@@ -1,7 +1,6 @@
 # cano.py
 
-Python libraries to support Canopy ecosystem: at least Jinja2 filters, the Rose app functionality, and the Rose validators
-
+Python libraries to support Canopy ecosystem. Jinja2 filters, Rose app functionality, Rose validators, fre wrappers.
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
