@@ -1,4 +1,4 @@
-# cano.py
+# fre
 
 Python libraries to support Canopy ecosystem. Jinja2 filters, Rose app functionality, Rose validators, fre wrappers.
 ## Getting started
