@@ -1,3 +1,21 @@
+commit 52ade551dc0edd2ecb92612443c1c5f9750dea69
+Author: Bennett Chang <Bennett.Chang@ldt-4742405.gfdl.noaa.gov>
+Date:   Mon Oct 9 16:13:58 2023 -0400
+
+    fixed typo
+
+commit 3886354142d575c7f63319117111ed10096a43e9
+Author: Bennett Chang <Bennett.Chang@ldt-4742405.gfdl.noaa.gov>
+Date:   Mon Oct 9 16:10:58 2023 -0400
+
+    function args
+
+commit e32434b75c89f96d962af18511799cb6d85134af
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 9 15:49:25 2023 -0400
+
+    log file
+
 commit e3c4814694b083b7104f1af3a6f1ae3f9cda30e1
 Author: Bennett <bcc2761@g.rit.edu>
 Date:   Mon Oct 9 15:36:11 2023 -0400
