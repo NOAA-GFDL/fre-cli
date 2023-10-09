@@ -1,0 +1,11 @@
+commit e3c4814694b083b7104f1af3a6f1ae3f9cda30e1
+Author: Bennett <bcc2761@g.rit.edu>
+Date:   Mon Oct 9 15:36:11 2023 -0400
+
+    initialization of files and sample code
+
+commit d14a505bf7c06206bab3f5bd5ef0cbe08964c0bb
+Author: Bennett Chang <98476720+bcc2761@users.noreply.github.com>
+Date:   Sat Sep 30 13:09:18 2023 -0400
+
+    Initial commit
