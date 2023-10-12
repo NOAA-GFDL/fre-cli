@@ -10,4 +10,3 @@
 * click.confirm(): potential for the user to verify actions and proceed
 * click.style(): can style text with wanted configurations if needed (can use click.secho())
 * click.pause(): stops executing current command and waits for user input to continue
-
