@@ -10,3 +10,7 @@
 * click.confirm(): potential for the user to verify actions and proceed
 * click.style(): can style text with wanted configurations if needed (can use click.secho())
 * click.pause(): stops executing current command and waits for user input to continue
+
+## Potential Errors
+* environments: I'm working with mainly `venv` right now, but `conda` and `venv` on other computers may fail
+    - this is likely due to the setup, within setup.py and calling `pip install --editable` after
