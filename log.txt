@@ -1,3 +1,9 @@
+commit fd0a0d75a4222a0e8a0d6cb6b170c7ca85bbb2cf
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 12 10:00:46 2023 -0400
+
+    setup.py and <pip install --editable .> learned and implemented to be able to execute without having to call <python playtest.py> and instead can just call <playtest>
+
 commit 29e8637916e9e028ae52e88282102271c4fdaaf2
 Author: Bennett Chang <Bennett.Chang@ldt-4742405.gfdl.noaa.gov>
 Date:   Wed Oct 11 16:58:28 2023 -0400
