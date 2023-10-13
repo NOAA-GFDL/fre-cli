@@ -13,4 +13,5 @@
 
 ## Potential Errors
 * environments: I'm working with mainly `venv` right now, but `conda` and `venv` on other computers may fail
-    - this is likely due to the setup, within setup.py and calling `pip install --editable` after
+    - this is likely due to the setup, within `setup.py`` and calling `pip install --editable` after
+    - however, using ^ this allows for cleaner execution, where the user only has to type `$scriptname` in the command line instead of `python $scriptname.py` (followed by any needed commands and flags of course)
