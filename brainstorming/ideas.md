@@ -19,3 +19,6 @@
 ## Questions for Users/Devs
 * do we want to use flags (`click.option()`), confirmations (`click.confirm()`), or a mix of both to allow users to run what they want, how they want?
     - this means that users can either use certain flags (i.e `--execute`), which will be included and explained in the `--help` feature, or they will just be prompted for what features they want and can decide if they want it with [y/N]
+
+## Potential Additional Uses for Click
+* program using BeautifulSoup to scrape GFDL pages for immediate tutorial guidance after prompting for GFDL login
