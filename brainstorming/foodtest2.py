@@ -7,11 +7,12 @@ import math
 total = 0.00
 
 def get_burger_options():
-    selected_options = []
     global total
-    total += 5.00
 
     while True:
+        selected_options = []
+        total += 5.00
+        
         impossible = click.confirm('Do you want to substitute beef patty for impossible patty?')
         cheese = click.confirm('Do you want to add cheese to the burger?')
         ketchup = click.confirm('Do you want to add ketchup to the burger?')
@@ -47,6 +48,9 @@ def get_burger_options():
             click.echo('You have added mushrooms.')
             selected_options.append('mushrooms')
             total += 0.25
+
+
+        # Want to make a list to add orders and have a cumulative print summary at the end 
 
         options_text = ', '.join(selected_options)
         if options_text:
