@@ -1,3 +1,63 @@
+commit 95784f74a3c7000643ddb6e65a8853141cdc9c70
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 16 16:05:30 2023 -0400
+
+    more changes added money
+
+commit 31614b1ca92f5ccb3b3e5f62d05de5131ce3102e
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 16 15:32:01 2023 -0400
+
+    foodtest changes
+
+commit 6da0d1bf1a515bea36ad636408a1ed21a2e3fa38
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 16 14:13:28 2023 -0400
+
+    more playing around with groups
+
+commit 92cf0234f9234457d5f17fb584bd612fb0dbb165
+Author: Bennett <bcc2761@g.rit.edu>
+Date:   Fri Oct 13 09:49:03 2023 -0400
+
+    documentation changes
+
+commit 3bf77694fe8b55331b9644bb95b4689b82acfc3e
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 12 17:02:08 2023 -0400
+
+    2nd file for learning
+
+commit 76f7d7504f4d387c744193bafc1a54df122bdcd6
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 12 15:49:45 2023 -0400
+
+    potential errors brainstorming
+
+commit e61f172f3c958d9a04ff2119d8ca2603a51cd47d
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 12 13:31:35 2023 -0400
+
+    format changes
+
+commit 4a68b17576befb52e9ac72718c410ec52b562aa8
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 12 13:16:19 2023 -0400
+
+    brainstorming directory with ideas file
+
+commit 2a2430c4ebc0ecf6450be01cb70daacd38f73415
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 12 10:31:24 2023 -0400
+
+    pdf guides added
+
+commit c45c92b9bc4539579f507e64f10d918332532a19
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 12 10:03:01 2023 -0400
+
+    log
+
 commit fd0a0d75a4222a0e8a0d6cb6b170c7ca85bbb2cf
 Author: Bennett Chang <bcc2761@g.rit.edu>
 Date:   Thu Oct 12 10:00:46 2023 -0400
