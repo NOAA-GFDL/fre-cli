@@ -1,8 +1,9 @@
 import click
-
+    
 # click group allows for multiple functions to be called via same script
 @click.group()
-def cli():
+@click.help_option(help = 'Choose what food you would like to get started.')
+def food():
     pass
 
 # first function, hello
@@ -28,8 +29,7 @@ def goodbye(name, uppercase):
     click.echo(farewell)
 
 # add your functions to the click group
-cli.add_command(hello)
-cli.add_command(goodbye)
+burger.add_command(hello)
 
 if __name__ == '__main__':
-    cli()
+    food()
