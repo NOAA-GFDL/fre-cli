@@ -1,3 +1,7 @@
+"""
+Simple program hence 'playtest' to familiarize with Click in general, likely going to be moved to /brainstorming directory and replaced by actual prototype program
+"""
+
 import click
 
 # click group allows for multiple functions to be called via same script
