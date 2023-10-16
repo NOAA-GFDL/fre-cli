@@ -1,4 +1,8 @@
+"""
+This program is written to familiarize with click's .confirm() tools and seek to do something similar to foodtest.py
+"""
 import click
+import math
 
 total = 0.00
 

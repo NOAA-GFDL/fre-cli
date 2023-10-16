@@ -1,3 +1,7 @@
+"""
+This program is written to familiarize with click's .group() and .option() tools
+"""
+
 import click
 import math
 
