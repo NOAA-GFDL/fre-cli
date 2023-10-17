@@ -67,7 +67,7 @@ def get_burger_options():
         
         more_food = click.confirm('Do you want to order more food?')
         if not more_food:
-            click.echo(f"Your order total is ${total:.2f}")
+            click.echo(f"Thank you! Your order total is ${total:.2f}")
             break
 
 
