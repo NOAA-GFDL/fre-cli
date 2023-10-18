@@ -16,27 +16,27 @@ def fre():
 this is a nested group within the {fre} group that allows commands to be processed
 """
 @fre.group('list')
-def frelist():
+def freList():
     """ - Execute fre list """
     pass
 
 @fre.group('make')
-def fremake():
+def freMake():
     """ - Execute fre make """
     pass
 
 @fre.group('run')
-def frerun():
+def freRun():
     """ - Execute fre run """
     pass
 
 @fre.group('postprocess')
-def frepostprocess():
+def frePostProcess():
     """ - Execute fre postprocess """
     pass
 
 @fre.group('check')
-def frecheck():
+def freCheck():
     """ - Execute fre check """
     pass
 
@@ -83,7 +83,7 @@ def list(uppercase):
 @fremake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
-def execute_all(context, uppercase):
+def executeAll(context, uppercase):
     """ - Execute all commands under fre make"""
     context.forward(checkout)
     context.forward(compile)
