@@ -39,7 +39,7 @@ def frecheck():
 {fremake} subcommands to be processed
 """
 @fremake.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print name in uppercase.')
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 def checkout(uppercase):
     statement = "execute fre make checkout script" 
     if uppercase:
@@ -47,17 +47,39 @@ def checkout(uppercase):
     click.echo(statement)
 
 @fremake.command()
-def compile():
-    click.echo("execute fre make compile script")
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+def compile(uppercase):
+    statement = "execute fre make compile script" 
+    if uppercase:
+        statement = statement.upper()
+    click.echo(statement)
 
 @fremake.command()
-def container():
-    click.echo("execute fre make container script")
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+def container(uppercase):
+    statement = "execute fre make container script" 
+    if uppercase:
+        statement = statement.upper()
+    click.echo(statement)
 
 @fremake.command()
-def list():
-    click.echo("execute fre make list script")
-    
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+def list(uppercase):
+    statement = "execute fre make list script" 
+    if uppercase:
+        statement = statement.upper()
+    click.echo(statement)
+
+# def execute_all_subcommands():
+#     checkout(False)  # Call checkout with uppercase option set to False
+#     compile(False)   # Call compile with uppercase option set to False
+#     container(False) # Call container with uppercase option set to False
+#     list(False)      # Call list with uppercase option set to False
+
+# @fremake.command()
+# def execute_all():
+#     execute_all_subcommands
+
 
 if __name__ == '__main__':
     fre()
