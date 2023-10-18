@@ -1,9 +1,0 @@
-README.md
-playtest.py
-setup.py
-playtest.egg-info/PKG-INFO
-playtest.egg-info/SOURCES.txt
-playtest.egg-info/dependency_links.txt
-playtest.egg-info/entry_points.txt
-playtest.egg-info/requires.txt
-playtest.egg-info/top_level.txt
