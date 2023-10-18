@@ -1,3 +1,81 @@
+commit b26168aa947bea1b31392e6478ba6b567740566e
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 13:11:53 2023 -0400
+
+    documentation updates
+
+commit e850515773d4fe8e397cdf0f6e51e703d4e13a05
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 13:00:12 2023 -0400
+
+    removed comments
+
+commit 70ed631810ab416a684a62bc854a3ed0a86c073c
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 12:59:16 2023 -0400
+
+    progress made on actual fre prototype per Chris's suggestions
+
+commit cd7a416c4c268cb4d4825215208489cf2be79f2b
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 11:41:31 2023 -0400
+
+    made a fre file and also added a pdf guide for setuptools
+
+commit 3bc940e23dab2e5910b99a4d5dc9af0a524889fe
+Author: Bennett <bcc2761@g.rit.edu>
+Date:   Tue Oct 17 13:43:15 2023 -0400
+
+    upd8
+
+commit 6a2e7df9dadb48b80e5fb3372786793433203beb
+Author: Bennett <bcc2761@g.rit.edu>
+Date:   Tue Oct 17 13:42:24 2023 -0400
+
+    want to incorporate classes
+
+commit 27f494a97706cafc914db4ea2a13f07bc89311bb
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 16 17:01:37 2023 -0400
+
+    pdf update
+
+commit bc913254d8aa912b20270e21915a18c1286e7a28
+Author: Bennett Chang <98476720+bcc2761@users.noreply.github.com>
+Date:   Mon Oct 16 17:00:39 2023 -0400
+
+    Update ideas.md
+
+commit 6bccdabf8bd8c6c5c8b3abcf36856a91ac287071
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 16 16:55:52 2023 -0400
+
+    comments
+
+commit 53b7d91c6fcde91a18c7f46c5b68c9b377a28883
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 16 16:47:31 2023 -0400
+
+    documentation for ideas
+
+commit d690eff97b00bb8bfafa3e53552deea1bb7f2abf
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 16 16:39:28 2023 -0400
+
+    while loop changes
+
+commit e9ec9a144d73d6e52e19bc6e315abd40a375e145
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 16 16:34:19 2023 -0400
+
+    comments
+
+commit ddb87d434bee4feba3da3539e658712f9f5abebc
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 16 16:32:55 2023 -0400
+
+    foodtest2.py for click.confirm() familiarization
+
 commit 95784f74a3c7000643ddb6e65a8853141cdc9c70
 Author: Bennett Chang <bcc2761@g.rit.edu>
 Date:   Mon Oct 16 16:05:30 2023 -0400
