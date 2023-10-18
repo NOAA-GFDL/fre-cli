@@ -20,11 +20,15 @@
 * do we want to use flags (`click.option()`), confirmations (`click.confirm()`), or a mix of both to allow users to run what they want, how they want?
     - this means that users can either use certain flags (i.e `--execute`), which will be included and explained in the `--help` feature, or they will just be prompted for what features they want and can decide if they want it with [y/N]
 
-## Updates/Things to Consider
+## Things to Consider/Implement
 * use of classes, arguments (necessary) vs. flags (optional)
     - arguments can be used for specific cases; i.e need to parse specific file
 * per Chris's input, need nested groups to allow subcommands to be executed with specific flags
     - will probably implement an `execute_all` command within a group like `fre make` if user wants to execute every feature at once, i.e. `checkout`, `container`, `list`, and `compile` for `fre make`
+* obviously going to need to make implementations for dealing with scripts across multiple files
+
+## Required Changes to Make
+* none (at the moment), still in experimentation phase
 
 ## Potential Additional Uses for Click
 * program using BeautifulSoup to scrape GFDL pages for immediate tutorial guidance after prompting for GFDL login

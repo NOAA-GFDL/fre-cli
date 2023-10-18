@@ -1,3 +1,8 @@
+"""
+prototype file for fre CLI
+authored by Bennett Chang | bcc2761
+"""
+
 import click
 
 """
@@ -53,6 +58,6 @@ def container():
 def list():
     click.echo("execute fre make list script")
     
-    
+
 if __name__ == '__main__':
     fre()
