@@ -17,22 +17,27 @@ this is a nested group within the {fre} group that allows commands to be process
 """
 @fre.group('list')
 def frelist():
+    """ - Execute fre list """
     pass
 
 @fre.group('make')
 def fremake():
+    """ - Execute fre make """
     pass
 
 @fre.group('run')
 def frerun():
+    """ - Execute fre run """
     pass
 
 @fre.group('postprocess')
 def frepostprocess():
+    """ - Execute fre postprocess """
     pass
 
 @fre.group('check')
 def frecheck():
+    """ - Execute fre check """
     pass
 
 """
@@ -41,6 +46,7 @@ def frecheck():
 @fremake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 def checkout(uppercase):
+    """ - Execute fre make checkout """
     statement = "execute fre make checkout script" 
     if uppercase:
         statement = statement.upper()
@@ -49,6 +55,7 @@ def checkout(uppercase):
 @fremake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 def compile(uppercase):
+    """ - Execute fre make compile """
     statement = "execute fre make compile script" 
     if uppercase:
         statement = statement.upper()
@@ -57,6 +64,7 @@ def compile(uppercase):
 @fremake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 def container(uppercase):
+    """ - Execute fre make container """
     statement = "execute fre make container script" 
     if uppercase:
         statement = statement.upper()
@@ -65,10 +73,33 @@ def container(uppercase):
 @fremake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 def list(uppercase):
+    """ - Execute fre make list """
     statement = "execute fre make list script" 
     if uppercase:
         statement = statement.upper()
     click.echo(statement)
+
+# this is the command that will execute all of `fre make`, but I need to test whether it will be able to pass specific flags to different areas when it they each have different flags
+@fremake.command()
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+@click.pass_context
+def execute_all(context, uppercase):
+    """ - Execute all commands under fre make"""
+    context.forward(checkout)
+    context.forward(compile)
+    context.forward(container)
+    context.forward(list)
+
+# @fremake.command()
+# def execute_all():
+#     fremake_execute_all()
+
+# @click.group()
+# def fremake_execute_all():
+#     compile()
+#     checkout()
+#     container()
+#     list()
 
 # def execute_all_subcommands():
 #     checkout(False)  # Call checkout with uppercase option set to False
