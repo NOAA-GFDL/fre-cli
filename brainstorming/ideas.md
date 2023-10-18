@@ -10,6 +10,7 @@
 * `click.confirm()`: potential for the user to verify actions and proceed
 * `click.style()`: can style text with wanted configurations if needed (can use click.secho())
 * `click.pause()`: stops executing current command and waits for user input to continue
+* `click.pass_context`: allows use of `context.forward(command)` and `context.invoke(command, args)` for discouraged yet possible invocation of commands from another command, probably what is going to be the solution to running all of something like `fre make` at once
 
 ## Potential Errors
 * environments: I'm working with mainly `venv` right now, but `conda` and `venv` on other computers may fail
