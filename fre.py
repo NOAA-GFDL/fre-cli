@@ -1,6 +1,7 @@
 """
-prototype file for fre CLI
+prototype file for FRE CLI
 authored by Bennett Chang | bcc2761
+NOAA | GFDL
 """
 
 import click
