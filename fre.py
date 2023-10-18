@@ -43,7 +43,7 @@ def freCheck():
 """
 {fremake} subcommands to be processed
 """
-@fremake.command()
+@freMake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 def checkout(uppercase):
     """ - Execute fre make checkout """
@@ -52,7 +52,7 @@ def checkout(uppercase):
         statement = statement.upper()
     click.echo(statement)
 
-@fremake.command()
+@freMake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 def compile(uppercase):
     """ - Execute fre make compile """
@@ -61,7 +61,7 @@ def compile(uppercase):
         statement = statement.upper()
     click.echo(statement)
 
-@fremake.command()
+@freMake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 def container(uppercase):
     """ - Execute fre make container """
@@ -70,7 +70,7 @@ def container(uppercase):
         statement = statement.upper()
     click.echo(statement)
 
-@fremake.command()
+@freMake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 def list(uppercase):
     """ - Execute fre make list """
@@ -80,7 +80,7 @@ def list(uppercase):
     click.echo(statement)
 
 # this is the command that will execute all of `fre make`, but I need to test whether it will be able to pass specific flags to different areas when it they each have different flags
-@fremake.command()
+@freMake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
 def executeAll(context, uppercase):
