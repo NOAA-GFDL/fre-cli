@@ -5,6 +5,7 @@ NOAA | GFDL
 """
 
 import click
+# import frelistex
 
 """
 click group allows for multiple functions to be called via same script
@@ -91,7 +92,19 @@ def executeAll(context, uppercase):
     context.forward(container)
     context.forward(list)
 
-# @fremake.command()
+# """
+# {frelist} subcommands to be processed, testing with frelistex.py file's functions, it seems it's able to be done but just needs different naming
+# """
+# @freList.command()
+# @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+# def listFunction(uppercase):
+#     """ - Execute fre list func """
+#     frelistex.listFunction(uppercase)
+
+if __name__ == '__main__':
+    fre()
+
+    # @fremake.command()
 # def execute_all():
 #     fremake_execute_all()
 
@@ -111,7 +124,3 @@ def executeAll(context, uppercase):
 # @fremake.command()
 # def execute_all():
 #     execute_all_subcommands
-
-
-if __name__ == '__main__':
-    fre()
