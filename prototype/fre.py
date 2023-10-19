@@ -1,6 +1,6 @@
 """
 prototype file for FRE CLI
-authored by Bennett Chang | bcc2761
+authored by Bennett.Chang@noaa.gov | bcc2761
 NOAA | GFDL
 """
 

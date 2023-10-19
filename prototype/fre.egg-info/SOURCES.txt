@@ -1,4 +1,3 @@
-README.md
 fre.py
 setup.py
 fre.egg-info/PKG-INFO
