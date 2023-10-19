@@ -15,7 +15,8 @@
 ## Potential Errors
 * environments: I'm working with mainly `venv` right now, but `conda` and `venv` on other computers may fail
     - this is likely due to the setup, within `setup.py`` and calling `pip install --editable` after
-    - however, using ^ this allows for cleaner execution, where the user only has to type `$scriptname` in the command line instead of `python $scriptname.py` (followed by any needed commands and flags of course)
+    - however, using ^ this allows for cleaner execution, where the user only has to type `$scriptname` in the command line instead of `python $scriptname.py` (followed by any needed commands and flags of course
+* `click.confirm()` actions will be hard for users to script
 
 ## Questions for Users/Devs
 * do we want to use flags (`click.option()`), confirmations (`click.confirm()`), or a mix of both to allow users to run what they want, how they want?
@@ -27,6 +28,8 @@
 * per Chris's input, need nested groups to allow subcommands to be executed with specific flags
     - will probably implement an `execute_all` command within a group like `fre make` if user wants to execute every feature at once, i.e. `checkout`, `container`, `list`, and `compile` for `fre make`
 * obviously going to need to make implementations for dealing with scripts across multiple files
+* subdirectories to be able to organize and access files and scripts within them
+* NOAA GFDL Conda channel to get this into userspace (Conda > pip/venv)
 
 ## Required Changes to Make
 * none (at the moment), still in experimentation phase
