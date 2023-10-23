@@ -1,0 +1,6 @@
+Package    Version Editable project location
+---------- ------- ------------------------------------------------------
+click      8.1.7
+fre        0.1.0   /home/Bennett.Chang/Coding/FRE-CLI-Prototype/prototype
+pip        23.3
+setuptools 68.2.2
