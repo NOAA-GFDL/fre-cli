@@ -1,3 +1,87 @@
+commit 735bd4bc1647ebc3dc32a00a153ddc8647957780
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Mon Oct 23 14:53:55 2023 -0400
+
+    up to date
+
+commit f1e9bea8351099f47629b4b857d347d5787df30c
+Author: Bennett <bcc2761@g.rit.edu>
+Date:   Mon Oct 23 10:05:42 2023 -0400
+
+    subdirectories
+
+commit dab7c8642b9761f180dedb3347feed69e6f3d7bf
+Author: Bennett <bcc2761@g.rit.edu>
+Date:   Fri Oct 20 16:23:49 2023 -0400
+
+    subdirectores
+
+commit e721443cb3e2dd4b0f2f3124c29af86094012f75
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 19 14:43:07 2023 -0400
+
+    Meeting with Chris and suggestion updates
+
+commit 7f3678cfd9a462909f3248c5928b19f1a39b169c
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 19 13:57:05 2023 -0400
+
+    trying to figure out how to create more modules for multi file functions
+
+commit 9c323544b4cdfc8e6a1946167cc38d8d61290a5f
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Thu Oct 19 09:45:15 2023 -0400
+
+    made directory for prototype files
+
+commit 32c341abd6ce73f4c50a8d1b615a4d94691ba562
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 17:03:00 2023 -0400
+
+    docstrings
+
+commit a3fe972287f24dbfa023be2dc2b0e224bcec32b3
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 17:00:51 2023 -0400
+
+    idea documentation updates
+
+commit 1766237d8ae040e90c4727848408f1c4d24a1e38
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 16:57:32 2023 -0400
+
+    camelCase freMake
+
+commit 0881684115c9ad8c54f77ce6bc4eff14c9e0d4ff
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 16:56:35 2023 -0400
+
+    camelCase cHaNgEs
+
+commit d0e7a629cda51ce4ced238dc7d460efcbced74e2
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 16:55:12 2023 -0400
+
+    fre make execute_all
+
+commit 6fcbadfeaf40f0198e643a0ff62225dbc5042548
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 13:27:33 2023 -0400
+
+    mandatory push
+
+commit 348eb58ede0a04252bcf871e66f209affbcac0f9
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 13:24:17 2023 -0400
+
+    want to implement a function that implements all commands under a subgroup like fre make
+
+commit f27901ae0b4e178b8704587f2a678821f3243c59
+Author: Bennett Chang <bcc2761@g.rit.edu>
+Date:   Wed Oct 18 13:12:24 2023 -0400
+
+    revisions file update
+
 commit b26168aa947bea1b31392e6478ba6b567740566e
 Author: Bennett Chang <bcc2761@g.rit.edu>
 Date:   Wed Oct 18 13:11:53 2023 -0400
