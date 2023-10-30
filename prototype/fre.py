@@ -5,13 +5,21 @@ NOAA | GFDL
 """
 
 import click
+
 from prototype import frelist
-from prototype.frelist.frelist import testfunction1
-from prototype.frelist.frelist import testfunction2
+from prototype.frelist.frelist import *
+
 from prototype import frecheck
+from prototype.frecheck.frecheck import *
+
 from prototype import fremake
+from prototype.fremake.fremake import *
+
 from prototype import frepostprocess
+from prototype.frepostprocess.frepostprocess import *
+
 from prototype import frerun
+from prototype.frerun.frerun import *
 
 """
 click group allows for multiple functions to be called via same script
