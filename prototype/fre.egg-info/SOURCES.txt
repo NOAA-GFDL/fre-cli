@@ -1,8 +1,0 @@
-fre.py
-setup.py
-fre.egg-info/PKG-INFO
-fre.egg-info/SOURCES.txt
-fre.egg-info/dependency_links.txt
-fre.egg-info/entry_points.txt
-fre.egg-info/requires.txt
-fre.egg-info/top_level.txt
