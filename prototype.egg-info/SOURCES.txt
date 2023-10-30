@@ -11,7 +11,7 @@ prototype.egg-info/top_level.txt
 prototype/frecheck/__init__.py
 prototype/frecheck/frecheckex.py
 prototype/frelist/__init__.py
-prototype/frelist/frelistex.py
+prototype/frelist/frelist.py
 prototype/fremake/__init__.py
 prototype/fremake/fremakeex.py
 prototype/frepostprocess/__init__.py
