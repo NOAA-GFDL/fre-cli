@@ -5,6 +5,7 @@ NOAA | GFDL
 """
 
 import click
+from frelist import frelistex
 # import frelistex
 
 """
@@ -103,24 +104,3 @@ def executeAll(context, uppercase):
 
 if __name__ == '__main__':
     fre()
-
-    # @fremake.command()
-# def execute_all():
-#     fremake_execute_all()
-
-# @click.group()
-# def fremake_execute_all():
-#     compile()
-#     checkout()
-#     container()
-#     list()
-
-# def execute_all_subcommands():
-#     checkout(False)  # Call checkout with uppercase option set to False
-#     compile(False)   # Call compile with uppercase option set to False
-#     container(False) # Call container with uppercase option set to False
-#     list(False)      # Call list with uppercase option set to False
-
-# @fremake.command()
-# def execute_all():
-#     execute_all_subcommands
