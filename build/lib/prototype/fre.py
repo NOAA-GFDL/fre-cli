@@ -5,7 +5,21 @@ NOAA | GFDL
 """
 
 import click
-from frelist import frelistex
+
+from prototype import frelist
+from prototype.frelist.frelist import *
+
+from prototype import frecheck
+from prototype.frecheck.frecheck import *
+
+from prototype import fremake
+from prototype.fremake.fremake import *
+
+from prototype import frepostprocess
+from prototype.frepostprocess.frepostprocess import *
+
+from prototype import frerun
+from prototype.frerun.frerun import *
 
 """
 click group allows for multiple functions to be called via same script
@@ -97,9 +111,11 @@ def executeAll(context, uppercase):
 """
 @freList.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-def listFunction(uppercase):
+@click.pass_context
+def function(context, uppercase):
     """ - Execute fre list func """
-    frelistex.listFunction(uppercase)
+    context.forward(testfunction2)
+
 
 if __name__ == '__main__':
     fre()
