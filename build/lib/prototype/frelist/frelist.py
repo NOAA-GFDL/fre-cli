@@ -6,15 +6,28 @@ NOAA | GFDL
 
 import click
 
-"""
-{frelist} subcommands to be processed
-"""
-@click.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-def listFunction(uppercase):
-    """ - Execute fre list checkout """
-    statement = "execute fre list function script" 
+# Create a CLI group and add the subcommands to it
+@click.group()
+def list():
+    pass
+
+@list.command()
+@click.option('--uppercase', '-u', is_flag=True, help='Print statement in uppercase.')
+def testfunction1(uppercase):
+    """Execute fre list testfunction1."""
+    statement = "testingtestingtestingtesting"
     if uppercase:
         statement = statement.upper()
     click.echo(statement)
 
+@list.command()
+@click.option('--uppercase', '-u', is_flag=True, help='Print statement in uppercase.')
+def testfunction2(uppercase):
+    """Execute fre list testfunction2."""
+    statement = "testingtestingtestingtesting"
+    if uppercase:
+        statement = statement.upper()
+    click.echo(statement)
+
+if __name__ == '__main__':
+    list()

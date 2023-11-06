@@ -11,3 +11,4 @@ Prototype of future FMS Runtime Environment (FRE) CLI using Python's Click Lib
         - this will allow `fre.py` to be ran with `fre` in the command line instead of `python fre.py`
         - run `pip install .` to install packages from `setup.py`
 * Enter commands and follow `--help` messages for guidance
+* Can run directly from root directory, no need to `cd` into `/prototype/`
