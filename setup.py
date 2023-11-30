@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='prototype',
+    name='fre',
     version='0.1.0',
     description='Prototype for fre',
     author='Bennett Chang',
@@ -13,7 +13,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'fre = prototype.fre:fre',
+            'fre = fre.fre:fre',
         ],
     },
 )
