@@ -3,7 +3,7 @@
 ## \author Tom Robinson
 ## \author Dana Singh
 ## \author Bennett Chang
-## \description fremake is used to create and run a code checkout script and compile a model.
+## \description Script for fremake is used to create and run a code checkout script and compile a model.
 
 # import subprocess
 # import os
