@@ -21,6 +21,9 @@ from fre.frepp.frepp import *
 from fre import frerun
 from fre.frerun.frerun import *
 
+from fre import fretest
+from fre.fretest.fretest import *
+
 """
 click group allows for multiple functions to be called via same script
 """
@@ -46,14 +49,20 @@ def freRun():
     """ - Execute fre run """
     pass
 
-@fre.group('postprocess')
+@fre.group('pp')
 def frePP():
-    """ - Execute fre postprocess """
+    """ - Execute fre pp """
     pass
 
 @fre.group('check')
 def freCheck():
     """ - Execute fre check """
+    pass
+
+@fre.group('test')
+@click.pass_context
+def freTest(context):
+    """ - Execute fre test """
     pass
 
 """
@@ -187,6 +196,23 @@ def executeAll(context, uppercase):
 def function(context, uppercase):
     """ - Execute fre list func """
     context.forward(testfunction2)
+
+# """
+# {frepp} subcommands to be processed
+# """
+# @frePP.command()
+# @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+# @click.pass_context
+# def frepptest(context, uppercase):
+#     """ - Execute fre pp test """
+#     context.forward(frepptest)
+
+@freTest.command()
+# @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+@click.pass_context
+def testfunction(context):
+    """ - Execute fre test testfunction """
+    context.forward(fretest.fretest.testfunction)
 
 
 if __name__ == '__main__':
