@@ -1,0 +1,151 @@
+## User defined edits
+postprocess:
+    # OPT/ROSE-SUITE-TEMPLATE.CONF
+    ROSE-EXPERIMENT-CONFIGURATION:
+        # Create path to a new rose-suite-EXP.conf; this should be in the same directory as the rose-suite-TEMPLATE configuration (opt/ folder)
+        - path: # TYPE = single-quoted string
+        - rose-suite-exp-configuration:
+            # Specific site used for workflow
+            SITE: # TYPE = single-quoted string
+            
+            # Switch to remove intermediate data files when they are no longer needed                
+            CLEAN_WORK: # TYPE = boolean
+            
+            # Directory to use for history file cache
+            PTMP_DIR: # TYPE = single-quoted string
+            
+            # Switch to run MDTF on generated pp output
+            DO_MDTF: # TYPE = boolean
+            
+            # Switch to turn on/off statics processing
+            DO_STATICS: # TYPE = boolean
+            
+            # Switch to turn on/off time-average file generation
+            DO_TIMEAVGS: # TYPE = boolean
+            
+            # Switch to run refine-diag script(s) on history file to generate additional diagnostics
+            DO_REFINEDIAG: # TYPE = boolean 
+            
+            # Switch to mask atmos pressure-level output above/below surface pressure/atmos top
+            DO_ATMOS_PLEVEL_MASKING: # TYPE = boolean
+            
+            # Filepath to the space-separated user script(s)
+            # Currently, recommend specifying the script filepath in terms of where the script(s)
+            # will exist after "cylc install"; e.g. \$CYLC_WORKFLOW_RUN_DIR/etc/script.csh, using relative path
+            REFINEDIAG_SCRIPTS: # TYPE = single-quoted string
+            
+            # Switch to run a pre-analysis script on history files
+            DO_PREANALYSIS: # TYPE = boolean
+            
+            # Filepath to the user script
+            # Currently, recommend specifying the script filepath in terms of where the script
+            # will exist after "cylc install"; e.g. \$CYLC_WORKFLOW_RUN_DIR/etc/script.csh, using relative path
+            PREANALYSIS_SCRIPT: # TYPE = single-quoted string
+            
+            # Switch to launch analysis scripts
+            DO_ANALYSIS: # TYPE = boolean
+            
+            # Switch to only launch analysis scripts
+            DO_ANALYSIS_ONLY: # TYPE = boolean
+            
+            # Location for shared analysis scripts
+            FRE_ANALYSIS_HOME: # TYPE = single-quoted string
+
+            ### Settings about the history files 
+            # Directory to the primary location for history files
+            HISTORY_DIR: # TYPE = single-quoted string
+            
+            # Directory to the secondary location for history files
+            HISTORY_DIR_REFINED: # TYPE = single-quoted string
+            
+            # ISO8601 duration of the length of the history segment
+            HISTORY_SEGMENT: # TYPE = single-quoted string
+                                  
+            ### Settings about the requested postprocessing
+            # ISO8601 duration of the desired post-processed output
+            PP_CHUNK_A: # TYPE = single-quoted string
+
+            # ISO8601 duration of a second desired postprocessed output
+            PP_CHUNK_B: # TYPE = single-quoted string
+
+            # Space separated list of pp components to process
+            PP_COMPONENTS: # TYPE = single-quoted string
+
+            # Directory to write pp products to
+            PP_DIR: # TYPE = single-quoted string
+
+            # ISO8601 date to begin postprocessing
+            PP_START: # TYPE = single-quoted string
+
+            # ISO8601 date to stop postprocessing
+            PP_STOP: # TYPE = single-quoted string
+
+            # Default regridded resolution, e.g. "288,180"
+            PP_DEFAULT_XYINTERP: # TYPE = single-quoted string
+
+            # Filepath to an FMS gridSpec netCDF file or a tarfile
+            PP_GRID_SPEC: # TYPE = single-quoted string
+
+            # Label for the experiment
+            EXPERIMENT: # TYPE = single-quoted string
+
+            # Label for the hardware and software environment
+            PLATFORM: # TYPE = single-quoted string
+
+            # Label for the FRE compilation target used in the simulation
+            TARGET: # TYPE = single-quoted string
+
+            ### Settings related to analysis scripts
+            # Directory to write analysis output
+            ANALYSIS_DIR: # TYPE = single-quoted string
+
+    # TMP DIRECTORY CREATION
+    # This edit is not needed when working on pp/an. If not working on pp/an, a tmpDir must be defined.
+    TMPDIR:
+        # Directory for tmp location (used in stage-history in workflow)
+        - path: # TYPE = single-quoted string
+
+    # REMAP AND REGRID variable groups
+    # Create 'type' sections for each PP_COMPONENT
+    REGRID-XY:
+        # Path to the rose-app.conf for regrid-xy
+        - path: # TYPE = single-quoted string
+        - rose-app-configuration:
+            - component:
+                # Name of component
+                - type: # TYPE = single-quoted string
+                  # Should be 'cubedsphere' or 'tripolar'
+                  inputGrid: # TYPE = single-quoted string
+                  # Used for identifying land or atmos grid moasic file
+                  inputRealm: # TYPE = single-quoted string
+                  # Should be 'conserve_order1', 'conserve_order2' or 'bilinear'
+                  interpMethod: # TYPE = single-quoted string
+                  # Longitudinal grid
+                  outputGridLon: #TYPE = single-quoted string
+                  # Latitudinal grid
+                  outputGridLat: # TYPE = single-quoted string
+                  # Grid type
+                  outputGridType: # TYPE = single-quoted string
+                  sources: # TYPE = single-quoted string
+
+    REMAP-PP-COMPONENTS:
+        # Path to the rose-app.conf for remap-pp-components
+        - path: # TYPE = single-quoted string
+        - rose-app-configuration:
+            - component:
+                # Name of component
+                - type: # TYPE = single-quoted string
+                  sources: # TYPE = single-quoted string
+                  # Should be either 'native', 'regrid-xy/default' or 'regrid-xy/LABEL'
+                  grid: # TYPE = single-quoted string
+
+## OPTIONAL EDITS                        
+    # BIN/INSTALL-EXP
+    # Optional edit: Add --sym-link option to install cylc-run directory to location with more space available; default installation location for cylc-run directory is $HOME;
+    # Utilize this edit if you do not have enough space in home directory
+    INSTALL-EXP-SCRIPT:
+        # Directory to install-exp script
+        - path: # TYPE = single-quoted string
+        - install-option:
+            # Add --sym-link option (or any other option) to install cylc-run directory to location with more space available
+            install: # TYPE = single-quoted string

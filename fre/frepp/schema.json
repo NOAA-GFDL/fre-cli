@@ -1,0 +1,128 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/User-edits",
+    "definitions": {
+        "User-edits": {
+            "type": "object",
+            "properties": {
+                "postprocess": {
+                    "$ref": "#/definitions/PP"
+                }
+            }
+        },
+        "PP": {
+            "type": "object",
+            "properties": {
+                "ROSE-EXPERIMENT-CONFIGURATION": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RoseExperimentConfiguration"
+                    }
+                },
+                "TMPDIR": {
+                     "type": "array",
+                     "properties": {
+                          "tmpdirpath": {"type": ["string","null"]}
+                     }
+                },
+                "REGRID-XY": {
+                     "type": "array",
+                     "properties": {
+                          "path": {"type": "string"},
+                          "rose-app-configuration": {
+                               "type": "object",
+                               "properties": {
+                                    "component": {
+                                         "type": "object",
+                                         "properties": {
+                                              "type": {"type": "string"},
+                                              "inputGrid": {"type": "string"},
+                                              "inputRealm": {"type": "string"},
+                                              "interpMethod": {"type": "string"},
+                                              "outputGridLon": {"type": "string"},
+                                              "outputGridLat": {"type": "string"},
+                                              "outputGridType": {"type": "string"},
+                                              "sources": {"type": "string"}
+                                         }
+                                    }
+                               }
+                          }
+                     }
+                },
+                "REMAP-PP-COMPONENTS": {
+                    "type": "array",
+                    "properties": {
+                         "path": {"type": "string"},
+                         "rose-app-configuration": {
+                              "type": "object",
+                              "properties": {
+                                   "component": {
+                                        "type": "object",
+                                        "properties": {
+                                             "type": {"type": "string"},
+                                             "sources": {"type": "string"},
+                                             "grid": {"type": "string"}
+                                        }
+                                   }
+                              }
+                         }
+                    }
+                },
+                "INSTALL-EXP-SCRIPT": {
+                     "type": "array",
+                     "properties": {
+                          "path": {"type": "string"},
+                          "install-option": {
+                               "type": "object",
+                               "properties": {
+                                    "install": {"type": "string"}
+                               }
+                          }
+                     } 
+                }
+           },   
+           "required": ["ROSE-EXPERIMENT-CONFIGURATION","REGRID-XY","REMAP-PP-COMPONENTS"]
+        },
+        "RoseExperimentConfiguration": {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string"},
+                "rose-suite-exp-configuration": {
+                     "type": "object",
+                     "properties": {
+                          "SITE": {"type": "string"},
+                          "CLEAN_WORK": {"type": "boolean"},
+                          "PTMP_DIR": {"type": "string"},
+                          "DO_MDTF": {"type": "boolean"},
+                          "DO_STATICS": {"type": "boolean"},
+                          "DO_TIMEAVGS": {"type": "boolean"},
+                          "DO_REFINEDIAG": {"type": "boolean"},
+                          "DO_ATMOS_PLEVEL_MASKING": {"type": "boolean"},
+                          "REFINEDIAG_SCRIPTS": {"type": "string"},
+                          "DO_PREANALYSIS": {"type": "boolean"},
+                          "PREANALYSIS_SCRIPT": {"type": "string"},
+                          "DO_ANALYSIS": {"type": "boolean"},
+                          "DO_ANALYSIS_ONLY": {"type": "boolean"},
+                          "FRE_ANALYSIS_HOME": {"type": "string"},
+                          "HISTORY_DIR": {"type": "string"},
+                          "HISTORY_DIR_REFINED": {"type": ["string","null"]},
+                          "HISTORY_SEGMENT": {"type": "string"},
+                          "PP_CHUNK_A": {"type": "string"},
+                          "PP_CHUNK_B": {"type": ["string","null"]},
+                          "PP_COMPONENTS": {"type": "string"},
+                          "PP_DIR": {"type": "string"},
+                          "PP_START": {"type": "string"},
+                          "PP_STOP": {"type": "string"},
+                          "PP_DEFAULT_XYINTERP": {"type": "string"},
+                          "PP_GRID_SPEC": {"type": "string"},
+                          "EXPERIMENT": {"type": "string"},
+                          "PLATFORM": {"type": "string"},
+                          "TARGET": {"type": "string"},
+                          "ANALYSIS_DIR": {"type": ["string","null"]}
+                     }
+                }
+            }
+        }
+    }
+}
+

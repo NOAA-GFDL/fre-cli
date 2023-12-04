@@ -1,3 +1,4 @@
+LICENSE.md
 README.md
 setup.py
 fre/__init__.py
@@ -17,7 +18,6 @@ fre/fremake/fremake.py
 fre/frepp/__init__.py
 fre/frepp/config.py
 fre/frepp/frepp.py
-fre/frepp/testfunction.py
 fre/frerun/__init__.py
 fre/frerun/frerun.py
 fre/fretest/__init__.py

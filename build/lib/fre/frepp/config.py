@@ -3,12 +3,12 @@
 # Author: Dana Singh
 # Description: Script parses user-edit yaml, creates/implements the changes in rose-suite-exp.conf, rose-app.conf, bin/install-exp, and checks that filepaths exist
 
-# import os
-# from pathlib import Path
-# import yaml
+import os
+from pathlib import Path
+import yaml
 import click
-# from jsonschema import validate, ValidationError, SchemaError
-# import json
+from jsonschema import validate, ValidationError, SchemaError
+import json
 
 ####################
 # Function to parse and validate user defined edits.yaml 
@@ -37,7 +37,13 @@ def parseyaml(file):
 
 ####################
 @click.command()
-@click.argument('yamlfile', nargs=1)
+@click.option("--yaml", 
+              "-y", 
+              type=str, 
+              is_Flag=True, 
+              help="YAML file to be used for parsing", 
+              required=True)
+# @click.argument('yamlfile', nargs=1)
 def yamlInfo(yamlfile):
     yml = parseyaml(yamlfile)
     # Parse information in dictionary 

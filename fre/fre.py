@@ -24,12 +24,16 @@ from fre.frerun.frerun import *
 from fre import fretest
 from fre.fretest.fretest import *
 
+#############################################
+
 """
 click group allows for multiple functions to be called via same script
 """
 @click.group()
 def fre():
     pass
+
+#############################################
 
 """
 this is a nested group within the {fre} group that allows commands to be processed
@@ -60,10 +64,11 @@ def freCheck():
     pass
 
 @fre.group('test')
-@click.pass_context
-def freTest(context):
+def freTest():
     """ - Execute fre test """
     pass
+
+#############################################
 
 """
 {fremake} subcommands to be processed
@@ -187,6 +192,8 @@ def executeAll(context, uppercase):
     context.forward(container)
     context.forward(list)
 
+#############################################
+
 """
 {frelist} subcommands to be processed
 """
@@ -197,15 +204,23 @@ def function(context, uppercase):
     """ - Execute fre list func """
     context.forward(testfunction2)
 
+#############################################
+
 # """
 # {frepp} subcommands to be processed
 # """
-# @frePP.command()
-# @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-# @click.pass_context
-# def frepptest(context, uppercase):
-#     """ - Execute fre pp test """
-#     context.forward(frepptest)
+@frePP.command()
+@click.option("--yamlfile", 
+              "-y", 
+              type=str, 
+              help="YAML file to be used for parsing", 
+              required=True)
+@click.pass_context
+def configure(context, yaml):
+    """ - Execute fre pp configure """
+    context.forward(frepp.frepp.configure)
+
+#############################################
 
 @freTest.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
@@ -214,6 +229,7 @@ def testfunction(context, uppercase):
     """ - Execute fre test testfunction """
     context.forward(fretest.fretest.testfunction)
 
+#############################################
 
 if __name__ == '__main__':
     fre()
