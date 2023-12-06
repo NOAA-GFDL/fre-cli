@@ -210,14 +210,12 @@ def function(context, uppercase):
 # {frepp} subcommands to be processed
 # """
 @frePP.command()
-@click.option("--yaml", 
-              "-y", 
+@click.option("-y", 
               type=str, 
-              is_Flag=True, 
               help="YAML file to be used for parsing", 
               required=True)
 @click.pass_context
-def configure(context, yaml):
+def configure(context, y):
     """ - Execute fre pp configure """
     context.forward(frepp.frepp.configure)
 

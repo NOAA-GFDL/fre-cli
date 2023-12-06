@@ -1,0 +1,1 @@
+from fre.frecheck import *

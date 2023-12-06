@@ -1,2 +1,1 @@
-import fre.fretest.fretest
-import fre.fretest.testfile
+from fre.fretest import *

@@ -23,9 +23,9 @@ def parseyaml(file):
         schema = json.load(s)
     
     # Validate yaml
-    # If the yaml is not valid, the schema validattion will raise errors and exit
+    # If the yaml is not valid, the schema validation will raise errors and exit
     if validate(instance=y,schema=schema) == None:
-        print("YAML VALID")
+        print("YAML VALID\n")
  
     # Start parsing the yaml
     d=[]
@@ -37,15 +37,13 @@ def parseyaml(file):
 
 ####################
 @click.command()
-@click.option("--yaml", 
-              "-y", 
+@click.option("-y", 
               type=str, 
-              is_Flag=True, 
               help="YAML file to be used for parsing", 
               required=True)
-# @click.argument('yamlfile', nargs=1)
-def yamlInfo(yamlfile):
-    yml = parseyaml(yamlfile)
+
+def yamlInfo(y):
+    yml = parseyaml(y)
     # Parse information in dictionary 
     for items in yml:
         for key,value in items.items():
@@ -74,7 +72,9 @@ def yamlInfo(yamlfile):
                                 f.write(f'{key}={value}\n\n')
                             else:
                                 f.write(f'{key}="{value}"\n\n')
-  
+
+                print(f"\t-Rose-suite-exp. configuration edits complete")
+ 
 ## ROSE-APP-CONFIG EDITS ##
             # Open and write to rose-app.conf for regrid-xy and remap-pp-components 
             # Populate configurations with info defined in edits.yaml; path should exist
@@ -103,7 +103,9 @@ def yamlInfo(yamlfile):
                                              f.write(f"\n[{value}]\n")
                                          if key != "type":
                                              f.write(f"{key}={value}\n")
-           
+                         ## EDIT STATUS
+                         print(f"\t-Rose-app edits complete")
+
             ## If path does not exist, output error message
             elif p.exists() == False and key == "rose-app-configuration":
                 print(f"ERR: Path {p} DOES NOT EXIST")
@@ -114,7 +116,8 @@ def yamlInfo(yamlfile):
             if p.exists() == True and key == "install-option": 
                 ## Check if filepath exists
                 print(f"Path to {p} EXISTS")
-
+  
+                #edit cylc install line to include symlink-dirs if value is defined
                 for key,value in value.items():
                     with open(p,"r") as f:
                         rf=f.readlines()
@@ -127,22 +130,41 @@ def yamlInfo(yamlfile):
                                     with open(p,'w') as f:
                                         for line in rf:
                                             f.write(line)
+                            ## EDIT STATUS
+                            print(f"\t-Install-exp edit complete")
+                        
+                        # ensure cylc install line is not edited
+                        else:
+                            value = ""
+                            for line in rf:
+                                #for optional cylc install addition edit
+                                if "cylc install -O" in line:
+                                    line_num=rf.index(line)
+                                    rf[line_num]='cylc install -O $1 --workflow-name $1 '+value+'\n'
+                                    with open(p,'w') as f:
+                                        for line in rf:
+                                            f.write(line)
+                            ## EDIT STATUS
+                            print("\t-No changes done to install script")
 
             ## If path does not exist, output error message
-            elif p.exists() == False and key == "install-option":
+            elif key == "install-option" and p.exists() == False: 
                 print(f"ERR: Path {p} DOES NOT EXIST")
 
 ## TMPDIR PATH EDIT ##
-            if key == "tmpdirpath":
+            if key == "tmpdirpath" and value != None:
                 tmppath = Path(value)
 
-                ## If path does exists, output message; if path does not exist, create tmp directory and output message
+                ## If path does exists, output edit status message; if path does not exist, create tmp directory and output edit status
                 if tmppath.exists():
                     print(f"Path to TMPDIR: {value} EXISTS")
                 else:
                     os.mkdir(value)
                     print(f"TMPDIR: {value} was CREATED")
+            
+            elif key == "tmpdirpath" and value == None:
+                print(f"ERRCHECK: TMPPATH DOES NOT EXIST")
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
-    yamlInfo()
+    yamlInfo() 

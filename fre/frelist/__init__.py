@@ -1,1 +1,1 @@
-import fre.frelist.frelist
+from fre.frelist import *

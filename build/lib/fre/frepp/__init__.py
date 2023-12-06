@@ -1,2 +1,1 @@
-import fre.frepp.frepp
-import fre.frepp.config
+from fre.frepp import *

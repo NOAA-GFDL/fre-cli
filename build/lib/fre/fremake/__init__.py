@@ -1,1 +1,1 @@
-import fre.fremake.fremake
+from fre.fremake import *
