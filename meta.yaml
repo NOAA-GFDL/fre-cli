@@ -1,0 +1,32 @@
+package:
+  name: fre
+  version: 0.1.0
+
+source:
+  # url: github url
+  path: .
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+  noarch: python
+
+requirements:
+  host:
+    - python
+    - pip
+  run:
+    - python
+    - click
+
+test:
+  imports:
+    - click
+    - fre
+
+about:
+  # home: github url
+  license: LGPL-3.0
+  license_file: LICENSE.md
+  summary: Command line interface for FMS Runtime Environment (FRE) workflow commands
+  author: Bennett Chang, Dana Singh
