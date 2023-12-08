@@ -1,2 +1,0 @@
-click @ file:///home/conda/feedstock_root/build_artifacts/click_1692311806742/work
--e git+https://github.com/bcc2761/FRE-CLI-Prototype.git@fe44c4ee4ce3a2eebf4cd9cccbd4f9e5c035fd10#egg=prototype

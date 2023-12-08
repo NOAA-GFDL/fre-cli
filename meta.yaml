@@ -3,13 +3,13 @@ package:
   version: 0.1.0
 
 source:
-  # url: https://gitlab.gfdl.noaa.gov/fre2/fre.git
+  # url: https://github.com/NOAA-GFDL/fre-cli
   path: .
 
 build:
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
-  noarch: pythonit
+  noarch: python
 
 requirements:
   host:
@@ -19,13 +19,13 @@ requirements:
     - python
     - click
 
-# test:
-#   imports:
-#     - click
-#     - fre
+test:
+  imports:
+    - click
+    - fre
 
 about:
-  # home: https://gitlab.gfdl.noaa.gov/fre2/fre.git
+  # home: https://github.com/NOAA-GFDL/fre-cli
   license: LGPL-3.0
   license_file: LICENSE.md
   summary: Command line interface for FMS Runtime Environment (FRE) workflow commands
