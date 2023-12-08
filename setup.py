@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='fre',
+    name='fre-cli',
     version='0.1.0',
-    description='Prototype for fre',
+    description='Command Line Interface for FRE commands',
     author='Bennett Chang',
     author_email='Bennett.Chang@noaa.gov',
     packages=find_packages(),

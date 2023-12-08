@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: fre-cli
+Version: 0.1.0
+Summary: Command Line Interface for FRE commands
+Author: Bennett Chang
+Author-email: Bennett.Chang@noaa.gov
+License-File: LICENSE.md
+Requires-Dist: Click
