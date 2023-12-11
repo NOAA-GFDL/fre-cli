@@ -13,3 +13,10 @@ Prototype of future FMS Runtime Environment (FRE) CLI using Python's Click Lib
 * Enter commands and follow `--help` messages for guidance
 * Can run directly from root directory, no need to `cd` into `/fre/`
 * May need to deactivate environment and reactivate it in order for changes to apply
+
+### Tools Included
+1) Postprocessing yaml configuration
+
+    Syntax: `fre pp configure -y [user-edit yaml file]`
+    
+    Currently, in order to use this subtool, the user needs the following tools available: pyyaml, click, pathlib, and jsonschema
