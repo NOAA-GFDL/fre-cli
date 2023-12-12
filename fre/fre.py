@@ -40,32 +40,32 @@ this is a nested group within the {fre} group that allows commands to be process
 """
 @fre.group('list')
 def freList():
-    """ - Execute fre list """
+    """ - access fre list subcommands """
     pass
 
 @fre.group('make')
 def freMake():
-    """ - Execute fre make """
+    """ - access fre make subcommands """
     pass
 
 @fre.group('run')
 def freRun():
-    """ - Execute fre run """
+    """ - access fre run subcommands"""
     pass
 
 @fre.group('pp')
 def frePP():
-    """ - Execute fre pp """
+    """ - access fre pp subcommands """
     pass
 
 @fre.group('check')
 def freCheck():
-    """ - Execute fre check """
+    """ - access fre check subcommands """
     pass
 
 @fre.group('test')
 def freTest():
-    """ - Execute fre test """
+    """ - access fre test subcommands """
     pass
 
 #############################################
@@ -78,33 +78,6 @@ def freTest():
 def checkout(uppercase):
     """ - Execute fre make checkout """
     statement = "execute fre make checkout script" 
-    if uppercase:
-        statement = statement.upper()
-    click.echo(statement)
-
-@freMake.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-def compile(uppercase):
-    """ - Execute fre make compile """
-    statement = "execute fre make compile script" 
-    if uppercase:
-        statement = statement.upper()
-    click.echo(statement)
-
-@freMake.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-def container(uppercase):
-    """ - Execute fre make container """
-    statement = "execute fre make container script" 
-    if uppercase:
-        statement = statement.upper()
-    click.echo(statement)
-
-@freMake.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-def list(uppercase):
-    """ - Execute fre make list """
-    statement = "execute fre make list script" 
     if uppercase:
         statement = statement.upper()
     click.echo(statement)
@@ -181,16 +154,16 @@ def fremakefunction(context, yamlfile, platform, target, force_checkout, force_c
     """ - Execute fre make func """
     context.forward(fremake)
 
-# this is the command that will execute all of `fre make`, but I need to test whether it will be able to pass specific flags to different areas when it they each have different flags
-@freMake.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-@click.pass_context
-def executeAll(context, uppercase):
-    """ - Execute all commands under fre make"""
-    context.forward(checkout)
-    context.forward(compile)
-    context.forward(container)
-    context.forward(list)
+# # this is the command that will execute all of `fre make`, but I need to test whether it will be able to pass specific flags to different areas when it they each have different flags
+# @freMake.command()
+# @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+# @click.pass_context
+# def executeAll(context, uppercase):
+#     """ - Execute all commands under fre make"""
+#     context.forward(checkout)
+#     context.forward(compile)
+#     context.forward(container)
+#     context.forward(list)
 
 #############################################
 
