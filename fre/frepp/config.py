@@ -10,7 +10,8 @@ import click
 from jsonschema import validate, ValidationError, SchemaError
 import json
 
-####################
+#############################################
+
 # Function to parse and validate user defined edits.yaml 
 def parseyaml(file):
     # Load yaml
@@ -35,7 +36,8 @@ def parseyaml(file):
                 d.append(dict)
     return d   #list,list of dictionaries
 
-####################
+#############################################
+
 @click.command()
 @click.option("-y", 
               type=str, 
