@@ -13,9 +13,6 @@
 * `click.pass_context`: allows use of `context.forward(command)` and `context.invoke(command, args)` for discouraged yet possible invocation of commands from another command, probably what is going to be the solution to running all of something like `fre make` at once
 
 ## Potential Errors
-* environments: I'm working with mainly `venv` right now, but `conda` and `venv` on other computers may fail
-    - this is likely due to the setup, within `setup.py`` and calling `pip install --editable` after
-    - however, using ^ this allows for cleaner execution, where the user only has to type `$scriptname` in the command line instead of `python $scriptname.py` (followed by any needed commands and flags of course
 * `click.confirm()` actions will be hard for users to script
 
 ## Questions for Users/Devs
@@ -25,14 +22,13 @@
 ## Things to Consider/Implement
 * use of classes, arguments (necessary) vs. flags (optional)
     - arguments can be used for specific cases; i.e need to parse specific file
-* per Chris's input, need nested groups to allow subcommands to be executed with specific flags
-    - will probably implement an `execute_all` command within a group like `fre make` if user wants to execute every feature at once, i.e. `checkout`, `container`, `list`, and `compile` for `fre make`
-* obviously going to need to make implementations for dealing with scripts across multiple files
-* subdirectories to be able to organize and access files and scripts within them
 * NOAA GFDL Conda channel to get this into userspace (Conda > pip/venv)
 
 ## Required Changes to Make
-* none (at the moment), still in experimentation phase
+* `fre pp configure -y file.yaml` only works when inside folder containing schema at the moment
+* want to polish up .gitignore file
+* deployment via GitLab
+* is there a way to check that all python dependencies needed by fre-cli are available in the current python envioronment? Like "python fre.py" or something?
 
 ## Potential Additional Uses for Click
 * program using BeautifulSoup to scrape GFDL pages for immediate tutorial guidance after prompting for GFDL login

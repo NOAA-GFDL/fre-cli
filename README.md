@@ -1,22 +1,26 @@
-# FRE-CLI-Prototype
-Prototype of future FMS Runtime Environment (FRE) CLI using Python's Click Lib
+# FRE-CLI
+FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
 ## Usage
 * Need to set up Conda environment first and foremost
-    - going to need Conda for python
-    - need to pip install:
-        - click
-        - setuptools
-    - using `setup.py`, must ensure that it is written in accordance with `fre.py` and `pip install .` (these instructions are better explained in `/pdf_guides/Setuptools Integration -- Click Documentation (8.1.x).pdf`)
-        - this will allow `fre.py` to be ran with `fre` in the command line instead of `python fre.py`
-        - run `pip install .` to install packages from `setup.py`
+    - If on workstation:
+        - module load conda
+    - Create new Conda environment
+        - conda create -n $envName
+    - Run `conda install` on needed dependencies
+        - `conda install -c chris.blanton fre` should install the CLI package created from the meta.yaml file
+    - setup.py file allows `fre.py` to be ran with `fre` in the command line instead of `python fre.py`
 * Enter commands and follow `--help` messages for guidance
-* Can run directly from root directory, no need to `cd` into `/fre/`
+* Can run directly from any directory, no need to `cd` into `/fre/`
 * May need to deactivate environment and reactivate it in order for changes to apply
 
 ### Tools Included
-1) Postprocessing yaml configuration
-
+1)  fre pp
+    Postprocessing yaml configuration
     Syntax: `fre pp configure -y [user-edit yaml file]`
-    
     Currently, in order to use this subtool, the user needs the following tools available: pyyaml, click, pathlib, and jsonschema
+2)  fre check
+3)  fre list
+4)  fre make
+5)  fre run
+6)  fre test
