@@ -12,6 +12,9 @@ import json
 
 #############################################
 
+package_dir = os.path.dirname(os.path.abspath(__file__))
+schema_path = os.path.join(package_dir, 'schema.json')
+
 # Function to parse and validate user defined edits.yaml 
 def parseyaml(file):
     # Load yaml
@@ -20,7 +23,7 @@ def parseyaml(file):
 
     ## TO-DO: validate user-yaml
     # Load the json schema: .load() (vs .loads()) reads and parses the json in one
-    with open("schema.json") as s:
+    with open(schema_path) as s:
         schema = json.load(s)
     
     # Validate yaml

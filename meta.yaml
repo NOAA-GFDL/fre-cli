@@ -32,3 +32,7 @@ about:
   license_file: LICENSE.md
   summary: Command line interface for FMS Runtime Environment (FRE) workflow commands
   author: Bennett Chang, Dana Singh, Chris Blanton
+
+# extra:
+#   files:
+#   - /fre/frepp/schema.json
