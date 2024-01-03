@@ -15,4 +15,4 @@ jobs:
         AnacondaToken: ch-669fd47b-c815-4b36-9501-f2830f1d18a4
         platforms: 'all'
         override: true
-        dry_run: true
+        dry-run: true
