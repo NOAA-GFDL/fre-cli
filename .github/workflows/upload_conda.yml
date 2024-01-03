@@ -12,7 +12,7 @@ jobs:
     - name: publish-to-conda
       uses: MichaelsJP/conda-package-publish-action@v1.0.0
       with:
-        AnacondaToken: ${{ secrets.CLI_ANACONDA_TOKEN }}
+        AnacondaToken: ch-669fd47b-c815-4b36-9501-f2830f1d18a4
         platforms: 'all'
         override: true
         dry_run: true
