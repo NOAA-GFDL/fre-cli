@@ -12,6 +12,6 @@ jobs:
     - name: publish-to-conda
       uses: MichaelsJP/conda-package-publish-action@v1.0.0
       with:
-        AnacondaToken: ch-669fd47b-c815-4b36-9501-f2830f1d18a4
+        AnacondaToken: bc-20e9ae2b-3e1c-4bd2-9fb3-c40debed12c8
         platforms: 'all'
         override: true
