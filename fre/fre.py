@@ -2,6 +2,7 @@
 prototype file for FRE CLI
 authored by Bennett.Chang@noaa.gov | bcc2761
 NOAA | GFDL
+2023-2024
 """
 
 import click
@@ -23,6 +24,9 @@ from fre.frerun.frerun import *
 
 from fre import fretest
 from fre.fretest.fretest import *
+
+from fre import frecatalog
+from fre.frecatalog.frecatalog import *
 
 #############################################
 
@@ -66,6 +70,11 @@ def freCheck():
 @fre.group('test')
 def freTest():
     """ - access fre test subcommands """
+    pass
+
+@fre.group('catalog')
+def freCatalog():
+    """ - access fre catalog subcommands """
     pass
 
 #############################################
@@ -202,6 +211,16 @@ def testfunction(context, uppercase):
     context.forward(fretest.fretest.testfunction)
 
 #############################################
+
+@freCatalog.command()
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+@click.pass_context
+def testfunction(context, uppercase):
+    """ - Execute fre catalog testfunction """
+    context.forward(frecatalog.frecatalog.testfunction)
+
+#############################################
+
 
 if __name__ == '__main__':
     fre()

@@ -4,3 +4,4 @@ from fre.frelist import *
 from fre.fremake import *
 from fre.frepp import *
 from fre.frerun import *
+from fre.frecatalog import *

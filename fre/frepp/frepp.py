@@ -9,7 +9,6 @@ import yaml
 import click
 from jsonschema import validate, ValidationError, SchemaError
 import json
-import click
 
 from multiprocessing.dummy import Pool
 
@@ -27,7 +26,7 @@ def pp():
 @click.pass_context
 def configure(context, y):
     """
-    # Insert fre pp configure here
+    # Takes a YAML file, parses it, and creates an output
     """
     context.forward(yamlInfo)    
 
