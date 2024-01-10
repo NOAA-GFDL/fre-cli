@@ -4,7 +4,7 @@ package:
 
 source:
   # url: https://github.com/NOAA-GFDL/fre-cli
-  path: .
+  path: ..
 
 build:
   script: {{ PYTHON }} -m pip install . -vv
@@ -29,7 +29,7 @@ test:
 about:
   # home: https://github.com/NOAA-GFDL/fre-cli
   license: LGPL-3.0
-  license_file: LICENSE.md
+  license_file: ../LICENSE.md
   summary: Command line interface for FMS Runtime Environment (FRE) workflow commands
   author: Bennett Chang, Dana Singh, Chris Blanton
 
