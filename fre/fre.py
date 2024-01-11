@@ -28,6 +28,9 @@ from fre.fretest.fretest import *
 from fre import frecatalog
 from fre.frecatalog.frecatalog import *
 
+from fre import freyamltools
+from fre.freyamltools.freyamltools import *
+
 #############################################
 
 """
@@ -75,6 +78,11 @@ def freTest():
 @fre.group('catalog')
 def freCatalog():
     """ - access fre catalog subcommands """
+    pass
+
+@fre.group('yamltools')
+def freYamltools():
+    """ - access fre yamltools subcommands """
     pass
 
 #############################################
@@ -218,6 +226,15 @@ def testfunction(context, uppercase):
 def testfunction(context, uppercase):
     """ - Execute fre catalog testfunction """
     context.forward(frecatalog.frecatalog.testfunction)
+
+#############################################
+
+@freYamltools.command()
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+@click.pass_context
+def testfunction(context, uppercase):
+    """ - Execute fre yamltools testfunction """
+    context.forward(freyamltools.freyamltools.testfunction)
 
 #############################################
 
