@@ -1,18 +1,19 @@
 name: publish_conda
-
 on:
   pull_request:
-    types: [opened, synchronize, reopened, closed]
-    
+    types: [opened, synchronize, reopened, closed] 
 jobs:
-  publish:
+  build_and_publish:
     runs-on: ubuntu-latest
+    container:
+      image: continuumio/miniconda3:latest
     steps:
-    - uses: actions/checkout@v1
-    - name: publish-to-conda
-      uses: MichaelsJP/conda-package-publish-action@v1.0.0
-      with:
-        AnacondaToken: ch-669fd47b-c815-4b36-9501-f2830f1d18a4
-        platforms: 'all'
-        override: true
-        dry_run: true
+    - name: Checkout Files
+      uses: actions/checkout@v2
+    - name: Run Docker to Build and Upload
+      run: |
+        conda install conda-build anaconda-client
+        anaconda login --username ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
+        pip install .
+        conda config --set anaconda_upload yes
+        conda build .
