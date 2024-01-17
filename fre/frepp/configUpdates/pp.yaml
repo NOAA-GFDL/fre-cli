@@ -4,16 +4,16 @@ configuration_paths:
   rose-remap: "/home/Dana.Singh/pp/ppyaml/fre-cli/fre/frepp/configUpdates/remap-rose-app.conf"
   rose-regrid: "/home/Dana.Singh/pp/ppyaml/fre-cli/fre/frepp/configUpdates/regrid-rose-app.conf"
 
-define: &ANA_AMIP_LEN "10yr"
-define: &PP_AMIP_CHUNK96 "1yr"
-define: &ANA_AMIP_START "1980"
-define: &ANA_AMIP_STOP "1988"
-define: &defaultxyInterp "180,288"
+define1: &ANA_AMIP_LEN "10yr"
+define2: &PP_AMIP_CHUNK96 "1yr"
+define3: &ANA_AMIP_START "1980"
+define4: &ANA_AMIP_STOP "1988"
+define5: &defaultxyInterp "180,288"
 
 rose-suite:
   refineDiag:
-    dsg_script: "$(includeDir)/refineDiag/refineDiag_data_stager_globalAve.csh"
-    ac6_script: "$(includeDir)/refineDiag/refineDiag_atmos_cmip6.csh"
+    datastager_script: "$(includeDir)/refineDiag/refineDiag_data_stager_globalAve.csh"
+    atmoscmip6_script: "$(includeDir)/refineDiag/refineDiag_atmos_cmip6.csh"
 #"\$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/refineDiag_atmos_cmip6.csh \$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/dummy.csh"
 
 #preAnalysis:
@@ -225,49 +225,6 @@ regrid-remap-info:
 tmpdir:
     # Directory for tmp location (used in stage-history in workflow)
     tmpdirpath: # TYPE = single-quoted string
-
-# REMAP AND REGRID variable groups
-# Create 'type' sections for each PP_COMPONENT
-regrid-xy:
-    # Path to the rose-app.conf for regrid-xy
-    - path: # TYPE = single-quoted string
-    - rose-app-configuration:
-        - component:
-            # Name of component
-            - type: # TYPE = single-quoted string
-              ### TYPE
-              # Should be 'cubedsphere' or 'tripolar'
-              inputGrid: # TYPE = single-quoted string
-              ### 
-              # Used for identifying land or atmos grid moasic file
-              ### SOURCEGRID
-              inputRealm: # TYPE = single-quoted string
-              ### land or atmos??
-              # Should be 'conserve_order1', 'conserve_order2' or 'bilinear'
-              interpMethod: # TYPE = single-quoted string
-              ### INTERPMETHOD
-              # Longitudinal grid
-              outputGridLon: #TYPE = single-quoted string
-              # Latitudinal grid
-              outputGridLat: # TYPE = single-quoted string
-              # Grid type
-              outputGridType: # TYPE = single-quoted string
-              ### 
-              sources: # TYPE = single-quoted string
-              ### SOURCE
-remap-pp-components:
-    # Path to the rose-app.conf for remap-pp-components
-    - path: # TYPE = single-quoted string
-    - rose-app-configuration:
-        - component:
-            # Name of component
-            - type: # TYPE = single-quoted string
-              ### TYPE
-              sources: # TYPE = single-quoted string 
-              ###SOURCE
-              # Should be either 'native', 'regrid-xy/default' or 'regrid-xy/LABEL'
-              grid: # TYPE = single-quoted string   
-              ### related to cmip=on or off in some way?????
 
 ## OPTIONAL EDITS                        
 # BIN/INSTALL-EXP
