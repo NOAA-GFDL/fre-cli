@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-from pathlib import Path
 import yaml
 import click
 from jsonschema import validate, ValidationError, SchemaError
@@ -21,22 +20,22 @@ for key,value in y.items():
     ## Add: check paths?
     if key == "configuration_paths":
       #print(value)
-      for key,value in value.items():
-        if key == "rose-suite":
-          rs = value
+      for filename,path in value.items():
+        if filename == "rose-suite":
+          rs = path
           # Create rose-suite-exp config
           with open(rs,'w') as f:
             f.write('[template variables]\n')
             f.write('## Information for requested postprocessing, info to pass to refineDiag/preanalysis scripts, info for epmt, and info to pass to analysis scripts \n')
     
         ## STILL CREATE ROSE APPS FOR NOW (regrid and remap)
-        elif key == "rose-remap":
-          remap_roseapp = value
+        elif filename == "rose-remap":
+          remap_roseapp = path
           with open(remap_roseapp,'w') as f:
             f.write("[command]\n")
             f.write("default=remap-pp-components\n")            
-        elif key == "rose-regrid":
-          regrid_roseapp = value
+        elif filename == "rose-regrid":
+          regrid_roseapp = path
           with open(regrid_roseapp,'w') as f:
             f.write("[command]\n")
             f.write("default=regrid-xy\n")
@@ -44,35 +43,65 @@ for key,value in y.items():
 ## Populate ROSE-SUITE-EXP config
     if key == "rose-suite":
       #print(value)
-      for key,value in value.items():
+      for suiteconfiginfo,dict in value.items():
         #print(value)
-        for key,value in value.items():
+        for configkey,configvalue in dict.items():
           #print(value)
-          if value != None:
+          if configvalue != None:
             with open(rs,'a') as f:
-              k=key.upper()
-              if value == True or value == False:
-                f.write(f'{k}={value}\n\n')
+              k=configkey.upper()
+              if configvalue == True or configvalue == False:
+                f.write(f'{k}={configvalue}\n\n')
               else:
-                if "pp_start" in key:
-                  f.write(f'{k}="{value}OOTZ"\n\n')
-                elif "pp_stop" in key:
-                  f.write(f'{k}="{value}OOTZ"\n\n')
+                if "pp_start" in configkey:
+                  f.write(f'{k}="{configvalue}OOTZ"\n\n')
+                elif "pp_stop" in configkey:
+                  f.write(f'{k}="{configvalue}OOTZ"\n\n')
                 else:
-                  f.write(f'{k}="{value}"\n\n')     
+                  f.write(f'{k}="{configvalue}"\n\n')     
 
 ##if value of type is in remap AND regrid grid value in remap rose app=regrid-xy
-###for inputRealm: if atmos in key, atmos, same with land and ocean
     if key == "regrid-remap-info":
-      #print(key)
-      for key,value in value.items():
-        for i in value:
-          #print(i)
-          for key,value in i.items():
-            #print(value)
+      for components,compinfo in value.items():
+        for i in compinfo:
+          for compkey,compvalue in i.items():
+            # Create/write remap rose app
             with open(remap_roseapp,'a') as f:
-              if key == "type":
-                f.write(f"\n[{value}]\n")
-              if key != "type":
-                f.write(f"{key}={value}\n")
+              if compkey == "type": 
+                f.write(f"\n[{compvalue}]\n")
 
+                #if xyInterp doesnt exist, grid is native
+                if i.get("xyInterp") == None:
+                  f.write(f"grid=native\n")
+
+                #in xyInterp exists, component can be regridded
+                elif i.get("xyInterp") != None:
+                  f.write("grid=regrid-xy\n")                       
+
+#              if key != "type":
+#                f.write(f"{key}={value}\n")
+
+              elif compkey == "sources":
+                f.write(f"{compkey}={compvalue}\n")
+
+            # Create/write regrid rose app
+            with open(regrid_roseapp,'a') as f:
+              if i.get("xyInterp") != None:
+                if compkey == "type":
+                  f.write(f"\n[{compvalue}]\n")
+                  if "atmos" in compvalue:
+                    f.write(f"inputRealm=atmos\n")
+                  elif "land" in compvalue:
+                    f.write(f"inputRealm=land\n")
+                  elif "ocean" in compvalue:
+                    f.write(f"inputRealm=ocean\n")
+                elif compkey == "sources":
+                  f.write(f"{compkey}={compvalue}\n")
+                elif compkey == "sourceGrid":
+                  f.write(f"inputGrid={compvalue}\n")
+                elif compkey == "interpMethod":
+                  f.write(f"{compkey}={compvalue}\n")
+
+##TO-DO
+#validation
+#fix sources
