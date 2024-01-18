@@ -24,3 +24,5 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
 4)  fre make
 5)  fre run
 6)  fre test
+7)  fre yamltools
+8)  fre catalog
