@@ -24,7 +24,7 @@ requirements:
     - click
     - pyyaml
     - jsonschema
-    - intakebuilder
+#    - intakebuilder
 
 test:
   imports:
