@@ -209,6 +209,27 @@ def configure(context, y):
     """ - Execute fre pp configure """
     context.forward(frepp.frepp.configure)
 
+@frePP.command()
+@click.option("-e",
+              "--experiment", 
+              type=str, 
+              help="Experiment name", 
+              required=True)
+@click.option("-p", 
+              "--platform",
+              type=str, 
+              help="Platform name", 
+              required=True)
+@click.option("-t",
+                "--target", 
+                type=str, 
+                help="Target name", 
+                required=True)
+@click.pass_context
+def checkout(context, experiment, platform, target):
+    """ - Execute fre pp checkout """
+    context.forward(frepp.frepp.checkout)
+
 #############################################
 
 @freTest.command()

@@ -11,6 +11,10 @@ build:
   number: 0
   noarch: python
 
+channels:
+    - bcc2761
+    - defaults
+
 requirements:
   host:
     - python
@@ -20,6 +24,7 @@ requirements:
     - click
     - pyyaml
     - jsonschema
+    - intakebuilder
 
 test:
   imports:
@@ -32,7 +37,3 @@ about:
   license_file: LICENSE.md
   summary: Command line interface for FMS Runtime Environment (FRE) workflow commands
   author: Bennett Chang, Dana Singh, Chris Blanton
-
-# extra:
-#   files:
-#   - /fre/frepp/schema.json
