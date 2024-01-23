@@ -207,7 +207,7 @@ def function(context, uppercase):
 @click.pass_context
 def configure(context, y):
     """ - Execute fre pp configure """
-    context.forward(frepp.frepp.configure)
+    context.forward(frepp.frepp.configureYAML)
 
 @frePP.command()
 @click.option("-e",

@@ -5,7 +5,7 @@
 
 import click
 
-from fre.frepp.configureScript import *
+from fre.frepp.configureScriptYAML import *
 from fre.frepp.checkoutScript import *
 
 #############################################
@@ -22,7 +22,7 @@ def pp():
               help="YAML file to be used for parsing", 
               required=True)
 @click.pass_context
-def configure(context, y):
+def configureYAML(context, y):
     """
     # Takes a YAML file, parses it, and creates an output
     """
