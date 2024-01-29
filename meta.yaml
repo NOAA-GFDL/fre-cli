@@ -24,7 +24,7 @@ requirements:
     - click
     - pyyaml
     - jsonschema
-#    - intakebuilder::bcc2761
+    - bcc2761::intakebuilder
 
 test:
   imports:
