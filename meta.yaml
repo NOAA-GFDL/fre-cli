@@ -24,13 +24,13 @@ requirements:
     - click
     - pyyaml
     - jsonschema
-    - intakebuilder::bcc2761
+#    - intakebuilder::bcc2761
 
 test:
   imports:
     - click
     - fre-cli
-    - intakebuilder::bcc2761
+#    - intakebuilder::bcc2761
 
 
 about:
