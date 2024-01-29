@@ -15,6 +15,5 @@ jobs:
       run: |
         conda install conda-build anaconda-client
         anaconda login --username ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
-        pip install .
         conda config --set anaconda_upload yes
         conda build .
