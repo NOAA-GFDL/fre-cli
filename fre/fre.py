@@ -213,11 +213,30 @@ def testfunction(context, uppercase):
 #############################################
 
 @freCatalog.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+@click.option('-i',
+              '--input_path', 
+              required=True, 
+              nargs=1) 
+@click.option('-o',
+              '--output_path', 
+              required=True, 
+              nargs=1)
+@click.option('--filter_realm', 
+              nargs=1)
+@click.option('--filter_freq', 
+              nargs=1)
+@click.option('--filter_chunk', 
+              nargs=1)
+@click.option('--overwrite', 
+              is_flag=True, 
+              default=False)
+@click.option('--append', 
+              is_flag=True, 
+              default=False)
 @click.pass_context
-def testfunction(context, uppercase):
-    """ - Execute fre catalog testfunction """
-    context.forward(frecatalog.frecatalog.testfunction)
+def buildCatalog(context, input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite,append):
+    """ - Execute fre catalog build """
+    context.forward(frecatalog.frecatalog.buildCatalog)
 
 #############################################
 

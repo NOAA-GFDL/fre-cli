@@ -3,23 +3,39 @@
 ## \author Bennett Chang
 ## \description Integration of CatalogBuilder to build a data catalog which can then be ingested in climate analysis scripts/workflow
 
-import os
-from pathlib import Path
-import yaml
 import click
 
-from fre.frecatalog.catalogfile import *
+from fre.frecatalog.get_intake_gfdl import *
 
 @click.group()
 def catalog():
-    pass 
+    pass
 
 @catalog.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+@click.option('-i',
+              '--input_path', 
+              required=True, 
+              nargs=1) 
+@click.option('-o',
+              '--output_path', 
+              required=True, 
+              nargs=1)
+@click.option('--filter_realm', 
+              nargs=1)
+@click.option('--filter_freq', 
+              nargs=1)
+@click.option('--filter_chunk', 
+              nargs=1)
+@click.option('--overwrite', 
+              is_flag=True, 
+              default=False)
+@click.option('--append', 
+              is_flag=True, 
+              default=False)
 @click.pass_context
-def testfunction(context, uppercase):
-    """ - Execute fre catalog function """
-    context.forward(function)
+def buildCatalog(context, input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite, append):
+    """ - Execute fre catalog build """
+    context.forward(build)
 
 if __name__ == "__main__":
-    test()
+    catalog()
