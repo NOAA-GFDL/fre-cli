@@ -24,12 +24,14 @@ requirements:
     - click
     - pyyaml
     - jsonschema
-#    - intakebuilder
+    - intakebuilder=0.0.0=bcc2761
 
 test:
   imports:
     - click
-    - fre
+    - fre-cli
+    - intakebuilder=0.0.0=bcc2761
+
 
 about:
   # home: https://github.com/NOAA-GFDL/fre-cli
