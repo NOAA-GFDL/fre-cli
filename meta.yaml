@@ -25,7 +25,6 @@ requirements:
     - click
     - pyyaml
     - jsonschema
-    - conda-forge::intake-esm
     - bcc2761::intakebuilder
 
 test:
