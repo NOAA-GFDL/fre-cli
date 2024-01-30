@@ -37,4 +37,4 @@ about:
   license: LGPL-3.0
   license_file: LICENSE.md
   summary: Command line interface for FMS Runtime Environment (FRE) workflow commands
-  author: Bennett Chang, Dana Singh, Chris Blanton
+  authors: Bennett Chang, Dana Singh, Chris Blanton
