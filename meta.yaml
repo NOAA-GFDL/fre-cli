@@ -13,6 +13,7 @@ build:
 
 channels:
     - bcc2761
+    - conda-forge
     - defaults
 
 requirements:
