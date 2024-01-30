@@ -30,7 +30,6 @@ test:
   imports:
     - click
     - fre
-#    - intakebuilder::bcc2761
 
 
 about:
