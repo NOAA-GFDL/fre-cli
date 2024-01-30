@@ -14,6 +14,7 @@ jobs:
     - name: Run Docker to Build and Upload
       run: |
         conda install conda-build anaconda-client
+        conda install conda-forge::intake-esm
         anaconda login --username ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
         conda config --set anaconda_upload yes
         conda build .
