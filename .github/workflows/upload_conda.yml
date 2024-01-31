@@ -18,6 +18,7 @@ jobs:
         # conda config --append channels noaa-gfdl
         conda config --append channels bcc2761
         conda install conda-build anaconda-client
-        anaconda login --username ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
+        anaconda login --token bc-20e9ae2b-3e1c-4bd2-9fb3-c40debed12c8
+        # anaconda login --username ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
         conda config --set anaconda_upload yes
         conda build .
