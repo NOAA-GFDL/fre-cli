@@ -34,7 +34,6 @@ test:
     - click
     - fre
 
-
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
   license: LGPL-3.0
