@@ -14,8 +14,8 @@ jobs:
     - name: Run Docker to Build and Upload
       run: |
         conda config --append channels conda-forge
-        conda config --append channels chris.blanton
-        conda config --append channels noaa-gfdl
+        # conda config --append channels chris.blanton
+        # conda config --append channels noaa-gfdl
         conda config --append channels bcc2761
         conda install conda-build anaconda-client
         anaconda login --username ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
