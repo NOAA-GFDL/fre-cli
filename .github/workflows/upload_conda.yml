@@ -20,4 +20,3 @@ jobs:
         export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
         conda config --set anaconda_upload yes
         conda build .
-        conda list
