@@ -17,8 +17,8 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
 ### Tools Included
 1)  fre pp
     - Postprocessing yaml configuration
-    - Syntax: `fre pp configure -y [user-edit yaml file]`
-    - Currently, in order to use this subtool, the user needs the following tools available: pyyaml, click, pathlib, and jsonschema
+        - Syntax: `fre pp configure -y [user-edit yaml file]`
+        - Currently, in order to use this subtool, the user needs the following tools available: pyyaml, click, pathlib, and jsonschema
 2)  fre check
 3)  fre list
 4)  fre make
