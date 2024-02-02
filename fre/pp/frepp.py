@@ -5,8 +5,8 @@
 
 import click
 
-from fre.frepp.configureScript import *
-from fre.frepp.checkoutScript import *
+from fre.pp.configureScript import *
+from fre.pp.checkoutScript import *
 
 #############################################
 
