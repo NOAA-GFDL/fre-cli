@@ -12,11 +12,9 @@ build:
   noarch: python
 
 channels:
-    - bcc2761
-    - conda-forge
     - defaults
-    # - noaa-gfdl
-    # - chris.blanton
+    - conda-forge
+    - noaa-gfdl
 
 requirements:
   host:
@@ -27,7 +25,7 @@ requirements:
     - click
     - pyyaml
     - jsonschema
-    - bcc2761::intakebuilder
+    - noaa-gfdl::intakebuilder
 
 test:
   imports:
