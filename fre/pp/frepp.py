@@ -24,7 +24,7 @@ def pp():
 @click.pass_context
 def configure(context, y):
     """
-    # Takes a YAML file, parses it, and creates an output
+    Takes a YAML file, parses it, and creates an output
     """
     context.forward(yamlInfo)
 
@@ -49,7 +49,7 @@ def configure(context, y):
 @click.pass_context
 def checkout(context, experiment, platform, target):
     """
-    # Checkout the template file
+    Checkout the template file
     """
     context.forward(checkoutTemplate)
 

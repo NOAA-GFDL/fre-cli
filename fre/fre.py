@@ -34,7 +34,7 @@ from fre.yamltools.freyamltools import *
 #############################################
 
 """
-click group allows for multiple functions to be called via same script
+principal main fre click group allows for subcommand functions from subgroups to be called via through this script with 'fre' as the entry point
 """
 @click.group()
 def fre():
@@ -43,7 +43,7 @@ def fre():
 #############################################
 
 """
-this is a nested group within the {fre} group that allows commands to be processed
+this is a nested group within the fre group that allows commands to be processed
 """
 @fre.group('list')
 def freList():
@@ -88,7 +88,7 @@ def freYamltools():
 #############################################
 
 """
-{fremake} subcommands to be processed
+fre make subcommands to be processed
 """
 @freMake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
@@ -185,7 +185,7 @@ def fremakefunction(context, yamlfile, platform, target, force_checkout, force_c
 #############################################
 
 """
-{frelist} subcommands to be processed
+fre list subcommands to be processed
 """
 @freList.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
@@ -196,9 +196,9 @@ def function(context, uppercase):
 
 #############################################
 
-# """
-# {frepp} subcommands to be processed
-# """
+"""
+fre pp subcommands to be processed
+"""
 @frePP.command()
 @click.option("-y", 
               type=str, 
@@ -232,6 +232,9 @@ def checkout(context, experiment, platform, target):
 
 #############################################
 
+"""
+fre test subcommands to be processed
+"""
 @freTest.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
@@ -241,6 +244,9 @@ def testfunction(context, uppercase):
 
 #############################################
 
+"""
+fre catalog subcommands to be processed
+"""
 @freCatalog.command()
 @click.option('-i',
               '--input_path', 
@@ -269,6 +275,9 @@ def buildCatalog(context, input_path, output_path, filter_realm, filter_freq, fi
 
 #############################################
 
+"""
+fre yamltools subcommands to be processed
+"""
 @freYamltools.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
@@ -277,7 +286,6 @@ def testfunction(context, uppercase):
     context.forward(yamltools.freyamltools.testfunction)
 
 #############################################
-
 
 if __name__ == '__main__':
     fre()
