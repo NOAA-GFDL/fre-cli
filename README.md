@@ -10,7 +10,7 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
     - Create new Conda environment
         - `conda create -n [environmentName]`
     - Run `conda install` on needed dependencies
-        - `conda install noaa-gfdl::fre-cli` should install the CLI package created from the meta.yaml file located at https://anaconda.org/NOAA-GFDL/fre-cli
+        - `conda install noaa-gfdl::fre-cli` should install the CLI package located at https://anaconda.org/NOAA-GFDL/fre-cli created from the meta.yaml file
         - All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
     - setup.py file allows `fre.py` to be ran with `fre` as the entry point in the command line instead of `python fre.py`
 * Enter commands and follow `--help` messages for guidance (brief rundown of commands also provided below)
