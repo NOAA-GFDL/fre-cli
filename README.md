@@ -28,15 +28,18 @@ In development:
         - Postprocessing yaml configuration
         - Minimal Syntax: `fre pp configure -y [user-edit yaml file]`
         - Module(s) needed: n/a
+        - Example: `fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml`
     - checkout
         - Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository 
         - Minimal Syntax: `fre pp checkout -e [experiment name] -p [platform name] -t [target name]`
         - Module(s) needed: n/a
+        - Example: `fre pp checkout -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp`
 2)  **fre catalog**
     - buildCatalog
         - Builds json and csv format catalogs from user input directory path
         - Minimal Syntax: `fre catalog buildCatalog -i [input path] -o [output path]`
         - Module(s) needed: n/a
+        - Example: `fre catalog buildCatalog -i /archive/am5/am5/am5f3b1r0/c96L65_am5f3b1r0_pdclim1850F/gfdl.ncrc5-deploy-prod-openmp/pp -o ~/output --overwrite`
 
 To be developed:
 1)  **fre check**
