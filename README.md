@@ -84,4 +84,11 @@ If there is *no* subdirectory created for the new tool you are trying to develop
     - Once published as a Conda package, ideally on the NOAA-GFDL channel at https://anaconda.org/NOAA-GFDL, an addition can be made to the "run" section under the "requirements" category in the meta.yaml of the fre-cli following the syntax `channel:package`
     - On pushes to the main branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically be updated using the workflow file
 
- ### **Example Directory Structure**
+ ### **Example /fre Directory Structure**
+.
+├── __init__.py
+├── fre.py
+├── subTool
+│   ├── __init__.py
+│   ├── subCommandScript.py
+│   └── fre(subTool).py
