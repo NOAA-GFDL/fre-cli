@@ -87,6 +87,7 @@ If there is *no* subdirectory created for the new tool you are trying to develop
 ### **MANIFEST.in**
 
 * In the case where non-python files like templates, examples, and outputs are to be included in the fre-cli package, MANIFEST.in can provide the solution. Ensure that the file exists within the correct folder, and add a line to the MANIFEST.in file saying something like `include fre/subTool/fileName.fileExtension`
+    - For more efficiency, if there are multiple files of the same type needed, the MANIFEST.in addition can be something like `recursive-include fre/subTool *.fileExtension` which would recursively include every file matching that fileExtension within the specified directory and its respective subdirectories
 
 ### **Example /fre Directory Structure**
 ```
