@@ -85,6 +85,7 @@ If there is *no* subdirectory created for the new tool you are trying to develop
     - On pushes to the main branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically be updated using the workflow file
 
  ### **Example /fre Directory Structure**
+```
 .
 ├── __init__.py
 ├── fre.py
@@ -92,3 +93,4 @@ If there is *no* subdirectory created for the new tool you are trying to develop
 │   ├── __init__.py
 │   ├── subCommandScript.py
 │   └── fre(subTool).py
+```
