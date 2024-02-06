@@ -1,4 +1,4 @@
 include README.md
 include LICENSE
-include fre/frepp/schema.json
-include fre/frecatalog/cats/gfdl_test1.json
+include fre/pp/schema.json
+include fre/catalog/cats/gfdl_test1.json
