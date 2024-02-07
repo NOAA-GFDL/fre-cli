@@ -197,11 +197,7 @@ def function(context, uppercase):
 #############################################
 
 """
-<<<<<<< HEAD
-{frepp} subcommands to be processed
-=======
 fre pp subcommands to be processed
->>>>>>> main
 """
 @frePP.command()
 @click.option("-y", 
@@ -211,11 +207,7 @@ fre pp subcommands to be processed
 @click.pass_context
 def configure(context, y):
     """ - Execute fre pp configure """
-<<<<<<< HEAD
-    context.forward(frepp.frepp.configureYAML)
-=======
-    context.forward(pp.frepp.configure)
->>>>>>> main
+    context.forward(pp.frepp.configureYAML)
 
 @frePP.command()
 @click.option("-e",
@@ -300,7 +292,7 @@ def convert(context, xml, platform, target, experiment, do_analysis, historydir,
     """
     Converts a Bronx XML to a Canopy rose-suite.conf 
     """
-    context.forward(frepp.frepp.configureXML)
+    context.forward(pp.frepp.configureXML)
 
 #############################################
 
