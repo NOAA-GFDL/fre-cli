@@ -13,7 +13,7 @@ import click
 
 from multiprocessing.dummy import Pool
 
-from .testfile import *
+from fre.test.testfile import *
 
 @click.group()
 def test():

@@ -2,32 +2,39 @@
 prototype file for FRE CLI
 authored by Bennett.Chang@noaa.gov | bcc2761
 NOAA | GFDL
+2023-2024
 """
 
 import click
 
-from fre import frelist
-from fre.frelist.frelist import *
+from fre import list
+from fre.list.frelist import *
 
-from fre import frecheck
-from fre.frecheck.frecheck import *
+from fre import check
+from fre.check.frecheck import *
 
-from fre import fremake
-from fre.fremake.fremake import *
+from fre import make
+from fre.make.fremake import *
 
-from fre import frepp
-from fre.frepp.frepp import *
+from fre import pp
+from fre.pp.frepp import *
 
-from fre import frerun
-from fre.frerun.frerun import *
+from fre import run
+from fre.run.frerun import *
 
-from fre import fretest
-from fre.fretest.fretest import *
+from fre import test
+from fre.test.fretest import *
+
+from fre import catalog
+from fre.catalog.frecatalog import *
+
+from fre import yamltools
+from fre.yamltools.freyamltools import *
 
 #############################################
 
 """
-click group allows for multiple functions to be called via same script
+principal main fre click group allows for subcommand functions from subgroups to be called via through this script with 'fre' as the entry point
 """
 @click.group()
 def fre():
@@ -36,7 +43,7 @@ def fre():
 #############################################
 
 """
-this is a nested group within the {fre} group that allows commands to be processed
+this is a nested group within the fre group that allows commands to be processed
 """
 @fre.group('list')
 def freList():
@@ -68,10 +75,20 @@ def freTest():
     """ - access fre test subcommands """
     pass
 
+@fre.group('catalog')
+def freCatalog():
+    """ - access fre catalog subcommands """
+    pass
+
+@fre.group('yamltools')
+def freYamltools():
+    """ - access fre yamltools subcommands """
+    pass
+
 #############################################
 
 """
-{fremake} subcommands to be processed
+fre make subcommands to be processed
 """
 @freMake.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
@@ -152,7 +169,7 @@ def checkout(uppercase):
 @click.pass_context
 def fremakefunction(context, yamlfile, platform, target, force_checkout, force_compile, keep_compiled, no_link, execute, parallel, jobs, no_parallel_checkout, submit, verbose, walltime, mail_list):
     """ - Execute fre make func """
-    context.forward(fremake)
+    context.forward(make.fremake.fremake)
 
 # # this is the command that will execute all of `fre make`, but I need to test whether it will be able to pass specific flags to different areas when it they each have different flags
 # @freMake.command()
@@ -168,20 +185,20 @@ def fremakefunction(context, yamlfile, platform, target, force_checkout, force_c
 #############################################
 
 """
-{frelist} subcommands to be processed
+fre list subcommands to be processed
 """
 @freList.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
 def function(context, uppercase):
     """ - Execute fre list func """
-    context.forward(testfunction2)
+    context.forward(list.frelist.testfunction2)
 
 #############################################
 
-# """
-# {frepp} subcommands to be processed
-# """
+"""
+fre pp subcommands to be processed
+"""
 @frePP.command()
 @click.option("-y", 
               type=str, 
@@ -190,16 +207,147 @@ def function(context, uppercase):
 @click.pass_context
 def configure(context, y):
     """ - Execute fre pp configure """
-    context.forward(frepp.frepp.configure)
+    context.forward(pp.frepp.configureYAML)
+
+@frePP.command()
+@click.option("-e",
+              "--experiment", 
+              type=str, 
+              help="Experiment name", 
+              required=True)
+@click.option("-p", 
+              "--platform",
+              type=str, 
+              help="Platform name", 
+              required=True)
+@click.option("-t",
+                "--target", 
+                type=str, 
+                help="Target name", 
+                required=True)
+@click.pass_context
+def checkout(context, experiment, platform, target):
+    """ - Execute fre pp checkout """
+    context.forward(pp.frepp.checkout)
+
+@frePP.command()
+@click.option('-x',
+              '--xml',
+              required=True,
+              help="Required. The Bronx XML")
+@click.option('-p',
+              '--platform',
+              required=True,
+              help="Required. The Bronx XML Platform")
+@click.option('-t',
+              '--target',
+              required=True,
+              help="Required. The Bronx XML Target")
+@click.option('-e',
+              '--experiment',
+              required=True,
+              help="Required. The Bronx XML Experiment")
+@click.option('--do_analysis',
+              is_flag=True,
+              default=False,
+              help="Optional. Runs the analysis scripts.")
+@click.option('--historydir',
+              help="Optional. History directory to reference. "                    \
+                    "If not specified, the XML's default will be used.")
+@click.option('--refinedir',
+              help="Optional. History refineDiag directory to reference. "         \
+                    "If not specified, the XML's default will be used.")
+@click.option('--ppdir',
+              help="Optional. Postprocessing directory to reference. "             \
+                    "If not specified, the XML's default will be used.")
+@click.option('--do_refinediag',
+              is_flag=True,
+              default=False,
+              help="Optional. Process refineDiag scripts")
+@click.option('--pp_start',
+              help="Optional. Starting year of postprocessing. "                   \
+                    "If not specified, a default value of '0000' "                  \
+                    "will be set and must be changed in rose-suite.conf")
+@click.option('--pp_stop',
+              help="Optional. Ending year of postprocessing. "                     \
+                    "If not specified, a default value of '0000' "                  \
+                    "will be set and must be changed in rose-suite.conf")
+@click.option('--validate',
+              is_flag=True,
+              help="Optional. Run the Cylc validator "                             \
+                    "immediately after conversion")
+@click.option('-v',
+              '--verbose',
+              is_flag=True,
+              help="Optional. Display detailed output")
+@click.option('-q',
+              '--quiet',
+              is_flag=True,
+              help="Optional. Display only serious messages and/or errors")
+@click.option('--dual',
+              is_flag=True,
+              help="Optional. Append '_canopy' to pp, analysis, and refinediag dirs")
+@click.pass_context
+def convert(context, xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
+    """
+    Converts a Bronx XML to a Canopy rose-suite.conf 
+    """
+    context.forward(pp.frepp.configureXML)
 
 #############################################
 
+"""
+fre test subcommands to be processed
+"""
 @freTest.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
 def testfunction(context, uppercase):
     """ - Execute fre test testfunction """
-    context.forward(fretest.fretest.testfunction)
+    context.forward(test.fretest.testfunction)
+
+#############################################
+
+"""
+fre catalog subcommands to be processed
+"""
+@freCatalog.command()
+@click.option('-i',
+              '--input_path', 
+              required=True, 
+              nargs=1) 
+@click.option('-o',
+              '--output_path', 
+              required=True, 
+              nargs=1)
+@click.option('--filter_realm', 
+              nargs=1)
+@click.option('--filter_freq', 
+              nargs=1)
+@click.option('--filter_chunk', 
+              nargs=1)
+@click.option('--overwrite', 
+              is_flag=True, 
+              default=False)
+@click.option('--append', 
+              is_flag=True, 
+              default=False)
+@click.pass_context
+def buildCatalog(context, input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite,append):
+    """ - Execute fre catalog build """
+    context.forward(catalog.frecatalog.buildCatalog)
+
+#############################################
+
+"""
+fre yamltools subcommands to be processed
+"""
+@freYamltools.command()
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+@click.pass_context
+def testfunction(context, uppercase):
+    """ - Execute fre yamltools testfunction """
+    context.forward(yamltools.freyamltools.testfunction)
 
 #############################################
 

@@ -46,7 +46,6 @@ def parseyaml(file):
               type=str, 
               help="YAML file to be used for parsing", 
               required=True)
-
 def yamlInfo(y):
     yml = parseyaml(y)
     # Parse information in dictionary 
