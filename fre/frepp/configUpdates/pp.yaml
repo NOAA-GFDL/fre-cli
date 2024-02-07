@@ -4,30 +4,26 @@ configuration_paths:
   rose-remap: "/home/Dana.Singh/pp/ppyaml/fre-cli/fre/frepp/configUpdates/remap-rose-app.conf"
   rose-regrid: "/home/Dana.Singh/pp/ppyaml/fre-cli/fre/frepp/configUpdates/regrid-rose-app.conf"
 
-define1: &ANA_AMIP_LEN "10yr"
-define2: &PP_AMIP_CHUNK96 "1yr"
-define3: &ANA_AMIP_START "1980"
-define4: &ANA_AMIP_STOP "1988"
-define5: &defaultxyInterp "180,288"
+analysisLen: &ANA_AMIP_LEN "10yr"
+chunk96: &PP_AMIP_CHUNK96 "1yr"
+analysisStart: &ANA_AMIP_START "1980"
+analysisStop: &ANA_AMIP_STOP "1988"
+defxyInterp: &defaultxyInterp "180,288"
 
 rose-suite:
   refineDiag:
     datastager_script: "$(includeDir)/refineDiag/refineDiag_data_stager_globalAve.csh"
     atmoscmip6_script: "$(includeDir)/refineDiag/refineDiag_atmos_cmip6.csh"
-#"\$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/refineDiag_atmos_cmip6.csh \$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/dummy.csh"
-
-#preAnalysis:
-#  - script: "\$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/refineDiag_data_stager_globalAve.csh"
 
   settings:
-    history_segment: 'P1Y' 
+    history_segment: "P1Y"
     pp_start: *ANA_AMIP_START
     pp_stop: *ANA_AMIP_STOP
     len: *ANA_AMIP_LEN
     site: "ppan"
     fre_analyis_home: #"/home/fms/local/opt/fre-analysis/test"
-    pp_chunk_a: 'P5Y'
-    pp_chunk_b: 'P10Y'
+    pp_chunk_a: "P5Y"
+    pp_chunk_b: "P10Y"
     pp_grid_spec: "/archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar"
 
   switches:
@@ -44,7 +40,7 @@ rose-suite:
     pp_dir: "/archive/$USER/canopy/am5/c96L33_amip/pp"
     ptmp: "/xtmp/$USER/ptmp"
     refine_diag:
-    preanalysis: 
+    preanalysis:
     history_refined: "/archive/$USER/canopy/am5/c96L33_amip/history_refineDiag"
     analysis: #"/nbhome/$USER/canopy/analysis/am5_c96L33_amip"
 
@@ -96,7 +92,7 @@ regrid-remap-info:
           chunkLength: *PP_AMIP_CHUNK96
         - freq: "monthly"
           chunkLength: *PP_AMIP_CHUNK96
-      timeAverage: 
+      timeAverage:
         - source: "monthly"
           interval: *PP_AMIP_CHUNK96
         - source: "monthly"
@@ -114,19 +110,19 @@ regrid-remap-info:
       cmip: "on"
       timeSeries:
         - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96          
+          chunkLength: *PP_AMIP_CHUNK96
     - type: "atmos_level"
       start: *ANA_AMIP_START
       sources: "atmos_month"
       sourceGrid: "atmos-cubedsphere"
       xyInterp: *defaultxyInterp
       cmip: "off"
-      timeSeries: 
+      timeSeries:
         - freq: "monthly"
           chunkLength: *PP_AMIP_CHUNK96
         - freq: "annual"
           chunkLength: *PP_AMIP_CHUNK96
-      timeAverage: 
+      timeAverage:
         - source: "monthly"
           interval: *PP_AMIP_CHUNK96
         - source: "monthly"
@@ -176,7 +172,7 @@ regrid-remap-info:
           chunkLength: *PP_AMIP_CHUNK96
         - freq: "annual"
           chunkLength: *PP_AMIP_CHUNK96
-      timeAverage: 
+      timeAverage:
         - source: "monthly"
           interval: *PP_AMIP_CHUNK96
         - source: "monthly"
@@ -201,10 +197,10 @@ regrid-remap-info:
       xyInterp: *defaultxyInterp
       interpMethod: "conserve_order1"
       cmip: "off"
-      timeSeries: 
+      timeSeries:
         - freq: "monthly"
           chunkLength: *PP_AMIP_CHUNK96
-      timeAverage: 
+      timeAverage:
         - source: "monthly"
           interval: *PP_AMIP_CHUNK96
         - source: "monthly"
@@ -216,23 +212,14 @@ regrid-remap-info:
       xyInterp: *defaultxyInterp
       interpMethod: "conserve_order1"
       cmip: "off"
-      timeSeries: 
+      timeSeries:
         - freq: "monthly"
           chunkLength: *PP_AMIP_CHUNK96
 
-# TMP DIRECTORY CREATION
-# This edit is not needed when working on pp/an. If not working on pp/an, a tmpDir must be defined.
 tmpdir:
-    # Directory for tmp location (used in stage-history in workflow)
-    tmpdirpath: # TYPE = single-quoted string
+  tmpdirpath:
 
-## OPTIONAL EDITS                        
-# BIN/INSTALL-EXP
-# Optional edit: Add --symlink-dirs option to install cylc-run directory to location with more space available; default installation location for cylc-run directory is $HOME;
-# Utilize this edit if you do not have enough space in home directory
 install-exp-script:
-    # Directory to install-exp script
-    - path: # TYPE = single-quoted string
+    - path: 
     - install-option:
-        # Add --symlink-dirs option (or any other option) to install cylc-run directory to location with more space available
-        install: # TYPE = single-quoted string
+        install: 
