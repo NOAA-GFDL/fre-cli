@@ -7,7 +7,7 @@ import click
 
 from fre.frepp.configureScriptYAML import *
 from fre.frepp.checkoutScript import *
-from fre.frepp.configureScriptXML2 import *
+from fre.frepp.configureScriptXML import *
 
 #############################################
 

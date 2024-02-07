@@ -9,6 +9,8 @@ import logging
 import metomi.rose.config
 import metomi.isodatetime.parsers
 
+#############################################
+
 #
 # Primary Usage: fre-bronx-to-canopy -x XML -e EXP -p PLATFORM -t TARGET
 # 
@@ -18,147 +20,6 @@ import metomi.isodatetime.parsers
 # - app/remap-pp-components/rose-app.conf
 # - app/regrid-xy/rose-app.conf
 #
-
-@click.command()
-@click.option('-x',
-              '--xml',
-              required=True,
-              help="Required. The Bronx XML")
-@click.option('-p',
-              '--platform',
-              required=True,
-              help="Required. The Bronx XML Platform")
-@click.option('-t',
-              '--target',
-              required=True,
-              help="Required. The Bronx XML Target")
-@click.option('-e',
-              '--experiment',
-              required=True,
-              help="Required. The Bronx XML Experiment")
-@click.option('--do_analysis',
-              is_flag=True,
-              default=False,
-              help="Optional. Runs the analysis scripts.")
-@click.option('--historydir',
-              help="Optional. History directory to reference. "                    \
-                    "If not specified, the XML's default will be used.")
-@click.option('--refinedir',
-              help="Optional. History refineDiag directory to reference. "         \
-                    "If not specified, the XML's default will be used.")
-@click.option('--ppdir',
-              help="Optional. Postprocessing directory to reference. "             \
-                    "If not specified, the XML's default will be used.")
-@click.option('--do_refinediag',
-              is_flag=True,
-              default=False,
-              help="Optional. Process refineDiag scripts")
-@click.option('--pp_start',
-              help="Optional. Starting year of postprocessing. "                   \
-                    "If not specified, a default value of '0000' "                  \
-                    "will be set and must be changed in rose-suite.conf")
-@click.option('--pp_stop',
-              help="Optional. Ending year of postprocessing. "                     \
-                    "If not specified, a default value of '0000' "                  \
-                    "will be set and must be changed in rose-suite.conf")
-@click.option('--validate',
-              is_flag=True,
-              help="Optional. Run the Cylc validator "                             \
-                    "immediately after conversion")
-@click.option('-v',
-              '--verbose',
-              is_flag=True,
-              help="Optional. Display detailed output")
-@click.option('-q',
-              '--quiet',
-              is_flag=True,
-              help="Optional. Display only serious messages and/or errors")
-@click.option('--dual',
-              is_flag=True,
-              help="Optional. Append '_canopy' to pp, analysis, and refinediag dirs")
-def convert(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
-    """ Converts a Bronx XML to a Canopy rose-suite.conf """
-        
-
-    cylc_loaded = False
-    
-    ##########################################################################
-    # Check the OS environment. Exit if FRE has not been loaded or Cylc has
-    # not been loaded (if using the --validate option).
-    ##########################################################################
-    if not(FRE_PATH in os.getenv('PATH') or FRE_TEST_PATH in os.getenv('PATH')):
-        raise EnvironmentError("Cannot run the XML converter because FRE Bronx "       \
-                               "isn't loaded. Please load the latest FRE Bronx "       \
-                               "module and try again.")
-    
-    if validate:
-        if CYLC_PATH in os.getenv('PATH'):
-            cylc_loaded = True
-        else:
-            raise EnvironmentError("Cannot run the validator tool because "            \
-                                   "the Cylc module isn't loaded. Please "             \
-                                   "run 'module load cylc/test' and try again.")
-        
-    # Logging settings. The default is throwing only warning messages
-    if verbose:
-        logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
-    elif quiet:
-        logging.basicConfig(level=logging.ERROR, format=LOGGING_FORMAT)
-    else:
-        logging.basicConfig(level=logging.WARNING, format=LOGGING_FORMAT)
-    # Alert the user if only 1 or zero PP years are given as an option, and
-    # notify them that a default of '0000' for those years will be set in the
-    # rose-suite configuration
-    if (pp_start is not None and pp_stop is None)                            \
-        or (pp_stop is not None and pp_start is None):
-        logging.warning("Only 1 PP start/stop year was specified. "                    \
-                        "After the converter has run, please edit the "                \
-                        "default '0000' values within your rose-suite.conf.")
-    if not pp_start and not pp_stop:
-        logging.warning("No PP start/stop year was specified. "                        \
-                        "After the converter has run, please edit the "                \
-                        "default '0000' values within your rose-suite.conf")
-        
-    # These series of conditionals takes into account input from the user
-    # (for the PP_START and PP_STOP year) that is not 4 digits or other
-    # nonsensical years. The rose-suite config requires 4 digits for years
-    # and if the year is under '1000' (but > 0), then leading zeros must be used.
-    if pp_start is not None and pp_stop is not None:
-        if len(pp_start) < 4 and int(pp_start) > 0:
-            pp_start = '0' * (4 - len(pp_start)) + pp_start
-        if len(pp_stop) < 4 and int(pp_stop) > 0:
-            pp_stop = '0' * (4 - len(pp_stop)) + pp_stop
-        if int(pp_start) >= int(pp_stop):
-            logging.warning("Your PP_START date is equal to or later than "            \
-                            "your PP_STOP date. Please revise these values in "        \
-                            "your configuration after the converter has run.")
-        if len(pp_start) > 4                                                      \
-            or len(pp_stop) > 4                                                   \
-            or int(pp_start) <= 0                                                 \
-            or int(pp_stop) <= 0:
-            logging.warning("At least one of your PP_start or PP_stop years "          \
-                            "does not make sense. Please revise this value in "        \
-                            "your configuration after the converter has run.")
-    
-    main(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual)
-    if verbose:
-        print("")
-    logging.info("XML conversion complete!")
-    # Run the Cylc validator tool on the current directory if conditions are met.
-    # Note: the user must be running the converter in the parent Cylc Workflow
-    # Directory if the validator is run.
-    if cylc_loaded:
-        if verbose:
-            print("")
-        logging.info("Running the Cylc validator tool...")
-        try:
-            subprocess.run("cylc validate .", shell=True, check=True)
-        except subprocess.CalledProcessError:
-            logging.error("Errant values in rose-suite.conf or other Cylc errors. "    \
-                            "Please check your configuration and run the validator "     \
-                            "again separately.")
-        finally:
-            logging.info("Validation step complete!") 
 
 LOGGING_FORMAT = '%(asctime)s  %(levelname)s: %(message)s'
 FRE_PATH = '/home/fms/local/opt/fre-commands/bronx-20/bin'
@@ -223,7 +84,7 @@ def chunk_from_legacy(legacy_chunk):
         logging.error("Unknown time units " + match.group(2))
         raise ValueError
 
-def frelist_xpath(args, xpath):
+def frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, xpath):
     """Returns filepaths of FRE XML elements that use X-path notation
        using Bronx's 'frelist' command via Python's 'subprocess' module
 
@@ -231,10 +92,10 @@ def frelist_xpath(args, xpath):
         1. args[str]: Argparse user-input arguments
         2. xpath[str]: X-path (XML) notation required by 'frelist'
     """
-    cmd = "frelist -x {} -p {} -t {} {} --evaluate '{}'".format(args.xml,
-                                                                args.platform,
-                                                                args.target,
-                                                                args.experiment,
+    cmd = "frelist -x {} -p {} -t {} {} --evaluate '{}'".format(xml,
+                                                                platform,
+                                                                target,
+                                                                experiment,
                                                                 xpath)
     logging.info(">> {}".format(xpath))
     process = subprocess.run(cmd,
@@ -256,7 +117,7 @@ def duration_to_seconds(duration):
     return dur.get_seconds()
 
 
-def main(args):
+def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
     """The meat of the converter
 
        Arguments: 
@@ -267,10 +128,6 @@ def main(args):
            2. Generate content for the regrid-xy app
            3. Generate content for the remap-pp-components app
     """
-    xml = args.xml
-    expname = args.experiment
-    platform = args.platform
-    target = args.target
 
     ##########################################################################
     # Set up default configurations for regrid-xy and remap-pp-components
@@ -302,35 +159,8 @@ def main(args):
     rose_suite.set(keys=['template variables', 'PP_DEFAULT_XYINTERP'], value='"360,180"')
     rose_suite.set(keys=['template variables', 'DO_ANALYSIS'],  value='True')
     
-    #if args.pp_start is not None:
-    #    rose_suite.set(keys=['template variables', 'PP_START'],
-    #                   value="'" + str(args.pp_start) + "'")
-    #else:
-    #    rose_suite.set(keys=['template variables', 'PP_START'],
-    #                   value="'0000'")
-
-    #if args.pp_stop is not None:
-    #    rose_suite.set(keys=['template variables', 'PP_STOP'],
-    #                   value="'" + str(args.pp_stop) + "'")
-    #else:
-    #    rose_suite.set(keys=['template variables', 'PP_STOP'],
-    #                   value="'0000'")
-
-    #if args.do_refinediag:
-    #    rose_suite.set(keys=['template variables', 'DO_REFINEDIAG'],
-    #                   value='True')
-    #    rose_suite.set(keys=['template variables', 'REFINEDIAG_NAME'],
-    #                   value="'atmos'")
-    #    rose_suite.set(keys=['template variables', 'DO_PREANALYSIS'],
-    #                   value='True')
-    #    rose_suite.set(keys=['template variables', 'PREANALYSIS_NAME'],
-    #                   value="'vitals'")
-    #else:
-
-    #rose_suite.set(keys=['template variables', 'DO_ANALYSIS'],
-    #               value=args.do_analysis)
     rose_suite.set(keys=['template variables', 'EXPERIMENT'],
-                   value="'{}'".format(expname))
+                   value="'{}'".format(experiment))
     rose_suite.set(keys=['template variables', 'PLATFORM'],
                    value="'{}'".format(platform))
     rose_suite.set(keys=['template variables', 'TARGET'],
@@ -351,7 +181,7 @@ def main(args):
     fetch_history_cmd = "frelist -x {} -p {} -t {} {} -d archive".format(xml,
                                                                          platform,
                                                                          target,
-                                                                         expname)
+                                                                         experiment)
     logging.info(">> {}".format(fetch_history_cmd))
     fetch_history_process = subprocess.run(fetch_history_cmd,
                                            shell=True,
@@ -365,7 +195,7 @@ def main(args):
     fetch_pp_cmd = "frelist -x {} -p {} -t {} {} -d postProcess".format(xml,
                                                                         platform,
                                                                         target,
-                                                                        expname)
+                                                                        experiment)
     logging.info(">> {}".format(fetch_pp_cmd))
     fetch_pp_process = subprocess.run(fetch_pp_cmd,
                                       shell=True,
@@ -378,7 +208,7 @@ def main(args):
     fetch_analysis_dir_cmd = "frelist -x {} -p {} -t {} {} -d analysis".format(xml,
                                                                         platform,
                                                                         target,
-                                                                        expname)
+                                                                        experiment)
     logging.info(">> {}".format(fetch_analysis_dir_cmd))
     fetch_analysis_dir_process = subprocess.run(fetch_analysis_dir_cmd,
                                       shell=True,
@@ -388,14 +218,14 @@ def main(args):
     analysisDir = fetch_analysis_dir_process.stdout.strip()
     logging.info(analysisDir)
 
-    gridSpec = frelist_xpath(args, 'input/dataFile[@label="gridSpec"]')
-    simTime = frelist_xpath(args, 'runtime/production/@simTime')
-    simUnits = frelist_xpath(args, 'runtime/production/@units')
+    gridSpec = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'input/dataFile[@label="gridSpec"]')
+    simTime = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/@simTime')
+    simUnits = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/@units')
 
     rose_suite.set(keys=['template variables', 'HISTORY_DIR'],
                    value="'{}'".format(historyDir))
     # set some dirs to something else to allow bronx dual-pps easily
-    if args.dual:
+    if dual:
         rose_suite.set(keys=['template variables', 'PP_DIR'],
                        value=f"'{ppDir}_canopy'")
         rose_suite.set(keys=['template variables', 'ANALYSIS_DIR'],
@@ -427,7 +257,7 @@ def main(args):
                       "--evaluate postProcess/refineDiag/@script".format(xml,
                                                                         platform,
                                                                         target,
-                                                                        expname)
+                                                                        experiment)
                         )
     refineDiag_process = subprocess.run(refineDiag_cmd,
                                        shell=True,
@@ -452,7 +282,7 @@ def main(args):
     if list_refinediags:
         # turn refinediag off by default in favor of the built-in plevel masking
         rose_suite.set(keys=['template variables', 'DO_REFINEDIAG'], value='False')
-        if args.dual:
+        if dual:
             rose_suite.set(keys=['template variables', '#HISTORY_DIR_REFINED'],
                            value=f"'{historyDirRefined}_canopy'")
         else:
@@ -476,12 +306,12 @@ def main(args):
         logging.info("No preAnalysis scripts written. )")
 
     # Grab all of the necessary PP component items/elements from the XML
-    comps = frelist_xpath(args, 'postProcess/component/@type').split()
+    comps = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'postProcess/component/@type').split()
     rose_suite.set(keys=['template variables', 'PP_COMPONENTS'],
                    value="'{}'".format(' '.join(sorted(comps))))
 
-    segment_time = frelist_xpath(args, 'runtime/production/segment/@simTime')
-    segment_units = frelist_xpath(args, 'runtime/production/segment/@units')
+    segment_time = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/segment/@simTime')
+    segment_units = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/segment/@units')
 
     if segment_units == 'years':
         segment = 'P{}Y'.format(segment_time)
@@ -498,7 +328,7 @@ def main(args):
 
     # Get the namelist current_date as the likely PP_START (unless "start" is used in the PP tags)
     # frelist --namelist may be better, but sometimes may not work
-    current_date_str = frelist_xpath(args, 'input/namelist')
+    current_date_str = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'input/namelist')
     match = re.search(r'current_date\s*=\s*(\d+),(\d+),(\d+)', current_date_str)
     if match:
         try:
@@ -538,13 +368,13 @@ def main(args):
                      .format(comp_count, len(comps)))
 
         # get the comp attributes
-        comp_source = frelist_xpath(args, '{}/@source'                                 \
+        comp_source = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/@source'                                 \
                                           .format(pp_comp_xpath_header))
-        xyInterp = frelist_xpath(args, '{}/@xyInterp'                                  \
+        xyInterp = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/@xyInterp'                                  \
                                        .format(pp_comp_xpath_header))
-        sourceGrid = frelist_xpath(args, '{}/@sourceGrid'                              \
+        sourceGrid = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/@sourceGrid'                              \
                                          .format(pp_comp_xpath_header))
-        interpMethod = frelist_xpath(args, '{}/@interpMethod'                          \
+        interpMethod = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/@interpMethod'                          \
                                          .format(pp_comp_xpath_header))
 
         # split some of the stuffs
@@ -582,7 +412,7 @@ def main(args):
         timeseries_count = 0
 
         # Get the number of TS nodes
-        results = frelist_xpath(args, '{}/timeSeries/@freq'                            \
+        results = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/timeSeries/@freq'                            \
                                       .format(pp_comp_xpath_header)).split()
         timeseries_count = len(results)
 
@@ -591,7 +421,7 @@ def main(args):
         for i in range(1, timeseries_count + 1):
             label = "{}.{}".format(comp, str(i))
 
-            source = frelist_xpath(args, '{}/timeSeries[{}]/@source'                   \
+            source = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/timeSeries[{}]/@source'                   \
                                          .format(pp_comp_xpath_header, i))
             if source:
                 if source.endswith('_refined'):
@@ -602,7 +432,7 @@ def main(args):
             #freq = freq_from_legacy(frelist_xpath(args,                                
             #                                      '{}/timeSeries[{}]/@freq'            \
             #                                      .format(pp_comp_xpath_header, i)))
-            chunk = chunk_from_legacy(frelist_xpath(args,                              
+            chunk = chunk_from_legacy(frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual,                              
                                                     '{}/timeSeries[{}]/@chunkLength'   \
                                                     .format(pp_comp_xpath_header, i)))
             chunks.add(chunk)
@@ -625,7 +455,7 @@ def main(args):
             rose_regrid_xy.set(keys=[comp, 'outputGridLat'], value=outputGridLat)
 
     # Process all of the found PP chunks into the rose-suite configuration
-    if args.verbose:
+    if verbose:
         print("")
     logging.info("Setting PP chunks...")
 
@@ -645,7 +475,7 @@ def main(args):
     logging.info("  Chunks used: {}".format(', '.join(sorted_chunks[0:2])))
    
     # Write out the final configurations.
-    if args.verbose:
+    if verbose:
         print("") 
     logging.info("Writing output files...")
 
@@ -663,6 +493,164 @@ def main(args):
     logging.info("  " + outfile)
     dumper(rose_regrid_xy, outfile)
 
+#############################################
+
+@click.command()
+@click.option('-x',
+              '--xml',
+              required=True,
+              help="Required. The Bronx XML")
+@click.option('-p',
+              '--platform',
+              required=True,
+              help="Required. The Bronx XML Platform")
+@click.option('-t',
+              '--target',
+              required=True,
+              help="Required. The Bronx XML Target")
+@click.option('-e',
+              '--experiment',
+              required=True,
+              help="Required. The Bronx XML Experiment")
+@click.option('--do_analysis',
+              is_flag=True,
+              default=False,
+              help="Optional. Runs the analysis scripts.")
+@click.option('--historydir',
+              help="Optional. History directory to reference. "                    \
+                    "If not specified, the XML's default will be used.")
+@click.option('--refinedir',
+              help="Optional. History refineDiag directory to reference. "         \
+                    "If not specified, the XML's default will be used.")
+@click.option('--ppdir',
+              help="Optional. Postprocessing directory to reference. "             \
+                    "If not specified, the XML's default will be used.")
+@click.option('--do_refinediag',
+              is_flag=True,
+              default=False,
+              help="Optional. Process refineDiag scripts")
+@click.option('--pp_start',
+              help="Optional. Starting year of postprocessing. "                   \
+                    "If not specified, a default value of '0000' "                  \
+                    "will be set and must be changed in rose-suite.conf")
+@click.option('--pp_stop',
+              help="Optional. Ending year of postprocessing. "                     \
+                    "If not specified, a default value of '0000' "                  \
+                    "will be set and must be changed in rose-suite.conf")
+@click.option('--validate',
+              is_flag=True,
+              help="Optional. Run the Cylc validator "                             \
+                    "immediately after conversion")
+@click.option('-v',
+              '--verbose',
+              is_flag=True,
+              help="Optional. Display detailed output")
+@click.option('-q',
+              '--quiet',
+              is_flag=True,
+              help="Optional. Display only serious messages and/or errors")
+@click.option('--dual',
+              is_flag=True,
+              help="Optional. Append '_canopy' to pp, analysis, and refinediag dirs")
+def convert(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
+    """ 
+    Converts a Bronx XML to a Canopy rose-suite.conf 
+    """
+
+    # Set the name of the directory
+    name = f"{experiment}__{platform}__{target}"
+
+    # Create the directory if it doesn't exist
+    cylcDir = os.path.expanduser("~/cylc-src")
+    newDir = os.path.join(cylcDir, name)
+    os.makedirs(newDir, exist_ok=True)
+
+    # Change the current working directory
+    os.chdir(newDir)
+
+    cylc_loaded = False
+    
+    ##########################################################################
+
+
+    ##########################################################################
+    # Check the OS environment. Exit if FRE has not been loaded or Cylc has
+    # not been loaded (if using the --validate option).
+    ##########################################################################
+    if not(FRE_PATH in os.getenv('PATH') or FRE_TEST_PATH in os.getenv('PATH')):
+        raise EnvironmentError("Cannot run the XML converter because FRE Bronx "       \
+                               "isn't loaded. Please load the latest FRE Bronx "       \
+                               "module and try again.")
+    
+    if validate:
+        if CYLC_PATH in os.getenv('PATH'):
+            cylc_loaded = True
+        else:
+            raise EnvironmentError("Cannot run the validator tool because "            \
+                                   "the Cylc module isn't loaded. Please "             \
+                                   "run 'module load cylc/test' and try again.")
+        
+    # Logging settings. The default is throwing only warning messages
+    if verbose:
+        logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
+    elif quiet:
+        logging.basicConfig(level=logging.ERROR, format=LOGGING_FORMAT)
+    else:
+        logging.basicConfig(level=logging.WARNING, format=LOGGING_FORMAT)
+    # Alert the user if only 1 or zero PP years are given as an option, and
+    # notify them that a default of '0000' for those years will be set in the
+    # rose-suite configuration
+    if (pp_start is not None and pp_stop is None)                            \
+        or (pp_stop is not None and pp_start is None):
+        logging.warning("Only 1 PP start/stop year was specified. "                    \
+                        "After the converter has run, please edit the "                \
+                        "default '0000' values within your rose-suite.conf.")
+    if not pp_start and not pp_stop:
+        logging.warning("No PP start/stop year was specified. "                        \
+                        "After the converter has run, please edit the "                \
+                        "default '0000' values within your rose-suite.conf")
+        
+    # These series of conditionals takes into account input from the user
+    # (for the PP_START and PP_STOP year) that is not 4 digits or other
+    # nonsensical years. The rose-suite config requires 4 digits for years
+    # and if the year is under '1000' (but > 0), then leading zeros must be used.
+    if pp_start is not None and pp_stop is not None:
+        if len(pp_start) < 4 and int(pp_start) > 0:
+            pp_start = '0' * (4 - len(pp_start)) + pp_start
+        if len(pp_stop) < 4 and int(pp_stop) > 0:
+            pp_stop = '0' * (4 - len(pp_stop)) + pp_stop
+        if int(pp_start) >= int(pp_stop):
+            logging.warning("Your PP_START date is equal to or later than "            \
+                            "your PP_STOP date. Please revise these values in "        \
+                            "your configuration after the converter has run.")
+        if len(pp_start) > 4                                                      \
+            or len(pp_stop) > 4                                                   \
+            or int(pp_start) <= 0                                                 \
+            or int(pp_stop) <= 0:
+            logging.warning("At least one of your PP_start or PP_stop years "          \
+                            "does not make sense. Please revise this value in "        \
+                            "your configuration after the converter has run.")
+    
+    main(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual)
+    
+    if verbose:
+        print("")
+    logging.info("XML conversion complete!")
+    # Run the Cylc validator tool on the current directory if conditions are met.
+    # Note: the user must be running the converter in the parent Cylc Workflow
+    # Directory if the validator is run.
+    if cylc_loaded:
+        if verbose:
+            print("")
+        logging.info("Running the Cylc validator tool...")
+        try:
+            subprocess.run("cylc validate .", shell=True, check=True)
+        except subprocess.CalledProcessError:
+            logging.error("Errant values in rose-suite.conf or other Cylc errors. "    \
+                            "Please check your configuration and run the validator "     \
+                            "again separately.")
+        finally:
+            logging.info("Validation step complete!") 
 
 if __name__ == '__main__':
-    pass
+    convert()
