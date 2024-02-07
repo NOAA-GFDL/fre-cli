@@ -5,9 +5,14 @@
 
 import click
 
+<<<<<<< HEAD:fre/frepp/frepp.py
 from fre.frepp.configureScriptYAML import *
 from fre.frepp.checkoutScript import *
 from fre.frepp.configureScriptXML import *
+=======
+from fre.pp.configureScript import *
+from fre.pp.checkoutScript import *
+>>>>>>> main:fre/pp/frepp.py
 
 #############################################
 

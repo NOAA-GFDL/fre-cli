@@ -1,21 +1,19 @@
-name: publish_conda
+name: build_conda
 on:
-  push:
+  pull_request:
     branches:
-    - main
+      - main
 jobs:
-  build_and_publish:
+  build:
     runs-on: ubuntu-latest
     container:
       image: continuumio/miniconda3:latest
     steps:
     - name: Checkout Files
       uses: actions/checkout@v2
-    - name: Run Docker to Build and Upload
+    - name: Run Docker to Build
       run: |
         conda config --append channels conda-forge
         conda config --append channels noaa-gfdl
-        conda install conda-build anaconda-client
-        export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
-        conda config --set anaconda_upload yes
+        conda install conda-build
         conda build .
