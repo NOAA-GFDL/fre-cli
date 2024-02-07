@@ -26,6 +26,7 @@ requirements:
     - pyyaml
     - jsonschema
     - noaa-gfdl::intakebuilder
+    - conda-forge::metomi-rose
 
 test:
   imports:

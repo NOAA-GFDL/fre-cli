@@ -1,1 +1,0 @@
-from fre.test import *

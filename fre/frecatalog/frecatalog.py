@@ -5,7 +5,7 @@
 
 import click
 
-from fre.catalog.get_intake_gfdl import *
+from fre.frecatalog.get_intake_gfdl import *
 
 @click.group()
 def catalog():

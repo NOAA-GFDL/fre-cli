@@ -1,0 +1,2 @@
+from fre.frecatalog import *
+
