@@ -32,11 +32,11 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
               required=True)
 def checkoutTemplate(experiment, platform, target):
     """
-    # Checkout the template file
+    Checkout the template file
     """
     # Create the directory if it doesn't exist
     directory = os.path.expanduser("~/cylc-src")
-    os.makedirs(directory, exist_ok=False)
+    os.makedirs(directory, exist_ok=True)
 
     # Change the current working directory
     os.chdir(directory)

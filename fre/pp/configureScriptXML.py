@@ -557,8 +557,22 @@ def convert(xml, platform, target, experiment, do_analysis, historydir, refinedi
     Converts a Bronx XML to a Canopy rose-suite.conf 
     """
 
+    # Set the name of the directory
+    name = f"{experiment}__{platform}__{target}"
+
+    # Create the directory if it doesn't exist
+    cylcDir = os.path.expanduser("~/cylc-src")
+    newDir = os.path.join(cylcDir, name)
+    os.makedirs(newDir, exist_ok=True)
+
+    # Change the current working directory
+    os.chdir(newDir)
+
     cylc_loaded = False
     
+    ##########################################################################
+
+
     ##########################################################################
     # Check the OS environment. Exit if FRE has not been loaded or Cylc has
     # not been loaded (if using the --validate option).
