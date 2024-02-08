@@ -60,23 +60,23 @@ To be developed:
 
 If there is *no* subdirectory created for the new tool you are trying to develop, there are a few steps to follow:
 
-  1. Create a subdirectory for the tool group inside the /fre folder; i.e. /fre/newTool
+  1. Create a subdirectory for the tool group inside the /fre folder; i.e. /fre/fre(subTool)
   2. Add an `__init__.py` inside of the new subdirectory
-      - this will contain one line, `from fre.subTool import *`
+      - this will contain one line, `from fre.fre(subTool) import *`
       - the purpose of this line is to allow the subTool module to include all the scripts and functions within it when invoked by `fre`
   3. Add a file named `fre(subTool).py`. This will serve as the main file to house all of the tool's related subcommands
   4. Add a Click group named after the subTool within `fre(subTool).py`
       - This group will contain all of the subcommands
   5. Create separate files to house the code for each different subcommand; *do not* code out the full implemetation of a function inside of a Click command within `fre(subTool).py`
   6. Be sure to import the contents of the needed subcommand scripts inside of `fre(subTool).py`
-      - i.e. `from fre.subTool.subCommandScript import *`
+      - i.e. `from fre.fre(subTool).subCommandScript import *`
   7. At this point, you can copy and paste the parts of your main Click subcommand from its script into `fre(subTool).py` when implementing the function reflective of the subcommand function
       - Everything will remain the same; i.e. arguments, options, etc.
       - However, this new function within `fre(subTool).py` must a new line after the arguments, options, and other command components; `@click.pass_context`
       - Along with this, a new argument "context" must now be added to the parameters of the command (preferably at the beginning, but it won't break it if it's not)
   8. From here, all that needs to be added after defining the command with a name is `context.forward(mainFunctionOfSubcommand)`, and done!
-  9. After this step, it is important to add `from fre.subTool import *` to the `__init__.py` within the /fre folder
-  10. The last step is to replicate the subcommand in the same way as done in `fre(subTool).py` inside of `fre.py`, but make sure to add `from fre import subTool` and `from fre.subTool.fre(subTool) import * ` 
+  9. After this step, it is important to add `from fre.fre(subTool) import *` to the `__init__.py` within the /fre folder
+  10. The last step is to replicate the subcommand in the same way as done in `fre(subTool).py` inside of `fre.py`, but make sure to add `from fre import subTool` and `from fre.fre(subTool).fre(subTool) import * ` 
  
 ### **Adding Tools From Other Repositories**
 
@@ -86,7 +86,7 @@ If there is *no* subdirectory created for the new tool you are trying to develop
  
 ### **MANIFEST.in**
 
-* In the case where non-python files like templates, examples, and outputs are to be included in the fre-cli package, MANIFEST.in can provide the solution. Ensure that the file exists within the correct folder, and add a line to the MANIFEST.in file saying something like `include fre/subTool/fileName.fileExtension`
+* In the case where non-python files like templates, examples, and outputs are to be included in the fre-cli package, MANIFEST.in can provide the solution. Ensure that the file exists within the correct folder, and add a line to the MANIFEST.in file saying something like `include fre/fre(subTool)/fileName.fileExtension`
     - For more efficiency, if there are multiple files of the same type needed, the MANIFEST.in addition can be something like `recursive-include fre/subTool *.fileExtension` which would recursively include every file matching that fileExtension within the specified directory and its respective subdirectories
 
 ### **Example /fre Directory Structure**
@@ -94,7 +94,7 @@ If there is *no* subdirectory created for the new tool you are trying to develop
 .
 ├── __init__.py
 ├── fre.py
-├── subTool
+├── fre(subTool)
 │   ├── __init__.py
 │   ├── subCommandScript.py
 │   └── fre(subTool).py
