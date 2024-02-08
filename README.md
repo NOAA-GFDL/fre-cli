@@ -76,7 +76,7 @@ If there is *no* subdirectory created for the new tool you are trying to develop
       - Along with this, a new argument "context" must now be added to the parameters of the command (preferably at the beginning, but it won't break it if it's not)
   8. From here, all that needs to be added after defining the command with a name is `context.forward(mainFunctionOfSubcommand)`, and done!
   9. After this step, it is important to add `from fre.fre(subTool) import *` to the `__init__.py` within the /fre folder
-  10. The last step is to replicate the subcommand in the same way as done in `fre(subTool).py` inside of `fre.py`, but make sure to add `from fre import subTool` and `from fre.fre(subTool).fre(subTool) import * ` 
+  10. The last step is to replicate the subcommand in the same way as done in `fre(subTool).py` inside of `fre.py`, but make sure to add `from fre import fre(subTool)` and `from fre.fre(subTool).fre(subTool) import * ` 
  
 ### **Adding Tools From Other Repositories**
 
@@ -87,7 +87,7 @@ If there is *no* subdirectory created for the new tool you are trying to develop
 ### **MANIFEST.in**
 
 * In the case where non-python files like templates, examples, and outputs are to be included in the fre-cli package, MANIFEST.in can provide the solution. Ensure that the file exists within the correct folder, and add a line to the MANIFEST.in file saying something like `include fre/fre(subTool)/fileName.fileExtension`
-    - For more efficiency, if there are multiple files of the same type needed, the MANIFEST.in addition can be something like `recursive-include fre/subTool *.fileExtension` which would recursively include every file matching that fileExtension within the specified directory and its respective subdirectories
+    - For more efficiency, if there are multiple files of the same type needed, the MANIFEST.in addition can be something like `recursive-include fre/fre(subTool) *.fileExtension` which would recursively include every file matching that fileExtension within the specified directory and its respective subdirectories
 
 ### **Example /fre Directory Structure**
 ```
