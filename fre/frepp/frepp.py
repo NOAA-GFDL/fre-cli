@@ -9,6 +9,7 @@ from fre.frepp.configureScriptYAML import *
 from fre.frepp.checkoutScript import *
 from fre.frepp.configureScriptXML import *
 from fre.frepp.validate import *
+from fre.frepp.install import *
 
 #############################################
 
@@ -23,6 +24,14 @@ def pp():
 @click.pass_context
 def validate(context, experiment, platform, target):
     context.forward(validate_subtool)
+
+#############################################
+
+# fre pp install
+@pp.command()
+@click.pass_context
+def install(context, experiment, platform, target):
+    context.forward(install_subtool)
 
 #############################################
 
