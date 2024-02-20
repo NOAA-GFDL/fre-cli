@@ -1,6 +1,6 @@
 package:
   name: fre-cli
-  version: "{{ environ['GIT_DESCRIBE_TAG'] }}"
+  version: 0.1.1
 
 source:
   # url: https://github.com/NOAA-GFDL/fre-cli
