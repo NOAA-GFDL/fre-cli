@@ -10,12 +10,21 @@ from fre.frepp.checkoutScript import *
 from fre.frepp.configureScriptXML import *
 from fre.frepp.validate import *
 from fre.frepp.install import *
+from fre.frepp.run import *
 
 #############################################
 
 @click.group()
 def pp():
     pass
+
+#############################################
+
+# fre pp run
+@pp.command()
+@click.pass_context
+def run(context, experiment, platform, target):
+    context.forward(run_subtool)
 
 #############################################
 
