@@ -24,6 +24,3 @@ def validate_subtool(experiment, platform, target):
     # Validate the Cylc configuration
     cmd = f"cylc validate ."
     subprocess.run(cmd, shell=True, check=True)
-
-if __name__ == '__main__':
-    validate()
