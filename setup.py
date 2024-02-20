@@ -12,6 +12,7 @@ setup(
         'Click',
         'pyyaml',
         'jsonschema',
+        'metomi-rose',
     ],
     entry_points={
         'console_scripts': [
