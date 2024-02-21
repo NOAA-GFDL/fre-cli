@@ -1,151 +1,272 @@
 ## User defined edits
-postprocess:
-    # OPT/ROSE-SUITE-TEMPLATE.CONF
-    ROSE-EXPERIMENT-CONFIGURATION:
-        # Create path to a new rose-suite-EXP.conf; this should be in the same directory as the rose-suite-TEMPLATE configuration (opt/ folder)
-        - path: # TYPE = single-quoted string
-        - rose-suite-exp-configuration:
-            # Specific site used for workflow
-            SITE: # TYPE = single-quoted string
-            
-            # Switch to remove intermediate data files when they are no longer needed                
-            CLEAN_WORK: # TYPE = boolean
-            
-            # Directory to use for history file cache
-            PTMP_DIR: # TYPE = single-quoted string
-            
-            # Switch to run MDTF on generated pp output
-            DO_MDTF: # TYPE = boolean
-            
-            # Switch to turn on/off statics processing
-            DO_STATICS: # TYPE = boolean
-            
-            # Switch to turn on/off time-average file generation
-            DO_TIMEAVGS: # TYPE = boolean
-            
-            # Switch to run refine-diag script(s) on history file to generate additional diagnostics
-            DO_REFINEDIAG: # TYPE = boolean 
-            
-            # Switch to mask atmos pressure-level output above/below surface pressure/atmos top
-            DO_ATMOS_PLEVEL_MASKING: # TYPE = boolean
-            
-            # Filepath to the space-separated user script(s)
-            # Currently, recommend specifying the script filepath in terms of where the script(s)
-            # will exist after "cylc install"; e.g. \$CYLC_WORKFLOW_RUN_DIR/etc/script.csh, using relative path
-            REFINEDIAG_SCRIPTS: # TYPE = single-quoted string
-            
-            # Switch to run a pre-analysis script on history files
-            DO_PREANALYSIS: # TYPE = boolean
-            
-            # Filepath to the user script
-            # Currently, recommend specifying the script filepath in terms of where the script
-            # will exist after "cylc install"; e.g. \$CYLC_WORKFLOW_RUN_DIR/etc/script.csh, using relative path
-            PREANALYSIS_SCRIPT: # TYPE = single-quoted string
-            
-            # Switch to launch analysis scripts
-            DO_ANALYSIS: # TYPE = boolean
-            
-            # Switch to only launch analysis scripts
-            DO_ANALYSIS_ONLY: # TYPE = boolean
-            
-            # Location for shared analysis scripts
-            FRE_ANALYSIS_HOME: # TYPE = single-quoted string
 
-            ### Settings about the history files 
-            # Directory to the primary location for history files
-            HISTORY_DIR: # TYPE = single-quoted string
-            
-            # Directory to the secondary location for history files
-            HISTORY_DIR_REFINED: # TYPE = single-quoted string
-            
-            # ISO8601 duration of the length of the history segment
-            HISTORY_SEGMENT: # TYPE = single-quoted string
-                                  
-            ### Settings about the requested postprocessing
-            # ISO8601 duration of the desired post-processed output
-            PP_CHUNK_A: # TYPE = single-quoted string
+# Paths
+configuration paths:
+  # Path to where user wants rose-suite experiment configuration
+  rose-suite:
+  # Path to remap-pp-components rose-app.conf
+  rose-remap:
+  # Path to regrid rose-app.conf
+  rose-regrid: 
 
-            # ISO8601 duration of a second desired postprocessed output
-            PP_CHUNK_B: # TYPE = single-quoted string
+# Define widely used variables
+# Length of analysis of experiment, in double quotes
+analysisLen: &ANA_AMIP_LEN ""
+# In double quotes
+chunk96: &PP_AMIP_CHUNK96 ""
+# Year to start analysis on experiment, in double quotes
+analysisStart: &ANA_AMIP_START ""
+# Year to stop analysis on experiment, in double quotes
+analysisStop: &ANA_AMIP_STOP ""
+# Default xy Interp, in double quotes
+defxyInterp: &defaultxyInterp ""
 
-            # Space separated list of pp components to process
-            PP_COMPONENTS: # TYPE = single-quoted string
+# Information for rose-suite experiment configuration 
+rose-suite:
+  settings:
+    # ISO8601 duration of the length of the history segment
+    history_segment:
+    # ISO8601 date to begin postprocessing
+    pp_start:
+    # ISO8601 date to stop postprocessing
+    pp_stop:
+    
+    len:
+    # Specific site used for workflow; must be 'generic', 'gfdl-ws' or 'ppan'
+    site:
+    # Location for shared analysis scripts
+    fre_analysis_home:
+    # ISO8601 duration of the desired post-processed output
+    pp_chunk_a:
+    # ISO8601 duration of a second desired postprocessed output
+    pp_chunk_b:
+    # Filepath to an FMS gridSpec netCDF file or a tarfile
+    pp_grid_spec: 
 
-            # Directory to write pp products to
-            PP_DIR: # TYPE = single-quoted string
+  switches:
+    # Switch to remove intermediate data files when they are no longer needed
+    clean_work:
+    # Switch to run MDTF on generated pp output
+    do_mdtf:
+    # Switch to turn on/off statics processing
+    do_statics:
+    # Switch to turn on/off time-average file generation
+    do_timeavgs:
+    # Switch to run refine-diag script(s) on history file to generate additional diagnostics
+    do_refinediag:
+    # Switch to mask atmos pressure-level output above/below surface pressure/atmos top
+    do_atmos_plevel_masking:
+    # Switch to run a pre-analysis script on history files
+    do_preanalysis:
+ 
+  directories:
+    # Directory to the primary location for history files
+    history_dir:
+    # Directory to write pp products to
+    pp_dir:
+    # Directory to use for history file cache
+    ptmp:
+    # Filepath to the user script(s) 
+    refine_diag:
+      # Data stager
+      datastager_script:
+      # Atmos cmip6
+      atmoscmip6_script:
+    # Filepath to the user script
+    preanalysis:
+    # Directory to the secondary location for history files
+    history_dir_refined:
+    # Directory to write analysis output
+    analysis:
 
-            # ISO8601 date to begin postprocessing
-            PP_START: # TYPE = single-quoted string
+  metadata:
+    # Label for the experiment
+    experiment:
+    # Label for the hardware and software environment
+    platform:
+    # Label for the FRE compilation target used in the simulation
+    target:
 
-            # ISO8601 date to stop postprocessing
-            PP_STOP: # TYPE = single-quoted string
+# Information needed to populate the rose-apps for regrid-xy and remap-pp-components
+# These rose apps will be retired eventually 
+regrid-remap-info:
+  components:
+      # Name of component
+    - type:
+      # Analysis start 
+      start: *ANA_AMIP_START
+      sources:
+      sourceGrid:
+      # Default regridded grid
+      xyInterp: *defaultxyInterp
+      # Should be 'conserve_order1', 'conserve_order2' or 'bilinear'
+      interpMethod:
+      timeSeries:
+        - freq:
+          source: 
+          chunkLength: *PP_AMIP_CHUNK96
+        - freq: 
+          source: 
+          chunkLength: *PP_AMIP_CHUNK96
+          variables: 
+        - freq: 
+          source:
+          chunkLength: *PP_AMIP_CHUNK96
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+      timeAverage:
+        - source:
+          interval: *PP_AMIP_CHUNK96
+        - source: 
+          interval: *ANA_AMIP_LEN
+        - source: 
+          interval: *PP_AMIP_CHUNK96
+          calcInterval: *PP_AMIP_CHUNK96
+    - type: 
+      zInterp:
+      start: *ANA_AMIP_START
+      sources:
+      sourceGrid: 
+      xyInterp: *defaultxyInterp
+      cmip: 
+      timeSeries:
+        - freq: 
+          source: 
+          chunkLength: *PP_AMIP_CHUNK96
+        - freq:
+          chunkLength: *PP_AMIP_CHUNK96
+      timeAverage:
+        - source: 
+          interval: *PP_AMIP_CHUNK96
+        - source: 
+          interval: *ANA_AMIP_LEN
+        - source: 
+          interval: *PP_AMIP_CHUNK96
+          calcInterval: *PP_AMIP_CHUNK96
+        - source: 
+          interval: *ANA_AMIP_LEN
+    - type: 
+      start: *ANA_AMIP_START
+      sources:
+      sourceGrid: 
+      xyInterp: *defaultxyInterp
+      cmip: 
+      timeSeries:
+        - freq:
+          chunkLength: *PP_AMIP_CHUNK96
+    - type: 
+      start: *ANA_AMIP_START
+      sources: 
+      sourceGrid: 
+      xyInterp: *defaultxyInterp
+      cmip: 
+      timeSeries:
+        - freq:
+          chunkLength: *PP_AMIP_CHUNK96
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+      timeAverage:
+        - source:
+          interval: *PP_AMIP_CHUNK96
+        - source: 
+          interval: *ANA_AMIP_LEN
+    - type: 
+      start: *ANA_AMIP_START
+      sources: 
+      sourceGrid:
+      xyInterp: *defaultxyInterp
+      interpMethod: 
+      cmip: 
+      timeAverage:
+        - source: 
+          interval: *PP_AMIP_CHUNK96
+        - source:  
+          interval: *ANA_AMIP_LEN
+      timeSeries:
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+    - type: 
+      start: *ANA_AMIP_START
+      sources: 
+      sourceGrid: 
+      xyInterp: *defaultxyInterp
+      timeSeries:
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+    - type: 
+      start: *ANA_AMIP_START
+      sources: 
+      cmip: 
+      timeSeries:
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+        - freq: 
+          source: 
+          chunkLength: *PP_AMIP_CHUNK96
+    - type: 
+      start: *ANA_AMIP_START
+      sources: 
+      sourceGrid: 
+      xyInterp: *defaultxyInterp
+      interpMethod:
+      cmip: 
+      timeSeries:
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+      timeAverage:
+        - source: 
+          interval: *PP_AMIP_CHUNK96
+        - source: 
+          interval: *ANA_AMIP_LEN
+    - type: 
+      start: *ANA_AMIP_START
+      xyInterp: *defaultxyInterp
+      sources: 
+      sourceGrid: 
+      interpMethod: 
+      cmip: 
+      timeSeries:
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+          source: 
+    - type: 
+      start: *ANA_AMIP_START
+      sources: 
+      sourceGrid: 
+      xyInterp: *defaultxyInterp
+      interpMethod: 
+      cmip: 
+      timeSeries:
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
+      timeAverage:
+        - source: 
+          interval: *PP_AMIP_CHUNK96
+        - source: 
+          interval: *ANA_AMIP_LEN
+    - type: 
+      start: *ANA_AMIP_START
+      sources:
+      sourceGrid: 
+      xyInterp: *defaultxyInterp
+      interpMethod: 
+      cmip: 
+      timeSeries:
+        - freq: 
+          chunkLength: *PP_AMIP_CHUNK96
 
-            # Default regridded resolution, e.g. "288,180"
-            PP_DEFAULT_XYINTERP: # TYPE = single-quoted string
+# TMP DIRECTORY CREATION
+# This edit is not needed when working on pp/an. If not working on pp/an, a tmpDir must be defined.
+tmpdir:
+  tmpdirpath:
 
-            # Filepath to an FMS gridSpec netCDF file or a tarfile
-            PP_GRID_SPEC: # TYPE = single-quoted string
-
-            # Label for the experiment
-            EXPERIMENT: # TYPE = single-quoted string
-
-            # Label for the hardware and software environment
-            PLATFORM: # TYPE = single-quoted string
-
-            # Label for the FRE compilation target used in the simulation
-            TARGET: # TYPE = single-quoted string
-
-            ### Settings related to analysis scripts
-            # Directory to write analysis output
-            ANALYSIS_DIR: # TYPE = single-quoted string
-
-    # TMP DIRECTORY CREATION
-    # This edit is not needed when working on pp/an. If not working on pp/an, a tmpDir must be defined.
-    TMPDIR:
-        # Directory for tmp location (used in stage-history in workflow)
-        - path: # TYPE = single-quoted string
-
-    # REMAP AND REGRID variable groups
-    # Create 'type' sections for each PP_COMPONENT
-    REGRID-XY:
-        # Path to the rose-app.conf for regrid-xy
-        - path: # TYPE = single-quoted string
-        - rose-app-configuration:
-            - component:
-                # Name of component
-                - type: # TYPE = single-quoted string
-                  # Should be 'cubedsphere' or 'tripolar'
-                  inputGrid: # TYPE = single-quoted string
-                  # Used for identifying land or atmos grid moasic file
-                  inputRealm: # TYPE = single-quoted string
-                  # Should be 'conserve_order1', 'conserve_order2' or 'bilinear'
-                  interpMethod: # TYPE = single-quoted string
-                  # Longitudinal grid
-                  outputGridLon: #TYPE = single-quoted string
-                  # Latitudinal grid
-                  outputGridLat: # TYPE = single-quoted string
-                  # Grid type
-                  outputGridType: # TYPE = single-quoted string
-                  sources: # TYPE = single-quoted string
-
-    REMAP-PP-COMPONENTS:
-        # Path to the rose-app.conf for remap-pp-components
-        - path: # TYPE = single-quoted string
-        - rose-app-configuration:
-            - component:
-                # Name of component
-                - type: # TYPE = single-quoted string
-                  sources: # TYPE = single-quoted string
-                  # Should be either 'native', 'regrid-xy/default' or 'regrid-xy/LABEL'
-                  grid: # TYPE = single-quoted string
-
-## OPTIONAL EDITS                        
-    # BIN/INSTALL-EXP
-    # Optional edit: Add --sym-link option to install cylc-run directory to location with more space available; default installation location for cylc-run directory is $HOME;
-    # Utilize this edit if you do not have enough space in home directory
-    INSTALL-EXP-SCRIPT:
-        # Directory to install-exp script
-        - path: # TYPE = single-quoted string
-        - install-option:
-            # Add --sym-link option (or any other option) to install cylc-run directory to location with more space available
-            install: # TYPE = single-quoted string
+# Optional edit: Add --symlink-dirs option to install cylc-run directory to location with more space available; default installation location for cylc-run directory is $HOME;
+# Utilize this edit if you do not have enough space in home directory
+install-exp-script:
+    - path:
+    - install-option:
+        install:
