@@ -7,29 +7,29 @@ NOAA | GFDL
 
 import click
 
-from fre import list
-from fre.list.frelist import *
+from fre import frelist
+from fre.frelist.frelist import *
 
-from fre import check
-from fre.check.frecheck import *
+from fre import frecheck
+from fre.frecheck.frecheck import *
 
-from fre import make
-from fre.make.fremake import *
+from fre import fremake
+from fre.fremake.fremake import *
 
-from fre import pp
-from fre.pp.frepp import *
+from fre import frepp
+from fre.frepp.frepp import *
 
-from fre import run
-from fre.run.frerun import *
+from fre import frerun
+from fre.frerun.frerun import *
 
-from fre import test
-from fre.test.fretest import *
+from fre import fretest
+from fre.fretest.fretest import *
 
-from fre import catalog
-from fre.catalog.frecatalog import *
+from fre import frecatalog
+from fre.frecatalog.frecatalog import *
 
-from fre import yamltools
-from fre.yamltools.freyamltools import *
+from fre import freyamltools
+from fre.freyamltools.freyamltools import *
 
 #############################################
 
@@ -169,7 +169,7 @@ def checkout(uppercase):
 @click.pass_context
 def fremakefunction(context, yamlfile, platform, target, force_checkout, force_compile, keep_compiled, no_link, execute, parallel, jobs, no_parallel_checkout, submit, verbose, walltime, mail_list):
     """ - Execute fre make func """
-    context.forward(make.fremake.fremake)
+    context.forward(fremake.fremake.fremake)
 
 # # this is the command that will execute all of `fre make`, but I need to test whether it will be able to pass specific flags to different areas when it they each have different flags
 # @freMake.command()
@@ -192,7 +192,7 @@ fre list subcommands to be processed
 @click.pass_context
 def function(context, uppercase):
     """ - Execute fre list func """
-    context.forward(list.frelist.testfunction2)
+    context.forward(frelist.frelist.testfunction2)
 
 #############################################
 
@@ -207,7 +207,7 @@ fre pp subcommands to be processed
 @click.pass_context
 def configure(context, y):
     """ - Execute fre pp configure """
-    context.forward(pp.frepp.configureYAML)
+    context.forward(frepp.frepp.configureYAML)
 
 @frePP.command()
 @click.option("-e",
@@ -228,7 +228,7 @@ def configure(context, y):
 @click.pass_context
 def checkout(context, experiment, platform, target):
     """ - Execute fre pp checkout """
-    context.forward(pp.frepp.checkout)
+    context.forward(frepp.frepp.checkout)
 
 @frePP.command()
 @click.option('-x',
@@ -292,7 +292,7 @@ def convert(context, xml, platform, target, experiment, do_analysis, historydir,
     """
     Converts a Bronx XML to a Canopy rose-suite.conf 
     """
-    context.forward(pp.frepp.configureXML)
+    context.forward(frepp.frepp.configureXML)
 
 #############################################
 
@@ -304,7 +304,7 @@ fre test subcommands to be processed
 @click.pass_context
 def testfunction(context, uppercase):
     """ - Execute fre test testfunction """
-    context.forward(test.fretest.testfunction)
+    context.forward(fretest.fretest.testfunction)
 
 #############################################
 
@@ -335,7 +335,7 @@ fre catalog subcommands to be processed
 @click.pass_context
 def buildCatalog(context, input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite,append):
     """ - Execute fre catalog build """
-    context.forward(catalog.frecatalog.buildCatalog)
+    context.forward(frecatalog.frecatalog.buildCatalog)
 
 #############################################
 
@@ -347,7 +347,7 @@ fre yamltools subcommands to be processed
 @click.pass_context
 def testfunction(context, uppercase):
     """ - Execute fre yamltools testfunction """
-    context.forward(yamltools.freyamltools.testfunction)
+    context.forward(freyamltools.freyamltools.testfunction)
 
 #############################################
 

@@ -8,7 +8,7 @@ from pathlib import Path
 import yaml
 import click
 
-from fre.yamltools.yamltoolsfile import *
+from fre.freyamltools.yamltoolsfile import *
 
 @click.group()
 def yamltools():

@@ -5,9 +5,9 @@
 
 import click
 
-from fre.pp.configureScriptYAML import *
-from fre.pp.checkoutScript import *
-from fre.pp.configureScriptXML import *
+from fre.frepp.configureScriptYAML import *
+from fre.frepp.checkoutScript import *
+from fre.frepp.configureScriptXML import *
 
 #############################################
 

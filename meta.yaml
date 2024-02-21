@@ -1,6 +1,6 @@
 package:
   name: fre-cli
-  version: 0.1.0
+  version: 0.1.1
 
 source:
   # url: https://github.com/NOAA-GFDL/fre-cli
@@ -26,6 +26,7 @@ requirements:
     - pyyaml
     - jsonschema
     - noaa-gfdl::intakebuilder
+    - conda-forge::metomi-rose
 
 test:
   imports:
