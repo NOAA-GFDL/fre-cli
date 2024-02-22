@@ -8,12 +8,48 @@ import click
 from fre.frepp.configureScriptYAML import *
 from fre.frepp.checkoutScript import *
 from fre.frepp.configureScriptXML import *
+from fre.frepp.validate import *
+from fre.frepp.install import *
+from fre.frepp.run import *
+from fre.frepp.status import *
 
 #############################################
 
 @click.group()
 def pp():
     pass
+
+#############################################
+
+# fre pp status
+@pp.command()
+@click.pass_context
+def status(context, experiment, platform, target):
+    context.forward(status_subtool)
+
+#############################################
+
+# fre pp run
+@pp.command()
+@click.pass_context
+def run(context, experiment, platform, target):
+    context.forward(run_subtool)
+
+#############################################
+
+# fre pp validate
+@pp.command()
+@click.pass_context
+def validate(context, experiment, platform, target):
+    context.forward(validate_subtool)
+
+#############################################
+
+# fre pp install
+@pp.command()
+@click.pass_context
+def install(context, experiment, platform, target):
+    context.forward(install_subtool)
 
 #############################################
 

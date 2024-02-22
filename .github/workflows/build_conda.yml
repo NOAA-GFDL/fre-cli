@@ -10,7 +10,7 @@ jobs:
       image: continuumio/miniconda3:latest
     steps:
     - name: Checkout Files
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Run Docker to Build
       run: |
         conda config --append channels conda-forge
