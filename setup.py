@@ -9,9 +9,11 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'Click',
+        'click',
         'pyyaml',
         'jsonschema',
+        'metomi-rose',
+        'gfdlfremake'
     ],
     entry_points={
         'console_scripts': [
