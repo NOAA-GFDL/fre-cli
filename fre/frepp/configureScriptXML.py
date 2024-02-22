@@ -22,7 +22,7 @@ import metomi.isodatetime.parsers
 #
 
 LOGGING_FORMAT = '%(asctime)s  %(levelname)s: %(message)s'
-FRE_PATH = '/home/fms/local/opt/fre-commands/bronx-20/bin'
+FRE_PATH = '/home/fms/local/opt/fre-commands/bronx-21/bin'
 FRE_TEST_PATH = '/home/fms/local/opt/fre-commands/test/bin'
 CYLC_PATH = '/home/fms/fre-canopy/system-settings/bin'
 CYLC_REFINED_SCRIPTS = ["check4ptop.pl", 
