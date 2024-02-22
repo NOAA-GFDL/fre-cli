@@ -32,6 +32,18 @@ test:
   imports:
     - click
     - fre
+    - fre.frepp
+    - fre.frepp.install
+    - fre.frepp.status
+    - fre.frepp.run
+    - fre.frepp.validate
+  commands:
+    - fre --help
+    - fre pp --help
+    - fre pp install --help
+    - fre pp status --help
+    - fre pp run --help
+    - fre pp validate --help
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
