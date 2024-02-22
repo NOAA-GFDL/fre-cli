@@ -11,12 +11,21 @@ from fre.frepp.configureScriptXML import *
 from fre.frepp.validate import *
 from fre.frepp.install import *
 from fre.frepp.run import *
+from fre.frepp.status import *
 
 #############################################
 
 @click.group()
 def pp():
     pass
+
+#############################################
+
+# fre pp status
+@pp.command()
+@click.pass_context
+def status(context, experiment, platform, target):
+    context.forward(status_subtool)
 
 #############################################
 

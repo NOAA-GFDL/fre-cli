@@ -8,10 +8,10 @@ import click
 
 def status_subtool(experiment, platform, target):
     """
-    Start or restart the Cylc workflow identified by:
+    Report workflow state for the Cylc workflow
     <experiment>__<platform>__<target>
     """
 
     name = experiment + '__' + platform + '__' + target
-    cmd = f"cylc play {name}"
-    subprocess.run(cmd, shell=True, check=True)
+    cmd = f"cylc workflow-state {name}"
+    subprocess.run(cmd, shell=True, check=True, timeout=30)

@@ -200,6 +200,28 @@ def function(context, uppercase):
 fre pp subcommands to be processed
 """
 
+# fre pp status
+@frePP.command()
+@click.option("-e",
+              "--experiment",
+              type=str,
+              help="Experiment name",
+              required=True)
+@click.option("-p",
+              "--platform",
+              type=str,
+              help="Platform name",
+              required=True)
+@click.option("-t",
+                "--target",
+                type=str,
+                help="Target name",
+                required=True)
+@click.pass_context
+def status(context, experiment, platform, target):
+    """Report status of PP configuration"""
+    context.forward(frepp.frepp.status)
+
 # fre pp run
 @frePP.command()
 @click.option("-e",
