@@ -1,8 +1,8 @@
 ## User defined edits
 configuration_paths: 
-  rose-suite: "/home/Dana.Singh/pp/ppyaml/fre-cli/fre/frepp/configUpdates/rose-suite-am5_c96L33_amip.conf" 
-  rose-remap: "/home/Dana.Singh/pp/ppyaml/fre-cli/fre/frepp/configUpdates/remap-rose-app.conf"
-  rose-regrid: "/home/Dana.Singh/pp/ppyaml/fre-cli/fre/frepp/configUpdates/regrid-rose-app.conf"
+  rose-suite: # "path/to/rose-suite-am5_c96L33_amip.conf" 
+  rose-remap: # "path/to/remap-rose-app.conf"
+  rose-regrid: # "path/to/regrid-rose-app.conf"
 
 analysisLen: &ANA_AMIP_LEN "10yr"
 chunk96: &PP_AMIP_CHUNK96 "1yr"

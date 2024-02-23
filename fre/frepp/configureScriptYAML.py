@@ -8,7 +8,7 @@ import json
 
 ######VALIDATE#####
 package_dir = os.path.dirname(os.path.abspath(__file__))
-schema_path = os.path.join(package_dir, 'schema-pp.json')
+schema_path = os.path.join(package_dir, 'schema.json')
 
 def validateYaml(file):
   # Load the json schema: .load() (vs .loads()) reads and parses the json in one
@@ -42,22 +42,49 @@ def yamlInfo(y):
     ## Add: check paths?
     if key == "configuration_paths":
       #print(value)
-      for filename,path in value.items():
-        if filename == "rose-suite":
-          rs = path
+      for configname,path in value.items():
+        if configname == "rose-suite":
+          rs_path = path
+          dirname = os.path.dirname(rs_path)
+
+          # Check if filepath exists
+          if os.path.exists(dirname):
+            print(f"Path: {dirname} exists")
+          else:
+            os.makedirs(dirname)
+            print(f"Path: {dirname} created")
+
           # Create rose-suite-exp config
-          with open(rs,'w') as f:
+          with open(rs_path,'w') as f:
             f.write('[template variables]\n')
             f.write('## Information for requested postprocessing, info to pass to refineDiag/preanalysis scripts, info for epmt, and info to pass to analysis scripts \n')
     
         ## STILL CREATE ROSE APPS FOR NOW (regrid and remap)
-        elif filename == "rose-remap":
+        elif configname == "rose-remap":
           remap_roseapp = path
+          dirname = os.path.dirname(remap_roseapp)
+
+          # Check if filepath exists
+          if os.path.exists(dirname):
+            print(f"Path: {dirname} exists")
+          else:
+            os.makedirs(dirname)
+            print(f"Path: {dirname} created")
+
           with open(remap_roseapp,'w') as f:
             f.write("[command]\n")
             f.write("default=remap-pp-components\n")            
-        elif filename == "rose-regrid":
+        elif configname == "rose-regrid":
           regrid_roseapp = path
+          dirname = os.path.dirname(regrid_roseapp)
+
+          # Check if filepath exists
+          if os.path.exists(dirname):
+            print(f"Path: {dirname} exists")
+          else:
+            os.makedirs(dirname)
+            print(f"Path: {dirname} created")
+
           with open(regrid_roseapp,'w') as f:
             f.write("[command]\n")
             f.write("default=regrid-xy\n")
@@ -70,7 +97,7 @@ def yamlInfo(y):
         for configkey,configvalue in dict.items():
           #print(value)
           if configvalue != None:
-            with open(rs,'a') as f:
+            with open(rs_path,'a') as f:
               k=configkey.upper()
               if configvalue == True or configvalue == False:
                 f.write(f'{k}={configvalue}\n\n')
@@ -136,7 +163,7 @@ def yamlInfo(y):
                         if key == "source":
                           f.write(f"{value} ")
                   f.write("\n")
-                    
+                   
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
     yamlInfo()
