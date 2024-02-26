@@ -15,5 +15,5 @@ jobs:
       run: |
         conda config --append channels conda-forge
         conda config --append channels noaa-gfdl
-        conda install conda-build
+        conda install conda-build conda-verify
         conda build .

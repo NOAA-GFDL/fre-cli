@@ -1,9 +1,11 @@
+{% set data = load_setup_py_data() %}
+
 package:
   name: fre-cli
-  version: 0.1.2
+  version: {{ data.get('version') }}
 
 source:
-  # url: https://github.com/NOAA-GFDL/fre-cli
+  git_url: https://github.com/NOAA-GFDL/fre-cli
   path: .
 
 build:
