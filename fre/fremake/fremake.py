@@ -5,6 +5,11 @@
 ## \author Bennett Chang
 ## \description Script for fremake is used to create and run a code checkout script and compile a model.
 
+from fre.fremake.checkout import *
+#from fre.fremake.makefile import *
+#from fre.fremake.compile import *
+#from fre.fremake.dockerfile import *
+
 # import subprocess
 # import os
 # import yaml
@@ -91,13 +96,13 @@ def make():
 @click.option("--mail-list", 
               type=str, 
               help="Email the comma-separated STRING list of emails rather than $USER@noaa.gov")
-def fremake(yamlfile, platform, target, force_checkout, force_compile, keep_compiled, no_link, execute, parallel, jobs, no_parallel_checkout, submit, verbose, walltime, mail_list):
+@click.pass_context
+def fremake(context,yamlfile, platform, target, force_checkout, force_compile, keep_compiled, no_link, execute, parallel, jobs, no_parallel_checkout, submit, verbose, walltime, mail_list):
     """
     Fremake is used to create a code checkout script to compile models for FRE experiments.
     """
-    
-    # Insert Actual Code
-    
+   
+    # Define variables  
     yml = yamlfile
     ps = platform
     ts = target
@@ -110,10 +115,86 @@ def fremake(yamlfile, platform, target, force_checkout, force_compile, keep_comp
     else:
         pc = " &"
 
-    print("End of function")
-    print(yml)
-    print(ps)
-    print(ts)
+    if verbose:
+      logging.basicCOnfig(level=logging.INFO)
+    else:
+      logging.basicConfig(level=logging.ERROR)
 
+    srcDir="src"
+    checkoutScriptName = "checkout.sh"
+    baremetalRun = False # This is needed if there are no bare metal runs
+
+    ## Split and store the platforms and targets in a list
+    plist = platform
+    tlist = target
+
+    ## Get the variables in the model yaml
+    freVars = varsfre.frevars(yml)
+
+    ## Open the yaml file and parse as fremakeYaml
+    modelYaml = yamlfre.freyaml(yml,freVars)
+    fremakeYaml = modelYaml.getCompileYaml()
+    return modelYaml, fremakeYaml
+
+###############################################################
+
+@make.command()
+@click.pass_context
+def cc(context, yamlfile, platform, jobs, npc):
+    """ - Create fremake checkout script. """
+    fremake()
+    context.forward(checkout_create)
+
+###############################################################
+@make.command()
+@click.pass_context
+def rc(context, yamlfile, platform, jobs, npc):
+    """ - Run created fremake checkout script. """
+    fremake()
+    context.forward(checkout_run)
+
+###############################################################
+@make.command()
+@click.pass_context
+def mc(context, yamlfile, platform, jobs, npc):
+    """ - Write fremake makefile script. """
+    fremake()
+    context.forward(makefile_create)
+
+###############################################################
+@make.command()
+@click.pass_context
+def compc(context,yamlfile,platform,target,jobs):
+    """ - Write compile script """
+    fremake()
+    context.forward(compile_create)
+
+###############################################################
+@make.command()
+@click.pass_context
+def compr(context,yamlfile,platform,target,jobs):
+    """ Run compile script """
+    fremake()
+    context.forward(compile_run)
+
+###############################################################
+
+@make.command()
+@click.pass_context
+def dc(context,yamlfile,platform,target):
+    """ - Writes the dockerfile """
+    fremake()
+    context.forward(dockerfile_create)
+
+###############################################################
+
+@make.command()
+@click.pass_context
+def dr(context,yamlfile,platform,target):
+    """ - Runs the dockerfile """
+    fremake()
+    context.forward(dockerfile_run)
+
+###############################################################
 if __name__ == "__main__":
     make()
