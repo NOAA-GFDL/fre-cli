@@ -86,6 +86,11 @@ def testmake(yamlfile, platform, target, execute, parallel, jobs, no_parallel_ch
     else:
         pc = " &"
 
+    if verbose:
+      logging.basicCOnfig(level=logging.INFO)
+    else:
+      logging.basicConfig(level=logging.ERROR)
+
     print("End of function")
     print(yml)
     print(ps)
