@@ -31,6 +31,9 @@ from fre.frecatalog.frecatalog import *
 from fre import freyamltools
 from fre.freyamltools.freyamltools import *
 
+from fre import freapp
+from fre.freapp.freapp import *
+
 #############################################
 
 """
@@ -84,6 +87,33 @@ def freCatalog():
 def freYamltools():
     """ - access fre yamltools subcommands """
     pass
+
+@fre.group('app')
+def freApp():
+    """access fre app subcommands"""
+    pass
+
+#############################################
+
+"""
+fre app subcommands to be processed
+"""
+@freApp.command()
+@click.option("-i", "--infile",
+              type=str,
+              help="Input NetCDF file containing pressure-level output to be masked",
+              required=True)
+@click.option("-o", "--outfile",
+              type=str,
+              help="Output file",
+              required=True)
+@click.option("-p", "--psfile",
+              help="Input NetCDF file containing surface pressure (ps)",
+              required=True)
+@click.pass_context
+def maskAtmosPlevel(context, infile, outfile, psfile):
+    """Mask out pressure level diagnostic output below land surface"""
+    context.forward(freapp.freapp.maskAtmosPlevel_subtool)
 
 #############################################
 
