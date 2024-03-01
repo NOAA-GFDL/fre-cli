@@ -10,24 +10,29 @@ import argparse
 import os
 import netCDF4 as nc
 import xarray as xr
+import click
 
-def run():
-    args = parse_args()
+@click.command()
 
+def maskAtmosPlevel_subtool(infile, outfile, psfile):
     # Error if outfile exists
-    if os.path.exists(args.outfile):
-        raise Exception(f"ERROR: Output file '{args.outfile}' already exists")
+    if os.path.exists(outfile):
+        raise Exception(f"ERROR: Output file '{outfile}' already exists")
 
     # Open ps dataset
-    ds_ps = xr.open_dataset(args.ps)
+    if not os.path.exists(psfile):
+        raise Exception(f"ERROR: Input surface pressure file '{psfile}' does not exist")
+    ds_ps = xr.open_dataset(psfile)
 
     # Exit with message if "ps" not available
     if "ps" not in list(ds_ps.variables):
-        print(f"WARNING: File '{args.infile}' does not contain surface pressure, so exiting")
+        print(f"WARNING: File '{infile}' does not contain surface pressure, so exiting")
         return None
 
     # Open input dataset
-    ds_in = xr.open_dataset(args.infile)
+    if not os.path.exists(infile):
+        raise Exception(f"ERROR: Input file '{infile}' does not exist")
+    ds_in = xr.open_dataset(infile)
 
     # The trigger for atmos masking is a variable attribute "needs_atmos_masking = True".
     # In the future this will be set within the model, but for now and testing,
@@ -46,10 +51,10 @@ def run():
 
     # Write the output file if anything was done
     if ds_out.variables:
-        print(f"Modifying variables '{list(ds_out.variables)}', appending into new file '{args.outfile}'")
-        write_dataset(ds_out, ds_in, args.outfile)
+        print(f"Modifying variables '{list(ds_out.variables)}', appending into new file '{outfile}'")
+        write_dataset(ds_out, ds_in, outfile)
     else:
-        print(f"No variables modified, so not writing output file '{args.outfile}'")
+        print(f"No variables modified, so not writing output file '{outfile}'")
     return None
 
 
@@ -185,4 +190,6 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    run()
+    args = parse_args()
+
+    mask_subtool(args.infile, args.outfile, args.ps)
