@@ -111,7 +111,7 @@ fre app subcommands to be processed
               help="Input NetCDF file containing surface pressure (ps)",
               required=True)
 @click.pass_context
-def maskAtmosPlevel(context, infile, outfile, psfile):
+def mask_atmos_plevel(context, infile, outfile, psfile):
     """Mask out pressure level diagnostic output below land surface"""
     context.forward(freapp.freapp.maskAtmosPlevel_subtool)
 
