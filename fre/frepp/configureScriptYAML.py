@@ -27,7 +27,6 @@ def validateYaml(file):
               help="YAML file to be used for parsing",
               required=True)
 
-#maybe change name to parseYaml
 def yamlInfo(y):
 #file="pp.yaml"
   with open(y,'r') as f:
@@ -37,9 +36,6 @@ def yamlInfo(y):
 #PARSE YAML
 ## Write the rose-suite-exp configuration
   for key,value in y.items():
-    #print(key)
-
-    ## Add: check paths?
     if key == "configuration_paths":
       #print(value)
       for configname,path in value.items():
@@ -91,29 +87,28 @@ def yamlInfo(y):
 
 ## Populate ROSE-SUITE-EXP config
     if key == "rose-suite":
-      #print(value)
       for suiteconfiginfo,dict in value.items():
-        #print(value)
         for configkey,configvalue in dict.items():
-          #print(value)
           if configvalue != None:
             with open(rs_path,'a') as f:
               k=configkey.upper()
               if configvalue == True or configvalue == False:
                 f.write(f'{k}={configvalue}\n\n')
               else:
-                if "pp_start" in configkey:
-                  f.write(f'{k}="{configvalue}OOTZ"\n\n')
-                elif "pp_stop" in configkey:
-                  f.write(f'{k}="{configvalue}OOTZ"\n\n')
+                if configkey == "refinediag_scripts":
+                  script=configvalue.split("/")[-1]
+                  f.write(f'{k}="\$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/{script}"\n\n')
+                elif configkey == "preanalysis_script":
+                  script=configvalue.split("/")[-1]
+                  f.write(f'{k}="\$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/{script}"\n\n')
                 else:
                   f.write(f'{k}="{configvalue}"\n\n')
 
-##if value of type is in remap AND regrid grid value in remap rose app=regrid-xy
-    if key == "regrid-remap-info":
-      for components,compinfo in value.items():
-        for i in compinfo:
+## If value of type is in remap AND regrid grid value in remap rose app=regrid-xy
+    if key == "components":
+      for i in value:
           for compkey,compvalue in i.items():
+
             # Create/write remap rose app
             with open(remap_roseapp,'a') as f:
               if compkey == "type": 
@@ -123,22 +118,20 @@ def yamlInfo(y):
                   f.write(f"grid=native\n")
                 #in xyInterp exists, component can be regridded
                 elif i.get("xyInterp") != None:
-                  f.write("grid=regrid-xy\n")                       
-
+                  f.write("grid=regrid-xy\n") 
+                if "static" in compvalue:
+                  f.write("freq=P0Y\n")                       
               elif compkey == "sources":
                 f.write(f"{compkey}={compvalue} ")
               elif compkey == "timeSeries":
-                #print(compvalue)
                 for i in compvalue:
                   for key,value in i.items():
                     if key == "source":
                       f.write(f"{value} ")
-### Have to add functionality of populating rose apps with static variables, if there are any (when freq=POY) ###
 
             # Create/write regrid rose app
             with open(regrid_roseapp,'a') as f:
-              # if xyInterp is defined, that is a regridded component
-              if i.get("xyInterp") != None:
+              if i.get("xyInterp") != None: 
                 if compkey == "type":
                   f.write(f"\n[{compvalue}]\n")
                   if "atmos" in compvalue:
@@ -150,20 +143,34 @@ def yamlInfo(y):
                   elif "ocean" in compvalue:
                     f.write("inputRealm=ocean\n")
                   elif "aerosol" or "tracer" in compvalue:
-                    f.write("inputRealm=aerosol\n")
+                    f.write("inputRealm=atmos\n")
                 elif compkey == "sourceGrid": 
                   f.write(f"inputGrid={compvalue}\n")
                 elif compkey == "interpMethod":
                   f.write(f"{compkey}={compvalue}\n")
                 elif compkey == "sources":
                   f.write(f"{compkey}={compvalue} ")
-                  if i["timeSeries"]:
+                  try: 
+                    i["timeSeries"]
                     for elem in i['timeSeries']:
                       for key,value in elem.items():
                         if key == "source":
                           f.write(f"{value} ")
+                  except:
+                    print("No timeseries information")
+
                   f.write("\n")
-                   
+
+                if compkey == "xyInterp" and compvalue == y["define5"]:
+                  f.write(f"outputGridType=default\n")
+                elif compkey == "xyInterp": 
+                  gridLat=compvalue.split(",")[0]
+                  gridLon=compvalue.split(",")[1]
+
+                  f.write(f"outputGridLat={gridLat}\n")
+                  f.write(f"outputGridLon={gridLon}\n")
+                  f.write(f"outputGridType={gridLat}_{gridLon}\n") 
+                  
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
     yamlInfo()

@@ -1,20 +1,17 @@
 ## User defined edits
 configuration_paths: 
-  rose-suite: # "path/to/rose-suite-am5_c96L33_amip.conf" 
-  rose-remap: # "path/to/remap-rose-app.conf"
-  rose-regrid: # "path/to/regrid-rose-app.conf"
+## DEBUG
+  rose-suite: "$PWD/rose-suite.conf"
+  rose-remap: "$PWD/remap-rose-app.conf"
+  rose-regrid: "$PWD/regrid-rose-app.conf"
 
-analysisLen: &ANA_AMIP_LEN "10yr"
-chunk96: &PP_AMIP_CHUNK96 "1yr"
-analysisStart: &ANA_AMIP_START "1980"
-analysisStop: &ANA_AMIP_STOP "1988"
-defxyInterp: &defaultxyInterp "180,288"
+define1: &ANA_AMIP_LEN "10yr"
+define2: &PP_AMIP_CHUNK96 "1yr"
+define3: &ANA_AMIP_START "1980"
+define4: &ANA_AMIP_STOP "1988"
+define5: &defaultxyInterp "180,288"
 
 rose-suite:
-  refineDiag:
-    datastager_script: "$(includeDir)/refineDiag/refineDiag_data_stager_globalAve.csh"
-    atmoscmip6_script: "$(includeDir)/refineDiag/refineDiag_atmos_cmip6.csh"
-
   settings:
     history_segment: "P1Y"
     pp_start: *ANA_AMIP_START
@@ -24,197 +21,196 @@ rose-suite:
     fre_analyis_home: #"/home/fms/local/opt/fre-analysis/test"
     pp_chunk_a: "P5Y"
     pp_chunk_b: "P10Y"
+    pp_default_xyinterp: *defaultxyInterp
+    pp_components: "atmos atmos_scalar land"
     pp_grid_spec: "/archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar"
 
   switches:
     clean_work: True
     do_mdtf: False
-    do_statics: True
+    do_statics: False
     do_timeavgs: True
     do_refinediag: False
     do_atmos_plevel_masking: True
     do_preanalysis: False
+    do_analysis: False
+    do_analysis_only: False
 
   directories:
-    history_dir: "/archive/c2b/am5/2022.01/c96L33_am5a0_cmip6Diag/gfdl.ncrc5-intel22-classic-prod-openmp/history"
-    pp_dir: "/archive/$USER/canopy/am5/c96L33_amip/pp"
-    ptmp: "/xtmp/$USER/ptmp"
-    refine_diag:
-    preanalysis:
-    history_refined: "/archive/$USER/canopy/am5/c96L33_amip/history_refineDiag"
-    analysis: #"/nbhome/$USER/canopy/analysis/am5_c96L33_amip"
+    history_dir: "/archive/c2b/am5/2022.01/c96L65_am5f1a0r0_amip/gfdl.ncrc5-intel22-classic-prod-openmp/history"
+    pp_dir: "/archive/$USER/canopy/am5/c96L65_amip/pp"
+    ptmp_dir: "/xtmp/$USER/ptmp"
+    refinediag_scripts: "$(includeDir)/refineDiag/refineDiag_atmos_cmip6.csh"
+    preanalysis_script: "$(includeDir)/refineDiag/refineDiag_data_stager_globalAve.csh"
+    history_refined: "/archive/$USER/canopy/am5/c96L65_amip/history_refineDiag"
+    analysis: #"/nbhome/$USER/canopy/analysis/am5_c96L65_amip"
 
   metadata:
-    experiment: "am5_c96L33_amip"
+    experiment: "am5_c96L65_amip"
     platform: "gfdl.ncrc5-intel22-classic"
     target: "prod-openmp"
 
 #regrid-xy and remap-pp-components information
-regrid-remap-info:
-  components:
-    - type: "atmos_cmip"
-      start: *ANA_AMIP_START
-      sources: "atmos_month_cmip"
-      sourceGrid: "atmos-cubedsphere"
-      xyInterp: *defaultxyInterp
-      interpMethod: "conserve_order2"
-      timeSeries:
-        - freq: "3hr"
-          source: "atmos_8xdaily_cmip"
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: "daily"
-          source: "atmos_daily_cmip"
-          chunkLength: *PP_AMIP_CHUNK96
-          variables: "huss tasmin tasmax tas pr psl sfcWind hurs uas vas zg500 ua10 ua850 va850 ua200"
-        - freq: "monthly"
-          source: "atmos_month_refined"
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source: "monthly"
-          interval: *PP_AMIP_CHUNK96
-        - source: "monthly"
-          interval: *ANA_AMIP_LEN
-        - source: "annual"
-          interval: *PP_AMIP_CHUNK96
-          calcInterval: *PP_AMIP_CHUNK96
-    - type: "atmos"
-      zInterp: "era40"
-      start: *ANA_AMIP_START
-      sources: "atmos_month"
-      sourceGrid: "atmos-cubedsphere"
-      xyInterp: *defaultxyInterp
-      cmip: "off"
-      timeSeries:
-        - freq: "6hr"
-          source: "atmos_4xdaily"
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source: "monthly"
-          interval: *PP_AMIP_CHUNK96
-        - source: "monthly"
-          interval: *ANA_AMIP_LEN
-        - source: "annual"
-          interval: *PP_AMIP_CHUNK96
-          calcInterval: *PP_AMIP_CHUNK96
-        - source: "annual"
-          interval: *ANA_AMIP_LEN
-    - type: "atmos_level_cmip"
-      start: *ANA_AMIP_START
-      sources: "atmos_level_cmip"
-      sourceGrid: "atmos-cubedsphere"
-      xyInterp: *defaultxyInterp
-      cmip: "on"
-      timeSeries:
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-    - type: "atmos_level"
-      start: *ANA_AMIP_START
-      sources: "atmos_month"
-      sourceGrid: "atmos-cubedsphere"
-      xyInterp: *defaultxyInterp
-      cmip: "off"
-      timeSeries:
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: "annual"
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source: "monthly"
-          interval: *PP_AMIP_CHUNK96
-        - source: "monthly"
-          interval: *ANA_AMIP_LEN
-    - type: "atmos_month_aer"
-      start: *ANA_AMIP_START
-      sources: "atmos_month_aer"
-      sourceGrid: "atmos-cubedsphere"
-      xyInterp: *defaultxyInterp
-      interpMethod: "conserve_order1"
-      cmip: "on"
-      timeAverage:
-        - source: "monthly"
-          interval: *PP_AMIP_CHUNK96
-        - source:  "monthly"
-          interval: *ANA_AMIP_LEN
-      timeSeries:
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-    - type: "atmos_diurnal"
-      start: *ANA_AMIP_START
-      sources: "atmos_diurnal"
-      sourceGrid: "atmos-cubedsphere"
-      xyInterp: *defaultxyInterp
-      timeSeries:
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-    - type: "atmos_scalar"
-      start: *ANA_AMIP_START
-      sources: "atmos_scalar"
-      cmip: "on"
-      timeSeries:
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: "monthly"
-          source: "atmos_global_cmip"
-          chunkLength: *PP_AMIP_CHUNK96
-    - type: "tracer_level"
-      start: *ANA_AMIP_START
-      sources: "atmos_tracer"
-      sourceGrid: "atmos-cubedsphere"
-      xyInterp: *defaultxyInterp
-      interpMethod: "conserve_order1"
-      cmip: "on"
-      timeSeries:
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: "annual"
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source: "monthly"
-          interval: *PP_AMIP_CHUNK96
-        - source: "monthly"
-          interval: *ANA_AMIP_LEN
-    - type: "aerosol_cmip"
-      start: *ANA_AMIP_START
-      xyInterp: *defaultxyInterp
-      sources: "aerosol_month_cmip"
-      sourceGrid: "atmos-cubedsphere"
-      interpMethod: "conserve_order1"
-      cmip: "on"
-      timeSeries:
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-          source: "aerosol_month_refined"
-    - type: "land"
-      start: *ANA_AMIP_START
-      sources: "land_month"
-      sourceGrid: "land-cubedsphere"
-      xyInterp: *defaultxyInterp
-      interpMethod: "conserve_order1"
-      cmip: "off"
-      timeSeries:
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source: "monthly"
-          interval: *PP_AMIP_CHUNK96
-        - source: "monthly"
-          interval: *ANA_AMIP_LEN
-    - type: "land_cmip"
-      start: *ANA_AMIP_START
-      sources: "land_month_cmip"
-      sourceGrid: "land-cubedsphere"
-      xyInterp: *defaultxyInterp
-      interpMethod: "conserve_order1"
-      cmip: "off"
-      timeSeries:
-        - freq: "monthly"
-          chunkLength: *PP_AMIP_CHUNK96
+#regrid-remap-info:
+components:
+  - type: "atmos_cmip"
+    start: *ANA_AMIP_START
+    sources: "atmos_month_cmip"
+    sourceGrid: "cubedsphere"
+    xyInterp: *defaultxyInterp  
+    interpMethod: "conserve_order2"
+    timeSeries:
+      - freq: "3hr"
+        source: "atmos_8xdaily_cmip"
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: "daily"
+        source: "atmos_daily_cmip"
+        chunkLength: *PP_AMIP_CHUNK96
+        variables: "huss tasmin tasmax tas pr psl sfcWind hurs uas vas zg500 ua10 ua850 va850 ua200"
+      - freq: "monthly"
+        source: "atmos_month_refined"
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source: "monthly"
+        interval: *PP_AMIP_CHUNK96
+      - source: "monthly"
+        interval: *ANA_AMIP_LEN
+      - source: "annual"
+        interval: *PP_AMIP_CHUNK96
+        calcInterval: *PP_AMIP_CHUNK96
+  - type: "atmos"
+    zInterp: "era40"
+    start: *ANA_AMIP_START
+    sources: "atmos_month"
+    sourceGrid: "cubedsphere"
+    xyInterp: *defaultxyInterp
+    interpMethod: "conserve_order2"
+    cmip: "off"
+    timeSeries:
+      - freq: "6hr"
+        source: "atmos_4xdaily"
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source: "monthly"
+        interval: *PP_AMIP_CHUNK96
+      - source: "monthly"
+        interval: *ANA_AMIP_LEN
+      - source: "annual"
+        interval: *PP_AMIP_CHUNK96
+        calcInterval: *PP_AMIP_CHUNK96
+      - source: "annual"
+        interval: *ANA_AMIP_LEN
+  - type: "atmos_level_cmip"
+    start: *ANA_AMIP_START
+    sources: "atmos_level_cmip"
+    sourceGrid: "cubedsphere"
+    xyInterp: *defaultxyInterp
+    interpMethod: "conserve_order2"
+    cmip: "on"
+    timeSeries:
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+  - type: "atmos_level"
+    start: *ANA_AMIP_START
+    sources: "atmos_month"
+    sourceGrid: "cubedsphere"
+    xyInterp: *defaultxyInterp
+    interpMethod: "conserve_order2"
+    cmip: "off"
+    timeSeries:
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: "annual"
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source: "monthly"
+        interval: *PP_AMIP_CHUNK96
+      - source: "monthly"
+        interval: *ANA_AMIP_LEN
+  - type: "atmos_month_aer"
+    start: *ANA_AMIP_START
+    sources: "atmos_month_aer"
+    sourceGrid: "cubedsphere"
+    xyInterp: *defaultxyInterp
+    interpMethod: "conserve_order1"
+    cmip: "on"
+    timeAverage:
+      - source: "monthly"
+        interval: *PP_AMIP_CHUNK96
+      - source:  "monthly"
+        interval: *ANA_AMIP_LEN
+    timeSeries:
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+  - type: "atmos_scalar"
+    start: *ANA_AMIP_START
+    sources: "atmos_scalar"
+    cmip: "on"
+    timeSeries:
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: "monthly"
+        source: "atmos_global_cmip"
+        chunkLength: *PP_AMIP_CHUNK96
+  - type: "tracer_level"
+    start: *ANA_AMIP_START
+    sources: "atmos_tracer"
+    sourceGrid: "cubedsphere"
+    xyInterp: *defaultxyInterp
+    interpMethod: "conserve_order1"
+    cmip: "on"
+    timeSeries:
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: "annual"
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source: "monthly"
+        interval: *PP_AMIP_CHUNK96
+      - source: "monthly"
+        interval: *ANA_AMIP_LEN
+  - type: "aerosol_cmip"
+    start: *ANA_AMIP_START
+    xyInterp: *defaultxyInterp
+    sources: "aerosol_month_cmip"
+    sourceGrid: "cubedsphere"
+    interpMethod: "conserve_order1"
+    cmip: "on"
+    timeSeries:
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+        source: "aerosol_month_refined"
+  - type: "land"
+    start: *ANA_AMIP_START
+    sources: "land_month"
+    sourceGrid: "cubedsphere"
+    xyInterp: *defaultxyInterp
+    interpMethod: "conserve_order1"
+    cmip: "off"
+    timeSeries:
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source: "monthly"
+        interval: *PP_AMIP_CHUNK96
+      - source: "monthly"
+        interval: *ANA_AMIP_LEN
+  - type: "land_cmip"
+    start: *ANA_AMIP_START
+    sources: "land_month_cmip"
+    sourceGrid: "cubedsphere"
+    xyInterp: *defaultxyInterp
+    interpMethod: "conserve_order1"
+    cmip: "off"
+    timeSeries:
+      - freq: "monthly"
+        chunkLength: *PP_AMIP_CHUNK96
 
 tmpdir:
   tmpdirpath:

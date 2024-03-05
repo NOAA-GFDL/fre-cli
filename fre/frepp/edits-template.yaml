@@ -10,16 +10,16 @@ configuration paths:
   rose-regrid: 
 
 # Define widely used variables
-# Length of analysis of experiment, in double quotes
-analysisLen: &ANA_AMIP_LEN ""
-# In double quotes
-chunk96: &PP_AMIP_CHUNK96 ""
-# Year to start analysis on experiment, in double quotes
-analysisStart: &ANA_AMIP_START ""
-# Year to stop analysis on experiment, in double quotes
-analysisStop: &ANA_AMIP_STOP ""
-# Default xy Interp, in double quotes
-defxyInterp: &defaultxyInterp ""
+# Length of analysis of experiment, string in double quotes
+define1: &ANA_AMIP_LEN ""
+# String in double quotes
+define2: &PP_AMIP_CHUNK96 ""
+# Year to start analysis on experiment, string in double quotes
+define3: &ANA_AMIP_START ""
+# Year to stop analysis on experiment, string in double quotes
+define4: &ANA_AMIP_STOP ""
+# Default xy Interp, string in double quotes
+define5: &defaultxyInterp ""
 
 # Information for rose-suite experiment configuration 
 rose-suite:
@@ -30,7 +30,7 @@ rose-suite:
     pp_start:
     # ISO8601 date to stop postprocessing
     pp_stop:
-    
+    # Length of experiment    
     len:
     # Specific site used for workflow; must be 'generic', 'gfdl-ws' or 'ppan'
     site:
@@ -40,6 +40,10 @@ rose-suite:
     pp_chunk_a:
     # ISO8601 duration of a second desired postprocessed output
     pp_chunk_b:
+    # Components to be post-processed
+    pp_components:
+    # Default regridded resolution
+    pp_default_xyinterp: *defaultxyInterp
     # Filepath to an FMS gridSpec netCDF file or a tarfile
     pp_grid_spec: 
 
@@ -58,6 +62,8 @@ rose-suite:
     do_atmos_plevel_masking:
     # Switch to run a pre-analysis script on history files
     do_preanalysis:
+    do_analysis:
+    do_analysis_only:
  
   directories:
     # Directory to the primary location for history files
@@ -65,15 +71,11 @@ rose-suite:
     # Directory to write pp products to
     pp_dir:
     # Directory to use for history file cache
-    ptmp:
-    # Filepath to the user script(s) 
-    refine_diag:
-      # Data stager
-      datastager_script:
-      # Atmos cmip6
-      atmoscmip6_script:
+    ptmp_dir:
+    # Filepath to refineDiag scripts
+    refinediag_scripts: 
     # Filepath to the user script
-    preanalysis:
+    preanalysis_script:
     # Directory to the secondary location for history files
     history_dir_refined:
     # Directory to write analysis output
@@ -89,175 +91,180 @@ rose-suite:
 
 # Information needed to populate the rose-apps for regrid-xy and remap-pp-components
 # These rose apps will be retired eventually 
-regrid-remap-info:
-  components:
-      # Name of component
-    - type:
-      # Analysis start 
-      start: *ANA_AMIP_START
-      sources:
-      sourceGrid:
-      # Default regridded grid
-      xyInterp: *defaultxyInterp
-      # Should be 'conserve_order1', 'conserve_order2' or 'bilinear'
-      interpMethod:
-      timeSeries:
-        - freq:
-          source: 
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: 
-          source: 
-          chunkLength: *PP_AMIP_CHUNK96
-          variables: 
-        - freq: 
-          source:
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source:
-          interval: *PP_AMIP_CHUNK96
-        - source: 
-          interval: *ANA_AMIP_LEN
-        - source: 
-          interval: *PP_AMIP_CHUNK96
-          calcInterval: *PP_AMIP_CHUNK96
-    - type: 
-      zInterp:
-      start: *ANA_AMIP_START
-      sources:
-      sourceGrid: 
-      xyInterp: *defaultxyInterp
-      cmip: 
-      timeSeries:
-        - freq: 
-          source: 
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq:
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source: 
-          interval: *PP_AMIP_CHUNK96
-        - source: 
-          interval: *ANA_AMIP_LEN
-        - source: 
-          interval: *PP_AMIP_CHUNK96
-          calcInterval: *PP_AMIP_CHUNK96
-        - source: 
-          interval: *ANA_AMIP_LEN
-    - type: 
-      start: *ANA_AMIP_START
-      sources:
-      sourceGrid: 
-      xyInterp: *defaultxyInterp
-      cmip: 
-      timeSeries:
-        - freq:
-          chunkLength: *PP_AMIP_CHUNK96
-    - type: 
-      start: *ANA_AMIP_START
-      sources: 
-      sourceGrid: 
-      xyInterp: *defaultxyInterp
-      cmip: 
-      timeSeries:
-        - freq:
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source:
-          interval: *PP_AMIP_CHUNK96
-        - source: 
-          interval: *ANA_AMIP_LEN
-    - type: 
-      start: *ANA_AMIP_START
-      sources: 
-      sourceGrid:
-      xyInterp: *defaultxyInterp
-      interpMethod: 
-      cmip: 
-      timeAverage:
-        - source: 
-          interval: *PP_AMIP_CHUNK96
-        - source:  
-          interval: *ANA_AMIP_LEN
-      timeSeries:
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-    - type: 
-      start: *ANA_AMIP_START
-      sources: 
-      sourceGrid: 
-      xyInterp: *defaultxyInterp
-      timeSeries:
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-    - type: 
-      start: *ANA_AMIP_START
-      sources: 
-      cmip: 
-      timeSeries:
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: 
-          source: 
-          chunkLength: *PP_AMIP_CHUNK96
-    - type: 
-      start: *ANA_AMIP_START
-      sources: 
-      sourceGrid: 
-      xyInterp: *defaultxyInterp
-      interpMethod:
-      cmip: 
-      timeSeries:
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source: 
-          interval: *PP_AMIP_CHUNK96
-        - source: 
-          interval: *ANA_AMIP_LEN
-    - type: 
-      start: *ANA_AMIP_START
-      xyInterp: *defaultxyInterp
-      sources: 
-      sourceGrid: 
-      interpMethod: 
-      cmip: 
-      timeSeries:
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-          source: 
-    - type: 
-      start: *ANA_AMIP_START
-      sources: 
-      sourceGrid: 
-      xyInterp: *defaultxyInterp
-      interpMethod: 
-      cmip: 
-      timeSeries:
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
-      timeAverage:
-        - source: 
-          interval: *PP_AMIP_CHUNK96
-        - source: 
-          interval: *ANA_AMIP_LEN
-    - type: 
-      start: *ANA_AMIP_START
-      sources:
-      sourceGrid: 
-      xyInterp: *defaultxyInterp
-      interpMethod: 
-      cmip: 
-      timeSeries:
-        - freq: 
-          chunkLength: *PP_AMIP_CHUNK96
+components:
+    # Name of component
+  - type:
+    # Analysis start 
+    start: *ANA_AMIP_START
+    sources:
+    sourceGrid:
+    # Default regridded grid
+    xyInterp: *defaultxyInterp
+    # Should be 'conserve_order1', 'conserve_order2' or 'bilinear'
+    interpMethod:
+    timeSeries:
+      - freq:
+        source: 
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: 
+        source: 
+        chunkLength: *PP_AMIP_CHUNK96
+        variables: 
+      - freq: 
+        source:
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source:
+        interval: *PP_AMIP_CHUNK96
+      - source: 
+        interval: *ANA_AMIP_LEN
+      - source: 
+        interval: *PP_AMIP_CHUNK96
+        calcInterval: *PP_AMIP_CHUNK96
+  - type: 
+    zInterp:
+    start: *ANA_AMIP_START
+    sources:
+    sourceGrid: 
+    xyInterp: *defaultxyInterp
+    interpMethod:
+    cmip: 
+    timeSeries:
+      - freq: 
+        source: 
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq:
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source: 
+        interval: *PP_AMIP_CHUNK96
+      - source: 
+        interval: *ANA_AMIP_LEN
+      - source: 
+        interval: *PP_AMIP_CHUNK96
+        calcInterval: *PP_AMIP_CHUNK96
+      - source: 
+        interval: *ANA_AMIP_LEN
+  - type: 
+    start: *ANA_AMIP_START
+    sources:
+    sourceGrid: 
+    xyInterp: *defaultxyInterp
+    interpMethod:
+    cmip: 
+    timeSeries:
+      - freq:
+        chunkLength: *PP_AMIP_CHUNK96
+  - type: 
+    start: *ANA_AMIP_START
+    sources: 
+    sourceGrid: 
+    xyInterp: *defaultxyInterp
+    interpMethod:
+    cmip: 
+    timeSeries:
+      - freq:
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source:
+        interval: *PP_AMIP_CHUNK96
+      - source: 
+        interval: *ANA_AMIP_LEN
+  - type: 
+    start: *ANA_AMIP_START
+    sources: 
+    sourceGrid:
+    xyInterp: *defaultxyInterp
+    interpMethod: 
+    cmip: 
+    timeAverage:
+      - source: 
+        interval: *PP_AMIP_CHUNK96
+      - source:  
+        interval: *ANA_AMIP_LEN
+    timeSeries:
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+  - type: 
+    start: *ANA_AMIP_START
+    sources: 
+    sourceGrid: 
+    xyInterp: *defaultxyInterp
+    interpMethod:
+    timeSeries:
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+  - type: 
+    start: *ANA_AMIP_START
+    sources: 
+    xyInterp: 
+    interpMethod:
+    cmip: 
+    timeSeries:
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: 
+        source: 
+        chunkLength: *PP_AMIP_CHUNK96
+  - type: 
+    start: *ANA_AMIP_START
+    sources: 
+    sourceGrid: 
+    xyInterp: *defaultxyInterp
+    interpMethod:
+    cmip: 
+    timeSeries:
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source: 
+        interval: *PP_AMIP_CHUNK96
+      - source: 
+        interval: *ANA_AMIP_LEN
+  - type: 
+    start: *ANA_AMIP_START
+    xyInterp: *defaultxyInterp
+    sources: 
+    sourceGrid: 
+    interpMethod: 
+    cmip: 
+    timeSeries:
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+        source: 
+  - type: 
+    start: *ANA_AMIP_START
+    sources: 
+    sourceGrid: 
+    xyInterp: *defaultxyInterp
+    interpMethod: 
+    cmip: 
+    timeSeries:
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
+    timeAverage:
+      - source: 
+        interval: *PP_AMIP_CHUNK96
+      - source: 
+        interval: *ANA_AMIP_LEN
+  - type: 
+    start: *ANA_AMIP_START
+    sources:
+    sourceGrid: 
+    xyInterp: *defaultxyInterp
+    interpMethod: 
+    cmip: 
+    timeSeries:
+      - freq: 
+        chunkLength: *PP_AMIP_CHUNK96
 
 # TMP DIRECTORY CREATION
 # This edit is not needed when working on pp/an. If not working on pp/an, a tmpDir must be defined.
