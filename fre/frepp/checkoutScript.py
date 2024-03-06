@@ -45,6 +45,7 @@ def checkoutTemplate(experiment, platform, target):
     name = f"{experiment}__{platform}__{target}"
 
     # Clone the repository with depth=1
+    click.echo("cloning into directory " + directory + "/" + name)
     clonecmd = f"git clone --depth=1 --recursive https://gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git {name}"
     subprocess.run(clonecmd, shell=True, check=True)
 
