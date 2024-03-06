@@ -1,27 +1,51 @@
 #!/usr/bin/env python
 
 import json
+import sys
 import click
 import os
-from intakebuilder import gfdlcrawler, CSVwriter, builderconfig
 from pathlib import Path
 import logging
+
 logger = logging.getLogger('local')
 logger.setLevel(logging.INFO)
 
+try:
+   from intakebuilder import gfdlcrawler, CSVwriter, builderconfig, configparser
+except ModuleNotFoundError:
+    print("The module intakebuilder is not installed. Do you have intakebuilder in your sys.path or have you activated the conda environment with the intakebuilder package in it? ")
+    print("Attempting again with adjusted sys.path ")
+    try:
+       sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    except:
+       print("Unable to adjust sys.path")
+    #print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    try:
+        from intakebuilder import gfdlcrawler, CSVwriter, builderconfig, configparser
+    except ModuleNotFoundError:
+        sys.exit("The module 'intakebuilder' is still not installed. Do you have intakebuilder in your sys.path or have you activated the conda environment with the intakebuilder package in it? ")
+
 package_dir = os.path.dirname(os.path.abspath(__file__))
-template_path = os.path.join(package_dir, 'cats/gfdl_test1.json')
+template_path = os.path.join(package_dir, '../cats/gfdl_template.json')
 
 #Setting up argument parsing/flags
 @click.command()
 @click.option('-i',
               '--input_path', 
-              required=True, 
-              nargs=1) 
+              required=False, 
+              nargs=1,
+              help="The directory path with the datasets to be cataloged. e.g. a GFDL PP path till /pp") 
 @click.option('-o',
               '--output_path', 
-              required=True, 
-              nargs=1)
+              required=False, 
+              nargs=1,
+              help="Specify output filename suffix only. e.g. 'catalog'")
+@click.option('-c',
+              '--config',
+              required=False,
+              type=click.Path(exists=True),
+              nargs=1,
+              help="Path to your yaml configuration, use the config_template in intakebuilder repo")
 @click.option('--filter_realm', 
               nargs=1)
 @click.option('--filter_freq', 
@@ -34,13 +58,21 @@ template_path = os.path.join(package_dir, 'cats/gfdl_test1.json')
 @click.option('--append', 
               is_flag=True, 
               default=False)
-def build(input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite, append):
+def build(input_path=None, output_path=None, config=None, filter_realm=None, filter_freq=None, filter_chunk=None,
+         overwrite=False, append=False):
+    # TODO error catching
+    print("input-path",input_path, config)
+    if (input_path is None):
+        configyaml = configparser.Config(config)
+        input_path = configyaml.input_path
+        output_path = configyaml.output_path
+
     project_dir = input_path
-    csv_path = output_path+".csv"
-    json_path = output_path+".json"
- 
+    csv_path = "{0}.csv".format(output_path)
+    json_path = "{0}.json".format(output_path) 
+
     ######### SEARCH FILTERS ###########################
-    
+
     dictFilter = {}
     dictFilterIgnore = {}
     if filter_realm:
@@ -63,8 +95,7 @@ def build(input_path, output_path, filter_realm, filter_freq, filter_chunk, over
     dictInfo = {}
     project_dir = project_dir.rstrip("/")
     logger.info("Calling gfdlcrawler.crawlLocal")
-    list_files = gfdlcrawler.crawlLocal(project_dir, dictFilter, dictFilterIgnore,logger)
-
+    list_files = gfdlcrawler.crawlLocal(project_dir, dictFilter, dictFilterIgnore, logger)
     #Grabbing data from template JSON, changing CSV path to match output path, and dumping data in new JSON
     with open(template_path, "r") as jsonTemplate:
         data = json.load(jsonTemplate)
@@ -74,14 +105,15 @@ def build(input_path, output_path, filter_realm, filter_freq, filter_chunk, over
     jsonFile.close()
     headers = CSVwriter.getHeader()
 
-    #When we pass relative path or just the filename the following still needs to not choke
-    #so we check if it's a directory first
+    # When we pass relative path or just the filename the following still needs to not choke
+    # so we check if it's a directory first
     if os.path.isdir(os.path.dirname(csv_path)):
         os.makedirs(os.path.dirname(csv_path), exist_ok=True)
     CSVwriter.listdict_to_csv(list_files, headers, csv_path, overwrite, append)
     print("JSON generated at:", os.path.abspath(json_path))
     print("CSV generated at:", os.path.abspath(csv_path))
-    logger.info("CSV generated at"+ os.path.abspath(csv_path))
+    logger.info("CSV generated at" + os.path.abspath(csv_path))
+
 
 if __name__ == '__main__':
     build()
