@@ -139,6 +139,15 @@ def var2process(proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, N, CMIP_input
             return 
         
         copy_nc(nc_fls[i], nc_fl_wrk)
+
+        # copy ps also, if it's there
+        nc_ps_file = nc_fls[i].replace('.'+var_i+'.nc', '.ps.nc')
+        print("nc_ps_file = ", nc_ps_file)
+        nc_ps_file_work = ""
+        if os.path.exists(nc_ps_file):
+            nc_ps_file_work = nc_fl_wrk.replace('.'+var_i+'.nc', '.ps.nc')
+            copy_nc(nc_ps_file, nc_ps_file_work)
+            print("\tnc_ps_file_work = ", nc_ps_file_work)
         
         # main CMOR actions:
         lcl_fl_nm = netcdf_var(proj_tbl_vars, var_lst, nc_fl_wrk, var_i, CMIP_input_json, CMOR_tbl_vars_file)
@@ -169,6 +178,8 @@ def var2process(proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, N, CMIP_input
 
         if os.path.exists(nc_fl_wrk):
             os.remove(nc_fl_wrk)
+        if os.path.exists(nc_ps_file_work):
+            os.remove(nc_ps_file_work)
                             
     return
 
@@ -177,7 +188,8 @@ def var2process(proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, N, CMIP_input
 
 def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_vars_file):
     print ("\n===> Starting netcdf_var():")
-    print("input data:", "\n\tvar_lst=", var_lst, "\n\tnc_fl=", nc_fl, "\n\tvar_i=", var_i)
+    var_j = var_lst[var_i]
+    print("input data:", "\n\tvar_lst=", var_lst, "\n\tnc_fl=", nc_fl, "\n\tvar_i=", var_i,"==>",var_j)
 
     # open the input file
     ds = nc.Dataset(nc_fl,'a')
@@ -211,10 +223,10 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
     # read the input units
     var = ds[var_i][:]
     var_dim = len(var.shape)
-    print("var_dim=", var_dim, " var_lst[var_i]=",var_lst[var_i])
-#    print("Line 208: var_i=", var_i)
-#    units = proj_tbl_vars["variable_entry"] [var_lst[var_i]] ["units"]
-    units = proj_tbl_vars["variable_entry"] [var_i] ["units"]
+    print("var_dim=", var_dim, " var_lst[var_i]=",var_j)
+#   print("Line 208: var_i=", var_i)
+    units = proj_tbl_vars["variable_entry"] [var_j] ["units"]
+#   units = proj_tbl_vars["variable_entry"] [var_i] ["units"]
     print("dimension=", var_dim, " units=", units)
 
     # Define lat and lon dimensions
@@ -246,6 +258,7 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
         cmorTime = cmor.axis("time", coord_vals=time, units=tm_units)
 
     # Set the axes
+    savePS = False
     if var_dim==3:
         axes = [cmorTime, cmorLat, cmorLon]
         print("[cmorTime, cmorLat, cmorLon]") 
@@ -256,17 +269,69 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
             axes = [cmorTime, cmorLev, cmorLat, cmorLon]
         elif vert_dim == "level" or vert_dim == "lev":
             lev = ds[vert_dim]
-            cmorLev = cmor.axis(vert_dim, coord_vals=lev[:], units=lev.units)
+            # find the ps file nearby
+            ps_file = nc_fl.replace('.'+var_i+'.nc', '.ps.nc')
+            ds_ps = nc.Dataset(ps_file)
+            ps = ds_ps['ps'][:]
+            cmorLev = cmor.axis("alternate_hybrid_sigma", coord_vals=lev[:], units=lev.units, cell_bounds=ds[vert_dim+"_bnds"])
             axes = [cmorTime, cmorLev, cmorLat, cmorLon]
+            ierr = cmor.zfactor(zaxis_id=cmorLev,
+                    zfactor_name="ap",
+                    axis_ids=[cmorLev, ],
+                    zfactor_values=ds["ap"][:],
+                    zfactor_bounds=ds["ap_bnds"][:],
+                    units=ds["ap"].units)
+            ierr = cmor.zfactor(zaxis_id=cmorLev,
+                    zfactor_name="b",
+                    axis_ids=[cmorLev, ],
+                    zfactor_values=ds["b"][:],
+                    zfactor_bounds=ds["b_bnds"][:],
+                    units=ds["b"].units)
+            ips = cmor.zfactor(zaxis_id=cmorLev,
+                   zfactor_name="ps",
+                   axis_ids=[cmorTime, cmorLat, cmorLon],
+                   units="Pa")
+            savePS = True
+        elif vert_dim == "levhalf":
+            lev = ds[vert_dim]
+            # find the ps file nearby
+            ps_file = nc_fl.replace('.'+var_i+'.nc', '.ps.nc')
+            ds_ps = nc.Dataset(ps_file)
+            ps = ds_ps['ps'][:]
+#           print("Calling cmor.zfactor, len,vals=",lev.shape,",",lev[:])
+            cmorLev = cmor.axis("alternate_hybrid_sigma_half", coord_vals=lev[:], units=lev.units)
+            axes = [cmorTime, cmorLev, cmorLat, cmorLon]
+            ierr = cmor.zfactor(zaxis_id=cmorLev,
+                    zfactor_name="ap_half",
+                    axis_ids=[cmorLev, ],
+                    zfactor_values=ds["ap_bnds"][:],
+                    units=ds["ap_bnds"].units)
+            ierr = cmor.zfactor(zaxis_id=cmorLev,
+                    zfactor_name="b_half",
+                    axis_ids=[cmorLev, ],
+                    zfactor_values=ds["b_bnds"][:],
+                    units=ds["b_bnds"].units)
+            ips = cmor.zfactor(zaxis_id=cmorLev,
+                   zfactor_name="ps",
+                   axis_ids=[cmorTime, cmorLat, cmorLon],
+                   units="Pa")
+            savePS = True
         else:
             raise Exception("Cannot handle this vertical dimension, yet:", vert_dim)
     else:
         raise Exception("Did not expect more than 4 dimensions; got", var_dim)
 
+    # read the positive attribute
+    var = ds[var_i][:]
+    positive = proj_tbl_vars["variable_entry"] [var_j] ["positive"]
+    print(" var_lst[var_i]=",var_j, " positive=", positive)
+
     # Write the output to disk
-#    cmorVar = cmor.variable(var_lst[var_i], units, axes)
-    cmorVar = cmor.variable(var_i, units, axes)
+#   cmorVar = cmor.variable(var_lst[var_i], units, axes)
+    cmorVar = cmor.variable(var_j, units, axes, positive=positive)
     cmor.write(cmorVar, var)
+    if savePS:
+       cmor.write(ips, ps, store_with=cmorVar)
     filename = cmor.close(cmorVar, file_name=True)
     print("filename=", filename)
     cmor.close()
@@ -330,7 +395,7 @@ def main():
 
     # process each variable separately
     for var_i in GFDL_var_lst:
-        if var_i in proj_tbl_vars["variable_entry"]:
+        if GFDL_var_lst[var_i] in proj_tbl_vars["variable_entry"]:
             var2process(proj_tbl_vars, GFDL_var_lst, dir2cmor, var_i, time_arr, N, CMIP_input_json, CMOR_tbl_vars_file)
         else: 
             print("WARNING: Skipping requested variable as it is not found in CMOR variable group:", var_i)
