@@ -22,6 +22,7 @@ dependencies:
   - python=3.11.6=hab00c5b_0_cpython
   - readline=8.2=h8228510_1
   - setuptools=68.2.2=pyhd8ed1ab_0
+  - sphinx
   - tk=8.6.13=h2797004_0
   - tzdata=2023c=h71feb2d_0
   - wheel=0.41.2=pyhd8ed1ab_0
