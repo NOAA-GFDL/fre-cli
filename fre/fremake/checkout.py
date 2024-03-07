@@ -79,7 +79,6 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
               freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
               freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
               freCheckout.finish(pc)
-              return freCheckout
 
 if __name__ == "__main__":
     checkout_create()
