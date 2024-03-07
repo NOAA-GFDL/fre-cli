@@ -169,7 +169,7 @@ def checkout(uppercase):
 @click.pass_context
 def fremakefunction(context, yamlfile, platform, target, force_checkout, force_compile, keep_compiled, no_link, execute, parallel, jobs, no_parallel_checkout, submit, verbose, walltime, mail_list):
     """ - Execute fre make func """
-    context.forward(fremake.fremake.fremake)
+    context.forward(fremake.fremake.fremakeFun)
 
 #####
 
@@ -184,6 +184,11 @@ def fremakefunction(context, yamlfile, platform, target, force_checkout, force_c
               multiple=True, #replaces nargs=-1 since we are using click.option() instead of click.argument()
               type=str,
               help="Hardware and software FRE platform space separated list of STRING(s). This sets platform-specific data and instructions", required=True)
+@click.option("-t", "--target",
+              multiple=True, #replaces nargs=-1 since we are using click.option() instead of click.argument()
+              type=str,
+              help="FRE target space separated list of STRING(s) that defines compilation settings and linkage directives for experiments. Predefined targets refer to groups of directives that exist in the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one of these in the target list). Any number of targets can be used.",
+              required=True)
 @click.option("-j",
               "--jobs",
               type=int,
@@ -194,11 +199,15 @@ def fremakefunction(context, yamlfile, platform, target, force_checkout, force_c
               "--no-parallel-checkout",
               is_flag=True,
               help="Use this option if you do not want a parallel checkout. The default is to have parallel checkouts.")
+@click.option("-v",
+              "--verbose",
+              is_flag=True,
+              help="Get verbose messages (repeat the option to increase verbosity level)")
 @click.pass_context
 
-def create_checkout(context,yamlfile,platform,npc,jobs):
+def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
     """ - Write the checkout script """
-    context.forward(fremake.fremake.checkout_create)
+    context.forward(fremake.fremake.cc)
 
 #####
 @freMake.command()
@@ -212,6 +221,11 @@ def create_checkout(context,yamlfile,platform,npc,jobs):
               multiple=True, #replaces nargs=-1 since we are using click.option() instead of click.argument()
               type=str,
               help="Hardware and software FRE platform space separated list of STRING(s). This sets platform-specific data and instructions", required=True)
+@click.option("-t", "--target",
+              multiple=True, #replaces nargs=-1 since we are using click.option() instead of click.argument()
+              type=str,
+              help="FRE target space separated list of STRING(s) that defines compilation settings and linkage directives for experiments. Predefined targets refer to groups of directives that exist in the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one of these in the target list). Any number of targets can be used.",
+              required=True)
 @click.option("-j",
               "--jobs",
               type=int,
@@ -222,10 +236,15 @@ def create_checkout(context,yamlfile,platform,npc,jobs):
               "--no-parallel-checkout",
               is_flag=True,
               help="Use this option if you do not want a parallel checkout. The default is to have parallel checkouts.")
+@click.option("-v",
+              "--verbose",
+              is_flag=True,
+              help="Get verbose messages (repeat the option to increase verbosity level)")
 @click.pass_context
-def run_checkout(context,yamlfile,platform,npc,jobs):
+
+def run_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
     """ - Run the checkout script """
-    context.forward(fremake.fremake.checkout_run)
+    context.forward(fremake.fremake.rc)
 
 #####
 @freMake.command
@@ -253,7 +272,7 @@ def run_checkout(context,yamlfile,platform,npc,jobs):
 @click.pass_context
 def create_makefile(context,yamlfile,platform,target):
     """ - Write the makefile """
-    context.forward(fremake.fremake.makefile_create)
+    context.forward(fremake.fremake.makefile)
 
 #####
 
@@ -282,7 +301,7 @@ def create_makefile(context,yamlfile,platform,target):
 @click.pass_context
 def create_compile(context,yamlfile,platform,target,jobs):
     """ - Write the compile script """
-    context.forward(fremake.fremake.compile_create)
+    context.forward(fremake.fremake.compile)
 
 #####
 
@@ -311,7 +330,7 @@ def create_compile(context,yamlfile,platform,target,jobs):
 @click.pass_context
 def run_compile(context,yamlfile,platform,target,jobs):
     """ - Run the compile script """
-    context.forward(fremake.fremake.compile_run)
+    context.forward(fremake.fremake.compile)
 
 #####
 
@@ -335,7 +354,7 @@ def run_compile(context,yamlfile,platform,target,jobs):
 
 def create_dockerfile(context,yamlfile,platform,target):
     """ - Write the dockerfile """
-    context.forward(fremake.fremake.dockerfile_create)
+    context.forward(fremake.fremake.dockerfile)
 
 #####
 
@@ -358,7 +377,7 @@ def create_dockerfile(context,yamlfile,platform,target):
 @click.pass_context
 def run_dockerfile(context,yamlfile,platform,target):
     """ - Run the dockerfile and create the container """
-    context.forward(fremake.fremake.dockerfile_run)
+    context.forward(fremake.fremake.dockerfile)
 
 #############################################
 

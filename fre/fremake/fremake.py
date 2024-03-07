@@ -97,7 +97,7 @@ def make():
               type=str, 
               help="Email the comma-separated STRING list of emails rather than $USER@noaa.gov")
 @click.pass_context
-def fremake(context,yamlfile, platform, target, force_checkout, force_compile, keep_compiled, no_link, execute, parallel, jobs, no_parallel_checkout, submit, verbose, walltime, mail_list):
+def fremakeFun(context,yamlfile, platform, target, force_checkout, force_compile, keep_compiled, no_link, execute, parallel, jobs, no_parallel_checkout, submit, verbose, walltime, mail_list):
     """
     Fremake is used to create a code checkout script to compile models for FRE experiments.
     """
@@ -140,17 +140,17 @@ def fremake(context,yamlfile, platform, target, force_checkout, force_compile, k
 
 @make.command()
 @click.pass_context
-def cc(context, yamlfile, platform, jobs, npc):
+def cc(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
     """ - Create fremake checkout script. """
-    fremake()
+    #fremake()
     context.forward(checkout_create)
 
 ###############################################################
 @make.command()
 @click.pass_context
-def rc(context, yamlfile, platform, jobs, npc):
+def rc(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
     """ - Run created fremake checkout script. """
-    fremake()
+    #fremake()
     context.forward(checkout_run)
 
 ###############################################################
@@ -158,7 +158,7 @@ def rc(context, yamlfile, platform, jobs, npc):
 @click.pass_context
 def mc(context, yamlfile, platform, jobs, npc):
     """ - Write fremake makefile script. """
-    fremake()
+    #fremake()
     context.forward(makefile_create)
 
 ###############################################################
@@ -166,7 +166,7 @@ def mc(context, yamlfile, platform, jobs, npc):
 @click.pass_context
 def compc(context,yamlfile,platform,target,jobs):
     """ - Write compile script """
-    fremake()
+    #fremake()
     context.forward(compile_create)
 
 ###############################################################
@@ -174,7 +174,7 @@ def compc(context,yamlfile,platform,target,jobs):
 @click.pass_context
 def compr(context,yamlfile,platform,target,jobs):
     """ Run compile script """
-    fremake()
+    #fremake()
     context.forward(compile_run)
 
 ###############################################################
@@ -183,7 +183,7 @@ def compr(context,yamlfile,platform,target,jobs):
 @click.pass_context
 def dc(context,yamlfile,platform,target):
     """ - Writes the dockerfile """
-    fremake()
+    #fremake()
     context.forward(dockerfile_create)
 
 ###############################################################
@@ -192,7 +192,7 @@ def dc(context,yamlfile,platform,target):
 @click.pass_context
 def dr(context,yamlfile,platform,target):
     """ - Runs the dockerfile """
-    fremake()
+    #fremake()
     context.forward(dockerfile_run)
 
 ###############################################################
