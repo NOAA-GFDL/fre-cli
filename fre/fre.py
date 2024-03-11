@@ -99,6 +99,31 @@ def checkout(uppercase):
         statement = statement.upper()
     click.echo(statement)
 
+@freMake.command
+@click.option("-y",
+              "--yamlfile",
+              type=str,
+              help="Experiment yaml compile FILE",
+              required=True) # used click.option() instead of click.argument() because we want to have help statements
+@click.option("-p",
+              "--platform",
+              multiple=True, #replaces nargs=-1 since we are using click.option() instead of click.argument()
+              type=str,
+              help="Hardware and software FRE platform space separated list of STRING(s). This sets platform-specific data and instructions", required=True)
+@click.option("-t", "--target",
+              multiple=True, #replaces nargs=-1 since we are using click.option() instead of click.argument()
+              type=str,
+              help="FRE target space separated list of STRING(s) that defines compilation settings and linkage directives for experiments. Predefined targets refer to groups of directives that exist in the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one of these in the target list). Any number of targets can be used.",
+              required=True)
+@click.option("-v", 
+              "--verbose", 
+              is_flag=True, 
+              help="Get verbose messages (repeat the option to increase verbosity level)")
+@click.pass_context
+def create_makefile(context,yamlfile,platform,target, verbose):
+    """ - Write the makefile """
+    context.forward(fremake.fremake.mc)
+
 @freMake.command()
 @click.option("-y", 
               "--yamlfile", 

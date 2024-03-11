@@ -17,6 +17,7 @@ import make.checkout
 import make.makefilefre
 import make.buildDocker
 import make.buildBaremetal
+from fre.fremake.makefile import *
 from multiprocessing.dummy import Pool
 
 @click.group()
@@ -199,6 +200,16 @@ def testmake(yamlfile, platform, target, execute, parallel, jobs, no_parallel_ch
                 pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
                 pool.map(make.buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool 
     click.echo("test2test2test2")
+
+
+
+@make.command()
+@click.pass_context
+def mc(context, yamlfile, platform, target, verbose):
+    """ - Write fremake makefile script. """
+    context.forward(makefile_create)
+
+
 
 if __name__ == "__main__":
     fmake()
