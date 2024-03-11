@@ -31,6 +31,9 @@ from fre.frecatalog.frecatalog import *
 from fre import freyamltools
 from fre.freyamltools.freyamltools import *
 
+from fre import frecmor
+from fre.frecmor.frecmor import *
+
 #############################################
 
 """
@@ -83,6 +86,10 @@ def freCatalog():
 @fre.group('yamltools')
 def freYamltools():
     """ - access fre yamltools subcommands """
+    pass
+@fre.group('cmor')
+def freCmor():
+    """ - access fre cmor subcommands"""
     pass
 
 #############################################
@@ -193,6 +200,31 @@ fre list subcommands to be processed
 def function(context, uppercase):
     """ - Execute fre list func """
     context.forward(frelist.frelist.testfunction2)
+
+#############################################
+
+"""
+fre cmor subcommands to be processed
+"""
+
+# fre cmor run
+@freCmor.command()
+@click.option("-d", "--indir",
+              type=str,
+              help="Input directory",
+              required=True)
+@click.option("-l", "--varlist",
+              type=str,
+              help="Variable list",
+              required=True)
+@click.option("-o", "--outdir",
+              type=str,
+              help="Output directory",
+              required=True)
+@click.pass_context
+def run(context, indir, outdir, varlist, table_config, exp_config):
+    """Rewrite climate model output"""
+    context.forward(frecmor.frecmor.run)
 
 #############################################
 

@@ -93,6 +93,7 @@ import netCDF4 as nc
 import string
 from shutil import copyfile
 #import shutil
+import click
 
 
 global nameOfset, GFDL_vars_file, CMIP_output, GFDL_real_vars_file
@@ -402,3 +403,8 @@ def main():
     
 if __name__ == "__main__":
     main()
+
+@click.command
+
+def run_subtool(context, indir, outdir, varlist, table_config, exp_config):
+   main()
