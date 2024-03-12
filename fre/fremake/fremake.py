@@ -5,9 +5,11 @@
 ## \author Bennett Chang
 ## \description Script for fremake is used to create and run a code checkout script and compile a model.
 
-from fre.fremake.checkout import *
+from fre.fremake.createCheckout import *
+from fre.fremake.runCheckout import *
 #from fre.fremake.makefile import *
-#from fre.fremake.compile import *
+from fre.fremake.createCompile import *
+#from fre.fremake.runCompile import *
 #from fre.fremake.dockerfile import *
 
 # import subprocess
@@ -134,21 +136,20 @@ def fremakeFun(context,yamlfile, platform, target, force_checkout, force_compile
     ## Open the yaml file and parse as fremakeYaml
     modelYaml = yamlfre.freyaml(yml,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
-    return modelYaml, fremakeYaml
+#    return modelYaml, fremakeYaml
 
 ###############################################################
 
 @make.command()
 @click.pass_context
-def cc(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
+def ccheckout(context,yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     """ - Create fremake checkout script. """
-    #fremake()
     context.forward(checkout_create)
 
 ###############################################################
 @make.command()
 @click.pass_context
-def rc(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
+def rcheckout(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
     """ - Run created fremake checkout script. """
     #fremake()
     context.forward(checkout_run)
@@ -164,15 +165,14 @@ def mc(context, yamlfile, platform, jobs, npc):
 ###############################################################
 @make.command()
 @click.pass_context
-def compc(context,yamlfile,platform,target,jobs):
+def ccompile(context,yamlfile,platform,target,jobs,parallel,verbose):
     """ - Write compile script """
-    #fremake()
     context.forward(compile_create)
 
 ###############################################################
 @make.command()
 @click.pass_context
-def compr(context,yamlfile,platform,target,jobs):
+def rcompile(context,yamlfile,platform,target,jobs):
     """ Run compile script """
     #fremake()
     context.forward(compile_run)
