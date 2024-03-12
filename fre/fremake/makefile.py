@@ -9,7 +9,7 @@ import logging
 
 @click.command()
 
-def makefile_create(yamlfile,platform,target,verbose):
+def makefile_create(yamlfile,platform,target):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -18,11 +18,6 @@ def makefile_create(yamlfile,platform,target,verbose):
     tlist = target
     yml = yamlfile
 
-
-    if verbose:
-        logging.basicCOnfig(level=logging.INFO)
-    else:
-        logging.basicConfig(level=logging.ERROR)
     
     ## Get the variables in the model yaml
     freVars = make.varsfre.frevars(yml)
@@ -34,7 +29,7 @@ def makefile_create(yamlfile,platform,target,verbose):
     ## Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
-            targ = make.targetfre.fretarget(targetName)
+            targetObject = make.targetfre.fretarget(targetName)
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
@@ -45,7 +40,7 @@ def makefile_create(yamlfile,platform,target,verbose):
             ## Check for type of build
             if iscontainer == False:
                 baremetalRun = True
-                bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
+                bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + targetObject.gettargetName() + "/exec"
                 os.system("mkdir -p " + bldDir)
                 ## Create the Makefile
                 freMakefile = make.makefilefre.makefile(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate)
@@ -53,6 +48,7 @@ def makefile_create(yamlfile,platform,target,verbose):
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
                 freMakefile.writeMakefile()
+                click.echo("\nMakefile created at " + bldDir + "\n")
             else:
                 image="ecpe4s/noaa-intel-prototype:2023.09.25"
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
@@ -63,6 +59,7 @@ def makefile_create(yamlfile,platform,target,verbose):
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
                 freMakefile.writeMakefile()
+                click.echo("\nMakefile created at " + bldDir + "\n")
 
 if __name__ == "__main__":
     makefile_create()

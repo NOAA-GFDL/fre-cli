@@ -263,16 +263,10 @@ def run_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,verb
               type=str,
               help="FRE target space separated list of STRING(s) that defines compilation settings and linkage directives for experiments. Predefined targets refer to groups of directives that exist in the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one of these in the target list). Any number of targets can be used.",
               required=True)
-@click.option("-j",
-              "--jobs",
-              type=int,
-              metavar='',
-              default=4,
-              help="Number of jobs to run simultaneously. Used for make -jJOBS and git clone recursive --jobs=JOBS")
 @click.pass_context
 def create_makefile(context,yamlfile,platform,target):
     """ - Write the makefile """
-    context.forward(fremake.fremake.makefile)
+    context.forward(fremake.fremake.mc)
 
 #####
 

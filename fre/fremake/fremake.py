@@ -6,7 +6,7 @@
 ## \description Script for fremake is used to create and run a code checkout script and compile a model.
 
 from fre.fremake.checkout import *
-#from fre.fremake.makefile import *
+from fre.fremake.makefile import *
 #from fre.fremake.compile import *
 #from fre.fremake.dockerfile import *
 
@@ -156,9 +156,8 @@ def rc(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
 ###############################################################
 @make.command()
 @click.pass_context
-def mc(context, yamlfile, platform, jobs, npc):
+def mc(context, yamlfile, platform, target):
     """ - Write fremake makefile script. """
-    #fremake()
     context.forward(makefile_create)
 
 ###############################################################
