@@ -11,15 +11,27 @@
         "rose-regrid": {"type": "string"}
       }
     },
-    "define1": {"type": "string"},
-    "define2": {"type": "string"},
-    "define3": {"type": "string"},
-    "define4": {"type": "string"},
-    "define5": {"type": "string"},
-
+    "analysisLen": {"type": "string"},
+    "chunk96": {"type": "string"},
+    "analysisStart": {
+      "type": "string",
+      "format":"integer"
+    },
+    "analysisStop": {
+      "type": "string",
+      "format": "integer"
+    },
+    "defxyInterp": {"type": "string"},
     "rose-suite": {
       "type": "object",
       "properties": {
+        "refineDiag": {
+          "type":"object",
+          "properties": {
+            "datastager_script": {"type":"string"},
+            "atmoscmip6_script": {"type":"string"}
+          }
+        },
         "settings": {
           "type":"object",
           "properties": {
@@ -43,9 +55,7 @@
             "do_timeavgs": {"type":"boolean"},
             "do_refinediag": {"type":"boolean"},
             "do_atmos_plevel_masking": {"type":"boolean"},
-            "do_preanalysis": {"type":"boolean"},
-            "do_analysis": {"type":"boolean"},
-            "do_analysis_only": {"type":"boolean"}
+            "do_preanalysis": {"type":"boolean"}
           }
         },
         "directories": {
@@ -53,9 +63,9 @@
           "properties": {
             "history_dir": {"type":"string"},
             "pp_dir": {"type":"string"},
-            "ptmp_dir": {"type":"string"},
-            "refinediag_scripts":{"type":["string","null"]},
-            "preanalysis_script":{"type":["string","null"]},
+            "ptmp": {"type":"string"},
+            "refineDiag":{"type":"string"},
+            "preanalysis":{"type":["string","null"]},
             "history_refined":{"type":"string"},
             "analysis":{"type":["string","null"]}
           }
@@ -70,32 +80,37 @@
         }
       }
     },
-    "component": {
-      "type":"object",
+    "regrid-remap-info": {
+      "type": "object",
       "properties": {
-        "type": {"type":"string"},
-        "start": {"type":"string"},
-        "sources": {"type":"string"},
-        "sourceGrid": {"type":"string"},
-        "xyInterp": {"type":"string"},
-        "zInterp": {"type":"string"},
-        "interpMethod": {"type":"string"},
-        "cmip": {"type":"string"},
-        "timeSeries": {
-          "type": "array",
+        "component": {
+          "type":"object",
           "properties": {
-            "freq": {"type":"string"},
-            "source": {"type":"string"},
-            "chunkLength": {"type":"string"},
-            "variables": {"type":"string"}
-          }
-        },
-        "timeAverage": {
-          "type": "array",
-          "properties": {
-            "source": {"type":"string"},
-            "interval": {"type":"string"},
-            "calcInterval": {"type":"string"}
+            "type": {"type":"string"},
+            "start": {"type":"string"},
+            "sources": {"type":"string"},
+            "sourceGrid": {"type":"string"},
+            "xyInterp": {"type":"string"},
+            "zInterp": {"type":"string"},
+            "interpMethod": {"type":"string"},
+            "cmip": {"type":"string"},
+            "timeSeries": {
+              "type": "array",
+              "properties": {
+                "freq": {"type":"string"},
+                "source": {"type":"string"},
+                "chunkLength": {"type":"string"},
+                "variables": {"type":"string"}
+              }
+            },
+            "timeAverage": {
+              "type": "array",
+              "properties": {
+                "source": {"type":"string"},
+                "interval": {"type":"string"},
+                "calcInterval": {"type":"string"}
+              }
+            }
           }
         }
       }

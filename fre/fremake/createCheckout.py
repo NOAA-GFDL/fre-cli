@@ -9,15 +9,16 @@ import make.targetfre
 import click
 import os
 import logging 
+import sys 
 
 @click.command()
 
-def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
+def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     # Define variables  
     yml = yamlfile
     ps = platform
     ts = target
-#    nparallel = parallel
+    run = execute
     jobs = str(jobs)
     pcheck = no_parallel_checkout
 
@@ -27,7 +28,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
         pc = " &"
 
     if verbose:
-      logging.basicCOnfig(level=logging.INFO)
+      logging.basicConfig(level=logging.INFO)
     else:
       logging.basicConfig(level=logging.ERROR)
 
@@ -70,16 +71,18 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
                    freCheckout = make.checkout.checkout("checkout.sh",srcDir)
                    freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                    freCheckout.finish(pc)
-
+                   #if run:
+                   #     freCheckout.run()
+                   #else:
+                   #     sys.exit()
          else:
               ## Run the checkout script
               image="ecpe4s/noaa-intel-prototype:2023.09.25"
               bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
               tmpDir = "tmp/"+platformName
-              freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
+              freCheckout = make.checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
               freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
               freCheckout.finish(pc)
 
 if __name__ == "__main__":
-    checkout_create()
-    
+    checkout_create() 

@@ -199,15 +199,20 @@ def fremakefunction(context, yamlfile, platform, target, force_checkout, force_c
               "--no-parallel-checkout",
               is_flag=True,
               help="Use this option if you do not want a parallel checkout. The default is to have parallel checkouts.")
+#@click.option("-e",
+#              "--execute",
+#              is_flag=True,
+#              default=False,
+#              help="Use this to run the created checkout script.")
 @click.option("-v",
               "--verbose",
               is_flag=True,
               help="Get verbose messages (repeat the option to increase verbosity level)")
 @click.pass_context
 
-def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
+def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     """ - Write the checkout script """
-    context.forward(fremake.fremake.cc)
+    context.forward(fremake.fremake.ccheckout)
 
 #####
 @freMake.command()
@@ -244,7 +249,7 @@ def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,v
 
 def run_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
     """ - Run the checkout script """
-    context.forward(fremake.fremake.rc)
+    context.forward(fremake.fremake.rcheckout)
 
 #####
 @freMake.command
@@ -292,10 +297,19 @@ def create_makefile(context,yamlfile,platform,target):
               metavar='',
               default=4,
               help="Number of jobs to run simultaneously. Used for make -jJOBS and git clone recursive --jobs=JOBS")
+@click.option("-n", 
+              "--parallel",
+              type=int, 
+              metavar='', default=1,
+              help="Number of concurrent model compiles (default 1)")
+@click.option("-v",
+              "--verbose",
+              is_flag=True,
+              help="Get verbose messages (repeat the option to increase verbosity level)")
 @click.pass_context
-def create_compile(context,yamlfile,platform,target,jobs):
+def create_compile(context,yamlfile,platform,target,jobs,parallel,verbose):
     """ - Write the compile script """
-    context.forward(fremake.fremake.compile)
+    context.forward(fremake.fremake.ccompile)
 
 #####
 
@@ -324,7 +338,7 @@ def create_compile(context,yamlfile,platform,target,jobs):
 @click.pass_context
 def run_compile(context,yamlfile,platform,target,jobs):
     """ - Run the compile script """
-    context.forward(fremake.fremake.compile)
+    context.forward(fremake.fremake.rcompile)
 
 #####
 
