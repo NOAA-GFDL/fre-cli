@@ -29,6 +29,9 @@ requirements:
     - jsonschema
     - noaa-gfdl::intakebuilder
     - conda-forge::metomi-rose
+    - cylc-flow
+    - cylc-rose
+    - metomi-rose
 
 test:
   imports:
