@@ -22,8 +22,6 @@ import metomi.isodatetime.parsers
 #
 
 LOGGING_FORMAT = '%(asctime)s  %(levelname)s: %(message)s'
-FRE_PATH = '/home/fms/local/opt/fre-commands/bronx-21/bin'
-FRE_TEST_PATH = '/home/fms/local/opt/fre-commands/test/bin'
 CYLC_PATH = '/home/fms/fre-canopy/system-settings/bin'
 CYLC_REFINED_SCRIPTS = ["check4ptop.pl", 
                         "module_init_3_1_6.pl",
@@ -573,14 +571,9 @@ def convert(xml, platform, target, experiment, do_analysis, historydir, refinedi
     ##########################################################################
 
 
-    ##########################################################################
-    # Check the OS environment. Exit if FRE has not been loaded or Cylc has
-    # not been loaded (if using the --validate option).
-    ##########################################################################
-    if not(FRE_PATH in os.getenv('PATH') or FRE_TEST_PATH in os.getenv('PATH')):
-        raise EnvironmentError("Cannot run the XML converter because FRE Bronx "       \
-                               "isn't loaded. Please load the latest FRE Bronx "       \
-                               "module and try again.")
+    # NOTE: Ideally we would check that "frelist" is in the PATH here,
+    # but in practice the frelist will just fail later if it's not loaded.
+    # If that error scenario is too confusing, let's add a check back here.
     
     if validate:
         if CYLC_PATH in os.getenv('PATH'):
