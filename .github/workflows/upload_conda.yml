@@ -16,6 +16,7 @@ jobs:
         conda config --append channels conda-forge
         conda config --append channels noaa-gfdl
         conda install conda-build anaconda-client conda-verify
+        conda update conda-build
         export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
         conda config --set anaconda_upload yes
         conda build .
