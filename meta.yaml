@@ -31,7 +31,6 @@ requirements:
     - cylc-flow
     - cylc-rose
     - metomi-rose
-    #testing with a comment 
 
 test:
   imports:
