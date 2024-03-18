@@ -6,7 +6,6 @@
 # It can accept any file and will only compute refineDiags in fields
 # are present.
 
-import argparse
 import os
 import netCDF4 as nc
 import xarray as xr
@@ -154,42 +153,3 @@ def post_write(filename, ds, var_with_bounds, bounds_variables):
     f.close()
 
     return None
-
-
-def parse_args():
-    """parse command line arguments"""
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("infile", type=str, help="Input file")
-    parser.add_argument(
-        "-o", "--outfile", type=str, required=True, help="Output file name"
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        required=False,
-        help="Print detailed output",
-    )
-    parser.add_argument(
-        "-f",
-        "--format",
-        type=str,
-        required=False,
-        default="NETCDF3_64BIT",
-        help="netcdf format for output file",
-    )
-    parser.add_argument(
-        "-p",
-        "--ps",
-        type=str,
-        required=True,
-        help="NetCDF file containing surface pressure"
-    )
-    return parser.parse_args()
-
-
-if __name__ == "__main__":
-    args = parse_args()
-
-    mask_subtool(args.infile, args.outfile, args.ps)
