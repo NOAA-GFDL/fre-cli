@@ -7,7 +7,7 @@
 
 from fre.fremake.makefile import *
 from fre.fremake.createCheckout import *
-from fre.fremake.runCheckout import *
+#from fre.fremake.runCheckout import *
 from fre.fremake.createCompile import *
 #from fre.fremake.runCompile import *
 #from fre.fremake.dockerfile import *
@@ -150,7 +150,7 @@ def mc(context, yamlfile, platform, target):
 ###############################################################
 @make.command()
 @click.pass_context
-def ccompile(context,yamlfile,platform,target,jobs,parallel,verbose):
+def ccompile(context,yamlfile,platform,target,jobs,parallel,execute,verbose):
     """ - Write compile script """
     context.forward(compile_create)
 

@@ -71,10 +71,10 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                    freCheckout = make.checkout.checkout("checkout.sh",srcDir)
                    freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                    freCheckout.finish(pc)
-                   #if run:
-                   #     freCheckout.run()
-                   #else:
-                   #     sys.exit()
+                   if run:
+                        freCheckout.run()
+                   else:
+                        sys.exit()
          else:
               ## Run the checkout script
               image="ecpe4s/noaa-intel-prototype:2023.09.25"
@@ -83,6 +83,8 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
               freCheckout = make.checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
               freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
               freCheckout.finish(pc)
+
+    return checkout_create()
 
 if __name__ == "__main__":
     checkout_create() 
