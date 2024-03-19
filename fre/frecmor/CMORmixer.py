@@ -84,7 +84,6 @@
 
 
 
-import argparse
 import os, sys
 import time as tm
 import numpy, json
@@ -342,29 +341,18 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
 
 # qboi30     
 
-def main():   
+@click.command
 
-    parser = argparse.ArgumentParser(description="CMORizing all files in directory specified in command line. Example: CMORmixer.py \
-    -d /archive/oar.gfdl.cmip6/CM4/warsaw_201710_om4_v1.0.1/CM4_1pctCO2_C/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/monthly/5yr \
-    -l /home/Serguei.Nikonov/CMOR_3/GFDL-CM4_1pctCO2_C_CMOR-Amon.lst \
-    -r /home/san/CMIP6_work/cmor/cmip6-cmor-tables/Tables/CMIP6_Amon.json \
-    -p /home/san/CMIP6_work/cmor/Test/CMOR_input_CM4_1pctCO2_C.json")
-    parser.add_argument('-d', dest='dir2cmor', help='directory to CMORize', required=True)    
-    parser.add_argument('-l', dest='GFDL_vars_file', help='GFDL list of variables in table', required=True)
-    parser.add_argument('-r', dest='CMOR_tbl_json', help='CMOR file with CMIP descriptions of variables', required=True)
-    parser.add_argument('-p', dest='CMIP_input_json', help='Experiment Name File expaining of what source type is used here', required=True)
-    parser.add_argument('-o', dest='CMIP_output', help='CMORized output files location (not required), default=/local2; it also can be like /home/$USER, or /net|work<i>/san, etc.', default="/local2")
-    args = parser.parse_args()
-        
+def run_subtool(indir, outdir, varlist, table_config, exp_config):
     # these global variables can be edited now
     # nameOfset is component label (e.g. atmos_cmip)
     global nameOfset, GFDL_vars_file, CMIP_output
     
-    dir2cmor = args.dir2cmor
-    GFDL_vars_file = args.GFDL_vars_file
-    CMOR_tbl_vars_file = args.CMOR_tbl_json
-    CMIP_input_json = args.CMIP_input_json
-    CMIP_output = args.CMIP_output
+    dir2cmor = indir
+    GFDL_vars_file = varlist
+    CMOR_tbl_vars_file = table_config
+    CMIP_input_json = exp_config
+    CMIP_output = outdir
     
     # open CMOR table config file
     f_js = open(CMOR_tbl_vars_file,"r")
@@ -400,11 +388,3 @@ def main():
             var2process(proj_tbl_vars, GFDL_var_lst, dir2cmor, var_i, time_arr, N, CMIP_input_json, CMOR_tbl_vars_file)
         else: 
             print("WARNING: Skipping requested variable as it is not found in CMOR variable group:", var_i)
-    
-if __name__ == "__main__":
-    main()
-
-@click.command
-
-def run_subtool(indir, outdir, varlist, table_config, exp_config):
-   main()
