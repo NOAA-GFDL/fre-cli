@@ -217,6 +217,14 @@ fre cmor subcommands to be processed
               type=str,
               help="Variable list",
               required=True)
+@click.option("-r", "--table_config",
+              type=str,
+              help="Table configuration",
+              required=True)
+@click.option("-p", "--exp_config",
+              type=str,
+              help="Experiment configuration",
+              required=True)
 @click.option("-o", "--outdir",
               type=str,
               help="Output directory",
@@ -224,7 +232,7 @@ fre cmor subcommands to be processed
 @click.pass_context
 def run(context, indir, outdir, varlist, table_config, exp_config):
     """Rewrite climate model output"""
-    context.forward(frecmor.frecmor.run)
+    context.forward(frecmor.frecmor.run_subtool)
 
 #############################################
 

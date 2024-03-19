@@ -406,5 +406,5 @@ if __name__ == "__main__":
 
 @click.command
 
-def run_subtool(context, indir, outdir, varlist, table_config, exp_config):
+def run_subtool(indir, outdir, varlist, table_config, exp_config):
    main()
