@@ -10,16 +10,18 @@ from multiprocessing.dummy import Pool
 import logging
 import os
 import click
+import sys
 
 @click.command()
 
-def compile_create(yamlfile,platform,target,jobs,parallel,verbose):
+def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
     # Define variables
     yml = yamlfile
     ps = platform
     ts = target
     nparallel = parallel
     jobs = str(jobs)
+    run = execute
 
     if verbose:
       logging.basicCOnfig(level=logging.INFO)
@@ -69,14 +71,15 @@ def compile_create(yamlfile,platform,target,jobs,parallel,verbose):
               fremakeBuild.writeScript()
               fremakeBuildList.append(fremakeBuild)
 
-    if baremetalRun:
-        pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
-        pool.map(make.buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool 
-
-
-#def compile_run():
-#  ## Run the build
-#  fremakeBuild.run()
+    if run:
+        #print("ITS GONNA RUN")
+        if baremetalRun:
+            pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
+            pool.map(make.buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
+#        else:
+#            fremakeBuild.run()
+    else:
+        sys.exit()
 
 if __name__ == "__main__":
     compile_create()

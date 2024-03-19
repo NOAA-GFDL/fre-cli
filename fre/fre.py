@@ -199,11 +199,11 @@ def fremakefunction(context, yamlfile, platform, target, force_checkout, force_c
               "--no-parallel-checkout",
               is_flag=True,
               help="Use this option if you do not want a parallel checkout. The default is to have parallel checkouts.")
-#@click.option("-e",
-#              "--execute",
-#              is_flag=True,
-#              default=False,
-#              help="Use this to run the created checkout script.")
+@click.option("-e",
+              "--execute",
+              is_flag=True,
+              default=False,
+              help="Use this to run the created checkout script.")
 @click.option("-v",
               "--verbose",
               is_flag=True,
@@ -302,12 +302,17 @@ def create_makefile(context,yamlfile,platform,target):
               type=int, 
               metavar='', default=1,
               help="Number of concurrent model compiles (default 1)")
+@click.option("-e",
+              "--execute",
+              is_flag=True,
+              default=False,
+              help="Use this to run the created checkout script.")
 @click.option("-v",
               "--verbose",
               is_flag=True,
               help="Get verbose messages (repeat the option to increase verbosity level)")
 @click.pass_context
-def create_compile(context,yamlfile,platform,target,jobs,parallel,verbose):
+def create_compile(context,yamlfile,platform,target,jobs,parallel,execute,verbose):
     """ - Write the compile script """
     context.forward(fremake.fremake.ccompile)
 

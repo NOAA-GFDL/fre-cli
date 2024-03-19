@@ -151,7 +151,7 @@ def mc(context, yamlfile, platform, target):
 ###############################################################
 @make.command()
 @click.pass_context
-def ccompile(context,yamlfile,platform,target,jobs,parallel,verbose):
+def ccompile(context,yamlfile,platform,target,jobs,parallel,execute,verbose):
     """ - Write compile script """
     context.forward(compile_create)
 
