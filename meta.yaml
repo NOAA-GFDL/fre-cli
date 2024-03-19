@@ -29,6 +29,7 @@ requirements:
     - jsonschema
     - noaa-gfdl::intakebuilder
     - conda-forge::metomi-rose
+    - cmor
 
 test:
   imports:
