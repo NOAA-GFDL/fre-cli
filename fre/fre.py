@@ -362,7 +362,7 @@ def run_compile(context,yamlfile,platform,target,jobs):
 
 def create_dockerfile(context,yamlfile,platform,target):
     """ - Write the dockerfile """
-    context.forward(fremake.fremake.dockerfile)
+    context.forward(fremake.fremake.dc)
 
 #####
 

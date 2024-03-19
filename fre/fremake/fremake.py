@@ -7,10 +7,11 @@
 
 from fre.fremake.makefile import *
 from fre.fremake.createCheckout import *
-from fre.fremake.runCheckout import *
+#from fre.fremake.runCheckout import *
 from fre.fremake.createCompile import *
 #from fre.fremake.runCompile import *
-#from fre.fremake.dockerfile import *
+from fre.fremake.createDocker import *
+#from fre.fremake.runDocker import *
 import click
 
 @click.group()
