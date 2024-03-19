@@ -39,6 +39,7 @@ test:
     - fre.frepp.status
     - fre.frepp.run
     - fre.frepp.validate
+    - fre.app
   commands:
     - fre --help
     - fre pp --help
@@ -46,6 +47,8 @@ test:
     - fre pp status --help
     - fre pp run --help
     - fre pp validate --help
+    - fre app --help
+    - fre app mask-atmos-plevel --help
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
