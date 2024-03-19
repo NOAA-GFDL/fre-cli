@@ -43,7 +43,6 @@ test:
     - fre.frepp.run
     - fre.frepp.validate
     - fre.cmor
-    - fre.cmor.run
   commands:
     - fre --help
     - fre pp --help
