@@ -28,10 +28,10 @@ requirements:
     - pyyaml
     - jsonschema
     - noaa-gfdl::intakebuilder
-    - cylc-flow
-    - cylc-rose
-    - metomi-rose
-    - cmor
+    - conda-forge::cylc-flow
+    - conda-forge::cylc-rose
+    - conda-forge::metomi-rose
+    - conda-forge::cmor
 
 test:
   imports:
