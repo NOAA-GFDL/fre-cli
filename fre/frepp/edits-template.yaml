@@ -81,14 +81,6 @@ rose-suite:
     # Directory to write analysis output
     analysis:
 
-  metadata:
-    # Label for the experiment
-    experiment:
-    # Label for the hardware and software environment
-    platform:
-    # Label for the FRE compilation target used in the simulation
-    target:
-
 # Information needed to populate the rose-apps for regrid-xy and remap-pp-components
 # These rose apps will be retired eventually 
 components:
