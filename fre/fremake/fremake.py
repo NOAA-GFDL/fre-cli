@@ -167,7 +167,7 @@ def rcompile(context,yamlfile,platform,target,jobs):
 
 @make.command()
 @click.pass_context
-def dc(context,yamlfile,platform,target):
+def dc(context,yamlfile,platform,target,execute):
     """ - Writes the dockerfile """
     #fremake()
     context.forward(dockerfile_create)

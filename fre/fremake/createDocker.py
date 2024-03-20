@@ -7,9 +7,10 @@ import make.yamlfre
 import make.buildDocker
 import click
 import os
+import sys
 
 @click.command()
-def dockerfile_create(yamlfile, platform, target):
+def dockerfile_create(yamlfile, platform, target, execute):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -17,7 +18,7 @@ def dockerfile_create(yamlfile, platform, target):
     plist = platform
     tlist = target
     yml = yamlfile
-
+    run = execute
 
     ## Get the variables in the model yaml
     freVars = make.varsfre.frevars(yml)
@@ -34,6 +35,7 @@ def dockerfile_create(yamlfile, platform, target):
                 pass
             else:
                 raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
+            
             (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,containerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the bldDir based on the modelRoot, the platform, and the target
@@ -62,8 +64,10 @@ def dockerfile_create(yamlfile, platform, target):
                 click.echo("\ntmpDir created at " + currDir + "/tmp")
                 click.echo("Dockerfile created at " + currDir + "\n")
 
-#def dockerfile_run():
-#    dockerBuild.build()
+            if run:
+                dockerBuild.build(containerBuild, containerRun)
+            else:
+                sys.exit()
 
 if __name__ == "__main__":
     dockerfile_create()
