@@ -42,9 +42,7 @@ test:
     - fre.frepp.status
     - fre.frepp.run
     - fre.frepp.validate
-    - fre.frecatalog
-    - fre.fremake
-#    - fre.frecmor
+    - fre.frecmor
   commands:
     - fre --help
     - fre pp --help
@@ -52,8 +50,6 @@ test:
     - fre pp status --help
     - fre pp run --help
     - fre pp validate --help
-    - fre catalog --help
-    - fre make --help
     - fre cmor --help
     - fre cmor run --help
 
