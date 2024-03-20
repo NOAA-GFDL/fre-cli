@@ -232,7 +232,7 @@ fre cmor subcommands to be processed
 @click.pass_context
 def run(context, indir, outdir, varlist, table_config, exp_config):
     """Rewrite climate model output"""
-    context.forward(frecmor.frecmor.run_subtool)
+    context.forward(frecmor.frecmor.runFunction)
 
 #############################################
 
