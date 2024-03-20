@@ -19,3 +19,8 @@ def cmor():
 @click.pass_context
 def runFunction(context, indir, outdir, varlist, table_config, exp_config):
     context.forward(run_subtool)
+
+#############################################=
+
+if __name__ == "__main__":
+    cmor()
