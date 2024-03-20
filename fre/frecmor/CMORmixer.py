@@ -387,3 +387,6 @@ def run_subtool(indir, outdir, varlist, table_config, exp_config):
             var2process(proj_tbl_vars, GFDL_var_lst, dir2cmor, var_i, time_arr, N, CMIP_input_json, CMOR_tbl_vars_file)
         else: 
             print("WARNING: Skipping requested variable as it is not found in CMOR variable group:", var_i)
+
+if __name__ == '__main__':
+    run_subtool()
