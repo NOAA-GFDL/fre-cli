@@ -54,12 +54,8 @@ def install(context, experiment, platform, target):
 #############################################
 
 @pp.command()
-@click.option("-y", 
-              type=str, 
-              help="YAML file to be used for parsing", 
-              required=True)
 @click.pass_context
-def configureYAML(context, y):
+def configureYAML(context,y,experiment,platform,target):
     """
     Takes a YAML file, parses it, and creates an output
     """
