@@ -83,10 +83,19 @@ def configureYAML(context, y):
               type=str, 
               help="Target name", 
               required=True)
+@click.option("-b", 
+              "--branch",
+              show_default=True,
+              default="main",
+              type=str,
+              help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
+                            "defaults to 'main'. Not intended for production use,"
+                            "but needed for branch testing."])
+                            )
 @click.pass_context
-def checkout(context, experiment, platform, target):
+def checkout(context, experiment, platform, target, branch='main'):
     """
-    Checkout the template file
+    Checkout the workflow template files from the repo
     """
     context.forward(checkoutTemplate)
 
