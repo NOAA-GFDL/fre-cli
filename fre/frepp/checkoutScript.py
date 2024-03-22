@@ -58,6 +58,17 @@ def checkoutTemplate(experiment, platform, target, branch='main'):
     clonecmd = f"git clone -b {branch} --single-branch --depth=1 --recursive https://gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git {name}"
     preexist_error = f"fatal: destination path '{name}' already exists and is not an empty directory."
     cloneproc = subprocess.run(clonecmd, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
+    if not cloneproc.returncode == 0:
+        if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
+            argstring = f" -e {experiment} -p {platform} -t {target}"
+            stop_report = "\n".join([f"Error in checkoutTemplate: the workflow definition specified by -e/-p/-t already exists at the location ~/cylc-src/{name}!",
+                                     "Please delete workflow dir and clone again."])
+            click.echo(stop_report)
+            return 1
+        else:
+            click.echo(clonecmd)
+            click.echo(cloneproc.stdout)
+        return 1
 
 #############################################
 
