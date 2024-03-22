@@ -30,9 +30,18 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
               type=str, 
               help="Target name", 
               required=True)
-def checkoutTemplate(experiment, platform, target):
+\@click.option("-b", 
+              "--branch",
+              show_default=True,
+              default="main",
+              type=str,
+              help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
+                            "defaults to 'main'. Not intended for production use,"
+                            "but needed for branch testing."])
+                            
+def checkoutTemplate(experiment, platform, target, branch='main'):
     """
-    Checkout the template file
+    Checkout the workflow template files from the repo
     """
     # Create the directory if it doesn't exist
     directory = os.path.expanduser("~/cylc-src")
@@ -44,10 +53,11 @@ def checkoutTemplate(experiment, platform, target):
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
 
-    # Clone the repository with depth=1
-    click.echo("cloning into directory " + directory + "/" + name)
-    clonecmd = f"git clone --depth=1 --recursive https://gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git {name}"
-    subprocess.run(clonecmd, shell=True, check=True)
+    # Clone the repository with depth=1; check for errors
+    click.echo("cloning experiment into directory " + directory + "/" + name)
+    clonecmd = f"git clone -b {branch} --single-branch --depth=1 --recursive https://gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git {name}"
+    preexist_error = f"fatal: destination path '{name}' already exists and is not an empty directory."
+    cloneproc = subprocess.run(clonecmd, shell=True, check=True, stdout=PIPE, stderr=STDOUT)
 
 #############################################
 
