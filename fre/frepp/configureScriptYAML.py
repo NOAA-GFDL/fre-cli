@@ -22,13 +22,12 @@ def validateYaml(file):
 
 ###################
 @click.command()
-@click.option("-y",
-              type=str,
-              help="YAML file to be used for parsing",
-              required=True)
 
-def yamlInfo(y):
-#file="pp.yaml"
+def yamlInfo(y,experiment,platform,target):
+  e = experiment
+  p = platform
+  t = target 
+
   with open(y,'r') as f:
     y=yaml.safe_load(f)
     yml = validateYaml(y)
@@ -87,6 +86,12 @@ def yamlInfo(y):
 
 ## Populate ROSE-SUITE-EXP config
     if key == "rose-suite":
+      if e and p and t:
+        with open(rs_path,'a') as f:
+          f.write(f'EXPERIMENT="{e}"\n\n')
+          f.write(f'PLATFORM="{p}"\n\n')
+          f.write(f'TARGET="{t}"\n\n')
+
       for suiteconfiginfo,dict in value.items():
         for configkey,configvalue in dict.items():
           if configvalue != None:

@@ -1,9 +1,9 @@
 ## User defined edits
+#User defined paths for where the rose-suite and rose-app configurations should be
 configuration_paths: 
-## DEBUG
-  rose-suite: "$PWD/rose-suite.conf"
-  rose-remap: "$PWD/remap-rose-app.conf"
-  rose-regrid: "$PWD/regrid-rose-app.conf"
+  rose-suite: "./rose-suite.conf"
+  rose-remap: "./remap-rose-app.conf"
+  rose-regrid: "./regrid-rose-app.conf"
 
 define1: &ANA_AMIP_LEN "10yr"
 define2: &PP_AMIP_CHUNK96 "1yr"
@@ -44,11 +44,6 @@ rose-suite:
     preanalysis_script: "$(includeDir)/refineDiag/refineDiag_data_stager_globalAve.csh"
     history_refined: "/archive/$USER/canopy/am5/c96L65_amip/history_refineDiag"
     analysis: #"/nbhome/$USER/canopy/analysis/am5_c96L65_amip"
-
-  metadata:
-    experiment: "am5_c96L65_amip"
-    platform: "gfdl.ncrc5-intel22-classic"
-    target: "prod-openmp"
 
 #regrid-xy and remap-pp-components information
 #regrid-remap-info:
@@ -146,6 +141,15 @@ components:
     timeSeries:
       - freq: "monthly"
         chunkLength: *PP_AMIP_CHUNK96
+  - type: "atmos_diurnal"
+    start: *ANA_AMIP_START
+    sources: "atmos_diurnal"
+    sourceGrid: "cubed-sphere"
+    xyInterp: *defaultxyInterp
+    interpMethod: conserve_order2
+    timeSeries:
+      - freq: "monthly"
+        chunklength: *PP_AMIP_CHUNK96
   - type: "atmos_scalar"
     start: *ANA_AMIP_START
     sources: "atmos_scalar"
