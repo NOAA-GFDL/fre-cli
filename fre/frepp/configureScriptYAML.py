@@ -52,8 +52,6 @@ def yamlInfo(yamlfile,experiment,platform,target):
       for configname,path in value.items():
         if configname == "rose-suite":
           rs_path = f"{path}rose-suite-{e}"
-          #dirname = os.path.dirname(rs_path)
-          #dirname = os.path.exists(rs_path)
         
           # Check if filepath exists
           if os.path.exists(rs_path):
@@ -99,7 +97,6 @@ def yamlInfo(yamlfile,experiment,platform,target):
         # Remap-pp-components rose-app.conf
         if configname == "rose-remap" and path != None: # AND VALUE NOT EMPTY:
           remap_roseapp = path
-          #dirname = os.path.exists(remap_roseapp)
           # Check if filepath exists
           if os.path.exists(remap_roseapp):
             print(f"Path: {remap_roseapp} exists")
@@ -113,7 +110,6 @@ def yamlInfo(yamlfile,experiment,platform,target):
         # Regrid-xy rose-app.conf 
         elif configname == "rose-regrid" and path != None: # AND VALUE NOT EMPTY:
           regrid_roseapp = path
-          #dirname = os.path.exists(regrid_roseapp)
           # Check if filepath exists
           if os.path.exists(regrid_roseapp):
             print(f"Path: {regrid_roseapp} exists")
