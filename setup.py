@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 setup(
     name='fre-cli',
@@ -6,7 +6,7 @@ setup(
     description='Command Line Interface for FRE commands',
     author='Bennett Chang',
     author_email='Bennett.Chang@noaa.gov',
-    packages=find_packages(),
+    packages=find_namespace_packages(),
     include_package_data=True,
     install_requires=[
         'click',
