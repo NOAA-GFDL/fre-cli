@@ -55,7 +55,7 @@ def install(context, experiment, platform, target):
 
 @pp.command()
 @click.pass_context
-def configureYAML(context,y,experiment,platform,target):
+def configureYAML(context,yamlfile,experiment,platform,target):
     """
     Takes a YAML file, parses it, and creates an output
     """

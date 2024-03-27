@@ -304,12 +304,13 @@ def install(context, experiment, platform, target):
                 type=str,
                 help="Target name",
                 required=True)
-@click.option("-y", 
+@click.option("-y",
+              "--yamlfile", 
               type=str, 
               help="YAML file to be used for parsing", 
               required=True)
 @click.pass_context
-def configure(context,y,experiment,platform,target):
+def configure(context,yamlfile,experiment,platform,target):
     """ - Execute fre pp configure """
     context.forward(frepp.frepp.configureYAML)
 
