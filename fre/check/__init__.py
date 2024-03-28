@@ -1,0 +1,1 @@
+from .frecheckexample import check_test_function

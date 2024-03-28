@@ -1,1 +1,0 @@
-# test file to see whether this subdirectory and commands within it can be called by fre.py
