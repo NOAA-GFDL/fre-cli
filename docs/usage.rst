@@ -49,14 +49,14 @@ A few subtools are currently in development:
 
 **fre pp**
 
-#. configure 
+1. configure 
 
 * Postprocessing yaml configuration
 * Minimal Syntax: *fre pp configure -y [user-edit yaml file]*
 * Module(s) needed: n/a
 * Example: *fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml*
 
-#. checkout
+2. checkout
 
 * Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository
 * Minimal Syntax: *fre pp checkout -e [experiment name] -p [platform name] -t [target name]*
@@ -66,8 +66,7 @@ A few subtools are currently in development:
 
 **fre catalog**
 
-#. buildCatalog
-
+1. buildCatalog1
 * Builds json and csv format catalogs from user input directory path
 * Minimal Syntax: *fre catalog buildCatalog -i [input path] -o [output path]*
 * Module(s) needed: n/a
@@ -98,32 +97,32 @@ Test as a normal user would use the CLI
 
 If there is *no* subdirectory created for the new tool you are trying to develop, there are a few steps to follow:
 
-#. Create a subdirectory for the tool group inside the /fre folder; i.e. /fre/fre(subTool)
+1. Create a subdirectory for the tool group inside the /fre folder; i.e. /fre/fre(subTool)
 
-#. Add an *__init__.py* inside of the new subdirectory
+2. Add an *__init__.py* inside of the new subdirectory
 * This will contain one line, *from fre.fre(subTool) import **
 * The purpose of this line is to allow the subTool module to include all the scripts and functions within it when invoked by fre
 
-#. Add a file named *fre(subTool).py*. This will serve as the main file to house all of the tool's related subcommands
+3. Add a file named *fre(subTool).py*. This will serve as the main file to house all of the tool's related subcommands
 
-#. Add a Click group named after the subTool within *fre(subTool).py*
+4. Add a Click group named after the subTool within *fre(subTool).py*
 * This group will contain all of the subcommands
 
-#. Create separate files to house the code for each different subcommand; do not code out the full implemetation of a function inside of a Click command within *fre(subTool).py*
+5. Create separate files to house the code for each different subcommand; do not code out the full implemetation of a function inside of a Click command within *fre(subTool).py*
 
-#. Be sure to import the contents of the needed subcommand scripts inside of fre(subTool).py
+6. Be sure to import the contents of the needed subcommand scripts inside of fre(subTool).py
 * i.e. from fre.fre(subTool).subCommandScript import *
 
-#. At this point, you can copy and paste the parts of your main Click subcommand from its script into *fre(subTool).py* when implementing the function reflective of the subcommand function
+7. At this point, you can copy and paste the parts of your main Click subcommand from its script into *fre(subTool).py* when implementing the function reflective of the subcommand function
 * Everything will remain the same; i.e. arguments, options, etc.
 * However, this new function within *fre(subTool).py* must a new line after the arguments, options, and other command components; *@click.pass_context*
 * Along with this, a new argument "context" must now be added to the parameters of the command (preferably at the beginning, but it won't break it if it's not)
 
-#. From here, all that needs to be added after defining the command with a name is *context.forward(mainFunctionOfSubcommand)*, and done!
+8. From here, all that needs to be added after defining the command with a name is *context.forward(mainFunctionOfSubcommand)*, and done!
 
-#. After this step, it is important to add *from fre.fre(subTool) import* to the *__init__.py* within the /fre folder
+9. After this step, it is important to add *from fre.fre(subTool) import* to the *__init__.py* within the /fre folder
 
-#. The last step is to replicate the subcommand in the same way as done in *fre(subTool).py* inside of *fre.py*, but make sure to add *from fre import fre(subTool)* and *from fre.fre(subTool).fre(subTool) import **
+10. The last step is to replicate the subcommand in the same way as done in *fre(subTool).py* inside of *fre.py*, but make sure to add *from fre import fre(subTool)* and *from fre.fre(subTool).fre(subTool) import **
 
 Please refer to this issue when encountering naming issues: `NOAA-GFDL#31 <https://github.com/NOAA-GFDL/fre-cli/issues/31>`_
 
