@@ -50,12 +50,14 @@ A few subtools are currently in development:
 **fre pp**
 
 #. configure 
+
 * Postprocessing yaml configuration
 * Minimal Syntax: *fre pp configure -y [user-edit yaml file]*
 * Module(s) needed: n/a
 * Example: *fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml*
 
 #.checkout
+
 * Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository
 * Minimal Syntax: *fre pp checkout -e [experiment name] -p [platform name] -t [target name]*
 * Module(s) needed: n/a
@@ -65,6 +67,7 @@ A few subtools are currently in development:
 **fre catalog**
 
 #. buildCatalog
+
 * Builds json and csv format catalogs from user input directory path
 * Minimal Syntax: *fre catalog buildCatalog -i [input path] -o [output path]*
 * Module(s) needed: n/a
