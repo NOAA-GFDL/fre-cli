@@ -51,19 +51,14 @@ def yamlInfo(yamlfile,experiment,platform,target):
     if key == "configuration_paths":
       for configname,path in value.items():
         if configname == "rose-suite":
-          rs_path = f"{path}rose-suite-{e}"
+          rs_path = f"{path}/rose-suite-{e}"
         
-          # Check if filepath exists
-          if os.path.exists(rs_path):
-            print(f"Path: {rs_path} exists")
-          else:
-            os.makedirs(rs_path)
-            print(f"Path: {rs_path} created")
-
           # Create rose-suite-exp config
           with open(rs_path,'w') as f:
             f.write('[template variables]\n')
             f.write('## Information for requested postprocessing, info to pass to refineDiag/preanalysis scripts, info for epmt, and info to pass to analysis scripts \n')
+
+          print(f"Path: {rs_path} created")
 
 ## Populate ROSE-SUITE-EXP config
     if key == "rose-suite":
