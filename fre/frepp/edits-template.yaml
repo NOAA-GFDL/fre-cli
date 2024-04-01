@@ -2,12 +2,12 @@
 
 # Paths
 configuration paths:
-  # Path to where user wants rose-suite experiment configuration
-  rose-suite:
-  # Path to remap-pp-components rose-app.conf
-  rose-remap:
-  # Path to regrid rose-app.conf
-  rose-regrid: 
+  # Path to where rose-suite experiment configuration should be in pp repo
+  rose-suite: "opt/"
+  # Path to remap-pp-components rose-app.conf in pp repo
+  rose-remap: "app/remap-pp-components/rose-app.conf"
+  # Path to regrid rose-app.conf in pp repo
+  rose-regrid: "app/regrid-xy/rose-app.conf"
 
 # Define widely used variables
 # Length of analysis of experiment, string in double quotes
@@ -80,14 +80,6 @@ rose-suite:
     history_dir_refined:
     # Directory to write analysis output
     analysis:
-
-  metadata:
-    # Label for the experiment
-    experiment:
-    # Label for the hardware and software environment
-    platform:
-    # Label for the FRE compilation target used in the simulation
-    target:
 
 # Information needed to populate the rose-apps for regrid-xy and remap-pp-components
 # These rose apps will be retired eventually 

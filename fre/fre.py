@@ -289,12 +289,28 @@ def install(context, experiment, platform, target):
     context.forward(frepp.frepp.install)
 
 @frePP.command()
-@click.option("-y", 
+@click.option("-e",
+              "--experiment",
+              type=str,
+              help="Experiment name",
+              required=True)
+@click.option("-p",
+              "--platform",
+              type=str,
+              help="Platform name",
+              required=True)
+@click.option("-t",
+                "--target",
+                type=str,
+                help="Target name",
+                required=True)
+@click.option("-y",
+              "--yamlfile", 
               type=str, 
               help="YAML file to be used for parsing", 
               required=True)
 @click.pass_context
-def configure(context, y):
+def configure(context,yamlfile,experiment,platform,target):
     """ - Execute fre pp configure """
     context.forward(frepp.frepp.configureYAML)
 
@@ -314,8 +330,17 @@ def configure(context, y):
                 type=str, 
                 help="Target name", 
                 required=True)
+@click.option("-b", 
+              "--branch",
+              show_default=True,
+              default="main",
+              type=str,
+              help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
+                            "defaults to 'main'. Not intended for production use,"
+                            "but needed for branch testing."])
+                            )
 @click.pass_context
-def checkout(context, experiment, platform, target):
+def checkout(context, experiment, platform, target, branch='main'):
     """ - Execute fre pp checkout """
     context.forward(frepp.frepp.checkout)
 
