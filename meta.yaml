@@ -5,8 +5,8 @@ package:
   version: {{ data.get('version') }}
 
 source:
-  # git_url: https://github.com/NOAA-GFDL/fre-cli
   path: .
+  git_url: https://github.com/NOAA-GFDL/fre-cli
 
 build:
   script: {{ PYTHON }} -m pip install . -vv
@@ -42,8 +42,7 @@ test:
     - fre.frepp.status
     - fre.frepp.run
     - fre.frepp.validate
-    # next import test should work but does not due to a mystery
-    #- fre.frecmor
+    - fre.frecmor
   commands:
     - fre --help
     - fre pp --help
