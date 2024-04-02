@@ -209,7 +209,6 @@ def fremakefunction(context, yamlfile, platform, target, force_checkout, force_c
               is_flag=True,
               help="Get verbose messages (repeat the option to increase verbosity level)")
 @click.pass_context
-
 def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     """ - Write the checkout script """
     context.forward(fremake.fremake.ccheckout)
@@ -246,7 +245,6 @@ def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,e
               is_flag=True,
               help="Get verbose messages (repeat the option to increase verbosity level)")
 @click.pass_context
-
 def run_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,verbose):
     """ - Run the checkout script """
     context.forward(fremake.fremake.rcheckout)
