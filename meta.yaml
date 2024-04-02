@@ -39,7 +39,7 @@ test:
     - fre.frepp.status
     - fre.frepp.run
     - fre.frepp.validate
-    - fre.freapp
+    - fre.app
   commands:
     - fre --help
     - fre pp --help
