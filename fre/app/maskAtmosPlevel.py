@@ -12,7 +12,6 @@ import xarray as xr
 import click
 
 @click.command()
-
 def maskAtmosPlevel_subtool(infile, outfile, psfile):
     # Error if outfile exists
     if os.path.exists(outfile):
