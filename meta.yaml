@@ -6,7 +6,7 @@ package:
 
 source:
   path: .
-  git_url: https://github.com/NOAA-GFDL/fre-cli
+  # git_url: https://github.com/NOAA-GFDL/fre-cli
 
 build:
   script: {{ PYTHON }} -m pip install . -vv
