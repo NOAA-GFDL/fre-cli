@@ -103,3 +103,6 @@ Please refer to this issue when encountering naming issues: https://github.com/N
 │   ├── __init__.py
 │   └── subCommandScript.py
 ```
+
+## **Additional Helpful Links**
+* [`setup.py` key words](https://setuptools.pypa.io/en/latest/references/keywords.html)
