@@ -28,7 +28,10 @@ requirements:
     - pyyaml
     - jsonschema
     - noaa-gfdl::intakebuilder
+    - conda-forge::cylc-flow
+    - conda-forge::cylc-rose
     - conda-forge::metomi-rose
+    - conda-forge::cmor
 
 test:
   imports:
@@ -40,6 +43,7 @@ test:
     - fre.frepp.run
     - fre.frepp.validate
     - fre.app
+    - fre.cmor
   commands:
     - fre --help
     - fre pp --help
@@ -49,6 +53,8 @@ test:
     - fre pp validate --help
     - fre app --help
     - fre app mask-atmos-plevel --help
+    - fre cmor --help
+    - fre cmor run --help
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli

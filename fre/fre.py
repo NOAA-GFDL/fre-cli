@@ -32,6 +32,7 @@ from fre import freyamltools
 from fre.freyamltools.freyamltools import *
 
 from .app import maskAtmosPlevel_subtool 
+from .cmor import run_subtool
 
 #############################################
 
@@ -85,6 +86,10 @@ def freCatalog():
 @fre.group('yamltools')
 def freYamltools():
     """ - access fre yamltools subcommands """
+    pass
+@fre.group('cmor')
+def frecmor():
+    """ - access fre cmor subcommands"""
     pass
 
 @fre.group('app')
@@ -226,6 +231,39 @@ def function(context, uppercase):
 #############################################
 
 """
+fre cmor subcommands to be processed
+"""
+
+# fre cmor run
+@frecmor.command()
+@click.option("-d", "--indir",
+              type=str,
+              help="Input directory",
+              required=True)
+@click.option("-l", "--varlist",
+              type=str,
+              help="Variable list",
+              required=True)
+@click.option("-r", "--table_config",
+              type=str,
+              help="Table configuration",
+              required=True)
+@click.option("-p", "--exp_config",
+              type=str,
+              help="Experiment configuration",
+              required=True)
+@click.option("-o", "--outdir",
+              type=str,
+              help="Output directory",
+              required=True)
+@click.pass_context
+def run(context, indir, outdir, varlist, table_config, exp_config):
+    """Rewrite climate model output"""
+    context.forward(run_subtool)
+
+#############################################
+
+"""
 fre pp subcommands to be processed
 """
 
@@ -318,12 +356,28 @@ def install(context, experiment, platform, target):
     context.forward(frepp.frepp.install)
 
 @frePP.command()
-@click.option("-y", 
+@click.option("-e",
+              "--experiment",
+              type=str,
+              help="Experiment name",
+              required=True)
+@click.option("-p",
+              "--platform",
+              type=str,
+              help="Platform name",
+              required=True)
+@click.option("-t",
+                "--target",
+                type=str,
+                help="Target name",
+                required=True)
+@click.option("-y",
+              "--yamlfile", 
               type=str, 
               help="YAML file to be used for parsing", 
               required=True)
 @click.pass_context
-def configure(context, y):
+def configure(context,yamlfile,experiment,platform,target):
     """ - Execute fre pp configure """
     context.forward(frepp.frepp.configureYAML)
 
@@ -343,8 +397,17 @@ def configure(context, y):
                 type=str, 
                 help="Target name", 
                 required=True)
+@click.option("-b", 
+              "--branch",
+              show_default=True,
+              default="main",
+              type=str,
+              help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
+                            "defaults to 'main'. Not intended for production use,"
+                            "but needed for branch testing."])
+                            )
 @click.pass_context
-def checkout(context, experiment, platform, target):
+def checkout(context, experiment, platform, target, branch='main'):
     """ - Execute fre pp checkout """
     context.forward(frepp.frepp.checkout)
 

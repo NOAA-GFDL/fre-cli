@@ -1,174 +1,187 @@
 #!/usr/bin/env python
 
-# Author: Dana Singh
-# Description: Script parses user-edit yaml, creates/implements the changes in rose-suite-exp.conf, rose-app.conf, bin/install-exp, and checks that filepaths exist
-
 import os
-from pathlib import Path
 import yaml
 import click
 from jsonschema import validate, ValidationError, SchemaError
 import json
+import shutil
 
-#############################################
-
+######VALIDATE#####
 package_dir = os.path.dirname(os.path.abspath(__file__))
 schema_path = os.path.join(package_dir, 'schema.json')
 
-# Function to parse and validate user defined edits.yaml 
-def parseyaml(file):
-    # Load yaml
-    with open(file,'r') as f:
-        y=yaml.safe_load(f)
+def validateYaml(file):
+  # Load the json schema: .load() (vs .loads()) reads and parses the json in one
+  with open(schema_path) as s:
+    schema = json.load(s)
 
-    ## TO-DO: validate user-yaml
-    # Load the json schema: .load() (vs .loads()) reads and parses the json in one
-    with open(schema_path) as s:
-        schema = json.load(s)
-    
-    # Validate yaml
-    # If the yaml is not valid, the schema validation will raise errors and exit
-    if validate(instance=y,schema=schema) == None:
-        print("YAML VALID\n")
- 
-    # Start parsing the yaml
-    d=[]
-    for k1 in y:
-        for k2 in y[k1]:
-            for dict in y[k1][k2]:
-                d.append(dict)
-    return d   #list,list of dictionaries
+  # Validate yaml
+  # If the yaml is not valid, the schema validation will raise errors and exit
+  if validate(instance=file,schema=schema) == None:
+    print("YAML VALID")
 
-#############################################
-
+###################
 @click.command()
-@click.option("-y", 
-              type=str, 
-              help="YAML file to be used for parsing", 
-              required=True)
-def yamlInfo(y):
-    yml = parseyaml(y)
-    # Parse information in dictionary 
-    for items in yml:
-        for key,value in items.items():
-            # Define paths in yaml
-            if key == 'path' and value != None:
-                p=Path(value)
 
-## ROSE-SUITE-EXP-CONFIG EDITS ##
-            # Create rose-suite-exp.conf and populate it with user-defined edits in edits.yaml
-            if key == "rose-suite-exp-configuration":
-                with open(p,'w') as f:
-                    f.write('[template variables]\n')
-                    f.write('## Information for requested postprocessing, info to pass to refineDiag/preanalysis scripts, info for epmt, and info to pass to analysis scripts \n')
-                print(f"{key} CREATED in {p}")
- 
-                for key,value in value.items():
-                    # If there is a defined value in the yaml, create and write to a rose-suite-EXP.conf
-                    if value != None:
-                        with open(p,'a') as f:
-                            # Add in comment for experiment specific information
-                            if key == "HISTORY_DIR":
-                                f.write("## Information about experiment\n")
+def yamlInfo(yamlfile,experiment,platform,target):
+  e = experiment
+  p = platform
+  t = target
+  yml = yamlfile
 
-                            # If value is of type boolean, do not add quotes in configuration. If the value is a string, write value in configuration with quotes.
-                            if value == True or value == False:
-                                f.write(f'{key}={value}\n\n')
-                            else:
-                                f.write(f'{key}="{value}"\n\n')
+  with open(yml,'r') as f:
+    y=yaml.safe_load(f)
+    valyml = validateYaml(y)
 
-                print(f"\t-Rose-suite-exp. configuration edits complete")
- 
-## ROSE-APP-CONFIG EDITS ##
-            # Open and write to rose-app.conf for regrid-xy and remap-pp-components 
-            # Populate configurations with info defined in edits.yaml; path should exist
-            if p.exists() == True and key == "rose-app-configuration":
-                ## Check if filepath exists
-                print(f"Path to {p} EXISTS")
+###################
+### Copy pp yaml into cylc-src directory, make rose-suite, then IF remap and regrid paths defined, write those in cylcsrc/app/...
 
-                #regrid-xy and remap-pp-components 
-                for v in value:
-                    for key,value in v.items():
-                         #write file and close; ensures file always starts with command and default fields
-                         with open(p,'w') as f:
-                             f.write("[command]\n")
-                             if "regrid-xy" in str(p):
-                                 f.write("default=regrid-xy\n")
-                             elif "remap-pp-components" in str(p):
-                                 f.write("default=remap-pp-components\n")
+  # Make sure cylc-src exists (it should if this is done after fre checkout) and cd into
+  directory = os.path.expanduser("~/cylc-src")
+  name = f"{e}__{p}__{t}"
+  # Copy pp yaml into ~/cylc-src/name
+  shutil.copyfile(yml,directory+"/"+name+"/pp.yaml")  
+  # Go into cylc-src directory
+  os.chdir(directory+"/"+name)
 
-                         for k in value:
-                             for key,value in k.items():
-                                 if value != None:
-                                     # Append defined regrid and remap information from yaml
-                                     with open(p,"a") as f:
-                                         # Component is written on own line with brackets, followed by information for that component
-                                         if key == "type":
-                                             f.write(f"\n[{value}]\n")
-                                         if key != "type":
-                                             f.write(f"{key}={value}\n")
-                         ## EDIT STATUS
-                         print(f"\t-Rose-app edits complete")
+### PARSE YAML
+## Write the rose-suite-exp configuration
+  for key,value in y.items():
+    if key == "configuration_paths":
+      for configname,path in value.items():
+        if configname == "rose-suite":
+          rs_path = f"{path}/rose-suite-{e}"
+        
+          # Create rose-suite-exp config
+          with open(rs_path,'w') as f:
+            f.write('[template variables]\n')
+            f.write('## Information for requested postprocessing, info to pass to refineDiag/preanalysis scripts, info for epmt, and info to pass to analysis scripts \n')
 
-            ## If path does not exist, output error message
-            elif p.exists() == False and key == "rose-app-configuration":
-                print(f"ERR: Path {p} DOES NOT EXIST")
-    
-## INSTALL-EXP SCRIPT EDIT ##
-            # If alternate path for cylc-run directory defined in edits.yaml, add symlink creation option onto cylc install command
-            # The file should exist, hence the file is read and lines are replaced with defined values in the yaml.
-            if p.exists() == True and key == "install-option": 
-                ## Check if filepath exists
-                print(f"Path to {p} EXISTS")
-  
-                #edit cylc install line to include symlink-dirs if value is defined
-                for key,value in value.items():
-                    with open(p,"r") as f:
-                        rf=f.readlines()
-                        if value != None:
-                            for line in rf:
-                                #for optional cylc install addition edit
-                                if "cylc install -O" in line:
-                                    line_num=rf.index(line)
-                                    rf[line_num]='cylc install -O $1 --workflow-name $1 '+value+'\n'
-                                    with open(p,'w') as f:
-                                        for line in rf:
-                                            f.write(line)
-                            ## EDIT STATUS
-                            print(f"\t-Install-exp edit complete")
-                        
-                        # ensure cylc install line is not edited
-                        else:
-                            value = ""
-                            for line in rf:
-                                #for optional cylc install addition edit
-                                if "cylc install -O" in line:
-                                    line_num=rf.index(line)
-                                    rf[line_num]='cylc install -O $1 --workflow-name $1 '+value+'\n'
-                                    with open(p,'w') as f:
-                                        for line in rf:
-                                            f.write(line)
-                            ## EDIT STATUS
-                            print("\t-No changes done to install script")
+          print(f"Path: {rs_path} created")
 
-            ## If path does not exist, output error message
-            elif key == "install-option" and p.exists() == False: 
-                print(f"ERR: Path {p} DOES NOT EXIST")
+## Populate ROSE-SUITE-EXP config
+    if key == "rose-suite":
+      if e and p and t:
+        with open(rs_path,'a') as f:
+          f.write(f'EXPERIMENT="{e}"\n\n')
+          f.write(f'PLATFORM="{p}"\n\n')
+          f.write(f'TARGET="{t}"\n\n')
 
-## TMPDIR PATH EDIT ##
-            if key == "tmpdirpath" and value != None:
-                tmppath = Path(value)
-
-                ## If path does exists, output edit status message; if path does not exist, create tmp directory and output edit status
-                if tmppath.exists():
-                    print(f"Path to TMPDIR: {value} EXISTS")
+      for suiteconfiginfo,dict in value.items():
+        for configkey,configvalue in dict.items():
+          if configvalue != None:
+            with open(rs_path,'a') as f:
+              k=configkey.upper()
+              if configvalue == True or configvalue == False:
+                f.write(f'{k}={configvalue}\n\n')
+              else:
+                if configkey == "refinediag_scripts":
+                  script=configvalue.split("/")[-1]
+                  f.write(f'{k}="\$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/{script}"\n\n')
+                elif configkey == "preanalysis_script":
+                  script=configvalue.split("/")[-1]
+                  f.write(f'{k}="\$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/{script}"\n\n')
                 else:
-                    os.mkdir(value)
-                    print(f"TMPDIR: {value} was CREATED")
-            
-            elif key == "tmpdirpath" and value == None:
-                print(f"ERRCHECK: TMPPATH DOES NOT EXIST")
+                  f.write(f'{k}="{configvalue}"\n\n')
 
+##################################################################################
+## Writes regrid-xy and Remap-pp-components rose-app.conf files
+    if key == "configuration_paths":
+      for configname,path in value.items():
+        # Remap-pp-components rose-app.conf
+        if configname == "rose-remap" and path != None: # AND VALUE NOT EMPTY:
+          remap_roseapp = path
+          # Check if filepath exists
+          if os.path.exists(remap_roseapp):
+            print(f"Path: {remap_roseapp} exists")
+          else:
+            os.makedirs(remap_roseapp)
+            print(f"Path: {remap_roseapp} created")
+          with open(remap_roseapp,'w') as f:
+            f.write("[command]\n")
+            f.write("default=remap-pp-components\n")     
+       
+        # Regrid-xy rose-app.conf 
+        elif configname == "rose-regrid" and path != None: # AND VALUE NOT EMPTY:
+          regrid_roseapp = path
+          # Check if filepath exists
+          if os.path.exists(regrid_roseapp):
+            print(f"Path: {regrid_roseapp} exists")
+          else:
+            os.makedirs(regrid_roseapp)
+            print(f"Path: {regrid_roseapp} created")
+          with open(regrid_roseapp,'w') as f:
+            f.write("[command]\n")
+            f.write("default=regrid-xy\n")
+
+## If the rose-remap and rose-regrid paths are defined, populate the associated rose-app.confs
+    if key == "components":
+      if y.get("configuration_paths")["rose-remap"] != None and y.get("configuration_paths")["rose-regrid"] != None:
+        for i in value:
+          for compkey,compvalue in i.items():
+            # Create/write remap rose app
+            with open(remap_roseapp,'a') as f:
+              if compkey == "type": 
+                f.write(f"\n\n[{compvalue}]\n")
+                #if xyInterp doesnt exist, grid is native
+                if i.get("xyInterp") == None:
+                  f.write(f"grid=native\n")
+                #in xyInterp exists, component can be regridded
+                elif i.get("xyInterp") != None:
+                  f.write("grid=regrid-xy\n") 
+                if "static" in compvalue:
+                  f.write("freq=P0Y\n")                       
+              elif compkey == "sources":
+                f.write(f"{compkey}={compvalue} ")
+              elif compkey == "timeSeries":
+                for i in compvalue:
+                  for key,value in i.items():
+                    if key == "source":
+                      f.write(f"{value} ")
+
+            # Create/write regrid rose app
+            with open(regrid_roseapp,'a') as f:
+              if i.get("xyInterp") != None: 
+                if compkey == "type":
+                  f.write(f"\n[{compvalue}]\n")
+                  if "atmos" in compvalue:
+                    f.write("inputRealm=atmos\n")
+                  elif "land" in compvalue:
+                    f.write("inputRealm=land\n")
+                  elif "river" in compvalue:
+                    f.write("inputRealm=land\n")
+                  elif "ocean" in compvalue:
+                    f.write("inputRealm=ocean\n")
+                  elif "aerosol" or "tracer" in compvalue:
+                    f.write("inputRealm=atmos\n")
+                elif compkey == "sourceGrid": 
+                  f.write(f"inputGrid={compvalue}\n")
+                elif compkey == "interpMethod":
+                  f.write(f"{compkey}={compvalue}\n")
+                elif compkey == "sources":
+                  f.write(f"{compkey}={compvalue} ")
+                  try: 
+                    i["timeSeries"]
+                    for elem in i['timeSeries']:
+                      for key,value in elem.items():
+                        if key == "source":
+                          f.write(f"{value} ")
+                  except:
+                    print("No timeseries information")
+
+                  f.write("\n")
+
+                if compkey == "xyInterp" and compvalue == y["define5"]:
+                  f.write(f"outputGridType=default\n")
+                elif compkey == "xyInterp": 
+                  gridLat=compvalue.split(",")[0]
+                  gridLon=compvalue.split(",")[1]
+
+                  f.write(f"outputGridLat={gridLat}\n")
+                  f.write(f"outputGridLon={gridLon}\n")
+                  f.write(f"outputGridType={gridLat}_{gridLon}\n") 
+                  
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
-    yamlInfo() 
+    yamlInfo()
