@@ -42,6 +42,7 @@ test:
     - fre.frepp.status
     - fre.frepp.run
     - fre.frepp.validate
+    - fre.app
     - fre.cmor
   commands:
     - fre --help
@@ -50,6 +51,8 @@ test:
     - fre pp status --help
     - fre pp run --help
     - fre pp validate --help
+    - fre app --help
+    - fre app mask-atmos-plevel --help
     - fre cmor --help
     - fre cmor run --help
 

@@ -31,6 +31,7 @@ from fre.frecatalog.frecatalog import *
 from fre import freyamltools
 from fre.freyamltools.freyamltools import *
 
+from .app import maskAtmosPlevel_subtool 
 from .cmor import run_subtool
 
 #############################################
@@ -90,6 +91,33 @@ def freYamltools():
 def frecmor():
     """ - access fre cmor subcommands"""
     pass
+
+@fre.group('app')
+def freapp():
+    """access fre app subcommands"""
+    pass
+
+#############################################
+
+"""
+fre app subcommands to be processed
+"""
+@freapp.command()
+@click.option("-i", "--infile",
+              type=str,
+              help="Input NetCDF file containing pressure-level output to be masked",
+              required=True)
+@click.option("-o", "--outfile",
+              type=str,
+              help="Output file",
+              required=True)
+@click.option("-p", "--psfile",
+              help="Input NetCDF file containing surface pressure (ps)",
+              required=True)
+@click.pass_context
+def mask_atmos_plevel(context, infile, outfile, psfile):
+    """Mask out pressure level diagnostic output below land surface"""
+    context.forward(maskAtmosPlevel_subtool)
 
 #############################################
 

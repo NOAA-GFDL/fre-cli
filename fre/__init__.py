@@ -6,4 +6,5 @@ from fre.frepp import *
 from fre.frerun import *
 from fre.frecatalog import *
 from fre.freyamltools import *
+from .app import *
 from .cmor import *
