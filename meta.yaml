@@ -10,7 +10,7 @@ source:
 
 build:
   script: {{ PYTHON }} -m pip install . -vv
-  number: 0
+  number: 1
   noarch: python
 
 channels:
@@ -28,9 +28,10 @@ requirements:
     - pyyaml
     - jsonschema
     - noaa-gfdl::intakebuilder
-    - cylc-flow
-    - cylc-rose
-    - metomi-rose
+    - conda-forge::cylc-flow
+    - conda-forge::cylc-rose
+    - conda-forge::metomi-rose
+    - conda-forge::cmor
 
 test:
   imports:
@@ -41,6 +42,7 @@ test:
     - fre.frepp.status
     - fre.frepp.run
     - fre.frepp.validate
+    - fre.cmor
   commands:
     - fre --help
     - fre pp --help
@@ -48,6 +50,8 @@ test:
     - fre pp status --help
     - fre pp run --help
     - fre pp validate --help
+    - fre cmor --help
+    - fre cmor run --help
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
