@@ -37,11 +37,11 @@ test:
   imports:
     - click
     - fre
-    - fre.frepp
-    - fre.frepp.install
-    - fre.frepp.status
-    - fre.frepp.run
-    - fre.frepp.validate
+    - fre.pp
+    - fre.pp.install
+    - fre.pp.status
+    - fre.pp.run
+    - fre.pp.validate
     - fre.app
     - fre.cmor
   commands:
