@@ -14,6 +14,8 @@ from .run import run_test_function
 from .test import test_test_function
 from .make import fre_make_function
 from .yamltools import yamltools_test_function
+from .app import maskAtmosPlevel_subtool 
+from .cmor import run_subtool
 
 #############################################
 
@@ -68,6 +70,37 @@ def frecatalog():
 def freyamltools():
     """ - access fre yamltools subcommands """
     pass
+@fre.group('cmor')
+def frecmor():
+    """ - access fre cmor subcommands"""
+    pass
+
+@fre.group('app')
+def freapp():
+    """access fre app subcommands"""
+    pass
+
+#############################################
+
+"""
+fre app subcommands to be processed
+"""
+@freapp.command()
+@click.option("-i", "--infile",
+              type=str,
+              help="Input NetCDF file containing pressure-level output to be masked",
+              required=True)
+@click.option("-o", "--outfile",
+              type=str,
+              help="Output file",
+              required=True)
+@click.option("-p", "--psfile",
+              help="Input NetCDF file containing surface pressure (ps)",
+              required=True)
+@click.pass_context
+def mask_atmos_plevel(context, infile, outfile, psfile):
+    """Mask out pressure level diagnostic output below land surface"""
+    context.forward(maskAtmosPlevel_subtool)
 
 #############################################
 
@@ -197,6 +230,39 @@ def function(context, uppercase):
 #############################################
 
 """
+fre cmor subcommands to be processed
+"""
+
+# fre cmor run
+@frecmor.command()
+@click.option("-d", "--indir",
+              type=str,
+              help="Input directory",
+              required=True)
+@click.option("-l", "--varlist",
+              type=str,
+              help="Variable list",
+              required=True)
+@click.option("-r", "--table_config",
+              type=str,
+              help="Table configuration",
+              required=True)
+@click.option("-p", "--exp_config",
+              type=str,
+              help="Experiment configuration",
+              required=True)
+@click.option("-o", "--outdir",
+              type=str,
+              help="Output directory",
+              required=True)
+@click.pass_context
+def run(context, indir, outdir, varlist, table_config, exp_config):
+    """Rewrite climate model output"""
+    context.forward(run_subtool)
+
+#############################################
+
+"""
 fre pp subcommands to be processed
 """
 
@@ -289,6 +355,11 @@ def install(context, experiment, platform, target):
     context.forward(install_subtool)
 
 @frepp.command()
+@click.option("-y",
+              "--yamlfile",
+              type=str,
+              help="YAML file to be used for parsing",
+              required=True)
 @click.option("-e",
               "--experiment",
               type=str,
@@ -304,12 +375,8 @@ def install(context, experiment, platform, target):
                 type=str,
                 help="Target name",
                 required=True)
-@click.option("-y", 
-              type=str, 
-              help="YAML file to be used for parsing", 
-              required=True)
 @click.pass_context
-def configure_yaml(context,y,experiment,platform,target):
+def configure_yaml(context,yamlfile,experiment,platform,target):
     """ - Execute fre pp configure """
     context.forward(yamlInfo)
 
@@ -337,7 +404,7 @@ def configure_yaml(context,y,experiment,platform,target):
               help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
                             "defaults to 'main'. Not intended for production use,"
                             "but needed for branch testing."])
-                            )
+             )
 @click.pass_context
 def checkout(context, experiment, platform, target, branch='main'):
     """ - Execute fre pp checkout """

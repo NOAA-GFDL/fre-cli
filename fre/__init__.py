@@ -5,3 +5,5 @@ from .pp import *
 from .run import *
 from .catalog import *
 from .yamltools import *
+from .app import *
+from .cmor import *

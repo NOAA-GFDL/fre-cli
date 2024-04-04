@@ -7,8 +7,8 @@
       "type": "object",
       "properties": {
         "rose-suite": {"type": "string"},
-        "rose-remap": {"type": "string"},
-        "rose-regrid": {"type": "string"}
+        "rose-remap": {"type": ["string","null"]},
+        "rose-regrid": {"type": ["string","null"]}
       }
     },
     "define1": {"type": "string"},
@@ -56,7 +56,7 @@
             "ptmp_dir": {"type":"string"},
             "refinediag_scripts":{"type":["string","null"]},
             "preanalysis_script":{"type":["string","null"]},
-            "history_refined":{"type":"string"},
+            "history_refined":{"type":["string","null"]},
             "analysis":{"type":["string","null"]}
           }
         },

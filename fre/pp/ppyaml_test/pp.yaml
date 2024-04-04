@@ -1,9 +1,9 @@
 ## User defined edits
-#User defined paths for where the rose-suite and rose-app configurations should be
+# Paths for where the rose-suite and rose-app configurations are in checked out pp repo
 configuration_paths: 
-  rose-suite: "./rose-suite.conf"
-  rose-remap: "./remap-rose-app.conf"
-  rose-regrid: "./regrid-rose-app.conf"
+  rose-suite: "opt"  
+  rose-remap: "app/remap-pp-components/rose-app.conf" 
+  rose-regrid: "app/regrid-xy/rose-app.conf" 
 
 define1: &ANA_AMIP_LEN "10yr"
 define2: &PP_AMIP_CHUNK96 "1yr"
