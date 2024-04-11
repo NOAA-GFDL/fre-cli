@@ -1,4 +1,3 @@
-from fre.fre import *
 from fre.frecheck import *
 from fre.frelist import *
 from .make import *
