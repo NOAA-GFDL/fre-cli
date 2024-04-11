@@ -378,11 +378,27 @@ def install(context, experiment, platform, target):
     context.forward(frepp.frepp.install)
 
 @frePP.command()
+@click.option("-e",
+              "--experiment",
+              type=str,
+              help="Experiment name",
+              required=True)
+@click.option("-p",
+              "--platform",
+              type=str,
+              help="Platform name",
+              required=True)
+@click.option("-t",
+                "--target",
+                type=str,
+                help="Target name",
+                required=True)
 @click.option("-y",
               "--yamlfile",
               type=str, 
               help="YAML file to be used for parsing", 
               required=True)
+
 @click.pass_context
 def configure(context, y):
     """ - Execute fre pp configure """
