@@ -77,7 +77,7 @@ def frecmor():
 
 @fre.group('app')
 def freapp():
-    """access fre app subcommands"""
+    """ - access fre app subcommands"""
     pass
 
 #############################################
