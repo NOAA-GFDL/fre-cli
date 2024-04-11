@@ -92,28 +92,32 @@ def yamlInfo(yamlfile,experiment,platform,target):
         # Remap-pp-components rose-app.conf
         if configname == "rose-remap" and path != None: # AND VALUE NOT EMPTY:
           remap_roseapp = path
-          # Check if filepath exists
-          if os.path.exists(remap_roseapp):
-            print(f"Path: {remap_roseapp} exists")
-          else:
-            os.makedirs(remap_roseapp)
-            print(f"Path: {remap_roseapp} created")
+
           with open(remap_roseapp,'w') as f:
-            f.write("[command]\n")
-            f.write("default=remap-pp-components\n")     
+            # Check if filepath exists
+            if os.path.exists(remap_roseapp):
+              print(f"Path: {remap_roseapp} exists")
+              f.write("[command]\n")
+              f.write("default=remap-pp-components\n")
+            else:
+              f.write("[command]\n")
+              f.write("default=remap-pp-components\n")
+              print(f"Path: {remap_roseapp} created")
        
         # Regrid-xy rose-app.conf 
         elif configname == "rose-regrid" and path != None: # AND VALUE NOT EMPTY:
           regrid_roseapp = path
-          # Check if filepath exists
-          if os.path.exists(regrid_roseapp):
-            print(f"Path: {regrid_roseapp} exists")
-          else:
-            os.makedirs(regrid_roseapp)
-            print(f"Path: {regrid_roseapp} created")
+
           with open(regrid_roseapp,'w') as f:
-            f.write("[command]\n")
-            f.write("default=regrid-xy\n")
+            # Check if filepath exists
+            if os.path.exists(regrid_roseapp):
+              print(f"Path: {regrid_roseapp} exists")
+              f.write("[command]\n")
+              f.write("default=regrid-xy\n")
+            else:
+              f.write("[command]\n")
+              f.write("default=regrid-xy\n")
+              print(f"Path: {regrid_roseapp} created")
 
 ## If the rose-remap and rose-regrid paths are defined, populate the associated rose-app.confs
     if key == "components":
