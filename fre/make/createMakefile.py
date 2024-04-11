@@ -8,7 +8,6 @@ import os
 import logging
 
 @click.command()
-
 def makefile_create(yamlfile,platform,target):
     srcDir="src"
     checkoutScriptName = "checkout.sh"

@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-#import fremake
 import gfdl_fremake.varsfre
 import gfdl_fremake.platformfre
 import gfdl_fremake.yamlfre
@@ -13,7 +12,6 @@ import click
 import sys
 
 @click.command()
-
 def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
     # Define variables
     yml = yamlfile

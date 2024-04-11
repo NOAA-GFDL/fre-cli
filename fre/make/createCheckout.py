@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-#import fremake
 import gfdl_fremake.varsfre
 import gfdl_fremake.platformfre
 import gfdl_fremake.yamlfre
@@ -12,7 +11,6 @@ import logging
 import sys 
 
 @click.command()
-
 def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     # Define variables  
     yml = yamlfile
@@ -84,7 +82,6 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
               freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
               freCheckout.finish(pc)
 
-    return checkout_create()
 
 if __name__ == "__main__":
     checkout_create() 
