@@ -14,7 +14,6 @@ from .run import run_test_function
 from .test import test_test_function
 from .make import fre_make_function
 from .yamltools import yamltools_test_function
-
 from .app import maskAtmosPlevel_subtool 
 from .cmor import run_subtool
 
@@ -356,6 +355,11 @@ def install(context, experiment, platform, target):
     context.forward(install_subtool)
 
 @frepp.command()
+@click.option("-y",
+              "--yamlfile",
+              type=str,
+              help="YAML file to be used for parsing",
+              required=True)
 @click.option("-e",
               "--experiment",
               type=str,
@@ -371,11 +375,6 @@ def install(context, experiment, platform, target):
                 type=str,
                 help="Target name",
                 required=True)
-@click.option("-y",
-              "--yamlfile", 
-              type=str, 
-              help="YAML file to be used for parsing", 
-              required=True)
 @click.pass_context
 def configure_yaml(context,yamlfile,experiment,platform,target):
     """ - Execute fre pp configure """
@@ -405,7 +404,7 @@ def configure_yaml(context,yamlfile,experiment,platform,target):
               help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
                             "defaults to 'main'. Not intended for production use,"
                             "but needed for branch testing."])
-                            )
+             )
 @click.pass_context
 def checkout(context, experiment, platform, target, branch='main'):
     """ - Execute fre pp checkout """
