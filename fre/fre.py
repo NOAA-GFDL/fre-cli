@@ -394,7 +394,7 @@ def install(context, experiment, platform, target):
                 help="Target name",
                 required=True)
 @click.option("-y",
-              "--yamlfile",
+              "--yamlfile", 
               type=str, 
               help="YAML file to be used for parsing", 
               required=True)
