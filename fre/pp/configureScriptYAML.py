@@ -5,6 +5,7 @@ import yaml
 import click
 from jsonschema import validate, ValidationError, SchemaError
 import json
+import shutil
 
 ######VALIDATE#####
 package_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,66 +24,41 @@ def validateYaml(file):
 ###################
 @click.command()
 
-def yamlInfo(y,experiment,platform,target):
+def yamlInfo(yamlfile,experiment,platform,target):
   e = experiment
   p = platform
-  t = target 
+  t = target
+  yml = yamlfile
 
-  with open(y,'r') as f:
+  with open(yml,'r') as f:
     y=yaml.safe_load(f)
-    yml = validateYaml(y)
+    valyml = validateYaml(y)
 
-#PARSE YAML
+###################
+### Copy pp yaml into cylc-src directory, make rose-suite, then IF remap and regrid paths defined, write those in cylcsrc/app/...
+
+  # Make sure cylc-src exists (it should if this is done after fre checkout) and cd into
+  directory = os.path.expanduser("~/cylc-src")
+  name = f"{e}__{p}__{t}"
+  # Copy pp yaml into ~/cylc-src/name
+  shutil.copyfile(yml,directory+"/"+name+"/pp.yaml")  
+  # Go into cylc-src directory
+  os.chdir(directory+"/"+name)
+
+### PARSE YAML
 ## Write the rose-suite-exp configuration
   for key,value in y.items():
     if key == "configuration_paths":
-      #print(value)
       for configname,path in value.items():
         if configname == "rose-suite":
-          rs_path = path
-          dirname = os.path.dirname(rs_path)
-
-          # Check if filepath exists
-          if os.path.exists(dirname):
-            print(f"Path: {dirname} exists")
-          else:
-            os.makedirs(dirname)
-            print(f"Path: {dirname} created")
-
+          rs_path = f"{path}/rose-suite-{e}"
+        
           # Create rose-suite-exp config
           with open(rs_path,'w') as f:
             f.write('[template variables]\n')
             f.write('## Information for requested postprocessing, info to pass to refineDiag/preanalysis scripts, info for epmt, and info to pass to analysis scripts \n')
-    
-        ## STILL CREATE ROSE APPS FOR NOW (regrid and remap)
-        elif configname == "rose-remap":
-          remap_roseapp = path
-          dirname = os.path.dirname(remap_roseapp)
 
-          # Check if filepath exists
-          if os.path.exists(dirname):
-            print(f"Path: {dirname} exists")
-          else:
-            os.makedirs(dirname)
-            print(f"Path: {dirname} created")
-
-          with open(remap_roseapp,'w') as f:
-            f.write("[command]\n")
-            f.write("default=remap-pp-components\n")            
-        elif configname == "rose-regrid":
-          regrid_roseapp = path
-          dirname = os.path.dirname(regrid_roseapp)
-
-          # Check if filepath exists
-          if os.path.exists(dirname):
-            print(f"Path: {dirname} exists")
-          else:
-            os.makedirs(dirname)
-            print(f"Path: {dirname} created")
-
-          with open(regrid_roseapp,'w') as f:
-            f.write("[command]\n")
-            f.write("default=regrid-xy\n")
+          print(f"Path: {rs_path} created")
 
 ## Populate ROSE-SUITE-EXP config
     if key == "rose-suite":
@@ -109,11 +85,41 @@ def yamlInfo(y,experiment,platform,target):
                 else:
                   f.write(f'{k}="{configvalue}"\n\n')
 
-## If value of type is in remap AND regrid grid value in remap rose app=regrid-xy
-    if key == "components":
-      for i in value:
-          for compkey,compvalue in i.items():
+##################################################################################
+## Writes regrid-xy and Remap-pp-components rose-app.conf files
+    if key == "configuration_paths":
+      for configname,path in value.items():
+        # Remap-pp-components rose-app.conf
+        if configname == "rose-remap" and path != None: # AND VALUE NOT EMPTY:
+          remap_roseapp = path
+          # Check if filepath exists
+          if os.path.exists(remap_roseapp):
+            print(f"Path: {remap_roseapp} exists")
+          else:
+            os.makedirs(remap_roseapp)
+            print(f"Path: {remap_roseapp} created")
+          with open(remap_roseapp,'w') as f:
+            f.write("[command]\n")
+            f.write("default=remap-pp-components\n")     
+       
+        # Regrid-xy rose-app.conf 
+        elif configname == "rose-regrid" and path != None: # AND VALUE NOT EMPTY:
+          regrid_roseapp = path
+          # Check if filepath exists
+          if os.path.exists(regrid_roseapp):
+            print(f"Path: {regrid_roseapp} exists")
+          else:
+            os.makedirs(regrid_roseapp)
+            print(f"Path: {regrid_roseapp} created")
+          with open(regrid_roseapp,'w') as f:
+            f.write("[command]\n")
+            f.write("default=regrid-xy\n")
 
+## If the rose-remap and rose-regrid paths are defined, populate the associated rose-app.confs
+    if key == "components":
+      if y.get("configuration_paths")["rose-remap"] != None and y.get("configuration_paths")["rose-regrid"] != None:
+        for i in value:
+          for compkey,compvalue in i.items():
             # Create/write remap rose app
             with open(remap_roseapp,'a') as f:
               if compkey == "type": 
