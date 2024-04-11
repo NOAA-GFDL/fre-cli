@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-import make.makefilefre
-import make.varsfre
-import make.targetfre
+import gfdl_fremake.makefilefre
+import gfdl_fremake.varsfre
+import gfdl_fremake.targetfre
 import click
 import os
 import logging
@@ -20,16 +20,16 @@ def makefile_create(yamlfile,platform,target):
 
     
     ## Get the variables in the model yaml
-    freVars = make.varsfre.frevars(yml)
+    freVars = gfdl_fremake.varsfre.frevars(yml)
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = make.yamlfre.freyaml(yml,freVars)
+    modelYaml = gfdl_fremake.yamlfre.freyaml(yml,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
     ## Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
-            targetObject = make.targetfre.fretarget(targetName)
+            targetObject = gfdl_fremake.targetfre.fretarget(targetName)
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
@@ -43,7 +43,7 @@ def makefile_create(yamlfile,platform,target):
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + targetObject.gettargetName() + "/exec"
                 os.system("mkdir -p " + bldDir)
                 ## Create the Makefile
-                freMakefile = make.makefilefre.makefile(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate)
+                freMakefile = gfdl_fremake.makefilefre.makefile(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate)
                 # Loop through components and send the component name, requires, and overrides for the Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
@@ -53,7 +53,7 @@ def makefile_create(yamlfile,platform,target):
                 image="ecpe4s/noaa-intel-prototype:2023.09.25"
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
-                freMakefile = make.makefilefre.makefileContainer(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate,tmpDir)
+                freMakefile = gfdl_fremake.makefilefre.makefileContainer(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate,tmpDir)
 
                 # Loop through compenents and send the component name and requires for the Makefile
                 for c in fremakeYaml['src']:

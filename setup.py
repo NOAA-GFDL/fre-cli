@@ -13,7 +13,7 @@ setup(
         'pyyaml',
         'jsonschema',
         'metomi-rose',
-        'gfdlfremake'
+        'fremake-canopy'
     ],
     entry_points={
         'console_scripts': [

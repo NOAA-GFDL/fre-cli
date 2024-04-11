@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
 #import fremake
-import make.varsfre
-import make.platformfre
-import make.yamlfre
-import make.targetfre
-import make.buildBaremetal
+import gfdl_fremake.varsfre
+import gfdl_fremake.platformfre
+import gfdl_fremake.yamlfre
+import gfdl_fremake.targetfre
+import gfdl_fremake.buildBaremetal
 from multiprocessing.dummy import Pool
 import logging
 import os
@@ -37,21 +37,21 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
     tlist = target
 
     ## Get the variables in the model yaml
-    freVars = make.varsfre.frevars(yml)
+    freVars = gfdl_fremake.varsfre.frevars(yml)
 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = make.yamlfre.freyaml(yml,freVars)
+    modelYaml = gfdl_fremake.yamlfre.freyaml(yml,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
     for targetName in tlist:
-         target = make.targetfre.fretarget(targetName)
+         target = gfdl_fremake.targetfre.fretarget(targetName)
 
     fremakeBuildList = []
     ## Loop through platforms and targets
     for platformName in plist:
       for targetName in tlist:
-         target = make.targetfre.fretarget(targetName)
+         target = gfdl_fremake.targetfre.fretarget(targetName)
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
@@ -65,7 +65,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
               bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
               os.system("mkdir -p " + bldDir)
               ## Create a list of compile scripts to run in parallel
-              fremakeBuild = make.buildBaremetal.buildBaremetal(fremakeYaml["experiment"],mkTemplate,srcDir,bldDir,target,modules,modulesInit,jobs)
+              fremakeBuild = gfdl_fremake.buildBaremetal.buildBaremetal(fremakeYaml["experiment"],mkTemplate,srcDir,bldDir,target,modules,modulesInit,jobs)
               for c in fremakeYaml['src']:
                    fremakeBuild.writeBuildComponents(c) 
               fremakeBuild.writeScript()
@@ -75,7 +75,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
         #print("ITS GONNA RUN")
         if baremetalRun:
             pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
-            pool.map(make.buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
+            pool.map(gfdl_fremake.buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
 #        else:
 #            fremakeBuild.run()
     else:
