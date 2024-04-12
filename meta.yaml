@@ -27,7 +27,6 @@ requirements:
     - click
     - pyyaml
     - jsonschema
-    - fremake-canopy
     - noaa-gfdl::intakebuilder
     - conda-forge::metomi-rose
 
