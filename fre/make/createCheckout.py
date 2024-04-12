@@ -1,10 +1,6 @@
 #!/usr/bin/python3
 
-import gfdl_fremake.varsfre
-import gfdl_fremake.platformfre
-import gfdl_fremake.yamlfre
-import gfdl_fremake.checkout
-import gfdl_fremake.targetfre
+from gfdl_fremake import varsfre, platformfre, yamlfre, checkout, targetfre
 import click
 import os
 import logging 
@@ -39,15 +35,15 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
     tlist = target
 
     ## Get the variables in the model yaml
-    freVars = gfdl_fremake.varsfre.frevars(yml)
+    freVars = varsfre.frevars(yml)
 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = gfdl_fremake.yamlfre.freyaml(yml,freVars)
+    modelYaml = yamlfre.freyaml(yml,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
     for targetName in tlist:
-         target = gfdl_fremake.targetfre.fretarget(targetName)
+         target = targetfre.fretarget(targetName)
 
     ## Loop through the platforms specified on the command line
     ## If the platform is a baremetal platform, write the checkout script and run it once
@@ -66,7 +62,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
               if not os.path.exists(srcDir):
                    os.system("mkdir -p " + srcDir)
               if not os.path.exists(srcDir+"/checkout.sh"):
-                   freCheckout = gfdl_fremake.checkout.checkout("checkout.sh",srcDir)
+                   freCheckout = checkout.checkout("checkout.sh",srcDir)
                    freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                    freCheckout.finish(pc)
                    if run:
@@ -78,7 +74,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
               image="ecpe4s/noaa-intel-prototype:2023.09.25"
               bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
               tmpDir = "tmp/"+platformName
-              freCheckout = gfdl_fremake.checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
+              freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
               freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
               freCheckout.finish(pc)
 

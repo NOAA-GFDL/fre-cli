@@ -1,10 +1,6 @@
 #!/usr/bin/python3
 
-import gfdl_fremake.varsfre
-import gfdl_fremake.makefilefre
-import gfdl_fremake.platformfre
-import gfdl_fremake.yamlfre
-import gfdl_fremake.buildDocker
+from gfdl_fremake import varsfre, makefilefre, platformfre, yamlfre, buildDocker
 import click
 import os
 import sys
@@ -21,16 +17,16 @@ def dockerfile_create(yamlfile, platform, target, execute):
     run = execute
 
     ## Get the variables in the model yaml
-    freVars = gfdl_fremake.varsfre.frevars(yml)
+    freVars = varsfre.frevars(yml)
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = gfdl_fremake.yamlfre.freyaml(yml,freVars)
+    modelYaml = yamlfre.freyaml(yml,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
     ## Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
-            targetObject = gfdl_fremake.targetfre.fretarget(targetName)
+            targetObject = targetfre.fretarget(targetName)
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
@@ -46,13 +42,13 @@ def dockerfile_create(yamlfile, platform, target, execute):
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
 
-                freMakefile = gfdl_fremake.makefilefre.makefileContainer(fremakeYaml["experiment"],fremakeYaml["addlibs"],srcDir,bldDir,mkTemplate,tmpDir)
+                freMakefile = makefilefre.makefileContainer(fremakeYaml["experiment"],fremakeYaml["addlibs"],srcDir,bldDir,mkTemplate,tmpDir)
                 # Loop through compenents and send the component name and requires for the Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
                 freMakefile.writeMakefile()
 
-                dockerBuild = gfdl_fremake.buildDocker.container(image,fremakeYaml["experiment"],fremakeYaml["addlibs"],RUNenv,targetObject)
+                dockerBuild = buildDocker.container(image,fremakeYaml["experiment"],fremakeYaml["addlibs"],RUNenv,targetObject)
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
                 dockerBuild.writeDockerfileMakefile(freMakefile.getTmpDir() + "/Makefile", freMakefile.getTmpDir()+"/linkline.sh")
                 for c in fremakeYaml['src']:

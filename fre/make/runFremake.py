@@ -10,13 +10,7 @@ import subprocess
 import os
 import yaml
 import logging
-import gfdl_fremake.targetfre
-import gfdl_fremake.varsfre
-import gfdl_fremake.yamlfre
-import gfdl_fremake.checkout
-import gfdl_fremake.makefilefre
-import gfdl_fremake.buildDocker
-import gfdl_fremake.buildBaremetal
+from gfdl_fremake import targetfre, varsfre, yamlfre, checkout, makefilefre, buildDocker, buildBaremetal
 from multiprocessing.dummy import Pool
 
 
@@ -48,13 +42,13 @@ def fremake_run(yamlfile, platform, target, execute, parallel, jobs, no_parallel
     plist = platform
     tlist = target
     ## Get the variables in the model yaml
-    freVars = gfdl_fremake.varsfre.frevars(yml) 
+    freVars = varsfre.frevars(yml) 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = gfdl_fremake.yamlfre.freyaml(yml,freVars)
+    modelYaml = yamlfre.freyaml(yml,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
     ## Error checking the targets
     for targetName in tlist:
-        target = gfdl_fremake.targetfre.fretarget(targetName)
+        target = targetfre.fretarget(targetName)
     ## Loop through the platforms specified on the command line
     ## If the platform is a baremetal platform, write the checkout script and run it once
     ## This should be done separately and serially because bare metal platforms should all be using
@@ -71,7 +65,7 @@ def fremake_run(yamlfile, platform, target, execute, parallel, jobs, no_parallel
             if not os.path.exists(srcDir):
                 os.system("mkdir -p " + srcDir)
             if not os.path.exists(srcDir+"/checkout.sh"):
-                freCheckout = gfdl_fremake.checkout.checkout("checkout.sh",srcDir)
+                freCheckout = checkout.checkout("checkout.sh",srcDir)
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                 freCheckout.finish(pc)
 
@@ -82,7 +76,7 @@ def fremake_run(yamlfile, platform, target, execute, parallel, jobs, no_parallel
     ## Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
-            target = gfdl_fremake.targetfre.fretarget(targetName)
+            target = targetfre.fretarget(targetName)
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
@@ -96,13 +90,13 @@ def fremake_run(yamlfile, platform, target, execute, parallel, jobs, no_parallel
             bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
             os.system("mkdir -p " + bldDir)
             ## Create the Makefile
-            freMakefile = gfdl_fremake.makefilefre.makefile(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate)
+            freMakefile = makefilefre.makefile(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate)
             # Loop through components and send the component name, requires, and overrides for the Makefile
             for c in fremakeYaml['src']:
                 freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
             freMakefile.writeMakefile()
             ## Create a list of compile scripts to run in parallel
-            fremakeBuild = gfdl_fremake.buildBaremetal.buildBaremetal(fremakeYaml["experiment"],mkTemplate,srcDir,bldDir,target,modules,modulesInit,jobs)
+            fremakeBuild = buildBaremetal.buildBaremetal(fremakeYaml["experiment"],mkTemplate,srcDir,bldDir,target,modules,modulesInit,jobs)
             for c in fremakeYaml['src']:
                 fremakeBuild.writeBuildComponents(c) 
             fremakeBuild.writeScript()
@@ -116,18 +110,18 @@ def fremake_run(yamlfile, platform, target, execute, parallel, jobs, no_parallel
             image="ecpe4s/noaa-intel-prototype:2023.09.25"
             bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
             tmpDir = "tmp/"+platformName
-            freCheckout = gfdl_fremake.checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
+            freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
             freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
             freCheckout.finish(pc)
             ## Create the makefile
     ### Should this even be a separate class from "makefile" in makefilefre? ~ ejs
-            freMakefile = gfdl_fremake.makefilefre.makefileContainer(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate,tmpDir)
+            freMakefile = makefilefre.makefileContainer(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate,tmpDir)
             # Loop through compenents and send the component name and requires for the Makefile
             for c in fremakeYaml['src']:
                 freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
             freMakefile.writeMakefile()
     ##### NEED MAKEFILE
-            dockerBuild = gfdl_fremake.buildDocker.container(image,fremakeYaml["experiment"],RUNenv,target)
+            dockerBuild = buildDocker.container(image,fremakeYaml["experiment"],RUNenv,target)
             dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
             dockerBuild.writeDockerfileMakefile(freMakefile.getTmpDir() + "/Makefile")
             for c in fremakeYaml['src']:
@@ -139,7 +133,7 @@ def fremake_run(yamlfile, platform, target, execute, parallel, jobs, no_parallel
     if baremetalRun:
             if __name__ == '__main__':
                 pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
-                pool.map(gfdl_fremake.buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool 
+                pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool 
 
 
 if __name__ == "__main__":
