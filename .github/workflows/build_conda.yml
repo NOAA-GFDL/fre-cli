@@ -16,4 +16,5 @@ jobs:
         conda config --append channels conda-forge
         conda config --append channels noaa-gfdl
         conda install conda-build conda-verify
+        pip install fremake-canopy
         conda build .
