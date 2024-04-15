@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from gfdl_fremake import varsfre, makefilefre, platformfre, yamlfre, buildDocker
+from gfdlfremake import varsfre, makefilefre, platformfre, yamlfre, buildDocker
 import click
 import os
 import sys
