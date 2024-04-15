@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from gfdlfremake import varsfre, platformfre, yamlfre, targetfre, buildBaremetal
+from .gfdlfremake import varsfre, platformfre, yamlfre, targetfre, buildBaremetal
 from multiprocessing.dummy import Pool
 import logging
 import os

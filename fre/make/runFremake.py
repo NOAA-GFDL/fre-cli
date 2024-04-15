@@ -10,7 +10,7 @@ import subprocess
 import os
 import yaml
 import logging
-from gfdlfremake import targetfre, varsfre, yamlfre, checkout, makefilefre, buildDocker, buildBaremetal
+from .gfdlfremake import targetfre, varsfre, yamlfre, checkout, makefilefre, buildDocker, buildBaremetal
 from multiprocessing.dummy import Pool
 
 

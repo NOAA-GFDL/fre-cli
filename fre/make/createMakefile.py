@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from gfdlfremake import makefilefre, varsfre, targetfre
+from .gfdlfremake import makefilefre, varsfre, targetfre
 import click
 import os
 import logging
