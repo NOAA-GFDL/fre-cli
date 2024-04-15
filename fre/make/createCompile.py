@@ -59,7 +59,14 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
               bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
               os.system("mkdir -p " + bldDir)
               ## Create a list of compile scripts to run in parallel
-              fremakeBuild = buildBaremetal.buildBaremetal(fremakeYaml["experiment"],mkTemplate,srcDir,bldDir,target,modules,modulesInit,jobs)
+              fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
+                                                       mkTemplatePath = mkTemplate,
+                                                       srcDir = srcDir,
+                                                       bldDir = bldDir,
+                                                       target = target,
+                                                       modules = modules,
+                                                       modulesInit = modulesInit,
+                                                       jobs = jobs)
               for c in fremakeYaml['src']:
                    fremakeBuild.writeBuildComponents(c) 
               fremakeBuild.writeScript()

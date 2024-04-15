@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from .gfdlfremake import makefilefre, varsfre, targetfre
+from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 import click
 import os
 import logging
@@ -40,17 +40,26 @@ def makefile_create(yamlfile,platform,target):
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + targetObject.gettargetName() + "/exec"
                 os.system("mkdir -p " + bldDir)
                 ## Create the Makefile
-                freMakefile = makefilefre.makefile(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate)
+                freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
+                                             libs = fremakeYaml["baremetal_linkerflags"],
+                                             srcDir = srcDir,
+                                             bldDir = bldDir,
+                                             mkTemplatePath = mkTemplate) 
                 # Loop through components and send the component name, requires, and overrides for the Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
                 freMakefile.writeMakefile()
-                click.echo("\nMakefile created at " + bldDir + "\n")
+                click.echo("\nMakefile created at " + bldDir + "/Makefile" + "\n")
             else:
                 image="ecpe4s/noaa-intel-prototype:2023.09.25"
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
-                freMakefile = makefilefre.makefileContainer(fremakeYaml["experiment"],srcDir,bldDir,mkTemplate,tmpDir)
+                freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
+                                                      libs = fremakeYaml["container_addlibs"],
+                                                      srcDir = srcDir,
+                                                      bldDir = bldDir,
+                                                      mkTemplatePath = mkTemplate,
+                                                      tmpDir = tmpDir)
 
                 # Loop through compenents and send the component name and requires for the Makefile
                 for c in fremakeYaml['src']:
