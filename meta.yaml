@@ -43,6 +43,7 @@ test:
     - fre.pp.status
     - fre.pp.run
     - fre.pp.validate
+    - fre.make
     - fre.app
     - fre.cmor
   commands:
@@ -52,6 +53,12 @@ test:
     - fre pp status --help
     - fre pp run --help
     - fre pp validate --help
+    - fre make --help
+    - fre make create-checkout --help
+    - fre make create-compile --help
+    - fre make create-dockerfile --help
+    - fre make create-makefile --help
+    - fre make run-fremake --help
     - fre app --help
     - fre app mask-atmos-plevel --help
     - fre cmor --help

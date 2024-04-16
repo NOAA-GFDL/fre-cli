@@ -1,3 +1,11 @@
-from .fremakeexample import fre_make_function
+from .createCheckout import checkout_create
+from .createCompile import compile_create
+from .createDocker import dockerfile_create
+from .createMakefile import makefile_create
+from .runFremake import fremake_run
 
-__all__ = ["fre_make_function"]
+__all__ = ["checkout_create",
+           "compile_create",
+           "dockerfile_create", 
+           "makefile_create",
+           "fremake_run"]
