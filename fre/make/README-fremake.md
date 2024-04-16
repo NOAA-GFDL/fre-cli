@@ -41,5 +41,5 @@ Through the fre-cli, `fre make` can be used to create and run a code checkout sc
     - run-fremake
         - Purpose: Create the checkout script, Makefile, compile script, and dockerfile (platform dependent) for the compilation of the model
         - Syntax:
-            - fre make run-fremake -y [experiment yaml] -p [platform] -t [target] [other options...]
+            - `fre make run-fremake -y [experiment yaml] -p [platform] -t [target] [other options...]`
 
