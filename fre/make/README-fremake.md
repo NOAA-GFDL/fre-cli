@@ -8,6 +8,7 @@ Through the fre-cli, `fre make` can be used to create and run a code checkout sc
 * Fremake package repository located at: https://gitlab.gfdl.noaa.gov/portable_climate/fremake_canopy/-/tree/main
 
 ### **`fre make` Subtools Guide**
+* **Supports multiple targets, would have to use one `-t` flag for each one** 
 - `create-checkout`
     - Purpose: Creates the checkout script and checks out source code (with execute option)
     - Bare-metal
@@ -35,7 +36,7 @@ Through the fre-cli, `fre make` can be used to create and run a code checkout sc
     - With the creation of the dockerfile, the Makefile, checkout script, and any other necessary script is copied into the container from a temporary location
     - Container Syntax:
         - To create file: `fre make create-dockerfile -y [experiment yaml file] -p [container platform] -t [target] -npc`
-        - To create and run file: `fre make create-dockerfile -y [experiment yaml file] -p [platform] -t [target] -npc -e``
+        - To create and run file: `fre make create-dockerfile -y [experiment yaml file] -p [platform] -t [target] -npc -e`
 - `run-fremake`
     - Purpose: Create the checkout script, Makefile, compile script, and dockerfile (platform dependent) for the compilation of the model
     - Syntax:
