@@ -6,6 +6,7 @@ package:
 
 source:
   path: .
+# ideally we would want to have this git_url path, but it messes with the conda publish workflow, where it builds only the sourced url and not local/branch changes
 # git_url: https://github.com/NOAA-GFDL/fre-cli
 
 build:
@@ -37,12 +38,12 @@ test:
   imports:
     - click
     - fre
+    - fre.pp
+    - fre.pp.install
+    - fre.pp.status
+    - fre.pp.run
+    - fre.pp.validate
     - fre.make
-    - fre.frepp
-    - fre.frepp.install
-    - fre.frepp.status
-    - fre.frepp.run
-    - fre.frepp.validate
     - fre.app
     - fre.cmor
   commands:

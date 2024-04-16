@@ -12,29 +12,8 @@ logger.setLevel(logging.INFO)
 package_dir = os.path.dirname(os.path.abspath(__file__))
 template_path = os.path.join(package_dir, 'cats/gfdl_test1.json')
 
-#Setting up argument parsing/flags
 @click.command()
-@click.option('-i',
-              '--input_path', 
-              required=True, 
-              nargs=1) 
-@click.option('-o',
-              '--output_path', 
-              required=True, 
-              nargs=1)
-@click.option('--filter_realm', 
-              nargs=1)
-@click.option('--filter_freq', 
-              nargs=1)
-@click.option('--filter_chunk', 
-              nargs=1)
-@click.option('--overwrite', 
-              is_flag=True, 
-              default=False)
-@click.option('--append', 
-              is_flag=True, 
-              default=False)
-def build(input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite, append):
+def build_script(input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite, append):
     project_dir = input_path
     csv_path = output_path+".csv"
     json_path = output_path+".json"
@@ -84,4 +63,4 @@ def build(input_path, output_path, filter_realm, filter_freq, filter_chunk, over
     logger.info("CSV generated at"+ os.path.abspath(csv_path))
 
 if __name__ == '__main__':
-    build()
+    build_script()

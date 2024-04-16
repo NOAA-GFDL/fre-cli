@@ -9,4 +9,3 @@ __all__ = ["checkout_create",
            "dockerfile_create", 
            "makefile_create",
            "fremake_run"]
-

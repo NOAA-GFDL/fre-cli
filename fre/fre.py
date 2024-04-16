@@ -7,29 +7,14 @@ NOAA | GFDL
 
 import click
 
-from fre import frelist
-from fre.frelist.frelist import *
-
-from fre import frecheck
-from fre.frecheck.frecheck import *
-
+from .pp import checkoutTemplate, yamlInfo, convert, validate_subtool, install_subtool, run_subtool, status_subtool 
+from .catalog import build_script
+from .list import list_test_function 
+from .check import check_test_function
+from .run import run_test_function
+from .test import test_test_function
+from .yamltools import yamltools_test_function
 from .make import checkout_create, compile_create, makefile_create, dockerfile_create, fremake_run
-
-from fre import frepp
-from fre.frepp.frepp import *
-
-from fre import frerun
-from fre.frerun.frerun import *
-
-from fre import fretest
-from fre.fretest.fretest import *
-
-from fre import frecatalog
-from fre.frecatalog.frecatalog import *
-
-from fre import freyamltools
-from fre.freyamltools.freyamltools import *
-
 from .app import maskAtmosPlevel_subtool 
 from .cmor import run_subtool
 
@@ -48,7 +33,7 @@ def fre():
 this is a nested group within the fre group that allows commands to be processed
 """
 @fre.group('list')
-def freList():
+def frelist():
     """ - access fre list subcommands """
     pass
 
@@ -58,32 +43,32 @@ def fremake():
     pass
 
 @fre.group('run')
-def freRun():
+def frerun():
     """ - access fre run subcommands"""
     pass
 
 @fre.group('pp')
-def frePP():
+def frepp():
     """ - access fre pp subcommands """
     pass
 
 @fre.group('check')
-def freCheck():
+def frecheck():
     """ - access fre check subcommands """
     pass
 
 @fre.group('test')
-def freTest():
+def fretest():
     """ - access fre test subcommands """
     pass
 
 @fre.group('catalog')
-def freCatalog():
+def frecatalog():
     """ - access fre catalog subcommands """
     pass
 
 @fre.group('yamltools')
-def freYamltools():
+def freyamltools():
     """ - access fre yamltools subcommands """
     pass
 @fre.group('cmor')
@@ -93,7 +78,7 @@ def frecmor():
 
 @fre.group('app')
 def freapp():
-    """access fre app subcommands"""
+    """ - access fre app subcommands"""
     pass
 
 #############################################
@@ -310,12 +295,36 @@ def create_dockerfile(context,yamlfile,platform,target,execute):
 """
 fre list subcommands to be processed
 """
-@freList.command()
+@frelist.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
 def function(context, uppercase):
     """ - Execute fre list func """
-    context.forward(frelist.frelist.testfunction2)
+    context.forward(list_test_function)
+
+#############################################
+
+"""
+fre check subcommands to be processed
+"""
+@frecheck.command()
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+@click.pass_context
+def function(context, uppercase):
+    """ - Execute fre check func """
+    context.forward(check_test_function)
+
+#############################################
+    
+""" 
+fre run subcommands to be processed
+"""
+@frerun.command()
+@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
+@click.pass_context
+def function(context, uppercase):
+    """ - Execute fre check func """
+    context.forward(run_test_function)
 
 #############################################
 
@@ -357,7 +366,7 @@ fre pp subcommands to be processed
 """
 
 # fre pp status
-@frePP.command()
+@frepp.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -375,11 +384,11 @@ fre pp subcommands to be processed
                 required=True)
 @click.pass_context
 def status(context, experiment, platform, target):
-    """Report status of PP configuration"""
-    context.forward(frepp.frepp.status)
+    """ - Report status of PP configuration"""
+    context.forward(status_subtool)
 
 # fre pp run
-@frePP.command()
+@frepp.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -397,11 +406,11 @@ def status(context, experiment, platform, target):
                 required=True)
 @click.pass_context
 def run(context, experiment, platform, target):
-    """Run PP configuration"""
-    context.forward(frepp.frepp.run)
+    """ - Run PP configuration"""
+    context.forward(run_subtool)
 
 # fre pp validate
-@frePP.command()
+@frepp.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -419,11 +428,11 @@ def run(context, experiment, platform, target):
                 required=True)
 @click.pass_context
 def validate(context, experiment, platform, target):
-    """Validate PP configuration"""
-    context.forward(frepp.frepp.validate)
+    """ - Validate PP configuration"""
+    context.forward(validate_subtool)
 
 # fre pp install
-@frePP.command()
+@frepp.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -441,10 +450,15 @@ def validate(context, experiment, platform, target):
                 required=True)
 @click.pass_context
 def install(context, experiment, platform, target):
-    """Install PP configuration"""
-    context.forward(frepp.frepp.install)
+    """ - Install PP configuration"""
+    context.forward(install_subtool)
 
-@frePP.command()
+@frepp.command()
+@click.option("-y",
+              "--yamlfile",
+              type=str,
+              help="YAML file to be used for parsing",
+              required=True)
 @click.option("-e",
               "--experiment",
               type=str,
@@ -460,18 +474,12 @@ def install(context, experiment, platform, target):
                 type=str,
                 help="Target name",
                 required=True)
-@click.option("-y",
-              "--yamlfile", 
-              type=str, 
-              help="YAML file to be used for parsing", 
-              required=True)
-
 @click.pass_context
-def configure(context,yamlfile,experiment,platform,target):
+def configure_yaml(context,yamlfile,experiment,platform,target):
     """ - Execute fre pp configure """
-    context.forward(frepp.frepp.configureYAML)
+    context.forward(yamlInfo)
 
-@frePP.command()
+@frepp.command()
 @click.option("-e",
               "--experiment", 
               type=str, 
@@ -495,13 +503,13 @@ def configure(context,yamlfile,experiment,platform,target):
               help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
                             "defaults to 'main'. Not intended for production use,"
                             "but needed for branch testing."])
-                            )
+             )
 @click.pass_context
 def checkout(context, experiment, platform, target, branch='main'):
     """ - Execute fre pp checkout """
-    context.forward(frepp.frepp.checkout)
+    context.forward(checkoutTemplate)
 
-@frePP.command()
+@frepp.command()
 @click.option('-x',
               '--xml',
               required=True,
@@ -559,30 +567,28 @@ def checkout(context, experiment, platform, target, branch='main'):
               is_flag=True,
               help="Optional. Append '_canopy' to pp, analysis, and refinediag dirs")
 @click.pass_context
-def convert(context, xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
-    """
-    Converts a Bronx XML to a Canopy rose-suite.conf 
-    """
-    context.forward(frepp.frepp.configureXML)
+def configure_xml(context, xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
+    """ - Converts a Bronx XML to a Canopy rose-suite.conf """
+    context.forward(convert)
 
 #############################################
 
 """
 fre test subcommands to be processed
 """
-@freTest.command()
+@fretest.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
-def testfunction(context, uppercase):
+def function(context, uppercase):
     """ - Execute fre test testfunction """
-    context.forward(fretest.fretest.testfunction)
+    context.forward(test_test_function)
 
 #############################################
 
 """
 fre catalog subcommands to be processed
 """
-@freCatalog.command()
+@frecatalog.command()
 @click.option('-i',
               '--input_path', 
               required=True, 
@@ -604,21 +610,21 @@ fre catalog subcommands to be processed
               is_flag=True, 
               default=False)
 @click.pass_context
-def buildCatalog(context, input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite,append):
+def build(context, input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite,append):
     """ - Execute fre catalog build """
-    context.forward(frecatalog.frecatalog.buildCatalog)
+    context.forward(build_script)
 
 #############################################
 
 """
 fre yamltools subcommands to be processed
 """
-@freYamltools.command()
+@freyamltools.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
 def testfunction(context, uppercase):
     """ - Execute fre yamltools testfunction """
-    context.forward(freyamltools.freyamltools.testfunction)
+    context.forward(yamltools_test_function)
 
 #############################################
 
