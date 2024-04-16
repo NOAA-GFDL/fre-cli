@@ -17,4 +17,6 @@ Through the fre-cli, `fre make` can be used to create and run a code checkout sc
         - Example: `fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml`
 
 
+hello hello
+
 Currently, running fre make create checkout creates 'test' directory and runs correctly if ran with the '-e' flag on initial call. However, if it's already been ran but with the '-e' flag, meaning that the testdir is already created, running it again with '-e' doesnt' seem to run the checkout script.
