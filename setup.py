@@ -12,8 +12,7 @@ setup(
         'click',
         'pyyaml',
         'jsonschema',
-        'metomi-rose',
-        'gfdlfremake'
+        'metomi-rose'
     ],
     entry_points={
         'console_scripts': [

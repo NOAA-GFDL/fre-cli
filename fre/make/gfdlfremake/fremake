@@ -1,0 +1,249 @@
+#!/usr/bin/python3
+## \date 2023
+## \author Tom Robinson
+## \author Dana Singh
+## \description fremake is used to create and run a code checkout script and compile a model.
+
+import subprocess
+import os
+import yaml
+import argparse
+import logging
+from . import targetfre, varsfre, yamlfre, checkout, makefilefre, buildDocker, buildBaremetal
+from multiprocessing.dummy import Pool
+
+## Add in cli options
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Fremake is used to create a code checkout script to compile models for FRE experiments.')
+    parser.add_argument("-y",
+                        "--yamlfile",
+                        type=str, help="Experiment yaml compile FILE",required=True)
+    parser.add_argument("-p",
+                        "--platform",
+                        nargs='*',
+                        type=str, help="Hardware and software FRE platform space separated list of STRING(s). This sets platform-specific data and instructions",required=True)
+    parser.add_argument("-t",
+                        "--target",
+                        nargs='*',
+                        type=str, help="FRE target space separated list of STRING(s) that defines compilation settings and linkage directives for experiments.\n\nPredefined targets refer to groups of directives that exist in the mkmf template file                                 (referenced in buildDocker.py). Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not                                  use more than one of these in the target list). Any number of targets can be used.",required=True)
+    parser.add_argument("-f", 
+                        "--force-checkout",
+                        action="store_true",
+                        help="Force checkout to get a fresh checkout to source directory in case the source directory exists")
+    parser.add_argument("-F",
+                        "--force-compile",
+                        action="store_true",
+                        help="Force compile to compile a fresh executable in case the executable directory exists")
+    parser.add_argument("-K",
+                        "--keep-compiled",
+                        action="store_true",
+                        help="Keep compiled files in the executable directory for future use")
+    parser.add_argument("--no-link",
+                        action="store_true",
+                        help="Do not link the executable")
+    parser.add_argument("-E", 
+                        "--execute",
+                        action="store_true",
+                        help="Execute all the created scripts in the current session")
+    parser.add_argument("-n", 
+                        "--parallel",
+                        type=int, 
+                        metavar='', default=1,
+                        help="Number of concurrent model compiles (default 1)")
+    parser.add_argument("-j",
+                        "--jobs",
+                        type=int,
+                        metavar='', default=4,
+                        help="Number of jobs to run simultaneously.  Used for make -jJOBS and git clone recursive --jobs=JOBS")
+    parser.add_argument("-npc",
+                        "--no-parallel-checkout",
+                        action="store_true",
+                        help="Use this option if you do not want a parallel checkout. The default is to have parallel checkouts.")
+    parser.add_argument("-s",
+                        "--submit",
+                        action="store_true",
+                        help="Submit all the created scripts as batch jobs")
+    parser.add_argument("-v", 
+                        "--verbose",
+                        action="store_true",
+                        help="Get verbose messages (repeat the option to increase verbosity level)")
+    parser.add_argument("-w NUM",
+                        "--walltime=NUM",
+                        type=int, metavar='',
+                        help="Maximum wall time NUM (in minutes) to use")
+    parser.add_argument("--mail-list=STRING",
+                        action="store_true",
+                        help="Email the comma=separated STRING list of emails rather than \$USER\@noaa.gov")
+
+    ## Parse the arguments
+    args = parser.parse_args()
+
+    ## Define arguments as variables
+    yml = args.yamlfile
+    ps = args.platform
+    ts = args.target
+    nparallel = args.parallel
+    jobs = str(args.jobs)
+    pcheck = args.no_parallel_checkout
+
+    ## Define parallelism addition for checkouts
+    # If pcheck is defined, no parallel checkouts
+    # If pcheck is not defined, default is to have parallel checkouts
+    if pcheck:
+      pc = ""
+    else:
+      pc = " &"
+
+    ## Define operation of option(s) above
+    if args.verbose:
+      logging.basicCOnfig(level=logging.INFO)
+    else:
+      logging.basicConfig(level=logging.ERROR)
+
+#### Main
+srcDir="src"
+checkoutScriptName = "checkout.sh"
+baremetalRun = False # This is needed if there are no bare metal runs
+
+## Split and store the platforms and targets in a list
+plist = args.platform
+tlist = args.target
+
+## Get the variables in the model yaml
+freVars = varsfre.frevars(yml) 
+
+## Open the yaml file and parse as fremakeYaml
+modelYaml = yamlfre.freyaml(yml,freVars)
+fremakeYaml = modelYaml.getCompileYaml()
+
+## Error checking the targets
+for targetName in tlist:
+     target = targetfre.fretarget(targetName)
+
+## Loop through the platforms specified on the command line
+## If the platform is a baremetal platform, write the checkout script and run it once
+## This should be done separately and serially because bare metal platforms should all be using
+## the same source code.
+for platformName in plist:
+     if modelYaml.platforms.hasPlatform(platformName):
+          pass
+     else:
+          raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
+     (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,containerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
+
+     ## Create the checkout script
+     if iscontainer == False:
+          ## Create the source directory for the platform
+          srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+          if not os.path.exists(srcDir):
+               os.system("mkdir -p " + srcDir)
+          if not os.path.exists(srcDir+"/checkout.sh"):
+               freCheckout = checkout.checkout("checkout.sh",srcDir)
+               freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
+               freCheckout.finish(pc)
+
+## TODO: Options for running on login cluster?
+               freCheckout.run()
+
+fremakeBuildList = []
+## Loop through platforms and targets
+for platformName in plist:
+ for targetName in tlist:
+     target = targetfre.fretarget(targetName)
+     if modelYaml.platforms.hasPlatform(platformName):
+          pass
+     else:
+          raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
+     (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,containerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
+
+     ## Make the source directory based on the modelRoot and platform
+     srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+
+     ## Check for type of build
+     if iscontainer == False:
+          baremetalRun = True
+          ## Make the build directory based on the modelRoot, the platform, and the target
+          bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
+          os.system("mkdir -p " + bldDir)
+
+          ## Create the Makefile
+          freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
+                                             libs = fremakeYaml["baremetal_linkerflags"],
+                                             srcDir = srcDir,
+                                             bldDir = bldDir,
+                                             mkTemplatePath = mkTemplate)
+
+
+          # Loop through components and send the component name, requires, and overrides for the Makefile
+          for c in fremakeYaml['src']:
+               freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
+          freMakefile.writeMakefile()
+
+## Create a list of compile scripts to run in parallel
+          fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
+                                                       mkTemplatePath = mkTemplate,
+                                                       srcDir = srcDir,
+                                                       bldDir = bldDir,
+                                                       target = target,
+                                                       modules = modules,
+                                                       modulesInit = modulesInit,
+                                                       jobs = jobs)
+
+          for c in fremakeYaml['src']:
+               fremakeBuild.writeBuildComponents(c) 
+          fremakeBuild.writeScript()
+          fremakeBuildList.append(fremakeBuild)
+          ## Run the build
+          fremakeBuild.run()
+     else:
+#################################### container stuff below ###########################################################
+          ## Run the checkout script
+#          image="hpc-me-intel:2021.1.1"
+          image="ecpe4s/noaa-intel-prototype:2023.09.25"
+          bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
+          tmpDir = "tmp/"+platformName
+
+          ## Create the checkout script
+          freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
+          freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
+          freCheckout.finish(pc)
+
+          ## Create the makefile
+### Should this even be a separate class from "makefile" in makefilefre? ~ ejs
+          freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
+                                                      libs = fremakeYaml["container_addlibs"],
+                                                      srcDir = srcDir,
+                                                      bldDir = bldDir,
+                                                      mkTemplatePath = mkTemplate,
+                                                      tmpDir = tmpDir)
+
+          # Loop through components and send the component name and requires for the Makefile
+          for c in fremakeYaml['src']:
+               freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
+          freMakefile.writeMakefile()
+
+          ## Build the dockerfile  
+          dockerBuild = buildDocker.container(base = image,
+                                              exp = fremakeYaml["experiment"],
+                                              libs = fremakeYaml["container_addlibs"],
+                                              RUNenv = RUNenv,
+                                              target = target)
+
+          dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
+          dockerBuild.writeDockerfileMakefile(freMakefile.getTmpDir() + "/Makefile", freMakefile.getTmpDir()+"/linkline.sh")
+
+          for c in fremakeYaml['src']:
+               dockerBuild.writeDockerfileMkmf(c)
+
+          dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
+
+          ## Run the dockerfile; build the container
+          dockerBuild.build(containerBuild,containerRun)
+
+          #freCheckout.cleanup()
+          #buildDockerfile(fremakeYaml,image)
+
+if baremetalRun:
+     if __name__ == '__main__':
+          pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
+          pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool 
