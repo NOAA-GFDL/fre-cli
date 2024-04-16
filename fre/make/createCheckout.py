@@ -69,6 +69,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                         freCheckout.run()
                    else:
                         sys.exit()
+              click.echo("\nCheckout script created at " + srcDir + "/checkout.sh" + "\n") 
          else:
               ## Run the checkout script
               image="ecpe4s/noaa-intel-prototype:2023.09.25"

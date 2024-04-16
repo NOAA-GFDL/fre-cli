@@ -71,7 +71,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
                    fremakeBuild.writeBuildComponents(c) 
               fremakeBuild.writeScript()
               fremakeBuildList.append(fremakeBuild)
-
+              click.echo("\nCompile script created at " + bldDir + "\n")
     if run:
         #print("ITS GONNA RUN")
         if baremetalRun:
