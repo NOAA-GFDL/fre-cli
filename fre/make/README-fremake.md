@@ -4,7 +4,7 @@ Through the fre-cli, `fre make` can be used to create and run a code checkout sc
 
 ## **Usage (Users)**
 
-* Refer to fre-cli README.md for foundational fre-cli usage guide and tips.
+* Refer to fre-cli [README.md](https://github.com/NOAA-GFDL/fre-cli/blob/main/README.md) for foundational fre-cli usage guide and tips.
 * Fremake package repository located at: https://gitlab.gfdl.noaa.gov/portable_climate/fremake_canopy/-/tree/main
 
 ### **Fremake Subtools Guide**
