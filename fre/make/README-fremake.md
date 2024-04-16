@@ -17,12 +17,12 @@ Through the fre-cli, `fre make` can be used to create and run a code checkout sc
             - Syntax: 
                 - To create file: `fre make create-checkout -y [experiment yaml file] -p [platform] -t [target]`
                 - To create and run file: `fre make create-checkout -y [experiment yaml file] -p [platform] -t [target] -e`
-        - Container 
-                - Checkout script is created in a tmpDir location, to eventually be copied into the container via the Dockefile
+        - Container
+            - Checkout script is created in a tmpDir location, to eventually be copied into the container via the Dockefile
                 - Checkout script does not support parallel checkouts
-                - Syntax: 
-                    - To create file: `fre make create-checkout -y [experiment yaml file] -p [container platform] -t [target] -npc`
-        - Example: `fre pp create-checkout -y am5.yaml -p ncrc5.intel -t prod`
+                    - Syntax:
+                        - To create file: `fre make create-checkout -y [experiment yaml file] -p [container platform] -t [target] -npc`
+            - Example: `fre pp create-checkout -y am5.yaml -p ncrc5.intel -t prod`
     - create-makefile
         - Purpose: Creates the makefile
         - Bare-metal Syntax: `fre make create-makefile -y [experiment yaml file] -p [platform] -t [target]`
@@ -39,7 +39,7 @@ Through the fre-cli, `fre make` can be used to create and run a code checkout sc
             - To create file: `fre make create-dockerfile -y [experiment yaml file] -p [container platform] -t [target] -npc`
             - To create and run file: `fre make create-dockerfile -y [experiment yaml file] -p [platform] -t [target] -npc -e``
     - run-fremake
-        - Purpose: Create the checkout script, Makefile, compile script, and dockerfile (platform dependent) for the compilation of the model 
+        - Purpose: Create the checkout script, Makefile, compile script, and dockerfile (platform dependent) for the compilation of the model
         - Syntax:
             - fre make run-fremake -y [experiment yaml] -p [platform] -t [target] [other options...]
 
