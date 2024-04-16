@@ -61,14 +61,19 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
               srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
               if not os.path.exists(srcDir):
                    os.system("mkdir -p " + srcDir)
-              if not os.path.exists(srcDir+"/checkout.sh"):
-                   freCheckout = checkout.checkout("checkout.sh",srcDir)
-                   freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
-                   freCheckout.finish(pc)
-                   if run:
-                        freCheckout.run()
-                   else:
-                        sys.exit()
+              #create checkout script:
+              #if checkout script exists, it is removed and created again
+              #if checkout script does not exist, it is created
+              freCheckout = checkout.checkout("checkout.sh",srcDir)
+              freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
+              freCheckout.finish(pc)
+              # Run the checkout script 
+              if run:
+                   freCheckout.run()
+              else:
+                   sys.exit()
+
+
               click.echo("\nCheckout script created at " + srcDir + "/checkout.sh" + "\n") 
          else:
               ## Run the checkout script
