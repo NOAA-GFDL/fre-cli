@@ -8,7 +8,8 @@ Through the fre-cli, `fre make` can be used to create and run a code checkout sc
 * Fremake package repository located at: https://gitlab.gfdl.noaa.gov/portable_climate/fremake_canopy/-/tree/main
 
 ### **`fre make` Subtools Guide**
-* **Supports multiple targets, would have to use one `-t` flag for each one** 
+* **Supports multiple targets, would have to use one `-t` flag for each one**
+* **User will not be able to create containers without access to podman**
 - `create-checkout`
     - Purpose: Creates the checkout script and checks out source code (with execute option)
     - Bare-metal
@@ -21,10 +22,12 @@ Through the fre-cli, `fre make` can be used to create and run a code checkout sc
             - Checkout script does not support parallel checkouts
                 - Syntax:
                     - To create file: `fre make create-checkout -y [experiment yaml file] -p [container platform] -t [target] -npc`
-        - Example: `fre pp create-checkout -y am5.yaml -p ncrc5.intel -t prod`
+        - Example: `fre make create-checkout -y am5.yaml -p ncrc5.intel -t prod`
 - `create-makefile`
     - Purpose: Creates the makefile
-    - Bare-metal Syntax: `fre make create-makefile -y [experiment yaml file] -p [platform] -t [target]`
+    - Bare-metal Syntax:
+        - `fre make create-makefile -y [experiment yaml file] -p [platform] -t [target]`
+        - Multi-target example: `fre make create-makefile -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug`
     - Container Syntax: `fre make create-makefile -y [experiment yaml file] -p [container platform] -t [target]`
 - `create-compile`
     - Purpose: Creates the compile script and compiles the model (with execute option)
