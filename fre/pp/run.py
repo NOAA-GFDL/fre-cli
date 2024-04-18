@@ -6,7 +6,7 @@ import click
 
 @click.command()
 
-def run_subtool(experiment, platform, target):
+def pp_run_subtool(experiment, platform, target):
     """
     Start or restart the Cylc workflow identified by:
     <experiment>__<platform>__<target>
