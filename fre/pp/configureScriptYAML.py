@@ -51,7 +51,7 @@ def yamlInfo(yamlfile,experiment,platform,target):
     if key == "configuration_paths":
       for configname,path in value.items():
         if configname == "rose-suite":
-          rs_path = f"{path}/rose-suite-{e}"
+          rs_path = f"{path}/rose-suite-{e}.conf"
         
           # Create rose-suite-exp config
           with open(rs_path,'w') as f:
