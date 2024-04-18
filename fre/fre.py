@@ -17,6 +17,7 @@ from .yamltools import yamltools_test_function
 from .make import checkout_create, compile_create, makefile_create, dockerfile_create, fremake_run
 from .app import maskAtmosPlevel_subtool 
 from .cmor import run_subtool
+from .lazy_group import LazyGroup
 
 #############################################
 
