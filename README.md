@@ -2,6 +2,14 @@
 
 FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
+## **Background**
+
+As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that will allow users to call upon FRE commands using a **_fre_** **tool** _subtool_ syntax. Developed with Click, a Python package easily installable through PyPI and Conda, the main goal of this is to allow users access to most, if not all of MSD-managed tools and workflows from one packaged, centralized CLI.
+
+![Screenshot from 2024-04-18 13-42-04](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/43c028a6-4e6a-42fe-8bec-008b6758ea9b)
+
+![clidiagram](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/04cd8ce1-dec8-457f-b8b7-544275e04f46)
+
 ## **Usage (Users)**
 
 * Need to set up Conda environment first and foremost
@@ -27,29 +35,13 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
 ### **Commands/Tools Included**
 
-In development:
-1)  **fre pp**
-    - configure
-        - Postprocessing yaml configuration
-        - Minimal Syntax: `fre pp configure -y [user-edit yaml file]`
-        - Module(s) needed: n/a
-        - Example: `fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml`
-    - checkout
-        - Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository 
-        - Minimal Syntax: `fre pp checkout -e [experiment name] -p [platform name] -t [target name]`
-        - Module(s) needed: n/a
-        - Example: `fre pp checkout -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp`
-2)  **fre catalog**
-    - buildCatalog
-        - Builds json and csv format catalogs from user input directory path
-        - Minimal Syntax: `fre catalog buildCatalog -i [input path] -o [output path]`
-        - Module(s) needed: n/a
-        - Example: `fre catalog buildCatalog -i /archive/am5/am5/am5f3b1r0/c96L65_am5f3b1r0_pdclim1850F/gfdl.ncrc5-deploy-prod-openmp/pp -o ~/output --overwrite`
-
 To be developed:
 - [ ]  **fre check**
+- [x]  **fre app**
+- [x]  **fre catalog**
 - [ ]  **fre list**
-- [ ]  **fre make**
+- [x]  **fre make**
+- [x]  **fre cmor**
 - [ ]  **fre run**
 - [ ]  **fre test**
 - [ ]  **fre yamltools**
