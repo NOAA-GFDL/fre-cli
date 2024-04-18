@@ -342,7 +342,7 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
 # qboi30     
 
 @click.command
-def run_subtool(indir, outdir, varlist, table_config, exp_config):
+def cmor_run_subtool(indir, outdir, varlist, table_config, exp_config):
     # these global variables can be edited now
     # nameOfset is component label (e.g. atmos_cmip)
     global nameOfset, GFDL_vars_file, CMIP_output
@@ -389,4 +389,4 @@ def run_subtool(indir, outdir, varlist, table_config, exp_config):
             print("WARNING: Skipping requested variable as it is not found in CMOR variable group:", var_i)
 
 if __name__ == '__main__':
-    run_subtool()
+    cmor_run_subtool()

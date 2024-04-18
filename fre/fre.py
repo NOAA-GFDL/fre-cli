@@ -7,7 +7,7 @@ NOAA | GFDL
 
 import click
 
-from .pp import checkoutTemplate, yamlInfo, convert, validate_subtool, install_subtool, run_subtool, status_subtool 
+from .pp import checkoutTemplate, yamlInfo, convert, validate_subtool, install_subtool, pp_run_subtool, status_subtool 
 from .catalog import build_script
 from .list import list_test_function 
 from .check import check_test_function
@@ -16,7 +16,7 @@ from .test import test_test_function
 from .yamltools import yamltools_test_function
 from .make import checkout_create, compile_create, makefile_create, dockerfile_create, fremake_run
 from .app import maskAtmosPlevel_subtool 
-from .cmor import run_subtool
+from .cmor import cmor_run_subtool
 
 #############################################
 
@@ -357,7 +357,7 @@ fre cmor subcommands to be processed
 @click.pass_context
 def run(context, indir, outdir, varlist, table_config, exp_config):
     """Rewrite climate model output"""
-    context.forward(run_subtool)
+    context.forward(cmor_run_subtool)
 
 #############################################
 
@@ -407,7 +407,7 @@ def status(context, experiment, platform, target):
 @click.pass_context
 def run(context, experiment, platform, target):
     """ - Run PP configuration"""
-    context.forward(run_subtool)
+    context.forward(pp_run_subtool)
 
 # fre pp validate
 @frepp.command()
