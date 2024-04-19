@@ -5,12 +5,13 @@ package:
   version: {{ data.get('version') }}
 
 source:
-  git_url: https://github.com/NOAA-GFDL/fre-cli
   path: .
+# ideally we would want to have this git_url path, but it messes with the conda publish workflow, where it builds only the sourced url and not local/branch changes
+# git_url: https://github.com/NOAA-GFDL/fre-cli
 
 build:
   script: {{ PYTHON }} -m pip install . -vv
-  number: 0
+  number: 1
   noarch: python
 
 channels:
@@ -28,19 +29,23 @@ requirements:
     - pyyaml
     - jsonschema
     - noaa-gfdl::intakebuilder
-    - cylc-flow
-    - cylc-rose
-    - metomi-rose
+    - conda-forge::cylc-flow
+    - conda-forge::cylc-rose
+    - conda-forge::metomi-rose
+    - conda-forge::cmor
 
 test:
   imports:
     - click
     - fre
-    - fre.frepp
-    - fre.frepp.install
-    - fre.frepp.status
-    - fre.frepp.run
-    - fre.frepp.validate
+    - fre.pp
+    - fre.pp.install
+    - fre.pp.status
+    - fre.pp.run
+    - fre.pp.validate
+    - fre.make
+    - fre.app
+    - fre.cmor
   commands:
     - fre --help
     - fre pp --help
@@ -48,6 +53,16 @@ test:
     - fre pp status --help
     - fre pp run --help
     - fre pp validate --help
+    - fre make --help
+    - fre make create-checkout --help
+    - fre make create-compile --help
+    - fre make create-dockerfile --help
+    - fre make create-makefile --help
+    - fre make run-fremake --help
+    - fre app --help
+    - fre app mask-atmos-plevel --help
+    - fre cmor --help
+    - fre cmor run --help
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
