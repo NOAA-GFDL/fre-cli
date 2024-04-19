@@ -17,35 +17,13 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
 
 #############################################
 
-@click.command()
-@click.option("-e",
-              "--experiment", 
-              type=str, 
-              help="Experiment name", 
-              required=True)
-@click.option("-p", 
-              "--platform",
-              type=str, 
-              help="Platform name", 
-              required=True)
-@click.option("-t",
-              "--target", 
-              type=str, 
-              help="Target name", 
-              required=True)
-@click.option("-b", 
-              "--branch",
-              show_default=True,
-              default="main",
-              type=str,
-              help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
-                            "defaults to 'main'. Not intended for production use,"
-                            "but needed for branch testing."]))
-                            
 def checkoutTemplate(experiment, platform, target, branch='main'):
     """
     Checkout the workflow template files from the repo
     """
+    print(experiment)
+    print(platform)
+    print(target)
     # Create the directory if it doesn't exist
     directory = os.path.expanduser("~/cylc-src")
     os.makedirs(directory, exist_ok=True)
@@ -76,5 +54,38 @@ def checkoutTemplate(experiment, platform, target, branch='main'):
 
 #############################################
 
+@click.command()
+@click.option("-e",
+              "--experiment", 
+              type=str, 
+              help="Experiment name", 
+              required=True)
+@click.option("-p", 
+              "--platform",
+              type=str, 
+              help="Platform name", 
+              required=True)
+@click.option("-t",
+              "--target", 
+              type=str, 
+              help="Target name", 
+              required=True)
+@click.option("-b", 
+              "--branch",
+              show_default=True,
+              default="main",
+              type=str,
+              help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
+                            "defaults to 'main'. Not intended for production use,"
+                            "but needed for branch testing."]))
+                            
+def checkoutTemplate_command(experiment, platform, target, branch="main"):
+    '''
+    Wrapper script for calling checkoutTemplate - allows the decorated version
+    of the function to be separate from the undecorated version
+    '''
+    return checkoutTemplate(experiment, platform, target, branch="main")
+                            
+
 if __name__ == '__main__':
-    checkoutTemplate()
+    checkoutTemplate_command()
