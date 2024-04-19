@@ -51,14 +51,14 @@ def yamlInfo(yamlfile,experiment,platform,target):
     if key == "configuration_paths":
       for configname,path in value.items():
         if configname == "rose-suite":
-          rs_path = f"{path}/rose-suite-{e}.conf"
+          rs_path = f"{path}/rose-suite.conf"
         
           # Create rose-suite-exp config
           with open(rs_path,'w') as f:
             f.write('[template variables]\n')
             f.write('## Information for requested postprocessing, info to pass to refineDiag/preanalysis scripts, info for epmt, and info to pass to analysis scripts \n')
 
-          print(f"Path: {rs_path} created")
+          print(f"Path: {os.getcwd()}/rose-suite.conf created")# {rs_path} created")
 
 ## Populate ROSE-SUITE-EXP config
     if key == "rose-suite":
@@ -96,13 +96,13 @@ def yamlInfo(yamlfile,experiment,platform,target):
           with open(remap_roseapp,'w') as f:
             # Check if filepath exists
             if os.path.exists(remap_roseapp):
-              print(f"Path: {remap_roseapp} exists")
+              print(f"Path: {os.getcwd()}/{remap_roseapp} exists")
               f.write("[command]\n")
               f.write("default=remap-pp-components\n")
             else:
               f.write("[command]\n")
               f.write("default=remap-pp-components\n")
-              print(f"Path: {remap_roseapp} created")
+              print(f"Path: {os.getcwd()}/{remap_roseapp} created")
        
         # Regrid-xy rose-app.conf 
         elif configname == "rose-regrid" and path != None: # AND VALUE NOT EMPTY:
@@ -111,13 +111,13 @@ def yamlInfo(yamlfile,experiment,platform,target):
           with open(regrid_roseapp,'w') as f:
             # Check if filepath exists
             if os.path.exists(regrid_roseapp):
-              print(f"Path: {regrid_roseapp} exists")
+              print(f"Path: {os.getcwd()}/{regrid_roseapp} exists")
               f.write("[command]\n")
               f.write("default=regrid-xy\n")
             else:
               f.write("[command]\n")
               f.write("default=regrid-xy\n")
-              print(f"Path: {regrid_roseapp} created")
+              print(f"Path: {os.getcwd()}/{regrid_roseapp} created")
 
 ## If the rose-remap and rose-regrid paths are defined, populate the associated rose-app.confs
     if key == "components":
