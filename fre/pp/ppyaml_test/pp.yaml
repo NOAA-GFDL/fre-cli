@@ -1,7 +1,7 @@
 ## User defined edits
 # Paths for where the rose-suite and rose-app configurations are in checked out pp repo
 configuration_paths: 
-  rose-suite: "opt"  
+  rose-suite: "."  
   rose-remap: "app/remap-pp-components/rose-app.conf" 
   rose-regrid: "app/regrid-xy/rose-app.conf" 
 
