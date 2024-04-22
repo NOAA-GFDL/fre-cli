@@ -53,7 +53,7 @@ To be developed:
     - Once inside the repository, developers can test local changes by running a `pip install .` inside of the root directory to install the fre-cli package locally with the newest local changes
     - Test as a normal user would use the CLI
 * [Official Click Documentation](https://click.palletsprojects.com/en/8.1.x/api/)
-  
+
 ### **Adding New Commands/Tools - Checklist**
 
 If there is *no* subdirectory created for the new tool command group you are trying to develop, there are a few steps to follow:
