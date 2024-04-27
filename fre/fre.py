@@ -17,6 +17,7 @@ from .yamltools import yamltools_test_function
 from .make import checkout_create, compile_create, makefile_create, dockerfile_create, fremake_run
 from .app import maskAtmosPlevel_subtool 
 from .cmor import run_subtool
+
 from .lazy_group import LazyGroup
 
 #############################################
@@ -26,6 +27,14 @@ principal main fre click group allows for subcommand functions from subgroups to
 """
 @click.group()
 def fre():
+    pass
+
+@click.group(
+    cls=LazyGroup,
+    lazy_subcommands={"fake": "fake.fake.fre_fake"},
+    help="Lazy fre group as main lazy group command"
+)
+def lazyfre():
     pass
 
 #############################################
@@ -72,6 +81,7 @@ def frecatalog():
 def freyamltools():
     """ - access fre yamltools subcommands """
     pass
+
 @fre.group('cmor')
 def frecmor():
     """ - access fre cmor subcommands"""
@@ -630,4 +640,5 @@ def testfunction(context, uppercase):
 #############################################
 
 if __name__ == '__main__':
-    fre()
+    # fre()
+    lazyfre()
