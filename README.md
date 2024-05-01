@@ -52,7 +52,6 @@ To be developed:
 * Gain access to the repository with `git clone git@github.com:NOAA-GFDL/fre-cli.git` or your fork's link (recommended) and an SSH RSA key
     - Once inside the repository, developers can test local changes by running a `pip install .` inside of the root directory to install the fre-cli package locally with the newest local changes
     - Test as a normal user would use the CLI
-* [Official Click Documentation](https://click.palletsprojects.com/en/8.1.x/api/)
 
 ### **Adding New Commands/Tools - Checklist**
 
@@ -97,4 +96,5 @@ Please refer to this issue when encountering naming issues: https://github.com/N
 ```
 
 ## **Additional Helpful Links**
+* [Official Click Documentation](https://click.palletsprojects.com/en/8.1.x/api/)
 * [`setup.py` key words](https://setuptools.pypa.io/en/latest/references/keywords.html)
