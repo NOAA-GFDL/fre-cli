@@ -13,7 +13,7 @@ As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that wi
 ## **Usage (Users)**
 
 * Need to set up Conda environment first and foremost
-    - If on workstationm there are three options:
+    - If on workstation there are three options:
         - `module load conda`, then follow the steps for gaea users below
         - `module load conda`, then `conda activate /nbhome/fms/conda/envs/fre-cli`
         - `module load fre/canopy`
@@ -52,7 +52,7 @@ To be developed:
 * Gain access to the repository with `git clone git@github.com:NOAA-GFDL/fre-cli.git` or your fork's link (recommended) and an SSH RSA key
     - Once inside the repository, developers can test local changes by running a `pip install .` inside of the root directory to install the fre-cli package locally with the newest local changes
     - Test as a normal user would use the CLI
-   
+
 ### **Adding New Commands/Tools - Checklist**
 
 If there is *no* subdirectory created for the new tool command group you are trying to develop, there are a few steps to follow:
