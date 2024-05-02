@@ -7,3 +7,4 @@ from .catalog import *
 from .yamltools import *
 from .app import *
 from .cmor import *
+from .lazy_group import LazyGroup

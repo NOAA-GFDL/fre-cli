@@ -16,7 +16,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'fre = fre.fre:lazyfre',
+            'fre = fre.fre:fre',
         ],
     },
 )
