@@ -339,9 +339,29 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
     return filename
 
 
-# qboi30     
-
+# Adding click options here let's this script be usable without calling it through "fre cmor"
 @click.command
+@click.option("-d", "--indir",
+              type=str,
+              help="Input directory",
+              required=True)
+@click.option("-l", "--varlist",
+              type=str,
+              help="Variable list",
+              required=True)
+@click.option("-r", "--table_config",
+              type=str,
+              help="Table configuration",
+              required=True)
+@click.option("-p", "--exp_config",
+              type=str,
+              help="Experiment configuration",
+              required=True)
+@click.option("-o", "--outdir",
+              type=str,
+              help="Output directory",
+              required=True)
+
 def cmor_run_subtool(indir, outdir, varlist, table_config, exp_config):
     # these global variables can be edited now
     # nameOfset is component label (e.g. atmos_cmip)
