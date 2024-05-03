@@ -206,9 +206,8 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
  #       raise Exception("ERROR: could not determine vertical dimension")
     print("Vertical dimension:", vert_dim)
 
-    # initialize CMOR, specify dir path to tables, specify output overwriting behavior, specify error message handling
-    ipth = opth = 'Test'
-    cmor.setup(inpath=ipth, set_verbosity=cmor.CMOR_NORMAL, netcdf_file_action=cmor.CMOR_REPLACE)
+    # initialize CMOR
+    cmor.setup()
 
     # read experiment configuration file
     cmor.dataset_json(CMIP_input_json)
