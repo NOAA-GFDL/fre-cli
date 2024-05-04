@@ -1,5 +1,5 @@
 """
-prototype file for FRE CLI
+Main host file for FRE-CLI program scripts
 authored by Bennett.Chang@noaa.gov | bcc2761
 NOAA | GFDL
 2023-2024
