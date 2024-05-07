@@ -132,10 +132,14 @@ def yamlInfo(yamlfile,experiment,platform,target):
                 if i.get("xyInterp") == None:
                   f.write(f"grid=native\n")
                 #in xyInterp exists, component can be regridded
-                elif i.get("xyInterp") != None:
-                  f.write("grid=regrid-xy\n") 
+                elif i.get("xyInterp") != None and i.get("xyInterp") == y["define5"]:
+                  f.write("grid=regrid-xy/default\n") 
+                elif i.get("xyInterp") != None and i.get("xyInterp") != y["define5"]:
+                  gridLat=i.get("xyInterp").split(",")[0]
+                  gridLon=i.get("xyInterp").split(",")[1]
+                  f.write(f"grid=regrid-xy/{gridLat}_{gridLon}\n")
                 if "static" in compvalue:
-                  f.write("freq=P0Y\n")                       
+                  f.write("freq=P0Y\n") 
               elif compkey == "sources":
                 f.write(f"{compkey}={compvalue} ")
               elif compkey == "timeSeries":
