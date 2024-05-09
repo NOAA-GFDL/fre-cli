@@ -132,9 +132,9 @@ def yamlInfo(yamlfile,experiment,platform,target):
                 if i.get("xyInterp") == None:
                   f.write(f"grid=native\n")
                 #in xyInterp exists, component can be regridded
-                elif i.get("xyInterp") != None and i.get("xyInterp") == y["define5"]:
+                elif i.get("xyInterp") != None and i.get("xyInterp") == y["defaultxyInterp"]:
                   f.write("grid=regrid-xy/default\n") 
-                elif i.get("xyInterp") != None and i.get("xyInterp") != y["define5"]:
+                elif i.get("xyInterp") != None and i.get("xyInterp") != y["defaultxyInterp"]:
                   gridLat=i.get("xyInterp").split(",")[0]
                   gridLon=i.get("xyInterp").split(",")[1]
                   f.write(f"grid=regrid-xy/{gridLat}_{gridLon}\n")
@@ -180,7 +180,7 @@ def yamlInfo(yamlfile,experiment,platform,target):
 
                   f.write("\n")
 
-                if compkey == "xyInterp" and compvalue == y["define5"]:
+                if compkey == "xyInterp" and compvalue == y["defaultxyInterp"]:
                   f.write(f"outputGridType=default\n")
                 elif compkey == "xyInterp": 
                   gridLat=compvalue.split(",")[0]
