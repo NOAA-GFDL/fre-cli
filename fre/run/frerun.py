@@ -1,7 +1,7 @@
 import click
 from .frerunexample import run_test_function
 
-@click.group(help="- access fre run subcommands")
+@click.group(help=" - access fre run subcommands")
 def runCli():
     pass
 
