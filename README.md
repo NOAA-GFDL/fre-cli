@@ -81,6 +81,7 @@ If there is *no* subdirectory created for the new tool command group you are try
   8. If the tool group is not already added into the `__init__.py` in the /fre folder, add it using `from .tool import *`
   9. With the lazy groups implemented in `lazy_group.py`, all that needs to be done is to add to the `lazy_subcommands` defined inside of the main `@click.group`, `fre`, inside of `fre.py`
       - Add the line: `"[tool]": ".[tool].fre[tool].[tool]Cli"`
+      - (Recommended): If the update is significant, consider incrementing the version number within [`setup.py`](https://github.com/NOAA-GFDL/fre-cli/blob/088ad363392b3bf187119d8970c22779d59aaed0/setup.py#L5) to reflect and signify the changes 
   10. Test by running `pip install .` from the root level of the directory, and running `fre`, followed by any subcommands necessary
  
 ### **Adding Tools From Other Repositories**
