@@ -82,7 +82,8 @@ def chunk_from_legacy(legacy_chunk):
         logging.error("Unknown time units " + match.group(2))
         raise ValueError
 
-def frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, xpath):
+def frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir,
+                  do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, xpath):
     """Returns filepaths of FRE XML elements that use X-path notation
        using Bronx's 'frelist' command via Python's 'subprocess' module
 
@@ -94,14 +95,24 @@ def frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, re
                                                                 platform,
                                                                 target,
                                                                 experiment,
-                                                                xpath)
+                                                                xpath).split(' ')
+    logging.info(f'{type(cmd)}')
+    logging.info("running cmd {}".format(cmd))
     logging.info(">> {}".format(xpath))
-    process = subprocess.run(cmd,
-                             shell=True,
-                             check=True,
-                             capture_output=True,
-                             universal_newlines=True)
+    try:
+        process = subprocess.run(cmd,
+                                 #                             errors=True,
+                                 shell=True,
+                                 check=True,
+                                 capture_output=True,
+                                 universal_newlines=True)
+    except:
+        logging.info("stdout:\n{}".format(process.stdout.strip()) )
+        logging.info("stderr:\n{}".format(process.stderr.strip()) )
+        raise Exception('problem with subprocess')
+
     result = process.stdout.strip()
+    #result = process.stderr.strip()
     logging.info(result)
     return(result)
 
@@ -174,48 +185,67 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     # directory variables have not been set by the user at the command line,
     # the XML's default paths will be inserted into rose-suite.conf.
     ##########################################################################
-    logging.info("Running frelist for XML parsing...")
-    logging.info("If this fails, try running the 'frelist' call manually.\n")
-    fetch_history_cmd = "frelist -x {} -p {} -t {} {} -d archive".format(xml,
-                                                                         platform,
-                                                                         target,
-                                                                         experiment)
-    logging.info(">> {}".format(fetch_history_cmd))
-    fetch_history_process = subprocess.run(fetch_history_cmd,
-                                           shell=True,
-                                           check=True,
-                                           capture_output=True,
-                                           universal_newlines=True)
-    historyDir = fetch_history_process.stdout.strip() + '/history'
+    #    try:
+    if historydir is None:
+        logging.info("Running frelist for historyDir assignment...")
+        logging.info("If this fails, try running the 'frelist' call manually and using the 'historydir' argument.\n")
+        fetch_history_cmd = "frelist -x {} -p {} -t {} {} -d archive".format(xml,
+                                                                             platform,
+                                                                             target,
+                                                                             experiment)
+        logging.info(">> {}".format(fetch_history_cmd))
+        fetch_history_process = subprocess.run(fetch_history_cmd,
+                                               shell=True,
+                                               check=True,
+                                               capture_output=True,
+                                               universal_newlines=True)
+        historyDir = fetch_history_process.stdout.strip() + '/history'
+
+        logging.info(historyDir)
+    else:
+        logging.info('historydir argument given, using arg instead of frelist output for historyDir and historyDirRefined')
+        historyDir = historydir
+
+    
     historyDirRefined = historyDir + '_refineDiag'
-    logging.info(historyDir)
+    
+    if ppdir is None:
+        logging.info("Running frelist for ppDir assignment...")
+        logging.info("If this fails, try running the 'frelist' call manually and using the 'ppdir' argument.\n")
+        fetch_pp_cmd = "frelist -x {} -p {} -t {} {} -d postProcess".format(xml,
+                                                                            platform,
+                                                                            target,
+                                                                            experiment)
+        logging.info(">> {}".format(fetch_pp_cmd))
+        fetch_pp_process = subprocess.run(fetch_pp_cmd,
+                                          shell=True,
+                                          check=True,
+                                          capture_output=True,
+                                          universal_newlines=True)
+        ppDir = fetch_pp_process.stdout.strip()
+        logging.info(ppDir)
+    else:
+        ppDir=ppdir
 
-    fetch_pp_cmd = "frelist -x {} -p {} -t {} {} -d postProcess".format(xml,
-                                                                        platform,
-                                                                        target,
-                                                                        experiment)
-    logging.info(">> {}".format(fetch_pp_cmd))
-    fetch_pp_process = subprocess.run(fetch_pp_cmd,
-                                      shell=True,
-                                      check=True,
-                                      capture_output=True,
-                                      universal_newlines=True)
-    ppDir = fetch_pp_process.stdout.strip()
-    logging.info(ppDir)
+    if do_analysis:
+        logging.info("Running frelist for analysisDir assignment...")
+        logging.info("If this fails... and hope it doesnt... try setting 'do_analysis' to 'false' \n")
+        fetch_analysis_dir_cmd = "frelist -x {} -p {} -t {} {} -d analysis".format(xml,
+                                                                                   platform,
+                                                                                   target,
+                                                                                   experiment)
+        logging.info(">> {}".format(fetch_analysis_dir_cmd))
+        fetch_analysis_dir_process = subprocess.run(fetch_analysis_dir_cmd,
+                                                    shell=True,
+                                                    check=True,
+                                                    capture_output=True,
+                                                    universal_newlines=True)
+        analysisDir = fetch_analysis_dir_process.stdout.strip()
+        logging.info(analysisDir)
+    else:
+        logging.info('not doing analysis.')
 
-    fetch_analysis_dir_cmd = "frelist -x {} -p {} -t {} {} -d analysis".format(xml,
-                                                                        platform,
-                                                                        target,
-                                                                        experiment)
-    logging.info(">> {}".format(fetch_analysis_dir_cmd))
-    fetch_analysis_dir_process = subprocess.run(fetch_analysis_dir_cmd,
-                                      shell=True,
-                                      check=True,
-                                      capture_output=True,
-                                      universal_newlines=True)
-    analysisDir = fetch_analysis_dir_process.stdout.strip()
-    logging.info(analysisDir)
-
+    
     gridSpec = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'input/dataFile[@label="gridSpec"]')
     simTime = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/@simTime')
     simUnits = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/@units')
