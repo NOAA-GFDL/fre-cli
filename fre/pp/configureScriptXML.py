@@ -85,35 +85,44 @@ def chunk_from_legacy(legacy_chunk):
 def frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir,
                   do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, xpath):
     """Returns filepaths of FRE XML elements that use X-path notation
-       using Bronx's 'frelist' command via Python's 'subprocess' module
+       using Bronx's 'frelist' command via subprocess module
 
     Arguments:
         1. args[str]: Argparse user-input arguments
         2. xpath[str]: X-path (XML) notation required by 'frelist'
     """
+
+    #debug_proc=subprocess.run('which frelist',
+    #                          shell=True,capture_output=True,universal_newlines=True)
+    #logging.info("DEBUG: stdout:\n{}".format(debug_proc.stdout.strip()) )
+    #logging.info("DEBUG: stderr:\n{}".format(debug_proc.stderr.strip()) )
+    #logging.info("DEBUG: returncode:\n{}".format(debug_proc.returncode) )
+    
+    
     cmd = "frelist -x {} -p {} -t {} {} --evaluate '{}'".format(xml,
                                                                 platform,
                                                                 target,
                                                                 experiment,
-                                                                xpath).split(' ')
-    logging.info(f'{type(cmd)}')
-    logging.info("running cmd {}".format(cmd))
+                                                                xpath)    
+    logging.info("running cmd:\n {}".format(cmd))
     logging.info(">> {}".format(xpath))
-    try:
-        process = subprocess.run(cmd,
-                                 #                             errors=True,
-                                 shell=True,
-                                 check=True,
-                                 capture_output=True,
-                                 universal_newlines=True)
-    except:
-        logging.info("stdout:\n{}".format(process.stdout.strip()) )
-        logging.info("stderr:\n{}".format(process.stderr.strip()) )
-        raise Exception('problem with subprocess')
+    process = subprocess.run(cmd,
+                             shell=True,
+                             #check=True,
+                             capture_output=True,
+                             universal_newlines=True)
+    
+    logging.info("stdout:\n{}".format(process.stdout.strip()) )
+    logging.info("stderr:\n{}".format(process.stderr.strip()) )
+    logging.info("returncode:\n{}".format(process.returncode) )
+
 
     result = process.stdout.strip()
     #result = process.stderr.strip()
-    logging.info(result)
+    logging.info("stripped stdout".format(result))
+    if process.returncode > 0:
+        raise Exception('problem with frelist call, exitcode is: {}'.format(process.returncode))
+
     return(result)
 
 def duration_to_seconds(duration):
@@ -126,7 +135,8 @@ def duration_to_seconds(duration):
     return dur.get_seconds()
 
 
-def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
+def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir,
+         do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
     """The meat of the converter
 
        Arguments: 
@@ -206,7 +216,8 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
         logging.info('historydir argument given, using arg instead of frelist output for historyDir and historyDirRefined')
         historyDir = historydir
 
-    
+        
+    # this should respond to do_refineDiag and refinedir args of this function, for now... not gonna worry about it
     historyDirRefined = historyDir + '_refineDiag'
     
     if ppdir is None:
@@ -227,28 +238,39 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     else:
         ppDir=ppdir
 
-    if do_analysis:
-        logging.info("Running frelist for analysisDir assignment...")
-        logging.info("If this fails... and hope it doesnt... try setting 'do_analysis' to 'false' \n")
-        fetch_analysis_dir_cmd = "frelist -x {} -p {} -t {} {} -d analysis".format(xml,
-                                                                                   platform,
-                                                                                   target,
-                                                                                   experiment)
-        logging.info(">> {}".format(fetch_analysis_dir_cmd))
-        fetch_analysis_dir_process = subprocess.run(fetch_analysis_dir_cmd,
-                                                    shell=True,
-                                                    check=True,
-                                                    capture_output=True,
-                                                    universal_newlines=True)
-        analysisDir = fetch_analysis_dir_process.stdout.strip()
-        logging.info(analysisDir)
-    else:
-        logging.info('not doing analysis.')
+    #if do_analysis:
+    # TODO shouldn't there be a CLI analysis dir arg while we're here?
+    # basically, this is borderline on the same level as the ppDir and historyDir fields. 
+    logging.info("Running frelist for analysisDir assignment...")
+    logging.info("If this fails... and hope it doesnt... try setting 'do_analysis' to 'false' \n")
+    fetch_analysis_dir_cmd = "frelist -x {} -p {} -t {} {} -d analysis".format(xml,
+                                                                               platform,
+                                                                               target,
+                                                                               experiment)
+    logging.info(">> {}".format(fetch_analysis_dir_cmd))
+    fetch_analysis_dir_process = subprocess.run(fetch_analysis_dir_cmd,
+                                                shell=True,
+                                                check=True,
+                                            capture_output=True,
+                                                universal_newlines=True)
+    analysisDir = fetch_analysis_dir_process.stdout.strip()
+    logging.info(analysisDir)
+    #else:
+    #    logging.info('not doing analysis.')
 
     
-    gridSpec = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'input/dataFile[@label="gridSpec"]')
-    simTime = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/@simTime')
-    simUnits = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/@units')
+    gridSpec = frelist_xpath(xml, platform, target, experiment, do_analysis,
+                             historydir, refinedir, ppdir, do_refinediag,
+                             pp_start, pp_stop, validate,
+                             verbose, quiet, dual, 'input/dataFile[@label="gridSpec"]')
+    simTime = frelist_xpath(xml, platform, target, experiment, do_analysis,
+                            historydir, refinedir, ppdir, do_refinediag,
+                            pp_start, pp_stop, validate,
+                            verbose, quiet, dual, 'runtime/production/@simTime')
+    simUnits = frelist_xpath(xml, platform, target, experiment, do_analysis,
+                             historydir, refinedir, ppdir, do_refinediag,
+                             pp_start, pp_stop, validate,
+                             verbose, quiet, dual, 'runtime/production/@units')
 
     rose_suite.set(keys=['template variables', 'HISTORY_DIR'],
                    value="'{}'".format(historyDir))
@@ -334,13 +356,19 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
         logging.info("No preAnalysis scripts written. )")
 
     # Grab all of the necessary PP component items/elements from the XML
-    comps = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'postProcess/component/@type').split()
+    comps = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                          do_refinediag, pp_start, pp_stop, validate, 
+                          verbose, quiet, dual, 'postProcess/component/@type').split()
     rose_suite.set(keys=['template variables', 'PP_COMPONENTS'],
                    value="'{}'".format(' '.join(sorted(comps))))
-
-    segment_time = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/segment/@simTime')
-    segment_units = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'runtime/production/segment/@units')
-
+    
+    segment_time = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                                 do_refinediag, pp_start, pp_stop, validate, 
+                                 verbose, quiet, dual, 'runtime/production/segment/@simTime')
+    segment_units = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                                  do_refinediag, pp_start, pp_stop, validate, 
+                                  verbose, quiet, dual, 'runtime/production/segment/@units')
+    
     if segment_units == 'years':
         segment = 'P{}Y'.format(segment_time)
     elif segment_units == 'months':
@@ -356,7 +384,9 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
 
     # Get the namelist current_date as the likely PP_START (unless "start" is used in the PP tags)
     # frelist --namelist may be better, but sometimes may not work
-    current_date_str = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, 'input/namelist')
+    current_date_str = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                                     do_refinediag, pp_start, pp_stop, validate, 
+                                     verbose, quiet, dual, 'input/namelist')
     match = re.search(r'current_date\s*=\s*(\d+),(\d+),(\d+)', current_date_str)
     if match:
         try:
@@ -396,14 +426,18 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
                      .format(comp_count, len(comps)))
 
         # get the comp attributes
-        comp_source = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/@source'                                 \
-                                          .format(pp_comp_xpath_header))
-        xyInterp = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/@xyInterp'                                  \
-                                       .format(pp_comp_xpath_header))
-        sourceGrid = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/@sourceGrid'                              \
-                                         .format(pp_comp_xpath_header))
-        interpMethod = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/@interpMethod'                          \
-                                         .format(pp_comp_xpath_header))
+        comp_source = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                                    do_refinediag, pp_start, pp_stop, validate, 
+                                    verbose, quiet, dual, '{}/@source'.format(pp_comp_xpath_header))
+        xyInterp = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                                 do_refinediag, pp_start, pp_stop, validate, 
+                                 verbose, quiet, dual, '{}/@xyInterp'.format(pp_comp_xpath_header))
+        sourceGrid = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                                   do_refinediag, pp_start, pp_stop, validate, 
+                                   verbose, quiet, dual, '{}/@sourceGrid'.format(pp_comp_xpath_header))
+        interpMethod = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                                     do_refinediag, pp_start, pp_stop, validate, 
+                                     verbose, quiet, dual, '{}/@interpMethod'.format(pp_comp_xpath_header))
 
         # split some of the stuffs
         if xyInterp != "":
@@ -440,8 +474,10 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
         timeseries_count = 0
 
         # Get the number of TS nodes
-        results = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/timeSeries/@freq'                            \
-                                      .format(pp_comp_xpath_header)).split()
+        results = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                                do_refinediag, pp_start, pp_stop, validate, 
+                                verbose, quiet, dual, '{}/timeSeries/@freq'                            \
+                                .format(pp_comp_xpath_header)).split()
         timeseries_count = len(results)
 
         # Loop over the TS nodes and write out the frequency, chunklength, and
@@ -449,8 +485,10 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
         for i in range(1, timeseries_count + 1):
             label = "{}.{}".format(comp, str(i))
 
-            source = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual, '{}/timeSeries[{}]/@source'                   \
-                                         .format(pp_comp_xpath_header, i))
+            source = frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, 
+                                   do_refinediag, pp_start, pp_stop, validate, 
+                                   verbose, quiet, dual, '{}/timeSeries[{}]/@source'                   \
+                                   .format(pp_comp_xpath_header, i))
             if source:
                 if source.endswith('_refined'):
                     logging.info(f"NOTE: Skipping history file '{source}' as refineDiag is turned off by default.")
@@ -460,7 +498,9 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
             #freq = freq_from_legacy(frelist_xpath(args,                                
             #                                      '{}/timeSeries[{}]/@freq'            \
             #                                      .format(pp_comp_xpath_header, i)))
-            chunk = chunk_from_legacy(frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual,                              
+            chunk = chunk_from_legacy(frelist_xpath(xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir,
+                                                    do_refinediag, pp_start, pp_stop, validate,
+                                                    verbose, quiet, dual,                              
                                                     '{}/timeSeries[{}]/@chunkLength'   \
                                                     .format(pp_comp_xpath_header, i)))
             chunks.add(chunk)
@@ -585,6 +625,14 @@ def convert(xml, platform, target, experiment, do_analysis, historydir, refinedi
     Converts a Bronx XML to a Canopy rose-suite.conf 
     """
 
+    # Logging settings. The default is throwing only warning messages
+    if verbose:
+        logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
+    elif quiet:
+        logging.basicConfig(level=logging.ERROR, format=LOGGING_FORMAT)
+    else:
+        logging.basicConfig(level=logging.WARNING, format=LOGGING_FORMAT)
+
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
 
@@ -594,6 +642,7 @@ def convert(xml, platform, target, experiment, do_analysis, historydir, refinedi
     os.makedirs(newDir, exist_ok=True)
 
     # Change the current working directory
+    xml = os.path.abspath(xml)
     os.chdir(newDir)
 
     cylc_loaded = False
@@ -613,13 +662,6 @@ def convert(xml, platform, target, experiment, do_analysis, historydir, refinedi
                                    "the Cylc module isn't loaded. Please "             \
                                    "run 'module load cylc/test' and try again.")
         
-    # Logging settings. The default is throwing only warning messages
-    if verbose:
-        logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
-    elif quiet:
-        logging.basicConfig(level=logging.ERROR, format=LOGGING_FORMAT)
-    else:
-        logging.basicConfig(level=logging.WARNING, format=LOGGING_FORMAT)
     # Alert the user if only 1 or zero PP years are given as an option, and
     # notify them that a default of '0000' for those years will be set in the
     # rose-suite configuration
