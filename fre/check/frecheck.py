@@ -1,7 +1,7 @@
 import click
 from .frecheckexample import check_test_function
 
-@click.group(help="- access fre check subcommands")
+@click.group(help=" - access fre check subcommands")
 def checkCli():
     pass
 

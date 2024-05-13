@@ -7,7 +7,7 @@ from .install import install_subtool
 from .run import pp_run_subtool
 from .status import status_subtool
 
-@click.group(help="- access fre pp subcommands")
+@click.group(help=" - access fre pp subcommands")
 def ppCli():
     pass
 

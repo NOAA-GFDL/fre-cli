@@ -5,7 +5,7 @@ from .createDocker import dockerfile_create
 from .createMakefile import makefile_create
 from .runFremake import fremake_run
 
-@click.group(help="- access fre make subcommands")
+@click.group(help=" - access fre make subcommands")
 def makeCli():
     pass
 

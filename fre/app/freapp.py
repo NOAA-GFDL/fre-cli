@@ -1,7 +1,7 @@
 import click
 from .maskAtmosPlevel import maskAtmosPlevel_subtool
 
-@click.group(help="- access fre app subcommands")
+@click.group(help=" - access fre app subcommands")
 def appCli():
     pass
 

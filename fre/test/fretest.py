@@ -1,7 +1,7 @@
 import click
 from .fretestexample import test_test_function
 
-@click.group(help="- access fre test subcommands")
+@click.group(help=" - access fre test subcommands")
 def testCli():
     pass
 
