@@ -210,7 +210,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
 
 
 
-    # TODO should respond to do_refineDiag and refinedir args of this function
+    # Q: should respond to do_refineDiag and refinedir args of this function?
     historydir_refined = historydir + '_refineDiag'
 
     if ppdir is None:
@@ -228,7 +228,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
         logging.info(ppdir)
 
 
-    # TODO shouldn't there be a CLI analysis dir arg while we're here?
+    # Q: shouldn't there be a CLI analysis dir arg while we're here?
     # basically, this is borderline on the same level as the ppDir and historydir fields.
     #if do_analysis:
     logging.info("Running frelist for analysis_dir assignment...")
@@ -611,15 +611,15 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
               default=False,
               help="Optional. Runs the analysis scripts.")
 @click.option('--historydir',
-              default = None, 
+              default = None,
               help="Optional. History directory to reference. "                    \
                     "If not specified, the XML's default will be used.")
 @click.option('--refinedir',
-              default = None, 
+              default = None,
               help="Optional. History refineDiag directory to reference. "         \
                     "If not specified, the XML's default will be used.")
 @click.option('--ppdir',
-              default = None, 
+              default = None,
               help="Optional. Postprocessing directory to reference. "             \
                     "If not specified, the XML's default will be used.")
 @click.option('--do_refinediag',
@@ -717,7 +717,7 @@ def convert(xml, platform, target, experiment, do_analysis,
         if int(pp_start) >= int(pp_stop):
             logging.warning("Your PP_START date is equal to or later than "            \
                             "your PP_STOP date. Please revise these values in "        \
-                            "your configuration after the converter has run.")            
+                            "your configuration after the converter has run.")
         if any( [ len(pp_start) >  4, len(pp_stop) >  4,
                   int(pp_start) <= 0, int(pp_stop) <= 0 ] ):
             logging.warning("At least one of your PP_start or PP_stop years "          \
