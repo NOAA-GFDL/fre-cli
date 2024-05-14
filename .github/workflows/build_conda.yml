@@ -17,3 +17,7 @@ jobs:
         conda config --append channels noaa-gfdl
         conda install conda-build conda-verify
         conda build .
+    - name: pylint all code
+      continue-on-error: true
+      run: |
+        pylint --clear-cache-post-run y ./fre
