@@ -2,7 +2,7 @@ import click
 #from .gen_intake_gfdl import build_script
 from scripts import gen_intake_gfdl
 
-@click.group(help=" - access fre catalog subcommands")
+@click.group(help=click.style(" - access fre catalog subcommands", fg=(64,94,213)))
 def catalogCli():
     pass
 
@@ -48,6 +48,7 @@ def catalogCli():
 def builder(context, input_path=None, output_path=None, config=None, filter_realm=None, filter_freq=None, filter_chunk=None, overwrite=False, append=False):
     """ - Generate .csv and .json files for catalog """
     context.forward(gen_intake_gfdl.main)
+
 
 if __name__ == "__main__":
     catalogCli()

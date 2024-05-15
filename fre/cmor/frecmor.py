@@ -1,7 +1,7 @@
 import click
 from .CMORmixer import cmor_run_subtool
 
-@click.group(help=" - access fre cmor subcommands")
+@click.group(help=click.style(" - access fre cmor subcommands", fg=(232,91,204)))
 def cmorCli():
     pass
 

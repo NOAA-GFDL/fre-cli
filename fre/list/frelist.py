@@ -1,7 +1,7 @@
 import click
 from .frelistexample import list_test_function
 
-@click.group(help=" - access fre list subcommands")
+@click.group(help=click.style(" - access fre list subcommands", fg=(232,204,91)))
 def listCli():
     pass
 

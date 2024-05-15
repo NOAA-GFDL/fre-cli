@@ -1,7 +1,7 @@
 import click
 from .freyamltoolsexample import yamltools_test_function
 
-@click.group(help=" - access fre yamltools subcommands")
+@click.group(help=click.style(" - access fre yamltools subcommands", fg=(202,177,95)))
 def yamltoolsCli():
     pass
 
