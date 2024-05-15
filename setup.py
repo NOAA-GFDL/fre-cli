@@ -11,7 +11,10 @@ setup(
     install_requires=[
         'click',
         'pyyaml',
+        'pylint', 
         'jsonschema',
+        'cylc-flow',
+        'cylc-rose',
         'metomi-rose'
     ],
     entry_points={
