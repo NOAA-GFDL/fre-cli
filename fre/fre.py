@@ -27,8 +27,9 @@ principal main fre click group allows for subcommand functions from subgroups to
                       "app": ".app.freapp.appCli",
                       "cmor": ".cmor.frecmor.cmorCli"
                       },
-    help="'fre' is the main CLI click group that houses the other tool groups as lazy subcommands."
+    help=click.style("'fre' is the main CLI click group that houses the other tool groups as lazy subcommands.", fg='cyan')
 )
+@click.version_option(package_name="fre-cli", message=click.style("%(package)s | %(version)s", fg=(155,255,172)))
 def fre():
     pass
 
