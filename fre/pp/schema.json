@@ -11,11 +11,11 @@
         "rose-regrid": {"type": ["string","null"]}
       }
     },
-    "define1": {"type": "string"},
-    "define2": {"type": "string"},
-    "define3": {"type": "string"},
-    "define4": {"type": "string"},
-    "define5": {"type": "string"},
+    "ana_amip_len": {"type": "string"},
+    "pp_amip_chunk": {"type": "string"},
+    "ana_amip_start": {"type": "string"},
+    "ana_amip_stop": {"type": "string"},
+    "defaultxyInterp": {"type": "string"},
 
     "rose-suite": {
       "type": "object",

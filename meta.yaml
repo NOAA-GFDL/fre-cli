@@ -29,6 +29,7 @@ requirements:
     - python
     - click
     - pyyaml
+    - pylint
     - jsonschema
     - noaa-gfdl::intakebuilder
     - conda-forge::cylc-flow
