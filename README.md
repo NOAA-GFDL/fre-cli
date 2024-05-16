@@ -101,9 +101,11 @@ If there is *no* subdirectory created for the new tool command group you are try
 .
 ├── __init__.py
 ├── fre.py
-├── /tool
+├── lazy_group.py
+├── /[tool]
 │   ├── __init__.py
-│   └── subCommandScript.py
+│   ├── fre[tool].py
+│   └── [subCommandScript].py
 ```
 
 ## **Additional Helpful Links**
