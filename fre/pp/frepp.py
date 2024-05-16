@@ -1,7 +1,7 @@
 import click
 from .checkoutScript import checkoutTemplate
-from .configureScriptYAML import yamlInfo
-from .configureScriptXML import convert
+from .configure_script_yaml import yamlInfo
+from .configure_script_xml import convert
 from .validate import validate_subtool
 from .install import install_subtool
 from .run import pp_run_subtool

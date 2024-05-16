@@ -5,11 +5,11 @@ configuration_paths:
   rose-remap: "app/remap-pp-components/rose-app.conf" 
   rose-regrid: "app/regrid-xy/rose-app.conf" 
 
-define1: &ANA_AMIP_LEN "10yr"
-define2: &PP_AMIP_CHUNK96 "1yr"
-define3: &ANA_AMIP_START "1980"
-define4: &ANA_AMIP_STOP "1988"
-define5: &defaultxyInterp "180,288"
+ana_amip_len: &ANA_AMIP_LEN "10yr"
+pp_amip_chunk: &PP_AMIP_CHUNK96 "1yr"
+ana_amip_start: &ANA_AMIP_START "1980"
+ana_amip_stop: &ANA_AMIP_STOP "1988"
+defaultxyInterp: &defaultxyInterp "180,288"
 
 rose-suite:
   settings:
