@@ -38,12 +38,11 @@ def yamlInfo(yamlfile,experiment,platform,target):
 ### Copy pp yaml into cylc-src directory, make rose-suite, then IF remap and regrid paths defined, write those in cylcsrc/app/...
 
   # Make sure cylc-src exists (it should if this is done after fre checkout) and cd into
-  directory = os.path.expanduser("~/cylc-src")
-  name = f"{e}__{p}__{t}"
   # Copy pp yaml into ~/cylc-src/name
-  shutil.copyfile(yml,directory+"/"+name+"/pp.yaml")  
-  # Go into cylc-src directory
-  os.chdir(directory+"/"+name)
+  cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
+  shutil.copyfile(yml, os.path.join(cylc_dir, 'pp.yaml')  )
+  # verify the directory exists
+  os.chdir(cylc_dir)
 
 ### PARSE YAML
 ## Write the rose-suite-exp configuration
