@@ -6,6 +6,7 @@ import click
 from jsonschema import validate, ValidationError, SchemaError
 import json
 import shutil
+import metomi.rose.config
 
 ######VALIDATE#####
 package_dir = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +31,28 @@ def yamlInfo(yamlfile,experiment,platform,target):
   t = target
   yml = yamlfile
 
+  # initialize rose suite config
+  rose_suite = metomi.rose.config.ConfigNode()
+  rose_suite.set(keys=['template variables', 'SITE'],              value='"ppan"')
+  rose_suite.set(keys=['template variables', 'CLEAN_WORK'],        value='True')
+  rose_suite.set(keys=['template variables', 'PTMP_DIR'],          value='"/xtmp/$USER/ptmp"')
+  rose_suite.set(keys=['template variables', 'DO_STATICS'],        value='True')
+  rose_suite.set(keys=['template variables', 'DO_TIMEAVGS'],       value='True')
+  rose_suite.set(keys=['template variables', 'DO_ATMOS_PLEVEL_MASKING'], value='True')
+
+  # initialize rose regrid config
+  rose_regrid = metomi.rose.config.ConfigNode()
+  rose_regrid.set(keys=['command', 'default'], value='regrid-xy')
+
+  # initialize rose remap config
+  rose_remap = metomi.rose.config.ConfigNode()
+  rose_remap.set(keys=['command', 'default'], value='remap-pp-components')
+
+  # set some rose suite vars
+  rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{e}"')
+  rose_suite.set(keys=['template variables', 'PLATFORM'], value=f'"{p}"')
+  rose_suite.set(keys=['template variables', 'TARGET'], value=f'"{t}"')
+
   with open(yml,'r') as f:
     y=yaml.safe_load(f)
     valyml = validateYaml(y)
@@ -51,72 +74,14 @@ def yamlInfo(yamlfile,experiment,platform,target):
       for configname,path in value.items():
         if configname == "rose-suite":
           rs_path = f"{path}/rose-suite.conf"
-        
-          # Create rose-suite-exp config
-          with open(rs_path,'w') as f:
-            f.write('[template variables]\n')
-            f.write('## Information for requested postprocessing, info to pass to refineDiag/preanalysis scripts, info for epmt, and info to pass to analysis scripts \n')
-
-          print(f"Path: {os.getcwd()}/rose-suite.conf created")# {rs_path} created")
 
 ## Populate ROSE-SUITE-EXP config
     if key == "rose-suite":
-      if e and p and t:
-        with open(rs_path,'a') as f:
-          f.write(f'EXPERIMENT="{e}"\n\n')
-          f.write(f'PLATFORM="{p}"\n\n')
-          f.write(f'TARGET="{t}"\n\n')
-
       for suiteconfiginfo,dict in value.items():
         for configkey,configvalue in dict.items():
           if configvalue != None:
-            with open(rs_path,'a') as f:
-              k=configkey.upper()
-              if configvalue == True or configvalue == False:
-                f.write(f'{k}={configvalue}\n\n')
-              else:
-                if configkey == "refinediag_scripts":
-                  script=configvalue.split("/")[-1]
-                  f.write(f'{k}="\$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/{script}"\n\n')
-                elif configkey == "preanalysis_script":
-                  script=configvalue.split("/")[-1]
-                  f.write(f'{k}="\$CYLC_WORKFLOW_RUN_DIR/etc/refineDiag/{script}"\n\n')
-                else:
-                  f.write(f'{k}="{configvalue}"\n\n')
-
-##################################################################################
-## Writes regrid-xy and Remap-pp-components rose-app.conf files
-    if key == "configuration_paths":
-      for configname,path in value.items():
-        # Remap-pp-components rose-app.conf
-        if configname == "rose-remap" and path != None: # AND VALUE NOT EMPTY:
-          remap_roseapp = path
-
-          with open(remap_roseapp,'w') as f:
-            # Check if filepath exists
-            if os.path.exists(remap_roseapp):
-              print(f"Path: {os.getcwd()}/{remap_roseapp} exists")
-              f.write("[command]\n")
-              f.write("default=remap-pp-components\n")
-            else:
-              f.write("[command]\n")
-              f.write("default=remap-pp-components\n")
-              print(f"Path: {os.getcwd()}/{remap_roseapp} created")
-       
-        # Regrid-xy rose-app.conf 
-        elif configname == "rose-regrid" and path != None: # AND VALUE NOT EMPTY:
-          regrid_roseapp = path
-
-          with open(regrid_roseapp,'w') as f:
-            # Check if filepath exists
-            if os.path.exists(regrid_roseapp):
-              print(f"Path: {os.getcwd()}/{regrid_roseapp} exists")
-              f.write("[command]\n")
-              f.write("default=regrid-xy\n")
-            else:
-              f.write("[command]\n")
-              f.write("default=regrid-xy\n")
-              print(f"Path: {os.getcwd()}/{regrid_roseapp} created")
+            k=configkey.upper()
+            rose_suite.set(keys=['template variables', k], value=f'{configvalue}')
 
 ## If the rose-remap and rose-regrid paths are defined, populate the associated rose-app.confs
     if key == "components":
@@ -124,28 +89,27 @@ def yamlInfo(yamlfile,experiment,platform,target):
         for i in value:
           for compkey,compvalue in i.items():
             # Create/write remap rose app
-            with open(remap_roseapp,'a') as f:
-              if compkey == "type": 
-                f.write(f"\n\n[{compvalue}]\n")
-                #if xyInterp doesnt exist, grid is native
-                if i.get("xyInterp") == None:
-                  f.write(f"grid=native\n")
-                #in xyInterp exists, component can be regridded
-                elif i.get("xyInterp") != None and i.get("xyInterp") == y["defaultxyInterp"]:
-                  f.write("grid=regrid-xy/default\n") 
-                elif i.get("xyInterp") != None and i.get("xyInterp") != y["defaultxyInterp"]:
-                  gridLat=i.get("xyInterp").split(",")[0]
-                  gridLon=i.get("xyInterp").split(",")[1]
-                  f.write(f"grid=regrid-xy/{gridLat}_{gridLon}\n")
-                if "static" in compvalue:
-                  f.write("freq=P0Y\n") 
-              elif compkey == "sources":
-                f.write(f"{compkey}={compvalue} ")
-              elif compkey == "timeSeries":
-                for i in compvalue:
-                  for key,value in i.items():
-                    if key == "source":
-                      f.write(f"{value} ")
+            if compkey == "type": 
+              f.write(f"\n\n[{compvalue}]\n")
+              #if xyInterp doesnt exist, grid is native
+              if i.get("xyInterp") == None:
+                f.write(f"grid=native\n")
+              #in xyInterp exists, component can be regridded
+              elif i.get("xyInterp") != None and i.get("xyInterp") == y["defaultxyInterp"]:
+                f.write("grid=regrid-xy/default\n") 
+              elif i.get("xyInterp") != None and i.get("xyInterp") != y["defaultxyInterp"]:
+                gridLat=i.get("xyInterp").split(",")[0]
+                gridLon=i.get("xyInterp").split(",")[1]
+                f.write(f"grid=regrid-xy/{gridLat}_{gridLon}\n")
+              if "static" in compvalue:
+                f.write("freq=P0Y\n") 
+            elif compkey == "sources":
+              f.write(f"{compkey}={compvalue} ")
+            elif compkey == "timeSeries":
+              for i in compvalue:
+                for key,value in i.items():
+                  if key == "source":
+                    f.write(f"{value} ")
 
             # Create/write regrid rose app
             with open(regrid_roseapp,'a') as f:
@@ -188,6 +152,20 @@ def yamlInfo(yamlfile,experiment,platform,target):
                   f.write(f"outputGridLat={gridLat}\n")
                   f.write(f"outputGridLon={gridLon}\n")
                   f.write(f"outputGridType={gridLat}_{gridLon}\n") 
+
+  # write rose configs
+  print("Writing output files...")
+  os.chdir(cylc_dir)
+  dumper = metomi.rose.config.ConfigDumper()
+  outfile = "rose-suite.conf"
+  dumper(rose_suite, outfile)
+  print("  " + outfile)
+  outfile = "app/regrid-xy/rose-app.conf"
+  dumper(rose_regrid, outfile)
+  print("  " + outfile)
+  outfile = "app/remap-pp-components/rose-app.conf"
+  dumper(rose_remap, outfile)
+  print("  " + outfile)
                   
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
