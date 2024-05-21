@@ -61,20 +61,7 @@ def yamlInfo(yamlfile,experiment,platform,target):
     y=yaml.safe_load(f)
     valyml = validateYaml(y)
 
-###################
-### Copy pp yaml into cylc-src directory, make rose-suite, then IF remap and regrid paths defined, write those in cylcsrc/app/...
-
-  # Make sure cylc-src exists (it should if this is done after fre checkout) and cd into
-  # Copy pp yaml into ~/cylc-src/name
-  cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
-  shutil.copyfile(yml, os.path.join(cylc_dir, 'pp.yaml')  )
-  # verify the directory exists
-  os.chdir(cylc_dir)
-
-### PARSE YAML
-## Write the rose-suite-exp configuration
   for key,value in y.items():
-
     if key == "rose-suite":
       for suiteconfiginfo,dict in value.items():
         for configkey,configvalue in dict.items():
@@ -112,16 +99,23 @@ def yamlInfo(yamlfile,experiment,platform,target):
           rose_regrid.set(keys=[f'{comp}', 'outputGridLat'], value=f'{interp_split[0]}')
           rose_regrid.set(keys=[f'{comp}', 'outputGridType'], value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
-  # write rose configs
+  # write output files
   print("Writing output files...")
-  os.chdir(cylc_dir)
+  cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
+
+  outfile = os.path.join(cylc_dir, 'pp.yaml')
+  shutil.copyfile(yml, outfile)
+  print("  " + outfile)
+
   dumper = metomi.rose.config.ConfigDumper()
   outfile = os.path.join(cylc_dir, "rose-suite.conf")
   dumper(rose_suite, outfile)
   print("  " + outfile)
+
   outfile = os.path.join(cylc_dir, "app", "regrid-xy", "rose-app.conf")
   dumper(rose_regrid, outfile)
   print("  " + outfile)
+
   outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
   dumper(rose_remap, outfile)
   print("  " + outfile)
