@@ -39,6 +39,10 @@ def yamlInfo(yamlfile,experiment,platform,target):
   rose_suite.set(keys=['template variables', 'DO_STATICS'],        value='True')
   rose_suite.set(keys=['template variables', 'DO_TIMEAVGS'],       value='True')
   rose_suite.set(keys=['template variables', 'DO_ATMOS_PLEVEL_MASKING'], value='True')
+  # disagreeable; these should be optional
+  rose_suite.set(keys=['template variables', 'DO_ANALYSIS_ONLY'],  value='False')
+  rose_suite.set(keys=['template variables', 'DO_MDTF'],  value='False')
+  rose_suite.set(keys=['template variables', 'PP_DEFAULT_XYINTERP'],  value='0,0')
 
   # initialize rose regrid config
   rose_regrid = metomi.rose.config.ConfigNode()
@@ -76,7 +80,10 @@ def yamlInfo(yamlfile,experiment,platform,target):
         for configkey,configvalue in dict.items():
           if configvalue != None:
             k=configkey.upper()
-            rose_suite.set(keys=['template variables', k], value=f'{configvalue}')
+            if configvalue == True or configvalue == False:
+              rose_suite.set(keys=['template variables', k], value=f'{configvalue}')
+            else:
+              rose_suite.set(keys=['template variables', k], value=f'"{configvalue}"')
 
     if key == "components":
       for i in value:
@@ -91,19 +98,19 @@ def yamlInfo(yamlfile,experiment,platform,target):
           rose_remap.set(keys=[f'{comp}', 'grid'], value='native')
         # if xyInterp exists, component can be regridded
         else:
-          gridLat=i.get("xyInterp").split(",")[0]
-          gridLon=i.get("xyInterp").split(",")[1]
-          rose_remap.set(keys=[f'{comp}', 'grid'], value=f'regrid-xy/{gridLat}_{gridLon}')
+          interp_split = i.get('xyInterp').split(',')
+          rose_remap.set(keys=[f'{comp}', 'grid'], value=f'regrid-xy/{interp_method[1]}_{interp_method[0]}.{interp_method}')
 
         # set regrid items
         if i.get("xyInterp") != None:
           rose_regrid.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
           rose_regrid.set(keys=[f'{comp}', 'inputRealm'], value=f'{i.get("inputRealm")}')
-          rose_regrid.set(keys=[f'{comp}', 'inputGrid'], value=f'{i.get("inputGrid")}')
+          rose_regrid.set(keys=[f'{comp}', 'inputGrid'], value=f'{i.get("sourceGrid")}')
           rose_regrid.set(keys=[f'{comp}', 'interpMethod'], value=f'{interp_method}')
           interp_split = i.get('xyInterp').split(',')
           rose_regrid.set(keys=[f'{comp}', 'outputGridLon'], value=f'{interp_split[1]}')
           rose_regrid.set(keys=[f'{comp}', 'outputGridLat'], value=f'{interp_split[0]}')
+          rose_regrid.set(keys=[f'{comp}', 'outputGridType'], value=f'{interp_method[1]}_{interp_method[0]}.{interp_method}')
 
   # write rose configs
   print("Writing output files...")
