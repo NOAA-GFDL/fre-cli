@@ -99,7 +99,7 @@ def yamlInfo(yamlfile,experiment,platform,target):
         # if xyInterp exists, component can be regridded
         else:
           interp_split = i.get('xyInterp').split(',')
-          rose_remap.set(keys=[f'{comp}', 'grid'], value=f'regrid-xy/{interp_method[1]}_{interp_method[0]}.{interp_method}')
+          rose_remap.set(keys=[f'{comp}', 'grid'], value=f'regrid-xy/{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
         # set regrid items
         if i.get("xyInterp") != None:
@@ -110,7 +110,7 @@ def yamlInfo(yamlfile,experiment,platform,target):
           interp_split = i.get('xyInterp').split(',')
           rose_regrid.set(keys=[f'{comp}', 'outputGridLon'], value=f'{interp_split[1]}')
           rose_regrid.set(keys=[f'{comp}', 'outputGridLat'], value=f'{interp_split[0]}')
-          rose_regrid.set(keys=[f'{comp}', 'outputGridType'], value=f'{interp_method[1]}_{interp_method[0]}.{interp_method}')
+          rose_regrid.set(keys=[f'{comp}', 'outputGridType'], value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
   # write rose configs
   print("Writing output files...")
