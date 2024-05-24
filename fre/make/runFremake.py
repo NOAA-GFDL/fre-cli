@@ -15,7 +15,7 @@ from multiprocessing.dummy import Pool
 
 
 @click.command()
-def fremake_run(yamlfile, platform, target, execute, parallel, jobs, no_parallel_checkout, submit, verbose):
+def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, verbose):
 
     yml = yamlfile
     ps = platform
