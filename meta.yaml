@@ -10,7 +10,8 @@ source:
 # git_url: https://github.com/NOAA-GFDL/fre-cli
 
 build:
-  script: {{ PYTHON }} -m pip install . -vv
+  script: 
+    - {{ PYTHON }} -m pip install . -vv
   number: 1
   noarch: python
 
@@ -27,12 +28,14 @@ requirements:
     - python
     - click
     - pyyaml
+    - pylint
     - jsonschema
     - noaa-gfdl::intakebuilder
     - conda-forge::cylc-flow
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
     - conda-forge::cmor
+    - conda-forge::cylc-uiserver
 
 test:
   imports:

@@ -11,15 +11,15 @@ configuration paths:
 
 # Define widely used variables
 # Length of analysis of experiment, string in double quotes
-define1: &ANA_AMIP_LEN ""
+ana_amip_len: &ANA_AMIP_LEN ""
 # String in double quotes
-define2: &PP_AMIP_CHUNK96 ""
+pp_amip_chunk: &PP_AMIP_CHUNK96 ""
 # Year to start analysis on experiment, string in double quotes
-define3: &ANA_AMIP_START ""
+ana_amip_start: &ANA_AMIP_START ""
 # Year to stop analysis on experiment, string in double quotes
-define4: &ANA_AMIP_STOP ""
+ana_amip_stop: &ANA_AMIP_STOP ""
 # Default xy Interp, string in double quotes
-define5: &defaultxyInterp ""
+defaultyInterp: &defaultxyInterp ""
 
 # Information for rose-suite experiment configuration 
 rose-suite:
