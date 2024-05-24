@@ -24,10 +24,6 @@ def makeCli():
               multiple=True, #replaces nargs=-1 since we are using click.option() instead of click.argument()
               type=str,               help="FRE target space separated list of STRING(s) that defines compilation settings and linkage directives for experiments. Predefined targets refer to groups of directives that exist in the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one of these in the target list). Any number of targets can be used.",
               required=True)
-@click.option("-e",
-              "--execute",
-              is_flag=True,
-              help="Execute all the created scripts in the current session")
 @click.option("-n",
               "--parallel",
               type=int,
@@ -44,16 +40,12 @@ def makeCli():
               "--no-parallel-checkout",
               is_flag=True,
               help="Use this option if you do not want a parallel checkout. The default is to have parallel checkouts.")
-@click.option("-s",
-              "--submit",
-              is_flag=True,
-              help="Submit all the created scripts as batch jobs")
 @click.option("-v",
               "--verbose",
               is_flag=True,
               help="Get verbose messages (repeat the option to increase verbosity level)")
 @click.pass_context
-def run_fremake(context, yamlfile, platform, target, execute, parallel, jobs, no_parallel_checkout, submit, verbose):
+def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, verbose):
     """ - Perform all fremake functions to run checkout and compile model"""
     context.forward(fremake_run)
 
