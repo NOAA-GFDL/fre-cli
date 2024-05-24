@@ -77,3 +77,11 @@ components:
     xyInterp: *xyInterp
     interpMethod: "conserve_order1"
     inputRealm: 'land'
+
+tmpdir:
+  tmpdirpath:
+￼
+install-exp-script:
+    - path:
+    - install-option:
+        install:
