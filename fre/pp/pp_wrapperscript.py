@@ -15,31 +15,42 @@
 import sys
 import os
 import subprocess
-from subprocess import PIPE
+from subprocess import PIPE, STDOUT
 from subprocess import STDOUT
 import click
 import re
 
-# Import from the local packages
-from .checkoutScript import _checkoutTemplate
-from .configureScriptXML import _convert
-from .configureScriptYAML import _yamlInfo
-from .validate import _validate_subtool
-from .install import _install_subtool
-from .run import _pp_run_subtool 
-from .status import _status_subtool 
+#Add path to this file to the pythonpath for local imports
+import_dir = os.path.dirname(os.path.abspath(__file__))
+print(import_dir)
+sys.path.append(import_dir)
 
-def runFre2pp(config_file, experiment, platform, target, branch="main", time=0000):
+# Import from the local packages
+os.chdir(import_dir)
+#from .pp import checkoutTemplate, yamlInfo, convert, validate_subtool, install_subtool, pp_run_subtool, status_subtool
+from checkoutScript import _checkoutTemplate
+from configureScriptXML import _convert
+from configureScriptYAML import _yamlInfo
+from validate import _validate_subtool
+from install import _install_subtool
+from run import _pp_run_subtool 
+from status import _status_subtool 
+
+@click.command()
+def runFre2pp(experiment, platform, target, config, branch):
     '''
     Wrapper script for calling a FRE2 pp experiment with the canopy-style
     infrastructure and fre-cli
+    time=0000
     '''
     
     #dumb xml check;does it need to be smarter?
-    is_xml = (config_file[-3:] == "xml")
+    is_xml = (config[-3:] == "xml")
 
     #env_setup
+    #todo: check for experiment existing, call frepp_stop to clean experiment, 
     try:
+        print("calling _checkoutTemplate")
         _checkoutTemplate(experiment, platform, target, branch)
     except Exception as err:
         raise
@@ -47,7 +58,7 @@ def runFre2pp(config_file, experiment, platform, target, branch="main", time=000
     if is_xml:
         #TODO: should this prompt for pp start/stop years?
         try:
-            _convert(config_file, platform, target, experiment, do_analysis=False)
+            _convert(config, platform, target, experiment, do_analysis=False)
             #note: arg list for this function is a looooot longer, but all those
             #args can be deduced from the xml when given default vals
         except Exception as err:
@@ -59,7 +70,7 @@ def runFre2pp(config_file, experiment, platform, target, branch="main", time=000
             raise
     else:
         try:
-            _yamlInfo(config_file, experiment, platform, target)
+            _yamlInfo(config, experiment, platform, target)
         except Exception as err:
             raise
     
@@ -263,4 +274,7 @@ if __name__ == '__main__':
     experiment = "c96L65_am5f4b5r0_pdclim1850F"
     platform = "gfdl.ncrc5-deploy" #all gfdl-compliant platforms start with gfdl
     target = "prod-openmp"
-    runFre2pp(config_file, experiment, platform, target, branch="main", time=0000)
+    branch = "main"
+    runFre2pp(config_file, experiment, platform, target, branch=branch, time=0000)
+    #YAML files in development are located at: https://gitlab.gfdl.noaa.gov/portable_climate/fremake_canopy
+    #mostly under blobs/main/yamls
