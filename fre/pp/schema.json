@@ -3,20 +3,6 @@
   "title": "Schema for PP Yaml",
   "type": "object",
   "properties": {
-    "configuration_paths": { 
-      "type": "object",
-      "properties": {
-        "rose-suite": {"type": "string"},
-        "rose-remap": {"type": ["string","null"]},
-        "rose-regrid": {"type": ["string","null"]}
-      }
-    },
-    "ana_amip_len": {"type": "string"},
-    "pp_amip_chunk": {"type": "string"},
-    "ana_amip_start": {"type": "string"},
-    "ana_amip_stop": {"type": "string"},
-    "defaultxyInterp": {"type": "string"},
-
     "rose-suite": {
       "type": "object",
       "properties": {
@@ -26,7 +12,6 @@
             "history_segment": {"type":"string"},
             "pp_start": {"type":"string"},
             "pp_stop": {"type":"string"},
-            "len": {"type":"string"},
             "site": {"type":"string"},
             "fre_analysis_home": {"type":["string","null"]},
             "pp_chunk_a": {"type":"string"},
@@ -74,30 +59,11 @@
       "type":"object",
       "properties": {
         "type": {"type":"string"},
-        "start": {"type":"string"},
         "sources": {"type":"string"},
         "sourceGrid": {"type":"string"},
         "xyInterp": {"type":"string"},
-        "zInterp": {"type":"string"},
         "interpMethod": {"type":"string"},
-        "cmip": {"type":"string"},
-        "timeSeries": {
-          "type": "array",
-          "properties": {
-            "freq": {"type":"string"},
-            "source": {"type":"string"},
-            "chunkLength": {"type":"string"},
-            "variables": {"type":"string"}
-          }
-        },
-        "timeAverage": {
-          "type": "array",
-          "properties": {
-            "source": {"type":"string"},
-            "interval": {"type":"string"},
-            "calcInterval": {"type":"string"}
-          }
-        }
+        "inputRealm": {"type":"string"}
       }
     },
     "tmpdir": {
