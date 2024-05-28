@@ -80,8 +80,8 @@ components:
 
 tmpdir:
   tmpdirpath:
-￼
+
 install-exp-script:
-    - path:
-    - install-option:
-        install:
+  - path:
+  - install-option:
+    install:
