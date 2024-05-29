@@ -35,7 +35,7 @@ requirements:
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
     - conda-forge::cmor
-    - conda-forge:cylc-uiserver
+    - conda-forge::cylc-uiserver
 
 test:
   imports:
