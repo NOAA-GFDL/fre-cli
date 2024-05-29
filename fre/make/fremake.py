@@ -1,9 +1,9 @@
 import click
-from .createCheckout import checkout_create
-from .createCompile import compile_create
-from .createDocker import dockerfile_create
-from .createMakefile import makefile_create
-from .runFremake import fremake_run
+from .fremake_scripts.createCheckout import checkout_create
+from .fremake_scripts.createCompile import compile_create
+from .fremake_scripts.createDocker import dockerfile_create
+from .fremake_scripts.createMakefile import makefile_create
+from .fremake_scripts.runFremake import fremake_run
 
 @click.group(help=click.style(" - access fre make subcommands", fg=(210,73,57)))
 def makeCli():
