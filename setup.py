@@ -16,6 +16,7 @@ setup(
         'jsonschema',
         'cylc-flow',
         'cylc-rose',
+        'cdo',
         'metomi-rose'
     ],
     entry_points={
