@@ -11,7 +11,8 @@ setup(
     install_requires=[
         'click',
         'pyyaml',
-        'pylint', 
+        'pylint',
+        'pytest',
         'jsonschema',
         'cylc-flow',
         'cylc-rose',
