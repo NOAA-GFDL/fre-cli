@@ -4,6 +4,7 @@
 # Description: 
 
 import os
+import sys
 from pathlib import Path
 import subprocess
 from subprocess import PIPE
@@ -21,9 +22,6 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
     """
     Checkout the workflow template files from the repo
     """
-    print(experiment)
-    print(platform)
-    print(target)
     # Create the directory if it doesn't exist
     directory = os.path.expanduser("~/cylc-src")
     os.makedirs(directory, exist_ok=True)
@@ -43,11 +41,15 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
             argstring = f" -e {experiment} -p {platform} -t {target}"
             stop_report = "\n".join([f"Error in checkoutTemplate: the workflow definition specified by -e/-p/-t already exists at the location ~/cylc-src/{name}!",
-                                     "Please delete workflow dir and clone again."])
-            click.echo(stop_report)
+                                     "Please delete workflow dir and clone again.". 
+                                     "Copy/paste commands:",
+                                     "\t cylc clean {name}",
+                                     "\t rm -r ~/cylc-src/{name}", 
+                                     "\t rm -r ~/cylc-run/{name}"])
+            sys.exit(stop_report)
             return 1
         else:
-            click.echo(preexist_error)
+            #if not identified, just print the error
             click.echo(clonecmd)
             click.echo(cloneproc.stdout)
         return 1

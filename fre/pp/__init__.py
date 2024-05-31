@@ -6,6 +6,7 @@ from .install import install_subtool
 from .run import pp_run_subtool
 from .status import status_subtool
 from .frepp import ppCli
+from .wrapper import runFre2pp
 
 __all__ = ["checkoutTemplate",
            "yamlInfo",
@@ -14,5 +15,6 @@ __all__ = ["checkoutTemplate",
            "install_subtool",
            "pp_run_subtool",
            "status_subtool",
-           "ppCli"]
+           "ppCli", 
+           "runFre2pp"]
 
