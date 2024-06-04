@@ -4,7 +4,7 @@ setup(
     name='fre-cli',
     version='0.1.5',
     description='Command Line Interface for FRE commands',
-    author='MSD Workflow Team','Bennett Chang', 'Dana Singh', 'Chris Blanton'
+    author='MSD Workflow Team','Bennett Chang','Dana Singh','Chris Blanton',
     author_email='oar.gfdl.workflow@noaa.gov',
     packages=find_namespace_packages(),
     include_package_data=True,
