@@ -69,8 +69,7 @@ test:
     - fre app mask-atmos-plevel --help
     - fre cmor --help
     - fre cmor run --help
-    - ls -a
-    - tree
+    - pytest tests/
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
