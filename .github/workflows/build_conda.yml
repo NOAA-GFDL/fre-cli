@@ -11,16 +11,16 @@ jobs:
     steps:
     - name: Checkout Files
       uses: actions/checkout@v4
-    - name: Run Pytests
-      run: |
-        pip install pytest
-        pytest fre/app/tests/
     - name: Run Docker to Build
       run: |
         conda config --append channels conda-forge
         conda config --append channels noaa-gfdl
         conda install conda-build conda-verify
         conda build .
+    - name: Run Pytests
+      run: |
+        pip install pytest
+        pytest fre/app/tests/
     - name: Pylint All Code
       continue-on-error: true
       run: |
