@@ -70,6 +70,7 @@ test:
     - fre cmor --help
     - fre cmor run --help
     - ls -a
+    - tree
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
