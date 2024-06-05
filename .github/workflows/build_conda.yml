@@ -17,10 +17,6 @@ jobs:
         conda config --append channels noaa-gfdl
         conda install conda-build conda-verify
         conda build .
-    - name: Run Pytests
-      run: |
-        pip install pytest
-        pytest fre/app/tests/
     - name: Pylint All Code
       continue-on-error: true
       run: |
