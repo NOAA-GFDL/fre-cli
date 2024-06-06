@@ -1,4 +1,5 @@
 import pathlib as pl
+import pytest
 
 # not a test function, to be called by test functions below.
 def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=None, unwgt=None, stddev_type=None):
