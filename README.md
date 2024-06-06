@@ -32,7 +32,7 @@ As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that wi
             - `conda install noaa-gfdl::fre-cli` should install the [CLI package](https://anaconda.org/NOAA-GFDL/fre-cli) created from the [`meta.yaml`](https://github.com/NOAA-GFDL/fre-cli/blob/refactoring/meta.yaml)
         - All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
         - setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
-* Enter commands and follow `--help` messages for guidance (brief rundown of commands also provided below)
+* Enter commands and follow `--help` messages for guidance (brief rundown of commands to be provided inside tool folder README files)
     - If the user just runs `fre`, it will list all the command groups following `fre`, such as `run`, `make`, `pp`, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown 
     - Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if `--help` is executed
         - Argument flags are not positional, can be specified in any order as long as they are specified
