@@ -70,7 +70,7 @@ If there is *no* subdirectory created for the new tool command group you are try
       - at the end of the `__init__.py` file, add an `__all__` [variable](https://realpython.com/python-all-attribute/), following [this syntax](https://github.com/NOAA-GFDL/fre-cli/blob/refactoring/fre/pp/__init__.py): `__all__ = ["subCommandFunction1", "subCommandFunction2", "subCommandClass1", "subCommandClass2"]`
       - the purpose of these lines are to enable `fre.py` to invoke them using its own [`__init__.py`](https://github.com/NOAA-GFDL/fre-cli/blob/refactoring/fre/__init__.py
   3. Create separate files to house the code implementation for each different subcommand; *do not* include any Click decorators for your function, except for `@click.command`
-      - Define the function with its usual arguments, and the Click decorators to prompt them will go into `fre[tool].py`
+      - Define the function normally with its usual arguments; the Click decorators to prompt them will instead go into `fre[tool].py`
   4. Remember to import any needed packages/dependencies in your subcommand script file
   5. _As of second refactoring_: Create a file named `fre[tool].py` (i.e `fremake.py`)
   6. In `fre[tool].py`, import all script commands from the tool's `__init__.py` file (i.e. `from .tool import subCommandFunction1, subCommandClass1, etc.`), and create a `@click.group` called `[tool]Cli` that is simply passed to the `if __name__ == "__main__":` block at the bottom of the file

@@ -17,7 +17,7 @@ jobs:
         conda config --append channels noaa-gfdl
         conda install conda-build conda-verify
         conda build .
-    - name: pylint all code
+    - name: Pylint All Code
       continue-on-error: true
       run: |
         python -m pip install --upgrade pip
