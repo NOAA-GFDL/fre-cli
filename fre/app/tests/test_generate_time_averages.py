@@ -189,7 +189,7 @@ def test_compare_fre_python_tools_to_fre_nctools():
     #assert (non_zero_count == 0.) # bad way to check for zero. 
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ) 
 
-
+@pytest.mark.skip(reason='test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_fre_python_tools_to_cdo():
     import numpy as np
     import netCDF4 as nc
@@ -248,7 +248,7 @@ def test_compare_unwgt_fre_python_tools_to_unwgt_cdo():
     non_zero_count=np.count_nonzero(diff_pytools_cdo_timavg[:])
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ) 
 
-
+@pytest.mark.skip(reason='test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_cdo_to_fre_nctools():
     import numpy as np
     import netCDF4 as nc
