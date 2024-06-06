@@ -14,24 +14,24 @@ As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that wi
 
 * Accessing the fre-cli:
     - (Method 1) User - Loading module:
-        - workstation: `module load fre/canopy`
-        - gaea: `module load fre/canopy`
+        - Workstation: `module load fre/canopy`
+        - Gaea: `module load fre/canopy`
     - (Method 2) User - Conda environment setup
         - If on workstation:
             - `module load miniforge`
             - `conda activate /nbhome/fms/conda/envs/fre-cli`
-        - If on gaea:
+        - If on Gaea:
             - `module load miniforge`
             - `conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli`
     - (Method 3) Developer - If you have Conda loaded and want to create your OWN environment (i.e. for development, testing, etc.)
-            - Create a new Conda environment: `conda create -n [environmentName]`
-            - Append necessary channels
-                - `conda config --append channels noaa-gfdl` 
-                - `conda config --append channels conda-forge`
-            - Run `conda install` on needed dependencies (`conda install click` will give you access to pip as well)
-                - `conda install noaa-gfdl::fre-cli` should install the [CLI package](https://anaconda.org/NOAA-GFDL/fre-cli) created from the [`meta.yaml`](https://github.com/NOAA-GFDL/fre-cli/blob/refactoring/meta.yaml)
-            - All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
-            - setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
+        - Create a new Conda environment: `conda create -n [environmentName]`
+        - Append necessary channels
+            - `conda config --append channels noaa-gfdl` 
+            - `conda config --append channels conda-forge`
+        - Run `conda install` on needed dependencies (`conda install click` will give you access to pip as well)
+            - `conda install noaa-gfdl::fre-cli` should install the [CLI package](https://anaconda.org/NOAA-GFDL/fre-cli) created from the [`meta.yaml`](https://github.com/NOAA-GFDL/fre-cli/blob/refactoring/meta.yaml)
+        - All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
+        - setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
 * Enter commands and follow `--help` messages for guidance (brief rundown of commands also provided below)
     - If the user just runs `fre`, it will list all the command groups following `fre`, such as `run`, `make`, `pp`, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown 
     - Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if `--help` is executed
@@ -110,4 +110,5 @@ If there is *no* subdirectory created for the new tool command group you are try
 
 ## **Additional Helpful Links**
 * [Official Click Documentation](https://click.palletsprojects.com/en/8.1.x/api/)
-* [`setup.py` key words](https://setuptools.pypa.io/en/latest/references/keywords.html)
+* [`setup.py` Key Words](https://setuptools.pypa.io/en/latest/references/keywords.html)
+* [`meta.yaml` Documentation](https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html)
