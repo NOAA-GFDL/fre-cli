@@ -43,7 +43,6 @@ requirements:
 test:
   source_files: 
     - fre/
-    # - fre/app/tests/
   imports:
     - click
     - pytest
