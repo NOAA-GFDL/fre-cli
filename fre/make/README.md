@@ -9,7 +9,7 @@ Through the fre-cli, `fre make` can be used to create and run a checkout script,
 
 * **Note: Users will not be able to create containers without access to podman**
 
-The fremake canopy fre-cli subcommands are described below ([Subcommands](#subcommands)) and well as a Guide on how to use them in what order ([Guide](#guide)).
+The fremake canopy fre-cli subcommands are described below ([Subcommands](#subcommands)), as well as a Guide on the order in which to use them ([Guide](#guide)).
 
 Additionally, as mentioned, multiple targets can be used more multiple target-platform combinations. Below is an example of this usage for both the bare-metal build and container build, using the AM5 model
 
