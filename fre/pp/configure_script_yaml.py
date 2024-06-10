@@ -67,11 +67,15 @@ def yamlInfo(yamlfile,experiment,platform,target):
         for configkey,configvalue in dict.items():
           if configvalue != None:
             k=configkey.upper()
-            if configvalue == True or configvalue == False:
-              rose_suite.set(keys=['template variables', k], value=f'{configvalue}')
+            if k in ("HISTORY_DIR", "PP_DIR", "ANALYSIS"):
+               # replace generic variables in pp yaml
+               stem=e.split("_",1)[0]
+               exp=e.split("_",1)[1]
+               replace=configvalue.replace("$(stem)",stem).replace("$(expname)",exp).replace("$(platform)",p).replace("$(target)",t)
+               rose_suite.set(keys=['template variables', k], value=f'{replace}')
             else:
               rose_suite.set(keys=['template variables', k], value=f'"{configvalue}"')
-
+    
     if key == "components":
       for i in value:
         comp = i.get('type')
@@ -119,7 +123,7 @@ def yamlInfo(yamlfile,experiment,platform,target):
   outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
   dumper(rose_remap, outfile)
   print("  " + outfile)
-                  
+               
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
     yamlInfo()
