@@ -18,20 +18,23 @@ As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that wi
     - (Method 1) User - Loading module:
         - Workstation: `module load fre/canopy`
         - Gaea: `module load fre/canopy`
-    - (Method 2) User - Conda environment setup
+        - _Cannot install local changes on top via `pip`_
+    - (Method 2) User - Conda environment setup:
         - If on workstation:
             - `module load miniforge`
             - `conda activate /nbhome/fms/conda/envs/fre-cli`
         - If on Gaea:
             - `module load miniforge`
             - `conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli`
-    - (Method 3) Developer - If you have Conda loaded and want to create your OWN environment (i.e. for development, testing, etc.)
+        - _Can install local changes on top via `pip`_
+    - (Method 3) Developer - If you have Conda loaded and want to create your OWN environment (i.e. for development, testing, etc.):
         - Create a new Conda environment: `conda create -n [environmentName]`
         - Append necessary channels
             - `conda config --append channels noaa-gfdl` 
             - `conda config --append channels conda-forge`
         - Run `conda install` on needed dependencies (`conda install click` will give you access to pip as well)
             - `conda install noaa-gfdl::fre-cli` should install the [CLI package](https://anaconda.org/NOAA-GFDL/fre-cli) created from the [`meta.yaml`](https://github.com/NOAA-GFDL/fre-cli/blob/refactoring/meta.yaml)
+        - _Can install local changes on top via `pip`_
         - All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
         - setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
 * Enter commands and follow `--help` messages for guidance (brief rundown of commands to be provided inside tool folder README files)
