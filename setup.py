@@ -1,4 +1,5 @@
 from setuptools import setup, find_namespace_packages
+import setuptools_git_versioning
 from setuptools_git_versioning import git_version
 
 setup(
