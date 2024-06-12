@@ -3,12 +3,13 @@
 FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
 * [Sphinx Page](https://noaa-gfdl.github.io/fre-cli/index.html)
+* [Project Outline](https://docs.google.com/document/d/19Uc01IPuuIuMtOyAvxXj9Mn6Ivc5Ql6NZ-Q6I8YowRI/edit?usp=sharing)
 
 ![IMG_1076](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/817cabe1-6e3b-4210-9874-b13f601265d6)
 
 ## **Background**
 
-As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that will allow users to call upon FRE commands using a **_fre_** **tool** _subtool_ syntax. Developed with Click, a Python package easily installable through PyPI and Conda, the main goal of this is to allow users access to most, if not all of MSD-managed tools and workflows from one packaged, centralized CLI. Click [here](https://docs.google.com/document/d/19Uc01IPuuIuMtOyAvxXj9Mn6Ivc5Ql6NZ-Q6I8YowRI/edit?usp=sharing) for further background information.
+As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that will allow users to call upon FRE commands using a **_fre_** **tool** _subtool_ syntax. Developed with Click, a Python package easily installable through PyPI and Conda, the main goal of this is to allow users access to most, if not all of MSD-managed tools and workflows from one packaged, centralized CLI.
 
 ![Screenshot from 2024-04-18 13-42-04](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/43c028a6-4e6a-42fe-8bec-008b6758ea9b)
 
@@ -108,11 +109,14 @@ If there is *no* subdirectory created for the new tool command group you are try
 .
 ├── __init__.py
 ├── fre.py
+├── README-tool-template.md
 ├── lazy_group.py
 ├── /[tool]
 │   ├── __init__.py
 │   ├── fre[tool].py
-│   └── [subCommandScript].py
+│   ├── README.md
+│   ├── [subCommandScript].py
+│   └── /[optional-submodule]
 ```
 
 ## **Additional Helpful Links**
