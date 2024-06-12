@@ -1,8 +1,9 @@
 from setuptools import setup, find_namespace_packages
+from setuptools_git_versioning import git_version
 
 setup(
     name='fre-cli',
-    version='0.1.6',
+    version=git_version(),
     description='Command Line Interface for FRE commands',
     author='MSD Workflow Team, Bennett Chang, Dana Singh, Chris Blanton',
     author_email='oar.gfdl.workflow@noaa.gov',
