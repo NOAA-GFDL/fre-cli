@@ -22,7 +22,7 @@ The [tool group] fre-cli tools are described below ([Subcommands](#subcommands))
    - Options:
         - `-[short command], --[long command] [name of argument] (required/not required)`
 ## Guide
-### **Bare-metal Build:**
+### **[Certain type of build/run]:**
 ```bash
 # Short description of subcommand 1
 fre [tool group] [subcommand] -[short/long command 1] [argument(s) 1] -[short/long command 2] [argument(s) 2] etc.
