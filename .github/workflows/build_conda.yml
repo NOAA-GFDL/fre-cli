@@ -13,16 +13,12 @@ jobs:
       uses: actions/checkout@v4
     - name: Get Version from Git Tag
       run: |
-        # Capture the output of the git command and store in a variable
         version=$(git describe --abbrev=0 --tags 2> /dev/null)
-        # Check if the command was successful (exit code 0)
         if [[ $? -eq 0 ]]; then
           echo "Version retrieved from git tag: $version"
-          # Export the version as an environment variable
           export CONDA_PACKAGE_VERSION=$version
         else
           echo "Error: Could not retrieve version from git tag."
-          # Exit the workflow with an error code (optional)
           exit 1
         fi 
     - name: Run Docker to Build
