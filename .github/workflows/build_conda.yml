@@ -11,23 +11,12 @@ jobs:
     steps:
     - name: Checkout Files
       uses: actions/checkout@v4
-    - name: Get Version from Git Tag
-      run: |
-        git tag
-        version=$(git describe --abbrev=0 --tags 2> /dev/null)
-        if [[ $? -eq 0 ]]; then
-          echo "Version retrieved from git tag: $version"
-          export CONDA_PACKAGE_VERSION=$version
-        else
-          echo "Error: Could not retrieve version from git tag."
-          exit 1
-        fi 
     - name: Run Docker to Build
       run: |
         conda config --append channels conda-forge
         conda config --append channels noaa-gfdl
         conda install conda-build conda-verify
-        conda build --version ${{ env.CONDA_PACKAGE_VERSION }} .
+        conda build .
     - name: Pylint All Code
       continue-on-error: true
       run: |
