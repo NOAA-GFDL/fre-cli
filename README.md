@@ -18,11 +18,11 @@ As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that wi
 ## **Usage (Users)**
 
 * Accessing the fre-cli:
-    - (Method 1) User - Loading module:
+    - **(Method 1) User - with Lmod:**
         - Workstation: `module load fre/canopy`
         - Gaea: `module load fre/canopy`
         - _Cannot install local changes on top via `pip`_
-    - (Method 2) User - Conda environment setup:
+    - **(Method 2) User - Conda Environment Activation:**
         - If on workstation:
             - `module load miniforge`
             - `conda activate /nbhome/fms/conda/envs/fre-cli`
@@ -30,7 +30,7 @@ As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that wi
             - `module load miniforge`
             - `conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli`
         - _Can install local changes on top via `pip`_
-    - (Method 3) Developer - If you have Conda loaded and want to create your OWN environment (i.e. for development, testing, etc.):
+    - **(Method 3) Developer - Conda Environment Building** (If you have Conda loaded and want to create your OWN environment for development, testing, etc.)
         - Create a new Conda environment: `conda create -n [environmentName]`
         - Append necessary channels
             - `conda config --append channels noaa-gfdl` 
