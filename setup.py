@@ -13,7 +13,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='fre-cli',
-    version=version_from_git(),
+    version=get_git_version(),
     description='Command Line Interface for FRE commands',
     author='MSD Workflow Team, Bennett Chang, Dana Singh, Chris Blanton',
     author_email='oar.gfdl.workflow@noaa.gov',
