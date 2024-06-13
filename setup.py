@@ -1,5 +1,15 @@
+import subprocess
+
+def get_git_version():
+  try:
+    # Get the latest tag using git describe
+    output = subprocess.check_output(['git', 'describe', '--abbrev=0']).decode('utf-8').strip()
+    # Split the output to get the tag (assuming valid format)
+    return output.split('-')[0]
+  except subprocess.CalledProcessError:
+    # Fallback to a default version if git fails
+    return "0.0.0"
 from setuptools import setup, find_namespace_packages
-from setuptools_git_versioning import version_from_git
 
 setup(
     name='fre-cli',
@@ -11,7 +21,6 @@ setup(
     include_package_data=True,
     install_requires=[
         'click',
-        'setuptools-git-versionining>=2.0',
         'pyyaml',
         'pylint',
         'pytest',
