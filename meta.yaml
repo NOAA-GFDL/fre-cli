@@ -38,7 +38,7 @@ requirements:
     - conda-forge::cylc-uiserver
     - conda-forge::pytest
     - conda-forge::python-cdo=1.6.0
-    - conda-forge::cdo=2.2.0
+    - conda-forge::cdo>=2.0.0
 
 test:
   source_files: 
