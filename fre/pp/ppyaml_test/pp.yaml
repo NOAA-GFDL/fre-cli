@@ -22,12 +22,9 @@ rose-suite:
 
   directories:
     history_dir: "/archive/c2b/$(stem)/2022.01/$(expname)/$(platform)-$(target)/history"
-    #"/archive/c2b/am5/2022.01/c96L65_am5f1a0r0_amip/gfdl.ncrc5-intel22-classic-prod-openmp/history"
     pp_dir: "/archive/$USER/canopy/$(stem)/$(expname)/$(platform)-$(target)/pp" 
-    #"/archive/$USER/canopy/am5/c96L65_amip/gfdl.ncrc5-deploy-prod-openmp/pp"
     ptmp_dir: "/xtmp/$USER/ptmp"
     analysis: "/nbhome/$USER/canopy/analysis/$(expname)" 
-    #"/nbhome/$USER/canopy/analysis/am5_c96L65_amip"
 
 components:
   - type: "atmos_cmip"
