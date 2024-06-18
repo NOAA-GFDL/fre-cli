@@ -31,7 +31,7 @@ requirements:
     - pylint
     - jsonschema
     - noaa-gfdl::intakebuilder
-    - conda-forge::cylc-flow
+    - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
     - conda-forge::cmor
