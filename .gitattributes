@@ -1,0 +1,2 @@
+# miniver (minimal versioning tool) https://github.com/jbweston/miniver
+my_package/_static_version.py export-subst

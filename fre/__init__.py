@@ -9,3 +9,7 @@ from .yamltools import *
 from .app import *
 from .cmor import *
 from .lazy_group import LazyGroup
+
+# miniver (minimal versioning tool) https://github.com/jbweston/miniver
+from ._version import __version__
+del _version
