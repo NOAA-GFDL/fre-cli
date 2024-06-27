@@ -4,9 +4,7 @@ import os
 import subprocess
 import click
 
-@click.command()
-
-def status_subtool(experiment, platform, target):
+def _status_subtool(experiment, platform, target):
     """
     Report workflow state for the Cylc workflow
     <experiment>__<platform>__<target>
@@ -15,3 +13,8 @@ def status_subtool(experiment, platform, target):
     name = experiment + '__' + platform + '__' + target
     cmd = f"cylc workflow-state {name}"
     subprocess.run(cmd, shell=True, check=True, timeout=30)
+
+
+@click.command()
+def status_subtool():
+    return _status_subtool(experiment, platform, target)

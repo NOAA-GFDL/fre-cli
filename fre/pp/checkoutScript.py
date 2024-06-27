@@ -4,6 +4,7 @@
 # Description: 
 
 import os
+import sys
 from pathlib import Path
 import subprocess
 from subprocess import PIPE
@@ -17,8 +18,7 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
 
 #############################################
 
-@click.command()
-def checkoutTemplate(experiment, platform, target, branch='main'):
+def _checkoutTemplate(experiment, platform, target, branch='main'):
     """
     Checkout the workflow template files from the repo
     """
@@ -41,16 +41,30 @@ def checkoutTemplate(experiment, platform, target, branch='main'):
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
             argstring = f" -e {experiment} -p {platform} -t {target}"
             stop_report = "\n".join([f"Error in checkoutTemplate: the workflow definition specified by -e/-p/-t already exists at the location ~/cylc-src/{name}!",
-                                     "Please delete workflow dir and clone again."])
-            click.echo(stop_report)
+                                     f"In the future, we will confirm that ~/cylc-src/{name} is usable and will check whether it is up-to-date.",
+                                     "But for now, if you wish to proceed, you must delete the workflow definition.",
+                                     "To start over, try:",
+                                     f"\t cylc stop {name}",
+                                     f"\t cylc clean {name}",
+                                     f"\t rm -r ~/cylc-src/{name}"])
+            sys.exit(stop_report)
             return 1
         else:
-            click.echo(preexist_error)
+            #if not identified, just print the error
             click.echo(clonecmd)
             click.echo(cloneproc.stdout)
         return 1
 
 #############################################
+
+@click.command()
+def checkoutTemplate(experiment, platform, target, branch="main"):
+    '''
+    Wrapper script for calling checkoutTemplate - allows the decorated version
+    of the function to be separate from the undecorated version
+    '''
+    return _checkoutTemplate(experiment, platform, target, branch="main")
+                            
 
 if __name__ == '__main__':
     checkoutTemplate()
