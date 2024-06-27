@@ -29,8 +29,8 @@ sys.path.append(import_dir)
 os.chdir(import_dir)
 #from .pp import checkoutTemplate, yamlInfo, convert, validate_subtool, install_subtool, pp_run_subtool, status_subtool
 from checkoutScript import _checkoutTemplate
-from configureScriptXML import _convert
-from configureScriptYAML import _yamlInfo
+from configure_script_xml import _convert
+from configure_script_yaml import _yamlInfo
 from validate import _validate_subtool
 from install import _install_subtool
 from run import _pp_run_subtool 
