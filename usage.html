@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="_static/fonts.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Subtools" href="subtools.html" />
+    <link rel="prev" title="Setup" href="setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#user-usage">User Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tools">Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage-developers">Usage (Developers)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="subtools.html">Subtools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">FAQ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<section id="user-usage">
+<h2>User Usage<a class="headerlink" href="#user-usage" title="Link to this heading"></a></h2>
+<p><strong>Conda environment set up</strong></p>
+<p>Load Conda</p>
+<p>Create new Conda environment</p>
+<p>Append necessary channels</p>
+<p>Install needed dependencies</p>
+<p>setup.py file allows fre.py to be ran with fre as the entry point on the command line instead of python fre.py</p>
+<p>Enter commands and follow <em>–help</em> messages for guidance (brief rundown of commands also provided below)</p>
+<p>If the user just runs <em>fre</em>, it will list all the command groups following <em>fre</em>, such as <em>run</em>, <em>make</em>, <em>pp</em>, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown</p>
+<p>Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if <em>–help</em> is executed</p>
+<p>Argument flags are not positional, can be specified in any order as long as they are specified</p>
+<p>Can run directly from any directory, no need to clone repository</p>
+<p>May need to deactivate environment and reactivate it in order for changes to apply</p>
+</section>
+<section id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Link to this heading"></a></h2>
+<p>A few subtools are currently in development:</p>
+<p><strong>fre pp</strong></p>
+<ol class="arabic simple">
+<li><p>configure</p></li>
+</ol>
+<ul class="simple">
+<li><p>Postprocessing yaml configuration</p></li>
+<li><p>Minimal Syntax: <em>fre pp configure -y [user-edit yaml file]</em></p></li>
+<li><p>Module(s) needed: n/a</p></li>
+<li><p>Example: <em>fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml</em></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>checkout</p></li>
+</ol>
+<ul class="simple">
+<li><p>Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository</p></li>
+<li><p>Minimal Syntax: <em>fre pp checkout -e [experiment name] -p [platform name] -t [target name]</em></p></li>
+<li><p>Module(s) needed: n/a</p></li>
+<li><p>Example: <em>fre pp checkout -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp</em></p></li>
+</ul>
+<p><strong>fre catalog</strong></p>
+<p>1. buildCatalog1
+* Builds json and csv format catalogs from user input directory path
+* Minimal Syntax: <em>fre catalog buildCatalog -i [input path] -o [output path]</em>
+* Module(s) needed: n/a
+* Example: <em>fre catalog buildCatalog -i /archive/am5/am5/am5f3b1r0/c96L65_am5f3b1r0_pdclim1850F/gfdl.ncrc5-deploy-prod-openmp/pp -o ~/output –overwrite</em></p>
+<p><strong>To be developed:</strong></p>
+<ol class="arabic simple">
+<li><p>fre check</p></li>
+<li><p>fre list</p></li>
+<li><p>fre make</p></li>
+<li><p>fre run</p></li>
+<li><p>fre test</p></li>
+<li><p>fre yamltools</p></li>
+</ol>
+</section>
+<section id="usage-developers">
+<h2>Usage (Developers)<a class="headerlink" href="#usage-developers" title="Link to this heading"></a></h2>
+<p>Developers are free to use the user guide above to familiarize with the CLI and save time from having to install any dependencies, but development within a Conda environment is heavily recommended regardless</p>
+<p>Gain access to the repository with <em>git clone git&#64;github.com:NOAA-GFDL/fre-cli.git</em> or your fork’s link (recommended) and an SSH RSA key</p>
+<p>Once inside the repository, developers can test local changes by running a <em>pip install .</em> inside of the root directory to install the fre-cli package locally with the newest local changes</p>
+<p>Test as a normal user would use the CLI</p>
+<p><strong>Adding New Tools - Checklist</strong></p>
+<p>If there is <em>no</em> subdirectory created for the new tool you are trying to develop, there are a few steps to follow:</p>
+<ol class="arabic simple">
+<li><p>Create a subdirectory for the tool group inside the /fre folder; i.e. /fre/fre(subTool)</p></li>
+<li><p>Add an <em>__init__.py</em> inside of the new subdirectory</p></li>
+</ol>
+<ul class="simple">
+<li><p>This will contain one line, <em>from fre.fre(subTool) import *</em></p></li>
+<li><p>The purpose of this line is to allow the subTool module to include all the scripts and functions within it when invoked by fre</p></li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p>Add a file named <em>fre(subTool).py</em>. This will serve as the main file to house all of the tool’s related subcommands</p></li>
+<li><p>Add a Click group named after the subTool within <em>fre(subTool).py</em></p></li>
+</ol>
+<ul class="simple">
+<li><p>This group will contain all of the subcommands</p></li>
+</ul>
+<ol class="arabic simple" start="5">
+<li><p>Create separate files to house the code for each different subcommand; do not code out the full implemetation of a function inside of a Click command within <em>fre(subTool).py</em></p></li>
+<li><p>Be sure to import the contents of the needed subcommand scripts inside of fre(subTool).py</p></li>
+</ol>
+<ul class="simple">
+<li><p>i.e. from fre.fre(subTool).subCommandScript import *</p></li>
+</ul>
+<ol class="arabic simple" start="7">
+<li><p>At this point, you can copy and paste the parts of your main Click subcommand from its script into <em>fre(subTool).py</em> when implementing the function reflective of the subcommand function</p></li>
+</ol>
+<ul class="simple">
+<li><p>Everything will remain the same; i.e. arguments, options, etc.</p></li>
+<li><p>However, this new function within <em>fre(subTool).py</em> must a new line after the arguments, options, and other command components; <em>&#64;click.pass_context</em></p></li>
+<li><p>Along with this, a new argument “context” must now be added to the parameters of the command (preferably at the beginning, but it won’t break it if it’s not)</p></li>
+</ul>
+<ol class="arabic simple" start="8">
+<li><p>From here, all that needs to be added after defining the command with a name is <em>context.forward(mainFunctionOfSubcommand)</em>, and done!</p></li>
+<li><p>After this step, it is important to add <em>from fre.fre(subTool) import</em> to the <em>__init__.py</em> within the /fre folder</p></li>
+<li><p>The last step is to replicate the subcommand in the same way as done in <em>fre(subTool).py</em> inside of <em>fre.py</em>, but make sure to add <em>from fre import fre(subTool)</em> and <em>from fre.fre(subTool).fre(subTool) import *</em></p></li>
+</ol>
+<p>Please refer to this issue when encountering naming issues: <a class="reference external" href="https://github.com/NOAA-GFDL/fre-cli/issues/31">NOAA-GFDL#31</a></p>
+<p><strong>Adding Tools From Other Repositories</strong></p>
+<p>Currently, the solution to this task is to approach it using Conda packages. The tool that is being added must reside within a repository that contains a meta.yaml that includes Conda dependencies like the one in this repository and ideally a setup.py (may be subject to change due to deprecation) that may include any potentially needed pip dependencies</p>
+<ul class="simple">
+<li><p>Once published as a Conda package, ideally on the NOAA-GFDL channel at <a class="reference external" href="https://anaconda.org/NOAA-GFDL">https://anaconda.org/NOAA-GFDL</a>, an addition can be made to the “run” section under the “requirements” category in the meta.yaml of the fre-cli following the syntax channel::package</p></li>
+<li><p>On pushes to the main branch, the package located at <a class="reference external" href="https://anaconda.org/NOAA-GFDL/fre-cli">https://anaconda.org/NOAA-GFDL/fre-cli</a> will automatically be updated using the workflow file</p></li>
+</ul>
+<p><strong>MANIFEST.in</strong></p>
+<p>In the case where non-python files like templates, examples, and outputs are to be included in the fre-cli package, MANIFEST.in can provide the solution. Ensure that the file exists within the correct folder, and add a line to the MANIFEST.in file saying something like <em>include fre/fre(subTool)/fileName.fileExtension</em></p>
+<ul class="simple">
+<li><p>For more efficiency, if there are multiple files of the same type needed, the MANIFEST.in addition can be something like <em>recursive-include fre/fre(subTool) *.fileExtension</em> which would recursively include every file matching that fileExtension within the specified directory and its respective subdirectories.</p></li>
+</ul>
+<p><strong>Example /fre Directory Structure</strong>
+.
+├── __init__.py
+├── fre.py
+├── fre(subTool)
+│   ├── __init__.py
+│   ├── subCommandScript.py
+│   └── fre(subTool).py</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="setup.html" class="btn btn-neutral float-left" title="Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="subtools.html" class="btn btn-neutral float-right" title="Subtools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
