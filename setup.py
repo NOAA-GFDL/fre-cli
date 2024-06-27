@@ -1,5 +1,7 @@
 from setuptools import setup, find_namespace_packages
 
+# miniver (minimal versioning tool) https://github.com/jbweston/miniver
+
 def get_version_and_cmdclass(pkg_path):
     """Load version.py module without importing the whole package.
        Template code from miniver
