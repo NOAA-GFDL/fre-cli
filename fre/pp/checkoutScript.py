@@ -41,7 +41,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
             argstring = f" -e {experiment} -p {platform} -t {target}"
             stop_report = "\n".join([f"Error in checkoutTemplate: the workflow definition specified by -e/-p/-t already exists at the location ~/cylc-src/{name}!",
-                                     "Please delete workflow dir and clone again.". 
+                                     "Please delete workflow dir and clone again.",
                                      "Copy/paste commands:",
                                      "\t cylc clean {name}",
                                      "\t rm -r ~/cylc-src/{name}", 
