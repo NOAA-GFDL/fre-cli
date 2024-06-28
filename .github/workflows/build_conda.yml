@@ -16,6 +16,7 @@ jobs:
         conda config --append channels conda-forge
         conda config --append channels noaa-gfdl
         conda install conda-build conda-verify
+        git describe
         conda build .
     - name: Pylint All Code
       continue-on-error: true
