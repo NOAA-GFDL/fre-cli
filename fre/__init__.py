@@ -9,3 +9,4 @@ from .yamltools import *
 from .app import *
 from .cmor import *
 from .lazy_group import LazyGroup
+from ._version import __version__
