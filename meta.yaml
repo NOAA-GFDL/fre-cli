@@ -11,7 +11,7 @@ source:
 
 build:
   script: 
-    - {{ PYTHON }} -m pip install . -vv
+    - {{ PYTHON }} -m pip build . -vv && {{ PYTHON }} -m pip install . -vv
   number: 1
   noarch: python
 

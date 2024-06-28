@@ -17,7 +17,6 @@ jobs:
         conda config --append channels noaa-gfdl
         conda install conda-build conda-verify
         git config --global --add safe.directory /__w/fre-cli/fre-cli
-        git describe
         git log -1 --format='%H'
         conda build .
     - name: Pylint All Code
