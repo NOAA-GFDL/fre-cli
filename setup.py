@@ -1,8 +1,10 @@
 from setuptools import setup, find_namespace_packages
+import versioneer
 
 setup(
     name='fre-cli',
-    version='0.1.6',
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     description='Command Line Interface for FRE commands',
     author='MSD Workflow Team, Bennett Chang, Dana Singh, Chris Blanton',
     author_email='oar.gfdl.workflow@noaa.gov',

@@ -9,3 +9,6 @@ from .yamltools import *
 from .app import *
 from .cmor import *
 from .lazy_group import LazyGroup
+
+from . import _version
+__version__ = _version.get_versions()['version']
