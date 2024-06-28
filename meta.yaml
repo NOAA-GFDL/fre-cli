@@ -21,6 +21,8 @@ channels:
     - noaa-gfdl
 
 requirements:
+  build:
+    - versioneer
   host:
     - python
     - pip
