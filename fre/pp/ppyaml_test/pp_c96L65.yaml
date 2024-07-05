@@ -21,10 +21,10 @@ rose-suite:
     do_analysis: False
 
   directories:
-    history_dir: "/archive/c2b/am5/2022.01/$(name)/$(platform)-$(target)/history"
-    pp_dir: "/archive/$USER/canopy/am5/2022.01/$(name)/$(platform)-$(target)/pp" 
+    history_dir: "/archive/c2b/$(stem)/$(name)/$(platform)-$(target)/history"
+    pp_dir: "/archive/$USER/canopy/$(stem)/$(name)/$(platform)-$(target)/pp" 
     ptmp_dir: "/xtmp/$USER/ptmp"
-    analysis: "/nbhome/$USER/canopy/analysis/$(name)" 
+    analysis: "/nbhome/$USER/canopy/analysis/$(name)"
 
 components:
   - type: "atmos_cmip"
