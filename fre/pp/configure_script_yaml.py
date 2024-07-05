@@ -12,6 +12,30 @@ import yaml
 import click
 import metomi.rose.config
 
+def yamlloads(yaml, experiment):
+    """
+    Load the yaml that holds experiment yamls.
+    EXtract FRE properties defined in the yaml.
+    """
+    with open(yaml,"r") as f:
+        y=yaml.safe_load(f)
+
+    # Define properties (FRE properties)
+    stem=y.get("stem")
+
+    for propkey,propvalue in y.items():
+        if propkey == "exp":
+            for i in propvalue:
+                # if the experiment listed in the click options matches 
+                # an experiment name listed in the main yaml, return 
+                # that experiment yaml
+                if i.get("expname") == experiment:
+                    # Load this specific pp yaml for rose suite and whatnot
+                    expyaml=i.get("ppyaml")
+
+    # return experiment yaml and defined FRE properties 
+    return(expyaml,stem)
+
 ######VALIDATE#####
 package_dir = os.path.dirname(os.path.abspath(__file__))
 schema_path = os.path.join(package_dir, 'schema.json')
@@ -30,7 +54,6 @@ def validate_yaml(file):
         print("YAML VALID")
 
 ###################
-
 def _yamlInfo(yamlfile,experiment,platform,target):
     """
     Using a valid pp.yaml, the rose-app and rose-suite
@@ -42,6 +65,8 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     p = platform
     t = target
     yml = yamlfile
+
+    exp,stem=yamlloads(yaml=yml,experiment=e)
 
     # initialize rose suite config
     rose_suite = metomi.rose.config.ConfigNode()
@@ -69,7 +94,7 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     rose_suite.set(keys=['template variables', 'PLATFORM'], value=f'"{p}"')
     rose_suite.set(keys=['template variables', 'TARGET'], value=f'"{t}"')
 
-    with open(yml,"r") as f:
+    with open(exp,"r") as f:
         y=yaml.safe_load(f)
         validate_yaml(y)
 
@@ -79,11 +104,10 @@ def _yamlInfo(yamlfile,experiment,platform,target):
                 for configkey,configvalue in dicts.items():
                     if configvalue is not None:
                         k=configkey.upper()
+                        #if configvalue == True or configvalue == False:
                         if k in ("HISTORY_DIR", "PP_DIR", "ANALYSIS"):
                             # replace generic variables in pp yaml
-                            stem=e.split("_",1)[0]
-                            exp=e.split("_",1)[1]
-                            replacevars=configvalue.replace("$(stem)",stem).replace("$(expname)",exp).replace("$(platform)",p).replace("$(target)",t)
+                            replacevars=configvalue.replace("$(stem)",stem).replace("$(name)",e).replace("$(platform)",p).replace("$(target)",t)
                             rose_suite.set(keys=['template variables', k], value=f'{replacevars}')
                         else:
                             rose_suite.set(keys=['template variables', k], value=f'"{configvalue}"')
@@ -118,8 +142,7 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     # write output files
     print("Writing output files...")
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
-
-    outfile = os.path.join(cylc_dir, 'pp.yaml')
+    outfile = os.path.join(cylc_dir, f"{e}.yaml")
     shutil.copyfile(yml, outfile)
     print("  " + outfile)
 
