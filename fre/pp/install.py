@@ -4,9 +4,7 @@ import os
 import subprocess
 import click
 
-@click.command()
-
-def install_subtool(experiment, platform, target):
+def _install_subtool(experiment, platform, target):
     """
     Install the Cylc workflow definition located in
     ~/cylc-src/<experiment>__<platform>__<target>
@@ -17,3 +15,7 @@ def install_subtool(experiment, platform, target):
     name = experiment + '__' + platform + '__' + target
     cmd = f"cylc install --no-run-name {name}"
     subprocess.run(cmd, shell=True, check=True)
+
+@click.command()    
+def install_subtool():
+    return _install_subtool(experiment, platform, target)

@@ -6,6 +6,7 @@ from .validate import validate_subtool
 from .install import install_subtool
 from .run import pp_run_subtool
 from .status import status_subtool
+from .wrapper import runFre2pp
 
 @click.group(help=click.style(" - access fre pp subcommands", fg=(57,139,210)))
 def ppCli():
@@ -216,6 +217,42 @@ def checkout(context, experiment, platform, target, branch='main'):
 def configure_xml(context, xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
     """ - Converts a Bronx XML to a Canopy rose-suite.conf """
     context.forward(convert)
+    
+#fre pp wrapper
+@ppCli.command()
+@click.option("-e",
+              "--experiment", 
+              type=str, 
+              help="Experiment name", 
+              required=True)
+@click.option("-p", 
+              "--platform",
+              type=str, 
+              help="Platform name", 
+              required=True)
+@click.option("-t",
+                "--target", 
+                type=str, 
+                help="Target name", 
+                required=True)
+@click.option("-c",
+                "--config-file", 
+                type=str, 
+                help="Path to a configuration file in either XML or YAML", 
+                required=True)
+@click.option("-b", 
+              "--branch",
+              show_default=True,
+              default="main",
+              type=str,
+              help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
+                            "defaults to 'main'. Not intended for production use,"
+                            "but needed for branch testing."])
+             )
+@click.pass_context
+def wrapper(context, experiment, platform, target, config_file, branch='main'):
+    """ - Execute fre pp checkout """
+    context.forward(runFre2pp)
 
 if __name__ == "__main__":
     ppCli()

@@ -4,9 +4,7 @@ import os
 import subprocess
 import click
 
-@click.command()
-
-def validate_subtool(experiment, platform, target):
+def _validate_subtool(experiment, platform, target):
     """
     Validate the Cylc workflow definition located in
     ~/cylc-src/<experiment>__<platform>__<target>
@@ -24,3 +22,7 @@ def validate_subtool(experiment, platform, target):
     # Validate the Cylc configuration
     cmd = f"cylc validate ."
     subprocess.run(cmd, shell=True, check=True)
+
+@click.command()
+def validate_subtool():
+    return _validate_subtool(experiment, platform, target)

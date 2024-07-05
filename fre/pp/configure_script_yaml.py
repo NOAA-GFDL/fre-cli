@@ -30,9 +30,8 @@ def validate_yaml(file):
         print("YAML VALID")
 
 ###################
-@click.command()
 
-def yamlInfo(yamlfile,experiment,platform,target):
+def _yamlInfo(yamlfile,experiment,platform,target):
     """
     Using a valid pp.yaml, the rose-app and rose-suite
     configuration files are created in the cylc-src
@@ -137,6 +136,13 @@ def yamlInfo(yamlfile,experiment,platform,target):
     dumper(rose_remap, outfile)
     print("  " + outfile)
 
+def yamlInfo(yamlfile,experiment,platform,target):
+    '''
+    Wrapper script for calling yamlInfo - allows the decorated version
+    of the function to be separate from the undecorated version
+    '''
+    return _yamlInfo(yamlfile,experiment,platform,target)
+                      
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
     yamlInfo()
