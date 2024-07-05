@@ -1,0 +1,12 @@
+## FRE properties
+projectID: "am5"
+FRE_VERSION: &fre_version "canopy"
+AM5_VERSION: &am5_version "2022.01" #"am5f7b12r1"
+stem: "am5/2022.01" # stem=projectID/version
+
+# Experiments
+exp:
+  - expname: "c96L65_am5f1a0r0_amip"
+    platform: "gfdl.ncrc5-intel22-classic"
+    target: "prod-openmp"
+    ppyaml: "pp_c96L65.yaml"
