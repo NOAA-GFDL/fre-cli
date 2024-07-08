@@ -1,12 +1,16 @@
 ## FRE properties
-projectID: "am5"
-FRE_VERSION: &fre_version "canopy"
-AM5_VERSION: &am5_version "2022.01" #"am5f7b12r1"
-stem: "am5/2022.01" # stem=projectID/version
+properties:
+  projectID: "am5"
+  FRE_VERSION: "canopy"
+  AM5_VERSION: "2022.01" 
+  stem: "am5/2022.01"
 
-# Experiments
+directories:
+  history_dir: "/archive/$USER/$(stem)/$(expname)/$(platform)-$(target)/history"
+  pp_dir: "/archive/$USER/canopy/$(stem)/$(expname)/$(platform)-$(target)/pp"
+  ptmp_dir: "/xtmp/$USER/ptmp"
+  analysis: "/nbhome/$USER/canopy/analysis/$(expname)"
+
 exp:
   - expname: "c96L65_am5f1a0r0_amip"
-    platform: "gfdl.ncrc5-intel22-classic"
-    target: "prod-openmp"
     ppyaml: "pp_c96L65.yaml"
