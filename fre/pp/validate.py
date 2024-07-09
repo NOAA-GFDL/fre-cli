@@ -24,5 +24,5 @@ def _validate_subtool(experiment, platform, target):
     subprocess.run(cmd, shell=True, check=True)
 
 @click.command()
-def validate_subtool():
+def validate_subtool(experiment, platform, target):
     return _validate_subtool(experiment, platform, target)

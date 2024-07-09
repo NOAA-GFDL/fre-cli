@@ -17,5 +17,5 @@ def _install_subtool(experiment, platform, target):
     subprocess.run(cmd, shell=True, check=True)
 
 @click.command()    
-def install_subtool():
+def install_subtool(experiment, platform, target):
     return _install_subtool(experiment, platform, target)
