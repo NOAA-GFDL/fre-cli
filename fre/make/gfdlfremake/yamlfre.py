@@ -152,7 +152,9 @@ class freyaml():
      self.platformsyaml = self.platforms.getPlatformsYaml()
      self.freyaml.update(self.platformsyaml)
 ## Validate the YAML
-     with open("schema.json", 'r') as f:
+     fremake_package_dir = os.path.dirname(os.path.abspath(__file__))
+     schema_path = os.path.join(fremake_package_dir, 'schema.json')
+     with open(schema_path, 'r') as f:
          s = f.read()
      schema = json.loads(s)
      validate(instance=self.freyaml, schema=schema)
