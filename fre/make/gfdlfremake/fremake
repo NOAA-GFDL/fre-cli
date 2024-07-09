@@ -9,13 +9,7 @@ import os
 import yaml
 import argparse
 import logging
-import targetfre
-import varsfre
-import yamlfre
-import checkout
-import makefilefre
-import buildDocker
-import buildBaremetal
+from . import targetfre, varsfre, yamlfre, checkout, makefilefre, buildDocker, buildBaremetal
 from multiprocessing.dummy import Pool
 
 ## Add in cli options
@@ -31,7 +25,7 @@ if __name__ == "__main__":
     parser.add_argument("-t",
                         "--target",
                         nargs='*',
-                        type=str, help="FRE target space separated list of STRING(s) that defines compilation settings and linkage directives for experiments.\n\nPredefined targets refer to groups of directives that exist in the mkmf template file 				(referenced in buildDocker.py). Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not 				   use more than one of these in the target list). Any number of targets can be used.",required=True)
+                        type=str, help="FRE target space separated list of STRING(s) that defines compilation settings and linkage directives for experiments.\n\nPredefined targets refer to groups of directives that exist in the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one of these in the target list). Any number of targets can be used.",required=True)
     parser.add_argument("-f", 
                         "--force-checkout",
                         action="store_true",
@@ -250,6 +244,6 @@ for platformName in plist:
           #buildDockerfile(fremakeYaml,image)
 
 if baremetalRun:
-          if __name__ == '__main__':
-          	pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
-          	pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool 
+    if __name__ == '__main__':
+        pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
+        pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool 

@@ -6,7 +6,7 @@
 
 import subprocess
 import os
-import targetfre
+from . import targetfre
 ## \brief Called for parallel execution purposes.  Runs the builds.
 ## \param fremakeBuildList the fremakeBuild object list passes by pool.map
 def fremake_parallel(fremakeBuildList):

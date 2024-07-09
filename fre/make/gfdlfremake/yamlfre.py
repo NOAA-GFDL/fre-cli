@@ -1,8 +1,7 @@
 import yaml
 import json
 from jsonschema import validate, ValidationError, SchemaError
-import platformfre
-import os
+from . import platformfre
 
 ## Open the yaml file and parse as fremakeYaml
 ## \param fname the name of the yaml file to parse

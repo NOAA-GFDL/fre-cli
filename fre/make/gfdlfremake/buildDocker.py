@@ -5,7 +5,7 @@
 ## \description 
 
 import os
-import targetfre
+from . import targetfre
 
 class container():
 ## \brief Opens the Dockerfile for writing
@@ -137,6 +137,12 @@ class container():
      #make runscript executable
      self.d.write("RUN chmod 744 "+self.bld+"/execrunscript.sh\n")
 
+     #finish the dockerfile
+     self.d.writelines(self.setup)
+     self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
+     self.d.write('ENTRYPOINT ["/bin/bash"]')
+     self.d.close()
+
 ## Builds the container image for the model
 ## \param self The dockerfile object
 ## \param containerBuild The tool used to build the container; docker or podman used
@@ -150,4 +156,3 @@ class container():
      os.system("rm -f "+self.e+".tar "+self.e+".sif")
      os.system(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName())
      os.system(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar")
-#     os.system("apptainer run --writable-tmpfs "+self.e+"-"+self.target.gettargetName()+".tar") 
