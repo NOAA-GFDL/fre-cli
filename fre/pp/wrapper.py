@@ -45,6 +45,8 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     #dumb xml check;does it need to be smarter?
     is_xml = (config_file[-3:] == "xml")
 
+    config_file = os.path.abspath(config_file)
+
     #env_setup
     #todo: check for experiment existing, call frepp_stop to clean experiment, 
     try:
