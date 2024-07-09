@@ -136,7 +136,6 @@ class container():
      self.d.write("COPY "+runOnDisk+" "+self.bld+"/execrunscript.sh\n")
      #make runscript executable
      self.d.write("RUN chmod 744 "+self.bld+"/execrunscript.sh\n")
-
      #finish the dockerfile
      self.d.writelines(self.setup)
      self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
