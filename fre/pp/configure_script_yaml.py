@@ -120,6 +120,7 @@ def _yamlInfo(yamlfile,experiment,platform,target):
   print("  " + outfile)
 
 
+@click.command()
 def yamlInfo(yamlfile,experiment,platform,target):
     '''
     Wrapper script for calling yamlInfo - allows the decorated version
