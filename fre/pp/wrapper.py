@@ -19,6 +19,7 @@ from subprocess import PIPE, STDOUT
 from subprocess import STDOUT
 import click
 import re
+import time
 
 #Add path to this file to the pythonpath for local imports
 import_dir = os.path.dirname(os.path.abspath(__file__))
@@ -87,7 +88,7 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     #send off a watcher script that reports on how it's going
     for n in range(1,12):
         try:
-            _status_subtool()
+            _status_subtool(experiment, platform, target)
         except Exception as err:
             raise
         time.sleep(300)
