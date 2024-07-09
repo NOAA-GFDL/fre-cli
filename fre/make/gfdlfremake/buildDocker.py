@@ -5,7 +5,7 @@
 ## \description 
 
 import os
-from . import targetfre
+import targetfre
 
 class container():
 ## \brief Opens the Dockerfile for writing
@@ -136,18 +136,18 @@ class container():
      self.d.write("COPY "+runOnDisk+" "+self.bld+"/execrunscript.sh\n")
      #make runscript executable
      self.d.write("RUN chmod 744 "+self.bld+"/execrunscript.sh\n")
-     #finish the dockerfile
-     self.d.writelines(self.setup)
-     self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
-     self.d.write('ENTRYPOINT ["/bin/bash"]')
-     self.d.close()
 
 ## Builds the container image for the model
 ## \param self The dockerfile object
 ## \param containerBuild The tool used to build the container; docker or podman used
 ## \param containerRun The container platform used with `exec` to run the container; apptainer or singularity used 
  def build(self,containerBuild,containerRun):
+     self.d.writelines(self.setup)
+     self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
+     self.d.write('ENTRYPOINT ["/bin/bash"]')
+     self.d.close()
      os.system(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName())
      os.system("rm -f "+self.e+".tar "+self.e+".sif")
      os.system(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName())
      os.system(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar")
+#     os.system("apptainer run --writable-tmpfs "+self.e+"-"+self.target.gettargetName()+".tar") 
