@@ -245,5 +245,5 @@ for platformName in plist:
 
 if baremetalRun:
      if __name__ == '__main__':
-         pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
-         pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool 
+          pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
+          pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool 
