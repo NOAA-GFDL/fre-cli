@@ -57,7 +57,14 @@ If there is *no* subdirectory created for the new tool command group you are try
 │   └── /[optional-submodule]
 ```
 
-## **Additional Helpful Links**
+### Further Usage Notes
+- If the user just runs `fre`, it will list all the command groups following `fre`, such as `run`, `make`, `pp`, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown 
+    - Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if `--help` is executed
+        - Argument flags are not positional, can be specified in any order as long as they are specified
+* Can run directly from any directory, no need to clone repository
+* *May need to deactivate environment and reactivate it in order for changes to apply*
+
+## **Helpful Links**
 * [Official Click Documentation](https://click.palletsprojects.com/en/8.1.x/api/)
 * [`setup.py` Key Words](https://setuptools.pypa.io/en/latest/references/keywords.html)
 * [`meta.yaml` Documentation](https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html)
