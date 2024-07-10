@@ -49,12 +49,6 @@ As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that wi
     - setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
 
 After one of the above, one can enter commands and follow `--help` messages for guidance. A brief rundown of commands to be provided are within each tool's folder as a `README.md`
-### Further Usage Notes
-- If the user just runs `fre`, it will list all the command groups following `fre`, such as `run`, `make`, `pp`, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown 
-    - Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if `--help` is executed
-        - Argument flags are not positional, can be specified in any order as long as they are specified
-* Can run directly from any directory, no need to clone repository
-* *May need to deactivate environment and reactivate it in order for changes to apply*
 
 ## **Checklist: Currently Implemented Tools**
 
