@@ -51,6 +51,9 @@ As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that wi
 
 After one of the above, one can enter commands and follow `--help` messages for guidance. A brief rundown of commands to be provided are within each tool's folder as a `README.md`
 
+### Further Notes on Use
+Following the instructions above, the user will be able to run `fre` from any directory, listing all command groups. These include e.g. `run`, `make`, and `pp`. The list of available subcommands for each group will be shown upon inclusion of the `--help` flag. The user will be alerted to any missing arguments required subcomands. Optional arguments will only shown with `--help` added to the subcommand. Note that argument flags are not positional, and can be specified in any order. 
+
 ## **Checklist: Currently Implemented Tools**
 
 To be developed:
