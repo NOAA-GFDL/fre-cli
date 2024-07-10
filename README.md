@@ -47,6 +47,7 @@ As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that wi
         - `conda install noaa-gfdl::fre-cli` should install the [CLI package](https://anaconda.org/NOAA-GFDL/fre-cli) created from the [`meta.yaml`](https://github.com/NOAA-GFDL/fre-cli/blob/refactoring/meta.yaml)
     - All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
     - setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
+    - For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/breakup_README/CONTRIBUTING.md)
 
 After one of the above, one can enter commands and follow `--help` messages for guidance. A brief rundown of commands to be provided are within each tool's folder as a `README.md`
 
@@ -62,7 +63,3 @@ To be developed:
 - [ ]  **fre run**
 - [ ]  **fre test**
 - [ ]  **fre yamltools**
-
-## ** Contributing to fre-cli **
-
-See [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/breakup_README/CONTRIBUTING.md)
