@@ -1,0 +1,1 @@
+note- this directory is for unit tests assessing `fre` functionality, and NOT for code corresponding to the command `fre test`
