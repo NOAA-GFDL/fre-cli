@@ -72,6 +72,7 @@ test:
     - fre app mask-atmos-plevel --help
     - fre cmor --help
     - fre cmor run --help
+    - pytest tests/
     - pytest fre/app/tests/
   requires:
     - pip
