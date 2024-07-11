@@ -74,8 +74,10 @@ test:
     - fre cmor run --help
     - pytest tests/
     - pytest fre/app/tests/
+    - pylint
   requires:
     - pip
+    - pylint
     - pytest
 
 about:
