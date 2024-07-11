@@ -60,7 +60,7 @@ test:
   commands:
     - pytest tests/
     - pytest fre/app/tests/
-    - pylint
+    - pylint fre/
     - fre --help
     - fre pp --help
     - fre pp install --help
