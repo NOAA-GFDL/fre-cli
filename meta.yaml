@@ -43,9 +43,11 @@ requirements:
 test:
   source_files: 
     - fre/
+    - tests/
   imports:
     - click
     - pytest
+    - pylint
     - fre
     - fre.pp
     - fre.pp.install
@@ -56,6 +58,9 @@ test:
     - fre.app
     - fre.cmor
   commands:
+    - pytest tests/
+    - pytest fre/app/tests/
+    - pylint
     - fre --help
     - fre pp --help
     - fre pp install --help
@@ -72,9 +77,7 @@ test:
     - fre app mask-atmos-plevel --help
     - fre cmor --help
     - fre cmor run --help
-    - pytest tests/
-    - pytest fre/app/tests/
-    - pylint
+
   requires:
     - pip
     - pylint
