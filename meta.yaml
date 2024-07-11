@@ -43,7 +43,6 @@ requirements:
 test:
   source_files: 
     - fre/
-    - tests/
   imports:
     - click
     - pytest
@@ -58,8 +57,8 @@ test:
     - fre.app
     - fre.cmor
   commands:
-    - pytest tests/
-    - pytest fre/app/tests/
+    - pytest fre/tests/
+    - pytest fre/app/generate_time_averages/tests/
     - pylint fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     - fre --help
     - fre pp --help
