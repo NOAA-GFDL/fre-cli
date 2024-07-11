@@ -23,7 +23,7 @@ import time
 
 #Add path to this file to the pythonpath for local imports
 import_dir = os.path.dirname(os.path.abspath(__file__))
-print(import_dir)
+#print(import_dir)
 sys.path.append(import_dir)
 
 # Import from the local packages
