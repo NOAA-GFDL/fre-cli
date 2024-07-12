@@ -128,26 +128,26 @@ def configure_yaml(context,yamlfile,experiment,platform,target):
 
 @ppCli.command()
 @click.option("-e",
-              "--experiment", 
-              type=str, 
-              help="Experiment name", 
+              "--experiment",
+              type=str,
+              help="Experiment name",
               required=True)
-@click.option("-p", 
+@click.option("-p",
               "--platform",
-              type=str, 
-              help="Platform name", 
+              type=str,
+              help="Platform name",
               required=True)
 @click.option("-t",
-                "--target", 
-                type=str, 
-                help="Target name", 
+                "--target",
+                type=str,
+                help="Target name",
                 required=True)
-@click.option("-b", 
+@click.option("-b",
               "--branch",
               show_default=True,
               default="main",
               type=str,
-              help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
+              help=" ".join(["Name of fre2/workflows/postproc branch to clone;"
                             "defaults to 'main'. Not intended for production use,"
                             "but needed for branch testing."])
              )
@@ -217,35 +217,35 @@ def checkout(context, experiment, platform, target, branch='main'):
 def configure_xml(context, xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
     """ - Converts a Bronx XML to a Canopy rose-suite.conf """
     context.forward(convert)
-    
+
 #fre pp wrapper
 @ppCli.command()
 @click.option("-e",
-              "--experiment", 
-              type=str, 
-              help="Experiment name", 
+              "--experiment",
+              type=str,
+              help="Experiment name",
               required=True)
-@click.option("-p", 
+@click.option("-p",
               "--platform",
-              type=str, 
-              help="Platform name", 
+              type=str,
+              help="Platform name",
               required=True)
 @click.option("-t",
-                "--target", 
-                type=str, 
-                help="Target name", 
+                "--target",
+                type=str,
+                help="Target name",
                 required=True)
 @click.option("-c",
-                "--config-file", 
-                type=str, 
-                help="Path to a configuration file in either XML or YAML", 
+                "--config-file",
+                type=str,
+                help="Path to a configuration file in either XML or YAML",
                 required=True)
-@click.option("-b", 
+@click.option("-b",
               "--branch",
               show_default=True,
               default="main",
               type=str,
-              help=" ".join(["Name of fre2/workflows/postproc branch to clone;" 
+              help=" ".join(["Name of fre2/workflows/postproc branch to clone;"
                             "defaults to 'main'. Not intended for production use,"
                             "but needed for branch testing."])
              )

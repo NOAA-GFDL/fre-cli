@@ -4,48 +4,48 @@
 #     module load python/3.9
 #     conda activate cmor
 
-# another possible runs without any preparation in terminal:  
+# another possible runs without any preparation in terminal:
 #    /home/san/anaconda/envs/cmor_dev/bin/python
 #    /app/spack/v0.15/linux-rhel7-x86_64/gcc-4.8.5/python/3.7.7-d6cyi6ophaei6arnmzya2kn6yumye2yl/bin/python
 
 
-# How to run it (simple examples): 
-# ~/fms_yaml_tools/CMOR_3/CMORmixer.py 
-#   -d /archive/oar.gfdl.cmip6/CM4/warsaw_201710_om4_v1.0.1/CM4_1pctCO2_C/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/monthly/5yr 
-#   -l /home/san/CMOR_3/GFDL-CM4_1pctCO2_C_CMOR-Amon.lst 
-#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_Amon.json 
+# How to run it (simple examples):
+# ~/fms_yaml_tools/CMOR_3/CMORmixer.py
+#   -d /archive/oar.gfdl.cmip6/CM4/warsaw_201710_om4_v1.0.1/CM4_1pctCO2_C/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/monthly/5yr
+#   -l /home/san/CMOR_3/GFDL-CM4_1pctCO2_C_CMOR-Amon.lst
+#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_Amon.json
 #   -p /home/san/CMOR/cmor/Test/CMOR_input_CM4_1pctCO2_C.json
 
-# ~/fms_yaml_tools/CMORmixer.py 
-#	-d /archive/Fabien.Paulot/ESM4/H2/ESM4_amip_D1_soilC_adj/gfdl.ncrc3-intel16-prod-openmp/pp/land/ts/monthly/5yr 
-#   -l /home/san/CMOR_3/GFDL-ESM4_amip_CMOR-landCML.lst 
-#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_Lmon.json 
+# ~/fms_yaml_tools/CMORmixer.py
+#	-d /archive/Fabien.Paulot/ESM4/H2/ESM4_amip_D1_soilC_adj/gfdl.ncrc3-intel16-prod-openmp/pp/land/ts/monthly/5yr
+#   -l /home/san/CMOR_3/GFDL-ESM4_amip_CMOR-landCML.lst
+#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_Lmon.json
 #   -p /home/san/CMOR/cmor/Test/CMOR_input_ESM4_amip.json
 
-# ~/fms_yaml_tools/CMORmixer.py 
-#   -d /archive/oar.gfdl.cmip6/CM4/warsaw_201710_om4_v1.0.1/CM4_historical/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/monthly/5yr 
-#   -l /home/san/CMOR_3/GFDL-CM4_historical_CMOR-Amon.lst 
-#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/Atmos_Monthly.json 
+# ~/fms_yaml_tools/CMORmixer.py
+#   -d /archive/oar.gfdl.cmip6/CM4/warsaw_201710_om4_v1.0.1/CM4_historical/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/monthly/5yr
+#   -l /home/san/CMOR_3/GFDL-CM4_historical_CMOR-Amon.lst
+#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/Atmos_Monthly.json
 #   -p /home/san/CMOR/cmor/Test/CMOR_input_CM4_historical.json
 
-# ~/fms_yaml_tools/CMORmixer.py 
-#   -d /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_cmip/ts/daily/5yr 
-#   -l /home/san/CMOR_3/GFDL-ESM4_CMOR-day_historical.lst 
-#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_day.json 
-#   -p /home/san/CMOR/cmor/Test/CMOR_input_ESM4_historical.json 
+# ~/fms_yaml_tools/CMORmixer.py
+#   -d /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_cmip/ts/daily/5yr
+#   -l /home/san/CMOR_3/GFDL-ESM4_CMOR-day_historical.lst
+#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_day.json
+#   -p /home/san/CMOR/cmor/Test/CMOR_input_ESM4_historical.json
 #   -o /net2/san
 
-# ~/fms_yaml_tools/CMORmixer.py 
-#   -d /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/6hr/5yr 
-#   -l /home/san/CMOR_3/GFDL-ESM4_CMOR-6hr.lst 
-#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_6hrPlev.json 
+# ~/fms_yaml_tools/CMORmixer.py
+#   -d /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/6hr/5yr
+#   -l /home/san/CMOR_3/GFDL-ESM4_CMOR-6hr.lst
+#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_6hrPlev.json
 #   -p /home/san/CMOR/cmor/Test/CMOR_input_ESM4_historical.json
 
-# ~/fms_yaml_tools/CMORmixer.py 
-#   -d /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_cmip/ts/3hr/5yr 
-#   -l /home/san/CMOR_3/GFDL_ESM4_historical_CMOR-3hr.lst 
-#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_3hr.json 
-#   -p /home/san/CMOR/cmor/Test/CMOR_input_ESM4_historical.json 
+# ~/fms_yaml_tools/CMORmixer.py
+#   -d /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_cmip/ts/3hr/5yr
+#   -l /home/san/CMOR_3/GFDL_ESM4_historical_CMOR-3hr.lst
+#   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_3hr.json
+#   -p /home/san/CMOR/cmor/Test/CMOR_input_ESM4_historical.json
 #   -o /net2/san
 
 # Additional tables containing in /home/san/CMIP6_work/cmor/cmip6-cmor-tables/Tables:
@@ -54,26 +54,26 @@
 #    CMIP6_grids.json
 #   CMIP6_coordinate.json
 
-# Detailed description of program is placed at  
+# Detailed description of program is placed at
 #    https://docs.google.com/document/d/1HPetcUyrVXDwCBIyWheZ_2JzOz7ZHi1y3vmIlcErYeA/edit?pli=1
 
 # Keep in mind rule for input ../cmor/cmip6-cmor-tables/Tables/*.json:
-#    output variables can not contain "_" in out_name, though name (and standard_name) itself can have it; example: 
+#    output variables can not contain "_" in out_name, though name (and standard_name) itself can have it; example:
 #        "alb_sfc": {
-#            "frequency": "mon", 
-#            "modeling_realm": "atmos", 
-#            "standard_name": "alb_sfc", 
-#            "units": "percent", 
-#            "cell_methods": "area: time: mean", 
-#            "long_name": "surface albedo", 
-#            "comment": "", 
-#            "dimensions": "longitude latitude time", 
-#            "out_name": "albsfc", 
-#            "type": "real", 
-#            "positive": "", 
-#            "valid_min": "", 
-#            "valid_max": "", 
-#            "ok_min_mean_abs": "", 
+#            "frequency": "mon",
+#            "modeling_realm": "atmos",
+#            "standard_name": "alb_sfc",
+#            "units": "percent",
+#            "cell_methods": "area: time: mean",
+#            "long_name": "surface albedo",
+#            "comment": "",
+#            "dimensions": "longitude latitude time",
+#            "out_name": "albsfc",
+#            "type": "real",
+#            "positive": "",
+#            "valid_min": "",
+#            "valid_max": "",
+#            "ok_min_mean_abs": "",
 #            "ok_max_mean_abs": ""
 #        }
 
@@ -97,14 +97,14 @@ import click
 
 global nameOfset, GFDL_vars_file, CMIP_output, GFDL_real_vars_file
 
-    
-def copy_nc(in_nc, out_nc):    
+
+def copy_nc(in_nc, out_nc):
     print("\tcopy_nc:  source_nc=", in_nc, " out_nc=", out_nc)
    # input file
     dsin = nc.Dataset(in_nc)
    # output file
-#    dsout = nc.Dataset(out_nc, "w", format="NETCDF3_CLASSIC")    
-    dsout = nc.Dataset(out_nc, "w")    
+#    dsout = nc.Dataset(out_nc, "w", format="NETCDF3_CLASSIC")
+    dsout = nc.Dataset(out_nc, "w")
    #Copy dimensions
     for dname, the_dim in dsin.dimensions.items():
         dsout.createDimension(dname, len(the_dim) if not the_dim.isunlimited() else None)
@@ -112,32 +112,32 @@ def copy_nc(in_nc, out_nc):
     for v_name, varin in dsin.variables.items():
         outVar = dsout.createVariable(v_name, varin.datatype, varin.dimensions)
         # Copy variable attributes
-        outVar.setncatts({k: varin.getncattr(k) for k in varin.ncattrs()})    
+        outVar.setncatts({k: varin.getncattr(k) for k in varin.ncattrs()})
         outVar[:] = varin[:]
     dsout.setncatts({a:dsin.getncattr(a) for a in dsin.ncattrs()})
-    dsin.close()    
-    dsout.close()    
+    dsin.close()
+    dsout.close()
     return
-    
-    
+
+
 def var2process(proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, N, CMIP_input_json, CMOR_tbl_vars_file):
-    print ("\nGFDL Variable : PCMDI Variable (var2process:var_lst[var2process]) => ")    
+    print ("\nGFDL Variable : PCMDI Variable (var2process:var_lst[var2process]) => ")
     print (var_i, ":", var_lst[var_i])
-    print("\tProcessing Directory/File:", var_i)    
+    print("\tProcessing Directory/File:", var_i)
     nc_fls = {}
     tmp_dir = "/tmp/"
 #    print("from var2process: CMIP_output=", CMIP_output)
     if CMIP_output == "/local2" or  CMIP_output.find("/work") != -1 or CMIP_output.find("/net") != -1:
-        tmp_dir = "/"        
+        tmp_dir = "/"
     for i in range(N):
-        nc_fls[i] = dir2cmor + "/" + nameOfset + "." + time_arr[i] + "." + var_i + ".nc"        
+        nc_fls[i] = dir2cmor + "/" + nameOfset + "." + time_arr[i] + "." + var_i + ".nc"
         nc_fl_wrk = CMIP_output + tmp_dir + nameOfset + "." + time_arr[i] + "." + var_i + ".nc"
         print("\tnc_fl_wrk = ", nc_fl_wrk)
 
         if not os.path.exists(nc_fls[i]):
             print ("\t", nc_fls[i], " does not exist. Move to the next file.")
-            return 
-        
+            return
+
         copy_nc(nc_fls[i], nc_fl_wrk)
 
         # copy ps also, if it's there
@@ -148,11 +148,11 @@ def var2process(proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, N, CMIP_input
             nc_ps_file_work = nc_fl_wrk.replace('.'+var_i+'.nc', '.ps.nc')
             copy_nc(nc_ps_file, nc_ps_file_work)
             print("\tnc_ps_file_work = ", nc_ps_file_work)
-        
+
         # main CMOR actions:
         lcl_fl_nm = netcdf_var(proj_tbl_vars, var_lst, nc_fl_wrk, var_i, CMIP_input_json, CMOR_tbl_vars_file)
         filename = CMIP_output + CMIP_output[:CMIP_output.find("/")] + "/" + lcl_fl_nm
-        
+
         print("source file =", nc_fls[i])
         print("filename =",filename)
         filedir =  filename[:filename.rfind("/")]
@@ -162,15 +162,15 @@ def var2process(proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, N, CMIP_input
         except OSError as error:
             print("directory ", filedir, "already exists")
 
-        mv_cmnd = "mv " + os.getcwd() + "/" + lcl_fl_nm + " " + filedir    
+        mv_cmnd = "mv " + os.getcwd() + "/" + lcl_fl_nm + " " + filedir
         print("mv_cmnd = ", mv_cmnd)
         os.system(mv_cmnd)
         print("=========================================================================================================\n\n")
-        
+
         flnm_no_nc = filename[:filename.rfind(".nc")]
         chk_str = flnm_no_nc[-6:]
         if not chk_str.isdigit():
-            filename_corr = filename[:filename.rfind(".nc")] + "_" + time_arr[i] + ".nc"    
+            filename_corr = filename[:filename.rfind(".nc")] + "_" + time_arr[i] + ".nc"
             mv_cmnd = "mv " + filename + " " + filename_corr
             print("2: mv_cmnd = ", mv_cmnd)
             os.system(mv_cmnd)
@@ -180,7 +180,7 @@ def var2process(proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, N, CMIP_input
             os.remove(nc_fl_wrk)
         if os.path.exists(nc_ps_file_work):
             os.remove(nc_ps_file_work)
-                            
+
     return
 
 # NetCDF all time periods
@@ -193,15 +193,15 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
 
     # open the input file
     ds = nc.Dataset(nc_fl,'a')
-    
+
     # determine the vertical dimension
     vert_dim = 0
-    for name, variable in ds.variables.items(): 
+    for name, variable in ds.variables.items():
         if name == var_i:
             dims = variable.dimensions
             for dim in dims:
                 if ds[dim].axis and ds[dim].axis == "Z":
-                    vert_dim = dim 
+                    vert_dim = dim
  #   if not vert_dim:
  #       raise Exception("ERROR: could not determine vertical dimension")
     print("Vertical dimension:", vert_dim)
@@ -232,14 +232,14 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
     # Assume input file is lat/lon grid
     if "xh" in var_list:
         raise Exception ("Ocean grid unimplemented")
-# "figure out the names of this dimension names programmatically !!!"		
+# "figure out the names of this dimension names programmatically !!!"
     lat = ds["lat"][:]
     lon = ds["lon"][:]
     lat_bnds = ds["lat_bnds"][:]
     lon_bnds = ds["lon_bnds"][:]
     cmorLat = cmor.axis("latitude", coord_vals=lat, cell_bounds=lat_bnds, units="degrees_N")
     cmorLon = cmor.axis("longitude", coord_vals=lon, cell_bounds=lon_bnds, units="degrees_E")
-    
+
     # Define time and time_bnds dimensions
     time = ds["time"][:]
     tm_units = ds["time"].units
@@ -247,20 +247,20 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
     print("from Ln236: tm_units=", tm_units)
     print("tm_bnds=", time_bnds)
     try:
-        print("Executing cmor.axis('time', coord_vals=time, cell_bounds=time_bnds, units=tm_units)") 	
-#        print("Executing cmor.axis('time', coord_vals=time, units=tm_units)") 	
-        time_bnds = ds["time_bnds"][:]            
+        print("Executing cmor.axis('time', coord_vals=time, cell_bounds=time_bnds, units=tm_units)")
+#        print("Executing cmor.axis('time', coord_vals=time, units=tm_units)")
+        time_bnds = ds["time_bnds"][:]
         cmorTime = cmor.axis("time", coord_vals=time, cell_bounds=time_bnds, units=tm_units)
 #        cmorTime = cmor.axis("time", coord_vals=time, units=tm_units)
     except:
-        print("Executing cmorTime = cmor.axis('time', coord_vals=time, units=tm_units)") 
+        print("Executing cmorTime = cmor.axis('time', coord_vals=time, units=tm_units)")
         cmorTime = cmor.axis("time", coord_vals=time, units=tm_units)
 
     # Set the axes
     savePS = False
     if var_dim==3:
         axes = [cmorTime, cmorLat, cmorLon]
-        print("[cmorTime, cmorLat, cmorLon]") 
+        print("[cmorTime, cmorLat, cmorLon]")
     elif var_dim == 4:
         if vert_dim == "plev30" or vert_dim == "plev19" or vert_dim == "plev8" or vert_dim == "height2m":
             lev = ds[vert_dim]
@@ -334,7 +334,7 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i, CMIP_input_json, CMOR_tbl_
     filename = cmor.close(cmorVar, file_name=True)
     print("filename=", filename)
     cmor.close()
-    
+
     return filename
 
 
@@ -365,37 +365,37 @@ def cmor_run_subtool(indir, outdir, varlist, table_config, exp_config):
     # these global variables can be edited now
     # nameOfset is component label (e.g. atmos_cmip)
     global nameOfset, GFDL_vars_file, CMIP_output
-    
+
     dir2cmor = indir
     GFDL_vars_file = varlist
     CMOR_tbl_vars_file = table_config
     CMIP_input_json = exp_config
     CMIP_output = outdir
-    
+
     # open CMOR table config file
     f_js = open(CMOR_tbl_vars_file,"r")
     proj_tbl_vars = json.load(f_js)
 
     # open input variable list
     f_v = open(GFDL_vars_file,"r")
-    GFDL_var_lst = json.load(f_v)    
+    GFDL_var_lst = json.load(f_v)
 
     # examine input files to obtain available date ranges
     Var_FileNames = []
     Var_FileNames_all = os.listdir(dir2cmor)
-#    print(Var_FileNames_all) 	
+#    print(Var_FileNames_all)
     for file in Var_FileNames_all:
         if file.endswith('.nc'):
             Var_FileNames.append(file)
     Var_FileNames.sort()
 #    print("Var_FileNames=",Var_FileNames)
-#    exit() 
+#    exit()
     nameOfset = Var_FileNames[0].split(".")[0]
     time_arr_s = set()
     for filename in Var_FileNames:
         time_now = filename.split(".")[1]
         time_arr_s.add(time_now)
-    time_arr = list(time_arr_s) 
+    time_arr = list(time_arr_s)
     time_arr.sort()
     N = len(time_arr)
     print ("Available dates:", time_arr)
@@ -404,7 +404,7 @@ def cmor_run_subtool(indir, outdir, varlist, table_config, exp_config):
     for var_i in GFDL_var_lst:
         if GFDL_var_lst[var_i] in proj_tbl_vars["variable_entry"]:
             var2process(proj_tbl_vars, GFDL_var_lst, dir2cmor, var_i, time_arr, N, CMIP_input_json, CMOR_tbl_vars_file)
-        else: 
+        else:
             print("WARNING: Skipping requested variable as it is not found in CMOR variable group:", var_i)
 
 if __name__ == '__main__':
