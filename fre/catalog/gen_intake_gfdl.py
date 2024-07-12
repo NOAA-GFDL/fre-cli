@@ -17,9 +17,9 @@ def build_script(input_path, output_path, filter_realm, filter_freq, filter_chun
     project_dir = input_path
     csv_path = output_path+".csv"
     json_path = output_path+".json"
- 
+
     ######### SEARCH FILTERS ###########################
-    
+
     dictFilter = {}
     dictFilterIgnore = {}
     if filter_realm:
@@ -31,7 +31,7 @@ def build_script(input_path, output_path, filter_realm, filter_freq, filter_chun
 
     ''' Override config file if necessary for dev
     project_dir = "/archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_1pctCO2_D1/gfdl.ncrc4-intel16-prod-openmp/pp/"
-    #for dev csvfile =  "/nbhome/$USER/intakebuilder_cats/intake_gfdl2.csv" 
+    #for dev csvfile =  "/nbhome/$USER/intakebuilder_cats/intake_gfdl2.csv"
     dictFilterIgnore = {}
     dictFilter["modeling_realm"]= 'atmos_cmip'
     dictFilter["frequency"] = "monthly"

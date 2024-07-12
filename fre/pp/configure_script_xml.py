@@ -587,11 +587,11 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     #logging.info("  %s", outfile)
     #dumper(rose_regrid_xy, outfile)
 
-def _convert(xml, platform, target, experiment, do_analysis=False, historydir=None, 
-             refinedir=None, ppdir=None, do_refinediag=False, pp_start=None, 
+def _convert(xml, platform, target, experiment, do_analysis=False, historydir=None,
+             refinedir=None, ppdir=None, do_refinediag=False, pp_start=None,
              pp_stop=None, validate=False, verbose=False, quiet=False, dual=False):
-    """ 
-    Converts a Bronx XML to a Canopy rose-suite.conf 
+    """
+    Converts a Bronx XML to a Canopy rose-suite.conf
     """
 
     # Logging settings. The default is throwing only warning messages

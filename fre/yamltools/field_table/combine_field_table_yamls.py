@@ -76,7 +76,7 @@ def add_new_mod(new_mod, curr_entries):
                 for curr_var in curr_varlist:
                     if new_var == curr_var:
                         continue
-                curr_varlist.append(new_var)    
+                curr_varlist.append(new_var)
 
 def model_type_exists(model_type, curr_entries):
     for entry in curr_entries['modlist']:
@@ -148,7 +148,7 @@ def main():
 
         except Exception as err:
             raise SystemExit(err)
-  
+
 
 if __name__ == "__main__":
     main()

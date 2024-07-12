@@ -214,7 +214,8 @@ def checkout(context, experiment, platform, target, branch='main'):
               is_flag=True,
               help="Optional. Append '_canopy' to pp, analysis, and refinediag dirs")
 @click.pass_context
-def configure_xml(context, xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
+def configure_xml(context, xml, platform, target, experiment, do_analysis, historydir, refinedir,
+                  ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
     """ - Converts a Bronx XML to a Canopy rose-suite.conf """
     context.forward(convert)
 

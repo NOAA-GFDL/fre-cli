@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Author: Bennett Chang
-# Description: 
+# Description:
 
 import os
 import sys
@@ -64,7 +64,7 @@ def checkoutTemplate(experiment, platform, target, branch="main"):
     of the function to be separate from the undecorated version
     '''
     return _checkoutTemplate(experiment, platform, target, branch="main")
-                            
+
 
 if __name__ == '__main__':
     checkoutTemplate()
