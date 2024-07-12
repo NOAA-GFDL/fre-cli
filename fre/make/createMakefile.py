@@ -15,7 +15,7 @@ def makefile_create(yamlfile,platform,target):
     tlist = target
     yml = yamlfile
 
-    
+
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(yml)
     ## Open the yaml file and parse as fremakeYaml
@@ -44,7 +44,7 @@ def makefile_create(yamlfile,platform,target):
                                              libs = fremakeYaml["baremetal_linkerflags"],
                                              srcDir = srcDir,
                                              bldDir = bldDir,
-                                             mkTemplatePath = mkTemplate) 
+                                             mkTemplatePath = mkTemplate)
                 # Loop through components and send the component name, requires, and overrides for the Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])

@@ -165,7 +165,7 @@ def check_reduction(diag_field, file_name):
   valid = ["none", "average", "min", "max", "rms"]
   reduction = diag_field['reduction']
 
-  if "diurnal" in reduction : 
+  if "diurnal" in reduction :
     if int(reduction[7:9]) < 0 :
       sys.exit('ERROR: The number of diurnal samples in ' + reduction + ' for variable:' + diag_field['var_name'] + ' and file:' + file_name + ' is not valid')
   elif "pow" in reduction :
@@ -217,4 +217,3 @@ with open(in_diag_table) as fl:
     check_for_duplicates(var_names, 'var_names in file: ' + diag_file['file_name'])
     file_names = file_names + [diag_file['file_name']]
 check_for_duplicates(file_names, "file_names")
-

@@ -68,7 +68,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
                                                        modulesInit = modulesInit,
                                                        jobs = jobs)
               for c in fremakeYaml['src']:
-                   fremakeBuild.writeBuildComponents(c) 
+                   fremakeBuild.writeBuildComponents(c)
               fremakeBuild.writeScript()
               fremakeBuildList.append(fremakeBuild)
               click.echo("\nCompile script created at " + bldDir + "/compile.sh" + "\n")

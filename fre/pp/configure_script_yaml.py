@@ -127,7 +127,7 @@ def yamlInfo(yamlfile,experiment,platform,target):
     of the function to be separate from the undecorated version
     '''
     return _yamlInfo(yamlfile,experiment,platform,target)
-                      
+
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
     yamlInfo()
