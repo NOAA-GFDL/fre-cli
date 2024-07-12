@@ -23,12 +23,9 @@ import time
 
 #Add path to this file to the pythonpath for local imports
 import_dir = os.path.dirname(os.path.abspath(__file__))
-#print(import_dir)
 sys.path.append(import_dir)
 
 # Import from the local packages
-os.chdir(import_dir)
-#from .pp import checkoutTemplate, yamlInfo, convert, validate_subtool, install_subtool, pp_run_subtool, status_subtool
 from checkoutScript import _checkoutTemplate
 from configure_script_xml import _convert
 from configure_script_yaml import _yamlInfo
@@ -47,6 +44,8 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     
     #dumb xml check;does it need to be smarter?
     is_xml = (config_file[-3:] == "xml")
+
+    config_file = os.path.abspath(config_file)
 
     #env_setup
     #todo: check for experiment existing, call frepp_stop to clean experiment, 
