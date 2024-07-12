@@ -34,19 +34,24 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
 
     # Clone the repository with depth=1; check for errors
     click.echo("cloning experiment into directory " + directory + "/" + name)
-    clonecmd = f"git clone -b {branch} --single-branch --depth=1 --recursive https://gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git {name}"
-    preexist_error = f"fatal: destination path '{name}' already exists and is not an empty directory."
+    clonecmd = (
+        f"git clone -b {branch} --single-branch --depth=1 --recursive "
+        f"https://gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git {name}" )
+    preexist_error = f"fatal: destination path '{name}' exists and is not an empty directory."
     cloneproc = subprocess.run(clonecmd, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
     if not cloneproc.returncode == 0:
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
             argstring = f" -e {experiment} -p {platform} -t {target}"
-            stop_report = "\n".join([f"Error in checkoutTemplate: the workflow definition specified by -e/-p/-t already exists at the location ~/cylc-src/{name}!",
-                                     f"In the future, we will confirm that ~/cylc-src/{name} is usable and will check whether it is up-to-date.",
-                                     "But for now, if you wish to proceed, you must delete the workflow definition.",
-                                     "To start over, try:",
-                                     f"\t cylc stop {name}",
-                                     f"\t cylc clean {name}",
-                                     f"\t rm -r ~/cylc-src/{name}"])
+            stop_report = (
+                "Error in checkoutTemplate: the workflow definition specified by -e/-p/-t already"
+                f" exists at the location ~/cylc-src/{name}!\n"
+                f"In the future, we will confirm that ~/cylc-src/{name} is usable and will check "
+                "whether it is up-to-date.\n"
+                "But for now, if you wish to proceed, you must delete the workflow definition.\n"
+                "To start over, try:\n"
+                f"\t cylc stop {name}\n"
+                f"\t cylc clean {name}\n"
+                f"\t rm -r ~/cylc-src/{name}" )
             sys.exit(stop_report)
             return 1
         else:

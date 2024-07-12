@@ -7,21 +7,21 @@ from .runFremake import fremake_run
 
 yamlfile_opt_help = """Experiment yaml compile FILE
 """
-platform_opt_help = """Hardware and software FRE platform space separated list of STRING(s). 
+platform_opt_help = """Hardware and software FRE platform space separated list of STRING(s).
 This sets platform-specific data and instructions
 """
-target_opt_help   = """a space separated list of STRING(s) that defines compilation settings and 
-linkage directives for experiments. Predefined targets refer to groups of directives that exist in 
-the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod', 
-'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive 
+target_opt_help   = """a space separated list of STRING(s) that defines compilation settings and
+linkage directives for experiments. Predefined targets refer to groups of directives that exist in
+the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod',
+'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive
 (cannot not use more than one of these in the target list). Any number of targets can be used.
 """
 parallel_opt_help = """Number of concurrent model compiles (default 1)
 """
-jobs_opt_help = """Number of jobs to run simultaneously. Used for make -jJOBS and git clone 
+jobs_opt_help = """Number of jobs to run simultaneously. Used for make -jJOBS and git clone
 recursive --jobs=JOBS
 """
-no_parallel_checkout_opt_help =  """Use this option if you do not want a parallel checkout. 
+no_parallel_checkout_opt_help =  """Use this option if you do not want a parallel checkout.
 The default is to have parallel checkouts.
 """
 verbose_opt_help = """Get verbose messages (repeat the option to increase verbosity level)
@@ -41,11 +41,11 @@ def makeCli():
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = platform_opt_help, required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = target_opt_help,
               required = True)
@@ -83,12 +83,12 @@ def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = platform_opt_help,
               required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = target_opt_help,
               required = True)
@@ -125,11 +125,11 @@ def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,e
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = platform_opt_help, required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = target_opt_help,
               required = True)
@@ -144,15 +144,15 @@ def create_makefile(context,yamlfile,platform,target):
 @click.option("-y",
               "--yamlfile",
               type = str,
-              help = yamlfile_opt_help,              
+              help = yamlfile_opt_help,
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = platform_opt_help, required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = target_opt_help,
               required = True)
@@ -191,11 +191,11 @@ def create_compile(context,yamlfile,platform,target,jobs,parallel,execute,verbos
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = platform_opt_help, required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option() 
+              multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = target_opt_help,
               required = True)

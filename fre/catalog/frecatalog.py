@@ -39,7 +39,7 @@ def catalogCli():
 #, help = 'The directory path with the datasets to be cataloged. E.g a GFDL PP path till /pp')
 @click.argument('output_path', required = False, nargs = 1)
 #, help = 'Specify output filename suffix only. e.g. catalog')
-@click.option('--config', required = False, type = click.Path(exists = True), nargs = 1, 
+@click.option('--config', required = False, type = click.Path(exists = True), nargs = 1,
               help = 'Path to your yaml config, Use the config_template in intakebuilder repo')
 @click.option('--filter_realm',  nargs = 1)
 @click.option('--filter_freq',  nargs = 1)

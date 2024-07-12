@@ -13,7 +13,9 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
 template_path = os.path.join(package_dir, 'cats/gfdl_test1.json')
 
 @click.command()
-def build_script(input_path, output_path, filter_realm, filter_freq, filter_chunk, overwrite, append):
+def build_script(input_path, output_path,
+                 filter_realm, filter_freq, filter_chunk,
+                 overwrite, append):
     project_dir = input_path
     csv_path = output_path+".csv"
     json_path = output_path+".json"
@@ -29,8 +31,10 @@ def build_script(input_path, output_path, filter_realm, filter_freq, filter_chun
     if filter_chunk:
         dictFilter["chunk_freq"] = filter_chunk
 
-    ''' Override config file if necessary for dev
-    project_dir = "/archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_1pctCO2_D1/gfdl.ncrc4-intel16-prod-openmp/pp/"
+    ''' 
+    # Override config file if necessary for dev
+    project_dir = 
+         "/archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_1pctCO2_D1/gfdl.ncrc4-intel16-prod-openmp/pp/"
     #for dev csvfile =  "/nbhome/$USER/intakebuilder_cats/intake_gfdl2.csv"
     dictFilterIgnore = {}
     dictFilter["modeling_realm"]= 'atmos_cmip'
@@ -38,13 +42,14 @@ def build_script(input_path, output_path, filter_realm, filter_freq, filter_chun
     dictFilter["chunk_freq"] = "5yr"
     dictFilterIgnore["remove"]= 'DO_NOT_USE'
     '''
+    
     #########################################################
     dictInfo = {}
     project_dir = project_dir.rstrip("/")
     logger.info("Calling gfdlcrawler.crawlLocal")
     list_files = gfdlcrawler.crawlLocal(project_dir, dictFilter, dictFilterIgnore,logger)
 
-    #Grabbing data from template JSON, changing CSV path to match output path, and dumping data in new JSON
+    #Grab data from template JSON, change CSV path to match output path, dump data in new JSON
     with open(template_path, "r") as jsonTemplate:
         data = json.load(jsonTemplate)
         data["catalog_file"] = os.path.abspath(csv_path)
