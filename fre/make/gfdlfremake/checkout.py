@@ -76,8 +76,6 @@ class checkout():
                writeRepo(self.checkoutScript,repo,c['component'],self.src,branch,c['additionalInstructions'],True,jobs,pc)
      else:
           writeRepo(self.checkoutScript,c['repo'],c['component'],self.src,c['branch'],c['additionalInstructions'],False,jobs,pc)
-## Add additional instructions
-     self.checkoutScript.write(c['additionalInstructions'])
 ## \brief If pc is defined: Loops through dictionary of pids, waits for each pid individually, writes exit code in `check` list; allows checkoutscript to exit if exit code is not 0; closes the checkout script when writing is done
 ## \param self The checkout script object
  def finish (self,pc):
