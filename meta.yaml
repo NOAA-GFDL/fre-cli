@@ -37,8 +37,8 @@ requirements:
     - conda-forge::metomi-rose
     - conda-forge::cmor
     - conda-forge::cylc-uiserver
-    - conda-forge::pytest
-    - conda-forge::pytest-cov
+    - conda-forge::pytest>=8.2.2
+    - conda-forge::pytest-cov>=5.0.0
     - conda-forge::python-cdo
     - conda-forge::cdo>=2.0.0
 
@@ -59,7 +59,7 @@ test:
     - fre.app
     - fre.cmor
   commands:
-    - pytest --cov=fre fre/
+    - pytest --config-file .pytest.ini --cov=fre fre/
     - pylint fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     - fre --help
     - fre pp --help
