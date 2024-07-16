@@ -24,5 +24,6 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'renku'
+#html_theme = 'renku'
+html_theme = 'rtd'
 html_static_path = ['_static']
