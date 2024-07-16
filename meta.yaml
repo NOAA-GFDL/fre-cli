@@ -59,7 +59,7 @@ test:
     - fre.app
     - fre.cmor
   commands:
-    - pytest --config-file .pytest.ini --cov=fre fre/
+    - pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
     - pylint fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     - fre --help
     - fre pp --help
