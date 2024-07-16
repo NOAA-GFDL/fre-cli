@@ -37,6 +37,7 @@ requirements:
     - conda-forge::cmor
     - conda-forge::cylc-uiserver
     - conda-forge::pytest
+    - conda-forge::pytest-cov
     - conda-forge::python-cdo
     - conda-forge::cdo>=2.0.0
 
@@ -57,8 +58,7 @@ test:
     - fre.app
     - fre.cmor
   commands:
-    - pytest fre/tests/
-    - pytest fre/app/generate_time_averages/tests/
+    - pytest --cov=fre fre/
     - pylint fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     - fre --help
     - fre pp --help
@@ -81,6 +81,7 @@ test:
     - pip
     - pylint
     - pytest
+    - pytest-cov
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
