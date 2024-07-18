@@ -53,7 +53,7 @@ def yamlload(yamlfile):
 
 ## TO-DO:
 # - figure out way to safe_load (yaml_loader=yaml.SafeLoader?)
-# - update validation
+# - update validation and schema
     return y
 
 ####################
@@ -83,7 +83,7 @@ def consolidate_yamls(yamlfile,experiment, platform,target):
     for i in cy.get("experiments"):
         exp_list.append(i.get("name"))
 
-    # Check is exp name is valid
+    # Check is exp name is valid experiment listed in main yaml
     if experiment not in exp_list:
         raise Exception(f"{experiment} is not in the list of experiments")
 
@@ -102,6 +102,9 @@ def consolidate_yamls(yamlfile,experiment, platform,target):
                 with open(i,'r') as f2: #copy expyaml into combined
                     f1.write(f"\n### {i.upper()} settings ###\n")
                     shutil.copyfileobj(f2,f1)
+
+## TO-DO: 
+# - condition where there are multiple pp yamls
 
     return combined
 
