@@ -16,6 +16,6 @@ def _install_subtool(experiment, platform, target):
     cmd = f"cylc install --no-run-name {name}"
     subprocess.run(cmd, shell=True, check=True)
 
-@click.command()    
-def install_subtool():
+@click.command()
+def install_subtool(experiment, platform, target):
     return _install_subtool(experiment, platform, target)

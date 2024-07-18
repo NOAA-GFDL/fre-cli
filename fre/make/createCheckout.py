@@ -3,12 +3,12 @@
 from .gfdlfremake import varsfre, platformfre, yamlfre, checkout, targetfre
 import click
 import os
-import logging 
-import sys 
+import logging
+import sys
 
 @click.command()
 def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
-    # Define variables  
+    # Define variables
     yml = yamlfile
     ps = platform
     ts = target
@@ -68,8 +68,8 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                    freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                    freCheckout.finish(pc)
                    click.echo("\nCheckout script created at " + srcDir + "/checkout.sh" + "\n")
-    
-              # Run the checkout script 
+
+              # Run the checkout script
               if run:
                    freCheckout.run()
               else:
@@ -86,4 +86,4 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
 
 
 if __name__ == "__main__":
-    checkout_create() 
+    checkout_create()

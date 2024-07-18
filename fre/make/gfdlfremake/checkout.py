@@ -59,12 +59,12 @@ class checkout():
  def __init__(self,fname,srcDir):
      self.fname = fname
      self.src = srcDir
+     os.system("mkdir -p "+self.src)
 ##TODO: Force checkout 
      os.system("rm -rf "+self.src+"/*")
      self.checkoutScript = open(self.src+"/"+fname, 'w')
      self.checkoutScript.write("#!/bin/sh -f \n")
      self.checkoutScript.write("export GIT_TERMINAL_PROMPT=0 \n")
-
 ## \brief Writes the contents of the checkout script by looping through the input yaml
 ## \param self The checkout script object
 ## \param y The fremake compile yaml
@@ -76,8 +76,6 @@ class checkout():
                writeRepo(self.checkoutScript,repo,c['component'],self.src,branch,c['additionalInstructions'],True,jobs,pc)
      else:
           writeRepo(self.checkoutScript,c['repo'],c['component'],self.src,c['branch'],c['additionalInstructions'],False,jobs,pc)
-## Add additional instructions
-     self.checkoutScript.write(c['additionalInstructions'])
 ## \brief If pc is defined: Loops through dictionary of pids, waits for each pid individually, writes exit code in `check` list; allows checkoutscript to exit if exit code is not 0; closes the checkout script when writing is done
 ## \param self The checkout script object
  def finish (self,pc):

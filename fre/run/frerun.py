@@ -1,3 +1,7 @@
+'''
+entry point for fre run subcommands
+'''
+
 import click
 from .frerunexample import run_test_function
 

@@ -14,7 +14,7 @@ def _pp_run_subtool(experiment, platform, target):
     name = experiment + '__' + platform + '__' + target
     cmd = f"cylc play {name}"
     subprocess.run(cmd, shell=True, check=True)
-    
-@click.command()    
-def pp_run_subtool():
+
+@click.command()
+def pp_run_subtool(experiment, platform, target):
     return _pp_run_subtool(experiment, platform, target)

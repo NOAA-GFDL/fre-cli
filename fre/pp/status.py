@@ -16,5 +16,5 @@ def _status_subtool(experiment, platform, target):
 
 
 @click.command()
-def status_subtool():
+def status_subtool(experiment, platform, target):
     return _status_subtool(experiment, platform, target)

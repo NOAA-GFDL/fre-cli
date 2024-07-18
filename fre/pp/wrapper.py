@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 #frepp.py
-#replacement for the frepp bash script located at: 
+#replacement for the frepp bash script located at:
 #https://gitlab.gfdl.noaa.gov/fre2/system-settings/-/blob/main/bin/frepp
 #~/Code/fre-cli/fre/frepp/wrapperscript
 #Author: Carolyn.Whitlock
 
-#todo: 
+#todo:
 # add relative path import to rest of pp tools
 # add command-line args using same format as fre.py
 # include arg for pp start / stop
@@ -19,22 +19,20 @@ from subprocess import PIPE, STDOUT
 from subprocess import STDOUT
 import click
 import re
+import time
 
 #Add path to this file to the pythonpath for local imports
 import_dir = os.path.dirname(os.path.abspath(__file__))
-print(import_dir)
 sys.path.append(import_dir)
 
 # Import from the local packages
-os.chdir(import_dir)
-#from .pp import checkoutTemplate, yamlInfo, convert, validate_subtool, install_subtool, pp_run_subtool, status_subtool
 from checkoutScript import _checkoutTemplate
 from configure_script_xml import _convert
 from configure_script_yaml import _yamlInfo
 from validate import _validate_subtool
 from install import _install_subtool
-from run import _pp_run_subtool 
-from status import _status_subtool 
+from run import _pp_run_subtool
+from status import _status_subtool
 
 @click.command()
 def runFre2pp(experiment, platform, target, config_file, branch):
@@ -43,18 +41,20 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     infrastructure and fre-cli
     time=0000
     '''
-    
+
     #dumb xml check;does it need to be smarter?
     is_xml = (config_file[-3:] == "xml")
 
+    config_file = os.path.abspath(config_file)
+
     #env_setup
-    #todo: check for experiment existing, call frepp_stop to clean experiment, 
+    #todo: check for experiment existing, call frepp_stop to clean experiment,
     try:
         print("calling _checkoutTemplate")
         _checkoutTemplate(experiment, platform, target, branch)
     except Exception as err:
         raise
-    
+
     if is_xml:
         #TODO: should this prompt for pp start/stop years?
         try:
@@ -73,21 +73,21 @@ def runFre2pp(experiment, platform, target, config_file, branch):
             _yamlInfo(config_file, experiment, platform, target)
         except Exception as err:
             raise
-    
+
     try:
         _install_subtool(experiment, platform, target)
     except:
-        raise        
-    
+        raise
+
     try:
         _pp_run_subtool(experiment, platform, target)
     except Exception as err:
-        raise    
-    
+        raise
+
     #send off a watcher script that reports on how it's going
     for n in range(1,12):
         try:
-            _status_subtool()
+            _status_subtool(experiment, platform, target)
         except Exception as err:
             raise
         time.sleep(300)

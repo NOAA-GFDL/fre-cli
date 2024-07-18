@@ -89,7 +89,7 @@ def main():
 
                     if "fieldname_code" not in entry:
                         raise Exception("fieldname_code is a required key!")
-                    
+
                     fieldname_code = entry["fieldname_code"]
                     check_fieldname_code(fieldname_code)
 
@@ -107,7 +107,7 @@ def main():
 
                     if "factor" not in entry:
                         raise Exception("factor is a required key")
-                    
+
                     factor = entry["factor"]
 
                     if "region_type" in entry:

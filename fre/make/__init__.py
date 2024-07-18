@@ -1,3 +1,7 @@
+'''
+for proper import of fre make subcommands 
+'''
+
 from .createCheckout import checkout_create
 from .createCompile import compile_create
 from .createDocker import dockerfile_create

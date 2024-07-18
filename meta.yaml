@@ -2,11 +2,12 @@
 
 package:
   name: fre-cli
-  version: '{{ environ.get('GIT_DESCRIBE_TAG', data.get('version')) }}'
+  version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
 
 source:
   path: .
-# ideally we would want to have this git_url path, but it messes with the conda publish workflow, where it builds only the sourced url and not local/branch changes
+# ideally we want this git_url path, but it messes with conda publish
+# where it builds only the sourced url and not local/branch changes
 # git_url: https://github.com/NOAA-GFDL/fre-cli
 
 build:
@@ -37,6 +38,7 @@ requirements:
     - conda-forge::cmor
     - conda-forge::cylc-uiserver
     - conda-forge::pytest
+    - conda-forge::pytest-cov
     - conda-forge::python-cdo
     - conda-forge::cdo>=2.0.0
 
@@ -46,6 +48,7 @@ test:
   imports:
     - click
     - pytest
+    - pylint
     - fre
     - fre.pp
     - fre.pp.install
@@ -56,6 +59,8 @@ test:
     - fre.app
     - fre.cmor
   commands:
+    - pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
+    - pylint fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     - fre --help
     - fre pp --help
     - fre pp install --help
@@ -72,10 +77,12 @@ test:
     - fre app mask-atmos-plevel --help
     - fre cmor --help
     - fre cmor run --help
-    - pytest fre/app/tests/
+
   requires:
     - pip
+    - pylint
     - pytest
+    - pytest-cov
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
