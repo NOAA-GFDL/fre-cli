@@ -62,12 +62,12 @@ def dont_convert_yaml_val(inval):
     dontconvertus = ["yes", "Yes", "no", "No", "on", "On", "off", "Off"]
 
     if not isinstance(inval, str):
-        return yaml.safe_load(inval)    
+        return yaml.safe_load(inval)
     if inval in dontconvertus:
         return inval
     else:
         return yaml.safe_load(inval)
-    
+
 class Field:
     """ A Field Object, containing the variable attributes, methods, and subparameters """
     def __init__(self, in_field_type, entry_tuple):
@@ -170,7 +170,7 @@ def pound_signs_within_quotes(in_lines):
         odds[idx] = [re.sub('#','poundsign',x) for x in line]
     newfilelines = [zip_uneven(e,o) for e, o in zip(evens,odds)]
     return ''.join(['"'.join(x) for x in newfilelines])
-      
+
 def process_field_file(my_file):
     """ Parse ascii field table into nested lists for further processing """
     with open(my_file, 'r') as fh:

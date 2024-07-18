@@ -31,7 +31,7 @@ def dockerfile_create(yamlfile, platform, target, execute):
                 pass
             else:
                 raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
-            
+
             (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,containerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the bldDir based on the modelRoot, the platform, and the target
