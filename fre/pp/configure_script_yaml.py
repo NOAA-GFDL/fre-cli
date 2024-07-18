@@ -7,9 +7,9 @@
 import os
 import json
 import shutil
-from jsonschema import validate, ValidationError, SchemaError
-import yaml
 from pathlib import Path
+from jsonschema import validate
+import yaml
 import metomi.rose.config
 
 ######VALIDATE#####
@@ -206,8 +206,7 @@ def _yamlInfo(yamlfile,experiment,platform,target):
 
     # write output files
     print("Writing output files...")
-    #cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
-    cylc_dir=os.path.join(os.path.expanduser("./"))
+    cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
     shutil.copyfile(YAML, outfile)
     print("  " + outfile)
