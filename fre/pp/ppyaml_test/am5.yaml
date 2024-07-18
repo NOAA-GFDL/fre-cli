@@ -1,0 +1,91 @@
+# reusable variables
+define: &AM5_VERSION        "am5f7b12r1"
+define: &FRE_STEM           !join [am5/, *AM5_VERSION]
+
+# amip
+define: &EXP_AMIP_START     "1979"
+define: &EXP_AMIP_END       "2020"
+define: &ANA_AMIP_START     "1980"
+define: &ANA_AMIP_END       "2020"
+
+define: &PP_AMIP_CHUNK96    "1yr"
+define: &PP_AMIP_CHUNK384   "1yr"
+define: &PP_XYINTERP96      "180,288"
+define: &PP_XYINTERP384     "720,1152"
+
+# climo
+define: &EXP_CLIMO_START96  "0001"
+define: &EXP_CLIMO_END96    "0011"
+define: &ANA_CLIMO_START96  "0002"
+define: &ANA_CLIMO_END96    "0011"
+
+define: &EXP_CLIMO_START384 "0001"
+define: &EXP_CLIMO_END384   "0006"
+define: &ANA_CLIMO_START384 "0002"
+define: &ANA_CLIMO_END384   "0006"
+
+# coupled
+define: &PP_CPLD_CHUNK_A    "5yr"
+define: &PP_CPLD_CHUNK_B    "20yr"
+
+# grids
+define: &GRID_SPEC96         "/archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar"
+
+# directories shared across tools
+shared_directories:
+  history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
+  pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
+  analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
+  ptmp_dir:     "/xtmp/$USER/ptmp"
+  fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
+
+# shared pp settings
+shared_postprocess:
+  settings:
+    history_segment:    "P1Y"
+    site:               "ppan"
+  switches:
+    do_statics:         True
+    do_timeavgs:        True
+    clean_work:         True
+    do_refinediag:      False
+    do_atmos_plevel_masking: True
+    do_preanalysis:     False
+    do_analysis:        True
+
+experiments:
+  - name: "c96L65_am5f7b12r1_amip"
+    pp:
+      - "yaml_include/pp.c96_amip.yaml"
+  - name: "c96L65_am5f7b12r1_pdclim1850F"
+    pp:
+      - "yaml_include/pp.c96_clim.yaml"
+  - name: "c96L65_am5f7b12r1_pdclim2010F"
+    pp:
+      - "yaml_include/pp.c96_clim.yaml"
+  - name: "c96L65_am5f7b12r1_pdclim2010AERF"
+    pp:
+      - "yaml_include/pp.c96_clim.yaml"
+  - name: "c384L65_am5f7b12r1_amip"
+    pp:
+      - "yaml_include/pp.c384_amip.yaml"
+  - name: "c384L65_am5f7b12r1_pdclim2010F"
+    pp:
+      - "yaml_include/pp.c384_clim.yaml"
+  - name: "c384L65_am5f7b12r1_pdclim1850F"
+    pp:
+      - "yaml_include/pp.c384_clim.yaml"
+  - name: "c384L65_am5f7b12r1_pdclim2010AERF"
+    pp:
+      - "yaml_include/pp.c384_clim.yaml"
+  - name: "c384L65_am5f7b12r1_OM4_p25_piControl_noBLING_DynVeg"
+    pp:
+      - "yaml_include/pp.c384_amip.yaml"
+      - "yaml_include/pp.om4.yaml"
+  - name: "c96L65_am5f7b12r1_OM4_p25_piControl_noBLING_DynVeg"
+    pp:
+      - "yaml_include/pp.c96_amip.yaml"
+      - "yaml_include/pp.om4.yaml"
+  - name: "c96L65_am5f7b12r1_amip_cosp"
+    pp:
+      - "yaml_include/pp.c96_amip.yaml"
