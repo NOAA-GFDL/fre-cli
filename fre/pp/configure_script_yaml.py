@@ -8,6 +8,7 @@ import os
 import json
 import shutil
 from pathlib import Path
+import click
 from jsonschema import validate
 import yaml
 import metomi.rose.config
@@ -103,9 +104,8 @@ def consolidate_yamls(yamlfile,experiment, platform,target):
                     f1.write(f"\n### {i.upper()} settings ###\n")
                     shutil.copyfileobj(f2,f1)
 
-## TO-DO: 
+## TO-DO:
 # - condition where there are multiple pp yamls
-
     return combined
 
 ####################
@@ -113,18 +113,10 @@ def consolidate_yamls(yamlfile,experiment, platform,target):
 #    """
 #    """
 ####################
-def _yamlInfo(yamlfile,experiment,platform,target):
+def rose_init(experiment,platform,target):
     """
-    Using a valid pp.yaml, the rose-app and rose-suite
-    configuration files are created in the cylc-src
-    directory. The pp.yaml is also copied to the
-    cylc-src directory.
+    Initialize the rose suite and app configurations.
     """
-    e = experiment
-    p = platform
-    t = target
-    yml = yamlfile
-
     # initialize rose suite config
     rose_suite = metomi.rose.config.ConfigNode()
     #rose_suite.set(keys=['template variables', 'SITE'],              value='"ppan"')
@@ -138,6 +130,11 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     rose_suite.set(keys=['template variables', 'DO_MDTF'],  value='False')
     rose_suite.set(keys=['template variables', 'PP_DEFAULT_XYINTERP'],  value='0,0')
 
+    # set some rose suite vars
+    rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{experiment}"')
+    rose_suite.set(keys=['template variables', 'PLATFORM'], value=f'"{platform}"')
+    rose_suite.set(keys=['template variables', 'TARGET'], value=f'"{target}"')
+
     # initialize rose regrid config
     rose_regrid = metomi.rose.config.ConfigNode()
     rose_regrid.set(keys=['command', 'default'], value='regrid-xy')
@@ -146,10 +143,23 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     rose_remap = metomi.rose.config.ConfigNode()
     rose_remap.set(keys=['command', 'default'], value='remap-pp-components')
 
-    # set some rose suite vars
-    rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{e}"')
-    rose_suite.set(keys=['template variables', 'PLATFORM'], value=f'"{p}"')
-    rose_suite.set(keys=['template variables', 'TARGET'], value=f'"{t}"')
+    return(rose_suite,rose_regrid,rose_remap)
+
+####################
+def _yamlInfo(yamlfile,experiment,platform,target):
+    """
+    Using a valid pp.yaml, the rose-app and rose-suite
+    configuration files are created in the cylc-src
+    directory. The pp.yaml is also copied to the
+    cylc-src directory.
+    """
+    e = experiment
+    p = platform
+    t = target
+    yml = yamlfile
+
+    # Initialize the rose configurations
+    rose_suite,rose_regrid,rose_remap=rose_init(e,p,t)
 
     # Combine main and exp yamls into one new combine.yaml
     comb_yaml = consolidate_yamls(yamlfile=yml,
@@ -158,17 +168,17 @@ def _yamlInfo(yamlfile,experiment,platform,target):
                                   target=t)
 
     # Load the combined yaml
-    YAML = yamlload(comb_yaml)
+    final_yaml = yamlload(comb_yaml)
 
     ## PARSE COMBINED YAML TO CREATE CONFIGS
     # Remove unwanted keys
-    del YAML["experiments"]
-    del YAML["define"]
+    del final_yaml["experiments"]
+    del final_yaml["define"]
 
-    for i in YAML.keys():
+    for i in final_yaml.keys():
         #print(i)
-        if YAML.get(i) is not None:
-            for configkey,configvalue in YAML.get(i).items():
+        if final_yaml.get(i) is not None:
+            for configkey,configvalue in final_yaml.get(i).items():
                 if isinstance(configvalue,dict):  ##for settings and switches
                     for i,j in configvalue.items():
                         rose_suite.set(keys=['template variables', i.upper()], value=f'{j}')
@@ -176,7 +186,7 @@ def _yamlInfo(yamlfile,experiment,platform,target):
                     rose_suite.set(keys=['template variables', configkey.upper()],
                                    value=f'{configvalue}')
 
-    components = YAML.get("postprocess").get("components")
+    components = final_yaml.get("postprocess").get("components")
     for i in components:
         comp = i.get('type')
         sources = i.get('sources')
@@ -211,7 +221,7 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     print("Writing output files...")
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
-    shutil.copyfile(YAML, outfile)
+    shutil.copyfile(final_yaml, outfile)
     print("  " + outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
