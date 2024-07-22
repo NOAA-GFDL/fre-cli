@@ -2,10 +2,10 @@
 define: &custom_interp "180,360"
 
 # directory overrides
-directories:
+c96_amip_directories:
   ptmp_dir: "/ptmp/$USER"
 
-postprocess:
+c96_amip_postprocess:
   # pp setting overrides
   settings:
     pp_start:   *ANA_AMIP_START
