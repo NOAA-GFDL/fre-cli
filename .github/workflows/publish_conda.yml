@@ -4,7 +4,7 @@ on:
     branches:
     - main
 jobs:
-  build_and_publish:
+  publish:
     runs-on: ubuntu-latest
     container:
       image: continuumio/miniconda3:latest
