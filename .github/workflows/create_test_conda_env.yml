@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '>=3.9'
 
     - name: Add conda to system path
       run: |
@@ -23,7 +23,7 @@ jobs:
         # create environment catalogbuilder will be installed into
         conda env create -f environment.yml --name fre-cli
         # install fre-cli
-        pip install .
+        $CONDA/envs/fre-cli/bin/python -m pip install .
 
     - name: Run pytest in catalogbuilder environment
       run: |
