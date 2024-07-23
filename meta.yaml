@@ -14,7 +14,10 @@ build:
   script: 
     - {{ PYTHON }} -m pip install . -vv
   number: 1
-  noarch: python
+#  noarch: python
+# from https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#architecture-independent-packages
+# since python-cdo links to cdo, which is written in C, this isn't a pure python package.
+# the conda-forge::cdo does not have a noarch specification --> worried this is influencing the pipeline
 
 channels:
     - defaults
