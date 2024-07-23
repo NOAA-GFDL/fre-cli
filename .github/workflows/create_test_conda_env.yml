@@ -1,0 +1,34 @@
+name: create_test_conda_env
+
+on: [push]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+
+    - name: Create fre-cli environment
+      run: |
+        # create environment catalogbuilder will be installed into
+        conda env create -f environment.yml --name fre-cli
+        # install fre-cli
+        pip install .
+
+    - name: Run pytest in catalogbuilder environment
+      run: |
+        which python
+        python --version
+        $CONDA/envs/catalogbuilder/bin/python --version
+        # which pytest
+        $CONDA/envs/catalogbuilder/bin/pytest
