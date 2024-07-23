@@ -29,6 +29,6 @@ jobs:
       run: |
         which python
         python --version
-        $CONDA/envs/catalogbuilder/bin/python --version
+        $CONDA/envs/fre-cli/bin/python --version
         # which pytest
-        $CONDA/envs/catalogbuilder/bin/pytest
+        $CONDA/envs/fre-cli/bin/pytest
