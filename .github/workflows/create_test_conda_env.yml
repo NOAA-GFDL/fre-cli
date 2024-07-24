@@ -20,12 +20,14 @@ jobs:
 
     - name: Create fre-cli environment
       run: |
-        # create environment catalogbuilder will be installed into
+        # create environment fre-cli will be installed into
         conda env create -f environment.yml --name fre-cli
-        # install fre-cli
-        $CONDA/envs/fre-cli/bin/python -m pip install .
+        # try to make sure the right things are in GITHUB_PATH
+        echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+        # install fre-cli w pip
+        $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
 
-    - name: Run pytest in catalogbuilder environment
+    - name: Run pytest in fre-cli environment
       run: |
         # try to make sure the right things are in GITHUB_PATH
         echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
