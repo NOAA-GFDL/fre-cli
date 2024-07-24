@@ -5,6 +5,7 @@ channels:
   - noaa-gfdl
 dependencies:
   - python
+  - pip
   - click
   - pyyaml
   - pylint
