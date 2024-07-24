@@ -6,7 +6,7 @@
 
 ## TO-DO:
 # - figure out way to safe_load (yaml_loader=yaml.SafeLoader?)
-# - update validation and schema
+# - condition where there are multiple pp yamls
 
 import os
 import json
@@ -41,7 +41,6 @@ def join_constructor(loader, node):
     """
     seq = loader.construct_sequence(node)
     return ''.join([str(i) for i in seq])
-
 ####################
 def yaml_load(yamlfile):
     """
@@ -53,7 +52,6 @@ def yaml_load(yamlfile):
     # Load the main yaml and validate
     with open(yamlfile,'r') as f:
         y=yaml.load(f,Loader=yaml.Loader)
-        #validate_yaml(y)
 
     return y
 
@@ -67,9 +65,9 @@ def consolidate_yamls(mainyaml,experiment, platform,target):
     # Create and write to combined yaml
     with open(combined,"w") as f1:
         f1.write('## Combined yamls\n')
-        f1.write(f'define: &name "{experiment}"\n')
-        f1.write(f'define: &platform "{platform}"\n')
-        f1.write(f'define: &target "{target}"\n\n')
+        f1.write(f'name: &name "{experiment}"\n')
+        f1.write(f'platform: &platform "{platform}"\n')
+        f1.write(f'target: &target "{target}"\n\n')
 
         # Combine main yaml with created combined.yaml
         with open(mainyaml,'r') as f2:
@@ -96,7 +94,7 @@ def consolidate_yamls(mainyaml,experiment, platform,target):
             expyaml=i.get("pp")
 
     # Combine experiment yaml with combined yaml
-    # Could be multtple experiment yamls associated with one experiment
+    # Could be multiple experiment yamls associated with one experiment
     # expname_list will be used later to set rose-suite items for each ppyaml (needed?)
     expname_list=[]
     if expyaml is not None:
@@ -107,10 +105,8 @@ def consolidate_yamls(mainyaml,experiment, platform,target):
                     f1.write(f"\n### {i.upper()} settings ###\n")
                     #copy expyaml into combined
                     shutil.copyfileobj(f2,f1)
-
-## TO-DO:
-# - condition where there are multiple pp yamls
-    return (combined,expname_list)
+    
+    return combined
 
 ####################
 def rose_init(experiment,platform,target):
@@ -119,12 +115,6 @@ def rose_init(experiment,platform,target):
     """
     # initialize rose suite config
     rose_suite = metomi.rose.config.ConfigNode()
-    #rose_suite.set(keys=['template variables', 'SITE'],              value='"ppan"')
-    #rose_suite.set(keys=['template variables', 'CLEAN_WORK'],        value='True')
-    #rose_suite.set(keys=['template variables', 'PTMP_DIR'],          value='"/xtmp/$USER/ptmp"')
-    #rose_suite.set(keys=['template variables', 'DO_STATICS'],        value='True')
-    #rose_suite.set(keys=['template variables', 'DO_TIMEAVGS'],       value='True')
-    #rose_suite.set(keys=['template variables', 'DO_ATMOS_PLEVEL_MASKING'], value='True')
     # disagreeable; these should be optional
     rose_suite.set(keys=['template variables', 'DO_ANALYSIS_ONLY'],  value='False')
     rose_suite.set(keys=['template variables', 'DO_MDTF'],  value='False')
@@ -146,73 +136,57 @@ def rose_init(experiment,platform,target):
     return(rose_suite,rose_regrid,rose_remap)
 
 ####################
-def set_rose_suite(yamlfile,rose_suite,expname_list):
+def set_rose_suite(yamlfile,rose_suite):
     """
     Set items in the rose suite configuration.
     """
-
     pp=yamlfile.get("postprocess")
     dirs=yamlfile.get("directories")
 
     # set rose-suite items
     if pp is not None:
         for i in pp.values():
-            for key,value in i.items():
-                rose_suite.set(keys=['template variables', key.upper()], value=f'{value}')
+            if not isinstance(i,list):  
+                for key,value in i.items():
+                    rose_suite.set(keys=['template variables', key.upper()], value=f'{value}')
     if dirs is not None:
         for key,value in dirs.items():
             rose_suite.set(keys=['template variables', key.upper()], value=f'{value}')
 
-    for n in expname_list:
-        exp_pp=yamlfile.get(f"{n}_postprocess")
-        exp_dirs=yamlfile.get(f"{n}_directories")
-
-        # set rose-suite items
-        if exp_pp is not None:
-            for i in exp_pp.values():
-                if not isinstance(i,list):
-                    for key,value in i.items():
-                        rose_suite.set(keys=['template variables', key.upper()], value=f'{value}')
-        if exp_dirs is not None:
-            for key,value in exp_dirs.items():
-                rose_suite.set(keys=['template variables', key.upper()], value=f'{value}')
-
 ####################
-def set_rose_apps(yamlfile,rose_regrid,rose_remap,expname_list):
+def set_rose_apps(yamlfile,rose_regrid,rose_remap):
     """
     Set items in the regrid and remap rose app configurations.
     """
+    components = yamlfile.get(f"postprocess").get("components")
+    for i in components:
+        comp = i.get('type')
+        sources = i.get('sources')
+        interp_method = i.get('interpMethod')
 
-    for n in expname_list:
-        components = yamlfile.get(f"{n}_postprocess").get("components")
-        for i in components:
-            comp = i.get('type')
-            sources = i.get('sources')
-            interp_method = i.get('interpMethod')
+        # set remap items
+        rose_remap.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
+        # if xyInterp doesnt exist, grid is native
+        if i.get("xyInterp") is None:
+            rose_remap.set(keys=[f'{comp}', 'grid'], value='native')
 
-            # set remap items
-            rose_remap.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
-            # if xyInterp doesnt exist, grid is native
-            if i.get("xyInterp") is None:
-                rose_remap.set(keys=[f'{comp}', 'grid'], value='native')
+        # if xyInterp exists, component can be regridded
+        else:
+            interp_split = i.get('xyInterp').split(',')
+            rose_remap.set(keys=[f'{comp}', 'grid'],
+                           value=f'regrid-xy/{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
-            # if xyInterp exists, component can be regridded
-            else:
-                interp_split = i.get('xyInterp').split(',')
-                rose_remap.set(keys=[f'{comp}', 'grid'],
-                               value=f'regrid-xy/{interp_split[0]}_{interp_split[1]}.{interp_method}')
-
-            # set regrid items
-            if i.get("xyInterp") is not None:
-                rose_regrid.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
-                rose_regrid.set(keys=[f'{comp}', 'inputRealm'], value=f'{i.get("inputRealm")}')
-                rose_regrid.set(keys=[f'{comp}', 'inputGrid'], value=f'{i.get("sourceGrid")}')
-                rose_regrid.set(keys=[f'{comp}', 'interpMethod'], value=f'{interp_method}')
-                interp_split = i.get('xyInterp').split(',')
-                rose_regrid.set(keys=[f'{comp}', 'outputGridLon'], value=f'{interp_split[1]}')
-                rose_regrid.set(keys=[f'{comp}', 'outputGridLat'], value=f'{interp_split[0]}')
-                rose_regrid.set(keys=[f'{comp}', 'outputGridType'],
-                                value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
+        # set regrid items
+        if i.get("xyInterp") is not None:
+            rose_regrid.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
+            rose_regrid.set(keys=[f'{comp}', 'inputRealm'], value=f'{i.get("inputRealm")}')
+            rose_regrid.set(keys=[f'{comp}', 'inputGrid'], value=f'{i.get("sourceGrid")}')
+            rose_regrid.set(keys=[f'{comp}', 'interpMethod'], value=f'{interp_method}')
+            interp_split = i.get('xyInterp').split(',')
+            rose_regrid.set(keys=[f'{comp}', 'outputGridLon'], value=f'{interp_split[1]}')
+            rose_regrid.set(keys=[f'{comp}', 'outputGridLat'], value=f'{interp_split[0]}')
+            rose_regrid.set(keys=[f'{comp}', 'outputGridType'],
+                            value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
 ####################
 def _yamlInfo(yamlfile,experiment,platform,target):
@@ -231,20 +205,32 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
 
     # Combine main and exp yamls into one new combine.yaml
-    comb_yaml,expname_list = consolidate_yamls(mainyaml=yml,
-                                               experiment=e,
-                                               platform=p,
-                                               target=t)
+    comb_yaml = consolidate_yamls(mainyaml=yml,
+                                  experiment=e,
+                                  platform=p,
+                                  target=t)
 
     # Load the combined yaml
     final_yaml = yaml_load(comb_yaml)
 
-    ## PARSE COMBINED YAML TO CREATE CONFIGS
-    # set rose-suite items
-    set_rose_suite(final_yaml,rose_suite,expname_list)
+    # Clean combined yaml to validate
+    del final_yaml["fre_properties"]
+    del final_yaml["shared"]
+    del final_yaml["experiments"]
 
-    # set regrid and remap rose app items
-    set_rose_apps(final_yaml,rose_regrid,rose_remap,expname_list)
+    with open("combined.yaml",'w') as f:
+        yaml.safe_dump(final_yaml,f,sort_keys=False)
+
+        # validate yaml
+        validate_yaml(final_yaml)
+
+
+    ## PARSE COMBINED YAML TO CREATE CONFIGS
+    # Set rose-suite items
+    set_rose_suite(final_yaml,rose_suite)
+
+    # Set regrid and remap rose app items
+    set_rose_apps(final_yaml,rose_regrid,rose_remap)
 
     # write output files
     print("Writing output files...")
