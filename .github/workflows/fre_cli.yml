@@ -1,0 +1,17 @@
+name: fre_cli
+on:
+  push:
+    branches:
+    - main
+jobs:
+  test_cli:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up enviroment
+      run: |
+        conda activate /nbhome/fms/conda/envs/fre-cli
+        #conda activate $GITHUB_WORKSPACE/
+      
+    - name: run pytest tests
+      run: |
+        pytest $GITHUB_WORKSPACE/fre/test/test_fre_cli.py
