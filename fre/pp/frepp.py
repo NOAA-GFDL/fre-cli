@@ -252,7 +252,7 @@ def configure_xml(context, xml, platform, target, experiment, do_analysis, histo
              )
 @click.pass_context
 def wrapper(context, experiment, platform, target, config_file, branch='main'):
-    """ - Execute fre pp checkout """
+    """ - Execute fre pp steps in order """
     context.forward(runFre2pp)
 
 if __name__ == "__main__":
