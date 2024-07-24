@@ -27,8 +27,10 @@ jobs:
 
     - name: Run pytest in catalogbuilder environment
       run: |
+        # try to make sure the right things are in GITHUB_PATH
+        echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
         which python
         python --version
         $CONDA/envs/fre-cli/bin/python --version
-        # which pytest
+        # run pytest
         $CONDA/envs/fre-cli/bin/pytest
