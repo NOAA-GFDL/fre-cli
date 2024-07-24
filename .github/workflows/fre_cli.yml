@@ -1,8 +1,6 @@
 name: fre_cli
-on:
-  push:
-    branches:
-    - main
+on: [push]
+
 jobs:
   test_cli:
     runs-on: ubuntu-latest
