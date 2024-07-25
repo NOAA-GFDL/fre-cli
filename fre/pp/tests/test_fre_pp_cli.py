@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from fre import fre
-from fre import frepp
+from fre import pp
 
 from click.testing import CliRunner
 runner = CliRunner()
