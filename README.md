@@ -9,7 +9,7 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
 ## **Background**
 
-As part of fre/canopy, MSD wanted to develop a modern, user-friendly CLI that will allow users to call upon FRE commands using a **_fre_** **tool** _subtool_ syntax. Developed with Click, a Python package easily installable through PyPI and Conda, the main goal of this is to allow users access to most, if not all of MSD-managed tools and workflows from one packaged, centralized CLI.
+`fre-cli` is a modern, user-friendly CLI that will allow users to call FRE commands using a **_fre_** **tool** _subtool_ syntax. Leveraging Click, an easily installable Python package available via PyPI and/or Conda, `fre-cli` gives users intuitive and easy-to-understand access to many FRE tools and workflows from one packaged, centralized CLI.
 
 ![Screenshot from 2024-04-18 13-42-04](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/43c028a6-4e6a-42fe-8bec-008b6758ea9b)
 
@@ -57,12 +57,14 @@ Following the instructions above, the user will be able to run `fre` from any di
 ## **Checklist: Currently Implemented Tools**
 
 To be developed:
-- [ ]  **fre check**
+
 - [x]  **fre app**
 - [x]  **fre catalog**
+- [ ]  **fre check**
+- [x]  **fre cmor**
 - [ ]  **fre list**
 - [x]  **fre make**
-- [x]  **fre cmor**
+- [x]  **fre pp**
 - [ ]  **fre run**
 - [ ]  **fre test**
 - [ ]  **fre yamltools**
