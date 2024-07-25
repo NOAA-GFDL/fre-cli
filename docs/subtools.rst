@@ -1,20 +1,20 @@
 Subtools
 ========
 
-frecheck
+fre check
 --------
 
-frelist
+fre list
 -------
 
-fremake
+fre make
 -------
 
-frepp
+fre pp
 -----
 
-frerun
+fre run
 ------
 
-fretest
+fre test
 -------
