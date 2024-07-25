@@ -5,12 +5,18 @@ channels:
   - noaa-gfdl
 dependencies:
   - python
+  - pip
   - click
   - pyyaml
   - pylint
   - jsonschema
   - noaa-gfdl::intakebuilder
-  - conda-forge::cylc-flow
+  - conda-forge::cylc-flow>=8.2.0
   - conda-forge::cylc-rose
   - conda-forge::metomi-rose
   - conda-forge::cmor
+  - conda-forge::cylc-uiserver
+  - conda-forge::pytest
+  - conda-forge::pytest-cov
+  - conda-forge::python-cdo
+  - conda-forge::cdo>=2.0.0

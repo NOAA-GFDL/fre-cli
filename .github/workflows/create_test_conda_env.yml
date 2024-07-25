@@ -1,0 +1,38 @@
+name: create_test_conda_env
+
+on: [push]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '>=3.9'
+
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+
+    - name: Create fre-cli environment
+      run: |
+        # create environment fre-cli will be installed into
+        conda env create -f environment.yml --name fre-cli
+        # try to make sure the right things are in GITHUB_PATH
+        echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+        # install fre-cli w pip
+        $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
+
+    - name: Run pytest in fre-cli environment
+      run: |
+        # try to make sure the right things are in GITHUB_PATH
+        echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+        which python
+        python --version
+        $CONDA/envs/fre-cli/bin/python --version
+        # run pytest
+        $CONDA/envs/fre-cli/bin/pytest
