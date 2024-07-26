@@ -37,3 +37,13 @@ etc.
 ```
 ### **PP Wrapper Decision Tree**
 ![pp_wrapper_decsiontree](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/d3eaa237-1e29-4922-9d83-8d9d11925c54)
+
+### **Tests**
+
+To run `fre pp` tests, return to root directory of the fre-cli repo and call just those tests with
+
+    python -m pytest fre/pp/tests/[test script.py]
+
+Or run all tests with
+
+    python -m pytests fre/pp/tests
