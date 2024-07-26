@@ -1,11 +1,10 @@
 import os
 from pathlib import Path
-#import configure_script_yaml as csy
-import fre.pp.configure_script_yaml as csy
+import configure_script_yaml as csy
 
 # Set example yaml paths, input directory
 CWD = Path.cwd()
-yamls_dir = Path("fre/tests/example_ppyamls")
+yamls_dir = Path("tests/example_ppyamls")
 in_dir = Path(f"{CWD}/{yamls_dir}")
 
 # Set what would be click options
