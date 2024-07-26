@@ -34,6 +34,7 @@ from .lazy_group import LazyGroup
 )
 
 def fre():
+    ''' entry point function to subgroup functions '''
     pass
 
 if __name__ == '__main__':
