@@ -40,7 +40,7 @@ etc.
 
 ### **Tests**
 
-To `fre pp` tests, return to root directory of the fre-cli repo and call just those tests with
+To run `fre pp` tests, return to root directory of the fre-cli repo and call just those tests with
 
     python -m pytest fre/pp/tests/[test script.py]
 
