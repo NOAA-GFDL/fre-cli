@@ -35,4 +35,16 @@ jobs:
         python --version
         $CONDA/envs/fre-cli/bin/python --version
         # run pytest
-        $CONDA/envs/fre-cli/bin/pytest
+        #$CONDA/envs/fre-cli/bin/pytest
+        pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
+
+    - name: Run pylint in fre-cli environment
+      run: |
+        # try to make sure the right things are in GITHUB_PATH
+        echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+        which python
+        python --version
+        $CONDA/envs/fre-cli/bin/python --version
+        # run pytest
+        #$CONDA/envs/fre-cli/bin/pylint
+        pylint fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
