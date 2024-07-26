@@ -36,8 +36,9 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
     click.echo("cloning experiment into directory " + directory + "/" + name)
     clonecmd = (
         f"git clone -b {branch} --single-branch --depth=1 --recursive "
-        f"https://gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git {name}" )
+        f"https://github.com/NOAA-GFDL/fre-workflows.git {name}" )
     preexist_error = f"fatal: destination path '{name}' exists and is not an empty directory."
+    click.echo(clonecmd)
     cloneproc = subprocess.run(clonecmd, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
     if not cloneproc.returncode == 0:
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
@@ -68,7 +69,7 @@ def checkoutTemplate(experiment, platform, target, branch="main"):
     Wrapper script for calling checkoutTemplate - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _checkoutTemplate(experiment, platform, target, branch="main")
+    return _checkoutTemplate(experiment, platform, target, branch)
 
 
 if __name__ == '__main__':
