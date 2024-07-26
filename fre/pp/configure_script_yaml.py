@@ -214,9 +214,10 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     final_yaml = yaml_load(comb_yaml)
 
     # Clean combined yaml to validate
-    del final_yaml["fre_properties"]
-    del final_yaml["shared"]
-    del final_yaml["experiments"]
+    # If keys exists, delete:
+    for keys_clean in ["fre_properties","shared","experiments"]:
+        if final_yaml[keys_clean] is not None:
+            del final_yaml[keys_clean]
 
     with open("combined.yaml",'w') as f:
         yaml.safe_dump(final_yaml,f,sort_keys=False)
