@@ -1,3 +1,7 @@
+<!-- from https://anaconda.org/NOAA-GFDL/fre-cli/badges -->
+[![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/version.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
+[![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
+[![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_relative_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
 # **FRE-CLI**
 
 FMS Runtime Environment (FRE) CLI developed using Python's Click package
