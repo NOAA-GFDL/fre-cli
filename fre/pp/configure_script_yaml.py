@@ -60,6 +60,9 @@ def consolidate_yamls(mainyaml,experiment, platform,target):
     """
     Combine main yaml and experiment yaml into combined yamls
     """
+    # Retrieve the directory containing the main yaml, to use
+    # as an offset for the child yamls
+    mainyaml_dir = os.path.dirname(mainyaml)
     # Path to new combined
     combined=Path("combined.yaml")
     # Create and write to combined yaml
@@ -101,7 +104,8 @@ def consolidate_yamls(mainyaml,experiment, platform,target):
         with open(combined,"a") as f1:
             for i in expyaml:
                 expname_list.append(i.split(".")[1])
-                with open(i,'r') as f2:
+                expyaml_path = os.path.join(mainyaml_dir, i)
+                with open(expyaml_path,'r') as f2:
                     f1.write(f"\n### {i.upper()} settings ###\n")
                     #copy expyaml into combined
                     shutil.copyfileobj(f2,f1)
@@ -136,6 +140,16 @@ def rose_init(experiment,platform,target):
     return(rose_suite,rose_regrid,rose_remap)
 
 ####################
+def quote_rose_values(value):
+    """
+    rose-suite.conf template variables must be quoted unless they are
+    boolean, in which case do not quote them.
+    """
+    if isinstance(value, bool):
+        return(f"{value}")
+    else:
+        return("'" + value + "'")
+
 def set_rose_suite(yamlfile,rose_suite):
     """
     Set items in the rose suite configuration.
@@ -148,10 +162,12 @@ def set_rose_suite(yamlfile,rose_suite):
         for i in pp.values():
             if not isinstance(i,list):  
                 for key,value in i.items():
-                    rose_suite.set(keys=['template variables', key.upper()], value=f'{value}')
+                    # rose-suite.conf is somewhat finicky with quoting
+                    # cylc validate will reveal any complaints
+                    rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
     if dirs is not None:
         for key,value in dirs.items():
-            rose_suite.set(keys=['template variables', key.upper()], value=f'{value}')
+            rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
 
 ####################
 def set_rose_apps(yamlfile,rose_regrid,rose_remap):
