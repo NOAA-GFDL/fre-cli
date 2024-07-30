@@ -150,7 +150,10 @@ def set_rose_suite(yamlfile,rose_suite):
                 for key,value in i.items():
                     # rose-suite.conf is somewhat finicky with quoting
                     # cylc validate will reveal any complaints
-                    rose_suite.set(keys=['template variables', key.upper()], value=f"'{value}'")
+                    if isinstance(value, bool):
+                        rose_suite.set(keys=['template variables', key.upper()], value=f"{value}")
+                    else:
+                        rose_suite.set(keys=['template variables', key.upper()], value=f"'{value}'")
     if dirs is not None:
         for key,value in dirs.items():
             rose_suite.set(keys=['template variables', key.upper()], value=f"'{value}'")
