@@ -2,17 +2,22 @@
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/version.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_relative_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
+[![CI](https://github.com/NOAA-GFDL/fre-cli/workflows/publish_conda/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions?query=workflow%3Apublish_conda+branch%3Amain++)
+
+<!-- ... someday... 
+[![Code coverage](https://codecov.io/gh/NOAA-GFDL/fre-cli/branch/main/graph/badge.svg?flag=unittests)](https://codecov.io/gh/NOAA-GFDL/fre-cli)--> 
+
 # **FRE-CLI**
 
 FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
-* [Sphinx Page](https://noaa-gfdl.github.io/fre-cli/index.html)
-* [Project Outline](https://docs.google.com/document/d/19Uc01IPuuIuMtOyAvxXj9Mn6Ivc5Ql6NZ-Q6I8YowRI/edit?usp=sharing)
+* [Sphinx Documentation](https://noaa-gfdl.github.io/fre-cli/index.html)
+<!--* ... internal doc, should remove, if anything...
+[Project Outline](https://docs.google.com/document/d/19Uc01IPuuIuMtOyAvxXj9Mn6Ivc5Ql6NZ-Q6I8YowRI/edit?usp=sharing) -->
 
 ![IMG_1076](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/817cabe1-6e3b-4210-9874-b13f601265d6)
 
 ## **Background**
-
 `fre-cli` is a modern, user-friendly CLI that will allow users to call FRE commands using a **_fre_** **tool** _subtool_ syntax. Leveraging Click, an easily installable Python package available via PyPI and/or Conda, `fre-cli` gives users intuitive and easy-to-understand access to many FRE tools and workflows from one packaged, centralized CLI.
 
 ![Screenshot from 2024-04-18 13-42-04](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/43c028a6-4e6a-42fe-8bec-008b6758ea9b)
