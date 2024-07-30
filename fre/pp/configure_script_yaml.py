@@ -60,6 +60,9 @@ def consolidate_yamls(mainyaml,experiment, platform,target):
     """
     Combine main yaml and experiment yaml into combined yamls
     """
+    # Retrieve the directory containing the main yaml, to use
+    # as an offset for the child yamls
+    mainyaml_dir = os.path.dirname(mainyaml)
     # Path to new combined
     combined=Path("combined.yaml")
     # Create and write to combined yaml
@@ -101,7 +104,8 @@ def consolidate_yamls(mainyaml,experiment, platform,target):
         with open(combined,"a") as f1:
             for i in expyaml:
                 expname_list.append(i.split(".")[1])
-                with open(i,'r') as f2:
+                expyaml_path = os.path.join(mainyaml_dir, i)
+                with open(expyaml_path,'r') as f2:
                     f1.write(f"\n### {i.upper()} settings ###\n")
                     #copy expyaml into combined
                     shutil.copyfileobj(f2,f1)
