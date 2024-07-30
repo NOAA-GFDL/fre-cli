@@ -1,20 +1,32 @@
 Subtools
 ========
 
-frecheck
+fre app
 --------
 
-frelist
--------
+fre catalog
+--------
 
-fremake
--------
+fre check (not yet implemented)
+--------
 
-frepp
------
+fre cmor
+--------
 
-frerun
-------
+fre list (not yet implemented)
+--------
 
-fretest
--------
+fre make
+--------
+
+fre pp
+--------
+
+fre run (not yet implemented)
+--------
+
+fre test (not yet implemented)
+--------
+
+fre yamltools (not yet implemented)
+--------
