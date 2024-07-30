@@ -1,3 +1,5 @@
 include README.md
 include LICENSE.md
 recursive-include fre *
+include versioneer.py
+include fre/_version.py
