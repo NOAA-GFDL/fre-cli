@@ -148,10 +148,12 @@ def set_rose_suite(yamlfile,rose_suite):
         for i in pp.values():
             if not isinstance(i,list):  
                 for key,value in i.items():
-                    rose_suite.set(keys=['template variables', key.upper()], value=f'{value}')
+                    # rose-suite.conf is somewhat finicky with quoting
+                    # cylc validate will reveal any complaints
+                    rose_suite.set(keys=['template variables', key.upper()], value=f"'{value}'")
     if dirs is not None:
         for key,value in dirs.items():
-            rose_suite.set(keys=['template variables', key.upper()], value=f'{value}')
+            rose_suite.set(keys=['template variables', key.upper()], value=f"'{value}'")
 
 ####################
 def set_rose_apps(yamlfile,rose_regrid,rose_remap):
