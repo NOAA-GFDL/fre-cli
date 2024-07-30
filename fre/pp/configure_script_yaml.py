@@ -140,6 +140,16 @@ def rose_init(experiment,platform,target):
     return(rose_suite,rose_regrid,rose_remap)
 
 ####################
+def quote_rose_values(value):
+    """
+    rose-suite.conf template variables must be quoted unless they are
+    boolean, in which case do not quote them.
+    """
+    if isinstance(value, bool):
+        return(f"{value}")
+    else:
+        return("'" + value + "'")
+
 def set_rose_suite(yamlfile,rose_suite):
     """
     Set items in the rose suite configuration.
@@ -154,13 +164,10 @@ def set_rose_suite(yamlfile,rose_suite):
                 for key,value in i.items():
                     # rose-suite.conf is somewhat finicky with quoting
                     # cylc validate will reveal any complaints
-                    if isinstance(value, bool):
-                        rose_suite.set(keys=['template variables', key.upper()], value=f"{value}")
-                    else:
-                        rose_suite.set(keys=['template variables', key.upper()], value=f"'{value}'")
+                    rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
     if dirs is not None:
         for key,value in dirs.items():
-            rose_suite.set(keys=['template variables', key.upper()], value=f"'{value}'")
+            rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
 
 ####################
 def set_rose_apps(yamlfile,rose_regrid,rose_remap):
