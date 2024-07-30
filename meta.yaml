@@ -31,7 +31,7 @@ requirements:
     - pyyaml
     - pylint
     - jsonschema
-    - noaa-gfdl::intakebuilder
+    - noaa-gfdl::catalogbuilder
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
@@ -58,6 +58,7 @@ test:
     - fre.make
     - fre.app
     - fre.cmor
+    - fre.catalog
   commands:
     - pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
     - pylint fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."

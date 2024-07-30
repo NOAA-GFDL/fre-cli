@@ -13,6 +13,7 @@ setup(
         'pyyaml',
         'pylint',
         'pytest',
+        'catalogbuilder',
         'jsonschema',
         'cylc-flow',
         'cylc-rose',
