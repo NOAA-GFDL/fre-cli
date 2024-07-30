@@ -1,37 +1,13 @@
 import click
-from scripts import gen_intake_gfdl
-from scripts import test_catalog
+import catalogbuilder
+from catalogbuilder.scripts import gen_intake_gfdl
+from catalogbuilder.scripts import test_catalog
 
 @click.group(help=click.style(" - access fre catalog subcommands", fg=(64,94,213)))
 def catalogCli():
+    ''' entry point for click into fre catalog cli calls '''
     pass
 
-#@catalogCli.command()
-#@click.option('-i',
-#              '--input_path',
-#              required = True,
-#              nargs = 1)
-#@click.option('-o',
-#              '--output_path',
-#              required = True,
-#              nargs = 1)
-#@click.option('--filter_realm',
-#              nargs = 1)
-#@click.option('--filter_freq',
-#              nargs = 1)
-#@click.option('--filter_chunk',
-#              nargs = 1)
-#@click.option('--overwrite',
-#              is_flag = True,
-#              default = False)
-#@click.option('--append',
-#              is_flag = True,
-#              default = False)
-#@click.pass_context
-#def build(context, input_path, output_path, filter_realm, filter_freq, filter_chunk,
-#          overwrite,append):
-#    """ - Execute fre catalog build """
-#    context.forward(build_script)
 
 @catalogCli.command()
 #TODO arguments dont have help message. So consider changing arguments to options?
