@@ -35,8 +35,12 @@ jobs:
         python --version
         $CONDA/envs/fre-cli/bin/python --version
         # run pytest
-        pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
-
+        pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
+        # install genbadge to generate coverage badge based on xml
+        pip install genbadge
+        genbadge coverage -v -i coverage.xml -o cov_badge.svg
+        genbadge tests -v -i pytest_results.xml -o pytest_badge.svg
+        
     - name: Run pylint in fre-cli environment
       run: |
         # try to make sure the right things are in GITHUB_PATH
@@ -44,5 +48,5 @@ jobs:
         which python
         python --version
         $CONDA/envs/fre-cli/bin/python --version
-        # run pytest
+        # run pylint
         pylint fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
