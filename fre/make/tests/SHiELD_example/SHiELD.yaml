@@ -1,0 +1,10 @@
+platformYaml: platforms.yaml
+compileYaml: compile.yaml
+fv3_release: main
+phy_release: main
+fms_release: "2023.02"
+drivers_release: main
+coupler_release: "2023.02"
+FMSincludes: "-IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include"
+momIncludes: "-Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include"
+INTEL: intel-classic
