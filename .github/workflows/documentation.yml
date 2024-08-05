@@ -14,9 +14,10 @@ jobs:
       - name: Install dependencies
         run: |
           #conda install sphinx
-          pip install sphinx renku-sphinx-theme sphinx-rtd-theme
+          #pip install sphinx renku-sphinx-theme sphinx-rtd-theme
           #pip install renku-sphinx-theme
-          pip install --upgrade sphinx-rtd-theme
+          #pip install --upgrade sphinx-rtd-theme
+          pip install --upgrade sphinx sphinx-rtd-theme
       - name: Sphinx build
         run: |
           sphinx-build docs build
