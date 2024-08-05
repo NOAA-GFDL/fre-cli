@@ -10,10 +10,12 @@ Welcome to Fre-Cli's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   setup
-   usage
-   subtools
+   What is FRE?
+   Installation
+   Usage
+   Tools
    FAQ
+   For developers
 
 Indices and tables
 ==================
