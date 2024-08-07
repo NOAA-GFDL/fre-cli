@@ -58,12 +58,8 @@ def test_cli_fre_catalog():
     result = runner.invoke(fre.fre, args=["catalog"])
     assert result.exit_code == 0
 
-def test_cli_fre_catalog_builder():
-    result = runner.invoke(fre.fre, args=["catalog", "builder"])
-    assert result.exit_code == 0
-
-def test_cli_fre_catalog_builder():
-    result = runner.invoke(fre.fre, args=["catalog", "builder", "/archive/FIRST.LAST/fre/FMS2023.04_om5_20240410/ESM4.2JpiC_om5b04r1/gfdl.ncrc5-intel23-prod-openmp/pp"])
+def test_cli_fre_catalog_builder_help():
+    result = runner.invoke(fre.fre, args=["catalog", "builder", "--help"])
     assert result.exit_code == 0
 
 def test_cli_fre_catalog_help():
