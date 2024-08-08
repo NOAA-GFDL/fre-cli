@@ -58,6 +58,10 @@ def test_cli_fre_catalog():
     result = runner.invoke(fre.fre, args=["catalog"])
     assert result.exit_code == 0
 
+def test_cli_fre_catalog_builder_help():
+    result = runner.invoke(fre.fre, args=["catalog", "builder", "--help"])
+    assert result.exit_code == 0
+
 def test_cli_fre_catalog_help():
     result = runner.invoke(fre.fre, args=['--help', "catalog"])
     assert result.exit_code == 0
