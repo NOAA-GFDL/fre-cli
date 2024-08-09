@@ -10,20 +10,16 @@ runner = CliRunner()
 
 from fre import fre
 
-# tests for base 'fre' calls
+# tests for base 'fre app' calls
 
-def test_cli_fre():
-    result = runner.invoke(fre.fre)
+def test_cli_fre_app():
+    result = runner.invoke(fre.fre, args=["app"])
     assert result.exit_code == 0
 
-def test_cli_fre_help():
-    result = runner.invoke(fre.fre, args='--help')
+def test_cli_fre_app_help():
+    result = runner.invoke(fre.fre, args=["app", "--help"])
     assert result.exit_code == 0
 
-def test_cli_fre_option_dne():
-    result = runner.invoke(fre.fre, args='optionDNE')
+def test_cli_fre_app_opt_dne():
+    result = runner.invoke(fre.fre, args=["app", "optionDNE"])
     assert result.exit_code == 2
-
-
-
-    
