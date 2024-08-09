@@ -3,16 +3,16 @@ import pytest
 
 # not a test function, to be called by test functions below.
 def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=None, unwgt=None, stddev_type=None):
-    assert all( [infile is not None, outfile is not None, 
+    assert all( [infile is not None, outfile is not None,
                  pkg is not None, avg_type is not None,
                  unwgt is not None] )
     if pl.Path(outfile).exists():
         print(f'output test file exists. deleting before remaking.')
         pl.Path(outfile).unlink() #delete file so we check that it can be recreated
     from fre.app.generate_time_averages import generate_time_averages as gtas
-    gtas.generate_time_average(infile = infile, outfile = outfile, 
-                               pkg = pkg, unwgt = unwgt, 
-                               avg_type = avg_type, stddev_type = stddev_type)                               
+    gtas.generate_time_average(infile = infile, outfile = outfile,
+                               pkg = pkg, unwgt = unwgt,
+                               avg_type = avg_type, stddev_type = stddev_type)
     return pl.Path(outfile).exists()
 
 ### preamble tests. if these fail, none of the others will succeed. -----------------
@@ -30,23 +30,23 @@ def test_time_avg_input_file_exists():
 ### cdo avgs, unweighted, all/seasonal/monthly ------------------------
 def test_monthly_cdo_time_unwgt_avgs():
     ''' generates an unweighted monthly time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'ymonmean_unwgt_'+test_file_name),
                                         pkg='cdo',avg_type='month',unwgt=True)
 
 def test_seasonal_cdo_time_unwgt_avgs():
     ''' generates an unweighted seasonal time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'yseasmean_unwgt_'+test_file_name),
                                         pkg='cdo',avg_type='seas',unwgt=True)
 
 def test_cdo_time_unwgt_avgs():
     ''' generates an unweighted time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'timmean_unwgt_'+test_file_name),
                                         pkg='cdo',avg_type='all',unwgt=True)
 
-    
+
 #### cdo avgs, weighted, all/seasonal/monthly ------------------------
 ## (TODO) WRITE THESE VERSIONS FOR CDOTIMEAVERAGER CLASS THEN MAKE THESE TESTS
 ##def test_monthly_cdo_time_avgs():
@@ -54,7 +54,7 @@ def test_cdo_time_unwgt_avgs():
 
 def test_cdo_time_avgs():
     ''' generates a weighted time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'timmean_'+test_file_name),
                                         pkg='cdo',avg_type='all',unwgt=False)
 
@@ -62,19 +62,19 @@ def test_cdo_time_avgs():
 ### cdo stddevs, unweighted, all/seasonal/monthly ------------------------
 def test_monthly_cdo_time_unwgt_stddevs():
     ''' generates a monthly time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'ymonstddev1_unwgt_'+test_file_name),
                                         pkg='cdo',avg_type='month',stddev_type='samp', unwgt=True)
 
 def test_seasonal_cdo_time_unwgt_stddevs():
     ''' generates a seasonal time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'yseasstddev1_unwgt_'+test_file_name),
                                         pkg='cdo',avg_type='seas',stddev_type='samp',unwgt=True)
 
 def test_cdo_time_unwgt_stddevs():
     ''' generates a time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'yseasmean_unwgt_'+test_file_name),
                                         pkg='cdo',avg_type='all',stddev_type='samp', unwgt=True)
 
@@ -84,33 +84,33 @@ def test_cdo_time_unwgt_stddevs():
 #def test_monthly_cdo_time_stddevs():
 #def test_seasonal_cdo_time_stddevs():
 #def test_cdo_time_stddevs():
-    
+
 ## frepythontools avgs+stddevs, weighted+unweighted, all ------------------------
 def test_fre_python_tools_time_avgs():
     ''' generates a time averaged file using fre_python_tools's version '''
     ''' weighted average, no std deviation '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
                                         pkg='fre-python-tools',avg_type='all', unwgt=False)
 
 def test_fre_python_tools_time_unwgt_avgs():
     ''' generates a time averaged file using fre_python_tools's version '''
     ''' weighted average, no std deviation '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'frepytools_unwgt_timavg_'+test_file_name),
                                         pkg='fre-python-tools',avg_type='all', unwgt=True)
 
 def test_fre_python_tools_time_avgs_stddevs():
     ''' generates a time averaged file using fre_python_tools's version '''
     ''' weighted average, no std deviation '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'frepytools_stddev_'+test_file_name),
                                         pkg='fre-python-tools',avg_type='all', stddev_type='samp', unwgt=False)
 
 def test_fre_python_tools_time_unwgt_avgs_stddevs():
     ''' generates a time averaged file using fre_python_tools's version '''
     ''' weighted average, no std deviation '''
-    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name), 
+    assert run_avgtype_pkg_calculations(infile  = (time_avg_file_dir+test_file_name),
                                         outfile = (time_avg_file_dir+'frepytools_unwgt_stddev_'+test_file_name),
                                         pkg='fre-python-tools',avg_type='all', stddev_type='samp', unwgt=True)
 
@@ -185,10 +185,10 @@ def test_compare_fre_python_tools_to_fre_nctools():
             print(f'diff_pytools_nctools_timavg[0][lat][lon]={diff_pytools_nctools_timavg[0][lat][lon]}')
             if lon>10: break
         break
-    
+
     non_zero_count=np.count_nonzero(diff_pytools_nctools_timavg[:])
-    #assert (non_zero_count == 0.) # bad way to check for zero. 
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ) 
+    #assert (non_zero_count == 0.) # bad way to check for zero.
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 @pytest.mark.skip(reason='test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_fre_python_tools_to_cdo():
@@ -218,7 +218,7 @@ def test_compare_fre_python_tools_to_cdo():
         break
 
     non_zero_count=np.count_nonzero(diff_pytools_cdo_timavg[:])
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ) 
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 
 def test_compare_unwgt_fre_python_tools_to_unwgt_cdo():
@@ -247,7 +247,7 @@ def test_compare_unwgt_fre_python_tools_to_unwgt_cdo():
         break
 
     non_zero_count=np.count_nonzero(diff_pytools_cdo_timavg[:])
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ) 
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 @pytest.mark.skip(reason='test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_cdo_to_fre_nctools():
@@ -284,4 +284,4 @@ def test_compare_cdo_to_fre_nctools():
         break
 
     non_zero_count=np.count_nonzero(diff_cdo_nctools_timavg[:])
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ) 
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
