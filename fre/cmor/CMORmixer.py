@@ -2,15 +2,13 @@
 '''
 see README.md for CMORmixer.py usage
 '''
-import os, sys
+import os
 import time as tm
-import numpy, json
-import cmor
-import netCDF4 as nc
-import string
+import json
 from shutil import copyfile
-#import shutil
+import netCDF4 as nc
 import click
+import cmor
 
 
 global nameOfset, GFDL_vars_file, CMIP_output, GFDL_real_vars_file

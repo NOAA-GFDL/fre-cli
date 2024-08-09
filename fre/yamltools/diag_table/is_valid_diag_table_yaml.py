@@ -19,16 +19,13 @@
 * You should have received a copy of the GNU Lesser General Public
 * License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************
-"""
-
-""" Determine if a yaml diag_table is valid.
+    Determine if a yaml diag_table is valid.
     Run `python3 is_valid_diag_table_yaml.py -h` for more details
     Author: Uriel Ramirez 05/27/2022
 """
 
-import yaml
-import sys
 import argparse
+import yaml
 
 parser = argparse.ArgumentParser(prog='is_valid_diag_table_yaml', \
                                  description="Determine if a yaml diag_table is valid. \

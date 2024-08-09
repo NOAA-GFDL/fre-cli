@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
-import click
 import os
-import logging
+import click
+from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 
 @click.command()
 def makefile_create(yamlfile,platform,target):

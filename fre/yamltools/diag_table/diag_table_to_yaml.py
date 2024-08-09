@@ -24,10 +24,10 @@
 """
 
 import copy as cp
-import click
 from os import path
+import click
 import yaml
-from .. import __version__, TableParseError
+from .. import __version__#, TableParseError
 
 def main():
     #: parse user input
