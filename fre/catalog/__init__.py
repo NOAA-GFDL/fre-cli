@@ -1,4 +1,4 @@
-#from .gen_intake_gfdl import build_script
+''' for fre.catalog imports '''
 from .frecatalog import catalog_cli
 
 __all__ = ["catalog_cli"]

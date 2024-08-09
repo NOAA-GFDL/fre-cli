@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+''' fre pp '''
+
 import click
 from .checkoutScript import checkoutTemplate
 from .configure_script_yaml import yamlInfo
@@ -256,4 +259,5 @@ def wrapper(context, experiment, platform, target, config_file, branch='main'):
     context.forward(runFre2pp)
 
 if __name__ == "__main__":
+    ''' entry point for click to fre pp commands '''
     pp_cli()

@@ -1,3 +1,4 @@
+''' for fre.test imports '''
 from .fretestexample import test_test_function
 from .fretest import test_cli
 

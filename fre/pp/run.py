@@ -1,9 +1,8 @@
 #!/usr/bin/env python
+''' fre pp run '''
 
-import os
 import subprocess
 import click
-
 
 def _pp_run_subtool(experiment, platform, target):
     """
@@ -17,4 +16,5 @@ def _pp_run_subtool(experiment, platform, target):
 
 @click.command()
 def pp_run_subtool(experiment, platform, target):
+    ''' entry point to run for click '''
     return _pp_run_subtool(experiment, platform, target)

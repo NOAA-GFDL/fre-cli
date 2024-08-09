@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+''' fre pp validate '''
 
 import os
 import subprocess
@@ -16,13 +17,14 @@ def _validate_subtool(experiment, platform, target):
     os.chdir(directory)
 
     # Run the Rose validation macros
-    cmd = f"rose macro --validate"
+    cmd = "rose macro --validate"
     subprocess.run(cmd, shell=True, check=True)
 
     # Validate the Cylc configuration
-    cmd = f"cylc validate ."
+    cmd = "cylc validate ."
     subprocess.run(cmd, shell=True, check=True)
 
 @click.command()
 def validate_subtool(experiment, platform, target):
+    ''' entry point to validate for click '''
     return _validate_subtool(experiment, platform, target)

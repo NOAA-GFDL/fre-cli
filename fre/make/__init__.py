@@ -1,6 +1,4 @@
-'''
-for proper import of fre make subcommands 
-'''
+''' for fre.make imports '''
 
 from .createCheckout import checkout_create
 from .createCompile import compile_create

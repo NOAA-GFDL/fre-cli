@@ -1,3 +1,4 @@
+''' for fre.cmor imports '''
 from .CMORmixer import cmor_run_subtool
 from .frecmor import cmor_cli
 
