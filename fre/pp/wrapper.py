@@ -21,17 +21,17 @@ import time
 import click
 
 # Import from the local packages
-from checkoutScript import _checkoutTemplate
-from configure_script_xml import _convert
-from configure_script_yaml import _yamlInfo
-from validate import _validate_subtool
-from install import _install_subtool
-from run import _pp_run_subtool
-from status import _status_subtool
+from .checkoutScript import _checkoutTemplate
+from .configure_script_xml import _convert
+from .configure_script_yaml import _yamlInfo
+from .validate import _validate_subtool
+from .install import _install_subtool
+from .run import _pp_run_subtool
+from .status import _status_subtool
 
-#Add path to this file to the pythonpath for local imports
-import_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(import_dir)
+##Add path to this file to the pythonpath for local imports
+#import_dir = os.path.dirname(os.path.abspath(__file__))
+#sys.path.append(import_dir)
 
 @click.command()
 def runFre2pp(experiment, platform, target, config_file, branch):
