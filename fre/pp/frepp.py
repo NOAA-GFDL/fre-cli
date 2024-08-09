@@ -9,11 +9,11 @@ from .status import status_subtool
 from .wrapper import runFre2pp
 
 @click.group(help=click.style(" - access fre pp subcommands", fg=(57,139,210)))
-def ppCli():
+def pp_cli():
     pass
 
 # fre pp status
-@ppCli.command()
+@pp_cli.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -35,7 +35,7 @@ def status(context, experiment, platform, target):
     context.forward(status_subtool)
 
 # fre pp run
-@ppCli.command()
+@pp_cli.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -57,7 +57,7 @@ def run(context, experiment, platform, target):
     context.forward(pp_run_subtool)
 
 # fre pp validate
-@ppCli.command()
+@pp_cli.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -79,7 +79,7 @@ def validate(context, experiment, platform, target):
     context.forward(validate_subtool)
 
 # fre pp install
-@ppCli.command()
+@pp_cli.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -100,7 +100,7 @@ def install(context, experiment, platform, target):
     """ - Install PP configuration"""
     context.forward(install_subtool)
 
-@ppCli.command()
+@pp_cli.command()
 @click.option("-y",
               "--yamlfile",
               type=str,
@@ -126,7 +126,7 @@ def configure_yaml(context,yamlfile,experiment,platform,target):
     """ - Execute fre pp configure """
     context.forward(yamlInfo)
 
-@ppCli.command()
+@pp_cli.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -156,7 +156,7 @@ def checkout(context, experiment, platform, target, branch='main'):
     """ - Execute fre pp checkout """
     context.forward(checkoutTemplate)
 
-@ppCli.command()
+@pp_cli.command()
 @click.option('-x',
               '--xml',
               required=True,
@@ -220,7 +220,7 @@ def configure_xml(context, xml, platform, target, experiment, do_analysis, histo
     context.forward(convert)
 
 #fre pp wrapper
-@ppCli.command()
+@pp_cli.command()
 @click.option("-e",
               "--experiment",
               type=str,
@@ -256,4 +256,4 @@ def wrapper(context, experiment, platform, target, config_file, branch='main'):
     context.forward(runFre2pp)
 
 if __name__ == "__main__":
-    ppCli()
+    pp_cli()

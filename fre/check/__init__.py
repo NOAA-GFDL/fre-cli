@@ -1,4 +1,4 @@
 from .frecheckexample import check_test_function
-from .frecheck import checkCli
+from .frecheck import check_cli
 
-__all__ = ["check_test_function", "checkCli"]
+__all__ = ["check_test_function", "check_cli"]

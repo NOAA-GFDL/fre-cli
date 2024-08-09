@@ -44,5 +44,5 @@ jobs:
         which python
         python --version
         $CONDA/envs/fre-cli/bin/python --version
-        # run pytest
-        pylint fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+        # run pytest, ignore netCDF4 Dataset import error
+        pylint --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
