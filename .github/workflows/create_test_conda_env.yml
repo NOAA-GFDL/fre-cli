@@ -41,13 +41,13 @@ jobs:
         genbadge coverage -v -i coverage.xml -o cov_badge.svg
         genbadge tests -v -i pytest_results.xml -o pytest_badge.svg
 
-      - name: upload code coverage and test badge
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-coverage-badge
-          path: |
-            cov-badge.svg
-            pytest_badge.svg
+    - name: upload code coverage and test badge
+      uses: actions/upload-artifact@v4 
+      with:
+        name: code-coverage-badges
+        path: |
+          cov-badge.svg
+          pytest_badge.svg
         
     - name: Run pylint in fre-cli environment
       run: |
