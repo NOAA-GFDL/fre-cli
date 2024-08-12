@@ -13,6 +13,7 @@ def run_cli():
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
 def function(context, uppercase):
+    # pylint: disable=unused-argument
     """ - Execute fre run test """
     context.forward(run_test_function)
 

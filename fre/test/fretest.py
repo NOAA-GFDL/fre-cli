@@ -1,3 +1,7 @@
+'''
+entry point for fre test subcommands
+'''
+
 import click
 from .fretestexample import test_test_function
 
@@ -9,6 +13,7 @@ def test_cli():
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
 def function(context, uppercase):
+    # pylint: disable=unused-argument
     """ - Execute fre test test """
     context.forward(test_test_function)
 

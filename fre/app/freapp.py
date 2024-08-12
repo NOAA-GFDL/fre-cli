@@ -5,7 +5,7 @@ import time
 
 import click
 
-from .maskAtmosPlevel import maskAtmosPlevel_subtool
+from .mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
 
 @click.group(help=click.style(" - access fre app subcommands", fg=(250,154,90)))
@@ -29,7 +29,7 @@ def app_cli():
 def mask_atmos_plevel(context, infile, outfile, psfile):
     # pylint: disable=unused-argument
     """Mask out pressure level diagnostic output below land surface"""
-    context.forward(maskAtmosPlevel_subtool)
+    context.forward(mask_atmos_plevel_subtool)
 
 
 @app_cli.command()

@@ -1,5 +1,9 @@
+'''
+entry point for fre catalog subcommands
+'''
+
 import click
-import catalogbuilder
+#import catalogbuilder
 from catalogbuilder.scripts import gen_intake_gfdl
 from catalogbuilder.scripts import test_catalog
 
@@ -33,7 +37,8 @@ def builder(context, input_path = None, output_path = None, config = None, filte
 @catalog_cli.command()
 @click.argument('json_path', nargs = 1 , required = True)
 @click.argument('json_template_path', nargs = 1 , required = False)
-@click.option('-tf', '--test-failure', is_flag=True, default = False, help="Errors are only printed. Program will not exit.")
+@click.option('-tf', '--test-failure', is_flag=True, default = False,
+              help="Errors are only printed. Program will not exit.")
 @click.pass_context
 def validate(context, json_path, json_template_path, test_failure):
     # pylint: disable=unused-argument

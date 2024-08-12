@@ -1,5 +1,5 @@
 ''' for fre.app imports '''
-from .maskAtmosPlevel import maskAtmosPlevel_subtool
+from .mask_atmos_plevel import mask_atmos_plevel_subtool
 from .freapp import app_cli
 
-__all__ = ["maskAtmosPlevel_subtool", "app_cli"]
+__all__ = ["mask_atmos_plevel_subtool", "app_cli"]
