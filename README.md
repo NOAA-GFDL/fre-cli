@@ -3,10 +3,8 @@
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_relative_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
 [![CI](https://github.com/NOAA-GFDL/fre-cli/workflows/publish_conda/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions?query=workflow%3Apublish_conda+branch%3Amain++)
-[![Coverage Status](https://github.com/NOAA-GFDL/fre-cli/workflows/create_test_conda_env/cov_badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions?query=workflow%3Acreate_test_conda_env+branch%3Amain++)
-
-<!-- ... someday... 
-[![Code coverage](https://codecov.io/gh/NOAA-GFDL/fre-cli/branch/main/graph/badge.svg?flag=unittests)](https://codecov.io/gh/NOAA-GFDL/fre-cli)--> 
+![Coverage Badge](https://noaa-gfdl.github.io/fre-cli/_images/cov_badge.svg)
+![Pytest Badge](https://noaa-gfdl.github.io/fre-cli/_images/pytest_badge.svg)
 
 # **FRE-CLI**
 
