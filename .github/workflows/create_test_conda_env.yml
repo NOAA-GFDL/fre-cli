@@ -38,16 +38,8 @@ jobs:
         pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
         # install genbadge to generate coverage badge based on xml
         pip install genbadge
-        genbadge coverage -v -i coverage.xml -o cov_badge.svg
-        genbadge tests -v -i pytest_results.xml -o pytest_badge.svg
-
-    - name: upload code coverage and test badge
-      uses: actions/upload-artifact@v4 
-      with:
-        name: code-coverage-badges
-        path: |
-          cov-badge.svg
-          pytest_badge.svg
+        genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
+        genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
         
     - name: Run pylint in fre-cli environment
       run: |
@@ -58,3 +50,20 @@ jobs:
         $CONDA/envs/fre-cli/bin/python --version
         # run pylint
         pylint fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+      
+    - name: Install dependencies
+      run: |
+        pip install sphinx renku-sphinx-theme sphinx-rtd-theme          
+        pip install --upgrade sphinx-rtd-theme
+      
+    - name: Sphinx build
+      run: |
+        sphinx-build docs build
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        publish_branch: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: build/
+        force_orphan: true
