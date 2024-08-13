@@ -51,17 +51,15 @@ jobs:
         # run pylint
         pylint fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
       
-    - name: Install dependencies
+    - name: Install Sphinx and Build Documentation
       run: |
         pip install sphinx renku-sphinx-theme sphinx-rtd-theme          
         pip install --upgrade sphinx-rtd-theme
-      
-    - name: Sphinx build
-      run: |
         sphinx-build docs build
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
+      if: ${{ github.ref == 'refs/heads/add_badges' }}
       with:
         publish_branch: gh-pages
         github_token: ${{ secrets.GITHUB_TOKEN }}
