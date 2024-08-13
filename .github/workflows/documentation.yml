@@ -17,6 +17,13 @@ jobs:
           pip install --upgrade sphinx-rtd-theme
       - name: Sphinx build
         run: |
+          # list content of docs dir before spinx-apidoc
+          ls docs/
+          # generate .rst from doc strings in fre/ modules
+          sphinx-apidoc --output-dir docs fre/ --separate          
+          # list content of docs dir after spinx-apidoc
+          ls docs/
+          # build content in docs/ dir, target is build/ dir
           sphinx-build docs build
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
