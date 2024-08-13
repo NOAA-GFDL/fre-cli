@@ -1,3 +1,4 @@
+<!--
 # **[Tool Group Name]**
 _Brief description of tool group's purpose._
 
@@ -11,8 +12,12 @@ _Brief description of tool group's purpose._
 
 The [tool group] fre-cli tools are described below ([Subcommands](#subcommands)) as well as a Guide on the order in which to use them (Guide).
 
+
 ## **Usage (Users)**
-* Refer to fre-cli [README.md](https://github.com/NOAA-GFDL/fre-cli/blob/main/README.md) for foundational fre-cli usage guide and tips.
+-->
+* Refer to fre-cli [README.md](https://github.com/NOAA-GFDL/fre-cli/blob/main/README.md) for usage and tips.
+
+<!--
 * [tool group] package repository located at: _insert permalink_
 
 
@@ -35,3 +40,4 @@ fre [tool group] [subcommand] -[short/long command 1] [argument(s) 1] -[short/lo
 
 etc.
 ```
+-->
