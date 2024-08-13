@@ -1,12 +1,11 @@
-.. TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING
-.. TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING
-.. TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING
-.. TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING TEMPORARILY TESTING
-
 .. Fre-Cli documentation master file, created by
    sphinx-quickstart on Wed Mar  6 22:28:21 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
+
+
+TEMPORARILY TESTING add_badges BRANCH DOCUMENTATION WORKFLOW
+============================================================
 
 Welcome to Fre-Cli's documentation!
 ===================================
