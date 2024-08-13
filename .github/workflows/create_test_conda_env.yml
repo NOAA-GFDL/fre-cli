@@ -7,42 +7,58 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '>=3.9'
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '>=3.9'
+      
+      - name: Add conda to system path
+        run: |
+          # $CONDA is an env var pointing to root of miniconda dir
+          echo $CONDA/bin >> $GITHUB_PATH
+      
+      - name: Create fre-cli environment
+        run: |
+          # create environment containing all dependencies
+          # the env cannot be explicitly activated in github CI/CD
+          conda env create -f environment.yml --name fre-cli
 
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
+          # add conda env's executables to github's PATH equiv.
+          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+          
+          # use *conda environment's pip* to install fre-cli
+          # called w/ full path to conda's python for explicitness
+          # called as a module (-m pip) for explicitness
+          $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
+      
+      - name: Run pytest in fre-cli environment
+        run: |
+          # add conda env's executables to github's PATH equiv.
+          # does this need to be done twice?
+          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
 
-    - name: Create fre-cli environment
-      run: |
-        # create environment fre-cli will be installed into
-        conda env create -f environment.yml --name fre-cli
-        # try to make sure the right things are in GITHUB_PATH
-        echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-        # install fre-cli w pip
-        $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
+          # are we talking to the right python?
+          which python
+          python --version
+          $CONDA/envs/fre-cli/bin/python --version
+          
+          # run pytest, not explicitly from the conda env?
+          which pytest
+          pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
+      
+      - name: Run pylint in fre-cli environment
+        run: |
+          # add conda env's executables to github's PATH equiv.
+          # does this need to be done a third time?
+          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
 
-    - name: Run pytest in fre-cli environment
-      run: |
-        # try to make sure the right things are in GITHUB_PATH
-        echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-        which python
-        python --version
-        $CONDA/envs/fre-cli/bin/python --version
-        # run pytest
-        pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
-
-    - name: Run pylint in fre-cli environment
-      run: |
-        # try to make sure the right things are in GITHUB_PATH
-        echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-        which python
-        python --version
-        $CONDA/envs/fre-cli/bin/python --version
-        # run pytest, ignore netCDF4 Dataset import error
-        pylint --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+          # are we talking to the right python?          
+          which python
+          python --version
+          $CONDA/envs/fre-cli/bin/python --version
+          
+          # run pylint, not explicitly from the conda env?
+          which pylint
+          # ignore toothless complaint pylint has about netCDF4's stuff
+          pylint --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
