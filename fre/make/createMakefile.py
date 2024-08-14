@@ -6,7 +6,7 @@ import os
 import logging
 
 @click.command()
-def makefile_create(yamlfile,platform,target):
+def makefile_create(yamlfile,experiment,platform,target):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -14,13 +14,20 @@ def makefile_create(yamlfile,platform,target):
     plist = platform
     tlist = target
     yml = yamlfile
+    name = experiment
+    
 
+#    ## Get the variables in the model yaml
+#    freVars = varsfre.frevars(yml)
+#    ## Open the yaml file and parse as fremakeYaml
+#    modelYaml = yamlfre.freyaml(yml,freVars)
+#    fremakeYaml = modelYaml.getCompileYaml()
 
-    ## Get the variables in the model yaml
-    freVars = varsfre.frevars(yml)
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml,freVars)
-    fremakeYaml = modelYaml.getCompileYaml()
+    for platformName in plist:
+         for targetName in tlist:
+              modelYaml = yamlfre.freyaml(yml,name,platformName,targetName)
+              fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
     ## Loop through platforms and targets
@@ -30,8 +37,10 @@ def makefile_create(yamlfile,platform,target):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
+                raise SystemExit (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+
             (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
+
   ## Make the bldDir based on the modelRoot, the platform, and the target
             srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build

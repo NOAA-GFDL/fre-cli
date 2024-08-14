@@ -6,7 +6,7 @@ import os
 import sys
 
 @click.command()
-def dockerfile_create(yamlfile, platform, target, execute):
+def dockerfile_create(yamlfile, experiment, platform, target, execute):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -14,13 +14,20 @@ def dockerfile_create(yamlfile, platform, target, execute):
     plist = platform
     tlist = target
     yml = yamlfile
+    name = experiment
     run = execute
 
-    ## Get the variables in the model yaml
-    freVars = varsfre.frevars(yml)
+#    ## Get the variables in the model yaml
+#    freVars = varsfre.frevars(yml)
+#    ## Open the yaml file and parse as fremakeYaml
+#    modelYaml = yamlfre.freyaml(yml,freVars)
+#    fremakeYaml = modelYaml.getCompileYaml()
+
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml,freVars)
-    fremakeYaml = modelYaml.getCompileYaml()
+    for platformName in plist:
+         for targetName in tlist:
+              modelYaml = yamlfre.freyaml(yml,name,platformName,targetName)
+              fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
     ## Loop through platforms and targets
@@ -30,8 +37,8 @@ def dockerfile_create(yamlfile, platform, target, execute):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
-
+                raise SystemExit (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+  
             (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,containerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the bldDir based on the modelRoot, the platform, and the target
@@ -67,8 +74,8 @@ def dockerfile_create(yamlfile, platform, target, execute):
                 dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
 
                 currDir = os.getcwd()
-                click.echo("\ntmpDir created at " + currDir + "/tmp")
-                click.echo("Dockerfile created at " + currDir + "\n")
+                click.echo("\ntmpDir created in " + currDir + "/tmp")
+                click.echo("Dockerfile created in " + currDir + "Dockerfile\n")
 
             if run:
                 dockerBuild.build(containerBuild, containerRun)

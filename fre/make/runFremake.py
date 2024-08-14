@@ -15,11 +15,10 @@ from multiprocessing.dummy import Pool
 
 
 @click.command()
-def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, verbose):
+def fremake_run(yamlfile, experiment, platform, target, parallel, jobs, no_parallel_checkout, verbose):
 
     yml = yamlfile
-    ps = platform
-    ts = target
+    name = experiment
     nparallel = parallel
     jobs = str(jobs)
     pcheck = no_parallel_checkout
@@ -43,12 +42,17 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
     plist = platform
     tlist = target
 
-    ## Get the variables in the model yaml
-    freVars = varsfre.frevars(yml)
-
+#    ## Get the variables in the model yaml
+#    freVars = varsfre.frevars(yml)
+#
+#    ## Open the yaml file and parse as fremakeYaml
+#    modelYaml = yamlfre.freyaml(yml,freVars)
+#    fremakeYaml = modelYaml.getCompileYaml()
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml,freVars)
-    fremakeYaml = modelYaml.getCompileYaml()
+    for platformName in plist:
+         for targetName in tlist:
+              modelYaml = yamlfre.freyaml(yml,name,platformName,targetName)
+              fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
     for targetName in tlist:
@@ -62,8 +66,9 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
-              raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
-         (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,containerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
+              raise SystemExit (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+
+         (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
          ## Create the checkout script
          if iscontainer == False:
