@@ -5,7 +5,6 @@ on: [push]
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -53,12 +52,42 @@ jobs:
           # does this need to be done a third time?
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
 
-          # are we talking to the right python?          
+      - name: Run pytest in fre-cli environment
+        run: |
+          # try to make sure the right things are in GITHUB_PATH
+          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
           which python
           python --version
           $CONDA/envs/fre-cli/bin/python --version
-          
-          # run pylint, not explicitly from the conda env?
-          which pylint
-          # ignore toothless complaint pylint has about netCDF4's stuff
-          pylint --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+          # run pytest
+          pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
+          # install genbadge to generate coverage badge based on xml
+          pip install genbadge
+          genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
+          genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
+        
+      - name: Run pylint in fre-cli environment
+        run: |
+          # try to make sure the right things are in GITHUB_PATH
+          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+          which python
+          python --version
+          $CONDA/envs/fre-cli/bin/python --version
+          # run pylint
+          pylint fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+      
+      - name: Install Sphinx and Build Documentation
+        run: |
+          pip install sphinx renku-sphinx-theme sphinx-rtd-theme          
+          pip install --upgrade sphinx-rtd-theme
+          sphinx-apidoc --output-dir docs fre/ --separate
+          sphinx-build docs build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/
+          force_orphan: true
