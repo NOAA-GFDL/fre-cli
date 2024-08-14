@@ -4,17 +4,12 @@ class platforms ():
 ## \param self The platform yaml object
 ## \param fname The path to the platform yaml file
 ## \param v the fre variables defined in the model Yaml
- def __init__(self,fname,v):
-     with open(fname, 'r') as file:
-          self.yaml = yaml.safe_load(v.freVarSub(file.read()))
+ def __init__(self,yamlFile): #,v):
+     self.yaml = yamlFile
+
 ## Check the yaml for errors/omissions
-     try:
-          self.yaml["platforms"]
-     except:
-          print(fname+" must have a platforms key\n")
-          raise
 ## Loop through the platforms
-     for p in self.yaml["platforms"]:
+     for p in self.yaml:
 ## Check the platform name
           try:
                p["name"]
@@ -90,9 +85,10 @@ class platforms ():
                     p["mkTemplate"]
                except:
                     raise ValueError("The non-container platform "+p["name"]+" must specify a mkTemplate \n")
+
 ## \brief Checks if the platform yaml has the named platform
  def hasPlatform(self,name):
-     for p in self.yaml["platforms"]:
+     for p in self.yaml:
           if p["name"] == name:
                return True
      return False
@@ -101,6 +97,6 @@ class platforms ():
      return self.yaml
 ## \brief Get the platform information from the name of the platform
  def getPlatformFromName(self,name):
-     for p in self.yaml["platforms"]:
+     for p in self.yaml:
           if p["name"] == name:
                return (p["compiler"], p["modules"], p["modulesInit"], p["fc"], p["cc"], p["modelRoot"],p["container"], p["mkTemplate"],p["containerBuild"], p["containerRun"], p["RUNenv"])
