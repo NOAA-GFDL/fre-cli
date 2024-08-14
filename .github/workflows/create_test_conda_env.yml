@@ -55,6 +55,7 @@ jobs:
       run: |
         pip install sphinx renku-sphinx-theme sphinx-rtd-theme          
         pip install --upgrade sphinx-rtd-theme
+        sphinx-apidoc --output-dir docs fre/ --separate
         sphinx-build docs build
 
     - name: Deploy to GitHub Pages
