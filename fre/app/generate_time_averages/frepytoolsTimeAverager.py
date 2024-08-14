@@ -1,4 +1,9 @@
 ''' class for python-native routine usuing netCDF4 and numpy to crunch time-averages '''
+
+import math
+import numpy
+from netCDF4 import Dataset
+
 from .timeAverager import timeAverager
 
 class frepytoolsTimeAverager(timeAverager):
@@ -9,8 +14,9 @@ class frepytoolsTimeAverager(timeAverager):
     '''
 
     def generate_timavg(self, infile=None, outfile=None):
-        ''' frepytools approach in a python-native manner. deliberately avoids pre-packaged routines. '''
-        assert(self.pkg=="fre-python-tools")
+        ''' frepytools approach in a python-native manner.
+        deliberately avoids pre-packaged routines. '''
+        assert self.pkg=="fre-python-tools"
         if __debug__:
             print(locals()) #input argument details
 
@@ -20,10 +26,6 @@ class frepytoolsTimeAverager(timeAverager):
         if self.avg_type != 'all':
             print(f'ERROR: avg_type={self.avg_type} not supported at this time.')
             return 1
-
-        import math
-        import numpy
-        from netCDF4 import Dataset
 
         # (TODO) file I/O should be a sep function, no? make tests, extend
         nc_fin = Dataset(infile, 'r')
@@ -36,8 +38,8 @@ class frepytoolsTimeAverager(timeAverager):
         # attempt to determine target var w/ bronx convention
         if self.var is not None:
             targ_var = self.var
-        else:
-            targ_var = infile.split('/').pop().split('.')[-2] # this can be replaced w/ a regex search maybe
+        else: # this can be replaced w/ a regex search maybe
+            targ_var = infile.split('/').pop().split('.')[-2]
 
         if __debug__:
             print(f'targ_var={targ_var}')
@@ -67,7 +69,9 @@ class frepytoolsTimeAverager(timeAverager):
         fin_dims = nc_fin.dimensions
         num_time_bnds = fin_dims['time'].size
         if not self.unwgt: #compute sum of weights
-            wgts = numpy.moveaxis( time_bnds,0,-1)[1][:].copy() - numpy.moveaxis( time_bnds,0,-1)[0][:].copy()
+#            wgts = numpy.moveaxis( time_bnds,0,-1 )[1][:].copy() - numpy.moveaxis( time_bnds,0,-1 )[0][:].copy()
+            wgts = numpy.moveaxis( time_bnds,0,-1 )[1][:].copy() \
+                   - numpy.moveaxis( time_bnds,0,-1 )[0][:].copy()
             wgts_sum=sum(wgts)
             if __debug__:
                 print(f'wgts_sum={wgts_sum}')
@@ -134,9 +138,11 @@ class frepytoolsTimeAverager(timeAverager):
 
 
 
-        # write output file, (TODO) make this a sep function, make tests, extend, consider compression particular;y for NETCDF file writing
-        # with Dataset( outfile, 'w', format='NETCDF4', persist=True ) as nc_fout: # consider this approach instead
-        #nc_fout= Dataset( outfile, 'w', format='NETCDF4', persist=True ) # how should we handle file formats (HDF5, Zarr, older NETCDF)?
+        # write output file
+        # (TODO) make this a sep function, make tests, extend,
+        # (TODO) consider compression particular;y for NETCDF file writing
+        # consider this approach instead:
+        #     with Dataset( outfile, 'w', format='NETCDF4', persist=True ) as nc_fout:
         nc_fout= Dataset( outfile, 'w', format=nc_fin.file_format, persist=True )
 
         # (TODO) make this a sep function, make tests, extend
@@ -156,7 +162,7 @@ class frepytoolsTimeAverager(timeAverager):
                     print(f'could not get nc file attribute: {ncattr}. moving on.')
                     unwritten_ncattr_list.append(ncattr)
         if len(unwritten_ncattr_list)>0:
-            print(f'WARNING: Some global attributes ({unwritten_ncattr_list}) were not successfully written.')
+            print(f'WARNING: Some global attributes ({unwritten_ncattr_list}) were not written.')
         print('------- DONE writing output attributes. --------')
         ##
 
@@ -166,11 +172,13 @@ class frepytoolsTimeAverager(timeAverager):
         unwritten_dims_list=[]
         for key in fin_dims:
             try:
-                if key=='time': # this strongly influences the final data structure shape of the averages.
-                    #nc_fout.createDimension( dimname=key, size=None ) # if set to None, and lets say you try to write
-                    #                                                  # e.g. the original 'time_bnds' (which has 60 time steps)
-                    #                                                  # the array holding the avg. value will suddently have 60 time steps
-                    #                                                  # even though only 1 is needed, 59 time steps will have no data
+                if key=='time':
+                    # this strongly influences the final data structure shape of the averages.
+                    # if set to None, and lets say you try to write
+                    # e.g. the original 'time_bnds' (which has 60 time steps)
+                    # the array holding the avg. value will suddently have 60 time steps
+                    # even though only 1 is needed, 59 time steps will have no data
+                    #nc_fout.createDimension( dimname=key, size=None )
                     nc_fout.createDimension( dimname=key, size=1)
                 else:
                     nc_fout.createDimension( dimname=key, size=fin_dims[key].size )
@@ -178,22 +186,26 @@ class frepytoolsTimeAverager(timeAverager):
                 print(f'problem. cannot read/write dimension {key}')
                 unwritten_dims_list.append(key)
         if len(unwritten_dims_list)>0:
-            print(f'WARNING: Some dimensions ({unwritten_dims_list}) were not successfully written.')
+            print(f'WARNING: Some dimensions ({unwritten_dims_list}) were not written.')
         print('------ DONE writing output dimensions. ------- \n')
         ##
 
 
         # (TODO) make this a sep function, make tests, extend
         # first write the data we care most about- those we computed
+        # copying metadata, not fully correct
+        # but not far from wrong according to CF
+        # cell_methods must be changed TO DO
         print(f'\n------- writing data for data {targ_var} -------- ')
         nc_fout.createVariable(targ_var, nc_fin[targ_var].dtype, nc_fin[targ_var].dimensions)
-        nc_fout.variables[targ_var].setncatts(nc_fin[targ_var].__dict__) # copying metadata, not fully correct
-                                                                         # but not far from wrong according to CF
-                                                                         # cell_methods must be changed TO DO
+        nc_fout.variables[targ_var].setncatts(nc_fin[targ_var].__dict__)
+
+
         nc_fout.variables[targ_var][:]=avgvals
         if self.stddev_type is not None:
             stddev_varname=targ_var+'_'+self.stddev_type+'_stddev'
-            nc_fout.createVariable(stddev_varname, nc_fin[targ_var].dtype, nc_fin[targ_var].dimensions)
+            nc_fout.createVariable(
+                stddev_varname, nc_fin[targ_var].dtype, nc_fin[targ_var].dimensions )
             nc_fout.variables[stddev_varname].setncatts(nc_fin[targ_var].__dict__)
             nc_fout.variables[stddev_varname][:]=stddevs
         print('---------- DONE writing output variables. ---------')
@@ -217,15 +229,15 @@ class frepytoolsTimeAverager(timeAverager):
                     print(f'nc_fin[var].shape={nc_fin[var].shape}')
                     #print(f'len(nc_fout.variables[{var}])={len(nc_fout.variables[var])}')
                     nc_fout.variables[var][:] = [ nc_fin[var][0] ]
-                    print(f'is it a time variable? {self.var_has_time_units(nc_fin.variables[var])}')
+                    print(f'time variable? {self.var_has_time_units(nc_fin.variables[var])}')
             else:
                 continue
 
         if len(unwritten_var_list)>0:
-            print(f'WARNING: some variables\' data ({unwritten_var_list}) was not successfully written.')
+            print(f'WARNING: some variables\' data ({unwritten_var_list}) was not written.')
         if len(unwritten_var_ncattr_dict)>0:
-            print(f'WARNING: some variables\' metadata was not successfully written.')
-            print(f'WARNING: relevant variable (key) and attribute (value) pairs: \n{unwritten_var_ncattr_dict}')
+            print('WARNING: some variables\' metadata was not successfully written.')
+            print(f'WARNING: relevant variable/attr pairs: \n{unwritten_var_ncattr_dict}')
         print('---------- DONE writing output variables. ---------')
         ##
 

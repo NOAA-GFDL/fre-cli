@@ -12,16 +12,16 @@ from .lazy_group import LazyGroup
 
 @click.group(
     cls = LazyGroup,
-    lazy_subcommands = {"pp": ".pp.frepp.ppCli",
-                      "catalog": ".catalog.frecatalog.catalogCli",
-                      "list": ".list.frelist.listCli",
-                      "check": ".check.frecheck.checkCli",
-                      "run": ".run.frerun.runCli",
-                      "test": ".test.fretest.testCli",
-                      "yamltools": ".yamltools.freyamltools.yamltoolsCli",
-                      "make": ".make.fremake.makeCli",
-                      "app": ".app.freapp.appCli",
-                      "cmor": ".cmor.frecmor.cmorCli"                      },
+    lazy_subcommands = {"pp": ".pp.frepp.pp_cli",
+                       "catalog": ".catalog.frecatalog.catalog_cli",
+                       "list": ".list.frelist.list_cli",
+                       "check": ".check.frecheck.check_cli",
+                       "run": ".run.frerun.run_cli",
+                       "test": ".test.fretest.test_cli",
+                       "yamltools": ".yamltools.freyamltools.yamltools_cli",
+                       "make": ".make.fremake.make_cli",
+                       "app": ".app.freapp.app_cli",
+                       "cmor": ".cmor.frecmor.cmor_cli"                      },
     help = click.style(
         "'fre' is the main CLI click group that houses the other tool groups as lazy subcommands.",
         fg='cyan')
@@ -35,7 +35,7 @@ from .lazy_group import LazyGroup
 
 def fre():
     ''' entry point function to subgroup functions '''
-    pass
+
 
 if __name__ == '__main__':
     fre()

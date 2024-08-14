@@ -1,7 +1,5 @@
-'''
-for proper import of fre yamltools subcommands
-'''
+''' for fre.yamltools imports '''
 from .freyamltoolsexample import yamltools_test_function
-from .freyamltools import yamltoolsCli
+from .freyamltools import yamltools_cli
 
-__all__ = ["yamltools_test_function", "yamltoolsCli"]
+__all__ = ["yamltools_test_function", "yamltools_cli"]
