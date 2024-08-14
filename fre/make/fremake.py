@@ -7,6 +7,7 @@ from .runFremake import fremake_run
 
 yamlfile_opt_help = """Experiment yaml compile FILE
 """
+experiment_opt_help = """Name of experiment"""
 platform_opt_help = """Hardware and software FRE platform space separated list of STRING(s).
 This sets platform-specific data and instructions
 """
@@ -39,6 +40,11 @@ def makeCli():
               type = str,
               help = yamlfile_opt_help,
               required = True) # use click.option() over click.argument(), we want help statements
+@click.option("-e",
+              "--experiment",
+              type = str,
+              help = experiment_opt_help,
+              required = True)
 @click.option("-p",
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
@@ -70,7 +76,7 @@ def makeCli():
               is_flag = True,
               help = verbose_opt_help)
 @click.pass_context
-def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, verbose):
+def run_fremake(context, experiment, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, verbose):
     """ - Perform all fremake functions to run checkout and compile model"""
     context.forward(fremake_run)
 
@@ -81,6 +87,11 @@ def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel
               type = str,
               help = yamlfile_opt_help,
               required = True) # use click.option() over click.argument(), we want help statements
+@click.option("-e",
+              "--experiment",
+              type = str,
+              help = experiment_opt_help,
+              required = True)
 @click.option("-p",
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
@@ -102,8 +113,7 @@ def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel
               "--no-parallel-checkout",
               is_flag = True,
               help = no_parallel_checkout_opt_help)
-@click.option("-e",
-              "--execute",
+@click.option("--execute",
               is_flag = True,
               default = False,
               help = "Use this to run the created checkout script.")
@@ -112,7 +122,7 @@ def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel
               is_flag = True,
               help = verbose_opt_help)
 @click.pass_context
-def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
+def create_checkout(context,yamlfile,experiment,platform,target,no_parallel_checkout,jobs,execute,verbose):
     """ - Write the checkout script """
     context.forward(checkout_create)
 
@@ -123,6 +133,11 @@ def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,e
               type = str,
               help = yamlfile_opt_help,
               required = True) # use click.option() over click.argument(), we want help statements
+@click.option("-e",
+              "--experiment",
+              type = str,
+              help = experiment_opt_help,
+              required = True)
 @click.option("-p",
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
@@ -134,7 +149,7 @@ def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,e
               help = target_opt_help,
               required = True)
 @click.pass_context
-def create_makefile(context,yamlfile,platform,target):
+def create_makefile(context,experiment,yamlfile,platform,target):
     """ - Write the makefile """
     context.forward(makefile_create)
 
@@ -146,6 +161,11 @@ def create_makefile(context,yamlfile,platform,target):
               type = str,
               help = yamlfile_opt_help,
               required = True) # use click.option() over click.argument(), we want help statements
+@click.option("-e",
+              "--experiment",
+              type = str,
+              help = experiment_opt_help,
+              required = True)
 @click.option("-p",
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
@@ -167,8 +187,7 @@ def create_makefile(context,yamlfile,platform,target):
               type = int,
               metavar = '', default = 1,
               help = parallel_opt_help)
-@click.option("-e",
-              "--execute",
+@click.option("--execute",
               is_flag = True,
               default = False,
               help = "Use this to run the created checkout script.")
@@ -177,11 +196,9 @@ def create_makefile(context,yamlfile,platform,target):
               is_flag = True,
               help = verbose_opt_help)
 @click.pass_context
-def create_compile(context,yamlfile,platform,target,jobs,parallel,execute,verbose):
+def create_compile(context,experiment,yamlfile,platform,target,jobs,parallel,execute,verbose):
     """ - Write the compile script """
     context.forward(compile_create)
-
-
 
 @makeCli.command
 @click.option("-y",
@@ -189,6 +206,11 @@ def create_compile(context,yamlfile,platform,target,jobs,parallel,execute,verbos
               type = str,
               help = yamlfile_opt_help,
               required = True) # use click.option() over click.argument(), we want help statements
+@click.option("-e",
+              "--experiment",
+              type = str,
+              help = experiment_opt_help,
+              required = True) 
 @click.option("-p",
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
@@ -199,12 +221,11 @@ def create_compile(context,yamlfile,platform,target,jobs,parallel,execute,verbos
               type = str,
               help = target_opt_help,
               required = True)
-@click.option("-e",
-              "--execute",
+@click.option("--execute",
               is_flag = True,
               help = "Build Dockerfile that has been generated by create-docker.")
 @click.pass_context
-def create_dockerfile(context,yamlfile,platform,target,execute):
+def create_dockerfile(context,experiment,yamlfile,platform,target,execute):
     """ - Write the dockerfile """
     context.forward(dockerfile_create)
 
