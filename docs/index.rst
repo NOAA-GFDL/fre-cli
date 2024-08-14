@@ -3,10 +3,6 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-
-TEMPORARILY TESTING add_badges BRANCH DOCUMENTATION WORKFLOW
-============================================================
-
 Welcome to Fre-Cli's documentation!
 ===================================
 
