@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
-from .gfdlfremake import varsfre, platformfre, yamlfre, targetfre, buildBaremetal
-from multiprocessing.dummy import Pool
-import logging
 import os
-import click
 import sys
+import logging
+from multiprocessing.dummy import Pool
+
+import click
+from .gfdlfremake import varsfre, platformfre, yamlfre, targetfre, buildBaremetal
 
 @click.command()
 def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):

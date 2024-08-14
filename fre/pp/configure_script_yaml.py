@@ -36,8 +36,8 @@ def validate_yaml(file):
 ####################
 def join_constructor(loader, node):
     """
-    Allows FRE properties defined 
-    in main yaml to be concatenated.  
+    Allows FRE properties defined
+    in main yaml to be concatenated.
     """
     seq = loader.construct_sequence(node)
     return ''.join([str(i) for i in seq])
@@ -109,7 +109,7 @@ def consolidate_yamls(mainyaml,experiment, platform,target):
                     f1.write(f"\n### {i.upper()} settings ###\n")
                     #copy expyaml into combined
                     shutil.copyfileobj(f2,f1)
-    
+
     return combined
 
 ####################
@@ -160,7 +160,7 @@ def set_rose_suite(yamlfile,rose_suite):
     # set rose-suite items
     if pp is not None:
         for i in pp.values():
-            if not isinstance(i,list):  
+            if not isinstance(i,list):
                 for key,value in i.items():
                     # rose-suite.conf is somewhat finicky with quoting
                     # cylc validate will reveal any complaints
@@ -228,14 +228,14 @@ def _yamlInfo(yamlfile,experiment,platform,target):
 
     # Load the combined yaml
     final_yaml = yaml_load(comb_yaml)
-    
+
     # Clean combined yaml to validate
     # If keys exists, delete:
     keys_clean=["fre_properties","shared","experiments"]
     for kc in keys_clean:
         if kc in final_yaml.keys():
             del final_yaml[kc]
-            
+
     with open("combined.yaml",'w') as f:
         yaml.safe_dump(final_yaml,f,sort_keys=False)
 

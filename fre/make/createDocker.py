@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-from .gfdlfremake import varsfre, targetfre, makefilefre, platformfre, yamlfre, buildDocker
-import click
 import os
 import sys
+import click
+from .gfdlfremake import varsfre, targetfre, makefilefre, platformfre, yamlfre, buildDocker
 
 @click.command()
 def dockerfile_create(yamlfile, platform, target, execute):
