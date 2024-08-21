@@ -6,7 +6,7 @@ from fre.yamltools import combine_yamls as cy
 
 ## SET-UP
 # Set example yaml paths, input directory, output directory
-CWD = Path.cwd()
+CWD = os.getcwd()
 yamls_dir = Path("fre/yamltools/tests/AM5_example")
 in_dir = Path(f"{CWD}/{yamls_dir}")
 

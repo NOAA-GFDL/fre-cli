@@ -79,7 +79,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
         py=comb_model["shared"]["compile"]["platformYaml"]
         py_path=Path(os.path.join(mainyaml_dir,py))
     else:
-        py=False
+        py_path=None
 
     # Extract compile yaml path for exp. provided
     # if experiment matches name in list of experiments in yaml, extract file path
@@ -92,21 +92,23 @@ def experiment_check(mainyaml_dir,comb,experiment):
             if compileyaml is not None:
                 cy_path=Path(os.path.join(mainyaml_dir,compileyaml))
             else:
-                cy_path=False
+                cy_path=None
+
             if expyaml is not None:
                 ey_path=[]
                 for e in expyaml:
                     ey=Path(os.path.join(mainyaml_dir,e))
                     ey_path.append(ey)
             else:
-                ey_path=False
+                ey_path=None
+
             if analysisyaml is not None:
                 ay_path=[]
                 for a in analysisyaml:
                     ay=Path(os.path.join(mainyaml_dir,a))
                     ay_path.append(ay)
             else:
-                ay_path=False
+                ay_path=None
 
             return (py_path,cy_path,ey_path,ay_path)
 
@@ -120,7 +122,7 @@ def combine_compile(comb_m,compileyaml):
     combined = comb_m
 
     # copy compile yaml info into combined yaml
-    if compileyaml is not False:
+    if compileyaml is not None:
         with open(combined,'a',encoding='UTF-8') as f1:
             with open(compileyaml,'r',encoding='UTF-8') as f2:
                 f1.write("\n### COMPILE INFO ###\n")
@@ -136,7 +138,7 @@ def combine_platforms(comb_mc,platformsyaml):
     """
     combined = comb_mc
     # combine platform yaml
-    if platformsyaml is not False:
+    if platformsyaml is not None:
         with open(combined,'a',encoding='UTF-8') as f1:
             with open(platformsyaml,'r',encoding='UTF-8') as f2:
                 f1.write("\n### PLATFORM INFO ###\n")
@@ -152,7 +154,7 @@ def combine_experiments(comb_mcp,expyaml):
     """
     combined = comb_mcp
     ## COMBINE EXPERIMENT YAML INFO
-    if expyaml is not False:
+    if expyaml is not None:
         for i in expyaml:
             #expyaml_path = os.path.join(mainyaml_dir, i)
             with open(combined,'a',encoding='UTF-8') as f1:
@@ -172,7 +174,7 @@ def combine_analysis(comb_mcpe,analysisyaml):
     combined = comb_mcpe
 
     ## COMBINE EXPERIMENT YAML INFO
-    if analysisyaml is not False:
+    if analysisyaml is not None:
         for i in analysisyaml:
             #analysisyaml_path = os.path.join(mainyaml_dir, i)
             with open(combined,'a',encoding='UTF-8') as f1:
