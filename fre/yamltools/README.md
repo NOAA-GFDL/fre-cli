@@ -10,4 +10,4 @@ To run `fre yamltools` test scripts, return to root directory of the fre-cli rep
 
 Or run all tests with
 
-    python -m pytests fre/yamltools/tests
+    python -m pytest fre/yamltools/tests
