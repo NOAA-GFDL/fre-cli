@@ -7,11 +7,11 @@ from fre.yamltools import combine_yamls as cy
 ## SET-UP
 # Set example yaml paths, input directory, output directory
 CWD = os.getcwd()
-yamls_dir = Path("fre/yamltools/tests/AM5_example")
-in_dir = Path(f"{CWD}/{yamls_dir}")
+test_dir = Path("fre/yamltools/tests")
+in_dir = Path(f"{CWD}/{test_dir}/AM5_example")
 
 # Create output directory
-out_dir = Path(f"{CWD}/fre/yamltools/tests/combine_yamls_out")
+out_dir = Path(f"{CWD}/{test_dir}/combine_yamls_out")
 
 # If output directory exists, remove and create again 
 if Path(out_dir).exists:
@@ -29,32 +29,32 @@ def test_modelyaml_exists():
     """
     Make sure main yaml file exists
     """
-    assert Path(f"{CWD}/{yamls_dir}/am5.yaml").exists()
+    assert Path(f"{in_dir}/am5.yaml").exists()
 
 def test_compileyaml_exists():
     """
     Make sure experiment yaml file exists
     """
-    assert Path(f"{CWD}/{yamls_dir}/compile.yaml").exists()
+    assert Path(f"{in_dir}/compile.yaml").exists()
 
 def test_platformyaml_exists():
     """
     Make sure experiment yaml file exists
     """
-    assert Path(f"{CWD}/{yamls_dir}/yaml_include/platforms.yaml").exists()
+    assert Path(f"{in_dir}/yaml_include/platforms.yaml").exists()
 
 def test_expyaml_exists():
     """
     Make sure experiment yaml file exists
     """
-    assert Path(f"{CWD}/{yamls_dir}/yaml_include/pp.c96_amip.yaml").exists()
+    assert Path(f"{in_dir}/yaml_include/pp.c96_amip.yaml").exists()
 
 @pytest.mark.skip(reason='analysis scripts might not be defined')
 def test_analysisyaml_exists():
     """
     Make sure experiment yaml file exists
     """
-    assert Path(f"{CWD}/{yamls_dir}/yaml_include/analysis.yaml").exists()
+    assert Path(f"{in_dir}/yaml_include/analysis.yaml").exists()
 
 def test_merged_yamls():
     """
