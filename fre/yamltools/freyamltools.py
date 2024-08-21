@@ -16,7 +16,7 @@ def function(context, uppercase):
     """ - Execute fre yamltools test """
     context.forward(yamltools_test_function)
 
-@yamltoolsCli.command()
+@yamltools_cli.command()
 @click.option("-y",
               "--yamlfile",
               type=str,
