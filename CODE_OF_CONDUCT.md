@@ -1,6 +1,6 @@
 # fre-cli Code of Conduct
 
-## Intro
+## Purpose
 Modeling Systems Division, and GFDL as whole, seeks to create a friendly, safe and welcoming environment for all, regardless of gender, sexual orientation, ability, ethnicity, socioeconomic status, and religion. In order to protect this collaborative environment, the following Code of Conduct sets out a series of guidelines to follow while interacting with the fre-cli repository, and its contributors. This code applies equally to mentors, mentees, and independent contributors.
 
 ## Expected Behavior
@@ -23,9 +23,8 @@ Modeling Systems Division, and GFDL as whole, seeks to create a friendly, safe a
   professional setting
 
 ## Addressing Grievances:
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by emailing TBD@NOAA.org which only goes to PERSON or PERSON2. To report an issue involving either of them please email HR_PERSON.
+Unacceptable behavior from any community member will not be tolerated. Anyone asked to stop unacceptable behavior is expected to comply immediately. Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by emailing gfdl.climate.model.info@noaa.gov 
 
 ## Attribution
-
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html 
+This Code of Conduct is adapted from the [Contributor Covenant], version 1.4,
+available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html, the [Citizen Code of Conduct] available at https://web.archive.org/web/20200330154000/http://citizencodeofconduct.org/, and the [GFDL Code of Conduct] available at https://www.gfdl.noaa.gov/wp-content/uploads/2022/05/GFDL_Code_of_Conduct.pdf
