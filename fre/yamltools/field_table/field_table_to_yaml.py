@@ -18,14 +18,13 @@
 * You should have received a copy of the GNU Lesser General Public
 * License along with FMS.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************
-"""
 
-""" Converts a legacy ascii field_table to a yaml field_table.
+Converts a legacy ascii field_table to a yaml field_table.
         Author: Eric Stofferahn 07/14/2022
+
 """
 
 import re
-import sys
 from collections import OrderedDict
 import click
 import yaml

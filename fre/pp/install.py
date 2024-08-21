@@ -1,6 +1,6 @@
 #!/usr/bin/env python
+''' fre pp install '''
 
-import os
 import subprocess
 import click
 
@@ -18,4 +18,5 @@ def _install_subtool(experiment, platform, target):
 
 @click.command()
 def install_subtool(experiment, platform, target):
+    ''' entry point to install for click '''
     return _install_subtool(experiment, platform, target)

@@ -1,15 +1,18 @@
+''' fre yamltools '''
+
 import click
 from .freyamltoolsexample import yamltools_test_function
 from .combine_yamls import consolidate_yamls
 
 @click.group(help=click.style(" - access fre yamltools subcommands", fg=(202,177,95)))
-def yamltoolsCli():
-    pass
+def yamltools_cli():
+    ''' entry point to fre yamltools click commands '''
 
-@yamltoolsCli.command()
+@yamltools_cli.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
 @click.pass_context
 def function(context, uppercase):
+    # pylint: disable=unused-argument
     """ - Execute fre yamltools test """
     context.forward(yamltools_test_function)
 
@@ -43,4 +46,4 @@ def combine_yamls(context,yamlfile,experiment,platform,target):
     context.forward(consolidate_yamls)
 
 if __name__ == "__main__":
-    yamltoolsCli()
+    yamltools_cli()
