@@ -42,7 +42,7 @@ fre_properties:
   # input paths
   - &AWG_INPUT_HOME_GAEA   "awg_include"
   - &AWG_INPUT_HOME_NESCC  "awg_include"
-  #- &AWG_INPUT_HOME_GFDL   !join[/nbhome/$USER/, *FRE_STEM, *PLATINFO, /$(name)/mdt_xml/awg_include] # will $USER work?
+  - &AWG_INPUT_HOME_GFDL   !join [ /nbhome/$USER/, *FRE_STEM, *PLATINFO, /$(name)/mdt_xml/awg_include]
   - &USER_FILES_F2toF5     "/gpfs/f5/gfdl_f/world-shared/Niki.Zadeh/archive/input/f2_user_files_in_xmls"
   - &append_to_setup_csh    "" # The start year of forcing dataset. FRE hack to set fyear
 
