@@ -6,16 +6,15 @@ from fre.yamltools import combine_yamls as cy
 
 ## SET-UP
 # Set example yaml paths, input directory, output directory
-#CWD = os.getcwd()
-#test_dir = Path("fre/yamltools/tests")
-test_dir = Path("yamltools/tests")
-in_dir = Path(f"{test_dir}/AM5_example")
+CWD = Path.cwd()
+test_dir = Path("fre/yamltools/tests")
+in_dir = Path(f"{CWD}/{test_dir}/AM5_example")
 
 # Create output directory
-out_dir = Path(f"{test_dir}/combine_yamls_out")
+out_dir = Path(f"{CWD}/{test_dir}/combine_yamls_out")
 
 # If output directory exists, remove and create again 
-if Path(out_dir).exists:
+if out_dir.exists():
     shutil.rmtree(out_dir)
     Path(out_dir).mkdir(parents=True,exist_ok=True)
 else:
@@ -76,4 +75,4 @@ def test_merged_yamls():
 
 ##TO-DO:
 # - check for correct yaml merging
-# - 
+# - validation 
