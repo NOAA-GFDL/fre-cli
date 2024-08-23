@@ -7,7 +7,8 @@ from fre.yamltools import combine_yamls as cy
 ## SET-UP
 # Set example yaml paths, input directory, output directory
 #CWD = os.getcwd()
-test_dir = Path("fre/yamltools/tests")
+#test_dir = Path("fre/yamltools/tests")
+test_dir = Path("yamltools/tests")
 in_dir = Path(f"{test_dir}/AM5_example")
 
 # Create output directory
