@@ -31,10 +31,10 @@ verbose_opt_help = """Get verbose messages (repeat the option to increase verbos
 
 
 @click.group(help=click.style(" - access fre make subcommands", fg=(210,73,57)))
-def makeCli():
+def make_cli():
     pass
 
-@makeCli.command()
+@make_cli.command()
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -81,7 +81,7 @@ def run_fremake(context, experiment, yamlfile, platform, target, parallel, jobs,
     context.forward(fremake_run)
 
 ####
-@makeCli.command()
+@make_cli.command()
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -127,7 +127,7 @@ def create_checkout(context,yamlfile,experiment,platform,target,no_parallel_chec
     context.forward(checkout_create)
 
 #####
-@makeCli.command
+@make_cli.command
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -155,7 +155,7 @@ def create_makefile(context,experiment,yamlfile,platform,target):
 
 #####
 
-@makeCli.command
+@make_cli.command
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -200,7 +200,7 @@ def create_compile(context,experiment,yamlfile,platform,target,jobs,parallel,exe
     """ - Write the compile script """
     context.forward(compile_create)
 
-@makeCli.command
+@make_cli.command
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -231,4 +231,4 @@ def create_dockerfile(context,experiment,yamlfile,platform,target,execute):
 
 
 if __name__ == "__main__":
-    makeCli()
+    make_cli()

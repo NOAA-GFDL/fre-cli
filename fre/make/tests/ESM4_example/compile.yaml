@@ -1,0 +1,124 @@
+compile:
+     experiment: "esm4"
+     container_addlibs: 
+     baremetal_linkerflags:  
+     src:
+          - component: "FMS"
+            repo: "https://github.com/NOAA-GFDL/FMS.git"
+            cppdefs: "-Duse_libMPI -Duse_netCDF -DMAXFIELDMETHODS_=500"
+            branch: *FMS_GIT_TAG 
+          - component: "atmos_phys"
+            requires: ["FMS"]
+            repo: "https://gitlab.gfdl.noaa.gov/FMS/atmos_phys.git"
+            branch: *ATM_PHYS_GIT_TAG 
+            otherFlags: *FMSincludes
+          - component: "atmos_dyn"
+            requires: ["FMS", "atmos_phys"]
+            repo: "https://github.com/NOAA-GFDL/GFDL_atmos_cubed_sphere.git"
+            cppdefs: "-DSPMD -DCLIMATE_NUDGE -DINTERNAL_FILE_NML"
+            otherFlags: *FMSincludes
+            branch: *ATM_FV3_GIT_TAG 
+            paths: [ "atmos_dyn/driver/GFDL",
+                     "atmos_dyn/model",
+                     "atmos_dyn/model_nh_null",
+                     "atmos_dyn/GFDL_tools",
+                     "atmos_dyn/driver/SHiELD/cloud_diagnosis.F90",
+                     "atmos_dyn/driver/SHiELD/gfdl_cloud_microphys.F90",
+                     "atmos_dyn/tools" ]
+          - component: "atmos_drivers"
+            requires: ["FMS", "atmos_phys", "atmos_dyn"]
+            repo: "https://github.com/NOAA-GFDL/atmos_drivers.git"
+            cppdefs: "-DSPMD -DCLIMATE_NUDGE"
+            branch: *ATM_DRV_GIT_TAG 
+            otherFlags: *FMSincludes
+            paths: ["atmos_drivers/coupled"]
+          - component: "lm4p"
+            requires: ["FMS"]
+            repo: "https://gitlab.gfdl.noaa.gov/FMS/lm4p.git"
+            branch: *LAND_GIT_TAG 
+            cppdefs: "-DINTERNAL_FILE_NML"
+            otherFlags: *FMSincludes
+          - component: "mom6" 
+            requires: ["FMS"]
+            repo: ["https://github.com/NOAA-GFDL/MOM6-examples.git",
+                   "https://github.com/NOAA-GFDL/ocean_BGC.git" ]
+            branch: [ "dev/gfdl", *OCEAN_BGC_GIT_TAG ] # cant use property for mom6 since its a commit hash instead of a branch
+            otherFlags: !join [ *FMSincludes, " ", *MOMincludes ]
+            additionalInstructions: |
+              pushd mom6/MOM6-examples
+              git checkout 40e3937 # this is just the value of MOM6_GIT_TAG property, can't seem to use variable 
+              popd
+              # this step might be covered by initial checkout since the default is recursive
+              git submodule update --recursive --init mom6/MOM6-examples/src/MOM6 mom6/MOM6-examples/src/SIS2 mom6/MOM6-examples/src/icebergs
+              # checkout dev/gfdl on the icebergs submodule
+              pushd mom6/MOM6-examples/src/icebergs
+              git checkout dev/gfdl
+              popd
+              # this is different than the MOM6_GIT_TAG above since its pulling a submodule not the whole repo
+              if [[ $MOM6_GIT_FIX ]]; then
+                echo WARNING: Checking out MOM6_GIT_FIX, set to: $MOM6_GIT_FIX
+                pushd mom6/MOM6-examples/src/MOM6/
+                git checkout $MOM6_GIT_FIX
+                popd
+              fi 
+              if [[ $SIS2_GIT_FIX ]]; then
+                echo WARNING: Checking out SIS2_GIT_FIX, set to: $SIS2_GIT_FIX 
+                pushd mom6/MOM6-examples/src/SIS2/
+                git checkout $SIS2_GIT_FIX
+                popd
+              fi
+              # link in dataset
+              pushd mom6/MOM6-examples
+              # skip the check for orion
+              #set platform_domain = `perl -T -e "use Net::Domain(hostdomain) ; print hostdomain"`
+              #if ("${platform_domain}" =~ *"MsState"* ) then
+              #  ln -s /work/noaa/gfdlscr/pdata/gfdl/gfdl_O/datasets/ .datasets
+              #else
+                ln -s /gpfs/f5/gfdl_o/world-shared/datasets .datasets
+              #endif
+              popd  
+              test -e mom6/.datasets
+              if [[ $status != 0 ]]; then
+                echo ""; echo "" ; echo "   WARNING:  .datasets link in MOM6 examples directory is invalid"; echo ""; echo ""
+              fi 
+            cppdefs: "-DMAX_FIELDS_=100 -DNOT_SET_AFFINITY -D_USE_MOM6_DIAG -D_USE_GENERIC_TRACER  -DUSE_PRECISION=2"
+            paths: [ "mom6/MOM6-examples/src/MOM6/config_src/infra/FMS2",
+                     "mom6/MOM6-examples/src/MOM6/config_src/memory/dynamic_symmetric",
+                     "mom6/MOM6-examples/src/MOM6/config_src/drivers/FMS_cap",
+                     "mom6/MOM6-examples/src/MOM6/src/ALE",
+                     "mom6/MOM6-examples/src/MOM6/src/core",
+                     "mom6/MOM6-examples/src/MOM6/src/diagnostics",
+                     "mom6/MOM6-examples/src/MOM6/src/equation_of_state",
+                     "mom6/MOM6-examples/src/MOM6/src/framework",
+                     "mom6/MOM6-examples/src/MOM6/src/ice_shelf",
+                     "mom6/MOM6-examples/src/MOM6/src/initialization",
+                     "mom6/MOM6-examples/src/MOM6/src/ocean_data_assim",
+                     "mom6/MOM6-examples/src/MOM6/src/parameterizations",
+                     "mom6/MOM6-examples/src/MOM6/src/tracer",
+                     "mom6/MOM6-examples/src/MOM6/src/user",
+                     "mom6/MOM6-examples/src/MOM6/config_src/external/ODA_hooks",
+                     "mom6/MOM6-examples/src/MOM6/config_src/external/database_comms",
+                     "mom6/MOM6-examples/src/MOM6/config_src/external/drifters",
+                     "mom6/MOM6-examples/src/MOM6/config_src/external/stochastic_physics",
+                     "mom6/MOM6-examples/src/MOM6/config_src/external/stochastic_physics",
+                     "mom6/ocean_BGC/generic_tracers",
+                     "mom6/ocean_BGC/mocsy/src" ]
+          - component: "sis2" 
+            requires: ["FMS", "mom6"]
+            repo: "https://github.com/NOAA-GFDL/ice_param.git"
+            branch: "2024.01"
+            cppdefs: "-DUSE_FMS2_IO"
+            otherFlags: !join [ *FMSincludes, " ", *MOMincludes ]
+            paths: [ "mom6/MOM6-examples/src/SIS2/config_src/dynamic_symmetric", 
+                     "mom6/MOM6-examples/src/SIS2/config_src/external/Icepack_interfaces",
+                     "mom6/MOM6-examples/src/SIS2/src",
+                     "mom6/MOM6-examples/src/icebergs/src",
+                     "sis2" ]
+          - component: "coupler"
+            requires: ["FMS", "atmos_dyn", "atmos_drivers", "atmos_phys", "lm4p", "sis2", "mom6"]
+            repo: "https://github.com/NOAA-GFDL/FMScoupler"
+            branch: "2024.01"
+            otherFlags: !join [ *FMSincludes, " ", *MOMincludes ]
+            paths: [ "coupler/shared",
+                     "coupler/full" ]
+

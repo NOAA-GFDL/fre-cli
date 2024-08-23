@@ -14,6 +14,7 @@ Welcome to Fre-Cli's documentation!
    usage
    subtools
    FAQ
+   badges
 
 Indices and tables
 ==================

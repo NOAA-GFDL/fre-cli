@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
-from .gfdlfremake import varsfre, platformfre, yamlfre, checkout, targetfre
-import click
 import os
 import subprocess
 import logging
 import sys
+import click
+from .gfdlfremake import varsfre, platformfre, yamlfre, checkout, targetfre
 
 @click.command()
 def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,jobs,execute,verbose):

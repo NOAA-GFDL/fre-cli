@@ -1,11 +1,14 @@
+''' fre cmor '''
+
 import click
+
 from .CMORmixer import cmor_run_subtool
 
 @click.group(help=click.style(" - access fre cmor subcommands", fg=(232,91,204)))
-def cmorCli():
-    pass
+def cmor_cli():
+    ''' entry point to fre cmor click commands '''
 
-@cmorCli.command()
+@cmor_cli.command()
 @click.option("-d", "--indir",
               type=str,
               help="Input directory",
@@ -28,8 +31,9 @@ def cmorCli():
               required=True)
 @click.pass_context
 def run(context, indir, outdir, varlist, table_config, exp_config):
+    # pylint: disable=unused-argument
     """Rewrite climate model output"""
     context.forward(cmor_run_subtool)
 
 if __name__ == "__main__":
-    cmorCli()
+    cmor_cli()

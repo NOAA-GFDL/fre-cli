@@ -5,13 +5,13 @@
 ## \author Bennett Chang
 ## \description Script for fremake is used to create and run a code checkout script and compile a model.
 
-import click
-import subprocess
 import os
-import yaml
 import logging
-from .gfdlfremake import targetfre, varsfre, yamlfre, checkout, makefilefre, buildDocker, buildBaremetal
 from multiprocessing.dummy import Pool
+
+import click
+
+from .gfdlfremake import targetfre, varsfre, yamlfre, checkout, makefilefre, buildDocker, buildBaremetal
 
 
 @click.command()

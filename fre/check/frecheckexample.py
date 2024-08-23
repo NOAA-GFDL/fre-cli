@@ -7,7 +7,7 @@ NOAA | GFDL
 import click
 
 @click.command()
-def check_test_function(uppercase):
+def check_test_function(uppercase=None):
     """Execute fre list testfunction2."""
     statement = "testingtestingtestingtesting"
     if uppercase:

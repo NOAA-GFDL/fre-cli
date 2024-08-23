@@ -5,12 +5,11 @@
 
 import os
 import sys
-from pathlib import Path
 import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
-import click
 import re
+import click
 
 #############################################
 
