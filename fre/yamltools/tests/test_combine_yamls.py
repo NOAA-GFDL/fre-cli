@@ -6,12 +6,12 @@ from fre.yamltools import combine_yamls as cy
 
 ## SET-UP
 # Set example yaml paths, input directory, output directory
-CWD = os.getcwd()
+#CWD = os.getcwd()
 test_dir = Path("fre/yamltools/tests")
-in_dir = Path(f"{CWD}/{test_dir}/AM5_example")
+in_dir = Path(f"{test_dir}/AM5_example")
 
 # Create output directory
-out_dir = Path(f"{CWD}/{test_dir}/combine_yamls_out")
+out_dir = Path(f"{test_dir}/combine_yamls_out")
 
 # If output directory exists, remove and create again 
 if Path(out_dir).exists:
@@ -68,7 +68,7 @@ def test_merged_yamls():
     cy._consolidate_yamls(modelyaml,EXPERIMENT, PLATFORM, TARGET)
 
     # Move combined yaml to output location
-    shutil.move(f"{CWD}/combined-{EXPERIMENT}.yaml", out_dir)
+    shutil.move(f"combined-{EXPERIMENT}.yaml", out_dir)
 
     # Check that the combined yaml exists
     assert Path(f"{out_dir}/combined-{EXPERIMENT}.yaml").exists()
