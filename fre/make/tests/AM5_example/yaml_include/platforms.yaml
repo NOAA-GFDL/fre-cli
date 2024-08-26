@@ -5,7 +5,7 @@ platforms:
      modules: [ !join [*INTEL, "/2022.2.1"],"fre/bronx-20",cray-hdf5/1.12.2.3, cray-netcdf/4.9.0.3]
      fc: ftn
      cc: cc
-     mkTemplate: !join ["/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/", *INTEL,".mk"]
+     mkTemplate: "/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/$(INTEL).mk"
      modelRoot: ${HOME}/fremake_canopy/test
    - name: ncrc5.intel23
      compiler: intel
@@ -13,7 +13,7 @@ platforms:
      modules: [!join [*INTEL, "/2023.1.0"],"fre/bronx-20",cray-hdf5/1.12.2.3, cray-netcdf/4.9.0.3]
      fc: ftn
      cc: cc
-     mkTemplate: !join ["/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/", *INTEL, ".mk"]
+     mkTemplate: "/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/$(INTEL).mk"
      modelRoot: ${HOME}/fremake_canopy/test
    - name: hpcme.2023
      compiler: intel
