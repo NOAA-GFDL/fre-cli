@@ -77,7 +77,7 @@ def quote_rose_values(value):
     boolean, in which case do not quote them.
     """
     if isinstance(value, bool):
-        return value
+        return(f"{value}")
     else:
         return("'" + value + "'")
 
