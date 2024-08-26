@@ -6,88 +6,12 @@ import json
 from jsonschema import validate, ValidationError, SchemaError
 from . import platformfre
 
-######################################
-##COULD HAVE YAML_COMBINE AS A SEPARATE TOOL FOR COMPILATION AND PP YAMLS, THEN YAMLFRE.PY WOULD JUST CLEAN AND GET COMPILE/PLATFORM INFO IT NEEDS (AND DO CHECKS/VALIDAITON)
-######################################
-def join_constructor(loader, node):
-    """
-    Allows FRE properties defined
-    in main yaml to be concatenated.
-    """
-    seq = loader.construct_sequence(node)
-    return ''.join([str(i) for i in seq])
-
-## Combine model yaml, compile yaml, and platform yaml into one yaml file
-## \param self the compile Yaml object
-def combineYaml(self):
-     # name of combined yaml
-     comb_compileyaml=f"fullcompile_{self.p}-{self.t}.yaml"
-
-     # copy model yaml info into combined yaml
-     with open(comb_compileyaml,'w+') as f1:
-          f1.write(f'name: &name "{self.n}"\n')
-          f1.write(f'platform: &platform "{self.p}"\n')
-          f1.write(f'target: &target "{self.t}"\n\n')
-          with open(self.modelfile,'r') as f2:
-               f1.write("### MODEL YAML SETTINGS ###\n")
-               shutil.copyfileobj(f2,f1)
-
-     # open combined compile yaml
-     with open(comb_compileyaml,'r') as f3:
-          cy = yaml.load(f3,Loader=yaml.Loader)
-
-     # Check if exp name given is actually valid experiment listed in combined yaml
-     exp_list = []
-     for i in cy.get("experiments"):
-          exp_list.append(i.get("name"))
-
-     if self.n not in exp_list:
-         raise Exception(f"{self.n} is not in the list of experiments")
-
-     # Extract compile yaml path for exp. provided
-     # if experiment matches name in list of experiments in yaml, extract file path
-     for i in cy.get("experiments"):
-         if self.n == i.get("name"):
-             compileyaml=i.get("compile")
-
-     # set platform yaml
-     platformyaml = cy.get("shared").get("compile").get("platformYaml")
-
-     # copy compile and platform yaml info into combined yaml
-     if compileyaml is not None:
-          with open(comb_compileyaml,'a') as f1:
-               for i in compileyaml:
-                    with open(i,'r') as f2:
-                         f1.write("\n### COMPILE INFO ###\n")
-                         shutil.copyfileobj(f2,f1)
-
-               # combine platform yaml
-               if platformyaml is not None:
-                    with open(platformyaml,'r') as f22:
-                         f1.write("\n### PLATFORM INFO ###\n")
-                         shutil.copyfileobj(f22,f1)
-
-
-     # open combined compile yaml
-     full_cy = parseCompile(comb_compileyaml)
-
-     # Clean combined yaml to validate
-     # If keys exists, delete:
-     keys_clean=["fre_properties", "shared", "experiments"]
-     for kc in keys_clean:
-         if kc in full_cy.keys():
-             del full_cy[kc]
-     with open(comb_compileyaml,'w') as f:
-         yaml.safe_dump(full_cy,f,sort_keys=False)
-
-     return full_cy
-
 ## Open the yaml file and parse as fremakeYaml
 ## \param fname the name of the yaml file to parse
 def parseCompile(fname):
 # Open the yaml file and parse as fremakeYaml
      with open(fname, 'r') as yamlfile:
-          y = yaml.load(yamlfile,Loader=yaml.Loader)
+          y = yaml.safe_load(yamlfile)
 
      return y 
 
@@ -210,30 +134,19 @@ class compileYaml():
 
 class freyaml():
 ## \param self The freyaml object
-## \param modelFileName The name of the model yaml file
-## \param name experiment name 
-## \param platform platform used for compilation
-## \param target target used in compilation
- def __init__(self,modelFileName,name,platform,target):
-     #self.freyaml = {}
-     self.modelfile = Path(modelFileName)
-     self.n = name
-     self.p = platform
-     self.t = target
-
-     yaml.add_constructor('!join', join_constructor)
-
-     #parse
-     self.combined = combineYaml(self)
+## \param combinedyaml The name of the combined yaml file
+ def __init__(self,combinedyaml):
+     # Parse
+     self.combined = parseCompile(combinedyaml)
 
 ## Validate the YAML
-     fremake_package_dir = os.path.dirname(os.path.abspath(__file__))
-     schema_path = os.path.join(fremake_package_dir, 'schema.json')
-     with open(schema_path, 'r') as f:
-         s = f.read()
-     schema = json.loads(s)
-     validate(instance=self.combined,schema=schema) 
-     print("\nCOMBINED YAML VALID")
+#     fremake_package_dir = os.path.dirname(os.path.abspath(__file__))
+#     schema_path = os.path.join(fremake_package_dir, 'schema.json')
+#     with open(schema_path, 'r') as f:
+#         s = f.read()
+#     schema = json.loads(s)
+#     validate(instance=self.combined,schema=schema) 
+#     print("\nCOMBINED YAML VALID")
 
      #get compile info
      self.compiledict = self.combined.get("compile")
