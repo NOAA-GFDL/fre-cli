@@ -166,7 +166,7 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     print("Writing output files...")
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
-    shutil.copyfile(f"combined-{e}.yaml", outfile)
+    shutil.copyfile(yml, outfile)
     print("  " + outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
