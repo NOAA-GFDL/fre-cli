@@ -4,7 +4,7 @@ from fre.pp import configure_script_yaml as csy
 
 # Set example yaml paths, input directory
 CWD = Path.cwd()
-yamls_dir = Path("fre/pp/tests/example_ppyamls")
+yamls_dir = Path("fre/pp/tests/AM5_example")
 in_dir = Path(f"{CWD}/{yamls_dir}")
 
 # Set what would be click options
