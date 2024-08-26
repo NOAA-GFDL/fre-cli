@@ -42,7 +42,7 @@ shared:
   # compile information
   compile:
     compileYaml: &compile_yaml "compile.yaml"
-    platformYaml: "platforms.yaml"
+    platformYaml: "yaml_include/platforms.yaml"
   
   # directories shared across tools
   directories: &shared_directories
