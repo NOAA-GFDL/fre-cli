@@ -30,18 +30,9 @@ def compile_create(yamlfile,experiment,platform,target,jobs,parallel,execute,ver
     plist = platform
     tlist = target
 
-#    ## Get the variables in the model yaml
-#    freVars = varsfre.frevars(yml)
-#
-#    ## Open the yaml file and parse as fremakeYaml
-#    modelYaml = yamlfre.freyaml(yml,freVars)
-#    fremakeYaml = modelYaml.getCompileYaml()
-
     ## Open the yaml file and parse as fremakeYaml
-    for platformName in plist:
-         for targetName in tlist:
-              modelYaml = yamlfre.freyaml(yml,name,platformName,targetName)
-              fremakeYaml = modelYaml.getCompileYaml()
+    modelYaml = yamlfre.freyaml(yml)
+    fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
     for targetName in tlist:

@@ -42,17 +42,9 @@ def fremake_run(yamlfile, experiment, platform, target, parallel, jobs, no_paral
     plist = platform
     tlist = target
 
-#    ## Get the variables in the model yaml
-#    freVars = varsfre.frevars(yml)
-#
-#    ## Open the yaml file and parse as fremakeYaml
-#    modelYaml = yamlfre.freyaml(yml,freVars)
-#    fremakeYaml = modelYaml.getCompileYaml()
     ## Open the yaml file and parse as fremakeYaml
-    for platformName in plist:
-         for targetName in tlist:
-              modelYaml = yamlfre.freyaml(yml,name,platformName,targetName)
-              fremakeYaml = modelYaml.getCompileYaml()
+    modelYaml = yamlfre.freyaml(yml)
+    fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
     for targetName in tlist:

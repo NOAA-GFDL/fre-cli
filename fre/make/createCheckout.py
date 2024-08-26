@@ -35,10 +35,8 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
     tlist = target
 
     ## Open the yaml file and parse as fremakeYaml
-    for platformName in plist:
-         for targetName in tlist:
-              modelYaml = yamlfre.freyaml(yml,name,platformName,targetName)
-              fremakeYaml = modelYaml.getCompileYaml()
+    modelYaml = yamlfre.freyaml(yml)
+    fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
     for targetName in tlist:
@@ -52,7 +50,7 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
-              raise SystemExit (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+              raise SystemExit (platformName + " does not exist in platforms.yaml") #modelYaml.combined.get("compile").get("platformYaml"))
          (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
     ## Create the source directory for the platform
@@ -87,7 +85,6 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
                         sys.exit()
 
          else:
-              ## Run the checkout script
               image="ecpe4s/noaa-intel-prototype:2023.09.25"
               bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
               tmpDir = "tmp/"+platformName

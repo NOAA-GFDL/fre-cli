@@ -17,17 +17,9 @@ def dockerfile_create(yamlfile, experiment, platform, target, execute):
     name = experiment
     run = execute
 
-#    ## Get the variables in the model yaml
-#    freVars = varsfre.frevars(yml)
-#    ## Open the yaml file and parse as fremakeYaml
-#    modelYaml = yamlfre.freyaml(yml,freVars)
-#    fremakeYaml = modelYaml.getCompileYaml()
-
     ## Open the yaml file and parse as fremakeYaml
-    for platformName in plist:
-         for targetName in tlist:
-              modelYaml = yamlfre.freyaml(yml,name,platformName,targetName)
-              fremakeYaml = modelYaml.getCompileYaml()
+    modelYaml = yamlfre.freyaml(yml)
+    fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
     ## Loop through platforms and targets
@@ -49,17 +41,17 @@ def dockerfile_create(yamlfile, experiment, platform, target, execute):
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
 
-                freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
-                                                      libs = fremakeYaml["container_addlibs"],
-                                                      srcDir = srcDir,
-                                                      bldDir = bldDir,
-                                                      mkTemplatePath = mkTemplate,
-                                                      tmpDir = tmpDir)
-
-                # Loop through components and send the component name and requires for the Makefile
-                for c in fremakeYaml['src']:
-                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
-                freMakefile.writeMakefile()
+#                freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
+#                                                      libs = fremakeYaml["container_addlibs"],
+#                                                      srcDir = srcDir,
+#                                                      bldDir = bldDir,
+#                                                      mkTemplatePath = mkTemplate,
+#                                                      tmpDir = tmpDir)
+#
+#                # Loop through components and send the component name and requires for the Makefile
+#                for c in fremakeYaml['src']:
+#                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
+#                freMakefile.writeMakefile()
 
                 dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],
@@ -67,7 +59,8 @@ def dockerfile_create(yamlfile, experiment, platform, target, execute):
                                               RUNenv = RUNenv,
                                               target = targetObject)
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
-                dockerBuild.writeDockerfileMakefile(freMakefile.getTmpDir() + "/Makefile", freMakefile.getTmpDir()+"/linkline.sh")
+                dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
+
                 for c in fremakeYaml['src']:
                     dockerBuild.writeDockerfileMkmf(c)
 
@@ -75,7 +68,7 @@ def dockerfile_create(yamlfile, experiment, platform, target, execute):
 
                 currDir = os.getcwd()
                 click.echo("\ntmpDir created in " + currDir + "/tmp")
-                click.echo("Dockerfile created in " + currDir + "Dockerfile\n")
+                click.echo("Dockerfile created in " + currDir +"\n")
 
             if run:
                 dockerBuild.build(containerBuild, containerRun)
