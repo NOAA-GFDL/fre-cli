@@ -117,8 +117,9 @@ class container():
  def writeRunscript(self,RUNenv,containerRun,runOnDisk):
      #create runscript in tmp - create spack environment, install necessary packages, 
      self.createscript = ["#!/bin/bash \n",
+                          "export BACKUP_LD_LIBRARY_PATH=$LD_LIBRARY\n",
                           "# Set up spack loads\n",
-                          RUNenv[0]+"\n"]                          
+                          RUNenv[0]+"\n"]
      with open(runOnDisk,"w") as f:
           f.writelines(self.createscript)
           f.write("# Load spack packages\n")
@@ -130,6 +131,7 @@ class container():
                     self.spackloads = "spack load "+l+"\n"
                     f.write(self.spackloads)
 
+          f.write("export LD_LIBRARY_PATH=$BACKUP_LD_LIBRARY_PATH:$LD_LIBRARY_PATH\n")
           f.write("# Run executable\n")
           f.write(self.bld+"/"+self.e+".x\n")
      #copy runscript into container in dockerfile
