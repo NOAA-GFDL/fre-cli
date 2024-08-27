@@ -5,13 +5,12 @@
 """
 
 ## TO-DO:
-# - figure out way to safe_load (yaml_loader=yaml.SafeLoader?)
 # - condition where there are multiple pp yamls
+# - validation here or in combined-yamls tools
 
 import os
 import json
 import shutil
-from pathlib import Path
 import click
 from jsonschema import validate
 import yaml
@@ -34,83 +33,15 @@ def validate_yaml(file):
         print("YAML VALID")
 
 ####################
-def join_constructor(loader, node):
-    """
-    Allows FRE properties defined
-    in main yaml to be concatenated.
-    """
-    seq = loader.construct_sequence(node)
-    return ''.join([str(i) for i in seq])
-####################
 def yaml_load(yamlfile):
     """
     Load the given yaml and validate.
     """
-    # Regsiter tag handler
-    yaml.add_constructor('!join', join_constructor)
-
     # Load the main yaml and validate
     with open(yamlfile,'r') as f:
-        y=yaml.load(f,Loader=yaml.Loader)
+        y=yaml.safe_load(f)
 
     return y
-
-####################
-def consolidate_yamls(mainyaml,experiment, platform,target):
-    """
-    Combine main yaml and experiment yaml into combined yamls
-    """
-    # Retrieve the directory containing the main yaml, to use
-    # as an offset for the child yamls
-    mainyaml_dir = os.path.dirname(mainyaml)
-    # Path to new combined
-    combined=Path("combined.yaml")
-    # Create and write to combined yaml
-    with open(combined,"w") as f1:
-        f1.write('## Combined yamls\n')
-        f1.write(f'name: &name "{experiment}"\n')
-        f1.write(f'platform: &platform "{platform}"\n')
-        f1.write(f'target: &target "{target}"\n\n')
-
-        # Combine main yaml with created combined.yaml
-        with open(mainyaml,'r') as f2:
-            f1.write("\n### MAIN YAML SETTINGS ###\n")
-            #copy contents of main yaml into combined yaml
-            shutil.copyfileobj(f2,f1)
-
-    # Load the new combined yaml and validate
-    cy=yaml_load(combined)
-
-    # Extract experiment yaml file paths from combined yaml
-    exp_list=[]
-    for i in cy.get("experiments"):
-        exp_list.append(i.get("name"))
-
-    # Check if exp name given is actually valid experiment listed in combined yaml
-    if experiment not in exp_list:
-        raise Exception(f"{experiment} is not in the list of experiments")
-
-    # Extract specific experiment yaml path for exp. provided
-    # if experiment matches name in list of experiments in yaml, extract file path
-    for i in cy.get("experiments"):
-        if experiment == i.get("name"):
-            expyaml=i.get("pp")
-
-    # Combine experiment yaml with combined yaml
-    # Could be multiple experiment yamls associated with one experiment
-    # expname_list will be used later to set rose-suite items for each ppyaml (needed?)
-    expname_list=[]
-    if expyaml is not None:
-        with open(combined,"a") as f1:
-            for i in expyaml:
-                expname_list.append(i.split(".")[1])
-                expyaml_path = os.path.join(mainyaml_dir, i)
-                with open(expyaml_path,'r') as f2:
-                    f1.write(f"\n### {i.upper()} settings ###\n")
-                    #copy expyaml into combined
-                    shutil.copyfileobj(f2,f1)
-
-    return combined
 
 ####################
 def rose_init(experiment,platform,target):
@@ -150,6 +81,7 @@ def quote_rose_values(value):
     else:
         return("'" + value + "'")
 
+####################
 def set_rose_suite(yamlfile,rose_suite):
     """
     Set items in the rose suite configuration.
@@ -174,7 +106,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
     """
     Set items in the regrid and remap rose app configurations.
     """
-    components = yamlfile.get(f"postprocess").get("components")
+    components = yamlfile.get("postprocess").get("components")
     for i in components:
         comp = i.get('type')
         sources = i.get('sources')
@@ -220,41 +152,21 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     # Initialize the rose configurations
     rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
 
-    # Combine main and exp yamls into one new combine.yaml
-    comb_yaml = consolidate_yamls(mainyaml=yml,
-                                  experiment=e,
-                                  platform=p,
-                                  target=t)
-
     # Load the combined yaml
-    final_yaml = yaml_load(comb_yaml)
-
-    # Clean combined yaml to validate
-    # If keys exists, delete:
-    keys_clean=["fre_properties","shared","experiments"]
-    for kc in keys_clean:
-        if kc in final_yaml.keys():
-            del final_yaml[kc]
-
-    with open("combined.yaml",'w') as f:
-        yaml.safe_dump(final_yaml,f,sort_keys=False)
-
-        # validate yaml
-        validate_yaml(final_yaml)
-
+    comb_pp_yaml = yaml_load(yml)
 
     ## PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items
-    set_rose_suite(final_yaml,rose_suite)
+    set_rose_suite(comb_pp_yaml,rose_suite)
 
     # Set regrid and remap rose app items
-    set_rose_apps(final_yaml,rose_regrid,rose_remap)
+    set_rose_apps(comb_pp_yaml,rose_regrid,rose_remap)
 
     # write output files
     print("Writing output files...")
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
-    shutil.copyfile(comb_yaml, outfile)
+    shutil.copyfile(yml, outfile)
     print("  " + outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
