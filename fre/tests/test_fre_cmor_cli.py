@@ -21,3 +21,15 @@ def test_cli_fre_cmor_opt_dne():
     ''' fre cmor optionDNE '''
     result = runner.invoke(fre.fre, args=["cmor", "optionDNE"])
     assert result.exit_code == 2
+
+def test_cli_fre_cmor_run():
+
+    indir = '/nbhome/Ciheim.Brown/where-the-sos-lives'
+    varlist = '/nbhome/Ciheim.Brown/varlist'
+    table_config = '/nbhome/Ciheim.Brown/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
+    exp_config = '/nbhome/Ciheim.Brown/CMOR_input_example.json'
+    outdir = '/nbhome/Ciheim.Brown/outdir'
+
+    result = runner.invoke(fre.fre, args=["cmor", "run", "--indir", indir, "--varlist", varlist, "--table_config", table_config, "--exp_config", exp_config,"--outdir",  outdir])
+    assert result.exit_code == 0
+
