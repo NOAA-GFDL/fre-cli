@@ -26,5 +26,4 @@ Modeling Systems Division, and GFDL as whole, seeks to create a friendly, safe a
 Unacceptable behavior from any community member will not be tolerated. Anyone asked to stop unacceptable behavior is expected to comply immediately. Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by emailing gfdl.climate.model.info@noaa.gov 
 
 ## Attribution
-This Code of Conduct is adapted from the [Contributor Covenant], version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html, the [Citizen Code of Conduct] available at https://web.archive.org/web/20200330154000/http://citizencodeofconduct.org/, and the [GFDL Code of Conduct] available at https://www.gfdl.noaa.gov/wp-content/uploads/2022/05/GFDL_Code_of_Conduct.pdf
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/version/1/4/code-of-conduct.html), version 1.4, the [Citizen Code of Conduct](https://web.archive.org/web/20200330154000/http://citizencodeofconduct.org/), and the [GFDL Code of Conduct](https://www.gfdl.noaa.gov/wp-content/uploads/2022/05/GFDL_Code_of_Conduct.pdf).
