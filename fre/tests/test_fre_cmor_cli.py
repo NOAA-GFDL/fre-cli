@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 ''' test "fre cmor" calls '''
 
-import os
+import subprocess
 
 from click.testing import CliRunner
 
@@ -24,7 +24,7 @@ def test_cli_fre_cmor_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "optionDNE"])
     assert result.exit_code == 2
 
-def test_cli_fre_cmor_run():
+def test_cli_fre_cmor_run_case1():
 
     indir = '/nbhome/Ciheim.Brown/where-the-sos-lives'
     varlist = '/nbhome/Ciheim.Brown/varlist'
@@ -35,4 +35,7 @@ def test_cli_fre_cmor_run():
     result = runner.invoke(fre.fre, args=["cmor", "run", "--indir", indir, "--varlist", varlist, "--table_config", table_config, "--exp_config", exp_config,"--outdir",  outdir])
     assert result.exit_code == 0
 
-    assert os.system("nccmp -f -m /nbhome/Ciheim.Brown/outdir/CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn/v20240826/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc /nbhome/Ciheim.Brown/where-the-sos-lives/ocean_monthly_1x1deg.199301-199712.sos.nc") == 1
+def test_cli_fre_cmor_run_case2(capfd):
+    assert subprocess.run(["nccmp", "-f", "-m", "/nbhome/Ciheim.Brown/outdir/CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn/v20240829/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc", "/nbhome/Ciheim.Brown/where-the-sos-lives/ocean_monthly_1x1deg.199301-199712.sos.nc"]).returncode == 1
+    out, err = capfd.readouterr()
+    subprocess.run(["rm", "-rf", "/nbhome/Ciheim.Brown/outdir/CMIP6/CMIP6/"])
