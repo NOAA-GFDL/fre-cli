@@ -34,8 +34,11 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
     plist = platform
     tlist = target
 
+    ## Get the variables in the model yaml
+    freVars = varsfre.frevars(yml) 
+
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml)
+    modelYaml = yamlfre.freyaml(yml,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets

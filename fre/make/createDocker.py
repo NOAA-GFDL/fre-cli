@@ -17,8 +17,11 @@ def dockerfile_create(yamlfile, experiment, platform, target, execute):
     name = experiment
     run = execute
 
+    ## Get the variables in the model yaml
+    freVars = varsfre.frevars(yml)
+
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml)
+    modelYaml = yamlfre.freyaml(yml,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
