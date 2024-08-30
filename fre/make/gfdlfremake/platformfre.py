@@ -1,13 +1,14 @@
 import yaml
 
 class platforms ():
-    def __init__(self,fname):
+    def __init__(self,platforminfo):
         """
         Param:
             - self The platform yaml object
-            - fname The path to the platform yaml file
+            - platforminfo dictionary with platform information
+                           from the combined yaml
         """
-        self.yaml = fname
+        self.yaml = platforminfo
 
         ## Check the yaml for errors/omissions
         ## Loop through the platforms
