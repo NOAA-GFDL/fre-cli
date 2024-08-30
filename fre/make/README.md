@@ -69,71 +69,98 @@ Additionally, as mentioned, multiple targets can be used more multiple target-pl
         - `-n, --parallel [number of concurrent modile compiles]`
 
 ## Guide
+In order to use the `fre make` tools, remember to create a combined yaml first. This can be done with the `fre yamltools combine-yamls` tool. This combines the model, compile, platform, experiment, and any analysis yamls into ONE yaml file for parsing and validation. 
+
+To combine: 
+`fre yamltools combine-yamls -y [model yaml file] -e [experiment name] -p [platform] -t [target]`
+
 ### **Bare-metal Build:**
 ```bash
+## NOTE: Remember to create the combined yaml first!
+##       The targets used in fremake are taken from the fre make command itself
+# Create combined yaml
+fre yamltools combine-yamls -y [model yaml file] -e [experiment name] -p [platform] -t [target]
+
 # Create checkout script
-fre make create-checkout -y [experiment yaml file] -p [platform] -t [target]
+fre make create-checkout -y [combined yaml file] -e [experiment name] -p [platform] -t [target]
       
 # Create and run checkout script
-fre make create-checkout -y [experiment yaml file] -p [platform] -t [target] -e
+fre make create-checkout -y [combined yaml file] -e [experiment name] -p [platform] -t [target] --execute
 
 # Create Makefile
-fre make create-makefile -y [experiment yaml file] -p [platform] -t [target]
+fre make create-makefile -y [combined yaml file] -e [experiment name] -p [platform] -t [target]
 
 # Creat the compile script
-fre make create-compile -y [experiment yaml file] -p [platform] -t [target]
+fre make create-compile -y [combined yaml file] -e [experiment name] -p [platform] -t [target]
 
 # Create and run the compile script
-fre make create-compile -y [experiment yaml file] -p [platform] -t [target] -e
+fre make create-compile -y [combined yaml file] -e [experiment name] -p [platform] -t [target] --execute
 
 # Run all of fremake 
-fre make run-fremake -y [experiment yaml] -p [platform] -t [target] [other options...]
+fre make run-fremake -y [combined yaml] -e [experiment name] -p [platform] -t [target] [other options...]
 ```
 
 ### **Bare-metal Build (Multi-target example):**
 ```bash
+## NOTE: Remember to create the combined yaml first!
+##       The targets used in fremake are taken from the fre make command itself 
+# Create combined yaml
+fre yamltools combine-yamls -y am5.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel23 -t debug 
+
 # Create checkout script
-fre make create-checkout -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug
+fre make create-checkout -y combined-c96L65_am5f7b12r1_amip.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel23 -t prod-openmp -t debug
       
 # Create and run checkout script
-fre make create-checkout -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug -e
+fre make create-checkout -y combined-c96L65_am5f7b12r1_amip.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel23 -t prod-openmp -t debug --execute
 
 # Create Makefile
-fre make create-makefile -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug
+fre make create-makefile -y combined-c96L65_am5f7b12r1_amip.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel23 -t prod-openmp -t debug
 
 # Creat the compile script
-fre make create-compile -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug
+fre make create-compile -y combined-c96L65_am5f7b12r1_amip.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel23 -t prod-openmp -t debug
 
 # Create and run the compile script
-fre make create-compile -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug -e
+fre make create-compile -y combined-c96L65_am5f7b12r1_amip.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel23 -t prod-openmp -t debug --execute
 
 # Run all of fremake 
-fre make run-fremake -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug [other options...]
+fre make run-fremake -y combined-c96L65_am5f7b12r1_amip.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel23 -t prod-openmp -t debug
 ```
 
 ### **Container Build:**
 For the container build, parallel checkouts are not supported, so the `-npc` options must be used for the checkout script. In addition the platform must be a container platform. ***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
 ```bash
+## NOTE: Remember to create the combined yaml first!
+##       The targets used in fremake are taken from the fre make command itself
+# Create combined yaml
+fre yamltools combine-yamls -y [model yaml] -e [experiment name] -p [CONTAINER PLATFORM] -t [target]
+
 # Create checkout script
-fre make create-checkout -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
+fre make create-checkout -y [combined yaml file] -e [experiment name] -p [CONTAINER PLATFORM] -t [target] -npc
       
 # Create and run checkout script
-fre make create-checkout -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target] -e -npc
+fre make create-checkout -y [combined yaml file] -e [experiment name] -p [CONTAINER PLATFORM] -t [target] --execute -npc
 
 # Create Makefile
-fre make create-makefile -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target] 
+fre make create-makefile -y [combined yaml file] -e [experiment name] -p [CONTAINER PLATFORM] -t [target] 
 
 # Create the compile script
-fre make create-compile -y [experiment yaml file] -p [CONTAINER PLATFORM]-t [target] 
+fre make create-compile -y [combined yaml file] -e [experiment name] -p [CONTAINER PLATFORM]-t [target] 
+
+# Create and run the compile script
+fre make create-compile -y [combined yaml file] -e [experiment name] -p [CONTAINER PLATFORM]-t [target] --execute
 
 #Create a Dockerfile
-fre make create-dockerfile -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target] 
+fre make create-dockerfile -y [combined yaml file] -e [experiment name] -p [CONTAINER PLATFORM] -t [target] 
 
 # Create and run the Dockerfile
-fre make create-dockerfile -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target]
+fre make create-dockerfile -y [combined yaml file] -e [experiment name] -p [CONTAINER PLATFORM] -t [target] --execute
 ```
 ### **Container Build (Multi-target example):**
 ```bash
+# NOTE: multi-target will be taken from fre make commands
+# Create combined yaml
+fre yamltools combine-yamls -y am5.yaml -e c96L65_am5f7b12r1_amip -p hpcme.2023 -t debug
+
 # Create checkout script
 fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod-openmp -t debug -npc
       
@@ -152,4 +179,3 @@ fre make create-compile -y am5.yaml -p hpcme.2023 -t prod-openmp -t debug -e
 # Run all of fremake 
 fre make run-fremake -y am5.yaml -p hpcme.2023 -t prod-openmp -t debug [other options...] -npc 
 ```
-
