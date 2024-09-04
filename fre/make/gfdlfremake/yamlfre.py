@@ -17,6 +17,20 @@ def parseCompile(fname,v):
 
     return y
 
+## VALIDATION OF COMBINED YAML CAN ALSO HAPPEN IN FRE YAMLTOOLS COMBINE-YAML
+def validate_yaml(yamlfile):
+    with open(yamlfile,'r') as yf:
+        cy = yaml.safe_load(yf)
+    ## Validate the YAML
+    fremake_package_dir = os.path.dirname(os.path.abspath(__file__))
+    schema_path = os.path.join(fremake_package_dir, 'schema.json')
+    with open(schema_path, 'r') as f:
+        s = f.read()
+    schema = json.loads(s)
+
+    validate(instance=cy,schema=schema)
+    print("\nCOMBINED YAML VALID")
+
 ##### THIS SEEMS UNUSED
 ## \brief Checks the yaml for variables. Required variables will dump and error. Non-required variables will
 ## set a default value for the variable
@@ -174,18 +188,6 @@ class freyaml():
         self.platformsyaml = self.platforms.getPlatformsYaml()
 
         #self.freyaml.update(self.platformsyaml)
-
-####TO-DO: CREATE A SCHEMA FOR THE COMBINED YAML (will apply to fre make and fre pp combiend yaml - same yaml) 
-## VALIDATION OF COMBINED YAML CAN ALSO HAPPEN IN FRE YAMLTOOLS COMBINE-YAML
-
-## Validate the YAML
-#     fremake_package_dir = os.path.dirname(os.path.abspath(__file__))
-#     schema_path = os.path.join(fremake_package_dir, 'schema.json')
-#     with open(schema_path, 'r') as f:
-#         s = f.read()
-#     schema = json.loads(s)
-#     validate(instance=self.combined,schema=schema)
-#     print("\nCOMBINED YAML VALID")
 
     def getCompileYaml(self):
         """
