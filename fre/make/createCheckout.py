@@ -5,7 +5,13 @@ import subprocess
 import logging
 import sys
 import click
+from pathlib import Path
 from .gfdlfremake import varsfre, platformfre, yamlfre, checkout, targetfre
+
+# Relative import
+f = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(f)
+import yamltools.combine_yamls as cy
 
 @click.command()
 def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,jobs,execute,verbose):
@@ -34,11 +40,31 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
     plist = platform
     tlist = target
 
+    ## If combined yaml does not exists, combine model, compile, and platform yamls
+    cd = Path.cwd()
+    combined = Path(f"combined-{name}.yaml")
+    combined_path=os.path.join(cd,combined)
+
+    # If fre yammltools combine-yamls tools was used, the combined yaml should exist
+    if Path(combined_path).exists:
+        ## Make sure that the previously created combined yaml is valid
+        yamlfre.validate_yaml(combined_path)
+
+        full_combined = combined_path
+
+    else:
+        ## Combine yaml files to parse
+        comb = cy.init_compile_yaml(yml,experiment,platform,target)
+        comb_yaml = comb.combine_model()
+        comb_compile = comb.combine_compile()
+        comb_platform = comb.combine_platforms()
+        full_combined = comb.clean_yaml()
+
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(yml) 
+    freVars = varsfre.frevars(full_combined) 
 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml,freVars)
+    modelYaml = yamlfre.freyaml(full_combined,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
