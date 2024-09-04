@@ -66,18 +66,6 @@ def dockerfile_create(yamlfile, experiment, platform, target, execute):
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
 
-#                freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
-#                                                      libs = fremakeYaml["container_addlibs"],
-#                                                      srcDir = srcDir,
-#                                                      bldDir = bldDir,
-#                                                      mkTemplatePath = mkTemplate,
-#                                                      tmpDir = tmpDir)
-#
-#                # Loop through components and send the component name and requires for the Makefile
-#                for c in fremakeYaml['src']:
-#                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
-#                freMakefile.writeMakefile()
-
                 dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],
                                               libs = fremakeYaml["container_addlibs"],
