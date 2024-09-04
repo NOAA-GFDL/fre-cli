@@ -28,11 +28,8 @@ def makefile_create(yamlfile,experiment,platform,target):
     combined_path=os.path.join(cd,combined)
 
     if Path(combined_path).exists:
-        ## Make sure that the previously created combined yaml is valid
-        yamlfre.validate_yaml(combined_path)
-
         full_combined = combined_path
-
+        print("\nNOTE: Yamls previously merged.")
     else:
         ## Combine yaml files to parse
         comb = cy.init_compile_yaml(yml,experiment,platform,target)
@@ -40,8 +37,6 @@ def makefile_create(yamlfile,experiment,platform,target):
         comb_compile = comb.combine_compile()
         comb_platform = comb.combine_platforms()
         full_combined = comb.clean_yaml()
-        # Validate the yaml
-        yamlfre.validate_yaml(full_combined)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined)

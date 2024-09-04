@@ -47,10 +47,8 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
 
     # If fre yammltools combine-yamls tools was used, the combined yaml should exist
     if Path(combined_path).exists():
-        ## Make sure that the previously created combined yaml is valid
-        yamlfre.validate_yaml(combined_path)
         full_combined = combined_path
-
+        print("\nNOTE: Yamls previously merged.")
     else:
         ## Combine yaml files to parse
         comb = cy.init_compile_yaml(yml,experiment,platform,target)
@@ -58,13 +56,11 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
         comb_compile = comb.combine_compile()
         comb_platform = comb.combine_platforms()
         full_combined = comb.clean_yaml()
-        # Validate the yaml
-        yamlfre.validate_yaml(full_combined)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined) 
 
-    ## Open the yaml file and parse as fremakeYaml
+    ## Open the yaml file, validate the yaml, and parse as fremakeYaml
     modelYaml = yamlfre.freyaml(full_combined,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
