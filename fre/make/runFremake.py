@@ -57,7 +57,7 @@ def fremake_run(yamlfile, experiment, platform, target, parallel, jobs, no_paral
     freVars = varsfre.frevars(full_combined)
 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyamlfull_combined,freVars)
+    modelYaml = yamlfre.freyaml(full_combined,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
