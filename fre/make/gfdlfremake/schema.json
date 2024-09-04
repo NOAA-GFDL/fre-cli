@@ -5,31 +5,23 @@
 	"description": "A yaml base for use with fre canopy",
 	"type": "object",
 	"properties": {
-		"platformYaml": {
-                        "description": "Path to the platform yaml file",
-                        "type": "string"
-		},
-		"compileYaml": {
-                        "description": "Path to the compile yaml file",
-                        "type": "string"
+                "name": {
+                       "description": "The name of the experiment",
+                       "type": "string"
                 },
-		"experiment": {
-			"description": "The name of the model",
-			"type": "string"
-		},
-                "container_addlibs":{
-                        "description": "Libraries and packages needed for linking in the container",
-                        "type": ["array","string","null"]
+                "platform": {
+                       "description": "The platforms listed in the command",
+                       "type": ["string","array"]
                 },
-                "baremetal_linkerflags":{
-                        "description": "Linker flags of libraries and packages needed for linking in the bare-metal build",
-                        "type": ["array","string","null"]
+                "target": {
+                       "description": "The targets listed in the command",
+                       "type": ["string","array"]
                 },
-		"src":{
-			"description": "The source code descriptions",
-			"type": "array",
-			"items":{"$ref": "#/$defs/comp" }
-		},
+                "compile": {
+                        "description": "The source code descriptions",
+                        "type": "object",
+                        "items":{"$ref": "#/$defs/comp" }
+                },
 		"platforms":{
                         "description": "FRE platforms",
                         "type": "array",
@@ -39,8 +31,31 @@
 	"$defs":{
 		"comp": {
 			"type": "object",
-			"required": ["component", "repo"],
+                        "required": ["experiment","src"],
 			"properties":{
+                                "experiment": {
+                                        "description": "The name of the model",
+                                        "type": "string"
+                                },
+                                "container_addlibs":{
+                                        "description": "Libraries and packages needed for linking in the container",
+                                        "type": ["array","string","null"]
+                                },
+                                "baremetal_linkerflags":{
+                                        "description": "Linker flags of libraries and packages needed for linking in the bare-metal build",
+                                        "type": ["array","string","null"]
+                                },
+                                "src":{
+                                        "description": "The source code descriptions",
+                                        "type": "array",
+                                        "items":{"$ref": "#/$defs/source" }
+                                }
+                        }
+                },
+                "source": {
+                        "type": "object",
+                        "required": ["component", "repo"],
+                        "properties":{
 				"component": {
 					"type": "string",
 					"description": "The name of the model component"
@@ -159,6 +174,6 @@
                         "additionalProperties": false
                 }
 	},
-	"required": ["experiment", "src", "platforms"],
+	"required": ["platforms"],
 	"additionalProperties": true
 }
