@@ -46,10 +46,9 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
     combined_path=os.path.join(cd,combined)
 
     # If fre yammltools combine-yamls tools was used, the combined yaml should exist
-    if Path(combined_path).exists:
+    if Path(combined_path).exists():
         ## Make sure that the previously created combined yaml is valid
         yamlfre.validate_yaml(combined_path)
-
         full_combined = combined_path
 
     else:
@@ -59,6 +58,8 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
         comb_compile = comb.combine_compile()
         comb_platform = comb.combine_platforms()
         full_combined = comb.clean_yaml()
+        # Validate the yaml
+        yamlfre.validate_yaml(full_combined)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined) 

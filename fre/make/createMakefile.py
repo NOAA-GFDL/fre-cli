@@ -40,6 +40,8 @@ def makefile_create(yamlfile,experiment,platform,target):
         comb_compile = comb.combine_compile()
         comb_platform = comb.combine_platforms()
         full_combined = comb.clean_yaml()
+        # Validate the yaml
+        yamlfre.validate_yaml(full_combined)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined)
