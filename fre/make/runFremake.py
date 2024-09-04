@@ -16,7 +16,6 @@ from .gfdlfremake import targetfre, varsfre, yamlfre, checkout, makefilefre, bui
 
 @click.command()
 def fremake_run(yamlfile, experiment, platform, target, parallel, jobs, no_parallel_checkout, verbose):
-
     yml = yamlfile
     name = experiment
     nparallel = parallel
@@ -42,11 +41,23 @@ def fremake_run(yamlfile, experiment, platform, target, parallel, jobs, no_paral
     plist = platform
     tlist = target
 
+    # If fre yamltools combine-yamls tools was used, the combined yaml should exist
+    if Path(combined_path).exists():
+        full_combined = combined_path
+        print("\nNOTE: Yamls previously merged.")
+    else:
+        ## Combine yaml files to parse
+        comb = cy.init_compile_yaml(yml,experiment,platform,target)
+        comb_yaml = comb.combine_model()
+        comb_compile = comb.combine_compile()
+        comb_platform = comb.combine_platforms()
+        full_combined = comb.clean_yaml()
+
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(yml)
+    freVars = varsfre.frevars(full_combined)
 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml,freVars)
+    modelYaml = yamlfre.freyamlfull_combined,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
