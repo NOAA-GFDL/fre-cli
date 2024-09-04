@@ -10,27 +10,18 @@
 
 import os
 import json
+import sys
 import shutil
 import click
+from pathlib import Path
 from jsonschema import validate
 import yaml
 import metomi.rose.config
 
-######VALIDATE#####
-package_dir = os.path.dirname(os.path.abspath(__file__))
-schema_path = os.path.join(package_dir, 'schema.json')
-def validate_yaml(file):
-    """
-     Using the schema.json file, the yaml format is validated.
-    """
-    # Load the json schema: .load() (vs .loads()) reads and parses the json in one
-    with open(schema_path) as s:
-        schema = json.load(s)
-
-    # Validate yaml
-    # If the yaml is not valid, the schema validation will raise errors and exit
-    if validate(instance=file,schema=schema) is None:
-        print("YAML VALID")
+# Relative import
+f = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(f)
+import yamltools.combine_yamls as cy
 
 ####################
 def yaml_load(yamlfile):
@@ -42,6 +33,25 @@ def yaml_load(yamlfile):
         y=yaml.safe_load(f)
 
     return y
+
+######VALIDATE#####
+def validate_yaml(yamlfile):
+    """
+     Using the schema.json file, the yaml format is validated.
+    """
+    # Load the yaml
+    yml = yaml_load(yamlfile)
+
+    package_dir = os.path.dirname(os.path.abspath(__file__))
+    schema_path = os.path.join(package_dir, 'schema.json')
+    # Load the json schema: .load() (vs .loads()) reads and parses the json in one
+    with open(schema_path,'r') as s:
+        schema = json.load(s)
+
+    # Validate yaml
+    # If the yaml is not valid, the schema validation will raise errors and exit
+    if validate(instance=yml,schema=schema) is None:
+        print("YAML VALID")
 
 ####################
 def rose_init(experiment,platform,target):
@@ -152,8 +162,29 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     # Initialize the rose configurations
     rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
 
+    ## If combined yaml does not exists, combine model, experiment, and analysis yamls
+    cd = Path.cwd()
+    combined = Path(f"combined-{e}.yaml")
+    combined_path=os.path.join(cd,combined)
+
+    # If fre yamltools combine-yamls tools was used, the combined yaml should exist
+    if Path(combined_path).exists():
+        ## Make sure that the previously created combined yaml is valid
+        validate_yaml(str(combined_path))
+        full_combined = combined_path
+    else:
+        ## Combine yaml files to parse
+        comb = cy.init_pp_yaml(yml,e,p,t)
+        comb_model = comb.combine_model()
+        comb_exp = comb.combine_experiment()
+        comb_analysis = comb.combine_analysis()
+        full_combined = comb.clean_yaml()
+
+        # Validate yaml
+        validate_yaml(full_combined)
+
     # Load the combined yaml
-    comb_pp_yaml = yaml_load(yml)
+    comb_pp_yaml = yaml_load(full_combined)
 
     ## PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items

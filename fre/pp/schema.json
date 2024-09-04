@@ -7,57 +7,69 @@
        "platform": {"type": "string"},
        "target": {"type": "string"},
        "directories": {
-           "history_dir": {"type":"string"},
-           "pp_dir": {"type":"string"},
-           "ptmp_dir": {"type":"string"},
-           "refinediag_scripts":{"type":["string","null"]},
-           "preanalysis_script":{"type":["string","null"]},
-           "history_refined":{"type":["string","null"]},
-           "analysis":{"type":["string","null"]},
-           "pp_grid_spec": {"type":"string"},
-           "fre_analysis_home": {"type":["string","null"]}
+           "description": "FRE shared directories",
+           "type": "object",
+           "items":{"$ref": "#/$defs/dirs" }
        },
        "postprocess": {
+           "description": "FRE post-processing information",
            "type": "object",
-           "properties": {
-               "settings": {
-                   "type:": "object", 
-                   "properties": {
-                       "history_segment": {"type":"string"},
-                       "site": {"type":"string"},
-                       "pp_chunk_a": {"type":"string"},
-                       "pp_chunk_b": {"type":"string"},
-                       "pp_start": {"type":"string"},
-                       "pp_stop": {"type":"string"},
-                       "pp_components": {"type":"string"}
-                   }
-               },
-               "switches": {
-                   "type": "object",
-                   "properties": {
-                       "clean_work": {"type":"boolean"},
-                       "do_mdtf": {"type":"boolean"},
-                       "do_statics": {"type":"boolean"},
-                       "do_timeavgs": {"type":"boolean"},
-                       "do_refinediag": {"type":"boolean"},
-                       "do_atmos_plevel_masking": {"type":"boolean"},
-                       "do_preanalysis": {"type":"boolean"},
-                       "do_analysis": {"type":"boolean"},
-                       "do_analysis_only": {"type":"boolean"}
-                   }
-               },
-               "components": {
-                   "type": "array",
-                   "properties": {
-                       "type": {"type":"string"},
-                       "sources": {"type":"string"},
-                       "sourceGrid": {"type":"string"},
-                       "xyInterp": {"type":"string"},
-                       "interpMethod": {"type":"string"},
-                       "inputRealm": {"type":"string"}
-                   }
-               }
-           }
+           "items":{"$ref": "#/$defs/pp" }
        }
+  },
+  "$defs": {
+      "dirs": {
+          "history_dir": {"type":"string"},
+          "pp_dir": {"type":"string"},
+          "ptmp_dir": {"type":"string"},
+          "refinediag_scripts":{"type":["string","null"]},
+          "preanalysis_script":{"type":["string","null"]},
+          "history_refined":{"type":["string","null"]},
+          "analysis_dir":{"type":["string","null"]},
+          "pp_grid_spec": {"type":"string"},
+          "fre_analysis_home": {"type":["string","null"]}
+      },
+      "pp": {
+          "type": "object",
+          "properties": {
+              "settings": {
+                  "type:": "object",
+                  "properties": {
+                      "history_segment": {"type":"string"},
+                      "site": {"type":"string"},
+                      "pp_chunk_a": {"type":"string"},
+                      "pp_chunk_b": {"type":"string"},
+                      "pp_start": {"type":"string"},
+                      "pp_stop": {"type":"string"},
+                      "pp_components": {"type":"string"}
+                  }
+              },
+              "switches": {
+                  "type": "object",
+                  "properties": {
+                      "clean_work": {"type":"boolean"},
+                      "do_mdtf": {"type":"boolean"},
+                      "do_statics": {"type":"boolean"},
+                      "do_timeavgs": {"type":"boolean"},
+                      "do_refinediag": {"type":"boolean"},
+                      "do_atmos_plevel_masking": {"type":"boolean"},
+                      "do_preanalysis": {"type":"boolean"},
+                      "do_analysis": {"type":"boolean"},
+                      "do_analysis_only": {"type":"boolean"}
+                  }
+              },
+              "components": {
+                  "type": "array",
+                  "properties": {
+                      "type": {"type":"string"},
+                      "sources": {"type":"string"},
+                      "sourceGrid": {"type":"string"},
+                      "xyInterp": {"type":"string"},
+                      "interpMethod": {"type":"string"},
+                      "inputRealm": {"type":"string"}
+                  }
+              }
+          }
+      }
   }
 }
