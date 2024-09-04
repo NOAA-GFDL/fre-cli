@@ -51,7 +51,7 @@ def validate_yaml(yamlfile):
     # Validate yaml
     # If the yaml is not valid, the schema validation will raise errors and exit
     if validate(instance=yml,schema=schema) is None:
-        print("YAML VALID")
+        print("COMBINED YAML VALID \n")
 
 ####################
 def rose_init(experiment,platform,target):
@@ -170,8 +170,8 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     # If fre yamltools combine-yamls tools was used, the combined yaml should exist
     if Path(combined_path).exists():
         ## Make sure that the previously created combined yaml is valid
-        validate_yaml(str(combined_path))
         full_combined = combined_path
+        print("\nNOTE: Yamls merged from combine-yamls tool")
     else:
         ## Combine yaml files to parse
         comb = cy.init_pp_yaml(yml,e,p,t)
@@ -180,8 +180,8 @@ def _yamlInfo(yamlfile,experiment,platform,target):
         comb_analysis = comb.combine_analysis()
         full_combined = comb.clean_yaml()
 
-        # Validate yaml
-        validate_yaml(full_combined)
+    # Validate yaml
+    validate_yaml(full_combined)
 
     # Load the combined yaml
     comb_pp_yaml = yaml_load(full_combined)
