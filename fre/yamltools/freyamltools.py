@@ -25,8 +25,7 @@ def function(context, uppercase):
 @click.option("-e",
               "--experiment",
               type=str,
-              help="Experiment name",
-              required=True)
+              help="Experiment name")
 @click.option("-p",
               "--platform",
               type=str,
@@ -37,8 +36,12 @@ def function(context, uppercase):
                 type=str,
                 help="Target name",
                 required=True)
+@click.option("--use",
+              type=str,
+              help="Process user is combining yamls for. Can pass 'compile' or 'pp'",
+              required=True)
 @click.pass_context
-def combine_yamls(context,yamlfile,experiment,platform,target):
+def combine_yamls(context,yamlfile,experiment,platform,target,use):
     """ 
     - Combine the model yaml with the compile, platform,
     experiment, and analysis yamls
