@@ -8,7 +8,6 @@
 ## TO-DO:
 # - figure out way to safe_load (yaml_loader=yaml.SafeLoader?)
 # - condition where there are multiple pp and analysis yamls
-# - fix schema for validation
 
 import os
 import json
@@ -34,25 +33,28 @@ def yaml_load(yamlfile):
 
     return y
 
-#def combine_model(modelyaml,combined):#,experiment,platform,target):
-#    """
-#    Create the combined.yaml and merge it with the model yaml
-#    Arguments:
-#        modelyaml  :  model yaml file
-#        combined   :  final combined file name
-#        experiment :  experiment name
-#        platform   :  platform used
-#        target     :  targets used
-#    """
-#    # copy model yaml info into combined yaml
-#    with open(combined,'w+',encoding='UTF-8') as f1:
-#        f1.write(f'name: &name "{experiment}"\n')
-#        f1.write(f'platform: &platform "{platform}"\n')
-#        f1.write(f'target: &target "{target}"\n\n')
-#        with open(modelyaml,'r',encoding='UTF-8') as f2:
-#            f1.write("### MODEL YAML SETTINGS ###\n")
-#            shutil.copyfileobj(f2,f1)
-#    print(f"   model yaml: {modelyaml}")
+def get_compile_paths(mainyaml_dir,comb):
+    """
+    Extract compile and platform paths from model yaml
+    """
+    comb_model=yaml_load(comb)
+
+    # set platform yaml filepath
+    if comb_model["build"]["platformYaml"] is not None:
+        py=comb_model["build"]["platformYaml"]
+        py_path=Path(os.path.join(mainyaml_dir,py))
+    else:
+        py_path=None
+
+    # set compile yaml filepath
+    if comb_model["build"]["compileYaml"] is not None:
+        cy=comb_model["build"]["compileYaml"]
+        cy_path=Path(os.path.join(mainyaml_dir,cy))
+    else:
+        cy_path=None
+
+    return (py_path,cy_path)
+
 
 def experiment_check(mainyaml_dir,comb,experiment):
     """
@@ -73,25 +75,12 @@ def experiment_check(mainyaml_dir,comb,experiment):
     if experiment not in exp_list:
         raise NameError(f"{experiment} is not in the list of experiments")
 
-    # set platform yaml filepath
-    if comb_model["shared"]["compile"]["platformYaml"] is not None:
-        py=comb_model["shared"]["compile"]["platformYaml"]
-        py_path=Path(os.path.join(mainyaml_dir,py))
-    else:
-        py_path=None
-
     # Extract compile yaml path for exp. provided
     # if experiment matches name in list of experiments in yaml, extract file path
     for i in comb_model.get("experiments"):
         if experiment == i.get("name"):
-            compileyaml=i.get("compile")
             expyaml=i.get("pp")
             analysisyaml=i.get("analysis")
-
-            if compileyaml is not None:
-                cy_path=Path(os.path.join(mainyaml_dir,compileyaml))
-            else:
-                cy_path=None
 
             if expyaml is not None:
                 ey_path=[]
@@ -109,16 +98,15 @@ def experiment_check(mainyaml_dir,comb,experiment):
             else:
                 ay_path=None
 
-            return (py_path,cy_path,ey_path,ay_path)
+            return (ey_path,ay_path)
 
-###### MAIN #####
 class init_compile_yaml():
-  def __init__(self,yamlfile,experiment,platform,target):
+  def __init__(self,yamlfile,platform,target):
     """
     Process to combine yamls appllicable to compilation
     """
     self.yml = yamlfile
-    self.name = experiment
+    self.name = yamlfile.split(".")[0]
     self.platform = platform
     self.target = target
 
@@ -133,16 +121,9 @@ class init_compile_yaml():
 
     print("Combining yaml files: ")
 
-
   def combine_model(self):
     """
     Create the combined.yaml and merge it with the model yaml
-    Arguments:
-        modelyaml  :  model yaml file
-        combined   :  final combined file name
-        experiment :  experiment name
-        platform   :  platform used
-        target     :  targets used
     """
     # copy model yaml info into combined yaml
     with open(self.combined,'w+',encoding='UTF-8') as f1:
@@ -158,12 +139,9 @@ class init_compile_yaml():
   def combine_compile(self):
     """
     Combine compile yaml with the defined combined.yaml
-    Arguments:
-        comb_m       :  combined model yaml file
-        compileyaml  :  compile yaml file
     """
-    # Experiment Check
-    (py_path,cy_path,ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
+    # Get compile info
+    (py_path,cy_path) = get_compile_paths(self.mainyaml_dir,self.combined)
 
     # copy compile yaml info into combined yaml
     if cy_path is not None:
@@ -176,12 +154,9 @@ class init_compile_yaml():
   def combine_platforms(self):
     """
     Combine platforms yaml with the defined combined.yaml
-    Arguments:
-        comb_mc        : combined model and compile yaml file
-        platformsyaml  :  platforms yaml file
     """
-    # Experiment Check
-    (py_path,cy_path,ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
+    # Get compile info
+    (py_path,cy_path) = get_compile_paths(self.mainyaml_dir,self.combined)
 
     # combine platform yaml
     if py_path is not None:
@@ -193,6 +168,8 @@ class init_compile_yaml():
 
   def clean_yaml(self):
       """
+      Clean the yaml; remove unnecessary sections in 
+      final combined yaml.
       """
       # Load the fully combined yaml
       full_yaml = yaml_load(self.combined)
@@ -234,12 +211,6 @@ class init_pp_yaml():
   def combine_model(self):
     """
     Create the combined.yaml and merge it with the model yaml
-    Arguments:
-        modelyaml  :  model yaml file
-        combined   :  final combined file name
-        experiment :  experiment name
-        platform   :  platform used
-        target     :  targets used
     """
     # copy model yaml info into combined yaml
     with open(self.combined,'w+',encoding='UTF-8') as f1:
@@ -255,12 +226,9 @@ class init_pp_yaml():
   def combine_experiment(self):
     """
     Combine experiment yamls with the defined combined.yaml
-    Arguments:
-        comb_mcp      :  combined model, compile, and platforms yaml file
-        expyaml       :  experiment yaml files
     """
     # Experiment Check
-    (py_path,cy_path,ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
+    (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
 
     ## COMBINE EXPERIMENT YAML INFO
     if ey_path is not None:
@@ -276,12 +244,9 @@ class init_pp_yaml():
   def combine_analysis(self):
     """
     Combine analysis yamls with the defined combined.yaml
-    Arguments:
-        comb_mcpe     :  combined model, compile, platforms, and experiment yaml file
-        analysisyaml  :  analysis yaml file
     """
     # Experiment Check
-    (py_path,cy_path,ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
+    (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
 
     ## COMBINE EXPERIMENT YAML INFO
     if ay_path is not None:
@@ -296,6 +261,8 @@ class init_pp_yaml():
 
   def clean_yaml(self):
       """
+      Clean the yaml; remove unnecessary sections in 
+      final combined yaml.
       """
       # Load the fully combined yaml
       full_yaml = yaml_load(self.combined)
@@ -314,61 +281,44 @@ class init_pp_yaml():
       return self.combined
 
 ###########################################################################################
-def _consolidate_yamls(yamlfile,experiment, platform,target):
+def _consolidate_yamls(yamlfile,experiment,platform,target,use):
     # Regsiter tag handler
     yaml.add_constructor('!join', join_constructor)
 
     # Path to the main model yaml
     mainyaml_dir = os.path.dirname(yamlfile)
 
-    # Name of the combined yaml
-    combined=f"combined-{experiment}.yaml"
+    if use == "compile":
+        # Define yaml object
+        comb = init_compile_yaml(yamlfile,platform,target)
+        # Merge model into combined file
+        comb.combine_model()
+        # Merge compile.yaml into combined file
+        comb.combine_compile()
+        # Merge platforms.yaml into combined file
+        comb.combine_platforms()
+        # Clean the yaml
+        comb.clean_yaml()
 
-    print("Combining yaml files: ")
-
-    # Define yaml object
-    comb = init_compile_yaml(yamlfile,experiment, platform,target)
-
-    # Merge model into combined file
-    comb.combine_model()
-
-    # Merge compile.yaml into combined file
-    comb.combine_compile()
-
-    # Merge platforms.yaml into combined file
-    comb.combine_platforms()
-
-    # Define yaml object
-    comb = init_pp_yaml(yamlfile,experiment,platform,target)
-
-    # Merge pp experiment yamls into combined file
-    comb.combine_experiment()
-
-    # Merge pp analysis yamls, if defined, into combined file
-    comb.combine_analysis()
-
-    # Load the fully combined yaml
-    full_yaml = yaml_load(combined)
-
-    # Clean the yaml
-    # If keys exists, delete:
-    keys_clean=["fre_properties", "shared", "experiments"]
-    for kc in keys_clean:
-        if kc in full_yaml.keys():
-            del full_yaml[kc]
-
-    with open(combined,'w',encoding='UTF-8') as f:
-        yaml.safe_dump(full_yaml,f,sort_keys=False)
-
-    print(f"Combined yaml located here: {os.path.dirname(combined)}/{combined}")
+    if use =="pp":
+        # Define yaml object
+        comb = init_pp_yaml(yamlfile,experiment,platform,target)
+        # Merge model into combined file
+        comb.combine_model()
+        # Merge pp experiment yamls into combined file
+        comb.combine_experiment()
+        # Merge pp analysis yamls, if defined, into combined file
+        comb.combine_analysis()
+        # Clean the yaml
+        comb.clean_yaml()
 
 @click.command()
-def consolidate_yamls(yamlfile,experiment, platform,target):
+def consolidate_yamls(yamlfile,experiment,platform,target,use):
     '''
     Wrapper script for calling yaml_combine - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _consolidate_yamls(yamlfile,experiment, platform,target)
+    return _consolidate_yamls(yamlfile,experiment,platform,target,use)
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
