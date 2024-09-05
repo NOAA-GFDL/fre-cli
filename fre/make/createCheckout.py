@@ -14,10 +14,10 @@ sys.path.append(f)
 import yamltools.combine_yamls as cy
 
 @click.command()
-def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,jobs,execute,verbose):
+def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     # Define variables
     yml = yamlfile
-    name = experiment
+    name = yamlfile.split(".")[0]
     run = execute
     jobs = str(jobs)
     pcheck = no_parallel_checkout
@@ -51,8 +51,8 @@ def checkout_create(yamlfile,experiment,platform,target,no_parallel_checkout,job
         print("\nNOTE: Yamls previously merged.")
     else:
         ## Combine yaml files to parse
-        comb = cy.init_compile_yaml(yml,experiment,platform,target)
-        comb_yaml = comb.combine_model()
+        comb = cy.init_compile_yaml(yml,platform,target)
+        comb_model = comb.combine_model()
         comb_compile = comb.combine_compile()
         comb_platform = comb.combine_platforms()
         full_combined = comb.clean_yaml()

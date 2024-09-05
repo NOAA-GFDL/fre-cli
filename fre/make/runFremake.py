@@ -15,9 +15,9 @@ from .gfdlfremake import targetfre, varsfre, yamlfre, checkout, makefilefre, bui
 
 
 @click.command()
-def fremake_run(yamlfile, experiment, platform, target, parallel, jobs, no_parallel_checkout, verbose):
+def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
     yml = yamlfile
-    name = experiment
+    name = yamlfile.split(".")[0]
     nparallel = parallel
     jobs = str(jobs)
     pcheck = no_parallel_checkout
@@ -47,8 +47,8 @@ def fremake_run(yamlfile, experiment, platform, target, parallel, jobs, no_paral
         print("\nNOTE: Yamls previously merged.")
     else:
         ## Combine yaml files to parse
-        comb = cy.init_compile_yaml(yml,experiment,platform,target)
-        comb_yaml = comb.combine_model()
+        comb = cy.init_compile_yaml(yml,platform,target)
+        comb_model = comb.combine_model()
         comb_compile = comb.combine_compile()
         comb_platform = comb.combine_platforms()
         full_combined = comb.clean_yaml()
