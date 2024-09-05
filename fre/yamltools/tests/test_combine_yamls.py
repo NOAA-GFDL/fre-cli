@@ -56,7 +56,29 @@ def test_analysisyaml_exists():
     """
     assert Path(f"{in_dir}/yaml_include/analysis.yaml").exists()
 
-def test_merged_yamls():
+def test_merged_compile_yamls():
+    """
+    Check for the creation of the combined-[experiment] yaml 
+    Check that the model yaml was merged into the combined yaml
+    """
+    # Go into the input directory
+    os.chdir(in_dir)
+
+    # Model yaml path
+    modelyaml = "am5.yaml"
+
+    USE_COMPILE = "compile"
+
+    # Merge the yamls
+    cy._consolidate_yamls(modelyaml, EXPERIMENT, PLATFORM, TARGET, USE_COMPILE)
+
+    # Move combined yaml to output location
+    shutil.move(f"combined-am5.yaml", out_dir)
+
+    # Check that the combined yaml exists
+    assert Path(f"{out_dir}/combined-am5.yaml").exists()
+
+def test_merged_pp_yamls():
     """
     Check for the creation of the combined-[experiment] yaml 
     Check that the model yaml was merged into the combined yaml
@@ -64,8 +86,10 @@ def test_merged_yamls():
     # Model yaml path
     modelyaml = Path(f"{in_dir}/am5.yaml")
 
+    USE_PP = "pp"
+
     # Merge the yamls
-    cy._consolidate_yamls(modelyaml,EXPERIMENT, PLATFORM, TARGET)
+    cy._consolidate_yamls(modelyaml, EXPERIMENT, PLATFORM, TARGET, USE_PP)
 
     # Move combined yaml to output location
     shutil.move(f"combined-{EXPERIMENT}.yaml", out_dir)
