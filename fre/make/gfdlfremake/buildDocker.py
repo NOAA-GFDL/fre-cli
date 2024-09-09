@@ -58,11 +58,11 @@ class container():
             - cScriptName : The name of the checkout script in the container
             - cOnDisk : The relative path to the checkout script on disk
         """
-        self.checkoutPath = "/apps/"+self.e+"/src/"+ cScriptName
+        self.checkoutPath = self.src+"/"+ cScriptName
         self.d.write("COPY " + cOnDisk +" "+ self.checkoutPath  +" \n")
-        self.d.write("RUN chmod 744 /apps/"+self.e+"/src/checkout.sh \n")
+        self.d.write("RUN chmod 744 "+self.src+"/checkout.sh \n")
         self.d.writelines(self.setup)
-        self.d.write(" && /apps/"+self.e+"/src/checkout.sh \n")
+        self.d.write(" && "+self.src+"/checkout.sh \n")
         # Clone mkmf
         self.d.writelines(self.mkmfclone)
 
@@ -170,6 +170,9 @@ class container():
         self.d.write("COPY "+runOnDisk+" "+self.bld+"/execrunscript.sh\n")
         #make runscript executable
         self.d.write("RUN chmod 744 "+self.bld+"/execrunscript.sh\n")
+        #link runscript to more general location (for frerun container usage)
+        self.d.write("RUN mkdir -p /apps/bin \ \n")
+        self.d.write(" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh")
         #finish the dockerfile
         self.d.writelines(self.setup)
         self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
