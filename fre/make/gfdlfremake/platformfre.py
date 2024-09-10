@@ -17,25 +17,21 @@ class platforms ():
             try:
                 p["name"]
             except:
-                print("At least one of the platforms is missing a name in "+fname+"\n")
-                raise
+                raise Exception("At least one of the platforms is missing a name in "+fname+"\n")
             ## Check the compiler
             try:
                 p["compiler"]
             except:
-                print ("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n")
-                raise
+                raise Exception("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n")
             ## Check for the Fortran (fc) and C (cc) compilers
             try:
                 p["fc"]
             except:
-                print ("You must specify the name of the Fortran compiler as fc on the "+p["name"]+" platform in the file "+fname+"\n")
-                raise
+                raise Exception("You must specify the name of the Fortran compiler as fc on the "+p["name"]+" platform in the file "+fname+"\n")
             try:
                 p["cc"]
             except:
-                print ("You must specify the name of the Fortran compiler as cc on the "+p["name"]+" platform in the file "+fname+"\n")
-                raise
+                raise Exception("You must specify the name of the Fortran compiler as cc on the "+p["name"]+" platform in the file "+fname+"\n")
             ## Check for modules to load
             try:
                 p["modules"]
@@ -64,8 +60,7 @@ class platforms ():
                 try:
                     p["containerBuild"]
                 except:
-                    print ("You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
-                    raise
+                    raise Exception("You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerBuild"] != "podman" and p["containerBuild"] != "docker":
                     raise ValueError("Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
                 ## Check for container environment set up for RUN commands
@@ -77,8 +72,7 @@ class platforms ():
                 try:
                     p["containerRun"]
                 except:
-                    print ("You must specify the program used to run the container (containerRun) on the "+p["name"]+" platform in the file "+fname+"\n")
-                    raise
+                    raise Exception("You must specify the program used to run the container (containerRun) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerRun"] != "apptainer" and p["containerRun"] != "singularity":
                     raise ValueError("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n")
                 ## set the location of the mkTemplate.

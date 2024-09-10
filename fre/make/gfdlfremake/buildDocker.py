@@ -30,6 +30,8 @@ class container():
         self.mkmf = True
         self.target = target
         self.template = "/apps/mkmf/templates/hpcme-intel21.mk"
+
+        # Set up spack loads in RUN commands in dockerfile
         if RUNenv == "":
             self.setup = ["RUN \\ \n"]
         else:
@@ -40,9 +42,13 @@ class container():
         if self.l:
             for l in self.l:
                 self.setup.append(" && spack load "+l+" \\ \n")
+
+        # Clone and copy mkmf through Dockerfile
         self.mkmfclone=["RUN cd /apps \\ \n",
                        " && git clone --recursive https://github.com/NOAA-GFDL/mkmf \\ \n",
                        " && cp mkmf/bin/* /usr/local/bin \n"]
+
+        # Set bld_dir, src_dir, mkmf_template
         self.bldsetup=["RUN bld_dir="+self.bld+" \\ \n",
                        " && src_dir="+self.src+" \\ \n",
                        " && mkmf_template="+self.template+ " \\ \n"]
