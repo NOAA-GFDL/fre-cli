@@ -8,11 +8,9 @@
 import os
 import logging
 from multiprocessing.dummy import Pool
-
 import click
-
 from .gfdlfremake import targetfre, varsfre, yamlfre, checkout, makefilefre, buildDocker, buildBaremetal
-
+import fre.yamltools.combine_yamls as cy
 
 @click.command()
 def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
@@ -41,17 +39,19 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
     plist = platform
     tlist = target
 
-    # If fre yamltools combine-yamls tools was used, the combined yaml should exist
+    ## If combined yaml does not exist, combine model, compile, and platform yamls
+    cd = Path.cwd()
+    combined = Path(f"combined-{name}.yaml")
+    combined_path=os.path.join(cd,combined)
+
+    # Combine model, compile, and platform yamls
+    # If fre yammltools combine-yamls tools was used, the combined yaml should exist
     if Path(combined_path).exists():
         full_combined = combined_path
         print("\nNOTE: Yamls previously merged.")
     else:
-        ## Combine yaml files to parse
         comb = cy.init_compile_yaml(yml,platform,target)
-        comb_model = comb.combine_model()
-        comb_compile = comb.combine_compile()
-        comb_platform = comb.combine_platforms()
-        full_combined = comb.clean_yaml()
+        full_combined = cy.get_combined_compileyaml(comb)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined)
@@ -72,7 +72,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
-              raise SystemExit (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+              raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
 
          (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
@@ -98,7 +98,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
-              raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
+              raise ValueError (platformName + " does not exist in " + modelYaml.platformsfile)
          (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,containerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
          ## Make the source directory based on the modelRoot and platform

@@ -167,18 +167,14 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     combined = Path(f"combined-{e}.yaml")
     combined_path=os.path.join(cd,combined)
 
-    # If fre yamltools combine-yamls tools was used, the combined yaml should exist
+    # Combine model, experiment, and analysis yamls
+    # If fre yammltools combine-yamls tools was used, the combined yaml should exist
     if Path(combined_path).exists():
-        ## Make sure that the previously created combined yaml is valid
         full_combined = combined_path
-        print("\nNOTE: Yamls merged from combine-yamls tool")
+        print("\nNOTE: Yamls previously merged.")
     else:
-        ## Combine yaml files to parse
         comb = cy.init_pp_yaml(yml,e,p,t)
-        comb_model = comb.combine_model()
-        comb_exp = comb.combine_experiment()
-        comb_analysis = comb.combine_analysis()
-        full_combined = comb.clean_yaml()
+        full_combined = cy.get_combined_compileyaml(comb)
 
     # Validate yaml
     validate_yaml(full_combined)

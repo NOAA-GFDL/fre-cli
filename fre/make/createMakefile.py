@@ -5,11 +5,7 @@ import sys
 from pathlib import Path
 import click
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
-
-# Relative import
-f = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(f)
-import yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls as cy 
 
 @click.command()
 def makefile_create(yamlfile,platform,target):
@@ -27,16 +23,14 @@ def makefile_create(yamlfile,platform,target):
     combined = Path(f"combined-{name}.yaml")
     combined_path=os.path.join(cd,combined)
 
-    if Path(combined_path).exists:
+    # Combine model, compile, and platform yamls
+    # If fre yammltools combine-yamls tools was used, the combined yaml should exist
+    if Path(combined_path).exists():
         full_combined = combined_path
         print("\nNOTE: Yamls previously merged.")
     else:
-        ## Combine yaml files to parse
         comb = cy.init_compile_yaml(yml,platform,target)
-        comb_model = comb.combine_model()
-        comb_compile = comb.combine_compile()
-        comb_platform = comb.combine_platforms()
-        full_combined = comb.clean_yaml()
+        full_combined = cy.get_combined_compileyaml(comb)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined)
@@ -53,7 +47,7 @@ def makefile_create(yamlfile,platform,target):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise SystemExit (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+                raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
 
             (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 

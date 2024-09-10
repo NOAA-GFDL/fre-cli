@@ -280,6 +280,40 @@ class init_pp_yaml():
       print(f"Combined yaml located here: {os.path.dirname(self.combined)}/{self.combined}")
       return self.combined
 
+def get_combined_compileyaml(comb):
+    """
+    Combine the model, compile, and platform yamls
+    Arguments:
+        - comb : combined yaml object 
+    """
+    # Merge model into combined file
+    comb_model = comb.combine_model()
+    # Merge compile.yaml into combined file
+    comb_compile = comb.combine_compile()
+    # Merge platforms.yaml into combined file
+    comb_platform = comb.combine_platforms()
+    # Clean the yaml
+    full_combined = comb.clean_yaml()
+
+    return full_combined
+
+def get_combined_ppyaml(comb):
+    """
+    Combine the model, experiment, and analysis yamls
+    Arguments:
+        - comb : comine yaml object
+    """
+    # Merge model into combined file
+    comb_model = comb.combine_model()
+    # Merge pp experiment yamls into combined file
+    comb_exp = comb.combine_experiment()
+    # Merge pp analysis yamls, if defined, into combined file
+    comb_analysis = comb.combine_analysis()
+    # Clean the yaml
+    full_combined = comb.clean_yaml()
+
+    return full_combined
+
 ###########################################################################################
 def _consolidate_yamls(yamlfile,experiment,platform,target,use):
     # Regsiter tag handler
@@ -289,28 +323,10 @@ def _consolidate_yamls(yamlfile,experiment,platform,target,use):
     mainyaml_dir = os.path.dirname(yamlfile)
 
     if use == "compile":
-        # Define yaml object
-        comb = init_compile_yaml(yamlfile,platform,target)
-        # Merge model into combined file
-        comb.combine_model()
-        # Merge compile.yaml into combined file
-        comb.combine_compile()
-        # Merge platforms.yaml into combined file
-        comb.combine_platforms()
-        # Clean the yaml
-        comb.clean_yaml()
+        get_combined_compileyaml(yamlfile,platform,target)
 
     if use =="pp":
-        # Define yaml object
-        comb = init_pp_yaml(yamlfile,experiment,platform,target)
-        # Merge model into combined file
-        comb.combine_model()
-        # Merge pp experiment yamls into combined file
-        comb.combine_experiment()
-        # Merge pp analysis yamls, if defined, into combined file
-        comb.combine_analysis()
-        # Clean the yaml
-        comb.clean_yaml()
+        get_combined_ppyaml(yamlfile,experiment,platform,target)
 
 @click.command()
 def consolidate_yamls(yamlfile,experiment,platform,target,use):
