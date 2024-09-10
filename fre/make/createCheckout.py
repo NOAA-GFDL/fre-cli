@@ -69,7 +69,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
-              raise ValueError (platformName + " does not exist in platforms.yaml") #modelYaml.combined.get("compile").get("platformYaml"))
+              raise ValueError (platformName + " does not exist in platforms.yaml") 
          (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
     ## Create the source directory for the platform
@@ -83,7 +83,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                    freCheckout = checkout.checkout("checkout.sh",srcDir)
                    freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                    freCheckout.finish(pc)
-                   print("\nCheckout script created in "+ srcDir + "/checkout.sh \n")
+                   click.echo("\nCheckout script created in "+ srcDir + "/checkout.sh \n")
 
                    # Run the checkout script
                    if run == True:

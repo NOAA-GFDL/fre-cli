@@ -6,7 +6,6 @@
 
 import subprocess
 import os
-#from . import targetfre
 
 def fremake_parallel(fremakeBuildList):
     """

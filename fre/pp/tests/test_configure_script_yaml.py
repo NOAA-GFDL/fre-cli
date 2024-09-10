@@ -10,7 +10,7 @@ target = "prod-openmp"
 # Set example yaml paths, input directory
 CWD = Path.cwd()
 test_dir = Path("fre/pp/tests")
-test_yaml = Path(f"AM5_example/am5.yaml")#combined-{experiment}.yaml")
+test_yaml = Path(f"AM5_example/am5.yaml")
 
 # Set home for ~/cylc-src location in script
 os.environ["HOME"]=str(Path(f"{CWD}/{test_dir}/configure_yaml_out"))
