@@ -102,8 +102,12 @@ class makefile():
             - r The requires for that component
             - o The overrides for that component
         """
-        d=zip(self.c,self.r,self.o)
-        return(sorted(d,key=lambda values:len(values[1]),reverse=True))
+        # org_comp : returns a zip object
+        org_comp = zip(self.c,self.r,self.o)
+        # Sort zip object so that the component with the most requires (self.r) is listed first, and so on 
+        sort = sorted(org_comp,key=lambda values:len(values[1]),reverse=True)
+
+        return sort
 
     def writeMakefile (self):
         """
