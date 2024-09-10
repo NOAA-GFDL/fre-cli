@@ -174,7 +174,7 @@ def _yamlInfo(yamlfile,experiment,platform,target):
         print("\nNOTE: Yamls previously merged.")
     else:
         comb = cy.init_pp_yaml(yml,e,p,t)
-        full_combined = cy.get_combined_compileyaml(comb)
+        full_combined = cy.get_combined_ppyaml(comb)
 
     # Validate yaml
     validate_yaml(full_combined)
