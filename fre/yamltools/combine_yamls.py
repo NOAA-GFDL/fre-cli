@@ -323,10 +323,12 @@ def _consolidate_yamls(yamlfile,experiment,platform,target,use):
     mainyaml_dir = os.path.dirname(yamlfile)
 
     if use == "compile":
-        get_combined_compileyaml(yamlfile,platform,target)
+        combined = init_compile_yaml(yamlfile, platform, target)
+        get_combined_compileyaml(combined)
 
     if use =="pp":
-        get_combined_ppyaml(yamlfile,experiment,platform,target)
+        combined = init_pp_yaml(yamlfile,experiment,platform,target)
+        get_combined_ppyaml(combined)
 
 @click.command()
 def consolidate_yamls(yamlfile,experiment,platform,target,use):
