@@ -29,38 +29,21 @@ jobs:
           # use *conda environment's pip* to install fre-cli
           # called w/ full path to conda's python for explicitness
           # called as a module (-m pip) for explicitness
-          $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
-      
-      - name: Run pytest in fre-cli environment
-        run: |
-          # add conda env's executables to github's PATH equiv.
-          # does this need to be done twice?
-          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-
-          # are we talking to the right python?
-          which python
-          python --version
-          $CONDA/envs/fre-cli/bin/python --version
-          
-          # run pytest, not explicitly from the conda env?
-          which pytest
-          pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
-      
-      - name: Run pylint in fre-cli environment
-        run: |
-          # add conda env's executables to github's PATH equiv.
-          # does this need to be done a third time?
-          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+          $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .      
 
       - name: Run pytest in fre-cli environment
         run: |
           # try to make sure the right things are in GITHUB_PATH
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+          
+          # are we talking to the right python?
           which python
           python --version
           $CONDA/envs/fre-cli/bin/python --version
+          
           # run pytest
           pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
+          
           # install genbadge to generate coverage badge based on xml
           pip install genbadge
           genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
@@ -70,11 +53,14 @@ jobs:
         run: |
           # try to make sure the right things are in GITHUB_PATH
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+
+          # are we talking to the right python?
           which python
           python --version
           $CONDA/envs/fre-cli/bin/python --version
+          
           # run pylint
-          pylint fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+          pylint --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
       
       - name: Install Sphinx and Build Documentation
         run: |
