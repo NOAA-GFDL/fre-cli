@@ -45,17 +45,23 @@ def var2process(proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, len_time_arr,
     print(f"{var_i}:{var_lst[var_i]}")
     print(f"    Processing Directory/File: {var_i}")
     nc_fls = {}
-    tmp_dir = "/tmp/"
 
     print(f"(var2process) cmip_output={cmip_output}")
     if any( [ cmip_output == "/local2",
               cmip_output.find("/work") != -1,
               cmip_output.find("/net" ) != -1 ] ):
-        tmp_dir = "/"
+        tmp_dir = "{cmip_output}/"
+    else:
+        tmp_dir = f"{cmip_output}/tmp/"
+        try:
+            os.makedirs(tmp_dir, exist_ok=True)
+        except Exception as exc:
+            raise(f'exc={exc}, could not create output temporary directory. stop.')
+    
 
     for i in range(len_time_arr):
         nc_fls[i] = f"{dir2cmor}/{name_of_set}.{time_arr[i]}.{var_i}.nc"
-        nc_fl_wrk = f"{cmip_output}{tmp_dir}{name_of_set}.{time_arr[i]}.{var_i}.nc"
+        nc_fl_wrk = f"{tmp_dir}{name_of_set}.{time_arr[i]}.{var_i}.nc"
         print(f"nc_fl_wrk = {nc_fl_wrk}")
 
         if not os.path.exists(nc_fls[i]):

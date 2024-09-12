@@ -25,17 +25,41 @@ def test_cli_fre_cmor_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "optionDNE"])
     assert result.exit_code == 2
 
-def test_cli_fre_cmor_run_case1():
 
-    indir = '/nbhome/Ciheim.Brown/where-the-sos-lives'
-    varlist = '/nbhome/Ciheim.Brown/varlist'
-    table_config = '/nbhome/Ciheim.Brown/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
-    exp_config = '/nbhome/Ciheim.Brown/CMOR_input_example.json'
-    outdir = '/nbhome/Ciheim.Brown/outdir'
+def test_cli_fre_cmor_run():
+    ''' fre cmor '''
+    result = runner.invoke(fre.fre, args=["cmor", "run"])
+    assert result.exit_code == 2
 
-    subprocess.run(["mkdir", "-p", outdir+'/tmp'])
-    result = runner.invoke(fre.fre, args=["cmor", "run", "--indir", indir, "--varlist", varlist, "--table_config", table_config, "--exp_config", exp_config,"--outdir",  outdir])
+def test_cli_fre_cmor_run_help():
+    ''' fre cmor --help '''
+    result = runner.invoke(fre.fre, args=["cmor", "run", "--help"])
     assert result.exit_code == 0
+
+def test_cli_fre_cmor_run_opt_dne():
+    ''' fre cmor optionDNE '''
+    result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
+    assert result.exit_code == 2
+
+    
+def test_cli_fre_cmor_run_case1(capfd):
+    ''' fre cmor run '''
+    indir = './test_files'
+    varlist = './test_files/varlist'
+    table_config = './test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
+    exp_config = './test_files/CMOR_input_example.json'
+    outdir = './test_files/outdir'
+
+    #subprocess.run(["mkdir", "-p", outdir+'/tmp'])
+    result = runner.invoke(fre.fre, args=["cmor", "run", "--indir", indir, "--varlist", varlist, "--table_config", table_config, "--exp_config", exp_config,"--outdir",  outdir])
+    #assert False
+    out, err = capfd.readouterr()
+    print(out)
+    print(err)
+    
+    assert result.exit_code == 0
+
+    assert True
 
 def test_cli_fre_cmor_run_case2(capfd):
 
