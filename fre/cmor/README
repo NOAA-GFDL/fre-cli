@@ -1,4 +1,4 @@
-old usage notes at the top of `CMORmixer.py`
+old usage notes at the top of `cmor_mixer.py`
 
 # Before start this script in common way run these 2 command in terminal where you are going to execute this script:
 #     module load python/3.9
@@ -10,38 +10,38 @@ old usage notes at the top of `CMORmixer.py`
 
 
 # How to run it (simple examples):
-# ~/fms_yaml_tools/CMOR_3/CMORmixer.py
+# ~/fms_yaml_tools/CMOR_3/cmor_mixer.py
 #   -d /archive/oar.gfdl.cmip6/CM4/warsaw_201710_om4_v1.0.1/CM4_1pctCO2_C/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/monthly/5yr
 #   -l /home/san/CMOR_3/GFDL-CM4_1pctCO2_C_CMOR-Amon.lst
 #   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_Amon.json
 #   -p /home/san/CMOR/cmor/Test/CMOR_input_CM4_1pctCO2_C.json
 
-# ~/fms_yaml_tools/CMORmixer.py
+# ~/fms_yaml_tools/cmor_mixer.py
 #	-d /archive/Fabien.Paulot/ESM4/H2/ESM4_amip_D1_soilC_adj/gfdl.ncrc3-intel16-prod-openmp/pp/land/ts/monthly/5yr
 #   -l /home/san/CMOR_3/GFDL-ESM4_amip_CMOR-landCML.lst
 #   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_Lmon.json
 #   -p /home/san/CMOR/cmor/Test/CMOR_input_ESM4_amip.json
 
-# ~/fms_yaml_tools/CMORmixer.py
+# ~/fms_yaml_tools/cmor_mixer.py
 #   -d /archive/oar.gfdl.cmip6/CM4/warsaw_201710_om4_v1.0.1/CM4_historical/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/monthly/5yr
 #   -l /home/san/CMOR_3/GFDL-CM4_historical_CMOR-Amon.lst
 #   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/Atmos_Monthly.json
 #   -p /home/san/CMOR/cmor/Test/CMOR_input_CM4_historical.json
 
-# ~/fms_yaml_tools/CMORmixer.py
+# ~/fms_yaml_tools/cmor_mixer.py
 #   -d /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_cmip/ts/daily/5yr
 #   -l /home/san/CMOR_3/GFDL-ESM4_CMOR-day_historical.lst
 #   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_day.json
 #   -p /home/san/CMOR/cmor/Test/CMOR_input_ESM4_historical.json
 #   -o /net2/san
 
-# ~/fms_yaml_tools/CMORmixer.py
+# ~/fms_yaml_tools/cmor_mixer.py
 #   -d /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos/ts/6hr/5yr
 #   -l /home/san/CMOR_3/GFDL-ESM4_CMOR-6hr.lst
 #   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_6hrPlev.json
 #   -p /home/san/CMOR/cmor/Test/CMOR_input_ESM4_historical.json
 
-# ~/fms_yaml_tools/CMORmixer.py
+# ~/fms_yaml_tools/cmor_mixer.py
 #   -d /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_cmip/ts/3hr/5yr
 #   -l /home/san/CMOR_3/GFDL_ESM4_historical_CMOR-3hr.lst
 #   -r /home/san/CMOR/cmor/cmip6-cmor-tables/Tables/CMIP6_3hr.json
