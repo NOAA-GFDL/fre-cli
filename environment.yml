@@ -11,6 +11,7 @@ dependencies:
   - pylint
   - jsonschema
   - noaa-gfdl::catalogbuilder
+  - conda-forge::nccmp
   - conda-forge::cylc-flow>=8.2.0
   - conda-forge::cylc-rose
   - conda-forge::metomi-rose
