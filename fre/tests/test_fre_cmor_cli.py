@@ -10,6 +10,7 @@ from fre import fre
 
 runner = CliRunner()
 
+# fre cmor
 def test_cli_fre_cmor():
     ''' fre cmor '''
     result = runner.invoke(fre.fre, args=["cmor"])
@@ -25,7 +26,7 @@ def test_cli_fre_cmor_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "optionDNE"])
     assert result.exit_code == 2
 
-
+# fre cmor run
 def test_cli_fre_cmor_run():
     ''' fre cmor '''
     result = runner.invoke(fre.fre, args=["cmor", "run"])
@@ -41,28 +42,39 @@ def test_cli_fre_cmor_run_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
+##def test_cli_fre_cmor_run_case1(capfd):
+def test_cli_fre_cmor_run_case1(capsys):
+    ''' fre cmor run, test-use case '''
+    # where are we? we're running pytest from the base directory of this repo
+    rootdir = 'fre/tests/test_files'
     
-def test_cli_fre_cmor_run_case1(capfd):
-    ''' fre cmor run '''
-    indir = './test_files'
-    varlist = './test_files/varlist'
-    table_config = './test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
-    exp_config = './test_files/CMOR_input_example.json'
-    outdir = './test_files/outdir'
+    # explicit inputs to tool
+    indir = f'{rootdir}/ocean_sos_var_file'
+    varlist = f'{rootdir}/varlist'
+    table_config = f'{rootdir}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
+    exp_config = f'{rootdir}/CMOR_input_example.json'
+    outdir = f'{rootdir}/outdir'
+
+#    indir = 'fre/tests/test_files'
+#    varlist = 'fre/tests/test_files/varlist'
+#    table_config = 'fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
+#    exp_config = 'fre/tests/test_files/CMOR_input_example.json'
+#    outdir = 'fre/tests/test_files/outdir'
 
     #subprocess.run(["mkdir", "-p", outdir+'/tmp'])
-    result = runner.invoke(fre.fre, args=["cmor", "run", "--indir", indir, "--varlist", varlist, "--table_config", table_config, "--exp_config", exp_config,"--outdir",  outdir])
+    result = runner.invoke(fre.fre, args = ["cmor", "run",
+                                            "--indir", indir,
+                                            "--varlist", varlist,
+                                            "--table_config", table_config,
+                                            "--exp_config", exp_config,
+                                            "--outdir",  outdir])
     #assert False
-    out, err = capfd.readouterr()
-    print(out)
-    print(err)
+    #out, err = capfd.readouterr()
+    out, err = capsys.readouterr()
+    #print(out)
+    #print(err)
     
     assert result.exit_code == 0
 
-    assert True
+    assert False
 
-def test_cli_fre_cmor_run_case2(capfd):
-
-    assert subprocess.run(["nccmp -f -m /nbhome/Ciheim.Brown/outdir/CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn/*/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc /nbhome/Ciheim.Brown/where-the-sos-lives/ocean_monthly_1x1deg.199301-199712.sos.nc"],shell=True).returncode == 1
-    out, err = capfd.readouterr()
-    #subprocess.run(["rm", "-rf", "/nbhome/Ciheim.Brown/outdir/CMIP6/CMIP6/"])
