@@ -46,34 +46,29 @@ def copy_nc(in_nc, out_nc):
     print('----- END copy_nc call -----\n\n')
 
 
-def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
-                cmip_input_json, cmor_tbl_vars_file):
+def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
+                cmip_input_json, cmor_table_vars_file):
     ''' PLACEHOLDER DESCRIPTION '''
     print('\n\n----- START netcdf_var call -----')
     # NetCDF all time periods
 
-    var_j = var_lst[var_i]
+    var_j = var_lst[gfdl_var]
     print( "(netcdf_var) input data: " )
     print(f"(netcdf_var)     var_lst = {var_lst}" )
     print(f"(netcdf_var)     nc_fl   = {nc_fl}" )
-    print(f"(netcdf_var)     var_i   = {var_i} ==> {var_j}" )
+    print(f"(netcdf_var)     gfdl_var   = {gfdl_var} ==> {var_j}" )
 
     # open the input file
     ds = nc.Dataset(nc_fl,'a')
 
     # determine the vertical dimension
-    vert_dim = None
+    vert_dim=0#vert_dim = None
     for name, variable in ds.variables.items():
-        if name == var_i:
+        if name == gfdl_var:
             dims = variable.dimensions
             for dim in dims:
                 if ds[dim].axis and ds[dim].axis == "Z":
                     vert_dim = dim
-    if vert_dim is None:
-        raise Exception("ERROR: vert_dim is None. could not determine vertical dimension")
-    elif not vert_dim in [ "plev30", "plev19", "plev8",
-                         "height2m", "level", "lev", "levhalf"] :
-        raise ValueError(f'vert_dim = {vert_dim} is not supported')
     print(f"(netcdf_var) Vertical dimension: {vert_dim}")
 
     # initialize CMOR
@@ -82,10 +77,10 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
     # read experiment configuration file
     cmor.dataset_json(cmip_input_json)
     print(f"(netcdf_var) cmip_input_json = {cmip_input_json}")
-    print(f"(netcdf_var) cmor_tbl_vars_file = {cmor_tbl_vars_file}")
+    print(f"(netcdf_var) cmor_table_vars_file = {cmor_table_vars_file}")
 
     # load variable list (CMOR table)
-    cmor.load_table(cmor_tbl_vars_file)
+    cmor.load_table(cmor_table_vars_file)
     var_list = list(ds.variables.keys())
     print(f"(netcdf_var) list of variables: {var_list}")
 
@@ -94,18 +89,23 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
     if "xh" in var_list:
         raise Exception ("Ocean grid unimplemented")
 
-
     # read the input units
-    var = ds[var_i][:]
+    var = ds[gfdl_var][:]
     var_dim = len(var.shape)
-    # Check var_dim
-    if not var_dim in [3, 4]:
-        raise ValueError(f"var_dim == {var_dim} != 3 nor 4. stop.")    
 
-    print(f"(netcdf_var) var_dim = {var_dim}, var_lst[var_i] = {var_j}")
-    print(f"(netcdf_var)  var_i = {var_i}")
-    units = proj_tbl_vars["variable_entry"] [var_j] ["units"]
-    #units = proj_tbl_vars["variable_entry"] [var_i] ["units"]
+    # Check var_dim, vert_dim
+    if not var_dim in [3, 4]:
+        raise ValueError(f"var_dim == {var_dim} != 3 nor 4. stop.")
+
+    if var_dim == 4 and vert_dim not in [ "plev30", "plev19", "plev8",
+                                          "height2m", "level", "lev", "levhalf"] :
+        raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
+
+
+    print(f"(netcdf_var) var_dim = {var_dim}, var_lst[gfdl_var] = {var_j}")
+    print(f"(netcdf_var)  gfdl_var = {gfdl_var}")
+    units = proj_table_vars["variable_entry"] [var_j] ["units"]
+    #units = proj_table_vars["variable_entry"] [gfdl_var] ["units"]
     print(f"(netcdf_var) var_dim = {var_dim}, units={units}")
 
     # "figure out the names of this dimension names programmatically !!!"
@@ -123,7 +123,7 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
     print(f"(netcdf_var) tm_units = {tm_units}")
     print(f"(netcdf_var) time_bnds  = {time_bnds}")
     try:
-        print( f"(netcdf_var) Executing cmor.axis('time', \n(netcdf_var) coord_vals = {time}, \n"
+        print( f"(netcdf_var) Executing cmor.axis('time', \n(netcdf_var) coord_vals = \n{time}, \n"
                f"(netcdf_var) cell_bounds = {time_bnds}, units = {tm_units})   " )
 
         time_bnds = ds["time_bnds"][:]
@@ -151,7 +151,7 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
             lev = ds[vert_dim]
 
             # find the ps file nearby
-            ps_file = nc_fl.replace('.{var_i}.nc', '.ps.nc')
+            ps_file = nc_fl.replace('.{gfdl_var}.nc', '.ps.nc')
             ds_ps = nc.Dataset(ps_file)
             ps = ds_ps['ps'][:]
 
@@ -181,7 +181,7 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
             lev = ds[vert_dim]
 
             # find the ps file nearby
-            ps_file = nc_fl.replace(f'.{var_i}.nc', '.ps.nc')
+            ps_file = nc_fl.replace(f'.{gfdl_var}.nc', '.ps.nc')
             ds_ps = nc.Dataset(ps_file)
             ps = ds_ps['ps'][:]
 
@@ -208,12 +208,12 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
 
 
     # read the positive attribute
-    var = ds[var_i][:]
-    positive = proj_tbl_vars["variable_entry"] [var_j] ["positive"]
-    print(f"(netcdf_var) var_lst[{var_i}] = {var_j}, positive = {positive}")
+    var = ds[gfdl_var][:]
+    positive = proj_table_vars["variable_entry"] [var_j] ["positive"]
+    print(f"(netcdf_var) var_lst[{gfdl_var}] = {var_j}, positive = {positive}")
 
     # Write the output to disk
-    #cmor_var = cmor.variable(var_lst[var_i], units, axes)
+    #cmor_var = cmor.variable(var_lst[gfdl_var], units, axes)
     cmor_var = cmor.variable(var_j, units, axes, positive = positive)
     cmor.write(cmor_var, var)
     if save_ps:
@@ -226,55 +226,62 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
     return filename
 
 
-def gfdl_to_pcmdi_var( proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr,
-                 cmip_input_json, cmor_tbl_vars_file, cmip_output, name_of_set  ):
+def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, time_arr,
+                 cmip_input_json, cmor_table_vars_file, cmip_output, name_of_set  ):
     ''' processes a target directory/file '''
     print('\n\n----- START gfdl_to_pcmdi_var call -----')
+    #print( "(gfdl_to_pcmdi_var) GFDL Variable : PCMDI Variable ")
 
-    print( "(gfdl_to_pcmdi_var) GFDL Variable : PCMDI Variable ")
-    print(f"(gfdl_to_pcmdi_var) (gfdl_variable:var_lst[gfdl_variable]) => {var_i}:{var_lst[var_i]}")
-    print(f"(gfdl_to_pcmdi_var)     Processing Directory/File: {var_i}")
+    print(f"(gfdl_to_pcmdi_var) (gfdl_var:var_lst[gfdl_var]) => {gfdl_var}:{var_lst[gfdl_var]}")
+    print(f"(gfdl_to_pcmdi_var)   Processing Directory/File: {gfdl_var}")
+    # why is nc_fls an empty dict here? see below line
     nc_fls = {}
 
-    print(f"(gfdl_to_pcmdi_var) cmip_output={cmip_output}")
+    print(f"(gfdl_to_pcmdi_var) cmip_output = {cmip_output}")
     if any( [ cmip_output == "/local2",
               cmip_output.find("/work") != -1,
               cmip_output.find("/net" ) != -1 ] ):
+        print(f'(gfdl_to_pcmdi_var) using /local /work /net ( tmp_dir = cmip_output/ )')
         tmp_dir = "{cmip_output}/"
     else:
+        print(f'(gfdl_to_pcmdi_var) NOT using /local /work /net (tmp_dir = cmip_output/tmp/ )')
         tmp_dir = f"{cmip_output}/tmp/"
         try:
             os.makedirs(tmp_dir, exist_ok=True)
         except Exception as exc:
             raise OSError(f'problem creating temp output directory. stop.') from exc
+    print(f'(gfdl_to_pcmdi_var) will use tmp_dir={tmp_dir}')
 
-
+    # loop over sets of dates, each one pointing to a file
     for i in range(len(time_arr)):
-        nc_fls[i] = f"{dir2cmor}/{name_of_set}.{time_arr[i]}.{var_i}.nc"
-        nc_fl_wrk = f"{tmp_dir}{name_of_set}.{time_arr[i]}.{var_i}.nc"
-        print(f"(gfdl_to_pcmdi_var) nc_fl_wrk = {nc_fl_wrk}")
+        print("\n\n==== begin (???) mysterious file movement =========================================================================")
 
+        # why is nc_fls a filled list/array/object thingy here? see above line
+        nc_fls[i] = f"{dir2cmor}/{name_of_set}.{time_arr[i]}.{gfdl_var}.nc"
         if not os.path.exists(nc_fls[i]):
             print (f"(gfdl_to_pcmdi_var) input file(s) {nc_fls[i]} does not exist. Moving on.")
-            return
+            continue #return # return? continue.
 
-        copy_nc( nc_fls[i], nc_fl_wrk)
+        # create a copy of the input file in the work directory
+        nc_file_work = f"{tmp_dir}{name_of_set}.{time_arr[i]}.{gfdl_var}.nc"
+        print(f"(gfdl_to_pcmdi_var) nc_file_work = {nc_file_work}")
+        copy_nc( nc_fls[i], nc_file_work)
 
         # copy ps also, if it's there
-        nc_ps_file = nc_fls[i].replace(f'.{var_i}.nc', '.ps.nc')
-        print(f"(gfdl_to_pcmdi_var) nc_ps_file = {nc_ps_file}")
-
-        nc_ps_file_work = ""
+        nc_ps_file_work = ''
+        nc_ps_file = nc_fls[i].replace(f'.{gfdl_var}.nc', '.ps.nc')        
         if os.path.exists(nc_ps_file):
-            nc_ps_file_work = nc_fl_wrk.replace(f'.{var_i}.nc', '.ps.nc')
-            copy_nc(nc_ps_file, nc_ps_file_work)
+            print(f"(gfdl_to_pcmdi_var) nc_ps_file = {nc_ps_file}")
+            nc_ps_file_work = nc_file_work.replace(f'.{gfdl_var}.nc', '.ps.nc')
             print(f"(gfdl_to_pcmdi_var) nc_ps_file_work = {nc_ps_file_work}")
+            copy_nc(nc_ps_file, nc_ps_file_work)
+
 
         # main CMOR actions:
         print ("(gfdl_to_pcmdi_var) calling netcdf_var()")
-        lcl_fl_nm = netcdf_var(proj_tbl_vars, var_lst, nc_fl_wrk, var_i,
-                               cmip_input_json, cmor_tbl_vars_file)
-        filename = f"{cmip_output}{cmip_output[:cmip_output.find('/')]}/{lcl_fl_nm}"
+        local_file_name = netcdf_var(proj_table_vars, var_lst, nc_file_work, gfdl_var,
+                               cmip_input_json, cmor_table_vars_file)
+        filename = f"{cmip_output}{cmip_output[:cmip_output.find('/')]}/{local_file_name}"
         print(f"(gfdl_to_pcmdi_var) source file = {nc_fls[i]}")
         print(f"(gfdl_to_pcmdi_var) filename = {filename}")
 
@@ -285,25 +292,26 @@ def gfdl_to_pcmdi_var( proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr,
         except FileExistsError:
             print(f'(gfdl_to_pcmdi_var) WARNING: directory {filedir} already exists!')
 
-        mv_cmnd = f"mv {os.getcwd()}/{lcl_fl_nm} {filedir}"
-        #print("=============================================================================\n\n")
-        print(f"(gfdl_to_pcmdi_var) mv_cmnd = {mv_cmnd}")
-        os.system(mv_cmnd)
+        # hmm.... this is making issues for pytest
+        mv_cmd = f"mv {os.getcwd()}/{local_file_name} {filedir}"
+        print(f"(gfdl_to_pcmdi_var) mv_cmd = {mv_cmd}")
+        os.system(mv_cmd)
 
-        flnm_no_nc = filename[:filename.rfind(".nc")]
-        chk_str = flnm_no_nc[-6:]
-        if not chk_str.isdigit():
+        filename_no_nc = filename[:filename.rfind(".nc")]
+        chunk_str = filename_no_nc[-6:]
+        if not chunk_str.isdigit():
             filename_corr = "{filename[:filename.rfind('.nc')]}_{time_arr[i]}.nc"
-            mv_cmnd = f"mv {filename} {filename_corr}"
-            print(f"(gfdl_to_pcmdi_var) mv_cmnd = {mv_cmnd}")
-            os.system(mv_cmnd)
+            mv_cmd = f"mv {filename} {filename_corr}"
+            print(f"(gfdl_to_pcmdi_var) mv_cmd = {mv_cmd}")
+            os.system(mv_cmd)
 
+        print("====== end (???) mysterious file movement =========================================================================\n\n")
 
-        if os.path.exists(nc_fl_wrk):
-            print(f'(gfdl_to_pcmdi_var) removing: nc_fl_wrk={nc_fl_wrk}')
-            os.remove(nc_fl_wrk)
+        if os.path.exists(nc_file_work):
+            print(f'(gfdl_to_pcmdi_var) removing: nc_file_work={nc_file_work}')
+            os.remove(nc_file_work)
         if os.path.exists(nc_ps_file_work):
-            print(f'(gfdl_to_pcmdi_var) removing: nc_ps_file_wrk={nc_ps_file_wrk}')
+            print(f'(gfdl_to_pcmdi_var) removing: nc_ps_file_work={nc_ps_file_work}')
             os.remove(nc_ps_file_work)
 
     print('----- END var2process call -----\n\n')
@@ -311,8 +319,8 @@ def gfdl_to_pcmdi_var( proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr,
 
 
 
-def _cmor_run_subtool( indir = None, outdir = None, varlist = None,
-                      table_config = None, exp_config = None ):
+def _cmor_run_subtool( indir = None, varlist = None,
+                       table_config = None, exp_config = None , outdir = None):
     ''' primary steering function for the cmor_mixer tool, i.e
     essentially main '''
     print('\n\n----- START _cmor_run_subtool call -----')
@@ -320,7 +328,7 @@ def _cmor_run_subtool( indir = None, outdir = None, varlist = None,
 
     # open CMOR table config file
     try:
-        proj_tbl_vars = json.load( open( table_config, "r") )
+        proj_table_vars = json.load( open( table_config, "r") )
     except:
         raise FileNotFoundError(
             f'ERROR: table_config file cannot be opened.\n'
@@ -359,17 +367,18 @@ def _cmor_run_subtool( indir = None, outdir = None, varlist = None,
         raise ValueError(f'ERROR: time_arr has length 0!')
 
     # process each variable separately
-    for var_i in gfdl_var_lst:
-        if gfdl_var_lst[var_i] in proj_tbl_vars["variable_entry"]:
+    for gfdl_var in gfdl_var_lst:
+        if gfdl_var_lst[gfdl_var] in proj_table_vars["variable_entry"]:
             gfdl_to_pcmdi_var(
-                proj_tbl_vars, gfdl_var_lst,
-                indir, var_i, time_arr,
+                proj_table_vars, gfdl_var_lst,
+                indir, gfdl_var, time_arr,
                 exp_config, table_config,
                 outdir, name_of_set )
         else:
-            print(f"(_cmor_run_subtool) WARNING: Skipping variable {var_i} ...")
+            print(f"(_cmor_run_subtool) WARNING: Skipping variable {gfdl_var} ...")
             print( "(_cmor_run_subtool)         ... it's not found in CMOR variable group")
     print('----- END _cmor_run_subtool call -----\n\n')
+
 
 @click.command()
 def cmor_run_subtool(indir, varlist, table_config, exp_config, outdir):
