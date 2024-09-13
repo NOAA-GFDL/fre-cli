@@ -62,16 +62,18 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
     ds = nc.Dataset(nc_fl,'a')
 
     # determine the vertical dimension
-    vert_dim = 0
+    vert_dim = None
     for name, variable in ds.variables.items():
         if name == var_i:
             dims = variable.dimensions
             for dim in dims:
                 if ds[dim].axis and ds[dim].axis == "Z":
                     vert_dim = dim
-    #if not vert_dim:
-    #    raise Exception("ERROR: could not determine vertical dimension")
-
+    if vert_dim is None:
+        raise Exception("ERROR: vert_dim is None. could not determine vertical dimension")
+    elif not vert_dim in [ "plev30", "plev19", "plev8",
+                         "height2m", "level", "lev", "levhalf"] :
+        raise ValueError(f'vert_dim = {vert_dim} is not supported')
     print(f"(netcdf_var) Vertical dimension: {vert_dim}")
 
     # initialize CMOR
@@ -87,19 +89,24 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
     var_list = list(ds.variables.keys())
     print(f"(netcdf_var) list of variables: {var_list}")
 
+    # Define lat and lon dimensions
+    # Assume input file is lat/lon grid
+    if "xh" in var_list:
+        raise Exception ("Ocean grid unimplemented")
+
+
     # read the input units
     var = ds[var_i][:]
     var_dim = len(var.shape)
+    # Check var_dim
+    if not var_dim in [3, 4]:
+        raise ValueError(f"var_dim == {var_dim} != 3 nor 4. stop.")    
+
     print(f"(netcdf_var) var_dim = {var_dim}, var_lst[var_i] = {var_j}")
     print(f"(netcdf_var)  var_i = {var_i}")
     units = proj_tbl_vars["variable_entry"] [var_j] ["units"]
     #units = proj_tbl_vars["variable_entry"] [var_i] ["units"]
     print(f"(netcdf_var) var_dim = {var_dim}, units={units}")
-
-    # Define lat and lon dimensions
-    # Assume input file is lat/lon grid
-    if "xh" in var_list:
-        raise Exception ("(netcdf_var) Ocean grid unimplemented")
 
     # "figure out the names of this dimension names programmatically !!!"
     lat = ds["lat"][:]
@@ -123,7 +130,7 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
         cmor_time = cmor.axis("time", coord_vals = time, cell_bounds = time_bnds, units = tm_units)
         #cmor_time = cmor.axis("time", coord_vals = time, units = tm_units)
     except:
-        print("(netcdf_var) Executing cmor_time = cmor.axis('time', coord_vals = time, units = tm_units)")
+        print("(netcdf_var) cmor_time = cmor.axis('time', coord_vals = time, units = tm_units)")
         cmor_time = cmor.axis("time", coord_vals = time, units = tm_units)
 
     # Set the axes
@@ -197,10 +204,8 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
                                 axis_ids = [cmor_time, cmor_lat, cmor_lon],
                                 units = "Pa" )
             save_ps = True
-        else:
-            raise Exception(f"(netcdf_var) Cannot handle vertical dimension {vert_dim}")
-    else:
-        raise Exception(f"(netcdf_var) Did not expect more than 4 dimensions; got {var_dim}")
+
+
 
     # read the positive attribute
     var = ds[var_i][:]
@@ -221,7 +226,7 @@ def netcdf_var (proj_tbl_vars, var_lst, nc_fl, var_i,
     return filename
 
 
-def gfdl_to_pcmdi_var( proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, len_time_arr,
+def gfdl_to_pcmdi_var( proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr,
                  cmip_input_json, cmor_tbl_vars_file, cmip_output, name_of_set  ):
     ''' processes a target directory/file '''
     print('\n\n----- START gfdl_to_pcmdi_var call -----')
@@ -241,16 +246,16 @@ def gfdl_to_pcmdi_var( proj_tbl_vars, var_lst, dir2cmor, var_i, time_arr, len_ti
         try:
             os.makedirs(tmp_dir, exist_ok=True)
         except Exception as exc:
-            raise(f'(gfdl_to_pcmdi_var) exc={exc}, problem creating temp output directory. stop.')
+            raise OSError(f'problem creating temp output directory. stop.') from exc
 
 
-    for i in range(len_time_arr):
+    for i in range(len(time_arr)):
         nc_fls[i] = f"{dir2cmor}/{name_of_set}.{time_arr[i]}.{var_i}.nc"
         nc_fl_wrk = f"{tmp_dir}{name_of_set}.{time_arr[i]}.{var_i}.nc"
         print(f"(gfdl_to_pcmdi_var) nc_fl_wrk = {nc_fl_wrk}")
 
         if not os.path.exists(nc_fls[i]):
-            print (f"(gfdl_to_pcmdi_var) input file(s) {nc_fls[i]} does not exist. Move to the next file.")
+            print (f"(gfdl_to_pcmdi_var) input file(s) {nc_fls[i]} does not exist. Moving on.")
             return
 
         copy_nc( nc_fls[i], nc_fl_wrk)
@@ -311,64 +316,59 @@ def _cmor_run_subtool( indir = None, outdir = None, varlist = None,
     ''' primary steering function for the cmor_mixer tool, i.e
     essentially main '''
     print('\n\n----- START _cmor_run_subtool call -----')
-    # these global variables can be edited now
-    # name_of_set is component label (e.g. atmos_cmip)
 
-    #dir2cmor = indir
-    #cmip_output = outdir
-    #gfdl_vars_file = varlist
-    #cmor_tbl_vars_file = table_config
-    #cmip_input_json = exp_config
 
     # open CMOR table config file
-    #f_js = open(table_config,"r")
-    proj_tbl_vars = json.load(
-                          open(table_config,"r") )#f_js)
+    try:
+        proj_tbl_vars = json.load( open( table_config, "r") )
+    except:
+        raise FileNotFoundError(
+            f'ERROR: table_config file cannot be opened.\n'
+            f'       table_config = {table_config}' )
 
     # open input variable list
-    #f_v = open(varlist,"r")
-    gfdl_var_lst = json.load(
-                         open(varlist,"r") ) # f_v)
+    try:
+        gfdl_var_lst = json.load( open( varlist, "r") )
+    except:
+        raise FileNotFoundError(
+            f'ERROR: varlist file cannot be opened.\n'
+            f'       varlist = {varlist}' )
 
     # examine input files to obtain available date ranges
     var_filenames = []
     var_filenames_all = os.listdir(indir)
     print(f'(_cmor_run_subtool) var_filenames_all={var_filenames_all}')
-    for file in var_filenames_all:
-        if file.endswith('.nc'):
-            var_filenames.append(file)
+    for var_file in var_filenames_all:
+        if var_file.endswith('.nc'):
+            var_filenames.append(var_file)
     var_filenames.sort()
     print(f"(_cmor_run_subtool) var_filenames = {var_filenames}")
 
 
-    #
+    # name_of_set == component label, which is not relevant for CMOR/CMIP
     name_of_set = var_filenames[0].split(".")[0]
-    time_arr_s = set()
+    print(f"(_cmor_run_subtool) component label is name_of_set = {name_of_set}")
+
+    time_arr = []
     for filename in var_filenames:
-        time_now = filename.split(".")[1]
-        time_arr_s.add(time_now)
-    time_arr = list(time_arr_s)
+        time_arr.append(
+            filename.split(".")[1] )
     time_arr.sort()
-    len_time_arr = len(time_arr)
     print(f"(_cmor_run_subtool) Available dates: {time_arr}")
+    if len(time_arr) < 1:
+        raise ValueError(f'ERROR: time_arr has length 0!')
 
     # process each variable separately
     for var_i in gfdl_var_lst:
         if gfdl_var_lst[var_i] in proj_tbl_vars["variable_entry"]:
-            gfdl_to_pcmdi_var(proj_tbl_vars, gfdl_var_lst, indir, var_i, time_arr, len_time_arr,
-                        exp_config, table_config, outdir, name_of_set)
+            gfdl_to_pcmdi_var(
+                proj_tbl_vars, gfdl_var_lst,
+                indir, var_i, time_arr,
+                exp_config, table_config,
+                outdir, name_of_set )
         else:
             print(f"(_cmor_run_subtool) WARNING: Skipping variable {var_i} ...")
             print( "(_cmor_run_subtool)         ... it's not found in CMOR variable group")
-
-## annoying?
-#def main( indir = None, outdir = None, varlist = None,
-#                      table_config = None, exp_config = None ):
-#    cmor_run_subtool( indir        = indir        ,
-#                      outdir       = outdir       ,
-#                      varlist      = varlist      ,
-#                      table_config = table_config ,
-#                      exp_config   = exp_config     )
     print('----- END _cmor_run_subtool call -----\n\n')
 
 @click.command()

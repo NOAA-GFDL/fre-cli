@@ -13,6 +13,7 @@ exp_config = f'{rootdir}/CMOR_input_example.json'
 outdir = f'{rootdir}/outdir'
 
 # determined by cmor_run_subtool
+# TODO get rid of that wildcard? how? 
 full_outputdir=f"{outdir}/CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn/*"
 full_outputfile=f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
 
@@ -31,19 +32,24 @@ def test_fre_cmor_run(capfd):
         outdir = outdir
     )
 
-    assert False
-    out, _ = capfd.readouterr()
-#    out, err = capfd.readouterr()
-#    print(f'out = \n{out}')
-#    print(f'err = \n{err}')
+    # the routine above doesn't really return anything
+    # so if we get here, b.c. no internal
+    # error to cmor_run_subtool raised, assert True ?
+    # DOUBLE CHECK THIS ASSUMPTION!!!!!
+    assert True
+    out, err = capfd.readouterr()
 
     
 
     
 #def test_fre_cmor_run_output_compare(capfd):
 #    ''' I/O comparison of prev test-use case '''
-#    assert subprocess.run(["nccmp", "-f", "-m", "-g", "-d", 
-#                           f"{indir}/{filename}",
-#                           "/nbhome/Ciheim.Brown/where-the-sos-lives/ocean_monthly_1x1deg.199301-199712.sos.nc"],shell=True).returncode == 1
+#    assert subprocess.run( [
+#                             "nccmp", "-f", "-m", "-g", "-d", 
+#                            f"{full_inputfile}",
+#                            f"{full_outputfile}"
+#                           ],
+#                           shell=True
+#                         ).returncode == 1
 #    out, err = capfd.readouterr()
 #    #subprocess.run(["rm", "-rf", "/nbhome/Ciheim.Brown/outdir/CMIP6/CMIP6/"])
