@@ -27,6 +27,8 @@ def test_configure_script():
     Creates rose-suite, regrid rose-app, remap rose-app
     TO-DO: will break this up for better tests
     """
+    os.chdir(f"{CWD}/{test_dir}/AM5_example")
+
     # Set output directory
     out_dir = Path(f"{os.getenv('HOME')}/cylc-src/{experiment}__{platform}__{target}")
     Path(out_dir).mkdir(parents=True,exist_ok=True)
