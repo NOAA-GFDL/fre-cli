@@ -269,7 +269,7 @@ def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, time_arr,
 
         # copy ps also, if it's there
         nc_ps_file_work = ''
-        nc_ps_file = nc_fls[i].replace(f'.{gfdl_var}.nc', '.ps.nc')        
+        nc_ps_file = nc_fls[i].replace(f'.{gfdl_var}.nc', '.ps.nc')
         if os.path.exists(nc_ps_file):
             print(f"(gfdl_to_pcmdi_var) nc_ps_file = {nc_ps_file}")
             nc_ps_file_work = nc_file_work.replace(f'.{gfdl_var}.nc', '.ps.nc')

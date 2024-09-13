@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 ''' test "fre cmor" calls '''
 
+import datetime
+from datetime import date
+import pathlib
+from pathlib import Path
 import subprocess
 import netCDF4 as nc
 
@@ -42,12 +46,13 @@ def test_cli_fre_cmor_run_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
-##def test_cli_fre_cmor_run_case1(capfd):
-def test_cli_fre_cmor_run_case1(capsys):
+def test_cli_fre_cmor_run_case1(capfd):
     ''' fre cmor run, test-use case '''
+
+    
     # where are we? we're running pytest from the base directory of this repo
     rootdir = 'fre/tests/test_files'
-    
+
     # explicit inputs to tool
     indir = f'{rootdir}/ocean_sos_var_file'
     varlist = f'{rootdir}/varlist'
@@ -55,26 +60,31 @@ def test_cli_fre_cmor_run_case1(capsys):
     exp_config = f'{rootdir}/CMOR_input_example.json'
     outdir = f'{rootdir}/outdir'
 
-#    indir = 'fre/tests/test_files'
-#    varlist = 'fre/tests/test_files/varlist'
-#    table_config = 'fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
-#    exp_config = 'fre/tests/test_files/CMOR_input_example.json'
-#    outdir = 'fre/tests/test_files/outdir'
+    # determined by cmor_run_subtool
+    YYYYMMDD=date.today().strftime('%Y%m%d')
+    cmor_creates_dir = \
+        'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn'
+    # why does this have "fre" at the end of it?
+    full_outputdir = \
+        f"{outdir}fre/{cmor_creates_dir}/v{YYYYMMDD}"
+    full_outputfile = \
+        f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
 
-    #subprocess.run(["mkdir", "-p", outdir+'/tmp'])
+    # FYI
+    filename = 'ocean_monthly_1x1deg.199301-199712.sos.nc' # unneeded, this is mostly for reference
+    full_inputfile=f"{indir}/{filename}"
+
+    # clean up, lest we fool outselves
+    if Path(full_outputfile).exists():
+        Path(full_outputfile).unlink()
+
     result = runner.invoke(fre.fre, args = ["cmor", "run",
                                             "--indir", indir,
                                             "--varlist", varlist,
                                             "--table_config", table_config,
                                             "--exp_config", exp_config,
                                             "--outdir",  outdir])
-    #assert False
-    #out, err = capfd.readouterr()
-    out, err = capsys.readouterr()
-    #print(out)
-    #print(err)
-    
-    assert result.exit_code == 0
-
-    assert False
-
+    assert all ( [ result.exit_code == 0,
+                   Path(full_outputfile).exists(),
+                   Path(full_inputfile).exists() ] )
+    out, err = capfd.readouterr()
