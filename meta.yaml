@@ -62,7 +62,7 @@ test:
     - fre.cmor
     - fre.catalog
   commands:
-    - pylint fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
+    - pylint --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     - pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
     - fre --help
     - fre pp --help
