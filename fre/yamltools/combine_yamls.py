@@ -41,17 +41,25 @@ def get_compile_paths(mainyaml_dir,comb):
 
     # set platform yaml filepath
     if comb_model["build"]["platformYaml"] is not None:
-        py=comb_model["build"]["platformYaml"]
-        py_path=Path(os.path.join(mainyaml_dir,py))
+        if Path(comb_model["build"]["platformYaml"]).exists():
+            py=comb_model["build"]["platformYaml"]
+            py_path=Path(os.path.join(mainyaml_dir,py))
+        else: 
+            raise ValueError("Incorrect platform yaml path given; does not exist.")
     else:
-        py_path=None
+        raise ValueError("No platform yaml path given!")
+        #py_path=None
 
     # set compile yaml filepath
     if comb_model["build"]["compileYaml"] is not None:
-        cy=comb_model["build"]["compileYaml"]
-        cy_path=Path(os.path.join(mainyaml_dir,cy))
+        if Path(comb_model["build"]["compileYaml"]).exists():
+            cy=comb_model["build"]["compileYaml"]
+            cy_path=Path(os.path.join(mainyaml_dir,cy))
+        else:
+            raise ValueError("Incorrect compile yaml path given; does not exist.")
     else:
-        cy_path=None
+        raise ValueError("No compile yaml path given!")
+        #cy_path=None
 
     return (py_path,cy_path)
 
@@ -81,25 +89,32 @@ def experiment_check(mainyaml_dir,comb,experiment):
         if experiment == i.get("name"):
             expyaml=i.get("pp")
             analysisyaml=i.get("analysis")
-
+            
             if expyaml is not None:
                 ey_path=[]
                 for e in expyaml:
-                    ey=Path(os.path.join(mainyaml_dir,e))
-                    ey_path.append(ey)
+                    if Path(e).exists():
+                        ey=Path(os.path.join(mainyaml_dir,e))
+                        ey_path.append(ey)
+                    else:
+                        raise ValueError("Incorrect experiment yaml path given; does not exist.")
             else:
-                ey_path=None
+                raise ValueError("No experiment yaml path given!")
 
             if analysisyaml is not None:
                 ay_path=[]
                 for a in analysisyaml:
-                    ay=Path(os.path.join(mainyaml_dir,a))
-                    ay_path.append(ay)
+                    if Path(a).exists():            
+                        ay=Path(os.path.join(mainyaml_dir,a))
+                        ay_path.append(ay)
+                    else:
+                        raise ValueError("Incorrect analysis yaml ath given; does not exist.")
             else:
                 ay_path=None
 
             return (ey_path,ay_path)
 
+## COMPILE CLASS ##
 class init_compile_yaml():
   def __init__(self,yamlfile,platform,target):
     """
@@ -187,6 +202,7 @@ class init_compile_yaml():
       print(f"Combined yaml located here: {os.path.dirname(self.combined)}/{self.combined}")
       return self.combined
 
+## PP CLASS ##
 class init_pp_yaml():
   def __init__(self,yamlfile,experiment,platform,target):
     """
@@ -236,7 +252,6 @@ class init_pp_yaml():
             #expyaml_path = os.path.join(mainyaml_dir, i)
             with open(self.combined,'a',encoding='UTF-8') as f1:
                 with open(i,'r',encoding='UTF-8') as f2:
-                    #f1.write(f"\n### {i.upper()} settings ###\n")
                     #copy expyaml into combined
                     shutil.copyfileobj(f2,f1)
             print(f"   experiment yaml: {i}")
@@ -280,6 +295,7 @@ class init_pp_yaml():
       print(f"Combined yaml located here: {os.path.dirname(self.combined)}/{self.combined}")
       return self.combined
 
+## Functions to combine the yaml files
 def get_combined_compileyaml(comb):
     """
     Combine the model, compile, and platform yamls
@@ -301,7 +317,7 @@ def get_combined_ppyaml(comb):
     """
     Combine the model, experiment, and analysis yamls
     Arguments:
-        - comb : comine yaml object
+        - comb : combined yaml object
     """
     # Merge model into combined file
     comb_model = comb.combine_model()
@@ -324,10 +340,12 @@ def _consolidate_yamls(yamlfile,experiment,platform,target,use):
 
     if use == "compile":
         combined = init_compile_yaml(yamlfile, platform, target)
+        # Create combined compile yaml
         get_combined_compileyaml(combined)
 
     if use =="pp":
         combined = init_pp_yaml(yamlfile,experiment,platform,target)
+        # Create combined pp yaml
         get_combined_ppyaml(combined)
 
 @click.command()
