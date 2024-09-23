@@ -162,19 +162,9 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     # Initialize the rose configurations
     rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
 
-    ## If combined yaml does not exists, combine model, experiment, and analysis yamls
-    cd = Path.cwd()
-    combined = Path(f"combined-{e}.yaml")
-    combined_path=os.path.join(cd,combined)
-
     # Combine model, experiment, and analysis yamls
-    # If fre yammltools combine-yamls tools was used, the combined yaml should exist
-    if Path(combined_path).exists():
-        full_combined = combined_path
-        print("\nNOTE: Yamls previously merged.")
-    else:
-        comb = cy.init_pp_yaml(yml,e,p,t)
-        full_combined = cy.get_combined_ppyaml(comb)
+    comb = cy.init_pp_yaml(yml,e,p,t)
+    full_combined = cy.get_combined_ppyaml(comb)
 
     # Validate yaml
     validate_yaml(full_combined)
