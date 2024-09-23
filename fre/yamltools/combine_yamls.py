@@ -197,7 +197,7 @@ class init_compile_yaml():
               del full_yaml[kc]
 
       with open(self.combined,'w',encoding='UTF-8') as f:
-          yaml.safe_dump(full_yaml,f,sort_keys=False)
+          yaml.safe_dump(full_yaml,f,default_flow_style=False,sort_keys=False)
 
       print(f"Combined yaml located here: {os.path.dirname(self.combined)}/{self.combined}")
       return self.combined
@@ -289,8 +289,8 @@ class init_pp_yaml():
           if kc in full_yaml.keys():
               del full_yaml[kc]
 
-      with open(self.combined,'w',encoding='UTF-8') as f:
-          yaml.safe_dump(full_yaml,f,sort_keys=False)
+      with open(self.combined,'w') as f:
+          yaml.safe_dump(full_yaml,f,default_flow_style=False,sort_keys=False)
 
       print(f"Combined yaml located here: {os.path.dirname(self.combined)}/{self.combined}")
       return self.combined
@@ -307,7 +307,7 @@ def get_combined_compileyaml(comb):
     # Merge compile.yaml into combined file
     comb_compile = comb.combine_compile()
     # Merge platforms.yaml into combined file
-    comb_platform = comb.combine_platforms()
+    full_combined = comb.combine_platforms()
     # Clean the yaml
     full_combined = comb.clean_yaml()
 

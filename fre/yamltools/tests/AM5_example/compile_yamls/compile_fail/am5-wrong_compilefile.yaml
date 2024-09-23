@@ -40,8 +40,8 @@ fre_properties:
 
 build:
   # compile information
-  compileYaml: "compile_fail/compiile.yaml" 
-  platformYaml: "compile_fail/platforms.yaml"
+  compileYaml: "compiile.yaml" 
+  platformYaml: "wrong_platforms.yaml"
 
 shared:
   # directories shared across tools
