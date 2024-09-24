@@ -13,12 +13,12 @@ setup(
         'pyyaml',
         'pylint',
         'pytest',
-        'catalogbuilder',
         'jsonschema',
         'cylc-flow',
         'cylc-rose',
         'cdo',
-        'metomi-rose'
+        'metomi-rose',
+        'GitPython'
     ],
     entry_points={
         'console_scripts': [

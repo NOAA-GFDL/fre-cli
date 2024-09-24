@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 ''' test "fre pp" calls '''
 
 from click.testing import CliRunner
