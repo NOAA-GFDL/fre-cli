@@ -12,6 +12,7 @@ dependencies:
   - jsonschema
   - noaa-gfdl::fre-nctools
   - noaa-gfdl::catalogbuilder
+  - conda-forge::git
   - conda-forge::nccmp
   - conda-forge::cylc-flow>=8.2.0
   - conda-forge::cylc-rose

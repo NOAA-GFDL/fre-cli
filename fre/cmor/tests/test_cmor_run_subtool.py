@@ -67,7 +67,7 @@ def test_fre_cmor_run(capfd):
     out, err = capfd.readouterr()
 
 def test_fre_cmor_run_output_compare(capfd):
-    ''' I/O comparison of prev test-use case '''
+    ''' I/O comparison of prev test-use case '''    
     print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
     print(f'FULL_INPUTFILE={FULL_INPUTFILE}')
 
@@ -79,6 +79,10 @@ def test_fre_cmor_run_output_compare(capfd):
                              shell=True,
                              check=False
                           )
+
+    # check file difference specifics here ----- 
+
+
     #subprocess.run(["rm", "-rf", f"{OUTDIR}/CMIP6/CMIP6/"])
     assert result.returncode == 1
     out, err = capfd.readouterr()

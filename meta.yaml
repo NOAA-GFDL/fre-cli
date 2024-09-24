@@ -12,7 +12,7 @@ source:
 
 build:
   script: 
-    - {{ PYTHON }} -m pip install . -vv
+    - {{ PYTHON }} -m pip install GitPython -vv && {{ PYTHON }} -m pip install . -vv
   number: 1
   noarch: python
 
@@ -33,6 +33,7 @@ requirements:
     - jsonschema
     - noaa-gfdl::catalogbuilder
     - noaa-gfdl::fre-nctools
+    - conda-forge::git
     - conda-forge::nccmp
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
@@ -43,8 +44,6 @@ requirements:
     - conda-forge::pytest-cov
     - conda-forge::python-cdo
     - conda-forge::cdo>=2.0.0
-    - pip:
-      - GitPython
 
 test:
   source_files: 
@@ -53,6 +52,7 @@ test:
     - click
     - pytest
     - pylint
+    - git
     - fre
     - fre.pp
     - fre.pp.install
