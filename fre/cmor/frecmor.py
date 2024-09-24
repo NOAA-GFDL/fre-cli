@@ -2,7 +2,7 @@
 
 import click
 
-from .cmor_mixer import cmor_run_subtool
+from .cmor_mixer import _cmor_run_subtool
 
 @click.group(help=click.style(" - access fre cmor subcommands", fg=(232,91,204)))
 def cmor_cli():
@@ -33,7 +33,7 @@ def cmor_cli():
 def run(context, indir, outdir, varlist, table_config, exp_config):
     # pylint: disable=unused-argument
     """Rewrite climate model output"""
-    context.forward(cmor_run_subtool)
+    context.forward(_cmor_run_subtool)
 
 if __name__ == "__main__":
     cmor_cli()

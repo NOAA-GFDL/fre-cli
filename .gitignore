@@ -54,7 +54,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
-fre/tests/test_files/cmip6-cmor-tables/*
+fre/tests/test_files/cmip6-cmor-tables/
 
 # Translations
 *.mo

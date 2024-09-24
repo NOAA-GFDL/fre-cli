@@ -319,7 +319,7 @@ def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, time_arr,
 
 
 
-def _cmor_run_subtool( indir = None, varlist = None,
+def cmor_run_subtool( indir = None, varlist = None,
                        table_config = None, exp_config = None , outdir = None):
     ''' primary steering function for the cmor_mixer tool, i.e
     essentially main '''
@@ -381,10 +381,10 @@ def _cmor_run_subtool( indir = None, varlist = None,
 
 
 @click.command()
-def cmor_run_subtool(indir, varlist, table_config, exp_config, outdir):
+def _cmor_run_subtool(indir, varlist, table_config, exp_config, outdir):
     ''' entry point to fre cmor run for click '''
-    return _cmor_run_subtool(indir, varlist, table_config, exp_config, outdir)
+    return cmor_run_subtool(indir, varlist, table_config, exp_config, outdir)
 
 
 if __name__ == '__main__':
-    _cmor_run_subtool()
+    cmor_run_subtool()

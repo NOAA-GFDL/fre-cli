@@ -52,7 +52,7 @@ def test_fre_cmor_run(capfd):
         Path(FULL_OUTPUTFILE).unlink()
 
     # test call, where meat of the workload gets done
-    fre.cmor._cmor_run_subtool(
+    fre.cmor.cmor_run_subtool(
         indir = INDIR,
         varlist = VARLIST,
         table_config = TABLE_CONFIG,

@@ -49,7 +49,6 @@ def test_cli_fre_cmor_run_opt_dne():
 def test_cli_fre_cmor_run_case1(capfd):
     ''' fre cmor run, test-use case '''
 
-
     # where are we? we're running pytest from the base directory of this repo
     rootdir = 'fre/tests/test_files'
 
@@ -78,6 +77,7 @@ def test_cli_fre_cmor_run_case1(capfd):
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
+    click.echo(''
     result = runner.invoke(fre.fre, args = ["cmor", "run",
                                             "--indir", indir,
                                             "--varlist", varlist,
