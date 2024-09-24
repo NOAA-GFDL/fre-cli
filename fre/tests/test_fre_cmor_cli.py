@@ -2,9 +2,7 @@
 
 from datetime import date
 from pathlib import Path
-import subprocess
 
-import netCDF4 as nc
 from click.testing import CliRunner
 
 from fre import fre
@@ -77,7 +75,7 @@ def test_cli_fre_cmor_run_case1(capfd):
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
-    click.echo(''
+    #click.echo('')
     result = runner.invoke(fre.fre, args = ["cmor", "run",
                                             "--indir", indir,
                                             "--varlist", varlist,

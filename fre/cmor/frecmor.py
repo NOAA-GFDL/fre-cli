@@ -30,7 +30,7 @@ def cmor_cli():
               help="Output directory",
               required=True)
 @click.pass_context
-def run(context, indir, outdir, varlist, table_config, exp_config):
+def run(context, indir, varlist, table_config, exp_config, outdir):
     # pylint: disable=unused-argument
     """Rewrite climate model output"""
     context.forward(_cmor_run_subtool)

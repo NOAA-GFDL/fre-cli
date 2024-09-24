@@ -135,6 +135,9 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
 
     # Set the axes
     save_ps = False
+    ps = None
+    ierr = None
+    ips = None
     if var_dim == 3:
         axes = [cmor_time, cmor_lat, cmor_lon]
         print(f"(netcdf_var) axes = {axes}")
@@ -188,7 +191,7 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
             #print("Calling cmor.zfactor, len,vals = ",lev.shape,",",lev[:])
             cmor_lev = cmor.axis("alternate_hybrid_sigma_half",
                                  coord_vals = lev[:], units = lev.units )
-            axes = [cmor_time, cmor_lev, cmor_lat, cmor_lon]
+            axes = [cmor_time, cmor_lev, cmor_lat, cmor_lon]            
             ierr = cmor.zfactor( zaxis_id = cmor_lev,
                                  zfactor_name = "ap_half",
                                  axis_ids = [cmor_lev, ],
@@ -217,7 +220,12 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
     cmor_var = cmor.variable(var_j, units, axes, positive = positive)
     cmor.write(cmor_var, var)
     if save_ps:
-        cmor.write(ips, ps, store_with = cmor_var)
+        if ips is not None and ps is not None:
+            cmor.write(ips, ps, store_with = cmor_var)
+        else:
+            print('WARNING: ps or ips is None!')
+            print(f'ps = {ps}')
+            print(f'ips = {ips}')
     filename = cmor.close(cmor_var, file_name = True)
     print(f"(netcdf_var) filename = {filename}")
     cmor.close()
@@ -254,7 +262,7 @@ def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, time_arr,
 
     # loop over sets of dates, each one pointing to a file
     for i in range(len(time_arr)):
-        print("\n\n==== begin (???) mysterious file movement =========================================================================")
+        print("\n\n==== begin (???) mysterious file movement ====================================")
 
         # why is nc_fls a filled list/array/object thingy here? see above line
         nc_fls[i] = f"{dir2cmor}/{name_of_set}.{time_arr[i]}.{gfdl_var}.nc"
@@ -305,7 +313,7 @@ def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, time_arr,
             print(f"(gfdl_to_pcmdi_var) mv_cmd = {mv_cmd}")
             os.system(mv_cmd)
 
-        print("====== end (???) mysterious file movement =========================================================================\n\n")
+        print("====== end (???) mysterious file movement ====================================\n\n")
 
         if os.path.exists(nc_file_work):
             print(f'(gfdl_to_pcmdi_var) removing: nc_file_work={nc_file_work}')
@@ -345,24 +353,24 @@ def cmor_run_subtool( indir = None, varlist = None,
     # examine input files to obtain available date ranges
     var_filenames = []
     var_filenames_all = os.listdir(indir)
-    print(f'(_cmor_run_subtool) var_filenames_all={var_filenames_all}')
+    print(f'(cmor_run_subtool) var_filenames_all={var_filenames_all}')
     for var_file in var_filenames_all:
         if var_file.endswith('.nc'):
             var_filenames.append(var_file)
     var_filenames.sort()
-    print(f"(_cmor_run_subtool) var_filenames = {var_filenames}")
+    print(f"(cmor_run_subtool) var_filenames = {var_filenames}")
 
 
     # name_of_set == component label, which is not relevant for CMOR/CMIP
     name_of_set = var_filenames[0].split(".")[0]
-    print(f"(_cmor_run_subtool) component label is name_of_set = {name_of_set}")
+    print(f"(cmor_run_subtool) component label is name_of_set = {name_of_set}")
 
     time_arr = []
     for filename in var_filenames:
         time_arr.append(
             filename.split(".")[1] )
     time_arr.sort()
-    print(f"(_cmor_run_subtool) Available dates: {time_arr}")
+    print(f"(cmor_run_subtool) Available dates: {time_arr}")
     if len(time_arr) < 1:
         raise ValueError(f'ERROR: time_arr has length 0!')
 
@@ -375,8 +383,8 @@ def cmor_run_subtool( indir = None, varlist = None,
                 exp_config, table_config,
                 outdir, name_of_set )
         else:
-            print(f"(_cmor_run_subtool) WARNING: Skipping variable {gfdl_var} ...")
-            print( "(_cmor_run_subtool)         ... it's not found in CMOR variable group")
+            print(f"(cmor_run_subtool) WARNING: Skipping variable {gfdl_var} ...")
+            print( "(cmor_run_subtool)         ... it's not found in CMOR variable group")
     print('----- END _cmor_run_subtool call -----\n\n')
 
 

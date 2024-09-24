@@ -80,7 +80,7 @@ def test_fre_cmor_run_output_compare(capfd):
                              check=False
                           )
 
-    # check file difference specifics here ----- 
+    # check file difference specifics here -----
 
 
     #subprocess.run(["rm", "-rf", f"{OUTDIR}/CMIP6/CMIP6/"])
