@@ -6,7 +6,8 @@ see README.md for CMORmixer.py usage
 # TODO : reconcile 'lst' variable names with 'list' in variable names
 #        as this is confusing to read and ambiguous to interpret
 #        probably good to avoid the word 'list' in the names
-# TODO : variable ierr is unused... what is it and hwat does it do?
+# variable ierr is unused... what is it and what does it do?
+#        commented out until further investigation done
 
 import os
 import json
@@ -50,8 +51,8 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
                 cmip_input_json, cmor_table_vars_file):
     ''' PLACEHOLDER DESCRIPTION '''
     print('\n\n----- START netcdf_var call -----')
-    # NetCDF all time periods
 
+    # NetCDF all time periods
     var_j = var_lst[gfdl_var]
     print( "(netcdf_var) input data: " )
     print(f"(netcdf_var)     var_lst = {var_lst}" )
@@ -87,14 +88,15 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
     # Define lat and lon dimensions
     # Assume input file is lat/lon grid
     if "xh" in var_list:
-        raise Exception ("Ocean grid unimplemented")
+        raise NotImplementedError(
+            "'xh' found in var_list. ocean grid req'd but not yet unimplemented. stop.")
 
     # read the input units
     var = ds[gfdl_var][:]
     var_dim = len(var.shape)
 
     # Check var_dim, vert_dim
-    if not var_dim in [3, 4]:
+    if var_dim not in [3, 4]:
         raise ValueError(f"var_dim == {var_dim} != 3 nor 4. stop.")
 
     if var_dim == 4 and vert_dim not in [ "plev30", "plev19", "plev8",
@@ -117,26 +119,32 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
     cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
 
     # Define time and time_bnds dimensions
-    time = ds["time"][:]
-    tm_units = ds["time"].units
+    #time = ds["time"][:]
+    time_coords = ds["time"][:]
+    time_coord_units = ds["time"].units
     time_bnds = []
-    print(f"(netcdf_var) tm_units = {tm_units}")
+    print(f"(netcdf_var) time_coord_units = {time_coord_units}")
     print(f"(netcdf_var) time_bnds  = {time_bnds}")
     try:
-        print( f"(netcdf_var) Executing cmor.axis('time', \n(netcdf_var) coord_vals = \n{time}, \n"
-               f"(netcdf_var) cell_bounds = {time_bnds}, units = {tm_units})   " )
+        print( f"(netcdf_var) Executing cmor.axis('time', \n"
+               f"(netcdf_var) coord_vals = \n{time_coords}, \n"
+               f"(netcdf_var) cell_bounds = {time_bnds}, units = {time_coord_units})   " )
 
         time_bnds = ds["time_bnds"][:]
-        cmor_time = cmor.axis("time", coord_vals = time, cell_bounds = time_bnds, units = tm_units)
-        #cmor_time = cmor.axis("time", coord_vals = time, units = tm_units)
-    except:
-        print("(netcdf_var) cmor_time = cmor.axis('time', coord_vals = time, units = tm_units)")
-        cmor_time = cmor.axis("time", coord_vals = time, units = tm_units)
+        cmor_time = cmor.axis("time", coord_vals = time_coords,
+                              cell_bounds = time_bnds, units = time_coord_units)
+        #cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
+    except ValueError as exc:
+        print(f"(netcdf_var) WARNING exception raised... exc={exc}")
+        print( "(netcdf_var) grabbing time_bnds didnt work... trying without it")
+        print( "(netcdf_var) cmor_time = cmor.axis('time', "
+              "coord_vals = time_coords, units = time_coord_units)")
+        cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
 
     # Set the axes
     save_ps = False
     ps = None
-    ierr = None
+    #ierr = None
     ips = None
     if var_dim == 3:
         axes = [cmor_time, cmor_lat, cmor_lon]
@@ -154,7 +162,7 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
             lev = ds[vert_dim]
 
             # find the ps file nearby
-            ps_file = nc_fl.replace('.{gfdl_var}.nc', '.ps.nc')
+            ps_file = nc_fl.replace(f'.{gfdl_var}.nc', '.ps.nc')
             ds_ps = nc.Dataset(ps_file)
             ps = ds_ps['ps'][:]
 
@@ -162,18 +170,18 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
                                  coord_vals = lev[:], units = lev.units,
                                  cell_bounds = ds[vert_dim+"_bnds"] )
             axes = [cmor_time, cmor_lev, cmor_lat, cmor_lon]
-            ierr = cmor.zfactor( zaxis_id = cmor_lev,
-                                 zfactor_name = "ap",
-                                 axis_ids = [cmor_lev, ],
-                                 zfactor_values = ds["ap"][:],
-                                 zfactor_bounds = ds["ap_bnds"][:],
-                                 units = ds["ap"].units )
-            ierr = cmor.zfactor( zaxis_id = cmor_lev,
-                                 zfactor_name = "b",
-                                 axis_ids = [cmor_lev, ],
-                                 zfactor_values = ds["b"][:],
-                                 zfactor_bounds = ds["b_bnds"][:],
-                                 units = ds["b"].units )
+            #ierr = cmor.zfactor( zaxis_id = cmor_lev,
+            #                     zfactor_name = "ap",
+            #                     axis_ids = [cmor_lev, ],
+            #                     zfactor_values = ds["ap"][:],
+            #                     zfactor_bounds = ds["ap_bnds"][:],
+            #                     units = ds["ap"].units )
+            #ierr = cmor.zfactor( zaxis_id = cmor_lev,
+            #                     zfactor_name = "b",
+            #                     axis_ids = [cmor_lev, ],
+            #                     zfactor_values = ds["b"][:],
+            #                     zfactor_bounds = ds["b_bnds"][:],
+            #                     units = ds["b"].units )
             ips = cmor.zfactor( zaxis_id = cmor_lev,
                                 zfactor_name = "ps",
                                 axis_ids = [cmor_time, cmor_lat, cmor_lon],
@@ -191,17 +199,17 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
             #print("Calling cmor.zfactor, len,vals = ",lev.shape,",",lev[:])
             cmor_lev = cmor.axis("alternate_hybrid_sigma_half",
                                  coord_vals = lev[:], units = lev.units )
-            axes = [cmor_time, cmor_lev, cmor_lat, cmor_lon]            
-            ierr = cmor.zfactor( zaxis_id = cmor_lev,
-                                 zfactor_name = "ap_half",
-                                 axis_ids = [cmor_lev, ],
-                                 zfactor_values = ds["ap_bnds"][:],
-                                 units = ds["ap_bnds"].units )
-            ierr = cmor.zfactor( zaxis_id = cmor_lev,
-                                 zfactor_name = "b_half",
-                                 axis_ids = [cmor_lev, ],
-                                 zfactor_values = ds["b_bnds"][:],
-                                 units = ds["b_bnds"].units )
+            axes = [cmor_time, cmor_lev, cmor_lat, cmor_lon]
+            #ierr = cmor.zfactor( zaxis_id = cmor_lev,
+            #                     zfactor_name = "ap_half",
+            #                     axis_ids = [cmor_lev, ],
+            #                     zfactor_values = ds["ap_bnds"][:],
+            #                     units = ds["ap_bnds"].units )
+            #ierr = cmor.zfactor( zaxis_id = cmor_lev,
+            #                     zfactor_name = "b_half",
+            #                     axis_ids = [cmor_lev, ],
+            #                     zfactor_values = ds["b_bnds"][:],
+            #                     units = ds["b_bnds"].units )
             ips = cmor.zfactor( zaxis_id = cmor_lev,
                                 zfactor_name = "ps",
                                 axis_ids = [cmor_time, cmor_lat, cmor_lon],
@@ -234,7 +242,7 @@ def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
     return filename
 
 
-def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, time_arr,
+def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, iso_datetime_arr,
                  cmip_input_json, cmor_table_vars_file, cmip_output, name_of_set  ):
     ''' processes a target directory/file '''
     print('\n\n----- START gfdl_to_pcmdi_var call -----')
@@ -249,29 +257,30 @@ def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, time_arr,
     if any( [ cmip_output == "/local2",
               cmip_output.find("/work") != -1,
               cmip_output.find("/net" ) != -1 ] ):
-        print(f'(gfdl_to_pcmdi_var) using /local /work /net ( tmp_dir = cmip_output/ )')
+        print('(gfdl_to_pcmdi_var) using /local /work /net ( tmp_dir = cmip_output/ )')
         tmp_dir = "{cmip_output}/"
     else:
-        print(f'(gfdl_to_pcmdi_var) NOT using /local /work /net (tmp_dir = cmip_output/tmp/ )')
+        print('(gfdl_to_pcmdi_var) NOT using /local /work /net (tmp_dir = cmip_output/tmp/ )')
         tmp_dir = f"{cmip_output}/tmp/"
         try:
             os.makedirs(tmp_dir, exist_ok=True)
         except Exception as exc:
-            raise OSError(f'problem creating temp output directory. stop.') from exc
+            raise OSError('problem creating temp output directory. stop.') from exc
     print(f'(gfdl_to_pcmdi_var) will use tmp_dir={tmp_dir}')
 
     # loop over sets of dates, each one pointing to a file
-    for i in range(len(time_arr)):
+    #for i in range(len(iso_datetime_arr)):
+    for i, iso_datetime in enumerate(iso_datetime_arr):
         print("\n\n==== begin (???) mysterious file movement ====================================")
 
         # why is nc_fls a filled list/array/object thingy here? see above line
-        nc_fls[i] = f"{dir2cmor}/{name_of_set}.{time_arr[i]}.{gfdl_var}.nc"
+        nc_fls[i] = f"{dir2cmor}/{name_of_set}.{iso_datetime}.{gfdl_var}.nc"
         if not os.path.exists(nc_fls[i]):
             print (f"(gfdl_to_pcmdi_var) input file(s) {nc_fls[i]} does not exist. Moving on.")
             continue #return # return? continue.
 
         # create a copy of the input file in the work directory
-        nc_file_work = f"{tmp_dir}{name_of_set}.{time_arr[i]}.{gfdl_var}.nc"
+        nc_file_work = f"{tmp_dir}{name_of_set}.{iso_datetime}.{gfdl_var}.nc"
         print(f"(gfdl_to_pcmdi_var) nc_file_work = {nc_file_work}")
         copy_nc( nc_fls[i], nc_file_work)
 
@@ -308,7 +317,7 @@ def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, time_arr,
         filename_no_nc = filename[:filename.rfind(".nc")]
         chunk_str = filename_no_nc[-6:]
         if not chunk_str.isdigit():
-            filename_corr = "{filename[:filename.rfind('.nc')]}_{time_arr[i]}.nc"
+            filename_corr = "{filename[:filename.rfind('.nc')]}_{iso_datetime}.nc"
             mv_cmd = f"mv {filename} {filename_corr}"
             print(f"(gfdl_to_pcmdi_var) mv_cmd = {mv_cmd}")
             os.system(mv_cmd)
@@ -336,19 +345,21 @@ def cmor_run_subtool( indir = None, varlist = None,
 
     # open CMOR table config file
     try:
-        proj_table_vars = json.load( open( table_config, "r") )
-    except:
+        proj_table_vars = json.load( open( table_config, "r",
+                                           encoding = "utf-8" ) )
+    except Exception as exc:
         raise FileNotFoundError(
             f'ERROR: table_config file cannot be opened.\n'
-            f'       table_config = {table_config}' )
+            f'       table_config = {table_config}' ) from exc
 
     # open input variable list
     try:
-        gfdl_var_lst = json.load( open( varlist, "r") )
-    except:
+        gfdl_var_lst = json.load( open( varlist, "r",
+                                        encoding = "utf-8" ) )
+    except Exception as exc:
         raise FileNotFoundError(
             f'ERROR: varlist file cannot be opened.\n'
-            f'       varlist = {varlist}' )
+            f'       varlist = {varlist}' ) from exc
 
     # examine input files to obtain available date ranges
     var_filenames = []
@@ -365,21 +376,21 @@ def cmor_run_subtool( indir = None, varlist = None,
     name_of_set = var_filenames[0].split(".")[0]
     print(f"(cmor_run_subtool) component label is name_of_set = {name_of_set}")
 
-    time_arr = []
+    iso_datetime_arr = []
     for filename in var_filenames:
-        time_arr.append(
+        iso_datetime_arr.append(
             filename.split(".")[1] )
-    time_arr.sort()
-    print(f"(cmor_run_subtool) Available dates: {time_arr}")
-    if len(time_arr) < 1:
-        raise ValueError(f'ERROR: time_arr has length 0!')
+    iso_datetime_arr.sort()
+    print(f"(cmor_run_subtool) Available dates: {iso_datetime_arr}")
+    if len(iso_datetime_arr) < 1:
+        raise ValueError('ERROR: iso_datetime_arr has length 0!')
 
     # process each variable separately
     for gfdl_var in gfdl_var_lst:
         if gfdl_var_lst[gfdl_var] in proj_table_vars["variable_entry"]:
             gfdl_to_pcmdi_var(
                 proj_table_vars, gfdl_var_lst,
-                indir, gfdl_var, time_arr,
+                indir, gfdl_var, iso_datetime_arr,
                 exp_config, table_config,
                 outdir, name_of_set )
         else:
