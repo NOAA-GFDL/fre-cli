@@ -18,7 +18,7 @@ setup(
         'cylc-rose',
         'cdo',
         'metomi-rose',
-        'git'
+        'GitPython'
     ],
     entry_points={
         'console_scripts': [
