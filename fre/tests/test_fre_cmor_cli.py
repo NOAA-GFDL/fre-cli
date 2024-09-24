@@ -1,13 +1,10 @@
-#!/usr/bin/env python3
 ''' test "fre cmor" calls '''
 
-import datetime
 from datetime import date
-import pathlib
 from pathlib import Path
 import subprocess
-import netCDF4 as nc
 
+import netCDF4 as nc
 from click.testing import CliRunner
 
 from fre import fre
@@ -46,10 +43,13 @@ def test_cli_fre_cmor_run_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
+
+# maybe this is not the right place for this test case? # TODO
+# these unit tests should be more about the cli, rather than the workload
 def test_cli_fre_cmor_run_case1(capfd):
     ''' fre cmor run, test-use case '''
 
-    
+
     # where are we? we're running pytest from the base directory of this repo
     rootdir = 'fre/tests/test_files'
 

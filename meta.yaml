@@ -43,6 +43,8 @@ requirements:
     - conda-forge::pytest-cov
     - conda-forge::python-cdo
     - conda-forge::cdo>=2.0.0
+    - pip:
+      - GitPython
 
 test:
   source_files: 

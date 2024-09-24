@@ -17,7 +17,8 @@ setup(
         'cylc-flow',
         'cylc-rose',
         'cdo',
-        'metomi-rose'
+        'metomi-rose',
+        'git'
     ],
     entry_points={
         'console_scripts': [
