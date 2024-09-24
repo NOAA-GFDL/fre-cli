@@ -12,7 +12,6 @@ source:
 
 build:
   script: 
-    - {{ PYTHON }} -m pip install GitPython -vv
     - {{ PYTHON }} -m pip install . -vv
   number: 1
   noarch: python
@@ -52,7 +51,6 @@ test:
     - click
     - pytest
     - pylint
-    - git
     - fre
     - fre.pp
     - fre.pp.install
@@ -65,7 +63,7 @@ test:
     - fre.catalog
   commands:
     - pylint --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
-    - pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
+    - pip install GitPython && pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
     - fre --help
     - fre pp --help
     - fre pp install --help
