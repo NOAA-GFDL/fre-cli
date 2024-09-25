@@ -37,6 +37,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
     tlist = target
 
     # Combine model, compile, and platform yamls
+    # Default behavior - combine yamls / rewrite combined yaml
     comb = cy.init_compile_yaml(yml,platform,target)
     full_combined = cy.get_combined_compileyaml(comb)
 
