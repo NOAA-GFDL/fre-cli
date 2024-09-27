@@ -26,7 +26,7 @@ def test_cli_fre_catalog_builder():
     result = runner.invoke(fre.fre, args=["catalog", "builder"])
     assert all( [
                   result.exit_code == 1,
-                  'No paths given, using yaml configuration'
+                  'Missing: input_path or output_path. Pass it in the config yaml or as command-line option'
                     in result.stdout.split('\n')
                 ]
               )
