@@ -9,6 +9,7 @@ import os
 import logging
 from multiprocessing.dummy import Pool
 import click
+from pathlib import Path
 from .gfdlfremake import targetfre, varsfre, yamlfre, checkout, makefilefre, buildDocker, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
