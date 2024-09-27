@@ -77,6 +77,9 @@ def test_merged_compile_yamls():
     # Check that the combined yaml exists
     assert Path(f"{comp_out_dir}/combined-{COMP_EXPERIMENT}.yaml").exists()
 
+    # Go back to original directory
+    os.chdir(CWD)
+
 def test_combined_compileyaml_validation():
     """
     Validate the combined compile yaml
@@ -121,6 +124,9 @@ def test_combined_compileyaml_combinefail():
         shutil.move(f"combined-am5-wrong_compilefile.yaml", comp_out_dir)
         assert True
 
+    # Go back to original directory
+    os.chdir(CWD)
+
 def test_combined_compileyaml_validatefail():
     """
     Check if the schema is validating correctly
@@ -157,6 +163,9 @@ def test_combined_compileyaml_validatefail():
         validate(instance=yml,schema=schema)
     except:
         assert True 
+
+    # Go back to original directory
+    os.chdir(CWD)
     
 ############ PP ############
 def test_expyaml_exists():
@@ -192,6 +201,9 @@ def test_merged_pp_yamls():
 
     # Check that the combined yaml exists
     assert Path(f"{pp_out_dir}/combined-{PP_EXPERIMENT}.yaml").exists()
+
+    # Go back to original directory
+    os.chdir(CWD)
 
 def test_combined_ppyaml_validation():
     """
