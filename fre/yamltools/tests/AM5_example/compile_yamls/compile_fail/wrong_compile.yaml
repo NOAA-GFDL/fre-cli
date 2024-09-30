@@ -1,0 +1,11 @@
+compile:
+     experiment: "am5"
+     container_addlibs: 
+     baremetal_linkerflags:  
+     src:
+          - component: 
+            repo: "https://github.com/NOAA-GFDL/FMS.git"
+            cppdefs: "-DINTERNAL_FILE_NML -Duse_libMPI -Duse_netCDF" 
+            branch: 2022.01
+            cppdefs: "-DHAVE_GETTID -Duse_libMPI -Duse_netCDF"
+            otherFlags: *FMSincludes

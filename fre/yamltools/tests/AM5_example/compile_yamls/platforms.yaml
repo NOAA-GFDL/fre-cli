@@ -14,7 +14,7 @@ platforms:
      fc: ftn
      cc: cc
      mkTemplate: "/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/$(INTEL).mk"
-     modelRoot: "/ncrc/home1/Dana.Singh/fre/fre-cli/fre/make/tests/AM5_example/combine_yamls/test" #${HOME}/fremake_canopy/test
+     modelRoot: ${HOME}/fremake_canopy/test
    - name: hpcme.2023
      compiler: intel
      RUNenv: [". /spack/share/spack/setup-env.sh", "spack load libyaml", "spack load netcdf-fortran@4.5.4", "spack load hdf5@1.14.0"]

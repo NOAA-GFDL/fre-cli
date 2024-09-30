@@ -10,27 +10,18 @@
 
 import os
 import json
+import sys
 import shutil
 import click
+from pathlib import Path
 from jsonschema import validate
 import yaml
 import metomi.rose.config
 
-######VALIDATE#####
-package_dir = os.path.dirname(os.path.abspath(__file__))
-schema_path = os.path.join(package_dir, 'schema.json')
-def validate_yaml(file):
-    """
-     Using the schema.json file, the yaml format is validated.
-    """
-    # Load the json schema: .load() (vs .loads()) reads and parses the json in one
-    with open(schema_path) as s:
-        schema = json.load(s)
-
-    # Validate yaml
-    # If the yaml is not valid, the schema validation will raise errors and exit
-    if validate(instance=file,schema=schema) is None:
-        print("YAML VALID")
+# Relative import
+f = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(f)
+import yamltools.combine_yamls as cy
 
 ####################
 def yaml_load(yamlfile):
@@ -42,6 +33,25 @@ def yaml_load(yamlfile):
         y=yaml.safe_load(f)
 
     return y
+
+######VALIDATE#####
+def validate_yaml(yamlfile):
+    """
+     Using the schema.json file, the yaml format is validated.
+    """
+    # Load the yaml
+    yml = yaml_load(yamlfile)
+
+    package_dir = os.path.dirname(os.path.abspath(__file__))
+    schema_path = os.path.join(package_dir, 'schema.json')
+    # Load the json schema: .load() (vs .loads()) reads and parses the json in one
+    with open(schema_path,'r') as s:
+        schema = json.load(s)
+
+    # Validate yaml
+    # If the yaml is not valid, the schema validation will raise errors and exit
+    if validate(instance=yml,schema=schema) is None:
+        print("COMBINED YAML VALID \n")
 
 ####################
 def rose_init(experiment,platform,target):
@@ -152,8 +162,15 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     # Initialize the rose configurations
     rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
 
+    # Combine model, experiment, and analysis yamls
+    comb = cy.init_pp_yaml(yml,e,p,t)
+    full_combined = cy.get_combined_ppyaml(comb)
+
+    # Validate yaml
+    validate_yaml(full_combined)
+
     # Load the combined yaml
-    comb_pp_yaml = yaml_load(yml)
+    comb_pp_yaml = yaml_load(full_combined)
 
     ## PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items
@@ -166,7 +183,7 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     print("Writing output files...")
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
-    shutil.copyfile(yml, outfile)
+    shutil.copyfile(full_combined, outfile)
     print("  " + outfile)
 
     dumper = metomi.rose.config.ConfigDumper()

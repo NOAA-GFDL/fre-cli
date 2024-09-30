@@ -1,164 +1,201 @@
 {
-	"$schema": "https://json-schema.org/draft/2020-12/schema",
-  	"$id": "https://example.com/product.schema.json",
-	"title": "frecanopy", 
-	"description": "A yaml base for use with fre canopy",
-	"type": "object",
-	"properties": {
-		"platformYaml": {
-                        "description": "Path to the platform yaml file",
-                        "type": "string"
-		},
-		"compileYaml": {
-                        "description": "Path to the compile yaml file",
-                        "type": "string"
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "name": {
+            "description": "The name of the experiment",
+            "type": "string"
+        },
+        "platform": {
+            "description": "The platforms listed in the command",
+            "type": "string"
+        },
+        "target": {
+            "description": "The targets listed in the command",
+            "type": "string"
+        },
+        "build": {
+           "type": "object",
+           "additionalProperties": false,
+           "properties": {
+               "compileYaml": {
+                   "description": "Path to the compile yaml.",
+                   "type": "string"
+               },
+               "platformYaml": {
+                   "description": "Path to the platform yaml.",
+                   "type": "string"
+               }
+           }
+        },
+        "compile": {
+            "description": "The source code descriptions",
+            "$ref": "#/definitions/Compile"
+        },
+        "platforms": {
+            "description": "FRE platforms",
+            "type": "array",
+            "items": {"$ref": "#/definitions/Platform"}
+        }
+    },
+    "definitions": {  
+        "Compile": {
+            "type": "object",
+            "properties": {
+                "experiment": {
+                    "description": "The name of the model",
+                    "type": "string"
                 },
-		"experiment": {
-			"description": "The name of the model",
-			"type": "string"
-		},
-                "container_addlibs":{
-                        "description": "Libraries and packages needed for linking in the container",
-                        "type": ["array","string","null"]
+                "container_addlibs": {
+                    "description": "Libraries and packages needed for linking in the container",
+                    "type": ["array","string","null"]
                 },
-                "baremetal_linkerflags":{
-                        "description": "Linker flags of libraries and packages needed for linking in the bare-metal build",
-                        "type": ["array","string","null"]
+                "baremetal_linkerflags": {
+                    "description": "Linker flags of libraries and packages needed for linking in the bare-metal build",
+                    "type": ["array","string","null"]
                 },
-		"src":{
-			"description": "The source code descriptions",
-			"type": "array",
-			"items":{"$ref": "#/$defs/comp" }
-		},
-		"platforms":{
-                        "description": "FRE platforms",
-                        "type": "array",
-                        "items":{"$ref": "#/$defs/plat" }
+                "src": {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/Src"}
                 }
-	},
-	"$defs":{
-		"comp": {
-			"type": "object",
-			"required": ["component", "repo"],
-			"properties":{
-				"component": {
-					"type": "string",
-					"description": "The name of the model component"
-				},
-				"repo": {
-					"anyOf": [
-						{ 
-							"type": "string",
-                                        		"description": "The URL of the code repository"
-						},
-						{
-                                                        "type": ["array","string"],
-                                                        "description": "The URL of the code repository"
-                                                }
-						]
-				},
-				"branch": {
-					"anyOf": [
-                                                {
-                                                        "type": "string",
-                                                        "description": "The version of code to clone"
-                                                },
-                                                {
-                                                        "type": ["array","string"],
-                                                        "description": "The version of code to clone"
-                                                }
-                                                ]
-				},
-				"requires": {
-                                        "type": ["array","string"],
-                                        "description": "list of componets that this component depends on"
-				},
-				"cppdefs": {
-                                        "type": "string",
-                                        "description": "String of CPPDEFs to include in compiling the component"
-                                },
-				"paths": {
-                                        "type": ["array","string"],
-                                        "description": "A list of the paths in the component to compile"
-                                },
-				"additionalInstructions": {
-                                        "type": "string",
-                                        "description": "Additional instuctions to run after checkout"
-				},
-				"doF90Cpp": {
-                                        "type": "boolean",
-                                        "description": "True if the preprocessor needs to be run"
-                                },
-                                "makeOverrides": {
-                                        "type": "string",
-                                        "description": "Overrides openmp target for MOM6" 
-                                },
-                                "otherFlags": {
-                                        "type": "string",
-                                        "description": "String of Include flags necessary to retrieve other code needed"
-                                }
-			},
-			"additionalProperties": false
-		},
-		"plat": {
-                        "type": "object",
-                        "required": ["name", "compiler", "fc", "cc"],
-                        "properties":{
-				"name": {
-                                        "type": "string",
-                                        "description": "The name of the platform"
-				},
-				"compiler": {
-                                        "type": "string",
-                                        "description": "The compiler used to build the model"
-				},
-				"modulesInit": {
-                                        "type": ["array","string"],
-                                        "description": "Array of commands to run before loading modules"
-				},
-				"modules": {
-                                        "type": ["array","string"],
-                                        "description": "List (array) of modules to load"
-				},
-				"fc": {
-                                        "type": "string",
-                                        "description": "The Fortran compiler"
-				},
-				"cc": {
-                                        "type": "string",
-                                        "description": "The C compiler"
-                                },
-				"mkTemplate": {
-                                        "type": "string",
-                                        "description": "Path to the mk template file"
-				},
-				"modelRoot": {
-                                        "type": "string",
-                                        "description": "Path to the root for all model install files"
-				},
-				"container": {
-					"anyOf": 
-						[
-							{"type": "string"},
-							{"type": "boolean"}
-						]
-				},
-				"RUNenv": {
-					"type": ["array", "string"],
-					"description": "Commands needed at the beginning of a RUN in dockerfile"
-				},
-				"containerBuild": {
-                                        "type": "string",
-                                        "description": "Program used to build the container"
-				},
-				"containerRun": {
-                                        "type": "string",
-                                        "description": "Program used to run the container"
-				}
-			},
-                        "additionalProperties": false
+            }
+        },
+        "Src": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "description": "The name of the model component",
+                    "type": "string"
+                },
+                "repo": {
+                    "anyOf": [
+                        {
+                            "description": "The URL of the code repository",
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uri",
+                                "qt-uri-protocols": [
+                                    "https"
+                                ],
+                                "qt-uri-extensions": [
+                                    ".git"
+                                ]
+                            }
+                        },
+                        {
+                            "description": "The URL of the code repository",
+                            "type": "string",
+                            "format": "uri",
+                            "qt-uri-protocols": [
+                                "https"
+                            ],
+                            "qt-uri-extensions": [
+                                ".git"
+                            ]            
+                        }
+                    ]
+                },
+                "cppdefs": {
+                    "description": "String of CPPDEFs to include in compiling the component",
+                    "type": "string"
+                },
+                "branch": {
+                    "anyOf": [
+                        {
+                            "description": "The version of code to clone",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "description": "The version of code to clone",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "otherFlags": {
+                    "description": "String of Include flags necessary to retrieve other code needed",
+                    "type": "string"
+                },
+                "requires": {
+                    "description": "list of componets that this component depends on",
+                    "type": "array",
+                    "items": {"type": "string"}
+                },
+                "paths": {
+                    "description": "A list of the paths in the component to compile",
+                    "type": "array",
+                    "items": {"type": "string"}
+                },
+                "doF90Cpp": {
+                    "description": "True if the preprocessor needs to be run",
+                    "type": "boolean"
+                },
+                "makeOverrides": {
+                    "description": "Overrides openmp target for MOM6",
+                    "type": "string"
                 }
-	},
-	"required": ["experiment", "src", "platforms"],
-	"additionalProperties": true
+            }
+        },
+        "Platform": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "The name of the platform",
+                    "type": "string"
+                },
+                "compiler": {
+                    "description": "The compiler used to build the model",
+                    "type": "string"
+                },
+                "modulesInit": {
+                    "description": "Array of commands to run before loading modules",
+                    "type": "array",
+                    "items": {"type": "string"}
+                },
+                "modules": {
+                    "description": "List (array) of modules to load",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "fc": {
+                    "description": "The Fortran compiler",
+                    "type": "string"
+                },
+                "cc": {
+                    "description": "The C compiler",
+                    "type": "string"
+                },
+                "mkTemplate": {
+                    "description": "Path to the mk template file",
+                    "type": "string"
+                },
+                "modelRoot": {
+                    "description": "Path to the root for all model install files",
+                    "type": "string"
+                },
+                "RUNenv": {
+                    "description": "Commands needed at the beginning of a RUN in dockerfile",
+                    "type": ["array","string"]
+                },
+                "container": {
+                    "description": "True/False if using container to compile",
+                    "type": "boolean"
+                },
+                "containerBuild": {
+                    "description": "Program used to build the container",
+                    "type": "string"
+                },
+                "containerRun": {
+                    "description": "Program used to run the container",
+                    "type": "string"
+                }
+            }
+        }
+    }
 }
