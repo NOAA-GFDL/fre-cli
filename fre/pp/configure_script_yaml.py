@@ -87,9 +87,9 @@ def quote_rose_values(value):
     boolean, in which case do not quote them.
     """
     if isinstance(value, bool):
-        return(f"{value}")
+        return f"{value}"
     else:
-        return("'" + value + "'")
+        return "'" + value + "'"
 
 ####################
 def set_rose_suite(yamlfile,rose_suite):
@@ -106,7 +106,8 @@ def set_rose_suite(yamlfile,rose_suite):
                 for key,value in i.items():
                     # rose-suite.conf is somewhat finicky with quoting
                     # cylc validate will reveal any complaints
-                    rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
+                    rose_suite.set( keys = ['template variables', key.upper()],
+                                    value = quote_rose_values(value) )
     if dirs is not None:
         for key,value in dirs.items():
             rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))

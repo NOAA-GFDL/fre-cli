@@ -200,7 +200,7 @@ class DiagTable:
                     subregion.
                     """
                     is_same = False
-        if (found and is_same):
+        if found and is_same:
             return
 
         tmp_dict2["line"] = myval
@@ -212,7 +212,7 @@ class DiagTable:
             stuff = myval.split(' ')
             k = -1
             for j in range(len(stuff)):
-                if (stuff[j] == ""):
+                if stuff[j] == "":
                     continue  # Some lines have extra spaces ("1 10  9 11 -1 -1")
                 k = k + 1
 
@@ -309,20 +309,20 @@ class DiagTable:
                     for i in range(len(iline_list)):
                         j = i
                         # Do not do anything with the "file_format" column
-                        if (i == 3):
+                        if i == 3:
                             continue
-                        if (i > 3):
+                        if i > 3:
                             j = i - 1
                         mykey = self.file_section_keys[j]
                         myfunct = self.file_section_fvalues[mykey]
                         myval = myfunct(iline_list[i].strip().strip('"').strip("'"))
 
                         # Ignore file_duration if it less than 0
-                        if (i == 9 and myval <= 0):
+                        if i == 9 and myval <= 0:
                             continue
 
                         # Ignore the file_duration_units if it is an empty string
-                        if (i == 10 and myval == ""):
+                        if i == 10 and myval == "":
                             continue
                         tmp_dict[mykey] = myval
                     self.file_section.append(cp.deepcopy(tmp_dict))
@@ -334,11 +334,11 @@ class DiagTable:
                             j = i
                             buf = iline_list[i]
                             # Do nothing with the "time_sampling" section
-                            if (i == 4):
+                            if i == 4:
                                 continue
-                            if (i > 4):
+                            if i > 4:
                                 j = i - 1
-                            if (i == 5):
+                            if i == 5:
                                 # Set the reduction to average or none instead of the other options
                                 if "true" in buf.lower() or "avg" in buf.lower() or "mean" in buf.lower():
                                     buf = "average"
@@ -346,10 +346,10 @@ class DiagTable:
                                     buf = "none"
 
                             # Set the kind to either "r4" or "r8"
-                            if (i == 7):
-                                if ("2" in buf):
+                            if i == 7:
+                                if "2" in buf:
                                     buf = "r4"
-                                elif ("1" in buf):
+                                elif "1" in buf:
                                     buf = "r8"
                                 else:
                                     raise Exception(" ERROR with line # " + str(iline_count) + '\n'
@@ -360,7 +360,7 @@ class DiagTable:
                             myval = myfunct(buf.strip().strip('"').strip("'"))
 
                             # Do not add the region to the field section. This will be added to the file later
-                            if (i != 6):
+                            if i != 6:
                                 tmp_dict[mykey] = myval
                             else:
                                 self.set_sub_region(myval, tmp_dict)
@@ -426,7 +426,7 @@ class DiagTable:
                     tmp_dict = cp.deepcopy(iregion_dict)
                     del tmp_dict['file_name']
                     del tmp_dict['line']
-                    if (tmp_dict['grid_type'] != "none"):
+                    if tmp_dict['grid_type'] != "none":
                         ifile_dict['sub_region'].append(tmp_dict)
                         found = True
                         if tmp_dict['is_only_zbounds']:

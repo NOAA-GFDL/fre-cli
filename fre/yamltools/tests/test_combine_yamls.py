@@ -19,7 +19,7 @@ in_dir = Path(f"{CWD}/{test_dir}/AM5_example")
 comp_out_dir = Path(f"{CWD}/{test_dir}/combine_yamls_out/compile")
 pp_out_dir = Path(f"{CWD}/{test_dir}/combine_yamls_out/pp")
 
-# If output directory exists, remove and create again 
+# If output directory exists, remove and create again
 for out in [comp_out_dir, pp_out_dir]:
     if out.exists():
         shutil.rmtree(out)
@@ -58,7 +58,7 @@ def test_platformyaml_exists():
 
 def test_merged_compile_yamls():
     """
-    Check for the creation of the combined-[experiment] yaml 
+    Check for the creation of the combined-[experiment] yaml
     Check that the model yaml was merged into the combined yaml
     """
     # Go into the input directory
@@ -146,7 +146,7 @@ def test_combined_compileyaml_validatefail():
     shutil.move(f"combined-am5-wrong_datatype.yaml", comp_out_dir)
 
     # Validate against schema; should fail
-    wrong_combined = Path(f"{comp_out_dir}/combined-am5-wrong_datatype.yaml")     
+    wrong_combined = Path(f"{comp_out_dir}/combined-am5-wrong_datatype.yaml")
     schema_file = os.path.join(f"{in_dir}","compile_yamls","schema.json")
 
     # Open/load combined yaml file
@@ -162,11 +162,11 @@ def test_combined_compileyaml_validatefail():
     try:
         validate(instance=yml,schema=schema)
     except:
-        assert True 
+        assert True
 
     # Go back to original directory
     os.chdir(CWD)
-    
+
 ############ PP ############
 def test_expyaml_exists():
     """

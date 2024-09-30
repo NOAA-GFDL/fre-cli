@@ -9,7 +9,7 @@ class cdoTimeAverager(timeAverager):
 
     def generate_timavg(self, infile=None, outfile=None):
         ''' use cdo package routines via python bindings '''
-        assert (self.pkg=="cdo")
+        assert self.pkg=="cdo"
         if __debug__:
             print(locals()) #input argument details
 
@@ -19,7 +19,8 @@ class cdoTimeAverager(timeAverager):
             return 1
 
         if self.var is not None:
-            print(f'WARNING: variable specification (var={self.var}) not currently supported for cdo time averaging. ignoring!')
+            print(f'WARNING: variable specification (var={self.var})' + \
+                  f' not currently supported for cdo time averaging. ignoring!')
 
         import cdo
         print(f'python-cdo version is {cdo.__version__}')
@@ -35,7 +36,8 @@ class cdoTimeAverager(timeAverager):
             nc_fin = Dataset(infile, 'r')
 
             time_bnds=nc_fin['time_bnds'][:].copy()
-            wgts=numpy.moveaxis(time_bnds,0,-1)[1][:].copy() - numpy.moveaxis(time_bnds,0,-1)[0][:].copy()
+            wgts = ( numpy.moveaxis(time_bnds,0,-1)[1][:].copy() - \
+                     numpy.moveaxis(time_bnds,0,-1)[0][:].copy() )
             wgts_sum=sum(wgts)
             if __debug__:
                 print(f'wgts_sum={wgts_sum}')

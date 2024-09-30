@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-    Script combines the model yaml with 
+    Script combines the model yaml with
     the compile, platform, and experiment
     yamls.
 """
@@ -44,7 +44,7 @@ def get_compile_paths(mainyaml_dir,comb):
         if Path(comb_model["build"]["platformYaml"]).exists():
             py=comb_model["build"]["platformYaml"]
             py_path=Path(os.path.join(mainyaml_dir,py))
-        else: 
+        else:
             raise ValueError("Incorrect platform yaml path given; does not exist.")
     else:
         raise ValueError("No platform yaml path given!")
@@ -89,7 +89,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
         if experiment == i.get("name"):
             expyaml=i.get("pp")
             analysisyaml=i.get("analysis")
-            
+
             if expyaml is not None:
                 ey_path=[]
                 for e in expyaml:
@@ -104,7 +104,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
             if analysisyaml is not None:
                 ay_path=[]
                 for a in analysisyaml:
-                    if Path(a).exists():            
+                    if Path(a).exists():
                         ay=Path(os.path.join(mainyaml_dir,a))
                         ay_path.append(ay)
                     else:
@@ -183,7 +183,7 @@ class init_compile_yaml():
 
   def clean_yaml(self):
       """
-      Clean the yaml; remove unnecessary sections in 
+      Clean the yaml; remove unnecessary sections in
       final combined yaml.
       """
       # Load the fully combined yaml
@@ -238,7 +238,7 @@ class init_pp_yaml():
             shutil.copyfileobj(f2,f1)
 
     print(f"   model yaml: {self.yml}")
-    
+
   def combine_experiment(self):
     """
     Combine experiment yamls with the defined combined.yaml
@@ -276,7 +276,7 @@ class init_pp_yaml():
 
   def clean_yaml(self):
       """
-      Clean the yaml; remove unnecessary sections in 
+      Clean the yaml; remove unnecessary sections in
       final combined yaml.
       """
       # Load the fully combined yaml
@@ -300,7 +300,7 @@ def get_combined_compileyaml(comb):
     """
     Combine the model, compile, and platform yamls
     Arguments:
-        - comb : combined yaml object 
+        - comb : combined yaml object
     """
     # Merge model into combined file
     comb_model = comb.combine_model()
@@ -328,7 +328,7 @@ def combined_compile_existcheck(combined,yml,platform,target):
         print("\nNOTE: Yamls previously merged.")
     else:
         comb = init_compile_yaml(yml,platform,target)
-        full_combined = get_combined_compileyaml(comb) 
+        full_combined = get_combined_compileyaml(comb)
 
     return full_combined
 
