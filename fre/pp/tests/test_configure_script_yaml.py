@@ -44,3 +44,6 @@ def test_configure_script():
                 Path(f"{out_dir}/rose-suite.conf").exists(),
                 Path(f"{out_dir}/app/regrid-xy/rose-app.conf").exists(),
                 Path(f"{out_dir}/app/remap-pp-components/rose-app.conf").exists()])
+
+    # Go back to original directory
+    os.chdir(CWD)

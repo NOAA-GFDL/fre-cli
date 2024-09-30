@@ -36,19 +36,10 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
     plist = platform
     tlist = target
 
-    ## If combined yaml does not exists, combine model, compile, and platform yamls
-    cd = Path.cwd()
-    combined = Path(f"combined-{name}.yaml")
-    combined_path=os.path.join(cd,combined)
-
     # Combine model, compile, and platform yamls
-    # If fre yammltools combine-yamls tools was used, the combined yaml should exist
-    if Path(combined_path).exists():
-        full_combined = combined_path
-        print("\nNOTE: Yamls previously merged.")
-    else:
-        comb = cy.init_compile_yaml(yml,platform,target)
-        full_combined = cy.get_combined_compileyaml(comb)
+    # Default behavior - combine yamls / rewrite combined yaml
+    comb = cy.init_compile_yaml(yml,platform,target)
+    full_combined = cy.get_combined_compileyaml(comb)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined) 

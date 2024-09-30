@@ -37,7 +37,7 @@ def function(context, uppercase):
                 help="Target name",
                 required=True)
 @click.option("--use",
-              type=str,
+              type=click.Choice(['compile','pp']),
               help="Process user is combining yamls for. Can pass 'compile' or 'pp'",
               required=True)
 @click.pass_context

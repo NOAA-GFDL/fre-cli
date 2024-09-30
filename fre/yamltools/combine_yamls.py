@@ -197,7 +197,7 @@ class init_compile_yaml():
               del full_yaml[kc]
 
       with open(self.combined,'w',encoding='UTF-8') as f:
-          yaml.safe_dump(full_yaml,f,sort_keys=False)
+          yaml.safe_dump(full_yaml,f,default_flow_style=False,sort_keys=False)
 
       print(f"Combined yaml located here: {os.path.dirname(self.combined)}/{self.combined}")
       return self.combined
@@ -289,13 +289,13 @@ class init_pp_yaml():
           if kc in full_yaml.keys():
               del full_yaml[kc]
 
-      with open(self.combined,'w',encoding='UTF-8') as f:
-          yaml.safe_dump(full_yaml,f,sort_keys=False)
+      with open(self.combined,'w') as f:
+          yaml.safe_dump(full_yaml,f,default_flow_style=False,sort_keys=False)
 
       print(f"Combined yaml located here: {os.path.dirname(self.combined)}/{self.combined}")
       return self.combined
 
-## Functions to combine the yaml files
+## Functions to combine the yaml files ##
 def get_combined_compileyaml(comb):
     """
     Combine the model, compile, and platform yamls
@@ -307,9 +307,28 @@ def get_combined_compileyaml(comb):
     # Merge compile.yaml into combined file
     comb_compile = comb.combine_compile()
     # Merge platforms.yaml into combined file
-    comb_platform = comb.combine_platforms()
+    full_combined = comb.combine_platforms()
     # Clean the yaml
     full_combined = comb.clean_yaml()
+
+    return full_combined
+
+def combined_compile_existcheck(combined,yml,platform,target):
+    """
+    Checks for if combined compile yaml exists already.
+    If not, combine model, compile, and platform yamls.
+    """
+    cd = Path.cwd()
+    combined_path=os.path.join(cd,combined)
+
+    # Combine model, compile, and platform yamls
+    # If fre yammltools combine-yamls tools was used, the combined yaml should exist
+    if Path(combined_path).exists():
+        full_combined = combined_path
+        print("\nNOTE: Yamls previously merged.")
+    else:
+        comb = init_compile_yaml(yml,platform,target)
+        full_combined = get_combined_compileyaml(comb) 
 
     return full_combined
 
@@ -342,11 +361,12 @@ def _consolidate_yamls(yamlfile,experiment,platform,target,use):
         combined = init_compile_yaml(yamlfile, platform, target)
         # Create combined compile yaml
         get_combined_compileyaml(combined)
-
-    if use =="pp":
+    elif use =="pp":
         combined = init_pp_yaml(yamlfile,experiment,platform,target)
         # Create combined pp yaml
         get_combined_ppyaml(combined)
+    else:
+        raise ValueError("'use' value is not valid; must be 'compile' or 'pp'")
 
 @click.command()
 def consolidate_yamls(yamlfile,experiment,platform,target,use):

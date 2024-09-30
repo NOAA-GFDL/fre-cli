@@ -32,6 +32,8 @@ requirements:
     - pylint
     - jsonschema
     - noaa-gfdl::catalogbuilder
+    - noaa-gfdl::fre-nctools
+    - conda-forge::nccmp
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
@@ -60,8 +62,8 @@ test:
     - fre.cmor
     - fre.catalog
   commands:
-    - pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
-    - pylint fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
+    - pylint --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
+    - pip install GitPython && pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
     - fre --help
     - fre pp --help
     - fre pp install --help

@@ -18,19 +18,11 @@ def makefile_create(yamlfile,platform,target):
     yml = yamlfile
     name = yamlfile.split(".")[0]
 
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    cd = Path.cwd()
     combined = Path(f"combined-{name}.yaml")
-    combined_path=os.path.join(cd,combined)
 
-    # Combine model, compile, and platform yamls
-    # If fre yammltools combine-yamls tools was used, the combined yaml should exist
-    if Path(combined_path).exists():
-        full_combined = combined_path
-        print("\nNOTE: Yamls previously merged.")
-    else:
-        comb = cy.init_compile_yaml(yml,platform,target)
-        full_combined = cy.get_combined_compileyaml(comb)
+    ## If combined yaml exists, note message of its existence
+    ## If combined yaml does not exist, combine model, compile, and platform yamls
+    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target) 
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined)
@@ -50,7 +42,6 @@ def makefile_create(yamlfile,platform,target):
                 raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
 
             (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
-
   ## Make the bldDir based on the modelRoot, the platform, and the target
             srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
