@@ -73,7 +73,8 @@ def test_make_ncgen3_nc_inputs(capfd):
     assert Path(d).exists()
 
     ncgen3_OUTPUT = d + TEST_NC_GRID_FILE
-    ncgen3_INPUT = TEST_DATA_IN_DIR + TEST_CDL_GRID_FILE
+    #ncgen3_INPUT = TEST_DATA_IN_DIR + TEST_CDL_GRID_FILE
+    ncgen3_INPUT = LOCAL_TEST_DIR + TEST_CDL_GRID_FILE
     if Path(ncgen3_OUTPUT).exists():
         assert True
     else:
