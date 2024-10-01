@@ -7,11 +7,51 @@ import click
 
 from .mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
+from .regrid_xy.regrid_xy import _regrid_xy
 
 @click.group(help=click.style(" - access fre app subcommands", fg=(250,154,90)))
 def app_cli():
     ''' entry point to fre app click commands '''
 
+@app_cli.command()
+@click.option("-i", "--input_dir",
+              type=str,
+              help="`inputDir` / `input_dir` (env var) specifies input directory to regrid, typically an untarredv history file archive",
+              required=True)
+@click.option("-o", "--output_dir",
+              type=str,
+              help="`outputDir` / `output_dir` (env var) specifies target location for output regridded files",
+              required=True)
+@click.option("-b", "--begin",
+              type=str,
+              help="`begin` / `begin` (env var) ISO8601 datetime format specification for starting date of data, part of input target file name",
+              required=True)
+@click.option("-t", "--tmp_dir",
+              type=str,
+              help="`TMPDIR` / `tmp_dir` (env var) temp directory for location of file read/writes",
+              required=True)
+@click.option("-r", "--remap_dir",
+              type=str,
+              help="`fregridRemapDir` / `remap_dir` (env var) directory containing remap file for regridding",
+              required=True)
+@click.option("-s", "--source",
+              type=str,
+              help="`source` / `source` (env var) source name for input target file name within input directory to target for regridding. the value for `source` must be present in at least one component's configuration fields",
+              required=True)
+@click.option("-g", "--grid_spec",
+              type=str,
+              help="`gridSpec` / `grid_spec` (env var) file containing mosaic for regridding",
+              required=True)
+@click.option("-I", "--def_xy_interp",
+              type=str,
+              help="`defaultxyInterp` / `def_xy_interp` (env var) default lat/lon resolution for output regridding. (change me? TODO)",
+              required=True)
+@click.pass_context
+def regrid(context,
+              input_dir, output_dir, begin, tmp_dir,
+              remap_dir, source, grid_xpec, def_xy_interp ):
+    ''' regrid target netcdf file '''
+    context.forward(_regrid_xy)
 
 @app_cli.command()
 @click.option("-i", "--infile",
