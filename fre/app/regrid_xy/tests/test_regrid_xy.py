@@ -127,7 +127,8 @@ def test_make_ncgen_grid_spec_nc_inputs(capfd):
     else:
         for i in range(1, 6+1):
             ncgen_grid_spec_i_nc_OUTPUT = d + f'{YYYYMMDD}.grid_spec.tile{i}.nc'
-            ncgen_grid_spec_i_cdl_INPUT = TEST_DATA_IN_DIR + f'{YYYYMMDD}.grid_spec.tile{i}.cdl'
+            #ncgen_grid_spec_i_cdl_INPUT = TEST_DATA_IN_DIR + f'{YYYYMMDD}.grid_spec.tile{i}.cdl'
+            ncgen_grid_spec_i_cdl_INPUT = LOCAL_TEST_DIR + f'{YYYYMMDD}.grid_spec.tile{i}.cdl'
             ex = [ 'ncgen', '-o', ncgen_grid_spec_i_nc_OUTPUT, ncgen_grid_spec_i_cdl_INPUT ]
             print (' '.join(ex))
             sp = subprocess.run( ex )
