@@ -3,17 +3,17 @@
 import os
 import sys
 import logging
+from pathlib import Path
 from multiprocessing.dummy import Pool
-
 import click
 from .gfdlfremake import varsfre, platformfre, yamlfre, targetfre, buildBaremetal
+import fre.yamltools.combine_yamls as cy
 
 @click.command()
 def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
     # Define variables
     yml = yamlfile
-    ps = platform
-    ts = target
+    name = yamlfile.split(".")[0]
     nparallel = parallel
     jobs = str(jobs)
     run = execute
@@ -31,11 +31,18 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
     plist = platform
     tlist = target
 
+    # Combined compile yaml file
+    combined = Path(f"combined-{name}.yaml")
+
+    ## If combined yaml exists, note message of its existence
+    ## If combined yaml does not exist, combine model, compile, and platform yamls
+    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
+
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(yml)
+    freVars = varsfre.frevars(full_combined)
 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml,freVars)
+    modelYaml = yamlfre.freyaml(full_combined,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
@@ -50,7 +57,8 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
-              raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
+              raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+
          (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
     ## Make the bldDir based on the modelRoot, the platform, and the target
          srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"

@@ -2,11 +2,13 @@
 
 import os
 import sys
+from pathlib import Path
 import click
 from .gfdlfremake import varsfre, targetfre, makefilefre, platformfre, yamlfre, buildDocker
+import fre.yamltools.combine_yamls as cy
 
 @click.command()
-def dockerfile_create(yamlfile, platform, target, execute):
+def dockerfile_create(yamlfile,platform,target,execute):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -14,12 +16,21 @@ def dockerfile_create(yamlfile, platform, target, execute):
     plist = platform
     tlist = target
     yml = yamlfile
+    name = yamlfile.split(".")[0]
     run = execute
 
+    # Combined compile yaml file
+    combined = Path(f"combined-{name}.yaml")
+
+    ## If combined yaml exists, note message of its existence
+    ## If combined yaml does not exist, combine model, compile, and platform yamls
+    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
+
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(yml)
+    freVars = varsfre.frevars(full_combined)
+
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml,freVars)
+    modelYaml = yamlfre.freyaml(full_combined,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
@@ -30,7 +41,7 @@ def dockerfile_create(yamlfile, platform, target, execute):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
+                raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
 
             (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,containerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
@@ -42,33 +53,21 @@ def dockerfile_create(yamlfile, platform, target, execute):
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
 
-                freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
-                                                      libs = fremakeYaml["container_addlibs"],
-                                                      srcDir = srcDir,
-                                                      bldDir = bldDir,
-                                                      mkTemplatePath = mkTemplate,
-                                                      tmpDir = tmpDir)
-
-                # Loop through components and send the component name and requires for the Makefile
-                for c in fremakeYaml['src']:
-                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
-                freMakefile.writeMakefile()
-
                 dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],
                                               libs = fremakeYaml["container_addlibs"],
                                               RUNenv = RUNenv,
                                               target = targetObject)
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
-                dockerBuild.writeDockerfileMakefile(freMakefile.getTmpDir() + "/Makefile", freMakefile.getTmpDir()+"/linkline.sh")
+                dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
+
                 for c in fremakeYaml['src']:
                     dockerBuild.writeDockerfileMkmf(c)
 
                 dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
-
                 currDir = os.getcwd()
-                click.echo("\ntmpDir created at " + currDir + "/tmp")
-                click.echo("Dockerfile created at " + currDir + "\n")
+                click.echo("\ntmpDir created in " + currDir + "/tmp")
+                click.echo("Dockerfile created in " + currDir +"\n")
 
             if run:
                 dockerBuild.build(containerBuild, containerRun)

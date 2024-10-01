@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 
 import os
+import sys
+from pathlib import Path
 import click
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
+import fre.yamltools.combine_yamls as cy 
 
 @click.command()
 def makefile_create(yamlfile,platform,target):
@@ -13,12 +16,19 @@ def makefile_create(yamlfile,platform,target):
     plist = platform
     tlist = target
     yml = yamlfile
+    name = yamlfile.split(".")[0]
 
+    combined = Path(f"combined-{name}.yaml")
+
+    ## If combined yaml exists, note message of its existence
+    ## If combined yaml does not exist, combine model, compile, and platform yamls
+    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target) 
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(yml)
+    freVars = varsfre.frevars(full_combined)
+ 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(yml,freVars)
+    modelYaml = yamlfre.freyaml(full_combined,freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
@@ -29,7 +39,8 @@ def makefile_create(yamlfile,platform,target):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise SystemExit (platformName + " does not exist in " + modelYaml.platformsfile)
+                raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+
             (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
   ## Make the bldDir based on the modelRoot, the platform, and the target
             srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"

@@ -2,26 +2,89 @@
 Through the fre-cli, `fre make` can be used to create and run a checkout script, makefile, and compile a model.
 
 * Fremake Canopy Supports:
-   - multiple targets, would have to use one `-t` flag for each one
+   - multiple targets; use `-t` flag to define each target
    - bare-metal build
    - container creation
    - parallel checkouts for bare-metal build**
 
-* **Note: Users will not be able to create containers without access to podman**
+** **Note: Users will not be able to create containers without access to podman**
 
-The fremake canopy fre-cli subcommands are described below ([Subcommands](#subcommands)), as well as a Guide on the order in which to use them ([Guide](#guide)).
+The fremake canopy fre-cli subcommands are described below ([Subtools](#subtools)), as well as a Guide on the order in which to use them ([Guide](#guide)).
 
 Additionally, as mentioned, multiple targets can be used more multiple target-platform combinations. Below is an example of this usage for both the bare-metal build and container build, using the AM5 model
 
-- [Bare-metal Example](#bare-metal-build-multi-target-example)  
-- [Container Example](#container-build-multi-target-example)
+- [Bare-metal Example](#bare-metal-build) 
+- [Bare-metal Multi-target Example](#bare-metal-build-multi-target)  
+- [Container Example](#container-build)
 
 ## **Usage (Users)**
 * Refer to fre-cli [README.md](https://github.com/NOAA-GFDL/fre-cli/blob/main/README.md) for foundational fre-cli usage guide and tips.
-* Fremake package repository located at: https://gitlab.gfdl.noaa.gov/portable_climate/fremake_canopy/-/tree/main
 
+## **Quickstart** 
+### **Bare-metal Build:**
+```bash
+# Create checkout script
+fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod
+      
+# Create and run checkout script
+fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod --execute
 
-## Subcommands
+# Create Makefile
+fre make create-makefile -y am5.yaml -p ncrc5.intel23 -t prod
+
+# Create the compile script
+fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod
+
+# Create and run the compile script
+fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod --execute
+```
+### **Bare-metal Build Multi-target:**
+```bash
+# Create checkout script
+fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod -t debug
+      
+# Create and run checkout script
+fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod -t debug --execute
+
+# Create Makefile
+fre make create-makefile -y am5.yaml -p ncrc5.intel23 -t prod -t debug
+
+# Create the compile script
+fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod -t debug
+
+# Create and run the compile script
+fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod -t debug --execute
+```
+
+### **Container Build:**
+In order for the container to build successfully, a `-npc`, or `--no-parallel-checkout` is needed.
+```bash
+# Create checkout script
+fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod -npc
+      
+# Create and run checkout script
+fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod -npc --execute
+
+# Create Makefile
+fre make create-makefile -y am5.yaml -p hpcme.2023 -t prod
+
+# Create Dockerfile
+fre make create-dockerfile -y am5.yaml -p hpcme.2023 -t prod
+
+# Create and run the Dockerfile
+fre make create-dockerfile -y am5.yaml -p hpcme.2023 -t prod --execute
+```
+
+### **Run all of fremake:**
+```bash
+# Bare-metal 
+fre make run-fremake -y am5.yaml -p ncrc5.intel23 -t prod
+
+# Container
+fre make run-fremake -y am5.yaml -p hpcme.2023 -t prod -npc 
+```
+
+## Subtools
 - `fre make create-checkout [options]`
    - Purpose: Creates the checkout script and can check out source code (with execute option)
    - Options:
@@ -69,87 +132,49 @@ Additionally, as mentioned, multiple targets can be used more multiple target-pl
         - `-n, --parallel [number of concurrent modile compiles]`
 
 ## Guide
+In order to use the `fre make` tools, remember to create a combined yaml first. This can be done with the `fre yamltools combine-yamls` tool. This combines the model, compile, platform, experiment, and any analysis yamls into ONE yaml file for parsing and validation. 
+
+To combine: 
+`fre yamltools combine-yamls -y [model yaml file] -e [experiment name] -p [platform] -t [target]`
+
 ### **Bare-metal Build:**
 ```bash
 # Create checkout script
-fre make create-checkout -y [experiment yaml file] -p [platform] -t [target]
+fre make create-checkout -y [model yaml file] -p [platform] -t [target]
       
 # Create and run checkout script
-fre make create-checkout -y [experiment yaml file] -p [platform] -t [target] -e
+fre make create-checkout -y [model yaml file] -p [platform] -t [target] --execute
 
 # Create Makefile
-fre make create-makefile -y [experiment yaml file] -p [platform] -t [target]
+fre make create-makefile -y [model yaml file] -p [platform] -t [target]
 
 # Creat the compile script
-fre make create-compile -y [experiment yaml file] -p [platform] -t [target]
+fre make create-compile -y [model yaml file] -p [platform] -t [target]
 
 # Create and run the compile script
-fre make create-compile -y [experiment yaml file] -p [platform] -t [target] -e
+fre make create-compile -y [model yaml file] -p [platform] -t [target] --execute
 
 # Run all of fremake 
-fre make run-fremake -y [experiment yaml] -p [platform] -t [target] [other options...]
-```
-
-### **Bare-metal Build (Multi-target example):**
-```bash
-# Create checkout script
-fre make create-checkout -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug
-      
-# Create and run checkout script
-fre make create-checkout -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug -e
-
-# Create Makefile
-fre make create-makefile -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug
-
-# Creat the compile script
-fre make create-compile -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug
-
-# Create and run the compile script
-fre make create-compile -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug -e
-
-# Run all of fremake 
-fre make run-fremake -y am5.yaml -p ncrc5.intel -t prod-openmp -t debug [other options...]
+fre make run-fremake -y [model yaml file] -p [platform] -t [target] [other options...]
 ```
 
 ### **Container Build:**
-For the container build, parallel checkouts are not supported, so the `-npc` options must be used for the checkout script. In addition the platform must be a container platform. ***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
+For the container build, parallel checkouts are not supported, so the `-npc` options must be used for the checkout script. In addition the platform must be a container platform. 
+
+***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
 ```bash
 # Create checkout script
-fre make create-checkout -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
+fre make create-checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
       
 # Create and run checkout script
-fre make create-checkout -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target] -e -npc
+fre make create-checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 
 # Create Makefile
-fre make create-makefile -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target] 
-
-# Create the compile script
-fre make create-compile -y [experiment yaml file] -p [CONTAINER PLATFORM]-t [target] 
+fre make create-makefile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
 
 #Create a Dockerfile
-fre make create-dockerfile -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target] 
+fre make create-dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
 
 # Create and run the Dockerfile
-fre make create-dockerfile -y [experiment yaml file] -p [CONTAINER PLATFORM] -t [target]
+fre make create-dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 ```
-### **Container Build (Multi-target example):**
-```bash
-# Create checkout script
-fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod-openmp -t debug -npc
-      
-# Create and run checkout script
-fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod-openmp -t debug -npc -e
-
-# Create Makefile
-fre make create-makefile -y am5.yaml -p hpcme.2023 -t prod-openmp -t debug
-
-# Creat the compile script
-fre make create-compile -y am5.yaml -p hpcme.2023 -t prod-openmp -t debug
-
-# Create and run the compile script
-fre make create-compile -y am5.yaml -p hpcme.2023 -t prod-openmp -t debug -e
-
-# Run all of fremake 
-fre make run-fremake -y am5.yaml -p hpcme.2023 -t prod-openmp -t debug [other options...] -npc 
-```
-
