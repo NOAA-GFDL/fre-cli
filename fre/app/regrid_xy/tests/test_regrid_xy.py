@@ -228,7 +228,7 @@ def test_import_regrid_xy(capfd):
     for path in sys.path: print(path);
 
 
-    import regrid_xy as rgxy
+    import fre.app.regrid_xy.regrid_xy as rgxy
     assert all( [ rgxy is not None,
                   rgxy.test_import() == 1 ] )
     out, err = capfd.readouterr()
