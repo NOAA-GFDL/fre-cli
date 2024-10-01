@@ -12,7 +12,7 @@ LOCAL_REMAP_TEST_DIR = LOCAL_TEST_DIR + 'remap-test-dir/'
 LOCAL_TEST_OUT_DIR = LOCAL_TEST_DIR + 'out-dir/'
 
 # clobber current output or no?
-CLEAN_ALL_OUTPUT = True
+CLEAN_ALL_OUTPUT = False
 if CLEAN_ALL_OUTPUT:
     shutil.rmtree(LOCAL_TEST_DIR)
 Path(LOCAL_TEST_DIR).mkdir(exist_ok = True)
@@ -78,7 +78,9 @@ def test_make_ncgen3_nc_inputs(capfd):
     if Path(ncgen3_OUTPUT).exists():
         assert True
     else:
-        ex = [ 'ncgen3', '-k', 'netCDF-4 classic model', '-o', ncgen3_OUTPUT , ncgen3_INPUT ]
+        assert Path(LOCAL_TEST_DIR).exists()
+        assert Path(ncgen3_INPUT).exists()
+        ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen3_OUTPUT , ncgen3_INPUT ]
         print (' '.join(ex))
         sp = subprocess.run( ex )
 
