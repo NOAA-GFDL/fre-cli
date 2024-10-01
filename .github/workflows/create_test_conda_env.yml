@@ -60,7 +60,7 @@ jobs:
           $CONDA/envs/fre-cli/bin/python --version
           
           # run pylint
-          pylint --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+          pylint -ry --ignored-modules netCDF4 fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
       
       - name: Install Sphinx and Build Documentation
         run: |
