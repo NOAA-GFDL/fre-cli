@@ -104,6 +104,7 @@ def test_make_ncgen_tile_nc_inputs(capfd):
             ncgen_tile_i_nc_OUTPUT = d + f'{YYYYMMDD}.{SOURCE}.tile{i}.nc'
             #ncgen_tile_i_cdl_INPUT = TEST_DATA_IN_DIR + f'{YYYYMMDD}.{SOURCE}.tile{i}.cdl'
             ncgen_tile_i_cdl_INPUT = LOCAL_TEST_DIR + f'{YYYYMMDD}.{SOURCE}.tile{i}.cdl'
+            assert Path(ncgen_tile_i_cdl_INPUT).exists()
             ex = [ 'ncgen', '-o', ncgen_tile_i_nc_OUTPUT, ncgen_tile_i_cdl_INPUT ]
             print (' '.join(ex))
             sp = subprocess.run( ex )
