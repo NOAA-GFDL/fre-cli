@@ -42,7 +42,7 @@ jobs:
           $CONDA/envs/fre-cli/bin/python --version
           
           # run pytest # PUT ME BACK WHEN READY
-          pytest -v -v fre/app/regrid_xy
+          pytest -x -v -v fre/app/regrid_xy
 #          pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
 #          
 #          # install genbadge to generate coverage badge based on xml
