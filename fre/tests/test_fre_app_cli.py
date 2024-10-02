@@ -53,4 +53,18 @@ def test_cli_fre_app_regrid_opt_dne():
     ''' fre cmor run optionDNE '''
     result = runner.invoke(fre.fre, args=["app", "regrid", "optionDNE"])
     assert result.exit_code == 2
-    
+
+def test_cli_fre_app_regrid_test_case_1():
+    ''' fre cmor run --help '''
+    import fre.app.regrid_xy.tests.test_regrid_xy as t_rgxy    
+    assert t_rgxy is not None
+    result = runner.invoke(fre.fre, args=["app", "regrid", 
+                                          "--input_dir", f"{t_rgxy.WORK_YYYYMMDD_DIR}",
+                                          "--output_dir", f"{t_rgxy.TEST_OUT_DIR}",
+                                          "--begin", f"{t_rgxy.YYYYMMDD}T000000",
+                                          "--tmp_dir", f"{t_rgxy.TEST_DIR}",
+                                          "--remap_dir", f"{t_rgxy.REMAP_DIR}",
+                                          "--source", f"{t_rgxy.SOURCE}",
+                                          "--grid_spec", f"{t_rgxy.GRID_SPEC_NO_TAR}",
+                                          "--def_xy_interp", f'"{t_rgxy.NLON},{t_rgxy.NLAT}"' ])
+    assert result.exit_code == 0
