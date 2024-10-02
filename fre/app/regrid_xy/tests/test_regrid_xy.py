@@ -252,86 +252,84 @@ def test_success_tar_grid_spec_regrid_xy(capfd):
     # this will only work at GFDL for now.
     if not Path(GOLD_GRID_SPEC).exists():
         assert True
-
-
-    # for the time being, still a little dependent on rose for configuration value passing
-    if Path(os.getcwd()+'/rose-app-run.conf').exists():
-        Path(os.getcwd()+'/rose-app-run.conf').unlink()
-    rose_app_run_config=open(os.getcwd()+'/rose-app-run.conf','a')    
-    rose_app_run_config.write(  '[command]\n'                    )
-    rose_app_run_config.write(  'default=regrid-xy\n'            )
-    rose_app_run_config.write(  '\n'                             )
-    rose_app_run_config.write( f'[{COMPONENT}]\n'                )
-    rose_app_run_config.write( f'sources={SOURCE}\n'             )
-    rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
-    rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
-    rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
-    rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
-    rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
-    rose_app_run_config.write(  '\n'                             )
-    rose_app_run_config.close()
-
-    import fre.app.regrid_xy.regrid_xy as rgxy
-    rgxy_returncode = rgxy.regrid_xy(
-        input_dir = WORK_YYYYMMDD_DIR,
-        output_dir = TEST_OUT_DIR,
-        begin = f'{YYYYMMDD}T000000',
-        tmp_dir = TEST_DIR,
-        remap_dir = REMAP_DIR,
-        source = SOURCE,
-        grid_spec = GOLD_GRID_SPEC,
-#        grid_spec = GOLD_GRID_SPEC_NO_TAR,
-        def_xy_interp = f'"{NLON},{NLAT}"'
-    )
-
-    # uhm....
-    #assert False
-    assert rgxy_returncode == 0
-    assert Path( REMAP_DIR + \
-          f'{INPUT_GRID}/{INPUT_REALM}/96-by-96/{INTERP_METHOD}/' + \
-          f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' \
-    ).exists()
-    assert Path( TEST_OUT_DIR ).exists()
-    assert Path( TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
-    assert Path( WORK_DIR ).exists()
-    assert Path( WORK_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'basin_codes.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile1.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile2.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile3.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile4.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile5.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile6.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile1XC96_mosaic_tile1.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile1Xocean_mosaic_tile1.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile2XC96_mosaic_tile2.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile2Xocean_mosaic_tile1.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile3XC96_mosaic_tile3.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile3Xocean_mosaic_tile1.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile4XC96_mosaic_tile4.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile4Xocean_mosaic_tile1.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile5XC96_mosaic_tile5.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile5Xocean_mosaic_tile1.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile6XC96_mosaic_tile6.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile6Xocean_mosaic_tile1.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'hash.md5' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile1.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile2.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile3.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile4.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile5.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile6.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'mosaic.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'ocean_hgrid.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'ocean_mask.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'ocean_mosaic.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'ocean_static.nc' ).exists()
-    assert Path( WORK_YYYYMMDD_DIR + 'ocean_topog.nc' ).exists() 
-#    assert False
-    out, err = capfd.readouterr()
+    else:
+        # for the time being, still a little dependent on rose for configuration value passing
+        if Path(os.getcwd()+'/rose-app-run.conf').exists():
+            Path(os.getcwd()+'/rose-app-run.conf').unlink()
+        rose_app_run_config=open(os.getcwd()+'/rose-app-run.conf','a')    
+        rose_app_run_config.write(  '[command]\n'                    )
+        rose_app_run_config.write(  'default=regrid-xy\n'            )
+        rose_app_run_config.write(  '\n'                             )
+        rose_app_run_config.write( f'[{COMPONENT}]\n'                )
+        rose_app_run_config.write( f'sources={SOURCE}\n'             )
+        rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
+        rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
+        rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
+        rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
+        rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
+        rose_app_run_config.write(  '\n'                             )
+        rose_app_run_config.close()
+        
+        import fre.app.regrid_xy.regrid_xy as rgxy
+        rgxy_returncode = rgxy.regrid_xy(
+            input_dir = WORK_YYYYMMDD_DIR,
+            output_dir = TEST_OUT_DIR,
+            begin = f'{YYYYMMDD}T000000',
+            tmp_dir = TEST_DIR,
+            remap_dir = REMAP_DIR,
+            source = SOURCE,
+            grid_spec = GOLD_GRID_SPEC,
+            #        grid_spec = GOLD_GRID_SPEC_NO_TAR,
+            def_xy_interp = f'"{NLON},{NLAT}"'
+        )
+        
+        # uhm....
+        #assert False
+        assert rgxy_returncode == 0
+        assert Path( REMAP_DIR + \
+                     f'{INPUT_GRID}/{INPUT_REALM}/96-by-96/{INTERP_METHOD}/' + \
+                     f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' \
+        ).exists()
+        assert Path( TEST_OUT_DIR ).exists()
+        assert Path( TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
+        assert Path( WORK_DIR ).exists()
+        assert Path( WORK_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'basin_codes.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile1.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile2.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile3.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile4.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile5.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile6.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile1XC96_mosaic_tile1.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile1Xocean_mosaic_tile1.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile2XC96_mosaic_tile2.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile2Xocean_mosaic_tile1.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile3XC96_mosaic_tile3.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile3Xocean_mosaic_tile1.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile4XC96_mosaic_tile4.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile4Xocean_mosaic_tile1.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile5XC96_mosaic_tile5.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile5Xocean_mosaic_tile1.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile6XC96_mosaic_tile6.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile6Xocean_mosaic_tile1.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'hash.md5' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile1.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile2.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile3.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile4.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile5.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile6.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'mosaic.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'ocean_hgrid.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'ocean_mask.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'ocean_mosaic.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'ocean_static.nc' ).exists()
+        assert Path( WORK_YYYYMMDD_DIR + 'ocean_topog.nc' ).exists() 
+        out, err = capfd.readouterr()
+    assert True
 
 
 
@@ -341,10 +339,6 @@ def test_success_no_tar_grid_spec_regrid_xy(capfd):
     """
     checks for success of regrid_xy with rose app-app run
     """
-    # this will only work at GFDL for now.
-    if not Path(GOLD_GRID_SPEC).exists():
-        assert True
-
     # for the time being, still a little dependent on rose for configuration value passing
     if Path(os.getcwd()+'/rose-app-run.conf').exists():
         Path(os.getcwd()+'/rose-app-run.conf').unlink()
@@ -361,7 +355,7 @@ def test_success_no_tar_grid_spec_regrid_xy(capfd):
     rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
     rose_app_run_config.write(  '\n'                             )
     rose_app_run_config.close()
-
+    
     import fre.app.regrid_xy.regrid_xy as rgxy
     rgxy_returncode = rgxy.regrid_xy(
         input_dir = WORK_YYYYMMDD_DIR,
@@ -370,24 +364,24 @@ def test_success_no_tar_grid_spec_regrid_xy(capfd):
         tmp_dir = TEST_DIR,
         remap_dir = REMAP_DIR,
         source = SOURCE,
-#        grid_spec = GOLD_GRID_SPEC,
+        #        grid_spec = GOLD_GRID_SPEC,
         grid_spec = GOLD_GRID_SPEC_NO_TAR,
         def_xy_interp = f'"{NLON},{NLAT}"'
     )
-
+    
     # uhm....
     #assert False
     assert rgxy_returncode == 0
     assert Path( REMAP_DIR + \
-          f'{INPUT_GRID}/{INPUT_REALM}/96-by-96/{INTERP_METHOD}/' + \
-          f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' \
+                 f'{INPUT_GRID}/{INPUT_REALM}/96-by-96/{INTERP_METHOD}/' + \
+                 f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' \
     ).exists()
     assert Path( TEST_OUT_DIR ).exists()
     assert Path( TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
     assert Path( WORK_DIR ).exists()
     assert Path( WORK_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
     assert Path( WORK_YYYYMMDD_DIR ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'basin_codes.nc' ).exists()
+
     assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile1.nc' ).exists()
     assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile2.nc' ).exists()
     assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile3.nc' ).exists()
@@ -395,36 +389,9 @@ def test_success_no_tar_grid_spec_regrid_xy(capfd):
     assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile5.nc' ).exists()
     assert Path( WORK_YYYYMMDD_DIR + 'C96_grid.tile6.nc' ).exists()
     assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile1XC96_mosaic_tile1.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile1Xocean_mosaic_tile1.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile2XC96_mosaic_tile2.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile2Xocean_mosaic_tile1.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile3XC96_mosaic_tile3.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile3Xocean_mosaic_tile1.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile4XC96_mosaic_tile4.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile4Xocean_mosaic_tile1.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile5XC96_mosaic_tile5.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile5Xocean_mosaic_tile1.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile6XC96_mosaic_tile6.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'C96_mosaic_tile6Xocean_mosaic_tile1.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'hash.md5' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile1.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile2.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile3.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile4.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile5.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'land_mask_tile6.nc' ).exists()
     assert Path( WORK_YYYYMMDD_DIR + 'mosaic.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'ocean_hgrid.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'ocean_mask.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'ocean_mosaic.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'ocean_static.nc' ).exists()
-#    assert Path( WORK_YYYYMMDD_DIR + 'ocean_topog.nc' ).exists() 
-#    assert False
     out, err = capfd.readouterr()
 
-    
 
 
     
