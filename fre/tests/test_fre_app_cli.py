@@ -56,8 +56,29 @@ def test_cli_fre_app_regrid_opt_dne():
 
 def test_cli_fre_app_regrid_test_case_1():
     ''' fre cmor run --help '''
+
     import fre.app.regrid_xy.tests.test_regrid_xy as t_rgxy    
     assert t_rgxy is not None
+
+    # for the time being, still a little dependent on rose for configuration value passing
+    if Path(os.getcwd()+'/rose-app-run.conf').exists():
+        Path(os.getcwd()+'/rose-app-run.conf').unlink()
+    rose_app_run_config=open(os.getcwd()+'/rose-app-run.conf','a')    
+    rose_app_run_config.write(  '[command]\n'                    )
+    rose_app_run_config.write(  'default=regrid-xy\n'            )
+    rose_app_run_config.write(  '\n'                             )
+    rose_app_run_config.write( f'[{t_rgxy.COMPONENT}]\n'                )
+    rose_app_run_config.write( f'sources={t_rgxy.SOURCE}\n'             )
+    rose_app_run_config.write( f'inputGrid={t_rgxy.INPUT_GRID}\n'       )
+    rose_app_run_config.write( f'inputRealm={t_rgxy.INPUT_REALM}\n'     )
+    rose_app_run_config.write( f'interpMethod={t_rgxy.INTERP_METHOD}\n' )
+    rose_app_run_config.write( f'outputGridLon={t_rgxy.NLON}\n'         )
+    rose_app_run_config.write( f'outputGridLat={t_rgxy.NLAT}\n'         )
+    rose_app_run_config.write(  '\n'                             )
+    rose_app_run_config.close()
+
+
+
     result = runner.invoke(fre.fre, args=["app", "regrid", 
                                           "--input_dir", f"{t_rgxy.WORK_YYYYMMDD_DIR}",
                                           "--output_dir", f"{t_rgxy.TEST_OUT_DIR}",
