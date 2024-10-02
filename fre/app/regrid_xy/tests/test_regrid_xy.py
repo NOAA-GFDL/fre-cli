@@ -33,6 +33,7 @@ YYYYMMDD='20030101'
 SOURCE='atmos_static_cmip' # generally a list, but for tests, only one
                            # note that components will not always contain a
                            # a source file of the same name
+SOURCES_XY = '96-by-96'
 
 WORK_YYYYMMDD_DIR = WORK_DIR + f'{YYYYMMDD}.nc/'
 TEST_NC_GRID_FILE = WORK_YYYYMMDD_DIR + "C96_mosaic.nc" # output of first ncgen test
@@ -174,7 +175,7 @@ def test_make_hgrid_gold_input(capfd):
             out, err = capfd.readouterr()
 
 
-@pytest.mark.skip(reason='debug')
+#@pytest.mark.skip(reason='debug')
 def test_make_fregrid_comparison_input(capfd):
     '''
     set-up test: use fregrid to regrid for later comparison to regrid_xy output
@@ -222,7 +223,7 @@ def test_make_fregrid_comparison_input(capfd):
     out, err = capfd.readouterr()
 
 
-@pytest.mark.skip(reason='debug')
+#@pytest.mark.skip(reason='debug')
 def test_import_regrid_xy(capfd):
     '''
     check import of regrid_xy as a module
@@ -237,7 +238,7 @@ def test_import_regrid_xy(capfd):
                   rgxy.test_import() == 1 ] )
     out, err = capfd.readouterr()
 
-@pytest.mark.skip(reason='debug')
+#@pytest.mark.skip(reason='debug')
 def test_success_tar_grid_spec_regrid_xy(capfd):
     """
     checks for success of regrid_xy with rose app-app run
@@ -439,13 +440,11 @@ def test_failure_wrong_DT_regrid_xy(capfd):
     invalid date for begin
     """
 
-    dr_file_output = TEST_OUT_DIR
-    Path(dr_file_output).mkdir(exist_ok = True)
-    assert Path(dr_file_output).exists()
+    Path(TEST_OUT_DIR).mkdir(exist_ok = True)
+    assert Path(TEST_OUT_DIR).exists()
 
-    dr_remap_out = REMAP_DIR
-    Path(dr_remap_out).mkdir(exist_ok = True)
-    assert Path(dr_remap_out).exists()
+    Path(REMAP_DIR).mkdir(exist_ok = True)
+    assert Path(REMAP_DIR).exists()
 
 
         # for the time being, still a little dependent on rose for configuration value passing
@@ -468,11 +467,11 @@ def test_failure_wrong_DT_regrid_xy(capfd):
     import fre.app.regrid_xy.regrid_xy as rgxy
     try:
         rgxy_returncode = rgxy.regrid_xy(
-            input_dir = d,
-            output_dir = dr_file_output,
+            input_dir = WORK_YYYYMMDD_DIR,
+            output_dir = TEST_OUT_DIR,
             begin = f'99999999T999999',
             tmp_dir = TEST_DIR,
-            remap_dir = dr_remap_out,
+            remap_dir = REMAP_DIR,
             source = SOURCE,
             grid_spec = GOLD_GRID_SPEC,
             def_xy_interp = f'"{NLON},{NLAT}"'
@@ -488,19 +487,18 @@ def test_failure_wrong_DT_regrid_xy(capfd):
 
 
 
-@pytest.mark.skip(reason='debug')
+#@pytest.mark.skip(reason='debug')
+
+
 def test_nccmp1_regrid_xy(capfd):
     """
     This test compares the output of make_hgrid and fregrid, which are expected to be identical
     """
-    remap_dir_out = REMAP_TEST_DIR
-    dr_remap_out = REMAP_DIR
-    sources_xy = '96-by-96'
     fregridRemapFile=f'fregrid_remap_file_{NLON}_by_{NLAT}.nc'
 
-    nccmp_ARG1 = dr_remap_out + INPUT_GRID + '/' + INPUT_REALM + '/' + \
-                 sources_xy + '/' + INTERP_METHOD  + '/' + fregridRemapFile
-    nccmp_ARG2 = remap_dir_out + fregridRemapFile
+    nccmp_ARG1 = REMAP_DIR + INPUT_GRID + '/' + INPUT_REALM + '/' + \
+                 SOURCES_XY + '/' + INTERP_METHOD  + '/' + fregridRemapFile
+    nccmp_ARG2 = REMAP_TEST_DIR + fregridRemapFile
     nccmp= [ 'nccmp', '-m', '--force', nccmp_ARG1, nccmp_ARG2 ]
     print (' '.join(nccmp))
     sp = subprocess.run(nccmp)
@@ -508,17 +506,12 @@ def test_nccmp1_regrid_xy(capfd):
     out, err = capfd.readouterr()
 
 
-@pytest.mark.skip(reason='debug')
 def test_nccmp2_regrid_xy(capfd):
     """
     This test compares the regridded source file output(s), which are expected to be identical
     """
-    dr_file_output = TEST_OUT_DIR
-    file_output_dir = ALL_TEST_OUT_DIR
-    outputFile = f'{YYYYMMDD}.{SOURCE}.nc'
-
-    nccmp_ARG1 = dr_file_output  + outputFile
-    nccmp_ARG2 = file_output_dir + outputFile
+    nccmp_ARG1 = TEST_OUT_DIR  + f'{YYYYMMDD}.{SOURCE}.nc'
+    nccmp_ARG2 = ALL_TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc'
     nccmp= [ 'nccmp', '-m', '--force', nccmp_ARG1, nccmp_ARG2 ]
     print (' '.join(nccmp))
     sp = subprocess.run(nccmp)
