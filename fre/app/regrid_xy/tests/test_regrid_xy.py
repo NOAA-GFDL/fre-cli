@@ -82,7 +82,9 @@ def test_setup_global_work_dirs(capfd):
 
     Path(REMAP_DIR).mkdir(exist_ok = True)
     assert Path(REMAP_DIR).exists()
-    
+
+
+def test_untar_inputs(capfd):
     ex = ["tar", "-C", TEST_DIR, "-zxvf", TAR_IN_DIR]
     sp = subprocess.run( ex )
     assert all ( [ sp.returncode == 0,
