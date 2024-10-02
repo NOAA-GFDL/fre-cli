@@ -292,12 +292,12 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             interp_method = rose_app_config.get( [component, 'interpMethod'] ).get_value()
             input_grid    = rose_app_config.get( [component, 'inputGrid'] ).get_value()
         except Exception as exc:
-            raise Exception('at least one of the following are None: ' + \
-                            f'input_grid=\n{input_grid}\n,input_realm=' + \
-                            f'\n{input_realm}\n,/interp_method=\n{interp_method}') \
+            raise Exception('at least one of the following are None: \n' + \
+                            f'input_grid=\n{input_grid}\n,input_realm=\n' + \
+                            f'{input_realm}\n,/interp_method=\n{interp_method}') \
                             from exc
-        print(f'input_grid    = {input_grid    }' + \
-              f'input_realm   = {input_realm   }' + \
+        print(f'input_grid    = {input_grid    }\n' + \
+              f'input_realm   = {input_realm   }\n' + \
               f'interp_method = {interp_method }'     )
 
         #target input variable resolution
@@ -325,12 +325,12 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             output_grid_lon = def_xy_interp[0]
             output_grid_lat = def_xy_interp[1]
 
-        print( f'output_grid_type = {output_grid_type }' + \
-               f'remap_file       = {remap_file       }' + \
-               f'more_options     = {more_options     }' + \
-               f'output_grid_lon  = {output_grid_lon  }' + \
-               f'output_grid_lat  = {output_grid_lat  }' + \
-               f'regrid_vars      = {regrid_vars      }'     )
+        print( f'output_grid_type = {output_grid_type }\n' + \
+               f'remap_file       = {remap_file       }\n' + \
+               f'more_options     = {more_options     }\n' + \
+               f'output_grid_lon  = {output_grid_lon  }\n' + \
+               f'output_grid_lat  = {output_grid_lat  }\n' + \
+               f'regrid_vars      = {regrid_vars      }\n'     )
 
 
 
@@ -346,7 +346,17 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 
         # this is just to get the grid_file name
         input_mosaic = get_mosaic_file_name(grid_spec_file, mosaic_type)
-        print(f'input_mosaic = {input_mosaic}') #DELETE
+        print(f'mosaic_type    = {mosaic_type}') #DELETE
+        #print(f'grid_spec_file = {grid_spec_file}') #DELETE
+        #print(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)') #DELETE
+        #print(f'input_mosaic  = {input_mosaic}') #DELETE
+        ## removeme #
+        ## removeme #
+        ## removeme #
+        #raise Exception('stopping here for now')
+        ## removeme #
+        ## removeme #
+        ## removeme #
 
         ## this is to get the tile1 filename?
         mosaic_grid_file = get_mosaic_grid_file_name(input_mosaic)

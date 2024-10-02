@@ -13,6 +13,7 @@ LOCAL_TEST_OUT_DIR = LOCAL_TEST_DIR + 'out-dir/'
 
 # official data/mosaic stuff
 GOLD_GRID_SPEC = "/archive/gold/datasets/OM4_05/mosaic_c96.v20180227.tar"
+GOLD_GRID_SPEC_NO_TAR = LOCAL_TEST_DIR + "mosaic.nc"
 TEST_DATA_IN_DIR  = "/archive/oar.gfdl.fre_test/canopy_test_data/app/regrid-xy/"
 TEST_CDL_GRID_FILE = "C96_mosaic.cdl"
 TEST_NC_GRID_FILE = "C96_mosaic.nc"
@@ -285,7 +286,8 @@ def test_success_regrid_xy(capfd):
         tmp_dir = LOCAL_TEST_DIR,
         remap_dir = dr_remap_out,
         source = SOURCE,
-        grid_spec = GOLD_GRID_SPEC,
+#        grid_spec = GOLD_GRID_SPEC,
+        grid_spec = GOLD_GRID_SPEC_NO_TAR,
         def_xy_interp = f'"{NLON},{NLAT}"'
     )
 
