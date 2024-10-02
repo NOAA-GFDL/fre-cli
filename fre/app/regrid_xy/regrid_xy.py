@@ -486,7 +486,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 
 @click.command()
 def _regrid_xy( input_dir, output_dir, begin, tmp_dir,
-                remap_dir, source, grid_xpec, def_xy_interp ):
+                remap_dir, source, grid_spec, def_xy_interp ):
     ''' click entrypoint '''
     return regrid_xy()
 
