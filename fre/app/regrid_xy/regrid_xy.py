@@ -349,7 +349,9 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         print(f'grid_spec_file = {grid_spec_file}') #DELETE
         print(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)') #DELETE
 
-        # assume the input mosaic is near the input grid spec file, usually in the work dir
+        # assume the input mosaic is near the input grid spec file where intially specified. copy to work dir.
+        shutil.copy( str(Path(grid_spec).parent)+'/'+get_mosaic_file_name(grid_spec_file, mosaic_type),
+                    work_dir )
         input_mosaic = work_dir + get_mosaic_file_name(grid_spec_file, mosaic_type)
         print(f'input_mosaic  = {input_mosaic}') #DELETE
         ## removeme #

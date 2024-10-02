@@ -56,11 +56,11 @@ coverage.xml
 cover/
 
 # files pulled/created via testing
-fre/tests/test_files/cmip6-cmor-tables/
-fre/tests/test_files/outdirfre/
-fre/pp/tests/configure_yaml_out/
-fre/yamltools/tests/combine_yamls_out/
-fre/app/generate_time_averages/tests/time_avg_test_files/
+#fre/tests/test_files/cmip6-cmor-tables/
+#fre/tests/test_files/outdirfre/
+#fre/pp/tests/configure_yaml_out/
+#fre/yamltools/tests/combine_yamls_out/
+#fre/app/generate_time_averages/tests/time_avg_test_files/
 
 # Translations
 *.mo
