@@ -66,9 +66,22 @@ def test_setup_clean_up(capfd):
     assert True
     
 
-def test_setup_global_work_d(capfd):
+def test_setup_global_work_dirs(capfd):
     Path(WORK_YYYYMMDD_DIR).mkdir(parents = True, exist_ok = True)
     assert Path(WORK_YYYYMMDD_DIR).exists()
+
+    Path(REMAP_TEST_DIR).mkdir(exist_ok = True)
+    assert Path(REMAP_TEST_DIR).exists()
+
+    Path(ALL_TEST_OUT_DIR).mkdir(exist_ok = True)
+    assert Path(ALL_TEST_OUT_DIR).exists()
+
+    Path(TEST_OUT_DIR).mkdir(exist_ok = True)
+    assert Path(TEST_OUT_DIR).exists()
+
+    Path(REMAP_DIR).mkdir(exist_ok = True)
+    assert Path(REMAP_DIR).exists()
+
 
 #@pytest.mark.skip(reason='debug')
 def test_make_ncgen3_nc_inputs(capfd):
@@ -187,22 +200,15 @@ def test_make_fregrid_comparison_input(capfd):
     fregrid_input_file_ARG = f'{YYYYMMDD}.{SOURCE}'
     fregrid_assoc_file_dir_ARG = WORK_YYYYMMDD_DIR
 
-    fregrid_remap_dir = REMAP_TEST_DIR
-    Path(fregrid_remap_dir).mkdir(exist_ok = True)
-    assert Path(fregrid_remap_dir).exists()
-
     fregridRemapFile = f'fregrid_remap_file_{NLON}_by_{NLAT}.nc'
-    fregrid_remap_file_ARG = fregrid_remap_dir + fregridRemapFile
+    fregrid_remap_file_ARG = REMAP_TEST_DIR + fregridRemapFile
 
     fregrid_nlat_ARG = str(NLAT)
     fregrid_nlon_ARG = str(NLON)
     fregrid_vars_ARG = 'grid_xt,grid_yt,orog'
 
-    fregrid_output_dir = ALL_TEST_OUT_DIR
-    Path(fregrid_output_dir).mkdir(exist_ok = True)
-    assert Path(fregrid_output_dir).exists()
 
-    fregrid_output_file_ARG = fregrid_output_dir + fregrid_input_file_ARG + '.nc'
+    fregrid_output_file_ARG = ALL_TEST_OUT_DIR + fregrid_input_file_ARG + '.nc'
 
     ex = [ 'fregrid', '--standard_dimension',
            '--input_mosaic',          fregrid_input_mosaic_ARG,
@@ -247,11 +253,6 @@ def test_success_tar_grid_spec_regrid_xy(capfd):
     if not Path(GOLD_GRID_SPEC).exists():
         assert True
 
-    Path(TEST_OUT_DIR).mkdir(exist_ok = True)
-    assert Path(TEST_OUT_DIR).exists()
-
-    Path(REMAP_DIR).mkdir(exist_ok = True)
-    assert Path(REMAP_DIR).exists()
 
     # for the time being, still a little dependent on rose for configuration value passing
     if Path(os.getcwd()+'/rose-app-run.conf').exists():
@@ -344,12 +345,6 @@ def test_success_no_tar_grid_spec_regrid_xy(capfd):
     if not Path(GOLD_GRID_SPEC).exists():
         assert True
 
-    Path(TEST_OUT_DIR).mkdir(exist_ok = True)
-    assert Path(TEST_OUT_DIR).exists()
-
-    Path(REMAP_DIR).mkdir(exist_ok = True)
-    assert Path(REMAP_DIR).exists()
-
     # for the time being, still a little dependent on rose for configuration value passing
     if Path(os.getcwd()+'/rose-app-run.conf').exists():
         Path(os.getcwd()+'/rose-app-run.conf').unlink()
@@ -439,12 +434,6 @@ def test_failure_wrong_DT_regrid_xy(capfd):
      checks for failure of regrid_xy with rose app-run when fed an
     invalid date for begin
     """
-
-    Path(TEST_OUT_DIR).mkdir(exist_ok = True)
-    assert Path(TEST_OUT_DIR).exists()
-
-    Path(REMAP_DIR).mkdir(exist_ok = True)
-    assert Path(REMAP_DIR).exists()
 
 
         # for the time being, still a little dependent on rose for configuration value passing
