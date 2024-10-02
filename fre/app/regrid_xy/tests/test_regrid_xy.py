@@ -30,7 +30,7 @@ SOURCE='atmos_static_cmip' # generally a list, but for tests, only one
                            # a source file of the same name
 
 # clobber current output or no?
-CLEAN_ALL_OUTPUT = True
+CLEAN_ALL_OUTPUT = False
 if CLEAN_ALL_OUTPUT:
     shutil.rmtree(LOCAL_TEST_DIR+'20030101.nc/'    )
     shutil.rmtree(LOCAL_TEST_DIR+'out-dir/'        )
