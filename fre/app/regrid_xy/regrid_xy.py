@@ -244,23 +244,23 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 
 
     # grid_spec file management
-    starting_dir = os.getcwd()
-    os.chdir(work_dir)
+    #starting_dir = os.getcwd()
+    #os.chdir(work_dir) # i hate it
     if '.tar' in grid_spec:
         untar_sp = \
-            subprocess.run( ['tar', '-xvf', grid_spec], check = False , capture_output = True)
+            subprocess.run( ['tar', '-xvf', grid_spec, '-C', work_dir], check = False , capture_output = True)
         if untar_sp.returncode != 0:
             raise Exception(
                 f'untarring of {grid_spec} file failed, ret_code={untar_sp.returncode}, stderr={untar_sp.stderr}')
-        if Path( 'mosaic.nc' ).exists():
-            grid_spec_file='mosaic.nc'
-        elif Path( 'grid_spec.nc' ).exists():
-            grid_spec_file='grid_spec.nc'
+        if Path( work_dir+'mosaic.nc' ).exists():
+            grid_spec_file=work_dir+'mosaic.nc'
+        elif Path( work_dir+'grid_spec.nc' ).exists():
+            grid_spec_file=work_dir+'grid_spec.nc'
         else:
             raise Exception(f'grid_spec_file cannot be determined from grid_spec={grid_spec}')
     else:
         try:
-            grid_spec_file=grid_spec.split('/').pop()
+            grid_spec_file=work_dir+grid_spec.split('/').pop()
             shutil.copy(grid_spec, grid_spec_file )
         except Exception as exc:
             raise Exception(f'grid_spec={grid_spec} could not be copied.') \
@@ -345,11 +345,13 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             raise Exception(f'input_realm={input_realm} not recognized.')
 
         # this is just to get the grid_file name
-        input_mosaic = get_mosaic_file_name(grid_spec_file, mosaic_type)
         print(f'mosaic_type    = {mosaic_type}') #DELETE
-        #print(f'grid_spec_file = {grid_spec_file}') #DELETE
-        #print(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)') #DELETE
-        #print(f'input_mosaic  = {input_mosaic}') #DELETE
+        print(f'grid_spec_file = {grid_spec_file}') #DELETE
+        print(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)') #DELETE
+
+        # assume the input mosaic is near the input grid spec file, usually in the work dir
+        input_mosaic = work_dir + get_mosaic_file_name(grid_spec_file, mosaic_type)
+        print(f'input_mosaic  = {input_mosaic}') #DELETE
         ## removeme #
         ## removeme #
         ## removeme #
@@ -359,7 +361,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         ## removeme #
 
         ## this is to get the tile1 filename?
-        mosaic_grid_file = get_mosaic_grid_file_name(input_mosaic)
+        mosaic_grid_file = work_dir + get_mosaic_grid_file_name(input_mosaic)
         print(f'mosaic_grid_file = {mosaic_grid_file}') #DELETE
 
         # need source file dimenions for lat/lon
@@ -372,7 +374,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         if remap_file is not None:
             try:
                 shutil.copy( remap_file,
-                             remap_file.split('/').pop() )
+                             work_dir+remap_file.split('/').pop() )
             except Exception as exc:
                 raise Exception('remap_file={remap_file} could not be copied to local dir') \
                     from exc
@@ -398,11 +400,11 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             if Path( remap_cache_file ).exists():
                 print(f'NOTE: using cached remap file {remap_cache_file}')
                 shutil.copy(remap_cache_file,
-                            remap_cache_file.split('/').pop())
+                            work_dir+remap_cache_file.split('/').pop())
             elif Path( central_remap_cache_file ).exists():
                 print(f'NOTE: using centrally cached remap file {remap_cache_file}')
                 shutil.copy(central_remap_cache_file,
-                            central_remap_cache_file.split('/').pop())
+                            work_dir+central_remap_cache_file.split('/').pop())
 
 
 
@@ -429,7 +431,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         output_file = target_file.replace('.tile1','') \
                       if 'tile1' in target_file \
                       else target_file
-        output_file = output_file.split('/').pop()
+        output_file = work_dir + output_file.split('/').pop()
 
         fregrid_command = [
             'fregrid',
@@ -475,7 +477,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 
         continue # end of comp loop, exit or next one.
 
-    os.chdir(starting_dir) # not clear this is necessary.
+    #os.chdir(starting_dir) # not clear this is necessary.
     print('done running regrid_xy()')
     return 0
 
