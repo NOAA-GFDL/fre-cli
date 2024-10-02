@@ -17,7 +17,7 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
 
 #############################################
 
-def _checkoutTemplate(experiment, platform, target, branch='main'):
+def _checkoutTemplate(experiment, platform, target, branch='main',forced='off'):
     """
     Checkout the workflow template files from the repo
     """
@@ -30,6 +30,15 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
 
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
+
+    #check if version of branch is correct
+    branch_status=subprocess.check_output(['git','status'])
+    if str(branch_test).find('Your branch is up to date') < 0 and forced == 'off':
+        branch_error = (
+        "Error in checkoutTemplate: Branch not up to date\n"
+        f"Turn paramter forced on to run without branches matching")
+        sys.exit(branch_error)
+        return 0
 
     # Clone the repository with depth=1; check for errors
     click.echo("cloning experiment into directory " + directory + "/" + name)
