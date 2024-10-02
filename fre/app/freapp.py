@@ -49,7 +49,7 @@ def app_cli():
 @click.pass_context
 def regrid(context,
               input_dir, output_dir, begin, tmp_dir,
-              remap_dir, source, grid_xpec, def_xy_interp ):
+              remap_dir, source, grid_spec, def_xy_interp ):
     ''' regrid target netcdf file '''
     context.forward(_regrid_xy)
 
