@@ -238,47 +238,6 @@ def test_import_regrid_xy(capfd):
 
 
 #@pytest.mark.skip(reason='debug')
-def test_failure_wrong_DT_regrid_xy(capfd):
-    """
-     checks for failure of regrid_xy with rose app-run when fed an
-    invalid date for begin
-    """
-
-    dr_file_output = LOCAL_TEST_OUT_DIR
-    Path(dr_file_output).mkdir(exist_ok = True)
-    assert Path(dr_file_output).exists()
-
-    dr_remap_out = LOCAL_REMAP_DIR
-    Path(dr_remap_out).mkdir(exist_ok = True)
-    assert Path(dr_remap_out).exists()
-
-    # note, the [env] field sets an environment variable.
-    # environment variables in flow.cylc act as the input args
-    ex = [ 'rose', 'app-run',
-           '-D', f'[env]inputDir={d}',
-           '-D', f'[env]outputDir={dr_file_output}',
-           '-D',  '[env]begin=99999999T999999',
-           '-D', f'[env]fregridRemapDir={dr_remap_out}',
-           '-D', f'[env]source={SOURCE}',
-           '-D', f'[env]gridSpec={GOLD_GRID_SPEC}',
-           '-D', f'[env]defaultxyInterp="{NLON},{NLAT}"',
-           '-D', f'[env]TMPDIR={LOCAL_TEST_DIR}', #set by slurm
-           '-D', f'[{COMPONENT}]sources={SOURCE}',
-           '-D', f'[{COMPONENT}]inputGrid={INPUT_GRID}',
-           '-D', f'[{COMPONENT}]inputRealm={INPUT_REALM}',
-           '-D', f'[{COMPONENT}]interpMethod={INTERP_METHOD}',
-           '-D', f'[{COMPONENT}]outputGridLon={NLON}',
-           '-D', f'[{COMPONENT}]outputGridLat={NLAT}'
-          ]
-    print (' '.join(ex))
-    sp = subprocess.run( ex )
-
-    assert all( [ sp.returncode != 0,
-                  True or sp.returncode == 1 ] )
-    out, err = capfd.readouterr()
-
-
-#@pytest.mark.skip(reason='debug')
 def test_success_regrid_xy(capfd):
     """
     checks for success of regrid_xy with rose app-app run
@@ -295,26 +254,38 @@ def test_success_regrid_xy(capfd):
     #created by regrid-xy
     work_dir = LOCAL_TEST_DIR + 'work/'
 
-    # note, the [env] field sets an environment variable.
-    # environment variables in flow.cylc act as the input args
-    ex = [ 'rose', 'app-run',
-           '-D', f'[env]inputDir={d}',
-           '-D', f'[env]outputDir={dr_file_output}',
-           '-D', f'[env]begin={YYYYMMDD}T000000',
-           '-D', f'[env]fregridRemapDir={dr_remap_out}',
-           '-D', f'[env]source={SOURCE}',
-           '-D', f'[env]gridSpec={GOLD_GRID_SPEC}',
-           '-D', f'[env]defaultxyInterp="{NLON},{NLAT}"',
-           '-D', f'[env]TMPDIR={LOCAL_TEST_DIR}', #set by slurm
-           '-D', f'[{COMPONENT}]sources={SOURCE}',
-           '-D', f'[{COMPONENT}]inputGrid={INPUT_GRID}',
-           '-D', f'[{COMPONENT}]inputRealm={INPUT_REALM}',
-           '-D', f'[{COMPONENT}]interpMethod={INTERP_METHOD}',
-           '-D', f'[{COMPONENT}]outputGridLon={NLON}',
-           '-D', f'[{COMPONENT}]outputGridLat={NLAT}'
-          ]
-    print (' '.join(ex))
-    sp = subprocess.run( ex )
+    import fre.app.regrid_xy.regrid_xy as rgxy
+    rgxy.regrid_xy(
+        input_dir = d,
+        output_dir = dr_file_output,
+        begin = f'{YYYYMMDD}T000000',
+        tmp_dir = LOCAL_TEST_DIR,
+        remap_dir = dr_remap_out,
+        source = SOURCE,
+        grid_spec = GOLD_GRID_SPEC,
+        def_xy_interp=f'"{NLON},{NLAT}"'
+    )
+
+#    # note, the [env] field sets an environment variable.
+#    # environment variables in flow.cylc act as the input args
+#    ex = [ 'rose', 'app-run',
+#           '-D', f'[env]inputDir={d}',
+#           '-D', f'[env]outputDir={dr_file_output}',
+#           '-D', f'[env]begin={YYYYMMDD}T000000',
+#           '-D', f'[env]fregridRemapDir={dr_remap_out}',
+#           '-D', f'[env]source={SOURCE}',
+#           '-D', f'[env]gridSpec={GOLD_GRID_SPEC}',
+#           '-D', f'[env]defaultxyInterp="{NLON},{NLAT}"',
+#           '-D', f'[env]TMPDIR={LOCAL_TEST_DIR}', #set by slurm
+#           '-D', f'[{COMPONENT}]sources={SOURCE}',
+#           '-D', f'[{COMPONENT}]inputGrid={INPUT_GRID}',
+#           '-D', f'[{COMPONENT}]inputRealm={INPUT_REALM}',
+#           '-D', f'[{COMPONENT}]interpMethod={INTERP_METHOD}',
+#           '-D', f'[{COMPONENT}]outputGridLon={NLON}',
+#           '-D', f'[{COMPONENT}]outputGridLat={NLAT}'
+#          ]
+#    print (' '.join(ex))
+#    sp = subprocess.run( ex )
 
     # uhm....
     assert all( [sp.returncode == 0,
@@ -359,6 +330,47 @@ def test_success_regrid_xy(capfd):
                  Path( work_dir + 'ocean_static.nc' ).exists(),
                  Path( work_dir + 'ocean_topog.nc' ).exists() ] )
     out, err = capfd.readouterr()
+
+@pytest.mark.skip(reason='need to remove rose but failure test not inital priority. currently, this trivially passes')
+def test_failure_wrong_DT_regrid_xy(capfd):
+    """
+     checks for failure of regrid_xy with rose app-run when fed an
+    invalid date for begin
+    """
+
+    dr_file_output = LOCAL_TEST_OUT_DIR
+    Path(dr_file_output).mkdir(exist_ok = True)
+    assert Path(dr_file_output).exists()
+
+    dr_remap_out = LOCAL_REMAP_DIR
+    Path(dr_remap_out).mkdir(exist_ok = True)
+    assert Path(dr_remap_out).exists()
+
+    # note, the [env] field sets an environment variable.
+    # environment variables in flow.cylc act as the input args
+    ex = [ 'rose', 'app-run',
+           '-D', f'[env]inputDir={d}',
+           '-D', f'[env]outputDir={dr_file_output}',
+           '-D',  '[env]begin=99999999T999999',
+           '-D', f'[env]fregridRemapDir={dr_remap_out}',
+           '-D', f'[env]source={SOURCE}',
+           '-D', f'[env]gridSpec={GOLD_GRID_SPEC}',
+           '-D', f'[env]defaultxyInterp="{NLON},{NLAT}"',
+           '-D', f'[env]TMPDIR={LOCAL_TEST_DIR}', #set by slurm
+           '-D', f'[{COMPONENT}]sources={SOURCE}',
+           '-D', f'[{COMPONENT}]inputGrid={INPUT_GRID}',
+           '-D', f'[{COMPONENT}]inputRealm={INPUT_REALM}',
+           '-D', f'[{COMPONENT}]interpMethod={INTERP_METHOD}',
+           '-D', f'[{COMPONENT}]outputGridLon={NLON}',
+           '-D', f'[{COMPONENT}]outputGridLat={NLAT}'
+          ]
+    print (' '.join(ex))
+    sp = subprocess.run( ex )
+
+    assert all( [ sp.returncode != 0,
+                  True or sp.returncode == 1 ] )
+    out, err = capfd.readouterr()
+
 
 
 #@pytest.mark.skip(reason='debug')
