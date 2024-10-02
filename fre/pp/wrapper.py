@@ -2,7 +2,7 @@
 #frepp.py
 #replacement for the frepp bash script located at:
 #https://gitlab.gfdl.noaa.gov/fre2/system-settings/-/blob/main/bin/frepp
-#~/Code/fre-cli/fre/frepp/wrapperscript
+# ~/Code/fre-cli/fre/frepp/wrapperscript
 #Author: Carolyn.Whitlock
 
 #todo:
@@ -41,9 +41,6 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     time=0000
     '''
 
-    #dumb xml check;does it need to be smarter?
-    is_xml = (config_file[-3:] == "xml")
-
     config_file = os.path.abspath(config_file)
 
     #env_setup
@@ -54,6 +51,8 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     except Exception as err:
         raise
 
+    #dumb xml check;does it need to be smarter?
+    is_xml = config_file[-3:] == "xml"
     if is_xml:
         #TODO: should this prompt for pp start/stop years?
         try:

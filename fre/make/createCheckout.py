@@ -42,7 +42,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
     full_combined = cy.get_combined_compileyaml(comb)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined) 
+    freVars = varsfre.frevars(full_combined)
 
     ## Open the yaml file, validate the yaml, and parse as fremakeYaml
     modelYaml = yamlfre.freyaml(full_combined,freVars)
@@ -60,7 +60,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
-              raise ValueError (platformName + " does not exist in platforms.yaml") 
+              raise ValueError (platformName + " does not exist in platforms.yaml")
          (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
 
     ## Create the source directory for the platform
