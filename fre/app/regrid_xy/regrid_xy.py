@@ -18,8 +18,8 @@ import click
 
 FREGRID_SHARED_FILES='/home/fms/shared_fregrid_remap_files'
 
-# formerly in shared.sh
 def truncate_date(date, freq):
+    ''' truncates iso freq to iso date time format '''
     format=freq_to_date_format(freq)
 
     #in the shell version, this line simply gets run.
@@ -42,10 +42,10 @@ def truncate_date(date, freq):
         date=date[:8]+date[-2:]
     return date
 
-# formerly in shared.sh
-# Print legacy Bronx-like date template format given a frequency (ISO 8601 duration)
 def freq_to_date_format(iso_freq):
-
+    ''' 
+    Print legacy Bronx-like date template format given a frequency (ISO 8601 duration) 
+    '''
     if iso_freq=='P1Y':
         return 'CCYY'
     elif iso_freq=='P1M':
@@ -55,8 +55,8 @@ def freq_to_date_format(iso_freq):
     elif (iso_freq[:2]=='PT') and (iso_freq[-1:]=='H'):
         return 'CCYYMMDDThh'
     else:
-        print('ERROR: Unknown Frequency '+iso_freq)
-        return
+        raise ValueError(f'ERROR: Unknown Frequency {iso_freq}')
+    return
 
 def test_import():
     '''for quickly testing import within pytest'''
