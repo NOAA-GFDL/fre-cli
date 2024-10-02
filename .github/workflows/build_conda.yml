@@ -2,7 +2,7 @@ name: build_conda
 on:
   pull_request:
     branches:
-      - FOOmain
+      - main
 
 jobs:
   build:

@@ -279,12 +279,10 @@ def test_success_tar_grid_spec_regrid_xy(capfd):
             remap_dir = REMAP_DIR,
             source = SOURCE,
             grid_spec = GOLD_GRID_SPEC,
-            #        grid_spec = GOLD_GRID_SPEC_NO_TAR,
             def_xy_interp = f'"{NLON},{NLAT}"'
         )
         
         # uhm....
-        #assert False
         assert rgxy_returncode == 0
         assert Path( REMAP_DIR + \
                      f'{INPUT_GRID}/{INPUT_REALM}/96-by-96/{INTERP_METHOD}/' + \
@@ -364,13 +362,11 @@ def test_success_no_tar_grid_spec_regrid_xy(capfd):
         tmp_dir = TEST_DIR,
         remap_dir = REMAP_DIR,
         source = SOURCE,
-        #        grid_spec = GOLD_GRID_SPEC,
         grid_spec = GOLD_GRID_SPEC_NO_TAR,
         def_xy_interp = f'"{NLON},{NLAT}"'
     )
     
     # uhm....
-    #assert False
     assert rgxy_returncode == 0
     assert Path( REMAP_DIR + \
                  f'{INPUT_GRID}/{INPUT_REALM}/96-by-96/{INTERP_METHOD}/' + \
@@ -436,9 +432,6 @@ def test_failure_wrong_DT_regrid_xy(capfd):
         # yay good job
         assert True
 
-#    assert rgxy_returncode != 0
-#    assert all( [ rgxy_returncode != 0,
-#                  True or sp.returncode == 1 ] )
     out, err = capfd.readouterr()
 
 
