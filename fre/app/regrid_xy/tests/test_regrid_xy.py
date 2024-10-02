@@ -250,7 +250,9 @@ def test_success_tar_grid_spec_regrid_xy(capfd):
     """
     checks for success of regrid_xy with rose app-app run
     """
-
+    # this will only work at GFDL for now.
+    if not Path(GOLD_GRID_SPEC).exists():
+        assert True
     dr_file_output = LOCAL_TEST_OUT_DIR
     Path(dr_file_output).mkdir(exist_ok = True)
     assert Path(dr_file_output).exists()
