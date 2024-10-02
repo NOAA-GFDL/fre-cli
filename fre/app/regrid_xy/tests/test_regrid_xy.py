@@ -7,6 +7,7 @@ import shutil
 # directories for tests
 TEST_DIR = os.getcwd() + "/fre/app/regrid_xy/tests/test_inputs_outputs/"
 
+TAR_IN_DIR = TEST_DIR + 'input_directory.tar.gz' #contains in-dir
 IN_DIR = TEST_DIR + 'in-dir/'
 WORK_DIR = TEST_DIR + f'work/'
 
@@ -81,6 +82,12 @@ def test_setup_global_work_dirs(capfd):
 
     Path(REMAP_DIR).mkdir(exist_ok = True)
     assert Path(REMAP_DIR).exists()
+    
+    ex = ["tar", "-C", TEST_DIR, "-zxvf", TAR_IN_DIR]
+    sp = subprocess.run( ex )
+    assert all ( [ sp.returncode == 0,
+                   Path(IN_DIR).exists() ] )
+
 
 
 #@pytest.mark.skip(reason='debug')
