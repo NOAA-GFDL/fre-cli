@@ -248,19 +248,19 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
     #os.chdir(work_dir) # i hate it
     if '.tar' in grid_spec:
         untar_sp = \
-            subprocess.run( ['tar', '-xvf', grid_spec, '-C', work_dir], check = False , capture_output = True)
+            subprocess.run( ['tar', '-xvf', grid_spec, '-C', input_dir], check = False , capture_output = True)
         if untar_sp.returncode != 0:
             raise Exception(
                 f'untarring of {grid_spec} file failed, ret_code={untar_sp.returncode}, stderr={untar_sp.stderr}')
-        if Path( work_dir+'mosaic.nc' ).exists():
-            grid_spec_file=work_dir+'mosaic.nc'
-        elif Path( work_dir+'grid_spec.nc' ).exists():
-            grid_spec_file=work_dir+'grid_spec.nc'
+        if Path( input_dir+'mosaic.nc' ).exists():
+            grid_spec_file=input_dir+'mosaic.nc'
+        elif Path( input_dir+'grid_spec.nc' ).exists():
+            grid_spec_file=input_dir+'grid_spec.nc'
         else:
             raise Exception(f'grid_spec_file cannot be determined from grid_spec={grid_spec}')
     else:
-        try:
-            grid_spec_file=work_dir+grid_spec.split('/').pop()
+        try: #attempt to copy directly from uncompressed grid_spec location
+            grid_spec_file=input_dir+grid_spec.split('/').pop()
             shutil.copy(grid_spec, grid_spec_file )
         except Exception as exc:
             raise Exception(f'grid_spec={grid_spec} could not be copied.') \
@@ -350,9 +350,9 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         print(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)') #DELETE
 
         # assume the input mosaic is near the input grid spec file where intially specified. copy to work dir.
-        shutil.copy( str(Path(grid_spec).parent)+'/'+get_mosaic_file_name(grid_spec_file, mosaic_type),
-                    work_dir )
-        input_mosaic = work_dir + get_mosaic_file_name(grid_spec_file, mosaic_type)
+#        shutil.copy( str(Path(grid_spec).parent)+'/'+get_mosaic_file_name(grid_spec_file, mosaic_type),
+#                    work_dir )
+        input_mosaic = input_dir + get_mosaic_file_name(grid_spec_file, mosaic_type)
         print(f'input_mosaic  = {input_mosaic}') #DELETE
         ## removeme #
         ## removeme #
@@ -363,7 +363,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         ## removeme #
 
         ## this is to get the tile1 filename?
-        mosaic_grid_file = work_dir + get_mosaic_grid_file_name(input_mosaic)
+        mosaic_grid_file = input_dir + get_mosaic_grid_file_name(input_mosaic)
         print(f'mosaic_grid_file = {mosaic_grid_file}') #DELETE
 
         # need source file dimenions for lat/lon
@@ -376,7 +376,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         if remap_file is not None:
             try:
                 shutil.copy( remap_file,
-                             work_dir+remap_file.split('/').pop() )
+                             input_dir+remap_file.split('/').pop() )
             except Exception as exc:
                 raise Exception('remap_file={remap_file} could not be copied to local dir') \
                     from exc
