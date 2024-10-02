@@ -1,5 +1,6 @@
 ''' test "fre app" calls '''
 
+import os
 from pathlib import Path
 
 from click.testing import CliRunner
