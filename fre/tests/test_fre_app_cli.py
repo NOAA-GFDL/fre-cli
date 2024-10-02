@@ -65,6 +65,6 @@ def test_cli_fre_app_regrid_test_case_1():
                                           "--tmp_dir", f"{t_rgxy.TEST_DIR}",
                                           "--remap_dir", f"{t_rgxy.REMAP_DIR}",
                                           "--source", f"{t_rgxy.SOURCE}",
-                                          "--grid_spec", f"{t_rgxy.GRID_SPEC_NO_TAR}",
+                                          "--grid_spec", f"{t_rgxy.GOLD_GRID_SPEC_NO_TAR}",
                                           "--def_xy_interp", f'"{t_rgxy.NLON},{t_rgxy.NLAT}"' ])
     assert result.exit_code == 0
