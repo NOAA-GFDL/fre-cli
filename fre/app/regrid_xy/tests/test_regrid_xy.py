@@ -1,15 +1,18 @@
+""" test regrid_xy functioning as an importable python module """
 from pathlib import Path
-import pytest
 import subprocess
 import os
-import shutil
+
+import pytest
+
+import fre.app.regrid_xy.regrid_xy as rgxy
 
 # directories for tests
 TEST_DIR = os.getcwd() + "/fre/app/regrid_xy/tests/test_inputs_outputs/"
 
 TAR_IN_DIR = TEST_DIR + 'input_directory.tar.gz' #contains in-dir
 IN_DIR = TEST_DIR + 'in-dir/'
-WORK_DIR = TEST_DIR + f'work/'
+WORK_DIR = TEST_DIR + 'work/'
 
 TEST_OUT_DIR = TEST_DIR + 'out-dir/'
 REMAP_DIR = TEST_DIR + 'remap-dir/'
@@ -40,39 +43,41 @@ WORK_YYYYMMDD_DIR = WORK_DIR + f'{YYYYMMDD}.nc/'
 TEST_NC_GRID_FILE = WORK_YYYYMMDD_DIR + "C96_mosaic.nc" # output of first ncgen test
 
 def test_setup_clean_up(capfd):
+    """ cleanup i/o directories is present for clean regrid_xy testing """
     try:
         Path(IN_DIR).unlink()
-    except:
+    except OSError:
         pass
     try:
         Path(TEST_NC_GRID_FILE).unlink()
-    except:
+    except OSError:
         pass
     try:
-        shutil.rmtree(WORK_DIR)
-    except:
+        Path(WORK_DIR).unlink()
+    except OSError:
         pass
     try:
-        shutil.rmtree(TEST_OUT_DIR)
-    except:
+        Path(TEST_OUT_DIR).unlink()
+    except OSError:
         pass
     try:
-        shutil.rmtree(ALL_TEST_OUT_DIR)
-    except:
+        Path(ALL_TEST_OUT_DIR).unlink()
+    except OSError:
         pass
     try:
-        shutil.rmtree(REMAP_DIR)
-    except:
+        Path(REMAP_DIR).unlink()
+    except OSError:
         pass
     try:
-        shutil.rmtree(REMAP_TEST_DIR)
-    except:
+        Path(REMAP_TEST_DIR).unlink()
+    except OSError:
         pass
     assert True
     out, err = capfd.readouterr()
-    
+
 
 def test_setup_global_work_dirs(capfd):
+    """ create i/o directories for regrid_xy testing """
     Path(WORK_YYYYMMDD_DIR).mkdir(parents = True, exist_ok = True)
     assert Path(WORK_YYYYMMDD_DIR).exists()
 
@@ -91,8 +96,9 @@ def test_setup_global_work_dirs(capfd):
 
 
 def test_untar_inputs(capfd):
+    """ untar input directory tarball to create test inputs """
     ex = ["tar", "-C", TEST_DIR, "-zxvf", TAR_IN_DIR]
-    sp = subprocess.run( ex )
+    sp = subprocess.run( ex , check = True )
     assert all ( [ sp.returncode == 0,
                    Path(IN_DIR).exists() ] )
     out, err = capfd.readouterr()
@@ -100,83 +106,85 @@ def test_untar_inputs(capfd):
 
 #@pytest.mark.skip(reason='debug')
 def test_make_ncgen3_nc_inputs(capfd):
-    '''
+    """
     set-up test: ncgen3 netcdf file inputs for later steps
     if the output exists, it will not bother remaking it
-    '''
+    """
 
-    ncgen3_OUTPUT = TEST_NC_GRID_FILE
-    ncgen3_INPUT = TEST_CDL_GRID_FILE
-    if Path(ncgen3_OUTPUT).exists():
+    ncgen3_output = TEST_NC_GRID_FILE
+    ncgen3_input = TEST_CDL_GRID_FILE
+    if Path(ncgen3_output).exists():
         assert True
     else:
         assert Path(TEST_DIR).exists()
-        assert Path(ncgen3_INPUT).exists()
-        ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen3_OUTPUT , ncgen3_INPUT ]
+        assert Path(ncgen3_input).exists()
+        ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen3_output , ncgen3_input ]
         print (' '.join(ex))
-        sp = subprocess.run( ex )
+        sp = subprocess.run( ex , check = True )
 
         assert all( [ sp.returncode == 0,
-                      Path(ncgen3_OUTPUT).exists() ] )
+                      Path(ncgen3_output).exists() ] )
         out, err = capfd.readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
 def test_make_ncgen_tile_nc_inputs(capfd):
-    '''
+    """
     set-up test: ncgen netcdf tile file inputs for later steps
     if the output exists, it will not bother remaking it
-    '''
-    ncgen_tile_i_nc_OUTPUT_exists = [ Path( WORK_YYYYMMDD_DIR + f'{YYYYMMDD}.{SOURCE}.tile{i}.nc').exists() \
+    """
+    ncgen_tile_i_nc_output_exists = [ Path( WORK_YYYYMMDD_DIR + \
+                                            f'{YYYYMMDD}.{SOURCE}.tile{i}.nc' ).exists() \
                                       for i in range(1, 6+1) ]
-    if all( ncgen_tile_i_nc_OUTPUT_exists ):
+    if all( ncgen_tile_i_nc_output_exists ):
         assert True
     else:
         for i in range(1, 6+1):
-            ncgen_tile_i_nc_OUTPUT = WORK_YYYYMMDD_DIR + f'{YYYYMMDD}.{SOURCE}.tile{i}.nc'
-            ncgen_tile_i_cdl_INPUT = IN_DIR + f'{YYYYMMDD}.{SOURCE}.tile{i}.cdl'
-            assert Path(ncgen_tile_i_cdl_INPUT).exists()
-            ex = [ 'ncgen', '-o', ncgen_tile_i_nc_OUTPUT, ncgen_tile_i_cdl_INPUT ]
+            ncgen_tile_i_nc_output = WORK_YYYYMMDD_DIR + f'{YYYYMMDD}.{SOURCE}.tile{i}.nc'
+            ncgen_tile_i_cdl_input = IN_DIR + f'{YYYYMMDD}.{SOURCE}.tile{i}.cdl'
+            assert Path(ncgen_tile_i_cdl_input).exists()
+            ex = [ 'ncgen', '-o', ncgen_tile_i_nc_output, ncgen_tile_i_cdl_input ]
             print (' '.join(ex))
-            sp = subprocess.run( ex )
+            sp = subprocess.run( ex , check = True )
 
             assert all( [sp.returncode == 0,
-                         Path(ncgen_tile_i_nc_OUTPUT).exists()] )
+                         Path(ncgen_tile_i_nc_output).exists()] )
             out, err = capfd.readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
 def test_make_ncgen_grid_spec_nc_inputs(capfd):
-    '''
+    """
     set-up test: ncgen netcdf grid spec tile file inputs for later steps
     if the output exists, it will not bother remaking it
-    '''
-    ncgen_grid_spec_i_nc_OUTPUT_exists = [ Path( WORK_YYYYMMDD_DIR + f'{YYYYMMDD}.grid_spec.tile{i}.nc').exists() \
+    """
+    ncgen_grid_spec_i_nc_output_exists = [ Path( WORK_YYYYMMDD_DIR + \
+                                                 f'{YYYYMMDD}.grid_spec.tile{i}.nc').exists() \
                                            for i in range(1, 6+1) ]
-    if all( ncgen_grid_spec_i_nc_OUTPUT_exists ):
+    if all( ncgen_grid_spec_i_nc_output_exists ):
         assert True
     else:
         for i in range(1, 6+1):
-            ncgen_grid_spec_i_nc_OUTPUT = WORK_YYYYMMDD_DIR + f'{YYYYMMDD}.grid_spec.tile{i}.nc'
-            ncgen_grid_spec_i_cdl_INPUT = IN_DIR + f'{YYYYMMDD}.grid_spec.tile{i}.cdl'
-            ex = [ 'ncgen', '-o', ncgen_grid_spec_i_nc_OUTPUT, ncgen_grid_spec_i_cdl_INPUT ]
+            ncgen_grid_spec_i_nc_output = WORK_YYYYMMDD_DIR + f'{YYYYMMDD}.grid_spec.tile{i}.nc'
+            ncgen_grid_spec_i_cdl_input = IN_DIR + f'{YYYYMMDD}.grid_spec.tile{i}.cdl'
+            ex = [ 'ncgen', '-o', ncgen_grid_spec_i_nc_output, ncgen_grid_spec_i_cdl_input ]
             print (' '.join(ex))
-            sp = subprocess.run( ex )
+            sp = subprocess.run( ex , check = True )
 
             assert all( [sp.returncode == 0,
-                         Path(ncgen_grid_spec_i_nc_OUTPUT).exists()] )
+                         Path(ncgen_grid_spec_i_nc_output).exists()] )
             out, err = capfd.readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
 def test_make_hgrid_gold_input(capfd):
-    '''
+    """
     set-up test: make C96 gold input via make_hgrid for later steps
     if the output exists in the desired location, it will not bother remaking it
-    '''
-    grid_i_file_targ_LOC_exists = [ Path( WORK_YYYYMMDD_DIR + f'C96_grid.tile{i}.nc').exists() \
+    """
+    grid_i_file_targ_loc_exists = [ Path( WORK_YYYYMMDD_DIR + f'C96_grid.tile{i}.nc').exists() \
                                     for i in range(1,6+1)                       ]
-    if all( grid_i_file_targ_LOC_exists ):
+    if all( grid_i_file_targ_loc_exists ):
         assert True
     else:
         # remake gold grid file locally, then move
@@ -185,76 +193,70 @@ def test_make_hgrid_gold_input(capfd):
                "--nlon", "192",
                "--grid_name", "C96_grid" ]
         print (' '.join(ex))
-        sp = subprocess.run( ex )
+        sp = subprocess.run( ex , check = True )
 
         assert sp.returncode == 0
         out, err = capfd.readouterr()
 
         # now move the files...
         for i in range(1, 6+1):
-            grid_i_file_curr_LOC = f'C96_grid.tile{i}.nc'
-            grid_i_file_targ_LOC = WORK_YYYYMMDD_DIR + f'C96_grid.tile{i}.nc'
-            ex = [ 'mv', '-f', grid_i_file_curr_LOC, grid_i_file_targ_LOC ]
+            grid_i_file_curr_loc = f'C96_grid.tile{i}.nc'
+            grid_i_file_targ_loc = WORK_YYYYMMDD_DIR + f'C96_grid.tile{i}.nc'
+            ex = [ 'mv', '-f', grid_i_file_curr_loc, grid_i_file_targ_loc ]
             print (' '.join(ex))
-            sp = subprocess.run( ex )
+            sp = subprocess.run( ex , check = True )
 
             assert all( [sp.returncode == 0,
-                         Path(grid_i_file_targ_LOC).exists()] )
+                         Path(grid_i_file_targ_loc).exists()] )
             out, err = capfd.readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
 def test_make_fregrid_comparison_input(capfd):
-    '''
+    """
     set-up test: use fregrid to regrid for later comparison to regrid_xy output
     if the output exists in the desired location, it will not bother remaking it
-    '''
+    """
 
-    fregrid_input_mosaic_ARG = TEST_NC_GRID_FILE
-    fregrid_input_dir_ARG = WORK_YYYYMMDD_DIR
-    fregrid_input_file_ARG = f'{YYYYMMDD}.{SOURCE}'
-    fregrid_assoc_file_dir_ARG = WORK_YYYYMMDD_DIR
+    fregrid_input_mosaic_arg = TEST_NC_GRID_FILE
+    fregrid_input_dir_arg = WORK_YYYYMMDD_DIR
+    fregrid_input_file_arg = f'{YYYYMMDD}.{SOURCE}'
+    fregrid_assoc_file_dir_arg = WORK_YYYYMMDD_DIR
 
-    fregridRemapFile = f'fregrid_remap_file_{NLON}_by_{NLAT}.nc'
-    fregrid_remap_file_ARG = REMAP_TEST_DIR + fregridRemapFile
+    fregrid_remap_file = f'fregrid_remap_file_{NLON}_by_{NLAT}.nc'
+    fregrid_remap_file_arg = REMAP_TEST_DIR + fregrid_remap_file
 
-    fregrid_nlat_ARG = str(NLAT)
-    fregrid_nlon_ARG = str(NLON)
-    fregrid_vars_ARG = 'grid_xt,grid_yt,orog'
+    fregrid_nlat_arg = str(NLAT)
+    fregrid_nlon_arg = str(NLON)
+    fregrid_vars_arg = 'grid_xt,grid_yt,orog'
 
 
-    fregrid_output_file_ARG = ALL_TEST_OUT_DIR + fregrid_input_file_ARG + '.nc'
+    fregrid_output_file_arg = ALL_TEST_OUT_DIR + fregrid_input_file_arg + '.nc'
 
     ex = [ 'fregrid', '--standard_dimension',
-           '--input_mosaic',          fregrid_input_mosaic_ARG,
-           '--input_dir',                fregrid_input_dir_ARG,
-           '--input_file',              fregrid_input_file_ARG,
-           '--associated_file_dir', fregrid_assoc_file_dir_ARG,
-           '--remap_file',              fregrid_remap_file_ARG,
-           '--nlon',                          fregrid_nlon_ARG,
-           '--nlat',                          fregrid_nlat_ARG,
-           '--scalar_field',                  fregrid_vars_ARG,
-           '--output_file',            fregrid_output_file_ARG  ]
+           '--input_mosaic',          fregrid_input_mosaic_arg,
+           '--input_dir',                fregrid_input_dir_arg,
+           '--input_file',              fregrid_input_file_arg,
+           '--associated_file_dir', fregrid_assoc_file_dir_arg,
+           '--remap_file',              fregrid_remap_file_arg,
+           '--nlon',                          fregrid_nlon_arg,
+           '--nlat',                          fregrid_nlat_arg,
+           '--scalar_field',                  fregrid_vars_arg,
+           '--output_file',            fregrid_output_file_arg  ]
     print (' \n'.join(ex))
-    sp = subprocess.run( ex )
+    sp = subprocess.run( ex , check = True )
 
     assert all( [ sp.returncode == 0,
-                  Path(fregrid_remap_file_ARG).exists(),
-                  Path(fregrid_output_file_ARG).exists() ] )
+                  Path(fregrid_remap_file_arg).exists(),
+                  Path(fregrid_output_file_arg).exists() ] )
     out, err = capfd.readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
 def test_import_regrid_xy(capfd):
-    '''
+    """
     check import of regrid_xy as a module
-    '''
-
-    import sys
-    for path in sys.path: print(path);
-
-
-    import fre.app.regrid_xy.regrid_xy as rgxy
+    """
     assert all( [ rgxy is not None,
                   rgxy.test_import() == 1 ] )
     out, err = capfd.readouterr()
@@ -271,21 +273,21 @@ def test_success_tar_grid_spec_regrid_xy(capfd):
         # for the time being, still a little dependent on rose for configuration value passing
         if Path(os.getcwd()+'/rose-app-run.conf').exists():
             Path(os.getcwd()+'/rose-app-run.conf').unlink()
-        rose_app_run_config=open(os.getcwd()+'/rose-app-run.conf','a')    
-        rose_app_run_config.write(  '[command]\n'                    )
-        rose_app_run_config.write(  'default=regrid-xy\n'            )
-        rose_app_run_config.write(  '\n'                             )
-        rose_app_run_config.write( f'[{COMPONENT}]\n'                )
-        rose_app_run_config.write( f'sources={SOURCE}\n'             )
-        rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
-        rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
-        rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
-        rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
-        rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
-        rose_app_run_config.write(  '\n'                             )
-        rose_app_run_config.close()
-        
-        import fre.app.regrid_xy.regrid_xy as rgxy
+
+        with open(os.getcwd()+'/rose-app-run.conf','a',encoding='utf-8') as rose_app_run_config:
+            rose_app_run_config.write(  '[command]\n'                    )
+            rose_app_run_config.write(  'default=regrid-xy\n'            )
+            rose_app_run_config.write(  '\n'                             )
+            rose_app_run_config.write( f'[{COMPONENT}]\n'                )
+            rose_app_run_config.write( f'sources={SOURCE}\n'             )
+            rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
+            rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
+            rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
+            rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
+            rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
+            rose_app_run_config.write(  '\n'                             )
+
+
         rgxy_returncode = rgxy.regrid_xy(
             input_dir = WORK_YYYYMMDD_DIR,
             output_dir = TEST_OUT_DIR,
@@ -296,7 +298,7 @@ def test_success_tar_grid_spec_regrid_xy(capfd):
             grid_spec = GOLD_GRID_SPEC,
             def_xy_interp = f'"{NLON},{NLAT}"'
         )
-        
+
         # uhm....
         assert rgxy_returncode == 0
         assert Path( REMAP_DIR + \
@@ -340,7 +342,7 @@ def test_success_tar_grid_spec_regrid_xy(capfd):
         assert Path( WORK_YYYYMMDD_DIR + 'ocean_mask.nc' ).exists()
         assert Path( WORK_YYYYMMDD_DIR + 'ocean_mosaic.nc' ).exists()
         assert Path( WORK_YYYYMMDD_DIR + 'ocean_static.nc' ).exists()
-        assert Path( WORK_YYYYMMDD_DIR + 'ocean_topog.nc' ).exists() 
+        assert Path( WORK_YYYYMMDD_DIR + 'ocean_topog.nc' ).exists()
         out, err = capfd.readouterr()
     assert True
 
@@ -355,21 +357,21 @@ def test_success_no_tar_grid_spec_regrid_xy(capfd):
     # for the time being, still a little dependent on rose for configuration value passing
     if Path(os.getcwd()+'/rose-app-run.conf').exists():
         Path(os.getcwd()+'/rose-app-run.conf').unlink()
-    rose_app_run_config=open(os.getcwd()+'/rose-app-run.conf','a')    
-    rose_app_run_config.write(  '[command]\n'                    )
-    rose_app_run_config.write(  'default=regrid-xy\n'            )
-    rose_app_run_config.write(  '\n'                             )
-    rose_app_run_config.write( f'[{COMPONENT}]\n'                )
-    rose_app_run_config.write( f'sources={SOURCE}\n'             )
-    rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
-    rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
-    rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
-    rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
-    rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
-    rose_app_run_config.write(  '\n'                             )
-    rose_app_run_config.close()
-    
-    import fre.app.regrid_xy.regrid_xy as rgxy
+
+    with open(os.getcwd()+'/rose-app-run.conf','a',encoding='utf-8') as rose_app_run_config:
+        rose_app_run_config.write(  '[command]\n'                    )
+        rose_app_run_config.write(  'default=regrid-xy\n'            )
+        rose_app_run_config.write(  '\n'                             )
+        rose_app_run_config.write( f'[{COMPONENT}]\n'                )
+        rose_app_run_config.write( f'sources={SOURCE}\n'             )
+        rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
+        rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
+        rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
+        rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
+        rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
+        rose_app_run_config.write(  '\n'                             )
+
+
     rgxy_returncode = rgxy.regrid_xy(
         input_dir = WORK_YYYYMMDD_DIR,
         output_dir = TEST_OUT_DIR,
@@ -380,7 +382,7 @@ def test_success_no_tar_grid_spec_regrid_xy(capfd):
         grid_spec = GOLD_GRID_SPEC_NO_TAR,
         def_xy_interp = f'"{NLON},{NLAT}"'
     )
-    
+
     # uhm....
     assert rgxy_returncode == 0
     assert Path( REMAP_DIR + \
@@ -405,38 +407,35 @@ def test_success_no_tar_grid_spec_regrid_xy(capfd):
 
 
 
-    
+
 @pytest.mark.skip(reason='debug')
-def test_failure_wrong_DT_regrid_xy(capfd):
+def test_failure_wrong_datetime_regrid_xy(capfd):
     """
      checks for failure of regrid_xy with rose app-run when fed an
     invalid date for begin
     """
-
-
-        # for the time being, still a little dependent on rose for configuration value passing
+    # for the time being, still a little dependent on rose for configuration value passing
     if Path(os.getcwd()+'/rose-app-run.conf').exists():
         Path(os.getcwd()+'/rose-app-run.conf').unlink()
-    rose_app_run_config=open(os.getcwd()+'/rose-app-run.conf','a')    
-    rose_app_run_config.write(  '[command]\n'                    )
-    rose_app_run_config.write(  'default=regrid-xy\n'            )
-    rose_app_run_config.write(  '\n'                             )
-    rose_app_run_config.write( f'[{COMPONENT}]\n'                )
-    rose_app_run_config.write( f'sources={SOURCE}\n'             )
-    rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
-    rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
-    rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
-    rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
-    rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
-    rose_app_run_config.write(  '\n'                             )
-    rose_app_run_config.close()
 
-    import fre.app.regrid_xy.regrid_xy as rgxy
+    with open(os.getcwd()+'/rose-app-run.conf','a',encoding='utf-8') as rose_app_run_config:
+        rose_app_run_config.write(  '[command]\n'                    )
+        rose_app_run_config.write(  'default=regrid-xy\n'            )
+        rose_app_run_config.write(  '\n'                             )
+        rose_app_run_config.write( f'[{COMPONENT}]\n'                )
+        rose_app_run_config.write( f'sources={SOURCE}\n'             )
+        rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
+        rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
+        rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
+        rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
+        rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
+        rose_app_run_config.write(  '\n'                             )
+
     try:
         rgxy_returncode = rgxy.regrid_xy(
             input_dir = WORK_YYYYMMDD_DIR,
             output_dir = TEST_OUT_DIR,
-            begin = f'99999999T999999',
+            begin = '99999999T999999',
             tmp_dir = TEST_DIR,
             remap_dir = REMAP_DIR,
             source = SOURCE,
@@ -458,14 +457,14 @@ def test_nccmp1_regrid_xy(capfd):
     """
     This test compares the output of make_hgrid and fregrid, which are expected to be identical
     """
-    fregridRemapFile=f'fregrid_remap_file_{NLON}_by_{NLAT}.nc'
+    fregrid_remap_file=f'fregrid_remap_file_{NLON}_by_{NLAT}.nc'
 
-    nccmp_ARG1 = REMAP_DIR + INPUT_GRID + '/' + INPUT_REALM + '/' + \
-                 SOURCES_XY + '/' + INTERP_METHOD  + '/' + fregridRemapFile
-    nccmp_ARG2 = REMAP_TEST_DIR + fregridRemapFile
-    nccmp= [ 'nccmp', '-m', '--force', nccmp_ARG1, nccmp_ARG2 ]
+    nccmp_arg1 = REMAP_DIR + INPUT_GRID + '/' + INPUT_REALM + '/' + \
+                 SOURCES_XY + '/' + INTERP_METHOD  + '/' + fregrid_remap_file
+    nccmp_arg2 = REMAP_TEST_DIR + fregrid_remap_file
+    nccmp= [ 'nccmp', '-m', '--force', nccmp_arg1, nccmp_arg2 ]
     print (' '.join(nccmp))
-    sp = subprocess.run(nccmp)
+    sp = subprocess.run( nccmp, check = True)
     assert sp.returncode == 0
     out, err = capfd.readouterr()
 
@@ -474,11 +473,11 @@ def test_nccmp2_regrid_xy(capfd):
     """
     This test compares the regridded source file output(s), which are expected to be identical
     """
-    nccmp_ARG1 = TEST_OUT_DIR  + f'{YYYYMMDD}.{SOURCE}.nc'
-    nccmp_ARG2 = ALL_TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc'
-    nccmp= [ 'nccmp', '-m', '--force', nccmp_ARG1, nccmp_ARG2 ]
+    nccmp_arg1 = TEST_OUT_DIR  + f'{YYYYMMDD}.{SOURCE}.nc'
+    nccmp_arg2 = ALL_TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc'
+    nccmp= [ 'nccmp', '-m', '--force', nccmp_arg1, nccmp_arg2 ]
     print (' '.join(nccmp))
-    sp = subprocess.run(nccmp)
+    sp = subprocess.run( nccmp, check = True)
     assert sp.returncode == 0
     out, err = capfd.readouterr()
 
@@ -491,3 +490,4 @@ def test_regrid_one_for_two_comps(capfd):
     and only once if the settings are the same.
     """
     assert False
+    out, err = capfd.readouterr()

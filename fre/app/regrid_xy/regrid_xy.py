@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-'''
+"""
   remaps scalar and/or vector fields. It is capable of remapping
   from a spherical grid onto a different one, e.g. spherical,
   or tripolar. By default, it does so using a conservative scheme.
   most valid input args to fregrid are valid in this script
-'''
+"""
 
 import subprocess
 import shutil
@@ -19,17 +18,17 @@ import click
 FREGRID_SHARED_FILES='/home/fms/shared_fregrid_remap_files'
 
 def truncate_date(date, freq):
-    ''' truncates iso freq to iso date time format '''
-    format=freq_to_date_format(freq)
+    """ truncates iso freq to iso date time """
+    freq_in_date_format=freq_to_date_format(freq)
 
     #in the shell version, this line simply gets run.
     #we will simply print this command to screen for now. TO DO (maybe we can work around it?)
     #not clear to me why piping to tr is necessary, doesnt seem to change output at all
-    #print('cylc date --template '+format+' '+date+' | tr -d T')
-    #output =subprocess.Popen(["cylc", "date", "--template", format, date,
+    #print('cylc date --template '+freq_in_date_format+' '+date+' | tr -d T')
+    #output =subprocess.Popen(["cylc", "date", "--template", freq_in_date_format, date,
     #                          "|","tr","-d","T"],
     #                          stdout=subprocess.PIPE)
-    output =subprocess.Popen(["cylc", "cycle-point", "--template", format, date],
+    output =subprocess.Popen(["cylc", "cycle-point", "--template", freq_in_date_format, date],
                               stdout=subprocess.PIPE)
     bytedate = output.communicate()[0]
     date=str(bytedate.decode())
@@ -43,33 +42,31 @@ def truncate_date(date, freq):
     return date
 
 def freq_to_date_format(iso_freq):
-    ''' 
-    Print legacy Bronx-like date template format given a frequency (ISO 8601 duration) 
-    '''
+    """
+    Print legacy Bronx-like date template format given a frequency (ISO 8601 duration)
+    """
     if iso_freq=='P1Y':
         return 'CCYY'
-    elif iso_freq=='P1M':
+    if iso_freq=='P1M':
         return 'CCYYMM'
-    elif iso_freq=='P1D':
+    if iso_freq=='P1D':
         return 'CCYYMMDD'
-    elif (iso_freq[:2]=='PT') and (iso_freq[-1:]=='H'):
+    if (iso_freq[:2]=='PT') and (iso_freq[-1:]=='H'):
         return 'CCYYMMDDThh'
-    else:
-        raise ValueError(f'ERROR: Unknown Frequency {iso_freq}')
-    return
+    raise ValueError(f'ERROR: Unknown Frequency {iso_freq}')
 
 def test_import():
-    '''for quickly testing import within pytest'''
+    """for quickly testing import within pytest"""
     return 1
 
 def safe_rose_config_get(config, section, field):
-    '''read optional variables from rose configuration, and don't error on None value'''
+    """read optional variables from rose configuration, and don't error on None value"""
     config_dict = config.get( [section,field] )
     return None if config_dict is None else config_dict.get_value()
 
 
 def get_mosaic_file_name(grid_spec_file, mosaic_type):
-    '''read string from a numpy masked array WHY'''
+    """read string from a numpy masked array WHY"""
     grid_spec_nc = Dataset(grid_spec_file, 'r')
     masked_data = grid_spec_nc[mosaic_type][:].copy() # maskedArray
     grid_spec_nc.close()
@@ -79,7 +76,7 @@ def get_mosaic_file_name(grid_spec_file, mosaic_type):
 
 
 def get_mosaic_grid_file_name(input_mosaic):
-    '''get mosaic grid file name from NESTED numpy masked array WHY'''
+    """get mosaic grid file name from NESTED numpy masked array WHY"""
     input_mosaic_nc = Dataset(input_mosaic,'r')
     masked_data = input_mosaic_nc['gridfiles'][0].copy()
     input_mosaic_nc.close()
@@ -89,7 +86,7 @@ def get_mosaic_grid_file_name(input_mosaic):
 
 
 def check_interp_method( nc_variable, interp_method):
-    '''print warning if optional interp_method clashes with nc file attribute field, if present'''
+    """print warning if optional interp_method clashes with nc file attribute field, if present"""
     attr_list=nc_variable.ncattrs()
     if 'interp_method' not in attr_list:
         pass
@@ -99,9 +96,9 @@ def check_interp_method( nc_variable, interp_method):
 
 
 def check_per_component_settings(component_list, rose_app_cfg):
-    '''for a source file ref'd by multiple components check per-component
+    """for a source file ref'd by multiple components check per-component
     settings for uniqueness. output list of bools of same length to check
-    in componenet loop'''
+    in componenet loop"""
     do_regridding = [True] #first component will always be run
     curr_out_grid_type_list = [safe_rose_config_get( \
                                                rose_app_cfg, component_list[0], 'outputGridType')]
@@ -114,14 +111,14 @@ def check_per_component_settings(component_list, rose_app_cfg):
         else:
             do_regridding.append(False)
     if len(do_regridding) != len(component_list) :
-        raise Exception('problem with checking per-component settings for uniqueness')
+        raise ValueError('problem with checking per-component settings for uniqueness')
     return do_regridding
 
 
 
 
 def make_component_list(config, source):
-    '''make list of relevant component names where source file appears in sources'''
+    """make list of relevant component names where source file appears in sources"""
     comp_list=[] #will not contain env, or command
     try:
         for keys, sub_node in config.walk():
@@ -135,13 +132,13 @@ def make_component_list(config, source):
             if source in sources:
                 comp_list.append(keys[0])
     except Exception as exc:
-        raise Exception(f'config = {config} may be an empty file... check the config') \
+        raise ValueError(f'config = {config} may be an empty file... check the config') \
             from exc
     return comp_list
 
 
 def make_regrid_var_list(target_file, interp_method = None):
-    '''create default list of variables to be regridded within target file.'''
+    """create default list of variables to be regridded within target file."""
     fin = Dataset(target_file,'r')
     all_fin_vars = fin.variables
     regrid_vars = []
@@ -162,10 +159,10 @@ def make_regrid_var_list(target_file, interp_method = None):
 def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
               remap_dir = None, source = None, grid_spec = None, def_xy_interp = None
               ):
-    '''
+    """
     calls fre-nctools' fregrid to regrid net cdf files
-    '''
-    
+    """
+
     ## rose config load check
     config_name = os.getcwd()
     config_name += '/rose-app-run.conf'
@@ -206,35 +203,35 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
     def_xy_interp[0] = def_xy_interp[0].replace('"', '')
     def_xy_interp[1] = def_xy_interp[1].replace('"', '')
     if any( [  def_xy_interp == [] or len(def_xy_interp) != 2  ] ):
-        raise Exception(
+        raise ValueError(
             f'default xy interpolation has invalid format: \n def_xy_interp = {def_xy_interp}')
 
     # input dir must exist
     if not Path( input_dir ).exists():
-        raise Exception(f'input_dir={input_dir} \n does not exist')
+        raise OSError(f'input_dir={input_dir} \n does not exist')
 
     # tmp_dir check
     if not Path( tmp_dir ).exists():
-        raise Exception(f'tmp_dir={tmp_dir} \n does not exist.')
+        raise OSError(f'tmp_dir={tmp_dir} \n does not exist.')
 
     # output dir check
     Path( output_dir ).mkdir( parents = True, exist_ok = True )
     if not Path( output_dir ).exists() :
-        raise Exception('the following does not exist and/or could not be created:' +
+        raise OSError('the following does not exist and/or could not be created:' +
                         f'output_dir=\n{output_dir}')
 
     # work/ dir check
     work_dir = tmp_dir + 'work/'
     Path( work_dir ).mkdir( exist_ok = True )
     if not Path( work_dir ).exists():
-        raise Exception('the following does not exist and/or could not be created:' +
+        raise OSError('the following does not exist and/or could not be created:' +
                         f'work_dir=\n{work_dir}')
 
 
     # fregrid remap dir check
     Path(remap_dir).mkdir( exist_ok = True )
     if not Path( remap_dir ).exists():
-        raise Exception(f'{remap_dir} could not be created')
+        raise OSError(f'{remap_dir} could not be created')
 
 
     # grid_spec file management
@@ -242,28 +239,30 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
     #os.chdir(work_dir) # i hate it
     if '.tar' in grid_spec:
         untar_sp = \
-            subprocess.run( ['tar', '-xvf', grid_spec, '-C', input_dir], check = False , capture_output = True)
+            subprocess.run( ['tar', '-xvf', grid_spec, '-C', input_dir],
+                            check = False , capture_output = True        )
         if untar_sp.returncode != 0:
-            raise Exception(
-                f'untarring of {grid_spec} file failed, ret_code={untar_sp.returncode}, stderr={untar_sp.stderr}')
+            raise OSError(
+                f'untarring of {grid_spec} file failed, ' + \
+                f'ret_code={untar_sp.returncode}, stderr={untar_sp.stderr}')
         if Path( input_dir+'mosaic.nc' ).exists():
             grid_spec_file=input_dir+'mosaic.nc'
         elif Path( input_dir+'grid_spec.nc' ).exists():
             grid_spec_file=input_dir+'grid_spec.nc'
         else:
-            raise Exception(f'grid_spec_file cannot be determined from grid_spec={grid_spec}')
+            raise ValueError(f'grid_spec_file cannot be determined from grid_spec={grid_spec}')
     else:
         try: #attempt to copy directly from uncompressed grid_spec location
             grid_spec_file=input_dir+grid_spec.split('/').pop()
             shutil.copy(grid_spec, grid_spec_file )
         except Exception as exc:
-            raise Exception(f'grid_spec={grid_spec} could not be copied.') \
+            raise OSError(f'grid_spec={grid_spec} could not be copied.') \
                 from exc
 
     # ------------------------------------------------------------------ component loop
     component_list = make_component_list(rose_app_config, source)
     if len(component_list) == 0:
-        raise Exception('component list empty- source file not found in any source file list!')
+        raise ValueError('component list empty- source file not found in any source file list!')
     if len(component_list) > 1: # check settings for uniqueness
         do_regridding = \
             check_per_component_settings( \
@@ -286,7 +285,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             interp_method = rose_app_config.get( [component, 'interpMethod'] ).get_value()
             input_grid    = rose_app_config.get( [component, 'inputGrid'] ).get_value()
         except Exception as exc:
-            raise Exception('at least one of the following are None: \n' + \
+            raise ValueError('at least one of the following are None: \n' + \
                             f'input_grid=\n{input_grid}\n,input_realm=\n' + \
                             f'{input_realm}\n,/interp_method=\n{interp_method}') \
                             from exc
@@ -301,7 +300,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             if is_tiled \
             else  f"/{truncate_date(begin,'P1D')}.{source}.nc"
         if not Path( target_file ).exists():
-            raise Exception(f'regrid_xy target does not exist. \ntarget_file={target_file}')
+            raise OSError(f'regrid_xy target does not exist. \ntarget_file={target_file}')
         print(f'target_file={target_file}') #DELETE
 
 
@@ -312,9 +311,9 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         regrid_vars      = safe_rose_config_get( rose_app_config, component, 'variables')
         output_grid_lon  = safe_rose_config_get( rose_app_config, component, 'outputGridLon')
         output_grid_lat  = safe_rose_config_get( rose_app_config, component, 'outputGridLat')
-        
+
         # if no input args specified, grab the defaul values
-        if any( [ output_grid_lon is None, 
+        if any( [ output_grid_lon is None,
                   output_grid_lat is None ] ):
             output_grid_lon = def_xy_interp[0]
             output_grid_lat = def_xy_interp[1]
@@ -336,29 +335,20 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         elif input_realm == 'land':
             mosaic_type = 'lnd_mosaic_file'
         else:
-            raise Exception(f'input_realm={input_realm} not recognized.')
+            raise ValueError(f'input_realm={input_realm} not recognized.')
 
         # this is just to get the grid_file name
-        print(f'mosaic_type    = {mosaic_type}') #DELETE
-        print(f'grid_spec_file = {grid_spec_file}') #DELETE
-        print(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)') #DELETE
+        #print(f'mosaic_type    = {mosaic_type}')
+        #print(f'grid_spec_file = {grid_spec_file}')
+        #print(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)')
 
-        # assume the input mosaic is near the input grid spec file where intially specified. copy to work dir.
-#        shutil.copy( str(Path(grid_spec).parent)+'/'+get_mosaic_file_name(grid_spec_file, mosaic_type),
-#                    work_dir )
+        # assume input_mosaic near input grid_spec, where intially specified.
         input_mosaic = input_dir + get_mosaic_file_name(grid_spec_file, mosaic_type)
-        print(f'input_mosaic  = {input_mosaic}') #DELETE
-        ## removeme #
-        ## removeme #
-        ## removeme #
-        #raise Exception('stopping here for now')
-        ## removeme #
-        ## removeme #
-        ## removeme #
+        #print(f'input_mosaic  = {input_mosaic}')
 
         ## this is to get the tile1 filename?
         mosaic_grid_file = input_dir + get_mosaic_grid_file_name(input_mosaic)
-        print(f'mosaic_grid_file = {mosaic_grid_file}') #DELETE
+        #print(f'mosaic_grid_file = {mosaic_grid_file}')
 
         # need source file dimenions for lat/lon
         source_nx = str(int(Dataset(mosaic_grid_file).dimensions['nx'].size / 2 ))
@@ -372,7 +362,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
                 shutil.copy( remap_file,
                              input_dir+remap_file.split('/').pop() )
             except Exception as exc:
-                raise Exception('remap_file={remap_file} could not be copied to local dir') \
+                raise OSError('remap_file={remap_file} could not be copied to local dir') \
                     from exc
         else:
             print('remap_file was not specified nor found. looking for default one')
@@ -411,7 +401,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 
         #check if there's anything worth regridding
         if len(regrid_vars) < 1:
-            raise Exception('make_regrid_var_list found no vars to regrid. and no vars given. exit')
+            raise ValueError('make_regrid_var_list found no vars to regrid. and no vars given. exit')
         print(f'regridding {len(regrid_vars)} variables: {regrid_vars}')
         regrid_vars_str=','.join(regrid_vars) # fregrid needs comma-demarcated list of vars
 
@@ -481,7 +471,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 @click.command()
 def _regrid_xy( input_dir, output_dir, begin, tmp_dir,
                 remap_dir, source, grid_spec, def_xy_interp ):
-    ''' click entrypoint '''    
+    """ click entrypoint """
     click.echo(f'(_regrid_xy) locals={locals()}')
     click.echo( '(_regrid_xy) click entrypoint hit- calling regrid_xy()')
     return regrid_xy( input_dir, output_dir, begin, tmp_dir,
@@ -489,7 +479,7 @@ def _regrid_xy( input_dir, output_dir, begin, tmp_dir,
 
 
 def main():
-    '''steering, local test/debug'''
+    """steering, local test/debug"""
     return regrid_xy()
 
 if __name__=='__main__':
