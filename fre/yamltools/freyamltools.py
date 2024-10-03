@@ -2,7 +2,7 @@
 
 import click
 from .freyamltoolsexample import yamltools_test_function
-from .combine_yamls import consolidate_yamls
+from .combine_yamls import _consolidate_yamls
 
 @click.group(help=click.style(" - access fre yamltools subcommands", fg=(202,177,95)))
 def yamltools_cli():

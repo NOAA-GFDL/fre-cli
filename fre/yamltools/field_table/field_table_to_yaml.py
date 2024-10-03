@@ -30,6 +30,7 @@ import click
 import yaml
 
 global gverbose
+gverbose = None
 
 def main():
     # Necessary to dump OrderedDict to yaml format
