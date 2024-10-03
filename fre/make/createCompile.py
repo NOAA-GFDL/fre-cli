@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 from multiprocessing.dummy import Pool
 import click
-from .gfdlfremake import varsfre, platformfre, yamlfre, targetfre, buildBaremetal
+from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
 @click.command()

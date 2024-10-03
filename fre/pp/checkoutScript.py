@@ -4,7 +4,6 @@
 # Description:
 
 import os
-import sys
 import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
@@ -52,7 +51,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
                 f"\t cylc stop {name}\n"
                 f"\t cylc clean {name}\n"
                 f"\t rm -r ~/cylc-src/{name}" )
-            sys.exit(stop_report)
+            click.echo(stop_report)
             return 1
         else:
             #if not identified, just print the error

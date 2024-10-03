@@ -1,8 +1,5 @@
-#!/usr/bin/env python
 """
-    Script combines the model yaml with
-    the compile, platform, and experiment
-    yamls.
+Script combines the model yaml with the compile, platform, and experiment yamls.
 """
 
 ## TO-DO:
@@ -10,8 +7,8 @@
 # - condition where there are multiple pp and analysis yamls
 
 import os
-import json
 import shutil
+
 from pathlib import Path
 import click
 import yaml
@@ -69,9 +66,9 @@ def experiment_check(mainyaml_dir,comb,experiment):
     Check that the experiment given is an experiment listed in the model yaml.
     Extract experiment specific information and file paths.
     Arguments:
-        mainyaml_dir    :  model yaml file
-        comb            :  combined yaml file name
-        experiment      :  experiment name
+    mainyaml_dir    :  model yaml file
+    comb            :  combined yaml file name
+    experiment      :  experiment name
     """
     comb_model=yaml_load(comb)
 
@@ -300,7 +297,7 @@ def get_combined_compileyaml(comb):
     """
     Combine the model, compile, and platform yamls
     Arguments:
-        - comb : combined yaml object
+    comb : combined yaml object
     """
     # Merge model into combined file
     comb_model = comb.combine_model()
@@ -336,7 +333,7 @@ def get_combined_ppyaml(comb):
     """
     Combine the model, experiment, and analysis yamls
     Arguments:
-        - comb : combined yaml object
+    comb : combined yaml object
     """
     # Merge model into combined file
     comb_model = comb.combine_model()
@@ -350,7 +347,7 @@ def get_combined_ppyaml(comb):
     return full_combined
 
 ###########################################################################################
-def _consolidate_yamls(yamlfile,experiment,platform,target,use):
+def consolidate_yamls(yamlfile,experiment,platform,target,use):
     # Regsiter tag handler
     yaml.add_constructor('!join', join_constructor)
 
@@ -369,12 +366,12 @@ def _consolidate_yamls(yamlfile,experiment,platform,target,use):
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'")
 
 @click.command()
-def consolidate_yamls(yamlfile,experiment,platform,target,use):
+def _consolidate_yamls(yamlfile,experiment,platform,target,use):
     '''
     Wrapper script for calling yaml_combine - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _consolidate_yamls(yamlfile,experiment,platform,target,use)
+    return consolidate_yamls(yamlfile,experiment,platform,target,use)
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':

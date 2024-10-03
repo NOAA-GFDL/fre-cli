@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
 import os
-import sys
 from pathlib import Path
+
 import click
+
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 import fre.yamltools.combine_yamls as cy
 

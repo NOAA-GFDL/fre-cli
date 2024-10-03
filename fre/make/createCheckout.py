@@ -5,8 +5,7 @@ import subprocess
 import logging
 import sys
 import click
-from pathlib import Path
-from .gfdlfremake import varsfre, platformfre, yamlfre, checkout, targetfre
+from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 import fre.yamltools.combine_yamls as cy
 
 @click.command()
@@ -61,7 +60,9 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
               pass
          else:
               raise ValueError (platformName + " does not exist in platforms.yaml")
-         (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
+         ( compiler, modules, modulesInit, fc, cc, modelRoot,
+           iscontainer, mkTemplate, containerBuild, ContainerRun,
+           RUNenv ) = modelYaml.platforms.getPlatformFromName(platformName)
 
     ## Create the source directory for the platform
          if iscontainer == False:

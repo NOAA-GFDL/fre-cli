@@ -27,17 +27,17 @@ def test_cli_fre_cmor_opt_dne():
 
 # fre cmor run
 def test_cli_fre_cmor_run():
-    ''' fre cmor '''
+    ''' fre cmor run '''
     result = runner.invoke(fre.fre, args=["cmor", "run"])
     assert result.exit_code == 2
 
 def test_cli_fre_cmor_run_help():
-    ''' fre cmor --help '''
+    ''' fre cmor run --help '''
     result = runner.invoke(fre.fre, args=["cmor", "run", "--help"])
     assert result.exit_code == 0
 
 def test_cli_fre_cmor_run_opt_dne():
-    ''' fre cmor optionDNE '''
+    ''' fre cmor run optionDNE '''
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
