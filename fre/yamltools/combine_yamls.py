@@ -1,8 +1,5 @@
-#!/usr/bin/env python
 """
-    Script combines the model yaml with
-    the compile, platform, and experiment
-    yamls.
+Script combines the model yaml with the compile, platform, and experiment yamls.
 """
 
 ## TO-DO:
@@ -69,9 +66,9 @@ def experiment_check(mainyaml_dir,comb,experiment):
     Check that the experiment given is an experiment listed in the model yaml.
     Extract experiment specific information and file paths.
     Arguments:
-        mainyaml_dir    :  model yaml file
-        comb            :  combined yaml file name
-        experiment      :  experiment name
+    mainyaml_dir    :  model yaml file
+    comb            :  combined yaml file name
+    experiment      :  experiment name
     """
     comb_model=yaml_load(comb)
 
@@ -300,7 +297,7 @@ def get_combined_compileyaml(comb):
     """
     Combine the model, compile, and platform yamls
     Arguments:
-        - comb : combined yaml object
+    comb : combined yaml object
     """
     # Merge model into combined file
     comb_model = comb.combine_model()
@@ -336,7 +333,7 @@ def get_combined_ppyaml(comb):
     """
     Combine the model, experiment, and analysis yamls
     Arguments:
-        - comb : combined yaml object
+    comb : combined yaml object
     """
     # Merge model into combined file
     comb_model = comb.combine_model()

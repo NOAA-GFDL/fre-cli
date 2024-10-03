@@ -1,8 +1,6 @@
 """
-frepp.py
-replacement for the frepp bash script located at:
+frepp.py, a replacement for the frepp bash script located at:
 https://gitlab.gfdl.noaa.gov/fre2/system-settings/-/blob/main/bin/frepp
- ~/Code/fre-cli/fre/frepp/wrapperscript
 Author: Carolyn.Whitlock
 """
 
