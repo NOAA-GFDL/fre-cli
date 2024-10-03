@@ -1,3 +1,6 @@
+"""
+tests routines in fre.yamltools.combine_yamls
+"""
 import os
 from pathlib import Path
 import pytest
@@ -11,15 +14,15 @@ from fre.yamltools import combine_yamls as cy
 ## SET-UP
 # Set example yaml paths, input directory, output directory
 CWD = Path.cwd()
-test_dir = Path("fre/yamltools/tests")
-in_dir = Path(f"{CWD}/{test_dir}/AM5_example")
+TEST_DIR = Path("fre/yamltools/tests")
+IN_DIR = Path(f"{CWD}/{TEST_DIR}/AM5_example")
 
 # Create output directories
-comp_out_dir = Path(f"{CWD}/{test_dir}/combine_yamls_out/compile")
-pp_out_dir = Path(f"{CWD}/{test_dir}/combine_yamls_out/pp")
+COMP_OUT_DIR = Path(f"{CWD}/{TEST_DIR}/combine_yamls_out/compile")
+PP_OUT_DIR = Path(f"{CWD}/{TEST_DIR}/combine_yamls_out/pp")
 
 # If output directory exists, remove and create again
-for out in [comp_out_dir, pp_out_dir]:
+for out in [COMP_OUT_DIR, PP_OUT_DIR]:
     if out.exists():
         shutil.rmtree(out)
         Path(out).mkdir(parents=True,exist_ok=True)
@@ -41,19 +44,19 @@ def test_modelyaml_exists():
     """
     Make sure main yaml file exists
     """
-    assert Path(f"{in_dir}/am5.yaml").exists()
+    assert Path(f"{IN_DIR}/am5.yaml").exists()
 
 def test_compileyaml_exists():
     """
     Make sure experiment yaml file exists
     """
-    assert Path(f"{in_dir}/compile_yamls/compile.yaml").exists()
+    assert Path(f"{IN_DIR}/compile_yamls/compile.yaml").exists()
 
 def test_platformyaml_exists():
     """
     Make sure experiment yaml file exists
     """
-    assert Path(f"{in_dir}/compile_yamls/platforms.yaml").exists()
+    assert Path(f"{IN_DIR}/compile_yamls/platforms.yaml").exists()
 
 def test_merged_compile_yamls():
     """
@@ -61,20 +64,20 @@ def test_merged_compile_yamls():
     Check that the model yaml was merged into the combined yaml
     """
     # Go into the input directory
-    os.chdir(in_dir)
+    os.chdir(IN_DIR)
 
     # Model yaml path
     modelyaml = "am5.yaml"
-    USE = "compile"
+    use = "compile"
 
     # Merge the yamls
-    cy._consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, USE)
+    cy._consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
 
     # Move combined yaml to output location
-    shutil.move(f"combined-am5.yaml", comp_out_dir)
+    shutil.move("combined-am5.yaml", COMP_OUT_DIR)
 
     # Check that the combined yaml exists
-    assert Path(f"{comp_out_dir}/combined-{COMP_EXPERIMENT}.yaml").exists()
+    assert Path(f"{COMP_OUT_DIR}/combined-{COMP_EXPERIMENT}.yaml").exists()
 
     # Go back to original directory
     os.chdir(CWD)
@@ -83,8 +86,8 @@ def test_combined_compileyaml_validation():
     """
     Validate the combined compile yaml
     """
-    combined_yamlfile =f"{comp_out_dir}/combined-{COMP_EXPERIMENT}.yaml"
-    schema_file = os.path.join(f"{in_dir}","compile_yamls","schema.json")
+    combined_yamlfile =f"{COMP_OUT_DIR}/combined-{COMP_EXPERIMENT}.yaml"
+    schema_file = os.path.join(f"{IN_DIR}","compile_yamls","schema.json")
 
     with open(combined_yamlfile,'r') as cf:
         yml = yaml.safe_load(cf)
@@ -106,21 +109,21 @@ def test_combined_compileyaml_combinefail():
     the combine fails. (compile yaml path misspelled)
     """
     # Go into the input directory
-    os.chdir(f"{in_dir}/compile_yamls/compile_fail")
+    os.chdir(f"{IN_DIR}/compile_yamls/compile_fail")
 
     # Model yaml path
-    modelyaml = f"am5-wrong_compilefile.yaml"
-    USE = "compile"
+    modelyaml = "am5-wrong_compilefile.yaml"
+    use = "compile"
 
     # Merge the yamls - should fail since there is no compile yaml specified in the model yaml
     try:
-        consolidate = cy._consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, USE)
+        cy._consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
         # Move combined yaml to output location
-        shutil.move(f"combined-am5-wrong_compilefile.yaml", comp_out_dir)
+        shutil.move("combined-am5-wrong_compilefile.yaml", COMP_OUT_DIR)
     except:
         print("EXPECTED FAILURE")
         # Move combined yaml to output location
-        shutil.move(f"combined-am5-wrong_compilefile.yaml", comp_out_dir)
+        shutil.move("combined-am5-wrong_compilefile.yaml", COMP_OUT_DIR)
         assert True
 
     # Go back to original directory
@@ -132,21 +135,21 @@ def test_combined_compileyaml_validatefail():
     Branch should be string
     """
     # Go into the input directory
-    os.chdir(f"{in_dir}/compile_yamls/compile_fail")
+    os.chdir(f"{IN_DIR}/compile_yamls/compile_fail")
 
     # Model yaml path
     modelyaml = "am5-wrong_datatype.yaml"
-    USE = "compile"
+    use = "compile"
 
     # Merge the yamls
-    cy._consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, USE)
+    cy._consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
 
     # Move combined yaml to output location
-    shutil.move(f"combined-am5-wrong_datatype.yaml", comp_out_dir)
+    shutil.move("combined-am5-wrong_datatype.yaml", COMP_OUT_DIR)
 
     # Validate against schema; should fail
-    wrong_combined = Path(f"{comp_out_dir}/combined-am5-wrong_datatype.yaml")
-    schema_file = os.path.join(f"{in_dir}","compile_yamls","schema.json")
+    wrong_combined = Path(f"{COMP_OUT_DIR}/combined-am5-wrong_datatype.yaml")
+    schema_file = os.path.join(f"{IN_DIR}","compile_yamls","schema.json")
 
     # Open/load combined yaml file
     with open(wrong_combined,'r') as cf:
@@ -171,14 +174,14 @@ def test_expyaml_exists():
     """
     Make sure experiment yaml file exists
     """
-    assert Path(f"{in_dir}/pp_yamls/pp.c96_amip.yaml").exists()
+    assert Path(f"{IN_DIR}/pp_yamls/pp.c96_amip.yaml").exists()
 
 @pytest.mark.skip(reason='analysis scripts might not be defined yet')
 def test_analysisyaml_exists():
     """
     Make sure experiment yaml file exists
     """
-    assert Path(f"{in_dir}/pp_yamls/analysis.yaml").exists()
+    assert Path(f"{IN_DIR}/pp_yamls/analysis.yaml").exists()
 
 def test_merged_pp_yamls():
     """
@@ -186,20 +189,20 @@ def test_merged_pp_yamls():
     Check that the model yaml was merged into the combined yaml
     """
     # Go into the input directory
-    os.chdir(in_dir)
+    os.chdir(IN_DIR)
 
     # Model yaml path
-    modelyaml = Path(f"{in_dir}/am5.yaml")
-    USE = "pp"
+    modelyaml = Path(f"{IN_DIR}/am5.yaml")
+    use = "pp"
 
     # Merge the yamls
-    cy._consolidate_yamls(modelyaml, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, USE)
+    cy._consolidate_yamls(modelyaml, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, use)
 
     # Move combined yaml to output location
-    shutil.move(f"combined-{PP_EXPERIMENT}.yaml", pp_out_dir)
+    shutil.move(f"combined-{PP_EXPERIMENT}.yaml", PP_OUT_DIR)
 
     # Check that the combined yaml exists
-    assert Path(f"{pp_out_dir}/combined-{PP_EXPERIMENT}.yaml").exists()
+    assert Path(f"{PP_OUT_DIR}/combined-{PP_EXPERIMENT}.yaml").exists()
 
     # Go back to original directory
     os.chdir(CWD)
@@ -208,8 +211,8 @@ def test_combined_ppyaml_validation():
     """
     Validate the combined compile yaml
     """
-    combined_yamlfile =f"{pp_out_dir}/combined-{PP_EXPERIMENT}.yaml"
-    schema_dir = Path(f"{in_dir}/pp_yamls")
+    combined_yamlfile =f"{PP_OUT_DIR}/combined-{PP_EXPERIMENT}.yaml"
+    schema_dir = Path(f"{IN_DIR}/pp_yamls")
     schema_file = os.path.join(schema_dir, 'schema.json')
 
     with open(combined_yamlfile,'r') as cf:

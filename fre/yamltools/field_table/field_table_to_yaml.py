@@ -29,6 +29,8 @@ from collections import OrderedDict
 import click
 import yaml
 
+global gverbose
+
 def main():
     # Necessary to dump OrderedDict to yaml format
     yaml.add_representer(OrderedDict, lambda dumper, data: dumper.represent_mapping('tag:yaml.org,2002:map', data.items()))
@@ -45,7 +47,6 @@ def main():
                   default=False,
                   help='Increase verbosity')
     def convert_field_table_to_yaml(file, verbose):
-        global gverbose
         gverbose = verbose
         field_table_name = file
 

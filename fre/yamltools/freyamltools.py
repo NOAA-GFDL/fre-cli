@@ -46,7 +46,7 @@ def combine_yamls(context,yamlfile,experiment,platform,target,use):
     - Combine the model yaml with the compile, platform,
     experiment, and analysis yamls
     """
-    context.forward(consolidate_yamls)
+    context.forward(_consolidate_yamls)
 
 if __name__ == "__main__":
     yamltools_cli()

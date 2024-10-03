@@ -347,7 +347,7 @@ def get_combined_ppyaml(comb):
     return full_combined
 
 ###########################################################################################
-def _consolidate_yamls(yamlfile,experiment,platform,target,use):
+def consolidate_yamls(yamlfile,experiment,platform,target,use):
     # Regsiter tag handler
     yaml.add_constructor('!join', join_constructor)
 
@@ -366,12 +366,12 @@ def _consolidate_yamls(yamlfile,experiment,platform,target,use):
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'")
 
 @click.command()
-def consolidate_yamls(yamlfile,experiment,platform,target,use):
+def _consolidate_yamls(yamlfile,experiment,platform,target,use):
     '''
     Wrapper script for calling yaml_combine - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _consolidate_yamls(yamlfile,experiment,platform,target,use)
+    return consolidate_yamls(yamlfile,experiment,platform,target,use)
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
