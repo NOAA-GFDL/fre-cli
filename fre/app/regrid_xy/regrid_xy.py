@@ -165,7 +165,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
     '''
     calls fre-nctools' fregrid to regrid net cdf files
     '''
-
+    
     ## rose config load check
     config_name = os.getcwd()
     config_name += '/rose-app-run.conf'
@@ -174,7 +174,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
     try:
         rose_app_config = rose_cfg.load(config_name)
     except Exception as exc:
-        raise Exception(f'config_name = {config_name} not found.') \
+        raise ValueError(f'config_name = {config_name} not found.') \
             from exc
 
 
@@ -191,26 +191,20 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
                  begin     , tmp_dir       ,
                  remap_dir , source        ,
                  grid_spec , def_xy_interp  ]:
-        raise Exception(f'a mandatory input argument is not present in {config_name})')
-    #    if any( [ input_dir is None, output_dir    is None,
-    #              begin     is None, tmp_dir       is None,
-    #              remap_dir is None, source        is None,
-    #              grid_spec is None, def_xy_interp is None ] ):
-    #        raise Exception(f'a mandatory input argument is not present in {config_name}')
+        print( f'input_dir         = { input_dir        }\n' + \
+               f'output_dir        = { output_dir       }\n' + \
+               f'begin             = { begin            }\n' + \
+               f'tmp_dir           = { tmp_dir          }\n' + \
+               f'remap_dir         = { remap_dir        }\n' + \
+               f'source            = { source           }\n' + \
+               f'grid_spec         = { grid_spec        }\n' + \
+               f'def_xy_interp     = { def_xy_interp    }'        )
+        raise ValueError(f'a mandatory input argument to regrid_xy is None... \n {locals()}')
+
 
     def_xy_interp    = def_xy_interp.split(',')
     def_xy_interp[0] = def_xy_interp[0].replace('"', '')
     def_xy_interp[1] = def_xy_interp[1].replace('"', '')
-    print( f'input_dir         = { input_dir        }\n' + \
-           f'output_dir        = { output_dir       }\n' + \
-           f'begin             = { begin            }\n' + \
-           f'tmp_dir           = { tmp_dir          }\n' + \
-           f'remap_dir         = { remap_dir        }\n' + \
-           f'source            = { source           }\n' + \
-           f'grid_spec         = { grid_spec        }\n' + \
-           f'def_xy_interp     = { def_xy_interp    }\n' + \
-           f'def_xy_interp[0]  = { def_xy_interp[0] }\n' + \
-           f'def_xy_interp[1]  = { def_xy_interp[1] }'       )
     if any( [  def_xy_interp == [] or len(def_xy_interp) != 2  ] ):
         raise Exception(
             f'default xy interpolation has invalid format: \n def_xy_interp = {def_xy_interp}')
@@ -487,8 +481,11 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 @click.command()
 def _regrid_xy( input_dir, output_dir, begin, tmp_dir,
                 remap_dir, source, grid_spec, def_xy_interp ):
-    ''' click entrypoint '''
-    return regrid_xy()
+    ''' click entrypoint '''    
+    click.echo(f'(_regrid_xy) locals={locals()}')
+    click.echo( '(_regrid_xy) click entrypoint hit- calling regrid_xy()')
+    return regrid_xy( input_dir, output_dir, begin, tmp_dir,
+                      remap_dir, source, grid_spec, def_xy_interp )
 
 
 def main():

@@ -41,6 +41,10 @@ TEST_NC_GRID_FILE = WORK_YYYYMMDD_DIR + "C96_mosaic.nc" # output of first ncgen 
 
 def test_setup_clean_up(capfd):
     try:
+        Path(IN_DIR).unlink()
+    except:
+        pass
+    try:
         Path(TEST_NC_GRID_FILE).unlink()
     except:
         pass
@@ -65,6 +69,7 @@ def test_setup_clean_up(capfd):
     except:
         pass
     assert True
+    out, err = capfd.readouterr()
     
 
 def test_setup_global_work_dirs(capfd):
@@ -82,6 +87,7 @@ def test_setup_global_work_dirs(capfd):
 
     Path(REMAP_DIR).mkdir(exist_ok = True)
     assert Path(REMAP_DIR).exists()
+    out, err = capfd.readouterr()
 
 
 def test_untar_inputs(capfd):
@@ -89,7 +95,7 @@ def test_untar_inputs(capfd):
     sp = subprocess.run( ex )
     assert all ( [ sp.returncode == 0,
                    Path(IN_DIR).exists() ] )
-
+    out, err = capfd.readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
