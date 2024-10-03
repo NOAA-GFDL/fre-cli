@@ -29,12 +29,12 @@ def app_cli():
               help = "`begin` / `begin` (env var) ISO8601 datetime format specification for" + \
                      " starting date of data, part of input target file name",
               required = True)
-@click.option("-t", "--tmp_dir",
+@click.option("-tmp", "--tmp_dir",
               type = str,
               help = "`TMPDIR` / `tmp_dir` (env var) temp directory for location of file " + \
                      "read/writes",
               required = True)
-@click.option("-r", "--remap_dir",
+@click.option("-rd", "--remap_dir",
               type = str,
               help = "`fregridRemapDir` / `remap_dir` (env var) directory containing remap file" + \
                      " for regridding",
@@ -49,7 +49,7 @@ def app_cli():
               type = str,
               help = "`gridSpec` / `grid_spec` (env var) file containing mosaic for regridding",
               required = True)
-@click.option("-I", "--def_xy_interp",
+@click.option("-xy", "--def_xy_interp",
               type = str,
               help = "`defaultxyInterp` / `def_xy_interp` (env var) default lat/lon resolution " + \
                      "for output regridding. (change me? TODO)",
@@ -70,7 +70,7 @@ def regrid(context,
               type = str,
               help = "Output file",
               required = True)
-@click.option("-p", "--psfile",
+@click.option("-p", "--psfile", # surface pressure... ps? TODO
               help = "Input NetCDF file containing surface pressure (ps)",
               required = True)
 @click.pass_context
