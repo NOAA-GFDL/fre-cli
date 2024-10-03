@@ -71,7 +71,7 @@ def test_merged_compile_yamls():
     use = "compile"
 
     # Merge the yamls
-    cy._consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
+    cy.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
 
     # Move combined yaml to output location
     shutil.move("combined-am5.yaml", COMP_OUT_DIR)
@@ -117,7 +117,7 @@ def test_combined_compileyaml_combinefail():
 
     # Merge the yamls - should fail since there is no compile yaml specified in the model yaml
     try:
-        cy._consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
+        cy.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
         # Move combined yaml to output location
         shutil.move("combined-am5-wrong_compilefile.yaml", COMP_OUT_DIR)
     except:
@@ -142,7 +142,7 @@ def test_combined_compileyaml_validatefail():
     use = "compile"
 
     # Merge the yamls
-    cy._consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
+    cy.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
 
     # Move combined yaml to output location
     shutil.move("combined-am5-wrong_datatype.yaml", COMP_OUT_DIR)
@@ -196,7 +196,7 @@ def test_merged_pp_yamls():
     use = "pp"
 
     # Merge the yamls
-    cy._consolidate_yamls(modelyaml, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, use)
+    cy.consolidate_yamls(modelyaml, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, use)
 
     # Move combined yaml to output location
     shutil.move(f"combined-{PP_EXPERIMENT}.yaml", PP_OUT_DIR)
