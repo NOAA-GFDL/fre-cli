@@ -1,4 +1,4 @@
-''' test "fre app" calls '''
+""" test "fre app" calls """
 
 import os
 from pathlib import Path
@@ -12,65 +12,65 @@ runner = CliRunner()
 
 # fre app
 def test_cli_fre_app(capfd):
-    ''' fre app '''
+    """ fre app """
     result = runner.invoke(fre.fre, args=["app"])
     assert result.exit_code == 0
     out, err = capfd.readouterr()
 
 def test_cli_fre_app_help(capfd):
-    ''' fre app --help '''
+    """ fre app --help """
     result = runner.invoke(fre.fre, args=["app", "--help"])
     assert result.exit_code == 0
     out, err = capfd.readouterr()
 
 def test_cli_fre_app_opt_dne(capfd):
-    ''' fre app optionDNE '''
+    """ fre app optionDNE """
     result = runner.invoke(fre.fre, args=["app", "optionDNE"])
     assert result.exit_code == 2
     out, err = capfd.readouterr()
 
 # fre app gen-time-averages
 def test_cli_fre_app_gen_time_averages(capfd):
-    ''' fre cmor run '''
+    """ fre cmor run """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages"])
     assert result.exit_code == 2
     out, err = capfd.readouterr()
 
 def test_cli_fre_app_gen_time_averages_help(capfd):
-    ''' fre cmor run --help '''
+    """ fre cmor run --help """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages", "--help"])
     assert result.exit_code == 0
     out, err = capfd.readouterr()
 
 def test_cli_fre_app_gen_time_averages_opt_dne(capfd):
-    ''' fre cmor run optionDNE '''
+    """ fre cmor run optionDNE """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages", "optionDNE"])
     assert result.exit_code == 2
     out, err = capfd.readouterr()
 
 # fre app regrid
 def test_cli_fre_app_regrid(capfd):
-    ''' fre cmor run '''
+    """ fre cmor run """
     result = runner.invoke(fre.fre, args=["app", "regrid"])
     assert result.exit_code == 2
     out, err = capfd.readouterr()
 
 def test_cli_fre_app_regrid_help(capfd):
-    ''' fre cmor run --help '''
+    """ fre cmor run --help """
     result = runner.invoke(fre.fre, args=["app", "regrid", "--help"])
     assert result.exit_code == 0
     out, err = capfd.readouterr()
 
 def test_cli_fre_app_regrid_opt_dne(capfd):
-    ''' fre cmor run optionDNE '''
+    """ fre cmor run optionDNE """
     result = runner.invoke(fre.fre, args=["app", "regrid", "optionDNE"])
     assert result.exit_code == 2
     out, err = capfd.readouterr()
 
 def test_cli_fre_app_regrid_test_case_1(capfd):
-    ''' fre cmor run --help '''
+    """ fre cmor run --help """
 
-    import fre.app.regrid_xy.tests.test_regrid_xy as t_rgxy    
+    import fre.app.regrid_xy.tests.test_regrid_xy as t_rgxy
     assert t_rgxy is not None
 
     # input files for this test are locked up in here as well
@@ -84,7 +84,7 @@ def test_cli_fre_app_regrid_test_case_1(capfd):
     # for the time being, still a little dependent on rose for configuration value passing
     if Path(os.getcwd()+'/rose-app-run.conf').exists():
         Path(os.getcwd()+'/rose-app-run.conf').unlink()
-    rose_app_run_config=open(os.getcwd()+'/rose-app-run.conf','a')    
+    rose_app_run_config=open(os.getcwd()+'/rose-app-run.conf','a')
     rose_app_run_config.write(  '[command]\n'                    )
     rose_app_run_config.write(  'default=regrid-xy\n'            )
     rose_app_run_config.write(  '\n'                             )
@@ -99,7 +99,7 @@ def test_cli_fre_app_regrid_test_case_1(capfd):
     rose_app_run_config.close()
     assert Path('./rose-app-run.conf').exists()
 
-    args_list = ["app", "regrid", 
+    args_list = ["app", "regrid",
                  "--input_dir", f"{t_rgxy.WORK_YYYYMMDD_DIR}",
                  "--output_dir", f"{t_rgxy.TEST_OUT_DIR}",
                  "--begin", f"{t_rgxy.YYYYMMDD}T000000",
@@ -110,7 +110,7 @@ def test_cli_fre_app_regrid_test_case_1(capfd):
                  "--def_xy_interp", f'"{t_rgxy.NLON},{t_rgxy.NLAT}"' ]
     click.echo(f'args_list = \n {args_list}')
     click.echo('fre ' + ' '.join(args_list))
-    
+
     result = runner.invoke(fre.fre, args=args_list )
     assert result.exit_code == 0
     out, err = capfd.readouterr()

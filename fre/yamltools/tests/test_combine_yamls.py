@@ -4,9 +4,8 @@ import pytest
 import shutil
 import json
 import yaml
-from jsonschema import validate, ValidationError, SchemaError
+from jsonschema import validate
 from fre.yamltools import combine_yamls as cy
-from multiprocessing import Process
 
 
 ## SET-UP

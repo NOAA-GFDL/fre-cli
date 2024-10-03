@@ -10,8 +10,8 @@
 # - condition where there are multiple pp and analysis yamls
 
 import os
-import json
 import shutil
+
 from pathlib import Path
 import click
 import yaml

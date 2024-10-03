@@ -13,7 +13,7 @@ import json
 import sys
 import shutil
 import click
-from pathlib import Path
+
 from jsonschema import validate
 import yaml
 import metomi.rose.config
