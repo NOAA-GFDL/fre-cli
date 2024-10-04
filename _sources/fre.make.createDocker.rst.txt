@@ -1,0 +1,7 @@
+fre.make.createDocker module
+============================
+
+.. automodule:: fre.make.createDocker
+   :members:
+   :undoc-members:
+   :show-inheritance:

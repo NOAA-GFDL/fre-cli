@@ -1,0 +1,88 @@
+# local reusable variable overrides
+fre_properties: 
+  - &custom_interp "180,360"
+
+# directory overrides
+#c96_amip_directories:
+directories:
+  <<: *shared_directories
+  ptmp_dir: "/ptmp/$USER"
+  pp_grid_spec: *GRID_SPEC96
+
+#c96_amip_postprocess:
+postprocess:
+  # pp setting overrides
+  settings:
+    <<: *shared_settings
+    pp_start:   *ANA_AMIP_START
+    pp_stop:    *ANA_AMIP_END
+    pp_chunk_a: *PP_AMIP_CHUNK96
+    pp_components: "atmos atmos_scalar"
+  switches: 
+    <<: *shared_switches
+    do_statics: False
+
+  # main pp instructions
+  components:
+    - type: "atmos_cmip"
+      sources: "atmos_month_cmip atmos_8xdaily_cmip atmos_daily_cmip"
+      sourceGrid: "cubedsphere"
+      xyInterp: *custom_interp
+      interpMethod: "conserve_order2"
+      inputRealm: 'atmos'
+    - type: "atmos"
+      sources: "atmos_month"
+      sourceGrid: "cubedsphere"
+      xyInterp: *PP_XYINTERP96
+      interpMethod: "conserve_order2"
+      inputRealm: 'atmos'
+    - type: "atmos_level_cmip"
+      sources: "atmos_level_cmip"
+      sourceGrid: "cubedsphere"
+      xyInterp: *PP_XYINTERP96
+      interpMethod: "conserve_order2"
+      inputRealm: 'atmos'
+    - type: "atmos_level"
+      sources: "atmos_month"
+      sourceGrid: "cubedsphere"
+      xyInterp: *PP_XYINTERP96
+      interpMethod: "conserve_order2"
+      inputRealm: 'atmos'
+    - type: "atmos_month_aer"
+      sources: "atmos_month_aer"
+      sourceGrid: "cubedsphere"
+      xyInterp: *PP_XYINTERP96
+      interpMethod: "conserve_order1"
+      inputRealm: 'atmos'
+    - type: "atmos_diurnal"
+      sources: "atmos_diurnal"
+      sourceGrid: "cubedsphere"
+      xyInterp: *PP_XYINTERP96
+      interpMethod: "conserve_order2"
+      inputRealm: 'atmos'
+    - type: "atmos_scalar"
+      sources: "atmos_scalar"
+    - type: "aerosol_cmip"
+      xyInterp: *PP_XYINTERP96
+      sources: "aerosol_month_cmip"
+      sourceGrid: "cubedsphere"
+      interpMethod: "conserve_order1"
+      inputRealm: 'atmos'
+    - type: "land"
+      sources: "land_month"
+      sourceGrid: "cubedsphere"
+      xyInterp: *PP_XYINTERP96
+      interpMethod: "conserve_order1"
+      inputRealm: 'land'
+    - type: "land_cmip"
+      sources: "land_month_cmip"
+      sourceGrid: "cubedsphere"
+      xyInterp: *PP_XYINTERP96
+      interpMethod: "conserve_order1"
+      inputRealm: 'land'
+    - type: "tracer_level"
+      sources: "atmos_tracer"
+      sourceGrid: "cubedsphere"
+      xyInterp: *PP_XYINTERP96
+      interpMethod: "conserve_order1"
+      inputRealm: 'atmos'

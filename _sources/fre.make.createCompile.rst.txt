@@ -1,0 +1,7 @@
+fre.make.createCompile module
+=============================
+
+.. automodule:: fre.make.createCompile
+   :members:
+   :undoc-members:
+   :show-inheritance:

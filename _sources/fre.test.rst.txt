@@ -1,0 +1,19 @@
+fre.test package
+================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.test.fretest
+   fre.test.fretestexample
+
+Module contents
+---------------
+
+.. automodule:: fre.test
+   :members:
+   :undoc-members:
+   :show-inheritance:
