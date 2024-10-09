@@ -33,7 +33,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main',forced='off'):
 
     #check if version of branch is correct
     branch_status=subprocess.check_output(['git','status'])
-    if str(branch_test).find('Your branch is up to date') < 0 and forced == 'off':
+    if str(branch_status).find('Your branch is up to date') < 0 and forced == 'off':
         branch_error = (
         "Error in checkoutTemplate: Branch not up to date\n"
         f"Turn paramter forced on to run without branches matching")
