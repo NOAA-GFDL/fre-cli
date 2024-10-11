@@ -378,8 +378,10 @@ def cmor_run_subtool( indir = None, varlist = None,
 
     iso_datetime_arr = []
     for filename in var_filenames:
-        iso_datetime_arr.append(
-            filename.split(".")[1] )
+        iso_datetime=filename.split(".")[1]
+        if iso_datetime not in iso_datetime_arr:
+            iso_datetime_arr.append(
+                filename.split(".")[1] )
     iso_datetime_arr.sort()
     print(f"(cmor_run_subtool) Available dates: {iso_datetime_arr}")
     if len(iso_datetime_arr) < 1:
