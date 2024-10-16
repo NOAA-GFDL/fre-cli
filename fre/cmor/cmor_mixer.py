@@ -16,6 +16,7 @@ import netCDF4 as nc
 import click
 import cmor
 
+# ----- SMALLER ROUTINES ----- #
 
 def copy_nc(in_nc, out_nc):
     ''' copy a net-cdf file, presumably '''
@@ -45,6 +46,39 @@ def copy_nc(in_nc, out_nc):
     dsin.close()
     dsout.close()
     print('----- END copy_nc call -----\n\n')
+
+
+def get_var_filenames(indir, var_filenames=[]):
+    ''' appends files ending in .nc located within indir to list var_filenames '''
+    #var_filenames = []
+    var_filenames_all = os.listdir(indir)
+    print(f'(get_var_filenames) var_filenames_all={var_filenames_all}')
+    for var_file in var_filenames_all:
+        if var_file.endswith('.nc'):
+            var_filenames.append(var_file)
+    #print(f"(get_var_filenames) var_filenames = {var_filenames}")
+    if len(var_filenames) < 1:
+        raise ValueError(f'target directory had no files with .nc ending. indir =\n {indir}')
+    var_filenames.sort()
+
+
+def get_iso_datetimes(var_filenames, iso_datetime_arr=[]):
+    ''' appends iso datetime strings found amongst filenames to iso_datetime_arr '''
+    #iso_datetime_arr = []
+    for filename in var_filenames:
+        iso_datetime=filename.split(".")[1]
+        if iso_datetime not in iso_datetime_arr:
+            iso_datetime_arr.append(
+                filename.split(".")[1] )
+    iso_datetime_arr.sort()
+    #print(f"(get_iso_datetimes) Available dates: {iso_datetime_arr}")
+    if len(iso_datetime_arr) < 1:
+        raise ValueError('ERROR: iso_datetime_arr has length 0!')
+
+
+
+
+# ----- BULK ROUTINES ----- #
 
 
 def netcdf_var (proj_table_vars, var_lst, nc_fl, gfdl_var,
@@ -335,13 +369,11 @@ def gfdl_to_pcmdi_var( proj_table_vars, var_lst, dir2cmor, gfdl_var, iso_datetim
 
 
 
-
 def cmor_run_subtool( indir = None, varlist = None,
                        table_config = None, exp_config = None , outdir = None):
     ''' primary steering function for the cmor_mixer tool, i.e
     essentially main '''
     print('\n\n----- START _cmor_run_subtool call -----')
-
 
     # open CMOR table config file
     try:
@@ -361,33 +393,25 @@ def cmor_run_subtool( indir = None, varlist = None,
             f'ERROR: varlist file cannot be opened.\n'
             f'       varlist = {varlist}' ) from exc
 
-    # examine input files to obtain available date ranges
+    # examine input directory to obtain a list of input file targets
     var_filenames = []
-    var_filenames_all = os.listdir(indir)
-    print(f'(cmor_run_subtool) var_filenames_all={var_filenames_all}')
-    for var_file in var_filenames_all:
-        if var_file.endswith('.nc'):
-            var_filenames.append(var_file)
-    var_filenames.sort()
-    print(f"(cmor_run_subtool) var_filenames = {var_filenames}")
-
-
-    # name_of_set == component label, which is not relevant for CMOR/CMIP
-    name_of_set = var_filenames[0].split(".")[0]
-    print(f"(cmor_run_subtool) component label is name_of_set = {name_of_set}")
-
+    get_var_filenames(indir, var_filenames)
+    print(f"(cmor_run_subtool) found filenames = \n {var_filenames}")
+    
+    # examine input files to obtain target date ranges 
     iso_datetime_arr = []
-    for filename in var_filenames:
-        iso_datetime=filename.split(".")[1]
-        if iso_datetime not in iso_datetime_arr:
-            iso_datetime_arr.append(
-                filename.split(".")[1] )
-    iso_datetime_arr.sort()
-    print(f"(cmor_run_subtool) Available dates: {iso_datetime_arr}")
-    if len(iso_datetime_arr) < 1:
-        raise ValueError('ERROR: iso_datetime_arr has length 0!')
+    get_iso_datetimes(var_filenames, iso_datetime_arr)
+    print(f"(cmor_run_subtool) found iso datetimes = \n {iso_datetime_arr}")
+
+    # name_of_set == component label...
+    # which is not relevant for CMOR/CMIP... or is it?
+    name_of_set = var_filenames[0].split(".")[0]
+    print(f"(cmor_run_subtool) setting name_of_set = \n {name_of_set}")
+    #assert False
+
 
     # process each variable separately
+    
     for gfdl_var in gfdl_var_lst:
         if gfdl_var_lst[gfdl_var] in proj_table_vars["variable_entry"]:
             gfdl_to_pcmdi_var(

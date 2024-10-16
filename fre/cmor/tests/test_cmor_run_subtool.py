@@ -13,7 +13,7 @@ ROOTDIR = 'fre/tests/test_files'
 # setup- cmip/cmor variable table(s)
 CLONE_CMIP_TABLE_URL='https://github.com/PCMDI/cmip6-cmor-tables.git'
 CLONE_REPO_PATH=f'{ROOTDIR}/cmip6-cmor-tables'
-TABLE_CONFIG = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
+TABLE_CONFIG = f'{CLONE_REPO_PATH}/Tables/CMIP6_Omon.json'
 
 def test_setup_cmor_cmip_table_repo():
     ''' setup routine, clone the repo holding CMOR/CMIP tables '''
@@ -34,9 +34,12 @@ OUTDIR = f'{ROOTDIR}/outdir'
 # determined by cmor_run_subtool
 YYYYMMDD=date.today().strftime('%Y%m%d')
 CMOR_CREATES_DIR='CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn'
-# why does this have "fre" at the end of it?
+# desired FULL_OUTPUTDIR...
 FULL_OUTPUTDIR = \
-   f"{OUTDIR}fre/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
+   f"{OUTDIR}/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
+## currently the case... why does this have "fre" at the end of it?
+#FULL_OUTPUTDIR = \
+#   f"{OUTDIR}fre/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
 FULL_OUTPUTFILE = \
 f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
 
