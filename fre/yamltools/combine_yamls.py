@@ -130,7 +130,7 @@ class init_compile_yaml():
     self.mainyaml_dir = os.path.dirname(self.yml)
 
     # Name of the combined yaml
-    self.combined=f"{self.mainyaml_dir}/combined-{self.namenopath}.yaml"
+    self.combined= f"combined-{self.namenopath}.yaml" if len(self.mainyaml_dir) == 0 else  f"{self.mainyaml_dir}/combined-{self.namenopath}.yaml"
 
     print("Combining yaml files: ")
 
