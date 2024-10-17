@@ -1,0 +1,28 @@
+fre.yamltools package
+=====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.yamltools.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.yamltools.combine_yamls
+   fre.yamltools.freyamltools
+   fre.yamltools.freyamltoolsexample
+
+Module contents
+---------------
+
+.. automodule:: fre.yamltools
+   :members:
+   :undoc-members:
+   :show-inheritance:

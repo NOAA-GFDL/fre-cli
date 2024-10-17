@@ -1,0 +1,10 @@
+fre.make.tests package
+======================
+
+Module contents
+---------------
+
+.. automodule:: fre.make.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:
