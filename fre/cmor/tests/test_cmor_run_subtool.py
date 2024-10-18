@@ -47,12 +47,14 @@ f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-
 FILENAME = 'ocean_monthly_1x1deg.199301-199712.sos.nc' # unneeded, this is mostly for reference
 FULL_INPUTFILE=f"{INDIR}/{FILENAME}"
 
-def test_fre_cmor_run(capfd):
-    ''' fre cmor run, test-use case '''
-
+def test_setup_fre_cmor_run_subtool_case1(capfd):
     # clean up, lest we fool outselves
     if Path(FULL_OUTPUTFILE).exists():
         Path(FULL_OUTPUTFILE).unlink()
+    assert not Path(FULL_OUTPUTFILE).exists()
+
+def test_fre_cmor_run_subtool_case1(capfd):
+    ''' fre cmor run, test-use case '''
 
     print(
         f"fre.cmor.cmor_run_subtool("
@@ -63,14 +65,14 @@ def test_fre_cmor_run(capfd):
         f"\'{OUTDIR}\'"
         ")"
     )
-    assert False
+#    assert False
 
     # test call, where meat of the workload gets done
     fre.cmor.cmor_run_subtool(
         indir = INDIR,
-        varlist = VARLIST,
-        table_config = TABLE_CONFIG,
-        exp_config = EXP_CONFIG,
+        json_var_list = VARLIST,
+        json_table_config = TABLE_CONFIG,
+        json_exp_config = EXP_CONFIG,
         outdir = OUTDIR
     )
 
@@ -101,7 +103,7 @@ def test_fre_cmor_run(capfd):
 #    assert result.returncode == 0
 #    out, err = capfd.readouterr()
 
-def test_fre_cmor_run_output_compare_metadata(capfd):
+def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
     ''' I/O metadata-only comparison of prev test-use case '''    
     print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
     print(f'FULL_INPUTFILE={FULL_INPUTFILE}')
@@ -121,3 +123,64 @@ def test_fre_cmor_run_output_compare_metadata(capfd):
     #subprocess.run(["rm", "-rf", f"{OUTDIR}/CMIP6/CMIP6/"])
     assert result.returncode == 1
     out, err = capfd.readouterr()
+
+
+import shutil
+FILENAME_DIFF = 'ocean_monthly_1x1deg.199301-199712.sos1.nc' # unneeded, this is mostly for reference
+FULL_INPUTFILE_DIFF=f"{INDIR}/{FILENAME_DIFF}"
+VARLIST_DIFF = f'{ROOTDIR}/varlist_local_target_vars_differ'
+def test_setup_fre_cmor_run_subtool_case2(capfd):
+    # clean up, lest we fool outselves
+    if Path(FULL_OUTPUTFILE).exists():
+        Path(FULL_OUTPUTFILE).unlink()
+    
+    assert not Path(FULL_OUTPUTFILE).exists()
+
+    # move the input file to a different name, keep internal variable named what it was before
+    shutil.move(
+        Path(FULL_INPUTFILE),
+        Path(FULL_INPUTFILE_DIFF) )
+    assert Path(FULL_INPUTFILE_DIFF).exists()
+    
+
+def test_fre_cmor_run_subtool_case2(capfd):
+    ''' fre cmor run, test-use case '''
+
+    # clean up, lest we fool outselves
+    if Path(FULL_OUTPUTFILE).exists():
+        Path(FULL_OUTPUTFILE).unlink()
+
+    print(
+        f"fre.cmor.cmor_run_subtool("
+        f"\'{INDIR}\',"
+        f"\'{VARLIST}\',"
+        f"\'{TABLE_CONFIG}\',"
+        f"\'{EXP_CONFIG}\',"
+        f"\'{OUTDIR}\'"
+        ")"
+    )
+#    assert False
+
+    # test call, where meat of the workload gets done
+    fre.cmor.cmor_run_subtool(
+        indir = INDIR,
+        json_var_list = VARLIST_DIFF,
+        json_table_config = TABLE_CONFIG,
+        json_exp_config = EXP_CONFIG,
+        outdir = OUTDIR
+    )
+
+    # success condition tricky... tool doesnt return anything really... ?
+    # TODO think about returns and success conditions
+    assert all( [ Path(FULL_OUTPUTFILE).exists(),
+                  Path(FULL_INPUTFILE_DIFF).exists() ] )
+    out, err = capfd.readouterr()
+
+
+def test_teardown_fre_cmor_run_subtool_case2(capfd):
+    ''' clean up for fre cmor run cli call tests in base dir test directory '''
+    shutil.move(
+        Path(FULL_INPUTFILE_DIFF),
+        Path(FULL_INPUTFILE) )
+    assert all( [ not Path(FULL_INPUTFILE_DIFF).exists(),
+                  Path(FULL_INPUTFILE).exists() ] )
