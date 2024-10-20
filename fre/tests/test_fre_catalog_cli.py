@@ -36,3 +36,15 @@ def test_cli_fre_catalog_builder_help():
     ''' fre catalog builder --help '''
     result = runner.invoke(fre.fre, args=["catalog", "builder", "--help"])
     assert result.exit_code == 0
+
+def test_cli_fre_catalog_merge():
+    result = runner.invoke(fre.fre, args=["catalog", "merge"])
+    expected_stdout = "Error: Missing option '--input'."
+    assert all( [
+        result.exit_code == 2,
+        expected_stdout in result.stdout.split('\n')
+    ] )
+
+def test_cli_fre_catalog_merge_help():
+    result = runner.invoke(fre.fre, args=["catalog", "merge", "--help"])
+    assert result.exit_code == 0
