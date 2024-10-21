@@ -60,14 +60,14 @@ new readme instructions iwll replace these.
     CMIP6_grids.json
     CMIP6_coordinate.json
 ...
-'''
+```
 
 Detailed description of program is placed at https://docs.google.com/document/d/1HPetcUyrVXDwCBIyWheZ_2JzOz7ZHi1y3vmIlcErYeA/edit?pli=1
 
 
-#-- Problems with standard CMOR library
-   - monthly variable "enth_conv_col" produces error - CMOR expects 4 dimensions but it has only 3;
-   - variable /archive/oar.gfdl.cmip6/CM4/warsaw_201710_om4_v1.0.1/CM4_historical/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_cmip/ts/3hr/5yr/atmos_cmip.1965010100-1969123123.clt.nc
+#-- Problems with standard CMOR library OLD
+   - monthly variable `enth_conv_col` produces error - CMOR expects 4 dimensions but it has only 3;
+   - variable `/archive/oar.gfdl.cmip6/CM4/warsaw_201710_om4_v1.0.1/CM4_historical/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_cmip/ts/3hr/5yr/atmos_cmip.1965010100-1969123123.clt.nc`
      is not readable.
 
 

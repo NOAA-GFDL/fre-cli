@@ -82,26 +82,31 @@ def test_fre_cmor_run_subtool_case1(capfd):
                   Path(FULL_INPUTFILE).exists() ] )
     out, err = capfd.readouterr()
 
-#def test_fre_cmor_run_output_compare_data(capfd):
-#    ''' I/O data-only comparison of test_fre_cmor_run '''    
-#    print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
-#    print(f'FULL_INPUTFILE={FULL_INPUTFILE}')
-#
-#    nccmp_cmd= [ "nccmp", "-f", "-d",
-#                 f"{FULL_INPUTFILE}",
-#                 f"{FULL_OUTPUTFILE}"    ]
-#    print(f"via subprocess, running {' '.join(nccmp_cmd)}")
-#    result = subprocess.run( ' '.join(nccmp_cmd),
-#                             shell=True,
-#                             check=False
-#                          )
-#
-#    # check file difference specifics here -----
-#
-#
-#    #subprocess.run(["rm", "-rf", f"{OUTDIR}/CMIP6/CMIP6/"])
-#    assert result.returncode == 0
-#    out, err = capfd.readouterr()
+def test_fre_cmor_run_output_compare_data(capfd):
+    ''' I/O data-only comparison of test_fre_cmor_run '''    
+    print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
+    print(f'FULL_INPUTFILE={FULL_INPUTFILE}')
+
+    nccmp_cmd= [ "nccmp", "-f", "-d",
+                 f"{FULL_INPUTFILE}",
+                 f"{FULL_OUTPUTFILE}"    ]
+    print(f"via subprocess, running {' '.join(nccmp_cmd)}")
+    result = subprocess.run( ' '.join(nccmp_cmd),
+                             shell=True,
+                             check=False,
+                             capture_output=True
+                          )
+
+    # check file difference specifics here -----
+
+
+    err_list = result.stderr.decode().split('\n')#length two if end in newline
+    expected_err="DIFFER : FILE FORMATS : NC_FORMAT_64BIT <> NC_FORMAT_NETCDF4_CLASSIC"
+    assert all( [result.returncode == 1,
+                 len(err_list)==2,
+                 '' in err_list,
+                 expected_err in err_list ] )
+    out, err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
     ''' I/O metadata-only comparison of prev test-use case '''    
@@ -126,20 +131,15 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
 
 
 import shutil
-FILENAME_DIFF = 'ocean_monthly_1x1deg.199301-199712.sos1.nc' # unneeded, this is mostly for reference
+FILENAME_DIFF = 'ocean_monthly_1x1deg.199301-199712.sosV2.nc' # unneeded, this is mostly for reference
 FULL_INPUTFILE_DIFF=f"{INDIR}/{FILENAME_DIFF}"
 VARLIST_DIFF = f'{ROOTDIR}/varlist_local_target_vars_differ'
 def test_setup_fre_cmor_run_subtool_case2(capfd):
-    # clean up, lest we fool outselves
-    if Path(FULL_OUTPUTFILE).exists():
-        Path(FULL_OUTPUTFILE).unlink()
-    
-    assert not Path(FULL_OUTPUTFILE).exists()
-
-    # move the input file to a different name, keep internal variable named what it was before
-    shutil.move(
-        Path(FULL_INPUTFILE),
-        Path(FULL_INPUTFILE_DIFF) )
+    # make a copy of the input file to the slightly different name
+    if not Path(FULL_INPUTFILE_DIFF).exists():
+        shutil.copy(
+            Path(FULL_INPUTFILE),
+            Path(FULL_INPUTFILE_DIFF) )
     assert Path(FULL_INPUTFILE_DIFF).exists()
     
 
@@ -153,7 +153,7 @@ def test_fre_cmor_run_subtool_case2(capfd):
     print(
         f"fre.cmor.cmor_run_subtool("
         f"\'{INDIR}\',"
-        f"\'{VARLIST}\',"
+        f"\'{VARLIST_DIFF}\',"
         f"\'{TABLE_CONFIG}\',"
         f"\'{EXP_CONFIG}\',"
         f"\'{OUTDIR}\'"
@@ -170,17 +170,17 @@ def test_fre_cmor_run_subtool_case2(capfd):
         outdir = OUTDIR
     )
 
-    # success condition tricky... tool doesnt return anything really... ?
-    # TODO think about returns and success conditions
+    # check we ran on the right input file.
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
                   Path(FULL_INPUTFILE_DIFF).exists() ] )
     out, err = capfd.readouterr()
 
 
-def test_teardown_fre_cmor_run_subtool_case2(capfd):
-    ''' clean up for fre cmor run cli call tests in base dir test directory '''
-    shutil.move(
-        Path(FULL_INPUTFILE_DIFF),
-        Path(FULL_INPUTFILE) )
-    assert all( [ not Path(FULL_INPUTFILE_DIFF).exists(),
-                  Path(FULL_INPUTFILE).exists() ] )
+#def test_teardown_fre_cmor_run_subtool_case2(capfd):
+#    ''' clean up for fre cmor run cli call tests in base dir test directory '''
+#    shutil.move(
+#        Path(FULL_INPUTFILE_DIFF),
+#        Path(FULL_INPUTFILE) )
+#    assert all( [ not Path(FULL_INPUTFILE_DIFF).exists(),
+#                  Path(FULL_INPUTFILE).exists() ] )
+
