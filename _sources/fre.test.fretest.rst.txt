@@ -1,0 +1,7 @@
+fre.test.fretest module
+=======================
+
+.. automodule:: fre.test.fretest
+   :members:
+   :undoc-members:
+   :show-inheritance:

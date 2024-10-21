@@ -1,0 +1,115 @@
+# reusable variables
+fre_properties:
+  - &AM5_VERSION        "am5f7b12r1"
+  - &FRE_STEM           !join [am5/, *AM5_VERSION]
+
+  # amip
+  - &EXP_AMIP_START     "19790101T0000Z"
+  - &EXP_AMIP_END       "20200101T0000Z"
+  - &ANA_AMIP_START     "19800101T0000Z"
+  - &ANA_AMIP_END       "20200101T0000Z"
+
+  - &PP_AMIP_CHUNK96    "P1Y"
+  - &PP_AMIP_CHUNK384   "P1Y"
+  - &PP_XYINTERP96      "180,288"
+  - &PP_XYINTERP384     "720,1152"
+
+  # climo
+  - &EXP_CLIMO_START96  "0001"
+  - &EXP_CLIMO_END96    "0011"
+  - &ANA_CLIMO_START96  "0002"
+  - &ANA_CLIMO_END96    "0011"
+
+  - &EXP_CLIMO_START384 "0001"
+  - &EXP_CLIMO_END384   "0006"
+  - &ANA_CLIMO_START384 "0002"
+  - &ANA_CLIMO_END384   "0006"
+
+  # coupled
+  - &PP_CPLD_CHUNK_A    "P5Y"
+  - &PP_CPLD_CHUNK_B    "P20Y"
+
+  # grids
+  - &GRID_SPEC96         "/archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar"
+
+  # compile information
+  - &release             "f1a1r1"
+  - &INTEL               "intel-classic"
+  - &FMSincludes         "-IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include"
+  - &momIncludes         "-Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include"
+
+shared:
+  # compile information
+  compile:
+    compileYaml: &compile_yaml "compile.yaml"
+    platformYaml: "yaml_include/platforms.yaml"
+  
+  # directories shared across tools
+  directories: &shared_directories
+    history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
+    pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
+    analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
+    ptmp_dir:     "/xtmp/$USER/ptmp"
+    fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
+
+  # shared pp settings
+  postprocess: 
+    settings: &shared_settings
+      history_segment:    "P1Y"
+      site:               "ppan"
+    switches: &shared_switches
+      do_statics:         True
+      do_timeavgs:        True
+      clean_work:         True
+      do_refinediag:      False
+      do_atmos_plevel_masking: True
+      do_preanalysis:     False
+      do_analysis:        True
+
+experiments:
+  - name: "c96L65_am5f7b12r1_amip"
+    pp:
+      - "yaml_include/pp.c96_amip.yaml"
+    compile: *compile_yaml
+  - name: "c96L65_am5f7b12r1_pdclim1850F"
+    pp:
+      - "yaml_include/pp.c96_clim.yaml"
+    compile: *compile_yaml
+  - name: "c96L65_am5f7b12r1_pdclim2010F"
+    pp:
+      - "yaml_include/pp.c96_clim.yaml"
+    compile: *compile_yaml
+  - name: "c96L65_am5f7b12r1_pdclim2010AERF"
+    pp:
+      - "yaml_include/pp.c96_clim.yaml"
+    compile: *compile_yaml
+  - name: "c384L65_am5f7b12r1_amip"
+    pp:
+      - "yaml_include/pp.c384_amip.yaml"
+    compile: *compile_yaml
+  - name: "c384L65_am5f7b12r1_pdclim2010F"
+    pp:
+      - "yaml_include/pp.c384_clim.yaml"
+    compile: *compile_yaml
+  - name: "c384L65_am5f7b12r1_pdclim1850F"
+    pp:
+      - "yaml_include/pp.c384_clim.yaml"
+    compile: *compile_yaml
+  - name: "c384L65_am5f7b12r1_pdclim2010AERF"
+    pp:
+      - "yaml_include/pp.c384_clim.yaml"
+    compile: *compile_yaml
+  - name: "c384L65_am5f7b12r1_OM4_p25_piControl_noBLING_DynVeg"
+    pp:
+      - "yaml_include/pp.c384_amip.yaml"
+      - "yaml_include/pp.om4.yaml"
+    compile: *compile_yaml
+  - name: "c96L65_am5f7b12r1_OM4_p25_piControl_noBLING_DynVeg"
+    pp:
+      - "yaml_include/pp.c96_amip.yaml"
+      - "yaml_include/pp.om4.yaml"
+    compile: *compile_yaml
+  - name: "c96L65_am5f7b12r1_amip_cosp"
+    pp:
+      - "yaml_include/pp.c96_amip.yaml"
+    compile: *compile_yaml

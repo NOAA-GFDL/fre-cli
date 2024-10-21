@@ -1,0 +1,7 @@
+fre.make.createCheckout module
+==============================
+
+.. automodule:: fre.make.createCheckout
+   :members:
+   :undoc-members:
+   :show-inheritance:

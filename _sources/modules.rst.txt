@@ -1,0 +1,7 @@
+fre
+===
+
+.. toctree::
+   :maxdepth: 4
+
+   fre

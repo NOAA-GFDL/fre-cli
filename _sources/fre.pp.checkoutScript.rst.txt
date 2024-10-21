@@ -1,0 +1,7 @@
+fre.pp.checkoutScript module
+============================
+
+.. automodule:: fre.pp.checkoutScript
+   :members:
+   :undoc-members:
+   :show-inheritance:

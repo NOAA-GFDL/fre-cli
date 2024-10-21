@@ -1,0 +1,7 @@
+fre.pp.wrapper module
+=====================
+
+.. automodule:: fre.pp.wrapper
+   :members:
+   :undoc-members:
+   :show-inheritance:

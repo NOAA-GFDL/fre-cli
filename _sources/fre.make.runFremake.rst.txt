@@ -1,0 +1,7 @@
+fre.make.runFremake module
+==========================
+
+.. automodule:: fre.make.runFremake
+   :members:
+   :undoc-members:
+   :show-inheritance:
