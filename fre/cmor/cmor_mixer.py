@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-see README.md for CMORmixer.py usage
+see README.md for cmor_mixer.py usage
 '''
 
 import os
@@ -435,7 +435,7 @@ def cmor_run_subtool( indir = None, json_var_list = None,
     # open CMOR table config file
     try:
         proj_table_vars = json.load( open( json_table_config, "r",
-                                           encoding = "utf-8" ) )
+                                           encoding = "utf-8"      ) )
     except Exception as exc:
         raise FileNotFoundError(
             f'ERROR: json_table_config file cannot be opened.\n'
@@ -444,7 +444,7 @@ def cmor_run_subtool( indir = None, json_var_list = None,
     # open input variable list
     try:
         var_list = json.load( open( json_var_list, "r",
-                                        encoding = "utf-8" ) )
+                                    encoding = "utf-8"  ) )
     except Exception as exc:
         raise FileNotFoundError(
             f'ERROR: json_var_list file cannot be opened.\n'
