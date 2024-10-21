@@ -37,25 +37,37 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
     - _Can install local changes on top via `pip`_
     - GFDL Workstation:
-        - `module load miniforge`
-        - `conda activate /nbhome/fms/conda/envs/fre-cli`
+        ```
+        module load miniforge
+        conda activate /nbhome/fms/conda/envs/fre-cli
+        ```
     - Gaea:
-        - `module load miniforge`
-        - `conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli`
-        
+        ```
+        module use /usw/conda/modulefiles
+        module load miniforge
+        conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli
+        ```
+
 ### (Method 3) Developer - Conda Environment Building
 * If you have Conda loaded and want to create your OWN environment for development, testing, etc.:
 
     - _Can install local changes on top via `pip`_
-    - Create a new Conda environment: `conda create -n [environmentName]`
-    - Append necessary channels
-        - `conda config --append channels noaa-gfdl` 
-        - `conda config --append channels conda-forge`
-    - Run `conda install` on needed dependencies (`conda install click` will give you access to pip as well)
-        - `conda install noaa-gfdl::fre-cli` should install the [CLI package](https://anaconda.org/NOAA-GFDL/fre-cli) created from the [`meta.yaml`](https://github.com/NOAA-GFDL/fre-cli/blob/refactoring/meta.yaml)
+    - Steps:
+        ```
+        # Create new conda enironment
+        conda create -n [environmentName]
+
+        # Append necessary channels
+        conda config --append channels noaa-gfdl
+        conda config --append channels conda-forge
+
+        # Run `conda install` on needed dependencies (`conda install click` will give you access to pip as well)
+        # should install the [CLI package](https://anaconda.org/NOAA-GFDL/fre-cli) created from the [`meta.yaml`](https://github.com/NOAA-GFDL/fre-cli/blob/refactoring/meta.yaml)
+        conda install noaa-gfdl::fre-cli         
+        ```
     - All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
     - setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
-    - For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/breakup_README/CONTRIBUTING.md)
+    - For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/main/CONTRIBUTING.md)
 
 After one of the above, one can enter commands and follow `--help` messages for guidance. A brief rundown of commands to be provided are within each tool's folder as a `README.md`
 
