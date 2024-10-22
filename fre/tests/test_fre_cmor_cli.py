@@ -12,7 +12,7 @@ import subprocess
 runner = CliRunner()
 
 # where are we? we're running pytest from the base directory of this repo
-global rootdir = 'fre/tests/test_files'
+rootdir = 'fre/tests/test_files'
 
 # fre cmor
 def test_cli_fre_cmor():
@@ -49,7 +49,7 @@ def test_cli_fre_cmor_run_opt_dne():
 def test_setup_test_files(capfd):
     ''' set-up test: create binary test files from reduced ascii files in root dir ''' 
 
-    ncgen_input = f'{rootdir}/reduced_ocean_monthly_1x1deg.199301-199712.sos.cdl'
+    ncgen_input = f'{rootdir}/tests/test_files/reduced_ocean_monthly_1x1deg.199301-199712.sos.cdl'
     ncgen_output = f'{rootdir}/reduced_ocean_monthly_1x1deg.199301-199712.sos.nc'
 
     assert Path(ncgen_input).exists()
