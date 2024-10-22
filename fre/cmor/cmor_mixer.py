@@ -240,7 +240,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                           "height2m", "level", "lev", "levhalf"] :
             raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
         lev = ds[vert_dim]
-        
+
     print(f"(rewrite_netcdf_file_var) var_dim = {var_dim}, local_var = {local_var}")
 
 
@@ -447,7 +447,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         # now we have a file in our targets, point CMOR to the configs and the input file(s)
         print ("(cmorize_target_var_files) calling rewrite_netcdf_file_var")
         gotta_go_back_here=os.getcwd()+'/'
-        os.chdir(gotta_go_back_here+tmp_dir) # this is, essentially, unavoidable. the cmor python module FORCES a write to CWD
+        os.chdir(gotta_go_back_here+tmp_dir) # this is unavoidable, cmor module FORCES write to CWD
         local_file_name = rewrite_netcdf_file_var( proj_table_vars                       ,
                                                    local_var                             ,
                                                    gotta_go_back_here + nc_file_work     ,
@@ -532,7 +532,8 @@ def cmor_run_subtool( indir = None,
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
         raise ValueError(f'all input arguments are required!\n'
                           '[indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
-                         f'[{indir}, {json_var_list}, {json_table_config}, {json_exp_config}, {outdir}]' )
+                         f'[{indir}, {json_var_list}, {json_table_config}, '
+                          '{json_exp_config}, {outdir}]' )
 
     # open CMOR table config file
     print('(cmor_run_subtool) getting table variables from json_table_config')
@@ -548,7 +549,7 @@ def cmor_run_subtool( indir = None,
     # open input variable list
     print('(cmor_run_subtool) opening variable list json_var_list')
     try:
-        with open( json_var_list, "r", encoding = "utf-8"  ) as var_list_file:        
+        with open( json_var_list, "r", encoding = "utf-8"  ) as var_list_file:
             var_list = json.load( var_list_file )
 
     except Exception as exc:
@@ -611,7 +612,9 @@ def cmor_run_subtool( indir = None,
 
 
 @click.command()
-def _cmor_run_subtool(indir = None, json_var_list = None, json_table_config = None, json_exp_config = None, outdir = None):
+def _cmor_run_subtool(indir = None,
+                      json_var_list = None, json_table_config = None, json_exp_config = None,
+                      outdir = None):
     ''' entry point to fre cmor run for click. see cmor_run_subtool for argument descriptions.'''
     return cmor_run_subtool(indir, json_var_list, json_table_config, json_exp_config, outdir)
 

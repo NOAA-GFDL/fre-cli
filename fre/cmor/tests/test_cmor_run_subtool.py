@@ -54,7 +54,7 @@ def test_setup_fre_cmor_run_subtool(capfd):
     this routine also checks to make sure the desired input file is present'''
     if Path(FULL_OUTPUTFILE).exists():
         Path(FULL_OUTPUTFILE).unlink()
-    if Path(OUTDIR).exists():        
+    if Path(OUTDIR).exists():
         shutil.rmtree(OUTDIR)
     assert not any ( [ Path(FULL_OUTPUTFILE).exists(),
                        Path(OUTDIR).exists()           ] )
@@ -100,7 +100,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
     result = subprocess.run( ' '.join(nccmp_cmd),
                              shell=True,
                              check=False,
-                             capture_output=True                          
+                             capture_output=True
     )
     # err_list has length two if end in newline
     err_list = result.stderr.decode().split('\n')
@@ -132,7 +132,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
 
 # FYI, but again, helpful for tests
 FILENAME_DIFF = \
-    'ocean_monthly_1x1deg.199301-199712.sosV2.nc' 
+    'ocean_monthly_1x1deg.199301-199712.sosV2.nc'
 FULL_INPUTFILE_DIFF = \
     f"{INDIR}/{FILENAME_DIFF}"
 VARLIST_DIFF = \
@@ -141,16 +141,16 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
     ''' make a copy of the input file to the slightly different name.
     checks for outputfile from prev pytest runs, removes it if it's present.
     this routine also checks to make sure the desired input file is present'''
-    if Path(FULL_OUTPUTFILE).exists():        
+    if Path(FULL_OUTPUTFILE).exists():
         Path(FULL_OUTPUTFILE).unlink()
     assert not Path(FULL_OUTPUTFILE).exists()
 
     if Path(OUTDIR+'/CMIP6').exists():
         shutil.rmtree(OUTDIR+'/CMIP6')
     assert not Path(OUTDIR+'/CMIP6').exists()
-    
-    
-    # VERY ANNOYING !!! FYI WARNING TODO 
+
+
+    # VERY ANNOYING !!! FYI WARNING TODO
     if Path(TMPDIR).exists():
         try:
             shutil.rmtree(TMPDIR)
@@ -158,10 +158,10 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
             print(f'WARNING: TMPDIR={TMPDIR} could not be removed.')
             print( '         this does not matter that much, but is unfortunate.')
             print( '         supicion: something the cmor module is using is not being closed')
-            pass
+
     #assert not Path(TMPDIR).exists()    # VERY ANNOYING !!! FYI WARNING TODO
-    
-    # VERY ANNOYING !!! FYI WARNING TODO    
+
+    # VERY ANNOYING !!! FYI WARNING TODO
     if Path(OUTDIR).exists():
         try:
             shutil.rmtree(OUTDIR)
@@ -169,10 +169,10 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
             print(f'WARNING: OUTDIR={OUTDIR} could not be removed.')
             print( '         this does not matter that much, but is unfortunate.')
             print( '         supicion: something the cmor module is using is not being closed')
-            pass
-    #assert not Path(OUTDIR).exists()    # VERY ANNOYING !!! FYI WARNING TODO    
 
-    # make a copy of the usual test file. 
+    #assert not Path(OUTDIR).exists()    # VERY ANNOYING !!! FYI WARNING TODO
+
+    # make a copy of the usual test file.
     if not Path(FULL_INPUTFILE_DIFF).exists():
         shutil.copy(
             Path(FULL_INPUTFILE),

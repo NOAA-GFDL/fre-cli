@@ -39,7 +39,7 @@ def run(context, indir, varlist, table_config, exp_config, outdir):
         json_var_list = varlist,
         json_table_config = table_config,
         json_exp_config = exp_config,
-        outdir = outdir        
+        outdir = outdir
     )
     #    context.forward(
     #        _cmor_run_subtool(

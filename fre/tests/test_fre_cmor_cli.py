@@ -1,6 +1,5 @@
 ''' test "fre cmor" calls '''
 
-import shutil
 from datetime import date
 from pathlib import Path
 
@@ -44,8 +43,8 @@ def test_cli_fre_cmor_run_opt_dne():
     assert result.exit_code == 2
 
 
-# maybe this is not the right place for this test case? # TODO
 # these unit tests should be more about the cli, rather than the workload
+YYYYMMDD=date.today().strftime('%Y%m%d')
 def test_cli_fre_cmor_run_case1():
     ''' fre cmor run, test-use case '''
 
@@ -60,7 +59,6 @@ def test_cli_fre_cmor_run_case1():
     outdir = f'{rootdir}/outdir'
 
     # determined by cmor_run_subtool
-    YYYYMMDD=date.today().strftime('%Y%m%d')
     cmor_creates_dir = \
         'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn'
     full_outputdir = \
@@ -89,7 +87,7 @@ def test_cli_fre_cmor_run_case1():
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
 
-    
+
 
 
 
@@ -107,7 +105,6 @@ def test_cli_fre_cmor_run_case2():
     outdir = f'{rootdir}/outdir'
 
     # determined by cmor_run_subtool
-    YYYYMMDD=date.today().strftime('%Y%m%d')
     cmor_creates_dir = \
         'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn'
     full_outputdir = \
@@ -135,5 +132,3 @@ def test_cli_fre_cmor_run_case2():
     assert all ( [ result.exit_code == 0,
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
-
-    
