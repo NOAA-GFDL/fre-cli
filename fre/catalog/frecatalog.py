@@ -6,6 +6,7 @@ import click
 #import catalogbuilder
 from catalogbuilder.scripts import gen_intake_gfdl
 from catalogbuilder.scripts import test_catalog
+from catalogbuilder.scripts import combine_cats
 
 
 @click.group(help=click.style(" - access fre catalog subcommands", fg=(64,94,213)))
@@ -27,9 +28,11 @@ def catalog_cli():
 @click.option('--filter_chunk',  nargs = 1)
 @click.option('--overwrite', is_flag = True, default = False)
 @click.option('--append', is_flag = True, default = False)
+@click.option('--slow', is_flag = True, default = False,
+    help = "Open NetCDF files to retrieve additional vocabulary (standard_name and intrafile static variables")
 @click.pass_context
 def builder(context, input_path = None, output_path = None, config = None, filter_realm = None,
-            filter_freq = None, filter_chunk = None, overwrite = False, append = False):
+            filter_freq = None, filter_chunk = None, overwrite = False, append = False, slow = False):
     # pylint: disable=unused-argument
     """ - Generate .csv and .json files for catalog """
     context.forward(gen_intake_gfdl.create_catalog_cli)
@@ -44,6 +47,16 @@ def validate(context, json_path, json_template_path, test_failure):
     # pylint: disable=unused-argument
     """ - Validate a catalog against catalog schema """
     context.forward(test_catalog.main)
+
+@catalog_cli.command()
+@click.option('--input', required = True, multiple = True,
+              help = 'Catalog json files to be merged, space-separated')
+@click.option('--output', required = True, nargs = 1,
+              help = 'Merged catalog')
+@click.pass_context
+def merge(context, input, output):
+    """ - Merge two or more more catalogs into one """
+    context.invoke(combine_cats.combine_cats, inputfiles=input, output_path=output)
 
 if __name__ == "__main__":
     catalog_cli()
