@@ -54,7 +54,7 @@ def test_setup_test_files(capfd):
 
     assert Path(ncgen_input).exists()
 
-    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_input, ncgen_output ]
+    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
 
     sp = subprocess.run(ex, check = True)
 
