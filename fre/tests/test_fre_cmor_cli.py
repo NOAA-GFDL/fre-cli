@@ -1,5 +1,6 @@
 ''' test "fre cmor" calls '''
 
+import shutil
 from datetime import date
 from pathlib import Path
 
@@ -63,7 +64,7 @@ def test_cli_fre_cmor_run_case1():
     cmor_creates_dir = \
         'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn'
     full_outputdir = \
-        f"{outdir}fre/{cmor_creates_dir}/v{YYYYMMDD}" # why does this have "fre" at the end of it?
+        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldnt be
     full_outputfile = \
         f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
 
@@ -83,7 +84,7 @@ def test_cli_fre_cmor_run_case1():
                                             "--exp_config", exp_config,
                                             "--outdir",  outdir])
     click.echo(f'stdout = \n {result.stdout}')
-    #click.echo(f'stderr = \n {result.stderr}')
+    #click.echo(f'stderr = \n {result.stderr}') #not captured sep.
     assert all ( [ result.exit_code == 0,
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
@@ -110,7 +111,7 @@ def test_cli_fre_cmor_run_case2():
     cmor_creates_dir = \
         'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn'
     full_outputdir = \
-        f"{outdir}fre/{cmor_creates_dir}/v{YYYYMMDD}" # why does this have "fre" at the end of it?
+        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldnt be
     full_outputfile = \
         f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
 
@@ -130,7 +131,7 @@ def test_cli_fre_cmor_run_case2():
                                             "--exp_config", exp_config,
                                             "--outdir",  outdir])
     click.echo(f'stdout = \n {result.stdout}')
-    #click.echo(f'stderr = \n {result.stderr}')
+    #click.echo(f'stderr = \n {result.stderr}') #not captured sep.
     assert all ( [ result.exit_code == 0,
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
