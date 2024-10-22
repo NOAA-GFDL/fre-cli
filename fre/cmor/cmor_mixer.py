@@ -462,7 +462,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
                                                   str( Path(tmp_dir).resolve() )
         )
         os.chdir(gotta_go_back_here)
-        assert False
+#        assert False
 
         # now that CMOR has rewritten things... we can take our post-rewriting actions
         # the final output filename + directory will be the following...
