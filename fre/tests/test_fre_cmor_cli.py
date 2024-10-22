@@ -7,7 +7,12 @@ from click.testing import CliRunner
 
 from fre import fre
 
+import subprocess
+
 runner = CliRunner()
+
+# where are we? we're running pytest from the base directory of this repo
+global rootdir = 'fre/tests/test_files'
 
 # fre cmor
 def test_cli_fre_cmor():
@@ -41,14 +46,26 @@ def test_cli_fre_cmor_run_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
+def test_setup_test_files(capfd):
+    ''' set-up test: create binary test files from reduced ascii files in root dir ''' 
+
+    ncgen_input = f'{rootdir}/reduced_ocean_monthly_1x1deg.199301-199712.sos.cdl'
+    ncgen_output = f'{rootdir}/reduced_ocean_monthly_1x1deg.199301-199712.sos.nc'
+
+    assert Path(ncgen_input).exists()
+
+    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_input, ncgen_output ]
+
+    sp = subprocess.run(ex, check = True)
+
+    assert all( [ sp.returncode == 0, Path(ncgen_output).exists() ] )
+
+    out, err = capfd.readouterr()
 
 # maybe this is not the right place for this test case? # TODO
 # these unit tests should be more about the cli, rather than the workload
 def test_cli_fre_cmor_run_case1(capfd):
     ''' fre cmor run, test-use case '''
-
-    # where are we? we're running pytest from the base directory of this repo
-    rootdir = 'fre/tests/test_files'
 
     # explicit inputs to tool
     indir = f'{rootdir}/ocean_sos_var_file'
@@ -68,7 +85,7 @@ def test_cli_fre_cmor_run_case1(capfd):
         f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
 
     # FYI
-    filename = 'ocean_monthly_1x1deg.199301-199712.sos.nc' # unneeded, this is mostly for reference
+    filename = 'reduced_ocean_monthly_1x1deg.199301-199712.sos.nc' # unneeded, this is mostly for reference
     full_inputfile=f"{indir}/{filename}"
 
     # clean up, lest we fool outselves
