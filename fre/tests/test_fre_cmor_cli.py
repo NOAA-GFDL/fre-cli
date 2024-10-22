@@ -50,7 +50,7 @@ def test_setup_test_files(capfd):
     ''' set-up test: create binary test files from reduced ascii files in root dir ''' 
 
     ncgen_input = f'{rootdir}/reduced_ascii_files/reduced_ocean_monthly_1x1deg.199301-199712.sos.cdl'
-    ncgen_output = f'{rootdir}/reduced_ocean_monthly_1x1deg.199301-199712.sos.nc'
+    ncgen_output = f'{rootdir}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199712.sos.nc'
 
     assert Path(ncgen_input).exists()
 
