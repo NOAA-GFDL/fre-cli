@@ -1,0 +1,18 @@
+fre.cmor.tests package
+======================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.cmor.tests.test_cmor_run_subtool
+
+Module contents
+---------------
+
+.. automodule:: fre.cmor.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:

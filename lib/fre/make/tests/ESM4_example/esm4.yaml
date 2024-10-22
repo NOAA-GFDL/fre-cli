@@ -1,0 +1,86 @@
+# esm4.2, based off ESM4p2_piControl_spinup_J_rts.xml
+# this needs -npc (non-parallel checkout) flag during checkout script creation for additional checkouts to work properly
+fre_properties:
+  - &RELEASE              "2024.01"
+  - &FMS_GIT_TAG          "2024.01" 
+  - &ATM_PHYS_GIT_TAG     "2024.01-alpha6" 
+  - &ATM_FV3_GIT_TAG      "2023.03"
+  - &ATM_DRV_GIT_TAG      "2023.04"
+  - &LAND_GIT_TAG         "2024.01"
+  - &ICE_PARAM_GIT_TAG    "2023.04"
+  - &ESM4_VERSION         "2024.01"
+  - &OCEAN_BGC_GIT_TAG    "dev4.2_benthic"
+  - &MOM6_DATE            "20231130"
+  - &MOM6_GIT_TAG         "40e3937"
+  - &MOM6_GIT_FIX         ""
+  - &SIS2_GIT_FIX         ""
+  # compile
+  - &FRE_STEM             !join [fre/FMS, *RELEASE, _mom6_, *MOM6_DATE] 
+  - &INTEL                "intel-classic"
+  - &FMSincludes          "-IFMS/include"
+  - &MOMincludes          "-Imom6/MOM6-examples/src/MOM6/src/framework"
+  # post processing
+  - &OM4_ANALYSIS         "ice_ocean_SIS2/OM4_05"
+  - &PROD_SIMTIME         "5"        # simulation length in years
+  - &PP_CMIP_CHUNK_A      "5yr"      # smaller chunk length for pp/analysis
+  - &PP_CMIP_CHUNK_B      "10yr"     # bigger  chunk length for pp/analysis
+  - &PP_START_YEAR        "0001"     # starting year
+  - &PROD_RUNTIME         "16:00:00" # Maximum wall clock per simulation
+  - &PROD_SEGTIME         "03:00:00" # Wall clock per segment (usually 1 year)
+  # MDBI settings
+  - &EXP_CPLD_START       "0001"     # simulation start year
+  - &EXP_CPLD_END         "1000"     # simulation end   year
+  # this property wasn't actually used in the xml, but seems to be intended for specifying reference files to verify regression tests
+  - &reference_tag        "FMS2022.03_mom6_20220703"
+  # these properties modify the build
+  - &BUILD_DATE            "" # included as part of the src directory path
+  - &MODIFIER              "" # appended to compile experiment name, can likely remove since compile experiments are no longer a thing
+  - &PLATINFO              "" # used for awg_input 
+  - &LIBS_ROOT             "esm4.2_compile$(MODIFIER)" # used below
+  - &SRC_DIR               !join [ $root/, *BUILD_DATE, /, *LIBS_ROOT, /src] # this ends up being used for input paths
+  - &MOM6_EXAMPLES         !join [ $root/, *BUILD_DATE, /, *LIBS_ROOT, /src/mom6] # also for input paths
+  # input paths
+  - &AWG_INPUT_HOME_GAEA   "awg_include"
+  - &AWG_INPUT_HOME_NESCC  "awg_include"
+  - &AWG_INPUT_HOME_GFDL   !join [ /nbhome/$USER/, *FRE_STEM, *PLATINFO, /$(name)/mdt_xml/awg_include]
+  - &USER_FILES_F2toF5     "/gpfs/f5/gfdl_f/world-shared/Niki.Zadeh/archive/input/f2_user_files_in_xmls"
+  - &append_to_setup_csh    "" # The start year of forcing dataset. FRE hack to set fyear
+
+build:
+  compileYaml: "compile.yaml"
+  platformYaml: "platforms.yaml"
+
+shared:
+  # directories shared across tools
+  # shamelessly stolen from am5 example
+  directories: &shared_directories
+    history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
+    pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
+    analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
+    ptmp_dir:     "/xtmp/$USER/ptmp"
+    fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
+
+  # shared pp settings
+  # also shamelessly stolen from am5 example
+  postprocess: 
+    settings: &shared_settings
+      history_segment:    "P1Y"
+      site:               "ppan"
+    switches: &shared_switches
+      do_statics:         True
+      do_timeavgs:        True
+      clean_work:         True
+      do_refinediag:      False
+      do_atmos_plevel_masking: True
+      do_preanalysis:     False
+      do_analysis:        True
+
+experiments:
+  - name: "ESM4p2_piControl_spinup_J"
+    pp:
+  - name: "ESM4p2_piControl_spinup_Jb"
+    pp:
+  - name: "ESM4p2_piControl_spinup_J_redoyr450_btmdiags"
+    pp:
+  - name: "ESM4p2_piControl_spinup_J_redoyr450"
+    pp:

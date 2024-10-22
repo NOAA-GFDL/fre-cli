@@ -1,0 +1,7 @@
+fre.pp.status module
+====================
+
+.. automodule:: fre.pp.status
+   :members:
+   :undoc-members:
+   :show-inheritance:

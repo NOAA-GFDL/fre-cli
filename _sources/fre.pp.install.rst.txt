@@ -1,0 +1,7 @@
+fre.pp.install module
+=====================
+
+.. automodule:: fre.pp.install
+   :members:
+   :undoc-members:
+   :show-inheritance:

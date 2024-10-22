@@ -1,0 +1,7 @@
+fre.yamltools.freyamltoolsexample module
+========================================
+
+.. automodule:: fre.yamltools.freyamltoolsexample
+   :members:
+   :undoc-members:
+   :show-inheritance:
