@@ -46,7 +46,7 @@ this subtool's help, and command-specific `run` help:
 
 the tool requires configuration in the form of variable tables and conventions to work appropriately
 clone the following repository and list the following directory contents to get a sense of what
-the code needs from you to work
+the code needs from you to work. a few examples shown in the output below. the CV file is of particular interest/necessity
 ```
 > git clone https://github.com/PCMDI/cmip6-cmor-tables.git fre/tests/test_files/cmip6-cmor-tables
 > ls fre/tests/test_files/cmip6-cmor-tables/Tables
@@ -57,11 +57,11 @@ the code needs from you to work
     CMIP6_coordinate.json
 	CMIP6_input_example.json
 ...
-	CMIP6_3hr.json	
+    CMIP6_3hr.json	
 ...
-	CMIP6_Efx.json
+    CMIP6_Efx.json
 ...
-	CMIP6_IyrGre.json	
+    CMIP6_IyrGre.json	
 ...
 ```
 
