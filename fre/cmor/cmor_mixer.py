@@ -178,7 +178,6 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # open the input file
     print(f"(rewrite_netcdf_file_var) opening {netcdf_file}" )
     ds = nc.Dataset(netcdf_file,'a')
-    print("FOO")
 
 
     # ocean grids are not implemented yet.
@@ -579,23 +578,12 @@ def cmor_run_subtool( indir = None,
         print(f'(cmor_run_subtool) ..............beginning CMORization for {local_var}/'
               f'{target_var}..........')
         cmorize_target_var_files(
-            indir, # OK
-            target_var, # OK
-            local_var, # OK
-            iso_datetime_arr, # OK
-            name_of_set, # OK
-
-            json_exp_config, # this makes sense just fine, i think
-            outdir, # OK
-
-            proj_table_vars, # passing this INSTEAD OF json_table_config makes more sense to me
-            json_table_config, # if this is being passed why pass proj table vars?
-            # --> b.c. the cmor module reads it directly!
+            indir, target_var, local_var, iso_datetime_arr, # OK
+            name_of_set, json_exp_config, 
+            outdir, 
+            proj_table_vars, json_table_config # a little redundant
         )
-
-
-    print('-------------------------- END _cmor_run_subtool call -----\n\n')
-
+    
 
 @click.command()
 def _cmor_run_subtool(indir = None,
