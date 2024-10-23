@@ -59,7 +59,7 @@ def test_setup_fre_cmor_run_subtool(capfd):
     assert not any ( [ Path(FULL_OUTPUTFILE).exists(),
                        Path(OUTDIR).exists()           ] )
     assert Path(FULL_INPUTFILE).exists()
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case1(capfd):
     ''' fre cmor run, test-use case '''
@@ -86,7 +86,7 @@ def test_fre_cmor_run_subtool_case1(capfd):
 
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
                   Path(FULL_INPUTFILE).exists() ] )
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
     ''' I/O data-only comparison of test case1 '''
@@ -110,7 +110,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
                  len(err_list)==2,
                  '' in err_list,
                  expected_err in err_list ] )
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
     ''' I/O metadata-only comparison of test case1 '''
@@ -127,7 +127,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
                           )
 
     assert result.returncode == 1
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 
 # FYI, but again, helpful for tests
@@ -178,7 +178,7 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
             Path(FULL_INPUTFILE),
             Path(FULL_INPUTFILE_DIFF) )
     assert Path(FULL_INPUTFILE_DIFF).exists()
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case2(capfd):
     ''' fre cmor run, test-use case2 '''
@@ -206,7 +206,7 @@ def test_fre_cmor_run_subtool_case2(capfd):
     # check we ran on the right input file.
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
                   Path(FULL_INPUTFILE_DIFF).exists() ] )
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case2_output_compare_data(capfd):
     ''' I/O data-only comparison of test case2 '''
@@ -229,7 +229,7 @@ def test_fre_cmor_run_subtool_case2_output_compare_data(capfd):
                  len(err_list)==2,
                  '' in err_list,
                  expected_err in err_list ] )
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case2_output_compare_metadata(capfd):
     ''' I/O metadata-only comparison of test case2 '''
@@ -246,4 +246,4 @@ def test_fre_cmor_run_subtool_case2_output_compare_metadata(capfd):
                           )
 
     assert result.returncode == 1
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()

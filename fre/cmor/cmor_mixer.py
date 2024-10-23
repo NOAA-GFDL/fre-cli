@@ -1,5 +1,5 @@
 '''
-python module housing the metadata processing routines utilizing the cmor module, in addition to 
+python module housing the metadata processing routines utilizing the cmor module, in addition to
 click API entry points
 see README.md for additional information on `fre cmor run` (cmor_mixer.py) usage
 '''
@@ -165,8 +165,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                               netcdf_file = None,
                               target_var = None,
                               json_exp_config = None,
-                              json_table_config = None,
-                              tmp_dir = None            ):
+                              json_table_config = None):#, tmp_dir = None            ):
     ''' rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
     '''
     print('\n\n-------------------------- START rewrite_netcdf_file_var call -----')
@@ -206,8 +205,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     try:
         time_bnds = ds["time_bnds"][:]
         #print(f"(rewrite_netcdf_file_var) time_bnds  = {time_bnds}")
-    except:
+    except ValueError:
         print( "(rewrite_netcdf_file_var) WARNING grabbing time_bnds didnt work... moving on")
+
 
 
 
@@ -345,8 +345,8 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
 
-    # read positive attribute and create cmor_var?
-    positive = proj_table_vars["variable_entry"] [target_var] ["positive"] # can this return none? TODO
+    # read positive attribute and create cmor_var? can this return none? TODO
+    positive = proj_table_vars["variable_entry"] [target_var] ["positive"]
     print(f"(rewrite_netcdf_file_var) positive = {positive}")
     cmor_var = cmor.variable(target_var, units, axes, positive = positive)
 
@@ -443,8 +443,8 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
                                                    gotta_go_back_here + nc_file_work     ,
                                                    target_var                            ,
                                                    gotta_go_back_here + json_exp_config  ,
-                                                   gotta_go_back_here + json_table_config,
-                                                   gotta_go_back_here + tmp_dir            )
+                                                   gotta_go_back_here + json_table_config)#,
+#                                                   gotta_go_back_here + tmp_dir            )
         os.chdir(gotta_go_back_here)
         assert Path( gotta_go_back_here+tmp_dir+local_file_name ).exists()
         #assert False
@@ -579,11 +579,11 @@ def cmor_run_subtool( indir = None,
               f'{target_var}..........')
         cmorize_target_var_files(
             indir, target_var, local_var, iso_datetime_arr, # OK
-            name_of_set, json_exp_config, 
-            outdir, 
+            name_of_set, json_exp_config,
+            outdir,
             proj_table_vars, json_table_config # a little redundant
         )
-    
+
 
 @click.command()
 def _cmor_run_subtool(indir = None,
