@@ -42,14 +42,7 @@ def run(context, indir, varlist, table_config, exp_config, outdir):
         outdir = outdir
     )
     #    context.forward(
-    #        _cmor_run_subtool(
-    #            indir = indir,
-    #            json_var_list = varlist,
-    #            json_table_config = table_config,
-    #            json_exp_config = exp_config,
-    #            outdir = outdir
-    #        )
-    #    )
+    #        _cmor_run_subtool() )
 
 if __name__ == "__main__":
     cmor_cli()

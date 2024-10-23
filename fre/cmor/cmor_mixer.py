@@ -1,6 +1,7 @@
-#!/usr/bin/env python
 '''
-see README.md for cmor_mixer.py usage
+python module housing the metadata processing routines utilizing the cmor module, in addition to 
+click API entry points
+see README.md for additional information on `fre cmor run` (cmor_mixer.py) usage
 '''
 
 import os
@@ -17,9 +18,7 @@ import cmor
 
 # ----- \end consts
 
-################################
-# ----- SMALLER ROUTINES ----- #
-################################
+### ------ helper functions  ------ ###
 def copy_nc(in_nc, out_nc):
     '''
     copy target input netcdf file in_nc to target out_nc. I have to think this is not a trivial copy
@@ -160,19 +159,14 @@ def create_tmp_dir(outdir):
 
 
 
-#############################
-# ----- BULK ROUTINES ----- #
-#############################
-
-
+### ------ BULK ROUTINES ------ ###
 def rewrite_netcdf_file_var ( proj_table_vars = None,
                               local_var = None,
                               netcdf_file = None,
                               target_var = None,
                               json_exp_config = None,
                               json_table_config = None,
-                              tmp_dir = None
-):
+                              tmp_dir = None            ):
     ''' rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
     '''
     print('\n\n-------------------------- START rewrite_netcdf_file_var call -----')
@@ -353,11 +347,8 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
     # read positive attribute and create cmor_var?
-    positive = proj_table_vars["variable_entry"] [target_var] ["positive"]
+    positive = proj_table_vars["variable_entry"] [target_var] ["positive"] # can this return none? TODO
     print(f"(rewrite_netcdf_file_var) positive = {positive}")
-    ##cmor_var = cmor.variable(local_var, units, axes)
-    #cmor_var = cmor.variable(local_var, units, axes, positive = positive)
-    #cmor_var = cmor.variable(target_var, units, axes)
     cmor_var = cmor.variable(target_var, units, axes, positive = positive)
 
     # Write the output to disk
@@ -475,13 +466,12 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
             print(f'(cmorize_target_var_files) WARNING: directory {filedir} already exists!')
 
         # hmm.... this is making issues for pytest
-        #mv_cmd = f"mv {os.getcwd()}/{local_file_name} {filedir}"
         mv_cmd = f"mv {tmp_dir}{local_file_name} {filedir}"
-
-        print(f"(cmorize_target_var_files) mv_cmd = {mv_cmd}")
-        #os.system(mv_cmd)
+        print(f"(cmorize_target_var_files) moving files...\n {mv_cmd}")
         subprocess.run(mv_cmd, shell=True, check=True)
 
+        # ------ refactor this into function? TODO
+        # ------ what is the use case for this logic really??
         filename_no_nc = filename[:filename.rfind(".nc")]
         chunk_str = filename_no_nc[-6:]
         if not chunk_str.isdigit():
@@ -489,10 +479,9 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
                   f'chunk_str = {chunk_str}')
             filename_corr = "{filename[:filename.rfind('.nc')]}_{iso_datetime}.nc"
             mv_cmd = f"mv {filename} {filename_corr}"
-            print(f"(cmorize_target_var_files) mv_cmd = {mv_cmd}")
-            #os.system(mv_cmd)
+            print(f"(cmorize_target_var_files) moving files, strange chunkstr logic...\n {mv_cmd}")
             subprocess.run(mv_cmd, shell=True, check=True)
-
+        # ------ end refactor this into function?
 
         # delete files in work dirs
         if Path(nc_file_work).exists():
@@ -502,9 +491,6 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
             Path(nc_ps_file_work).unlink()
 
 
-
-    print("====== end (???) mysterious file movement ====================================\n\n")
-    print('-------------------------- END var2process call -----\n\n')
 
 
 
