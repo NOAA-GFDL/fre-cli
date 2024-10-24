@@ -33,7 +33,7 @@ def run_cmor_RUN(filename, table, opt_var_name):
     return
 
 
-## 1)
+## 1) SUCCEEDs
 ## land, Lmon, gr1
 ## Result - one file debug mode success, but the exp_config has the wrong grid, amongst other thinhgs?>
 #testfile_land_gr1_Lmon = \
@@ -42,15 +42,7 @@ def run_cmor_RUN(filename, table, opt_var_name):
 ##assert False
 
 
-## This file's variable isn't in any cmip6 table...
-#### atmos, Amon, gr1
-#### Result - one file debug mode, NULL
-###testfile_atmos_gr1_Amon = \
-###    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/atmos/ts/monthly/5yr/atmos.000101-000512.t_ref.nc'
-###run_cmor_RUN(testfile_atmos_gr1_Amon, 'Amon', opt_var_name = 't_ref')
-###assert False
-
-## 2)
+## 2) FAIL
 ## native vertical atmos, (Amon, AERmon: gr1), just like above, but with nontrivial vertical levels?
 ## this one is more typical, on the FULL ATMOS LEVELS
 ## Amon / cl
@@ -61,7 +53,7 @@ def run_cmor_RUN(filename, table, opt_var_name):
 #run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_complex_vert, 'Amon', opt_var_name = 'cl')
 #assert False
 
-## 3)
+## 3) FAIL
 ## this one is on the ATMOS HALF-LEVELS
 ## Amon / mc
 ## Result - error, UnboundLocalError: local variable 'cmor_lev' referenced before assignment (ps file handing double check!!!)
@@ -71,7 +63,7 @@ def run_cmor_RUN(filename, table, opt_var_name):
 #run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_fullL, 'Amon', opt_var_name = 'mc')
 #assert False
 
-## 4)
+## 4) FAIL
 ## zonal averages. AmonZ... no AmonZ table though???
 ## !!!REPLACING AmonZ w/ Amon!!!
 ## just like #1, but lack longitude
@@ -82,46 +74,52 @@ def run_cmor_RUN(filename, table, opt_var_name):
 #run_cmor_RUN(testfile_atmos_gr1_AmonZ_nolons, 'Amon', opt_var_name = 'ta')
 #assert False
 
-# 5)
-# ocean regridded, gr. seaice could be slightly different (Omon?) #TODO
-# Result - success WITH BUG: problematic file path in copy nc... /home/Ian.Laflotte/Working/fre-cli/tmpocean_monthly_1x1deg.185001-185412.sos.n,
-testfile_ocean_monthly_1x1deg_gr = \
-    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/ocean_monthly_1x1deg/ts/monthly/5yr/ocean_monthly_1x1deg.190001-190412.sos.nc'
-run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
-assert False
+## 5) PARTIAL FAIL
+## ocean regridded, gr. seaice could be slightly different (Omon?) #TODO
+## Result - success WITH BUG: problematic file path in copy nc... /home/Ian.Laflotte/Working/fre-cli/tmpocean_monthly_1x1deg.185001-185412.sos.n,
+#testfile_ocean_monthly_1x1deg_gr = \
+#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/ocean_monthly_1x1deg/ts/monthly/5yr/ocean_monthly_1x1deg.190001-190412.sos.nc'
+#run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
+#assert False
 
-# ocean native, gn. seaice could be slightly different (Omon?) #TODO
-testfile_ocean_monthly_gn = \
-    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/ocean_monthly.002101-002512.sos.nc'
-run_cmor_RUN(testfile_, '', opt_var_name = 'sos')
-assert False
+## ocean native, gn. seaice could be slightly different (Omon?) #TODO
+## Result - error, AttributeError: NetCDF: Attempt to define fill value when data already exists. 
+#testfile_ocean_monthly_gn = \
+#    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/ocean_monthly.002101-002512.sos.nc'
+#run_cmor_RUN(testfile_ocean_monthly_gn, 'Omon', opt_var_name = 'sos')
+#assert False
 
-# 6)
-# ocean 3D, either. seaice could be slightly different (Omon?) #TODO
-# just like #4 and #5, analogous to #2 (this is kinda funny... zonal averaged, horizontally regridded but maybe not, w/ native vertical levels (half or full?)?
-# this one is regridded (1x1 deg was regrid above so it's not the native resolution)
-# Result - ,
-testfile_ocean_monthly_z_1x1deg_gr = \
-    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/ocean_monthly_z_1x1deg.000101-000512.so.nc'
-run_cmor_RUN(testfile_, '', opt_var_name = 'so')
-assert False
+## 6) FAIL
+## ocean 3D, either. seaice could be slightly different (Omon?) #TODO
+## just like #4 and #5, analogous to #2 (this is kinda funny... zonal averaged, horizontally regridded but maybe not, w/ native vertical levels (half or full?)?
+## this one is regridded (1x1 deg was regrid above so it's not the native resolution)
+## Result - error, AttributeError: NetCDF: Attempt to define fill value when data already exists
+#testfile_ocean_monthly_z_1x1deg_gr = \
+#    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/ocean_monthly_z_1x1deg.000101-000512.so.nc'
+#run_cmor_RUN(testfile_ocean_monthly_z_1x1deg_gr, 'Omon', opt_var_name = 'so')
+#assert False
 
-# 7)
-# global scalars, gn, e.g. Amon
-# lack longitude and latitude
-# Result - ,
-testfile_atmos_scalar_gn_Amon_nolon_nolat = \
-    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/atmos_scalar.197001-197412.ch4global.nc'
-run_cmor_RUN(testfile_, '', opt_var_name = 'ch4global')
-assert False
+## 7) FAIL
+## global scalars, gn, e.g. Amon
+## lack longitude and latitude
+## Result - error,   File "src/netCDF4/_netCDF4.pyx", line 2519, in netCDF4._netCDF4.Dataset.__getitem__ IndexError: lat not found in /
+#testfile_atmos_scalar_gn_Amon_nolon_nolat = \
+#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/atmos_scalar.197001-197412.ch4global.nc'
+#run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
+#assert False
 
-# 8)
+# 8) FAIL
 # phase 2L landuse land output, gr1, e.g. Emon
 # “landuse” as a dimension
-# Result - ,
+# Result - error,   File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py", line 134, in get_vertical_dimension    if not (ds[dim].axis and ds[dim].axis == "Z"):
+#   File "src/netCDF4/_netCDF4.pyx", line 4932, in netCDF4._netCDF4.Variable.__getattr__
+#   File "src/netCDF4/_netCDF4.pyx", line 4654, in netCDF4._netCDF4.Variable.getncattr
+#   File "src/netCDF4/_netCDF4.pyx", line 1617, in netCDF4._netCDF4._get_att
+#   File "src/netCDF4/_netCDF4.pyx", line 2113, in netCDF4._netCDF4._ensure_nc_success
+# AttributeError: NetCDF: Attribute not found
 testfile_LUmip_refined_gr1_Emon_landusedim = \
     '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/LUmip_refined.185001-185412.gppLut.nc'
-run_cmor_RUN(testfile_, '', opt_var_name = None)
+run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
 assert False
 
 
