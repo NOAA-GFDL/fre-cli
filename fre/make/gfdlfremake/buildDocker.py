@@ -154,7 +154,7 @@ class container():
         """
         #create runscript in tmp - create spack environment, install necessary packages,
         self.createscript = ["#!/bin/bash \n",
-                             "export BACKUP_LD_LIBRARY_PATH=$LD_LIBRARY\n",
+                             "export BACKUP_LD_LIBRARY_PATH=$LD_LIBRARY_PATH\n",
                              "# Set up spack loads\n",
                              RUNenv[0]+"\n"]
         with open(runOnDisk,"w") as f:
