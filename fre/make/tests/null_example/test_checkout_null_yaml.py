@@ -1,8 +1,9 @@
 #tests for the create-checkout step of fre-make, for null_model.yaml
 import os
+from fre import fre
 from pathlib import Path
 from fre.pp import configure_script_yaml as csy
-import subprocess
+from click.testing import CliRunner
 
 # Set what would be click options
 experiment = "c96L65_am5f7b12r1_amip"
@@ -18,7 +19,8 @@ test_yaml = Path(f"null_model.yaml")
 os.environ["HOME"]=str(Path(f"{CWD}/{test_dir}/configure_yaml_out"))
 
 #run checkout command
-subprocess.run(["fre","make","create-checkout","-y","null_model.yaml","-p","ncrc5.intel","-t","debug"]) 
+runner = CliRunner()
+result = runner.invoke(fre.fre, args=["make","create-checkout","-y","null_model.yaml","-p","ncrc5.intel","-t","debug"])
 
 def test_checkout_script_exists():
     """
