@@ -29,8 +29,12 @@ def cmor_cli():
               type=str,
               help="Output directory",
               required=True)
+@click.option('-v', "--opt_var_name",
+              type = str,
+              help="optional variable name filter. if the variable name in the targeted file doesnt match, the variable is skipped",
+              required=False)
 @click.pass_context
-def run(context, indir, varlist, table_config, exp_config, outdir):
+def run(context, indir, varlist, table_config, exp_config, outdir, opt_var_name):
     # pylint: disable=unused-argument
     """Rewrite climate model output"""
     context.invoke(
@@ -39,7 +43,8 @@ def run(context, indir, varlist, table_config, exp_config, outdir):
         json_var_list = varlist,
         json_table_config = table_config,
         json_exp_config = exp_config,
-        outdir = outdir
+        outdir = outdir,
+        opt_var_name = opt_var_name
     )
     #    context.forward(
     #        _cmor_run_subtool() )
