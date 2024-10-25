@@ -30,7 +30,15 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
 
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
-
+    # Get name of local branch and check branch rquest
+    branch_names = subprocess.run(["git","branch"],capture_output=True, text=True)
+    local_branch_name = branch_names.stdout.split()[1]
+    if branch != 'main':
+        if branch != local_branch_name:
+            stop_report = ("Error in branch: local branch does not match branch input"
+            sys.exit(stop_report)
+            return 1
+    
     # Clone the repository with depth=1; check for errors
     click.echo("cloning experiment into directory " + directory + "/" + name)
     clonecmd = (
