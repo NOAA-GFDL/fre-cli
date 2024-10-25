@@ -6,6 +6,7 @@ it is for a very context-dependent set of tests for a very specific point in tim
 '''
 
 
+import sys
 import os
 from pathlib import Path
 
@@ -22,7 +23,18 @@ EXP_CONFIG_DEFAULT=f'{ROOTDIR}/CMOR_input_example.json' # this likely is not suf
 
 
 def run_cmor_RUN(filename, table, opt_var_name):
-    run_cmor(
+    func_debug = True
+    if func_debug:
+        print('run_cmor('
+             f'    indir = {str(Path(filename).parent)},'
+             f'    json_var_list = {CMORBITE_VARLIST},'
+             f'    json_table_config = {ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_{table}.json,'
+             f'    json_exp_config = {EXP_CONFIG_DEFAULT},'
+             f'    outdir = {os.getcwd()},' 
+             f'    opt_var_name = opt_var_name'
+              ')'
+             )
+    FOO_return = run_cmor(
         indir = str(Path(filename).parent),
         json_var_list = CMORBITE_VARLIST,
         json_table_config = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_{table}.json',
@@ -30,16 +42,18 @@ def run_cmor_RUN(filename, table, opt_var_name):
         outdir = os.getcwd(), # dont keep it this way...
         opt_var_name = opt_var_name
     )
-    return
+    return FOO_return
 
 
-## 1) SUCCEEDs
-## land, Lmon, gr1
-## Result - one file debug mode success, but the exp_config has the wrong grid, amongst other thinhgs?>
-#testfile_land_gr1_Lmon = \
-#    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/land.005101-005512.lai.nc'
-#run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
-##assert False
+# 1) SUCCEEDs
+# land, Lmon, gr1
+# Result - one file debug mode success, but the exp_config has the wrong grid, amongst other thinhgs?>
+testfile_land_gr1_Lmon = \
+    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/land.005101-005512.lai.nc'
+some_return = run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
+print(f'some_return={some_return}')
+sys.exit()
+#assert False
 
 
 ## 2) FAIL
