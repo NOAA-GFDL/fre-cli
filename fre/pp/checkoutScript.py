@@ -35,7 +35,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
     local_branch_name = branch_names.stdout.split()[1]
     if branch != 'main':
         if branch != local_branch_name:
-            stop_report = ("Error in branch: local branch does not match branch input"
+            stop_report = ("Error in branch: local branch does not match branch input")
             sys.exit(stop_report)
             return 1
     
