@@ -14,106 +14,8 @@ import netCDF4 as nc
 import click
 import cmor
 
-# ------ \start assumptions / potential future configuration thingies.
-# GLOBAL hardcoded assumption: netcdf files always have an ending of '.nc'
-#                              many implicit assumptions regarding the presence of metadata in the input netcdf file name
-#                                  e.g. datetime, variable name, name_of_set are all assumed to be at particular spots
-#                              utf8 encoding
-#                              MINOR: opening netcdf files in append or write or read
-#                              MINOR: key names in certain input configuration files- these are tightly controlled
-#
-# for check_dataset_for_ocean_grids:
-#                                    input reading/checking hardcode - dataset doesn't have a variable named 'xh'
-# for get_vertical_dimension:
-#                             input reading/checking hardcode - dataset has dimension/axis name 'Z'
-# for create_tmp_dir:
-#                     input reading/checking hardcode - check output directory for specific drives local2, work, net
-#                     output moving/writing hardcode - tmpdir name is 'tmp' if condition met
-#
-# for rewrite_netcdf_file_var:
-#                              input reading/checking hardcode - dimensions named 'lat', 'lon', 'time'
-#                              input reading/checking hardcode - "bounds" for above, named 'lat_bnds', 'lon_bnds', 'time_bnds'
-#                              input reading/checking hardcode - check that var_dim is 3 or 4
-#                              input reading/checking hardcode - check that var_dim is 3 --> simple 3 dim subcase
-#                              input reading/checking hardcode - if var_dim is 4, vert_dim must be one of the following:
-#                                                                "plev30", "plev19", "plev8","height2m", "level", "lev", "levhalf"
-#                              input reading/checking hardcode -     then subcases are relevant as follows:
-#                                                                    if   vert_dim in ["plev30", "plev19", "plev8", "height2m"] --> SUBCASE
-#                                                                    elif vert_dim in ["level", "lev", "levhalf"] --> DISTINCT SUBCASE
-#                                                                        pressure input file is tagged with 'ps' potentially nearby
-#                                                                        sub_sub_case --> if vert_dim is lev_half
-#                                                                            input ds has zfactor values as 'ap_bnds', 'b_bnds'
-#                              output moving/writing hardcode -              output zfactors have names "ap_half", "b_half",
-#                                                                            output vertical level axis name "alternate_hybrid_sigma_half"
-#                                                                        sub_sub_case --> else
-#                                                                            input ds has zfactor values as 'ap' and 'b', and zfactor bnds as 'ap_bnds', 'b_bnds'
-#                              output moving/writing hardcode -              output zfactors have names "ap", "b",
-#                                                                            output vertical level axis name "alternate_hybrid_sigma"
-#                              output moving/writing hardcode -          output interpolated pressures have name "ps", units "Pa"
-#                              output moving/writing hardcode -  cmor setup parameters
-#                              output moving/writing hardcode -  lat/lon axies named "latitude"/"longitude" with units "degrees_N" "degrees_E"
-#
-# for cmorize_target_var_files:
-#                               input reading/checking hardcode - pressure input file is tagged with 'ps' potentially nearby
-#                               output moving/writing hardcode -  pressure out file is named with 'ps'
-#
-
-
-
 # ----- \start consts
 DEBUG_MODE_RUN_ONE = True
-
-#
-INPUT_READ_PS_FILE_VAR_NAME = 'ps'
-INPUT_READDIR_NAME_CHECKS = [ [ 'contains', '/work'],
-                              ['contains', '/net'],
-                              ['equal', '/local2']  ]
-
-#
-OUTPUT_TEMP_DIR_NAME = 'tmp'
-
-#
-INPUT_READ_OCEAN_GRID_VAR_NAME = 'xh'
-INPUT_READ_Z_AXIS_NAME = 'Z'
-
-#
-INPUT_READ_LAT_DIM = 'lat'
-INPUT_READ_LAT_BNDS = 'lat_bnds'
-INPUT_READ_LON_DIM = 'lon'
-INPUT_READ_LON_BNDS = 'lon_bnds'
-INPUT_READ_TIME_DIM = 'time'
-INPUT_READ_TIME_BNDS = 'time_bnds'
-
-#
-INPUT_ACCEPT_VAR_DIMS = [3,4]
-INPUT_ACCEPT_VERT_DIMS = ["plev30", "plev19", "plev8","height2m", "level", "lev", "levhalf"]
-
-# ----
-#INPUT_SUBCASE1_VAR_VERT_DIMS = { "4": [ "plev30", "plev19", "plev8", "height2m" ] }
-
-# ----
-INPUT_SUBCASE2_VAR_VERT_DIMS = { "4": [ "level", "lev", "levhalf" ] }
-#-
-OUTPUT_SUBCASE2_PS_VAR_NAME = 'ps'
-OUTPUT_SUBCASE2_PS_VAR_UNIT = 'Pa'
-
-# --- ---
-INPUT_SUBCASE2_0_VAR_VERT_DIMS = { "4": [ "levhalf" ] }
-INPUT_SUBCASE2_0_ZFACT_VALS = ['ap_bnds','b_bnds']
-#-
-OUTPUT_SUBCASE2_0_ZFACT_VAL_NAMES = ['ap_half','b_half']
-OUTPUT_SUBCASE2_0_VERT_LVL_NAME = 'altername_hybrid_sigma_half'
-
-# --- ---
-INPUT_SUBCASE2_1_VAR_VERT_DIMS = { "4": [ "level", "lev" ] }
-INPUT_SUBCASE2_1_ZFACT_VALS = ['ap','b']
-INPUT_SUBCASE2_1_ZFACT_BNDS = ['ap_bnds','b_bnds']
-#-
-OUTPUT_SUBCASE2_0_ZFACT_VAL_NAMES = ['ap','b']
-OUTPUT_SUBCASE2_0_VERT_LVL_NAME = 'altername_hybrid_sigma'
-
-
-
 
 # ----- \end consts
 
@@ -226,6 +128,9 @@ def get_vertical_dimension(ds,target_var):
         dims = variable.dimensions
         for dim in dims:
             # if it is not a vertical axis, move on.
+            print(f'(get_vertical_dimension) dim={dim}')
+            if dim == 'landuse':
+                continue
             if not (ds[dim].axis and ds[dim].axis == "Z"):
                 continue
             vert_dim = dim
@@ -264,7 +169,18 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                               target_var = None,
                               json_exp_config = None,
                               json_table_config = None):#, tmp_dir = None            ):
-    ''' rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
+    ''' 
+    rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
+    accepts six arguments, all required:
+        proj_table_vars: json dictionary object, variable table read from json_table_config.
+        local_var: string, variable name used for finding files locally containing target_var,
+                   this argument is often equal to target_var.
+        netcdf_file: string, representing path to intput netcdf file.
+        target_var: string, representing the variable name attached to the data object in the netcdf file.
+        json_exp_config: string, representing path to json configuration file holding metadata for appending to output
+                         this argument is most used for making sure the right grid label is getting attached to the right output
+        json_table_config: string, representing path to json configuration file holding variable names for a given table.
+                           proj_table_vars is read from this file, but both are passed anyways. 
     '''
     print('\n\n-------------------------- START rewrite_netcdf_file_var call -----')
     print( "(rewrite_netcdf_file_var) input data: " )
@@ -392,7 +308,10 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             ds_ps.close()
 
             # assign lev_half specifics
-            if vert_dim == "lev_half":
+            if vert_dim == "levhalf":
+                cmor_lev = cmor.axis( "alternate_hybrid_sigma_half",
+                                      coord_vals = lev[:],
+                                      units = lev.units )
                 ierr_ap = cmor.zfactor( zaxis_id       = cmor_lev,
                                         zfactor_name   = "ap_half",
                                         axis_ids       = [cmor_lev, ],
@@ -403,10 +322,11 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                        axis_ids       = [cmor_lev, ],
                                        zfactor_values = ds["b_bnds"][:],
                                        units          = ds["b_bnds"].units )
-                cmor_lev = cmor.axis( "alternate_hybrid_sigma_half",
-                                      coord_vals = lev[:],
-                                      units = lev.units )
             else:
+                cmor_lev = cmor.axis( "alternate_hybrid_sigma",
+                                      coord_vals  = lev[:],
+                                      units       = lev.units,
+                                      cell_bounds = ds[vert_dim+"_bnds"] )
                 ierr_ap = cmor.zfactor( zaxis_id       = cmor_lev,
                                         zfactor_name   = "ap",
                                         axis_ids       = [cmor_lev, ],
@@ -419,10 +339,6 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                        zfactor_values = ds["b"][:],
                                        zfactor_bounds = ds["b_bnds"][:],
                                        units          = ds["b"].units )
-                cmor_lev = cmor.axis( "alternate_hybrid_sigma",
-                                      coord_vals  = lev[:],
-                                      units       = lev.units,
-                                      cell_bounds = ds[vert_dim+"_bnds"] )
 
             print(f'(rewrite_netcdf_file_var) ierr_ap after calling cmor_zfactor: {ierr_ap}\n'
                   f'(rewrite_netcdf_file_var) ierr_b after calling cmor_zfactor: {ierr_b}'  )
@@ -493,7 +409,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
 
 
     #determine a tmp dir for working on files.
-    tmp_dir = create_tmp_dir( outdir )
+    tmp_dir = create_tmp_dir( outdir ) + '/'
     print(f'(cmorize_target_var_files) will use tmp_dir={tmp_dir}')
 
 
@@ -721,6 +637,7 @@ def cmor_run_subtool( indir = None,
         if DEBUG_MODE_RUN_ONE:
             print(f'WARNING: DEBUG_MODE_RUN_ONE is True. breaking var_list loop')
             break
+    return 0
 
 
 @click.command()

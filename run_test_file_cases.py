@@ -13,6 +13,16 @@ from pathlib import Path
 import fre
 from fre.cmor.cmor_mixer import cmor_run_subtool as run_cmor
 
+def print_the_outcome(some_return,case_str):
+    print('-----------------------------------------------------------------------------------------------------------------')
+    if some_return != 0:
+        print(f'{case_str} case failed[[[FAIL -_-]]]: some_return={some_return}')
+    else:
+        print(f'{case_str} case probably OK [[[PROB-OK ^-^]]]: some_return={some_return}')
+    print('-----------------------------------------------------------------------------------------------------------------')
+    print(f'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
+    assert some_return == 0
+
 # global consts for these tests, with no/trivial impact on the results
 ROOTDIR='fre/tests/test_files'
 CMORBITE_VARLIST=f'{ROOTDIR}/CMORbite_var_list.json'
@@ -23,16 +33,26 @@ EXP_CONFIG_DEFAULT=f'{ROOTDIR}/CMOR_input_example.json' # this likely is not suf
 
 
 def run_cmor_RUN(filename, table, opt_var_name):
-    func_debug = True
-    if func_debug:
-        print('run_cmor('
-             f'    indir = {str(Path(filename).parent)},'
-             f'    json_var_list = {CMORBITE_VARLIST},'
-             f'    json_table_config = {ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_{table}.json,'
-             f'    json_exp_config = {EXP_CONFIG_DEFAULT},'
-             f'    outdir = {os.getcwd()},' 
-             f'    opt_var_name = opt_var_name'
-              ')'
+    func_debug1 = False
+    if func_debug1:
+        print('run_cmor(\n'
+             f'    indir = \"{str(Path(filename).parent)}\",\n'
+             f'    json_var_list = \"{CMORBITE_VARLIST}\",\n'
+             f'    json_table_config = \"{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_{table}.json\",\n'
+             f'    json_exp_config = \"{EXP_CONFIG_DEFAULT}\",\n'
+             f'    outdir = \"{os.getcwd()}\",\n' 
+             f'    opt_var_name = \"{opt_var_name}\"\n'
+              ')\n'
+             )
+    func_debug2 = True
+    if func_debug2:
+        print('fre cmor run '
+                  f'-d {str(Path(filename).parent)} '
+                  f'-l {CMORBITE_VARLIST} '
+                  f'-r {ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_{table}.json '
+                  f'-p {EXP_CONFIG_DEFAULT} '
+                  f'-o {os.getcwd()} ' 
+                  f'-v {opt_var_name} '
              )
     FOO_return = run_cmor(
         indir = str(Path(filename).parent),
@@ -45,96 +65,133 @@ def run_cmor_RUN(filename, table, opt_var_name):
     return FOO_return
 
 
-# 1) SUCCEEDs
-# land, Lmon, gr1
-# Result - one file debug mode success, but the exp_config has the wrong grid, amongst other thinhgs?>
-testfile_land_gr1_Lmon = \
-    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/land.005101-005512.lai.nc'
-some_return = run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
-print(f'some_return={some_return}')
-sys.exit()
-#assert False
+## 1) SUCCEEDs
+## land, Lmon, gr1
+#testfile_land_gr1_Lmon = \
+#    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/land.005101-005512.lai.nc'
+#try:
+#    some_return = run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
+#except:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1
+#    pass
+#print_the_outcome(some_return,'land_gr1_Lmon / lai')
 
 
-## 2) FAIL
-## native vertical atmos, (Amon, AERmon: gr1), just like above, but with nontrivial vertical levels?
-## this one is more typical, on the FULL ATMOS LEVELS
-## Amon / cl
-## Result - error, UnboundLocalError: local variable 'cmor_lev' referenced before assignment (ps file handing double check!!!)
-## WITH BUG: problematic file path in copy nc... /home/Ian.Laflotte/Working/fre-cli/tmpocean_monthly_1x1deg.185001-185412.sos.n,
+## 2) SUCCEEDs
+## atmos, Amon / cl
 #testfile_atmos_level_cmip_gr1_Amon_complex_vert = \
 #    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/atmos_level_cmip.196001-196412.cl.nc'
-#run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_complex_vert, 'Amon', opt_var_name = 'cl')
-#assert False
+#try:
+#    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_complex_vert, 'Amon', opt_var_name = 'cl')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_complex_vert / cl')
 
-## 3) FAIL
-## this one is on the ATMOS HALF-LEVELS
-## Amon / mc
-## Result - error, UnboundLocalError: local variable 'cmor_lev' referenced before assignment (ps file handing double check!!!)
-## WITH BUG: problematic file path in copy nc... /home/Ian.Laflotte/Working/fre-cli/tmpatmos_level_cmip.185001-185412.mc.nc
+
+## 3) SUCCEEDs
+## atmos, Amon / mc
 #testfile_atmos_level_cmip_gr1_Amon_fullL = \
 #    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/atmos_level_cmip.195501-195912.mc.nc'
-#run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_fullL, 'Amon', opt_var_name = 'mc')
-#assert False
+#try:
+#    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_fullL, 'Amon', opt_var_name = 'mc')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_fullL / mc')
 
-## 4) FAIL
-## zonal averages. AmonZ... no AmonZ table though???
-## !!!REPLACING AmonZ w/ Amon!!!
+
+## 4) FAIL (no longitude coordinate case)
+## atmos, Amoon / ta
 ## just like #1, but lack longitude
-## Result - error, lat/lon hardcoding as chris was saying would break:  File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py", line 195, in rewrite_netcdf_file_var    lon = ds["lon"][:]  File "src/netCDF4/_netCDF4.pyx", line 2519, in netCDF4._netCDF4.Dataset.__getitem__ IndexError: lon not found in /
-## WITH BUG: problematic file path in copy nc... /home/Ian.Laflotte/Working/fre-cli/tmpatmos_plev39_cmip.185001-185412.ta.nc
+## Result - error, File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py", line 195, in rewrite_netcdf_file_var    lon = ds["lon"][:]  File "src/netCDF4/_netCDF4.pyx", line 2519, in netCDF4._netCDF4.Dataset.__getitem__ IndexError: lon not found in /
 #testfile_atmos_gr1_AmonZ_nolons = \
 #    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/atmos_plev39_cmip.201001-201412.ta.nc'
-#run_cmor_RUN(testfile_atmos_gr1_AmonZ_nolons, 'Amon', opt_var_name = 'ta')
-#assert False
+#try:
+#    some_return = run_cmor_RUN(testfile_atmos_gr1_AmonZ_nolons, 'Amon', opt_var_name = 'ta')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'atmos_gr1_AmonZ_nolons / ta')
 
-## 5) PARTIAL FAIL
-## ocean regridded, gr. seaice could be slightly different (Omon?) #TODO
-## Result - success WITH BUG: problematic file path in copy nc... /home/Ian.Laflotte/Working/fre-cli/tmpocean_monthly_1x1deg.185001-185412.sos.n,
+
+## 5) SUCCEEDS
+## ocean, Omon / sos
 #testfile_ocean_monthly_1x1deg_gr = \
 #    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/ocean_monthly_1x1deg/ts/monthly/5yr/ocean_monthly_1x1deg.190001-190412.sos.nc'
-#run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
-#assert False
+#try:
+#    some_return = run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'ocean_monthly_1x1deg_gr / sos')
 
-## ocean native, gn. seaice could be slightly different (Omon?) #TODO
-## Result - error, AttributeError: NetCDF: Attempt to define fill value when data already exists. 
+
+
+## 6) FAIL (copy_nc failure!!! WEIRD)
+## ocean, Omon / sos
+## Result - error, AttributeError: NetCDF: Attempt to define fill value when data already exists.
 #testfile_ocean_monthly_gn = \
 #    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/ocean_monthly.002101-002512.sos.nc'
-#run_cmor_RUN(testfile_ocean_monthly_gn, 'Omon', opt_var_name = 'sos')
-#assert False
+#try:
+#    some_return = run_cmor_RUN(testfile_ocean_monthly_gn, 'Omon', opt_var_name = 'sos')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'ocean_monthly_gn / sos')
 
-## 6) FAIL
-## ocean 3D, either. seaice could be slightly different (Omon?) #TODO
-## just like #4 and #5, analogous to #2 (this is kinda funny... zonal averaged, horizontally regridded but maybe not, w/ native vertical levels (half or full?)?
-## this one is regridded (1x1 deg was regrid above so it's not the native resolution)
-## Result - error, AttributeError: NetCDF: Attempt to define fill value when data already exists
+
+
+## 7) FAIL (copy_nc failure!!! WEIRD)
+## ocean, Omon / so
+## Result - identical failure to #6
 #testfile_ocean_monthly_z_1x1deg_gr = \
 #    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/ocean_monthly_z_1x1deg.000101-000512.so.nc'
-#run_cmor_RUN(testfile_ocean_monthly_z_1x1deg_gr, 'Omon', opt_var_name = 'so')
-#assert False
+#try:
+#    some_return = run_cmor_RUN(testfile_ocean_monthly_z_1x1deg_gr, 'Omon', opt_var_name = 'so')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'ocean_monthly_z_1x1deg_gr / so')
 
-## 7) FAIL
-## global scalars, gn, e.g. Amon
-## lack longitude and latitude
+
+## 8) FAIL (no latitude nor longitude coordinates cases)
+## atmos, Amon / ch4global
 ## Result - error,   File "src/netCDF4/_netCDF4.pyx", line 2519, in netCDF4._netCDF4.Dataset.__getitem__ IndexError: lat not found in /
 #testfile_atmos_scalar_gn_Amon_nolon_nolat = \
 #    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/atmos_scalar.197001-197412.ch4global.nc'
-#run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
-#assert False
+#try:
+#    some_return = run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
 
-# 8) FAIL
-# phase 2L landuse land output, gr1, e.g. Emon
-# “landuse” as a dimension
-# Result - error,   File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py", line 134, in get_vertical_dimension    if not (ds[dim].axis and ds[dim].axis == "Z"):
-#   File "src/netCDF4/_netCDF4.pyx", line 4932, in netCDF4._netCDF4.Variable.__getattr__
-#   File "src/netCDF4/_netCDF4.pyx", line 4654, in netCDF4._netCDF4.Variable.getncattr
-#   File "src/netCDF4/_netCDF4.pyx", line 1617, in netCDF4._netCDF4._get_att
-#   File "src/netCDF4/_netCDF4.pyx", line 2113, in netCDF4._netCDF4._ensure_nc_success
+
+# 9) FAIL
+# LUmip, Emon / gppLut
+# Result - error,
+# File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py",
+#    line 134, in get_vertical_dimension    if not (ds[dim].axis and ds[dim].axis == "Z"):
 # AttributeError: NetCDF: Attribute not found
 testfile_LUmip_refined_gr1_Emon_landusedim = \
     '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/LUmip_refined.185001-185412.gppLut.nc'
-run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
-assert False
+try:
+    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'LUmip_refined_gr1_Emon_langusedim / gppLut')
+
 
 
 
