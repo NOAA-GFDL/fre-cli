@@ -40,7 +40,7 @@ INPUT_READ_AP_ZFACTS = ['ap','ap_bnds']
 INPUT_READ_B_ZFACTS = ['b','b_bnds']
 
 #
-OUTPUT_WRITE_AXIS_LEVELS_NAME="alternate_hybrid_sigma"
+OUTPUT_WRITE_AXIS_LEVELS_HALF_NAME="alternate_hybrid_sigma"
 OUTPUT_WRITE_AP_ZFACTS_NAME = "ap"
 OUTPUT_WRITE_B_ZFACTS_NAME = "b"
 
@@ -190,7 +190,7 @@ def create_tmp_dir(outdir):
         tmp_dir = str( Path(f"{outdir}/").resolve() ) + '/'
     else:
         print(f'(create_tmp_dir) NOT using /local /work /net (tmp_dir = {outdir}/{OUTPUT_TEMP_DIR_NAME}/ )')
-        tmp_dir = str( Path(f"{outdir}/{OUTPUT_TEMP_DIR_NAME}/").resolve() ) + '/'
+        tmp_dir = str( Path(f"{outdir}/{OUTPUT_TMP_DIR_NAME}/").resolve() ) + '/'
     try:
         os.makedirs(tmp_dir, exist_ok=True)
     except Exception as exc:
@@ -206,7 +206,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                               target_var = None,
                               json_exp_config = None,
                               json_table_config = None):#, tmp_dir = None            ):
-    '''
+    ''' 
     rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
     accepts six arguments, all required:
         proj_table_vars: json dictionary object, variable table read from json_table_config.
@@ -217,10 +217,10 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         json_exp_config: string, representing path to json configuration file holding metadata for appending to output
                          this argument is most used for making sure the right grid label is getting attached to the right output
         json_table_config: string, representing path to json configuration file holding variable names for a given table.
-                           proj_table_vars is read from this file, but both are passed anyways.
+                           proj_table_vars is read from this file, but both are passed anyways. 
     '''
-    print(  "(rewrite_netcdf_file_var) input data: \n"
-           f"                              local_var   =  {local_var}\n"
+    print(  "(rewrite_netcdf_file_var) input data: \n" 
+           f"                              local_var   =  {local_var}\n" 
            f"                              target_var = {target_var}")
 
 
@@ -362,11 +362,11 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                         zfactor_bounds = ds[ INPUT_READ_AP_ZFACTS[1] ][:],
                                         units          = ds[ INPUT_READ_AP_ZFACTS[0] ].units )
                 ierr_b = cmor.zfactor( zaxis_id       = cmor_lev,
-                                       zfactor_name   = OUTPUT_WRITE_B_ZFACTS_NAME,
+                                       zfactor_name   = OUTPUT_WRITE_ZFACTS_NAME,
                                        axis_ids       = [cmor_lev, ],
-                                       zfactor_values = ds[ INPUT_READ_B_ZFACTS[0] ][:],
-                                       zfactor_bounds = ds[ INPUT_READ_B_ZFACTS[1] ][:],
-                                       units          = ds[ INPUT_READ_B_ZFACTS[0] ].units )
+                                       zfactor_values = ds[ INPUT_READ_b_ZFACTS[0] ][:],
+                                       zfactor_bounds = ds[ INPUT_READ_b_ZFACTS[1] ][:],
+                                       units          = ds[ INPUT_READ_b_ZFACTS[0] ].units )
                 cmor_lev = cmor.axis( OUTPUT_WRITE_AXIS_LEVELS_NAME,
                                       coord_vals  = lev[:],
                                       units       = lev.units,
@@ -477,10 +477,10 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         print( Path( tmp_dir     ) )
         print( Path( os.getcwd() ) )
         if Path( tmp_dir ).is_absolute():
-            print('tmp_dir is absolute')
+            print(f'tmp_dir is absolute')
             make_cmor_write_here = tmp_dir
         elif Path( tmp_dir ).exists(): # relative to where we are
-            print('tmp_dir is relative to CWD!')
+            print(f'tmp_dir is relative to CWD!')
             make_cmor_write_here = os.getcwd() + '/'+tmp_dir # unavoidable, cmor module FORCES write to CWD
         assert make_cmor_write_here is not None
 
@@ -542,8 +542,8 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
             Path(nc_ps_file_work).unlink()
 
         if DEBUG_MODE_RUN_ONE:
-            print('WARNING: DEBUG_MODE_RUN_ONE is True!!!!')
-            print('WARNING: done processing one file!!!')
+            print(f'WARNING: DEBUG_MODE_RUN_ONE is True!!!!')
+            print(f'WARNING: done processing one file!!!')
             break
 
 
@@ -667,7 +667,7 @@ def cmor_run_subtool( indir = None,
         )
 
         if DEBUG_MODE_RUN_ONE:
-            print('WARNING: DEBUG_MODE_RUN_ONE is True. breaking var_list loop')
+            print(f'WARNING: DEBUG_MODE_RUN_ONE is True. breaking var_list loop')
             break
 
 
