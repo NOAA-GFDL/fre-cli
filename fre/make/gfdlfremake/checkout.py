@@ -108,9 +108,6 @@ class checkout():
         else:
             self.checkoutScript.close()
 
-        # Make checkout script executable
-        os.chmod(self.src+"/"+self.fname, 0o744)
-
 ## TODO: batch script building
     def run (self):
         """
