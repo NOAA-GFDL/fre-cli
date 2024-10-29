@@ -18,7 +18,7 @@ from .gfdlfremake import (
     makefilefre, buildDocker, buildBaremetal )
 
 @click.command()
-def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose,force_checkout,foce_compile):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]

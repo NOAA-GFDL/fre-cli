@@ -10,7 +10,7 @@ from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
 @click.command()
-def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
+def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]

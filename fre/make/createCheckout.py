@@ -9,7 +9,7 @@ from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 import fre.yamltools.combine_yamls as cy
 
 @click.command()
-def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
+def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout):
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -83,6 +83,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                    else:
                         sys.exit()
               else:
+
                    print("\nCheckout script PREVIOUSLY created in "+ srcDir + "/checkout.sh \n")
                    if run == True:
                         os.chmod(srcDir+"/checkout.sh", 0o744)
