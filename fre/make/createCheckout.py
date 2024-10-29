@@ -5,8 +5,8 @@ import subprocess
 import logging
 import sys
 import click
-from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 import fre.yamltools.combine_yamls as cy
+from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
 def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     # Define variables
@@ -64,7 +64,7 @@ def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,
            RUNenv ) = modelYaml.platforms.getPlatformFromName(platformName)
 
     ## Create the source directory for the platform
-         if iscontainer == False:
+         if iscontainer is False:
               srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
               # if the source directory does not exist, it is created
               if not os.path.exists(srcDir):
@@ -77,13 +77,13 @@ def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,
                    click.echo("\nCheckout script created in "+ srcDir + "/checkout.sh \n")
 
                    # Run the checkout script
-                   if run == True:
+                   if run is True:
                         freCheckout.run()
                    else:
                         sys.exit()
               else:
                    print("\nCheckout script PREVIOUSLY created in "+ srcDir + "/checkout.sh \n")
-                   if run == True:
+                   if run is True:
                         os.chmod(srcDir+"/checkout.sh", 0o744)
                         try:
                              subprocess.run(args=[srcDir+"/checkout.sh"], check=True)

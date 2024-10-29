@@ -62,7 +62,7 @@ def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
          ## Make the bldDir based on the modelRoot, the platform, and the target
          srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
          ## Check for type of build
-         if iscontainer == False:
+         if iscontainer is False:
               baremetalRun = True
               bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
               os.system("mkdir -p " + bldDir)
