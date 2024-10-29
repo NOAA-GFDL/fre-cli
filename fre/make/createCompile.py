@@ -9,8 +9,7 @@ import click
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
-@click.command()
-def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
+def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -60,7 +59,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
               raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
 
          (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
-    ## Make the bldDir based on the modelRoot, the platform, and the target
+         ## Make the bldDir based on the modelRoot, the platform, and the target
          srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
          ## Check for type of build
          if iscontainer == False:
@@ -82,14 +81,19 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
               fremakeBuildList.append(fremakeBuild)
               click.echo("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
     if run:
-        #print("ITS GONNA RUN")
         if baremetalRun:
             pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
-#        else:
-#            fremakeBuild.run()
     else:
         sys.exit()
+
+@click.command()
+def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
+    '''
+    Decorator for calling _compile_create - allows the decorated version
+    of the function to be separate from the undecorated version
+    '''
+    return _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose)
 
 if __name__ == "__main__":
     compile_create()

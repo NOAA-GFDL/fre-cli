@@ -8,8 +8,7 @@ import click
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 import fre.yamltools.combine_yamls as cy
 
-@click.command()
-def makefile_create(yamlfile,platform,target):
+def _makefile_create(yamlfile,platform,target):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -77,6 +76,14 @@ def makefile_create(yamlfile,platform,target):
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
                 freMakefile.writeMakefile()
                 click.echo("\nMakefile created at " + bldDir + "/Makefile" + "\n")
+
+@click.command()
+def makefile_create(yamlfile,platform,target):
+    '''
+    Decorator for calling _makefile_create - allows the decorated version
+    of the function to be separate from the undecorated version
+    '''
+    return _makefile_create(yamlfile,platform,target)
 
 if __name__ == "__main__":
     makefile_create()
