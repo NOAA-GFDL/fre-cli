@@ -50,10 +50,13 @@ def test_can_i_expand_user():
 def test_cli_fre_pp_checkout_case():
     ''' fre pp checkout -e FOO -p BAR -t BAZ'''
     result = runner.invoke(fre.fre, args=["pp", "checkout", "-e", "FOO", "-p", "BAR", "-t", "BAZ"], catch_exceptions=True)
-    print(result.stdout)
+    print(f'(test_fre_pp_cli) result.stdout is = {result.stdout}')
+    #print(result.stdout)
     #click.echo(result.stderr)
-    print(result.exception)
+    #print(result.exception)
+    print(f'(test_fre_pp_cli) result.exception is  = {result.exception}')
     directory = os.path.expanduser("~/cylc-src")+'/FOO__BAR__BAZ'
+    print(f'(test_fre_pp_cli) directory is = {directory}')
     assert all( [ result.exit_code == 0,
                   Path(os.path.expanduser("~")).exists(),
                   Path(os.path.expanduser("~/cylc-src")).exists(),
