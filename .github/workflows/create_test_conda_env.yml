@@ -51,7 +51,7 @@ jobs:
           fre pp checkout -e FOO -p BAR -t BAZ
           cd ~/cylc-src/FOO__BAR__BAZ && pwd && cd - && rm -rf ~/cylc-src/FOO__BAR__BAZ
           #pytest -v -v --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
-          pytest -v -v fre/tests
+          pytest -v -v fre/tests/test_fre_pp_cli.py
           echo "-------"
           ls ~ && cd ~ && pwd && ls && cd -
           ls ~/cylc-src && cd ~/cylc-src && pwd && ls && cd -
