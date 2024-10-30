@@ -44,11 +44,12 @@ jobs:
           # quick info i want to know DELETE ME
           echo "------------------------------------------------------------------------------"
           ls ~
+          cd ~
           pwd
           
           # run pytest
-          echo "------------------------------------------------------------------------------"
-          pytest -v -v --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/ || echo "FAIL GUARD"
+          echo "------------------------------------------------------------------------------"          
+          pytest -v -v --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
           ls ~          
           
           # install genbadge to generate coverage badge based on xml
