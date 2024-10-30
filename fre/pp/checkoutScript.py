@@ -31,6 +31,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
     name = f"{experiment}__{platform}__{target}"
 
     # Clone the repository with depth=1; check for errors
+    print('------' + directory + "/" + name + '--------')
     click.echo("cloning experiment into directory " + directory + "/" + name)
     clonecmd = (
         f"git clone -b {branch} --single-branch --depth=1 --recursive "
@@ -38,6 +39,13 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
     preexist_error = f"fatal: destination path '{name}' exists and is not an empty directory."
     click.echo(clonecmd)
     cloneproc = subprocess.run(clonecmd, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
+    from pathlib import Path
+    if Path(directory + "/" + name).exists():
+        print('YAYAYAYAY')
+    else:
+        print('boooooooo')
+        assert False
+
     if not cloneproc.returncode == 0:
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
             argstring = f" -e {experiment} -p {platform} -t {target}"
