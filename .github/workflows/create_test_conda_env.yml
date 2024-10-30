@@ -40,11 +40,19 @@ jobs:
           which python
           python --version
           $CONDA/envs/fre-cli/bin/python --version
+
+          # quick info i want to know DELETE ME
+          echo "------------------------------------------------------------------------------"
+          ls ~
+          pwd
           
           # run pytest
-          pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
+          echo "------------------------------------------------------------------------------"
+          pytest -v -v --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/ || echo "FAIL GUARD"
+          ls ~          
           
           # install genbadge to generate coverage badge based on xml
+          echo "------------------------------------------------------------------------------"
           pip install genbadge
           genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
           genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
