@@ -1,5 +1,7 @@
 ''' test "fre pp" calls '''
 
+import os
+from pathlib import Path
 from click.testing import CliRunner
 
 from fre import fre
@@ -38,6 +40,13 @@ def test_cli_fre_pp_checkout_opt_dne():
     ''' fre pp checkout optionDNE '''
     result = runner.invoke(fre.fre, args=["pp", "checkout", "optionDNE"])
     assert result.exit_code == 2
+
+def test_cli_fre_pp_checkout():
+    ''' fre pp checkout -e FOO -p BAR -t BAZ'''
+    result = runner.invoke(fre.fre, args=["pp", "checkout", "-e", "FOO", "-p", "BAR", "-t", "BAZ"])
+    directory = os.path.expanduser("~/cylc-src")+'/FOO__BAR__BAZ'
+    assert all( [ result.exit_code == 0,
+                 Path(directory).exists() ]
 
 #-- fre pp configure-xml
 def test_cli_fre_pp_configure_xml():
