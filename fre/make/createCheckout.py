@@ -76,7 +76,9 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                    freCheckout = checkout.checkout("checkout.sh",srcDir)
                    freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                    freCheckout.finish(pc)
-                   click.echo("\nCheckout script created in "+ srcDir + "/checkout.sh \n")
+                   # Make checkout script executable
+                   os.chmod(srcDir+"/checkout.sh", 0o744)
+                   print("\nCheckout script created in "+ srcDir + "/checkout.sh \n")
 
                    # Run the checkout script
                    if run == True:
@@ -99,7 +101,6 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                        print("\nCheckout script PREVIOUSLY created in "+ srcDir + "/checkout.sh \n")
 
                    if run == True:
-                        os.chmod(srcDir+"/checkout.sh", 0o744)
                         try:
                              subprocess.run(args=[srcDir+"/checkout.sh"], check=True)
                         except:
