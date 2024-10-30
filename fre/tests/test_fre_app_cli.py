@@ -15,57 +15,57 @@ def test_cli_fre_app(capfd):
     """ fre app """
     result = runner.invoke(fre.fre, args=["app"])
     assert result.exit_code == 0
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_help(capfd):
     """ fre app --help """
     result = runner.invoke(fre.fre, args=["app", "--help"])
     assert result.exit_code == 0
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_opt_dne(capfd):
     """ fre app optionDNE """
     result = runner.invoke(fre.fre, args=["app", "optionDNE"])
     assert result.exit_code == 2
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 # fre app gen-time-averages
 def test_cli_fre_app_gen_time_averages(capfd):
     """ fre cmor run """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages"])
     assert result.exit_code == 2
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_gen_time_averages_help(capfd):
     """ fre cmor run --help """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages", "--help"])
     assert result.exit_code == 0
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_gen_time_averages_opt_dne(capfd):
     """ fre cmor run optionDNE """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages", "optionDNE"])
     assert result.exit_code == 2
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 # fre app regrid
 def test_cli_fre_app_regrid(capfd):
     """ fre cmor run """
     result = runner.invoke(fre.fre, args=["app", "regrid"])
     assert result.exit_code == 2
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_regrid_help(capfd):
     """ fre cmor run --help """
     result = runner.invoke(fre.fre, args=["app", "regrid", "--help"])
     assert result.exit_code == 0
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_regrid_opt_dne(capfd):
     """ fre cmor run optionDNE """
     result = runner.invoke(fre.fre, args=["app", "regrid", "optionDNE"])
     assert result.exit_code == 2
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_regrid_test_case_1(capfd):
     """ fre cmor run --help """
@@ -113,4 +113,4 @@ def test_cli_fre_app_regrid_test_case_1(capfd):
 
     result = runner.invoke(fre.fre, args=args_list )
     assert result.exit_code == 0
-    out, err = capfd.readouterr()
+    _out, _err = capfd.readouterr()
