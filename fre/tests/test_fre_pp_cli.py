@@ -43,11 +43,16 @@ def test_cli_fre_pp_checkout_opt_dne():
 
 def test_cli_fre_pp_checkout_case():
     ''' fre pp checkout -e FOO -p BAR -t BAZ'''
-    result = runner.invoke(fre.fre, args=["pp", "checkout", "-e", "FOO", "-p", "BAR", "-t", "BAZ"])
+    result = runner.invoke(fre.fre, args=["pp", "checkout", "-e", "FOO", "-p", "BAR", "-t", "BAZ"], catch_exceptions=True)
+    print(result.stdout)
+    #click.echo(result.stderr)
+    print(result.exception)
     directory = os.path.expanduser("~/cylc-src")+'/FOO__BAR__BAZ'
     assert all( [ result.exit_code == 0,
-                 Path(directory).exists() ] )
-
+                  Path(os.path.expanduser("~")).exists(),
+                  Path(os.path.expanduser("~/cylc-src")).exists(),
+                  Path(directory).exists() , False] )
+    
 #-- fre pp configure-xml
 def test_cli_fre_pp_configure_xml():
     ''' fre pp configure-xml '''
