@@ -8,8 +8,7 @@ import click
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls as cy
 
-@click.command()
-def _dockerfile_create(yamlfile,platform,target,execute):
+def dockerfile_create(yamlfile,platform,target,execute):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -79,12 +78,12 @@ def _dockerfile_create(yamlfile,platform,target,execute):
                 sys.exit()
 
 @click.command()
-def dockerfile_create(yamlfile,platform,target,execute):
+def _dockerfile_create(yamlfile,platform,target,execute):
     '''
-    Decorator for calling _dockerfile_create - allows the decorated version
+    Decorator for calling dockerfile_create - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _dockerfile_create(yamlfile,platform,target,execute)
+    return dockerfile_create(yamlfile,platform,target,execute)
 
 if __name__ == "__main__":
     dockerfile_create()

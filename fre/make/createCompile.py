@@ -9,7 +9,7 @@ import click
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
-def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
+def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -88,12 +88,12 @@ def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
         sys.exit()
 
 @click.command()
-def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
+def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
     '''
-    Decorator for calling _compile_create - allows the decorated version
+    Decorator for calling compile_create - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose)
+    return compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose)
 
 if __name__ == "__main__":
     compile_create()

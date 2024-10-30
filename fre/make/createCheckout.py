@@ -8,7 +8,7 @@ import click
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
-def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
+def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -104,12 +104,12 @@ def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,
               click.echo("\nCheckout script created at " + tmpDir + "/checkout.sh" + "\n")
 
 @click.command()
-def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
+def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     '''
-    Decorator for calling _checkout_create - allows the decorated version
+    Decorator for calling checkout_create - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose)
+    return checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose)
 
 if __name__ == "__main__":
     checkout_create()
