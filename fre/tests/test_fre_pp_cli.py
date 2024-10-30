@@ -41,6 +41,12 @@ def test_cli_fre_pp_checkout_opt_dne():
     result = runner.invoke(fre.fre, args=["pp", "checkout", "optionDNE"])
     assert result.exit_code == 2
 
+
+def test_can_i_expand_user():
+    print('dougie jones says....')
+    print( '(test_fre_pp_cli) HEEEEEEELLOOOOOO!@!!!!@###$#!!!!!' )
+    assert Path( os.path.expanduser("~") ).exists()
+
 def test_cli_fre_pp_checkout_case():
     ''' fre pp checkout -e FOO -p BAR -t BAZ'''
     result = runner.invoke(fre.fre, args=["pp", "checkout", "-e", "FOO", "-p", "BAR", "-t", "BAZ"], catch_exceptions=True)
