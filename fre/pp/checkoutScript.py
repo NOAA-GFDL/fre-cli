@@ -53,7 +53,9 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
     cloneproc = subprocess.run(clonecmd, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
 
     if branch == 'main':
-        subprocess.run(['git' ,'checkout' ,'tags/2024.01]')
+        local_version = subprocess.run(['fre' ,'--version'])
+        if local_version != '2024.01':
+            subprocess.run(['git' ,'checkout' ,'tags/2024.01'])
 
     if not cloneproc.returncode == 0:
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
