@@ -10,7 +10,7 @@ from fre.make import createCheckout
 # Set example yaml paths, input directory
 CWD = Path.cwd()
 test_dir = Path("fre/make/tests/null_example")
-yamlfile = Path("{test_dir}/null_model.yaml")
+yamlfile = Path(f"{test_dir}/null_model.yaml")
 
 #set platform and target
 platform = "ncrc5.intel"
@@ -32,7 +32,8 @@ def test_checkout_script_exists():
     """
     result = runner.invoke(fre.fre, args=["make","create-checkout","-y",yamlfile,"-p",platform,"-t",target])
     #createCheckout.checkout_create(["null_model.yaml","ncrc5.intel","debug"])
-    assert Path(f"{out_dir}/checkout.sh").exists()
+    assert result.exit_code == 0
+    assert Path(f"{out_dir}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
 def test_checkout_execute():
     """
