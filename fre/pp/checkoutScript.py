@@ -4,11 +4,15 @@
 # Description:
 
 import os
+import sys
 import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
 import re
 import click
+from fre import fre
+from click.testing import CliRunner
+
 
 #############################################
 
@@ -29,6 +33,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
 
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
+
     # Get name of local branch and check branch rquest
     branch_names = subprocess.run(["git","branch"],capture_output=True, text=True)
     local_branch_name = branch_names.stdout.split()[1]
@@ -37,16 +42,19 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
             stop_report = ("Error in branch: local branch does not match branch input")
             sys.exit(stop_report)
             return 1
-    
+
     # Clone the repository with depth=1; check for errors
     click.echo("cloning experiment into directory " + directory + "/" + name)
     clonecmd = (
         f"git clone -b {branch} --single-branch --depth=1 --recursive "
-        f"git checkout tags/2024.01 "
         f"https://github.com/NOAA-GFDL/fre-workflows.git {name}" )
     preexist_error = f"fatal: destination path '{name}' exists and is not an empty directory."
     click.echo(clonecmd)
     cloneproc = subprocess.run(clonecmd, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
+
+    if branch == 'main':
+        subprocess.run(['git' ,'checkout' ,'tags/2024.01]')
+
     if not cloneproc.returncode == 0:
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
             argstring = f" -e {experiment} -p {platform} -t {target}"
@@ -60,7 +68,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
                 f"\t cylc stop {name}\n"
                 f"\t cylc clean {name}\n"
                 f"\t rm -r ~/cylc-src/{name}" )
-            click.echo(stop_report)
+            sys.exit(stop_report)
             return 1
         else:
             #if not identified, just print the error
