@@ -9,8 +9,7 @@ import click
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
-@click.command()
-def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
+def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -63,7 +62,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
          ## Make the bldDir based on the modelRoot, the platform, and the target
          srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
          ## Check for type of build
-         if iscontainer == False:
+         if iscontainer is False:
               baremetalRun = True
               bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
               os.system("mkdir -p " + bldDir)
@@ -108,6 +107,14 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
     else:
         sys.exit()
+
+@click.command()
+def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
+    '''
+    Decorator for calling compile_create - allows the decorated version
+    of the function to be separate from the undecorated version
+    '''
+    return compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose)
 
 if __name__ == "__main__":
     compile_create()
