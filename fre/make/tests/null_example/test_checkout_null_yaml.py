@@ -15,10 +15,9 @@ yamlfile = Path("{test_dir}/null_model.yaml")
 #set platform and target
 platform = "ncrc5.intel"
 target = "debug"
-yamlfile = "null_model.yaml"
 
 #set output directory
-out_dir = Path(f"{os.getenv('HOME')}/configure_yaml_out/fremake_canopy/test/null_model_full/src")
+out_dir = Path(f"{os.getenv('HOME')}/fre_make_out")
 Path(out_dir).mkdir(parents=True,exist_ok=True)
 
 # Set home for ~/cylc-src location in script
@@ -31,7 +30,7 @@ def test_checkout_script_exists():
     """
     Make sure checkout file exists
     """
-    result = runner.invoke(fre.fre, args=["make","create-checkout","-y","{yamlfile}","-p","ncrc5.intel","-t","debug"])
+    result = runner.invoke(fre.fre, args=["make","create-checkout","-y",yamlfile,"-p",platform,"-t",target])
     #createCheckout.checkout_create(["null_model.yaml","ncrc5.intel","debug"])
     assert Path(f"{out_dir}/checkout.sh").exists()
 
@@ -40,6 +39,6 @@ def test_checkout_execute():
     check if --execute option works
     """
     subprocess.run(["rm","-rf",f"{out_dir}"])
-    result = runner.invoke(fre.fre, args=["make","create-checkout","-y","{yamlfile}","-p","ncrc5.intel","-t","debug","--execute"])
+    result = runner.invoke(fre.fre, args=["make","create-checkout","-y",yamlfile,"-p",platform,"-t",target,"--execute"])
     assert (result.exit_code == 0)
 
