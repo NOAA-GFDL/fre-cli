@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 ''' tools for generating time averages from various packages '''
 import click
 
@@ -45,6 +44,7 @@ def generate_time_average(infile=None, outfile=None,
 
 @click.command()
 def generate(inf, outf, pkg, var, unwgt, avg_type, stddev_type):
+    ''' click entrypoint to time averaging routine '''
     exitstatus=generate_time_average( inf, outf,
                                       pkg, var,
                                       unwgt,

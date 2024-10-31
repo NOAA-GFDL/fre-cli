@@ -69,9 +69,8 @@ class frepytoolsTimeAverager(timeAverager):
         fin_dims = nc_fin.dimensions
         num_time_bnds = fin_dims['time'].size
         if not self.unwgt: #compute sum of weights
-#            wgts = numpy.moveaxis( time_bnds,0,-1 )[1][:].copy() - numpy.moveaxis( time_bnds,0,-1 )[0][:].copy()
-            wgts = numpy.moveaxis( time_bnds,0,-1 )[1][:].copy() \
-                   - numpy.moveaxis( time_bnds,0,-1 )[0][:].copy()
+            wgts = ( numpy.moveaxis( time_bnds,0,-1 )[1][:].copy() - \
+                     numpy.moveaxis( time_bnds,0,-1 )[0][:].copy() )
             wgts_sum=sum(wgts)
             if __debug__:
                 print(f'wgts_sum={wgts_sum}')

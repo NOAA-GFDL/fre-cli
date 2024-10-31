@@ -5,8 +5,7 @@ import subprocess
 import logging
 import sys
 import click
-from pathlib import Path
-from .gfdlfremake import varsfre, platformfre, yamlfre, checkout, targetfre
+from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 import fre.yamltools.combine_yamls as cy
 
 @click.command()
@@ -42,7 +41,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
     full_combined = cy.get_combined_compileyaml(comb)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined) 
+    freVars = varsfre.frevars(full_combined)
 
     ## Open the yaml file, validate the yaml, and parse as fremakeYaml
     modelYaml = yamlfre.freyaml(full_combined,freVars)
@@ -60,8 +59,10 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
-              raise ValueError (platformName + " does not exist in platforms.yaml") 
-         (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
+              raise ValueError (platformName + " does not exist in platforms.yaml")
+         ( compiler, modules, modulesInit, fc, cc, modelRoot,
+           iscontainer, mkTemplate, containerBuild, ContainerRun,
+           RUNenv ) = modelYaml.platforms.getPlatformFromName(platformName)
 
     ## Create the source directory for the platform
          if iscontainer == False:
@@ -74,7 +75,9 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                    freCheckout = checkout.checkout("checkout.sh",srcDir)
                    freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                    freCheckout.finish(pc)
-                   click.echo("\nCheckout script created in "+ srcDir + "/checkout.sh \n")
+                   # Make checkout script executable
+                   os.chmod(srcDir+"/checkout.sh", 0o744)
+                   print("\nCheckout script created in "+ srcDir + "/checkout.sh \n")
 
                    # Run the checkout script
                    if run == True:
@@ -84,7 +87,6 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
               else:
                    print("\nCheckout script PREVIOUSLY created in "+ srcDir + "/checkout.sh \n")
                    if run == True:
-                        os.chmod(srcDir+"/checkout.sh", 0o744)
                         try:
                              subprocess.run(args=[srcDir+"/checkout.sh"], check=True)
                         except:
@@ -101,7 +103,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
               freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
               freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
               freCheckout.finish(pc)
-              click.echo("\nCheckout script created at " + tmpDir + "/checkout.sh" + "\n")
+              print("\nCheckout script created at " + tmpDir + "/checkout.sh" + "\n")
 
 
 if __name__ == "__main__":

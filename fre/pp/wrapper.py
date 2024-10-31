@@ -1,9 +1,8 @@
-#!/usr/bin/env python
-#frepp.py
-#replacement for the frepp bash script located at:
-#https://gitlab.gfdl.noaa.gov/fre2/system-settings/-/blob/main/bin/frepp
-#~/Code/fre-cli/fre/frepp/wrapperscript
-#Author: Carolyn.Whitlock
+"""
+frepp.py, a replacement for the frepp bash script located at:
+https://gitlab.gfdl.noaa.gov/fre2/system-settings/-/blob/main/bin/frepp
+Author: Carolyn.Whitlock
+"""
 
 #todo:
 # add relative path import to rest of pp tools
@@ -12,12 +11,8 @@
 # test yaml path
 # error handling
 
-import sys
 import os
 import time
-#import subprocess
-#from subprocess import PIPE, STDOUT
-#from subprocess import STDOUT
 import click
 
 # Import from the local packages
@@ -29,10 +24,6 @@ from .install import _install_subtool
 from .run import _pp_run_subtool
 from .status import _status_subtool
 
-##Add path to this file to the pythonpath for local imports
-#import_dir = os.path.dirname(os.path.abspath(__file__))
-#sys.path.append(import_dir)
-
 @click.command()
 def runFre2pp(experiment, platform, target, config_file, branch):
     '''
@@ -40,9 +31,6 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     infrastructure and fre-cli
     time=0000
     '''
-
-    #dumb xml check;does it need to be smarter?
-    is_xml = (config_file[-3:] == "xml")
 
     config_file = os.path.abspath(config_file)
 
@@ -54,6 +42,8 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     except Exception as err:
         raise
 
+    #dumb xml check;does it need to be smarter?
+    is_xml = config_file[-3:] == "xml"
     if is_xml:
         #TODO: should this prompt for pp start/stop years?
         try:

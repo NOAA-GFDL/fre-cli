@@ -1,8 +1,5 @@
-#!/usr/bin/env python
 """
-    Script combines the model yaml with 
-    the compile, platform, and experiment
-    yamls.
+Script combines the model yaml with the compile, platform, and experiment yamls.
 """
 
 ## TO-DO:
@@ -10,8 +7,8 @@
 # - condition where there are multiple pp and analysis yamls
 
 import os
-import json
 import shutil
+
 from pathlib import Path
 import click
 import yaml
@@ -41,10 +38,10 @@ def get_compile_paths(mainyaml_dir,comb):
 
     # set platform yaml filepath
     if comb_model["build"]["platformYaml"] is not None:
-        if Path(comb_model["build"]["platformYaml"]).exists():
+        if Path(os.path.join(mainyaml_dir,comb_model["build"]["platformYaml"])).exists():
             py=comb_model["build"]["platformYaml"]
             py_path=Path(os.path.join(mainyaml_dir,py))
-        else: 
+        else:
             raise ValueError("Incorrect platform yaml path given; does not exist.")
     else:
         raise ValueError("No platform yaml path given!")
@@ -52,7 +49,7 @@ def get_compile_paths(mainyaml_dir,comb):
 
     # set compile yaml filepath
     if comb_model["build"]["compileYaml"] is not None:
-        if Path(comb_model["build"]["compileYaml"]).exists():
+        if Path(os.path.join(mainyaml_dir,comb_model["build"]["compileYaml"])).exists():
             cy=comb_model["build"]["compileYaml"]
             cy_path=Path(os.path.join(mainyaml_dir,cy))
         else:
@@ -69,9 +66,9 @@ def experiment_check(mainyaml_dir,comb,experiment):
     Check that the experiment given is an experiment listed in the model yaml.
     Extract experiment specific information and file paths.
     Arguments:
-        mainyaml_dir    :  model yaml file
-        comb            :  combined yaml file name
-        experiment      :  experiment name
+    mainyaml_dir    :  model yaml file
+    comb            :  combined yaml file name
+    experiment      :  experiment name
     """
     comb_model=yaml_load(comb)
 
@@ -89,7 +86,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
         if experiment == i.get("name"):
             expyaml=i.get("pp")
             analysisyaml=i.get("analysis")
-            
+
             if expyaml is not None:
                 ey_path=[]
                 for e in expyaml:
@@ -104,7 +101,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
             if analysisyaml is not None:
                 ay_path=[]
                 for a in analysisyaml:
-                    if Path(a).exists():            
+                    if Path(a).exists():
                         ay=Path(os.path.join(mainyaml_dir,a))
                         ay_path.append(ay)
                     else:
@@ -122,17 +119,18 @@ class init_compile_yaml():
     """
     self.yml = yamlfile
     self.name = yamlfile.split(".")[0]
+    self.namenopath = self.name.split("/")[-1].split(".")[0]
     self.platform = platform
     self.target = target
 
-    # Regsiter tag handler
+    # Register tag handler
     yaml.add_constructor('!join', join_constructor)
 
     # Path to the main model yaml
     self.mainyaml_dir = os.path.dirname(self.yml)
 
     # Name of the combined yaml
-    self.combined=f"combined-{self.name}.yaml"
+    self.combined= f"combined-{self.namenopath}.yaml" if len(self.mainyaml_dir) == 0 else  f"{self.mainyaml_dir}/combined-{self.namenopath}.yaml"
 
     print("Combining yaml files: ")
 
@@ -183,7 +181,7 @@ class init_compile_yaml():
 
   def clean_yaml(self):
       """
-      Clean the yaml; remove unnecessary sections in 
+      Clean the yaml; remove unnecessary sections in
       final combined yaml.
       """
       # Load the fully combined yaml
@@ -238,7 +236,7 @@ class init_pp_yaml():
             shutil.copyfileobj(f2,f1)
 
     print(f"   model yaml: {self.yml}")
-    
+
   def combine_experiment(self):
     """
     Combine experiment yamls with the defined combined.yaml
@@ -276,7 +274,7 @@ class init_pp_yaml():
 
   def clean_yaml(self):
       """
-      Clean the yaml; remove unnecessary sections in 
+      Clean the yaml; remove unnecessary sections in
       final combined yaml.
       """
       # Load the fully combined yaml
@@ -300,7 +298,7 @@ def get_combined_compileyaml(comb):
     """
     Combine the model, compile, and platform yamls
     Arguments:
-        - comb : combined yaml object 
+    comb : combined yaml object
     """
     # Merge model into combined file
     comb_model = comb.combine_model()
@@ -328,7 +326,7 @@ def combined_compile_existcheck(combined,yml,platform,target):
         print("\nNOTE: Yamls previously merged.")
     else:
         comb = init_compile_yaml(yml,platform,target)
-        full_combined = get_combined_compileyaml(comb) 
+        full_combined = get_combined_compileyaml(comb)
 
     return full_combined
 
@@ -336,7 +334,7 @@ def get_combined_ppyaml(comb):
     """
     Combine the model, experiment, and analysis yamls
     Arguments:
-        - comb : combined yaml object
+    comb : combined yaml object
     """
     # Merge model into combined file
     comb_model = comb.combine_model()
@@ -350,7 +348,7 @@ def get_combined_ppyaml(comb):
     return full_combined
 
 ###########################################################################################
-def _consolidate_yamls(yamlfile,experiment,platform,target,use):
+def consolidate_yamls(yamlfile,experiment,platform,target,use):
     # Regsiter tag handler
     yaml.add_constructor('!join', join_constructor)
 
@@ -369,12 +367,12 @@ def _consolidate_yamls(yamlfile,experiment,platform,target,use):
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'")
 
 @click.command()
-def consolidate_yamls(yamlfile,experiment,platform,target,use):
+def _consolidate_yamls(yamlfile,experiment,platform,target,use):
     '''
     Wrapper script for calling yaml_combine - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _consolidate_yamls(yamlfile,experiment,platform,target,use)
+    return consolidate_yamls(yamlfile,experiment,platform,target,use)
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':

@@ -9,13 +9,13 @@ class frenctoolsTimeAverager(timeAverager):
 
     def generate_timavg(self, infile=None, outfile=None):
         ''' use fre-nctool's CLI timavg.csh with subprocess call '''
-        assert (self.pkg=="fre-nctools")
+        assert self.pkg=="fre-nctools"
         if __debug__:
             print(locals()) #input argument details
 
         exitstatus=1
         if self.avg_type!='all':
-            print(f'ERROR: avg_type={self.avg_type} is not supported by this function at this time.')
+            print(f'ERROR: avg_type={self.avg_type} not supported by this class at this time.')
             return exitstatus
 
         if self.unwgt:
@@ -25,7 +25,8 @@ class frenctoolsTimeAverager(timeAverager):
             print('WARNING: stddev_type arg unsupported by frenctoolsTimeAverager. ignoring!!!')
 
         if self.var is not None:
-            print(f'WARNING: variable specification (var={self.var}) not currently supported for frenctols time averaging. ignoring!')
+            print(f'WARNING: variable specification (var={self.var})' + \
+                  f' not currently supported for frenctols time averaging. ignoring!')
 
         if infile is None:
             print('ERROR: I need an input file, specify a value for the infile argument')

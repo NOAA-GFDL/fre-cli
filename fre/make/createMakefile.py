@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
 import os
-import sys
 from pathlib import Path
+
 import click
+
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
-import fre.yamltools.combine_yamls as cy 
+import fre.yamltools.combine_yamls as cy
 
 @click.command()
 def makefile_create(yamlfile,platform,target):
@@ -22,11 +23,11 @@ def makefile_create(yamlfile,platform,target):
 
     ## If combined yaml exists, note message of its existence
     ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target) 
+    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined)
- 
+
     ## Open the yaml file and parse as fremakeYaml
     modelYaml = yamlfre.freyaml(full_combined,freVars)
     fremakeYaml = modelYaml.getCompileYaml()

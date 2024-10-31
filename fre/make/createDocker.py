@@ -4,7 +4,8 @@ import os
 import sys
 from pathlib import Path
 import click
-from .gfdlfremake import varsfre, targetfre, makefilefre, platformfre, yamlfre, buildDocker
+#from .gfdlfremake import varsfre, targetfre, makefilefre, platformfre, yamlfre, buildDocker
+from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls as cy
 
 @click.command()
@@ -41,9 +42,12 @@ def dockerfile_create(yamlfile,platform,target,execute):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+                raise ValueError (platformName + " does not exist in " + \
+                                  modelYaml.combined.get("compile").get("platformYaml"))
 
-            (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,containerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
+            ( compiler, modules, modulesInit, fc, cc, modelRoot,
+              iscontainer, mkTemplate, containerBuild, containerRun,
+              RUNenv ) = modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the bldDir based on the modelRoot, the platform, and the target
             srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
