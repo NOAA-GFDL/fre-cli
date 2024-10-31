@@ -200,12 +200,12 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)
 
 @click.command()
-def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose,force_checkout,force_compile):
     '''
     Decorator for calling fremake_run - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose)
+    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose,force_checkout,force_compile)
 
 if __name__ == "__main__":
     fremake_run()

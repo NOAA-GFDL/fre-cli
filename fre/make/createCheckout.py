@@ -129,12 +129,12 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                        print("\nCheckout script PREVIOUSLY created in "+ tmpDir + "/checkout.sh" + "\n")
 
 @click.command()
-def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
+def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout):
     '''
     Decorator for calling checkout_create - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose)
+    return checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout)
 
 if __name__ == "__main__":
     checkout_create()
