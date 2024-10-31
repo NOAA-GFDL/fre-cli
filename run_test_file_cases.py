@@ -105,20 +105,19 @@ def run_cmor_RUN(filename, table, opt_var_name):
 
 
 # 4) FAIL (no longitude coordinate case)
-# atmos, AERmonZ / ta
+# atmos, Amoon / ta
 # just like #1, but lack longitude
 # Result - error, File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py", line 195, in rewrite_netcdf_file_var    lon = ds["lon"][:]  File "src/netCDF4/_netCDF4.pyx", line 2519, in netCDF4._netCDF4.Dataset.__getitem__ IndexError: lon not found in /
-testfile_atmos_gr1_AERmonZ_nolons = \
+testfile_atmos_gr1_AmonZ_nolons = \
     '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/atmos_plev39_cmip.201001-201412.ta.nc'
 try:
-    some_return = run_cmor_RUN(testfile_atmos_gr1_AERmonZ_nolons, 'AERmonZ', opt_var_name = 'ta')
+    some_return = run_cmor_RUN(testfile_atmos_gr1_AmonZ_nolons, 'Amon', opt_var_name = 'ta')
 except Exception as exc:
     print(f'exception caught: exc=\n{exc}')
     some_return=-1    
     pass
-print_the_outcome(some_return,'atmos_gr1_AERmonZ_nolons / ta')
+print_the_outcome(some_return,'atmos_gr1_AmonZ_nolons / ta')
 
-sys.exit()
 
 ## 5) SUCCEEDS
 ## ocean, Omon / sos
