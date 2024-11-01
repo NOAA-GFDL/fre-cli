@@ -1,6 +1,7 @@
 """ test "fre app" calls """
 
 import os
+import subprocess
 from pathlib import Path
 
 import click
