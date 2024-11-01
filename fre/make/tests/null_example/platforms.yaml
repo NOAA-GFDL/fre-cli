@@ -24,3 +24,9 @@ platforms:
      container: True
      containerBuild: "podman"
      containerRun: "apptainer" 
+   - name: ci.gnu
+     compiler: gnu
+     fc: mpifort
+     cc: mpicc
+     mkTemplate: /__w/fre-cli/fre-cli/mkmf/templates/linux-ubuntu-xenial-gnu.mk
+     modelRoot: ${HOME}/fremake_canopy/test
