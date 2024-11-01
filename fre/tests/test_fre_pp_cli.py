@@ -60,7 +60,7 @@ def test_cli_fre_pp_checkout_case():
     assert all( [ result.exit_code == 0,
                   Path(os.path.expanduser("~")).exists(),
                   Path(os.path.expanduser("~/cylc-src")).exists(),
-                  Path(directory).exists() , False] )
+                  Path(directory).exists()] )
     
 #-- fre pp configure-xml
 def test_cli_fre_pp_configure_xml():
