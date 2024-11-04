@@ -5,10 +5,10 @@ package:
   version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
 
 source:
-  path: .
+#  path: .
 # ideally we want this git_url path, but it messes with conda publish
 # where it builds only the sourced url and not local/branch changes
-# git_url: https://github.com/NOAA-GFDL/fre-cli
+  git_url: https://github.com/NOAA-GFDL/fre-cli
 
 build:
   script: 
