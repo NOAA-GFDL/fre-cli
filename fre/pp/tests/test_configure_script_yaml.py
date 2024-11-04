@@ -8,18 +8,14 @@ platform = "gfdl.ncrc5-intel22-classic"
 target = "prod-openmp"
 
 # Set example yaml paths, input directory
-CWD = Path.cwd()
 test_dir = Path("fre/pp/tests")
 test_yaml = Path(f"AM5_example/am5.yaml")
-
-# Set home for ~/cylc-src location in script
-#os.environ["HOME"]=str(Path(f"{CWD}/{test_dir}/configure_yaml_out"))
 
 def test_combinedyaml_exists():
     """
     Make sure combined yaml file exists
     """
-    assert Path(f"{CWD}/{test_dir}/{test_yaml}").exists()
+    assert Path(f"{test_dir}/{test_yaml}").exists()
 
 def test_configure_script():
     """ 
@@ -28,16 +24,14 @@ def test_configure_script():
     TO-DO: will break this up for better tests
     """
     # Set home for ~/cylc-src location in script
-    os.environ["HOME"]=str(Path(f"{CWD}/{test_dir}/configure_yaml_out"))
-
-    os.chdir(f"{CWD}/{test_dir}/AM5_example")
+    os.environ["HOME"]=str(Path(f"{test_dir}/configure_yaml_out"))
 
     # Set output directory
     out_dir = Path(f"{os.getenv('HOME')}/cylc-src/{experiment}__{platform}__{target}")
     Path(out_dir).mkdir(parents=True,exist_ok=True)
 
     # Define combined yaml
-    model_yaml = str(Path(f"{CWD}/{test_dir}/{test_yaml}"))
+    model_yaml = str(Path(f"{test_dir}/{test_yaml}"))
 
     # Invoke configure_yaml_script.py
     csy._yamlInfo(model_yaml,experiment,platform,target)
@@ -47,6 +41,3 @@ def test_configure_script():
                 Path(f"{out_dir}/rose-suite.conf").exists(),
                 Path(f"{out_dir}/app/regrid-xy/rose-app.conf").exists(),
                 Path(f"{out_dir}/app/remap-pp-components/rose-app.conf").exists()])
-
-    # Go back to original directory
-    os.chdir(CWD)
