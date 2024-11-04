@@ -86,6 +86,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                 freCheckout = checkout.checkout("checkout.sh",srcDir)
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                 freCheckout.finish(pc)
+                os.chmod(srcDir+"/checkout.sh", 0o744)
                 ## TODO: Options for running on login cluster?
                 freCheckout.run()
 
