@@ -3,7 +3,6 @@ Test fre make create-makefile
 """
 import os
 import shutil
-import pytest
 from pathlib import Path
 from fre.make import createMakefile
 
