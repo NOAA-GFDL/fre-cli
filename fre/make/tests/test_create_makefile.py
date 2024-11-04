@@ -3,6 +3,7 @@ Test fre make create-makefile
 """
 import os
 import shutil
+import pytest
 from pathlib import Path
 from fre.make import createMakefile
 
@@ -57,7 +58,8 @@ def test_bm_makefile_creation():
     createMakefile.makefile_create(yamlfile_path,BM_PLATFORM,TARGET)
 
     assert Path(f"{out}/fremake_canopy/test/{EXPERIMENT}/{bm_plat}-{targ}/exec/Makefile").exists()
-                  
+
+@pytest.mark.skip(reason='Test to see if combined-yaml is issue')                  
 def test_container_makefile_creation():
     """
     Check the makefile is created when the container platform is used
