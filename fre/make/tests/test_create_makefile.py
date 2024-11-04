@@ -27,7 +27,7 @@ else:
     Path(out).mkdir(parents=True,exist_ok=True)
 
 # Set output directory as home for fre make output
-os.environ["HOME"]=str(Path(out))
+#os.environ["HOME"]=str(Path(out))
 
 def test_modelyaml_exists():
     """
@@ -51,6 +51,9 @@ def test_bm_makefile_creation():
     """
     Check the makefile is created when a bare-metal platform is used
     """
+    # Set output directory as home for fre make output
+    os.environ["HOME"]=str(Path(out))
+
     bm_plat = BM_PLATFORM[0]
     targ = TARGET[0]
     yamlfile_path = f"{test_dir}/{NM_EXAMPLE}/{YAMLFILE}"

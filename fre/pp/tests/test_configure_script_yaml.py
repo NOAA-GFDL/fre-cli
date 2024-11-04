@@ -13,7 +13,7 @@ test_dir = Path("fre/pp/tests")
 test_yaml = Path(f"AM5_example/am5.yaml")
 
 # Set home for ~/cylc-src location in script
-os.environ["HOME"]=str(Path(f"{CWD}/{test_dir}/configure_yaml_out"))
+#os.environ["HOME"]=str(Path(f"{CWD}/{test_dir}/configure_yaml_out"))
 
 def test_combinedyaml_exists():
     """
@@ -27,6 +27,9 @@ def test_configure_script():
     Creates rose-suite, regrid rose-app, remap rose-app
     TO-DO: will break this up for better tests
     """
+    # Set home for ~/cylc-src location in script
+    os.environ["HOME"]=str(Path(f"{CWD}/{test_dir}/configure_yaml_out"))
+
     os.chdir(f"{CWD}/{test_dir}/AM5_example")
 
     # Set output directory
