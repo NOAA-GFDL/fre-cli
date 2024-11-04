@@ -53,10 +53,12 @@ def test_bm_makefile_creation():
     bm_plat = BM_PLATFORM[0]
     targ = TARGET[0]
     yamlfile_path = f"{test_dir}/{NM_EXAMPLE}/{YAMLFILE}"
+    print(os.getcwd())
+    ah
     createMakefile.makefile_create(yamlfile_path,BM_PLATFORM,TARGET)
 
     assert Path(f"{out}/fremake_canopy/test/{EXPERIMENT}/{bm_plat}-{targ}/exec/Makefile").exists()
-
+                  
 def test_container_makefile_creation():
     """
     Check the makefile is created when the container platform is used
