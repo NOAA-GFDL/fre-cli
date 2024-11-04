@@ -15,7 +15,7 @@ from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -200,12 +200,12 @@ def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,ver
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)
 
 @click.command()
-def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
     '''
     Decorator for calling _fremake_run - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose)
+    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose)
 
 if __name__ == "__main__":
     fremake_run()
