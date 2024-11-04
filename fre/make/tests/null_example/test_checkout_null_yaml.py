@@ -8,7 +8,6 @@ import subprocess
 from fre.make import createCheckout
 
 # Set example yaml paths, input directory
-CWD = Path.cwd()
 test_dir = Path("fre/make/tests/null_example")
 yamlfile = Path(f"{test_dir}/null_model.yaml")
 
@@ -17,7 +16,7 @@ platform = "ncrc5.intel"
 target = "debug"
 
 #set output directory
-out_dir = Path(f"{os.getenv('HOME')}/fre_make_out")
+out_dir = Path(f"fre/make/tests/null_example/fre_make_out")
 Path(out_dir).mkdir(parents=True,exist_ok=True)
 
 # Set home for ~/cylc-src location in script
