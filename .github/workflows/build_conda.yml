@@ -12,7 +12,7 @@ jobs:
       - name: Checkout Files
         uses: actions/checkout@v4
         with:
-          submodule: 'recursive'
+          submodules: 'recursive'
       - name: Run Conda to Build
         run: |
           conda config --append channels conda-forge
