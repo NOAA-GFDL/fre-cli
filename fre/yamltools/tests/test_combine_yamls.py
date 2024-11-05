@@ -81,7 +81,6 @@ def test_combined_compileyaml_validation():
     Validate the combined compile yaml
     """
     combined_yamlfile =f"{COMP_OUT_DIR}/combined-{COMP_EXPERIMENT}.yaml"
-#    schema_file = os.path.join(f"{IN_DIR}","compile_yamls","schema.json")
     schema_file = os.path.join(Path(TEST_DIR).resolve().parents[1], "gfdl_msd_schemas", "FRE", "fre_make.json")
     
     with open(combined_yamlfile,'r') as cf:
@@ -135,9 +134,7 @@ def test_combined_compileyaml_validatefail():
 
     # Validate against schema; should fail
     wrong_combined = Path(f"{COMP_OUT_DIR}/combined-am5-wrong_datatype.yaml")
-    #schema_file = os.path.join(f"{IN_DIR}","compile_yamls","schema.json")
     schema_file = os.path.join(Path(TEST_DIR).resolve().parents[1], "gfdl_msd_schemas", "FRE", "fre_make.json")
-    print(schema_file)
 
     # Open/load combined yaml file
     with open(wrong_combined,'r') as cf:
