@@ -90,7 +90,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
             if expyaml is not None:
                 ey_path=[]
                 for e in expyaml:
-                    if Path(e).exists():
+                    if Path(os.path.join(mainyaml_dir,e)).exists():
                         ey=Path(os.path.join(mainyaml_dir,e))
                         ey_path.append(ey)
                     else:
@@ -115,7 +115,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
 class init_compile_yaml():
   def __init__(self,yamlfile,platform,target):
     """
-    Process to combine yamls appllicable to compilation
+    Process to combine yamls applicable to compilation
     """
     self.yml = yamlfile
     self.name = yamlfile.split(".")[0]
