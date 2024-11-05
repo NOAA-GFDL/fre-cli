@@ -8,7 +8,7 @@ dependencies:
   - pip
   - click
   - pyyaml
-  - pylint
+  #  - pylint
   - jsonschema
   - noaa-gfdl::fre-nctools
   - noaa-gfdl::catalogbuilder
@@ -18,9 +18,9 @@ dependencies:
   - conda-forge::metomi-rose
   - conda-forge::cmor
   - conda-forge::cylc-uiserver
-  - conda-forge::pytest
-  - conda-forge::pytest-cov
+  #  - conda-forge::pytest
+  #  - conda-forge::pytest-cov
   - conda-forge::python-cdo
   - conda-forge::cdo>=2.0.0
-  - pip:
-    - GitPython
+  #  - pip:
+  #    - GitPython

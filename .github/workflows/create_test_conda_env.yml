@@ -21,10 +21,10 @@ jobs:
         run: |
           # create environment containing all dependencies
           # the env cannot be explicitly activated in github CI/CD
-          #conda env create -f environment.yml --name fre-cli
-          conda config --add channels conda-forge
-          conda config --add channels noaa-gfdl
-          conda create -n fre-cli noaa-gfdl::fre-cli
+          conda env create -f environment.yml --name fre-cli
+          #conda config --add channels conda-forge
+          #conda config --add channels noaa-gfdl
+          #conda create -n fre-cli noaa-gfdl::fre-cli
 
           # add conda env's executables to github's PATH equiv.
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
@@ -32,7 +32,7 @@ jobs:
           ## use *conda environment's pip* to install fre-cli
           ## called w/ full path to conda's python for explicitness
           ## called as a module (-m pip) for explicitness
-          #$CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
+          $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
 
 #      - name: Run pytest in fre-cli environment
 #        run: |
