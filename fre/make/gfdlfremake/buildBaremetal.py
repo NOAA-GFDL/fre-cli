@@ -110,6 +110,9 @@ class buildBaremetal():
         self.f.write(self.make+"\n")
         self.f.close()
 
+        # Make compile script executable
+        os.chmod(self.bld+"/compile.sh", 0o744)
+
 ## TODO run as a batch job on the login cluster
     def run(self):
         """
@@ -118,7 +121,6 @@ class buildBaremetal():
             - self : The dockerfile object
         """
 ###### TODO make the Makefile
-        os.chmod(self.bld+"/compile.sh", 0o744)
         command = [self.bld+"/compile.sh","|","tee",self.bld+"/log.compile"]
         try:
             subprocess.run(args=command, check=True)
