@@ -22,7 +22,7 @@ jobs:
           # create environment containing all dependencies
           # the env cannot be explicitly activated in github CI/CD
           #conda env create -f environment.yml --name fre-cli
-		  conda config --add channels conda-forge noaa-gfdl
+          conda config --add channels conda-forge noaa-gfdl
           conda create -n fre-cli noaa-gfdl::fre-cli
 
           # add conda env's executables to github's PATH equiv.
