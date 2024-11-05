@@ -7,16 +7,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodule: 'recursive'
+#      - name: Update Submodules
+#        run: |
+#          git submodule update --init --recursive
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '>=3.9'
-      
       - name: Add conda to system path
         run: |
           # $CONDA is an env var pointing to root of miniconda dir
           echo $CONDA/bin >> $GITHUB_PATH
-      
       - name: Create fre-cli environment
         run: |
           # create environment containing all dependencies
