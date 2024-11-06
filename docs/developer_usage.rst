@@ -1,3 +1,4 @@
+===============
 Developer Usage
 ===============
 
@@ -5,18 +6,33 @@ Developers are free to use the user guide above to familiarize with the CLI and 
 having to install any dependencies, but development within a Conda environment is heavily
 recommended regardless.
 
-
 Gain access to the repository with ``git clone git@github.com:NOAA-GFDL/fre-cli.git`` or your fork's
- link (recommended) and an SSH RSA key.
+ link (recommended) and an SSH RSA key. Once inside the repository, developers can test local changes
+ by running a ``pip install .`` inside of the root directory to install the fre-cli package locally
+ with the newest local changes. Test as a normal user would use the CLI.
 
-Once inside the repository, developers can test local changes by running a ``pip install .`` inside
-of the root directory to install the fre-cli package locally with the newest local changes.
 
-Test as a normal user would use the CLI.
+**Adding New Tools**
+====================
 
-**Adding New Tools - Checklist**
+
+**From Other Repositories**
+-------------------------
+Currently, the solution to this task is to approach it using Conda packages. The tool that is being
+added must reside within a repository that contains a meta.yaml that includes Conda dependencies
+like the one in this repository and ideally a setup.py (may be subject to change due to deprecation)
+that may include any potentially needed pip dependencies
+
+* Once published as a Conda package, ideally on the `NOAA-GFDL conda channel<https://anaconda.org/NOAA-GFDL>`_,
+  an addition can be made to the "run" section under the "requirements" category in the meta.yaml of the fre-cli
+  following the syntax channel::package
+
+* On pushes to the main branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically
+  be updated using the workflow file
+  
+
+  **Checklist**
 --------------------------------
-
 If there is *no* subdirectory created for the new tool you are trying to develop, there are a few
 steps to follow:
 
@@ -66,20 +82,17 @@ steps to follow:
 Please refer to this issue when encountering naming issues:
 `NOAA-GFDL#31 <https://github.com/NOAA-GFDL/fre-cli/issues/31>`_
 
-**Adding Tools From Other Repositories**
-----------------------------------------
 
-Currently, the solution to this task is to approach it using Conda packages. The tool that is being
-added must reside within a repository that contains a meta.yaml that includes Conda dependencies
-like the one in this repository and ideally a setup.py (may be subject to change due to deprecation)
-that may include any potentially needed pip dependencies
+**Example /fre Directory Structure**
+------------------------------------
 
-* Once published as a Conda package, ideally on the `NOAA-GFDL conda channel<https://anaconda.org/NOAA-GFDL>`_,
-  an addition can be made to the "run" section under the "requirements" category in the meta.yaml of the fre-cli
-  following the syntax channel::package
+├── __init__.py
+├── fre.py
+├── fre(subTool)
+│   ├── __init__.py
+│   ├── subCommandScript.py
+│   └── fre(subTool).py
 
-* On pushes to the main branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically
-  be updated using the workflow file
 
 **MANIFEST.in**
 ---------------
@@ -92,16 +105,13 @@ MANIFEST.in file saying something like *include fre/fre(subTool)/fileName.fileEx
   like *recursive-include fre/fre(subTool) *.fileExtension* which would recursively include every file matching that
   fileExtension within the specified directory and its respective subdirectories.
 
-**Example /fre Directory Structure**
-------------------------------------
-
-├── __init__.py
-├── fre.py
-├── fre(subTool)
-│   ├── __init__.py
-│   ├── subCommandScript.py
-│   └── fre(subTool).py
 
 **Adding Documentation**
 ------------------------
 see section "Documentation-Documentation"
+
+
+**other note**
+--------------
+``fre/setup.py`` allows ``fre/fre.py`` to be ran as ``fre`` on the command line by defining it as an
+**entry point**. Without it, the call would be, instead, ``python fre/fre.py``

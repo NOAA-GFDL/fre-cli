@@ -1,3 +1,4 @@
+===========================
 Documentation-Documentation
 ===========================
 
@@ -5,7 +6,7 @@ Welcome to `fre-cli`'s Documentation-documentation- where we document how the do
 documented
 
 How to Contribute to ``fre-cli``'s documentation
-------------------------------------------------
+================================================
 
 * Fork fre-cli on github
 * On github, navigate to your fre-cli fork, and click “settings”

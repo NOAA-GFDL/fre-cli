@@ -1,7 +1,8 @@
 .. Fre-Cli documentation master file, created by sphinx-quickstart on Wed Mar  6 22:28:21 2024.
    You can adapt this file completely to your liking, but it should at least contain the root
-   `toctree` directive.
+   \`toctree\` directive (no backslashes)
 
+===================================
 Welcome to Fre-Cli's documentation!
 ===================================
 
@@ -9,15 +10,15 @@ Welcome to Fre-Cli's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   Setup
-   Usage
-   Developer Usage
-   Documentation Documentation
-   FAQ
-   Badges
+   setup
+   usage
+   developer_usage
+   contributing_to_doc
+   badges
 
-Indices and tables
-==================
+
+Indices
+=======
 
 * :ref:`genindex`
 * :ref:`modindex`
