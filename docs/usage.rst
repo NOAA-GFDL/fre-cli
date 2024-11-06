@@ -19,13 +19,13 @@ Create new Conda environment
 Append necessary channels
 
 .. code-block::console
-conda config --append channels noaa-gfdl
-conda config --append channels conda-forge
+    conda config --append channels noaa-gfdl
+    conda config --append channels conda-forge
 
 Install needed dependencies
 
 .. code-block::console
-conda install noaa-gfdl::fre-cli
+    conda install noaa-gfdl::fre-cli
  
 ``fre/setup.py`` allows ``fre/fre.py`` to be ran as ``fre`` on the command line by defining it as an **entry point**. Without it, the call would be, instead, ``python fre/fre.py``
 
