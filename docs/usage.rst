@@ -11,10 +11,14 @@ See "Setup".
 
 **Calling ``fre``**
 
-* ``fre/setup.py`` allows ``fre/fre.py`` to be ran as ``fre`` on the command line by defining it as an **entry point**. Without it, the call would be, instead, ``python fre/fre.py``
-* Enter commands and follow ``--help`` messages for guidance (brief rundown of commands also provided below)
-* If the user just runs ``fre``, it will list all the command groups following ``fre``, such as ``run``, ``make``, ``pp``, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown
-* Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if ``--help`` is executed
+Brief rundown of commands also provided below:
+
+* Enter commands and follow ``--help`` messages for guidance 
+* If the user just runs ``fre``, it will list all the command groups following ``fre``, such as
+  ``run``, ``make``, ``pp``, etc. and once the user specifies a command group, the list of available
+  subcommands for that group will be shown
+* Commands that require arguments to run will alert user about missing arguments, and will also list
+  the rest of the optional parameters if ``--help`` is executed
 * Argument flags are not positional, can be specified in any order as long as they are specified
 * Can run directly from any directory, no need to clone repository
 * May need to deactivate environment and reactivate it in order for changes to apply
@@ -33,31 +37,34 @@ A few subtools are currently in development:
 
 **fre catalog**
 
-1. ``builder`` (out of date)
+1. ``builder`` Generate a catalog
 * Builds json and csv format catalogs from user input directory path
 * Minimal Syntax: ``fre catalog builder -i [input path] -o [output path]``
 * Module(s) needed: n/a
 * Example: ``fre catalog builder -i /archive/am5/am5/am5f3b1r0/c96L65_am5f3b1r0_pdclim1850F/gfdl.ncrc5-deploy-prod-openmp/pp -o ~/output --overwrite``
 
-2. ``validate``
+2. ``validate`` Validate the catalog
+
+
 
 **fre cmor**
 1. ``run``
-
+* placehold
 
 **fre make**
+
+1. ``run-fremake``
+* placehold
 
 **fre pp**
 
 1. ``configure`` 
-
 * Postprocessing yaml configuration
 * Minimal Syntax: ``fre pp configure -y [user-edit yaml file]``
 * Module(s) needed: n/a
 * Example: ``fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml``
 
 2. ``checkout``
-
 * Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository
 * Minimal Syntax: ``fre pp checkout -e [experiment name] -p [platform name] -t [target name]``
 * Module(s) needed: n/a
@@ -66,13 +73,16 @@ A few subtools are currently in development:
 
 **fre yamltools**
 
+1. ``combine-yamls``
+* placehold
+
 
 **To be developed:**
 
-#. fre check
-#. fre list
-#. fre run
-#. fre test
+#. ``fre check``
+#. ``fre list``
+#. ``fre run``
+#. ``fre test``
 
 
 Usage (Developers)
@@ -144,17 +154,27 @@ Please refer to this issue when encountering naming issues:
 
 **Adding Tools From Other Repositories**
 
-Currently, the solution to this task is to approach it using Conda packages. The tool that is being added must reside within a repository that contains a meta.yaml that includes Conda dependencies like the one in this repository and ideally a setup.py (may be subject to change due to deprecation) that may include any potentially needed pip dependencies
+Currently, the solution to this task is to approach it using Conda packages. The tool that is being
+added must reside within a repository that contains a meta.yaml that includes Conda dependencies
+like the one in this repository and ideally a setup.py (may be subject to change due to deprecation)
+that may include any potentially needed pip dependencies
 
-* Once published as a Conda package, ideally on the NOAA-GFDL channel at https://anaconda.org/NOAA-GFDL, an addition can be made to the "run" section under the "requirements" category in the meta.yaml of the fre-cli following the syntax channel::package
+* Once published as a Conda package, ideally on the `NOAA-GFDL conda channel<https://anaconda.org/NOAA-GFDL>`_,
+  an addition can be made to the "run" section under the "requirements" category in the meta.yaml of the fre-cli
+  following the syntax channel::package
 
-* On pushes to the main branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically be updated using the workflow file
+* On pushes to the main branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically
+  be updated using the workflow file
 
 **MANIFEST.in**
 
-In the case where non-python files like templates, examples, and outputs are to be included in the fre-cli package, MANIFEST.in can provide the solution. Ensure that the file exists within the correct folder, and add a line to the MANIFEST.in file saying something like *include fre/fre(subTool)/fileName.fileExtension*
+In the case where non-python files like templates, examples, and outputs are to be included in the fre-cli package,
+MANIFEST.in can provide the solution. Ensure that the file exists within the correct folder, and add a line to the
+MANIFEST.in file saying something like *include fre/fre(subTool)/fileName.fileExtension*
 
-* For more efficiency, if there are multiple files of the same type needed, the MANIFEST.in addition can be something like *recursive-include fre/fre(subTool) *.fileExtension* which would recursively include every file matching that fileExtension within the specified directory and its respective subdirectories.
+* For more efficiency, if there are multiple files of the same type needed, the MANIFEST.in addition can be something
+  like *recursive-include fre/fre(subTool) *.fileExtension* which would recursively include every file matching that
+  fileExtension within the specified directory and its respective subdirectories.
 
 **Example /fre Directory Structure**
 .
