@@ -23,9 +23,6 @@ jobs:
           # create environment containing all dependencies
           # the env cannot be explicitly activated in github CI/CD
           conda env create -f environment.yml --name fre-cli
-          #conda config --add channels conda-forge
-          #conda config --add channels noaa-gfdl
-          #conda create -n fre-cli noaa-gfdl::fre-cli
 
           # add conda env's executables to github's PATH equiv.
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
@@ -35,36 +32,36 @@ jobs:
           ## called as a module (-m pip) for explicitness
           $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
 
-#      - name: Run pytest in fre-cli environment
-#        run: |
-#          # try to make sure the right things are in GITHUB_PATH
-#          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-#          
-#          # are we talking to the right python?
-#          which python
-#          python --version
-#          $CONDA/envs/fre-cli/bin/python --version
-#          
-#          # run pytest
-#          pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
-#          
-#          # install genbadge to generate coverage badge based on xml
-#          pip install genbadge
-#          genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
-#          genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
-#        
-#      - name: Run pylint in fre-cli environment
-#        run: |
-#          # try to make sure the right things are in GITHUB_PATH
-#          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-#
-#          # are we talking to the right python?
-#          which python
-#          python --version
-#          $CONDA/envs/fre-cli/bin/python --version
-#          
-#          # run pylint, ignored modules avoid warnings arising from code internal to those modules 
-#          pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+      - name: Run pytest in fre-cli environment
+        run: |
+          # try to make sure the right things are in GITHUB_PATH
+          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+          
+          # are we talking to the right python?
+          which python
+          python --version
+          $CONDA/envs/fre-cli/bin/python --version
+          
+          # run pytest
+          pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
+          
+          # install genbadge to generate coverage badge based on xml
+          pip install genbadge
+          genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
+          genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
+        
+      - name: Run pylint in fre-cli environment
+        run: |
+          # try to make sure the right things are in GITHUB_PATH
+          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+
+          # are we talking to the right python?
+          which python
+          python --version
+          $CONDA/envs/fre-cli/bin/python --version
+          
+          # run pylint, ignored modules avoid warnings arising from code internal to those modules 
+          pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
 
       - name: Install Sphinx and Build Documentation
         run: |
@@ -75,8 +72,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.ref == 'refs/heads/update-fre-cmor-doc' }}
-#        if: ${{ github.ref == 'refs/heads/main' }
+        if: ${{ github.ref == 'refs/heads/main' }
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}

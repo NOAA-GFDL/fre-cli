@@ -29,7 +29,7 @@ requirements:
     - python
     - click
     - pyyaml
-    #    - pylint
+    - pylint
     - jsonschema
     - noaa-gfdl::catalogbuilder
     - noaa-gfdl::fre-nctools
@@ -39,8 +39,8 @@ requirements:
     - conda-forge::metomi-rose
     - conda-forge::cmor
     - conda-forge::cylc-uiserver
-    #    - conda-forge::pytest
-    #    - conda-forge::pytest-cov
+    - conda-forge::pytest
+    - conda-forge::pytest-cov
     - conda-forge::python-cdo
     - conda-forge::cdo>=2.0.0
 
@@ -49,8 +49,8 @@ test:
     - fre/
   imports:
     - click
-    #    - pytest
-    #    - pylint
+    - pytest
+    - pylint
     - fre
     - fre.pp
     - fre.pp.install
@@ -62,8 +62,8 @@ test:
     - fre.cmor
     - fre.catalog
   commands:
-    #    - pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
-    #    - pip install GitPython && pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
+    - pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
+    - pip install GitPython && pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
     - fre --help
     - fre pp --help
     - fre pp install --help
@@ -83,9 +83,9 @@ test:
 
   requires:
     - pip
-    #    - pylint
-    #    - pytest
-    #    - pytest-cov
+    - pylint
+    - pytest
+    - pytest-cov
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
