@@ -1,20 +1,20 @@
 Setup
 =====
 
-Need to set up Conda environment first and foremost
+Set up Conda environment first and foremost
 
 If on workstation:
-module load conda
+``module load conda``
 
-Create new Conda environment
-conda create -n [environmentName]
+Create new Conda environment:
+``conda create -n [environmentName]``
 
-Append necessary channels
-conda config --append channels noaa-gfdl
-conda config --append channels conda-forge
+Append necessary channels:
+``conda config --append channels noaa-gfdl; conda config --append channels conda-forge;``
 
-Run conda install on needed dependencies
-conda install noaa-gfdl::fre-cli should install the CLI package located at https://anaconda.org/NOAA-GFDL/fre-cli created from the meta.yaml file
+Run conda install on needed dependencies, should install the CLI package located at
+https://anaconda.org/NOAA-GFDL/fre-cli :
+``conda install noaa-gfdl::fre-cli``
 
 All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
 setup.py file allows fre.py to be ran with fre as the entry point on the command line instead of python fre.py

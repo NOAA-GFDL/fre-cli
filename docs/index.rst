@@ -12,6 +12,7 @@ Welcome to Fre-Cli's documentation!
    setup
    usage
    subtools
+   contributing_to_doc
    FAQ
    badges
 
