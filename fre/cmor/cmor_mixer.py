@@ -5,6 +5,7 @@ see README.md for additional information on `fre cmor run` (cmor_mixer.py) usage
 '''
 
 import os
+import glob
 import json
 import subprocess
 from pathlib import Path
@@ -13,8 +14,8 @@ import netCDF4 as nc
 import click
 import cmor
 
-
 # ----- \start consts
+DEBUG_MODE_RUN_ONE = True
 
 # ----- \end consts
 
@@ -26,8 +27,8 @@ def copy_nc(in_nc, out_nc):
         in_nc: string, path to an input netcdf file we wish to copy
         out_nc: string, an output path to copy the targeted input netcdf file to
     '''
-    print(f'(copy_nc)  in_nc: {in_nc}')
-    print(f'(copy_nc)  out_nc: {out_nc}')
+    print(f'(copy_nc)  in_nc: {in_nc}\n'
+          f'          out_nc: {out_nc}')
 
     # input file
     dsin = nc.Dataset(in_nc)
@@ -56,22 +57,24 @@ def copy_nc(in_nc, out_nc):
     dsout.close()
 
 
-def get_var_filenames(indir, var_filenames = None):
+def get_var_filenames(indir, var_filenames = None, local_var = None):
     '''
-    appends files ending in .nc located within indir to list var_filenames accepts two arguments
+    appends files ending in .nc located within indir to list var_filenames accepts three arguments
         indir: string, representing a path to a directory containing files ending in .nc extension
         var_filenames: list of strings, empty or non-empty, to append discovered filenames to. the
                        object pointed to by the reference var_filenames is manipulated, and so need
                        not be returned.
+        local_var: string, optional, if not None, will be used for ruling out filename targets
     '''
     if var_filenames is None:
         var_filenames = []
-    var_filenames_all = os.listdir(indir)
+    filename_pattern='.nc' if local_var is None else f'.{local_var}.nc'
+    print(f'(get_var_filenames) filename_pattern={filename_pattern}')
+    var_filenames_all=glob.glob(f'{indir}/*{filename_pattern}')
     print(f'(get_var_filenames) var_filenames_all={var_filenames_all}')
     for var_file in var_filenames_all:
-        if var_file.endswith('.nc'):
-            var_filenames.append(var_file)
-    #print(f"(get_var_filenames) var_filenames = {var_filenames}")
+        var_filenames.append( Path(var_file).name )
+    print(f"(get_var_filenames) var_filenames = {var_filenames}")
     if len(var_filenames) < 1:
         raise ValueError(f'target directory had no files with .nc ending. indir =\n {indir}')
     var_filenames.sort()
@@ -96,7 +99,7 @@ def get_iso_datetimes(var_filenames, iso_datetime_arr = None):
     iso_datetime_arr.sort()
     #print(f"(get_iso_datetimes) Available dates: {iso_datetime_arr}")
     if len(iso_datetime_arr) < 1:
-        raise ValueError('ERROR: iso_datetime_arr has length 0!')
+        raise ValueError('(get_iso_datetimes) ERROR: iso_datetime_arr has length 0!')
 
 def check_dataset_for_ocean_grid(ds):
     '''
@@ -104,12 +107,10 @@ def check_dataset_for_ocean_grid(ds):
     one argument. this function has no return.
         ds: netCDF4.Dataset object containing variables with associated dimensional information.
     '''
-    #print(f'(check_dataset_for_ocean_grid) {ds}')
-    #print(f'(check_dataset_for_ocean_grid) {ds.variables}')
-    #print(f'(check_dataset_for_ocean_grid) {ds.variables.keys()}')
     if "xh" in list(ds.variables.keys()):
         raise NotImplementedError(
-            "'xh' found in var_list. ocean grid req'd but not yet unimplemented. stop.")
+            "(check_dataset_for_ocean_grid) 'xh' found in var_list. ocean grid req'd but not yet unimplemented. stop.")
+
 
 def get_vertical_dimension(ds,target_var):
     '''
@@ -127,11 +128,13 @@ def get_vertical_dimension(ds,target_var):
         dims = variable.dimensions
         for dim in dims:
             # if it is not a vertical axis, move on.
+            print(f'(get_vertical_dimension) dim={dim}')
+            if dim == 'landuse':
+                continue
             if not (ds[dim].axis and ds[dim].axis == "Z"):
                 continue
             vert_dim = dim
     return vert_dim
-
 
 def create_tmp_dir(outdir):
     '''
@@ -141,20 +144,20 @@ def create_tmp_dir(outdir):
                 file output. tmp_dir will be slightly different depending on the output directory
                 targeted
     '''
-    print(f"(cmorize_target_var_files) outdir = {outdir}")
+    print(f"(create_tmp_dir) outdir = {outdir}")
     tmp_dir = None
     if any( [ outdir == "/local2",
               outdir.find("/work") != -1,
               outdir.find("/net" ) != -1 ] ):
-        print(f'(cmorize_target_var_files) using /local /work /net ( tmp_dir = {outdir}/ )')
-        tmp_dir = "{outdir}/"
+        print(f'(create_tmp_dir) using /local /work /net ( tmp_dir = {outdir}/ )')
+        tmp_dir = str( Path("{outdir}/").resolve() )
     else:
-        print('(cmorize_target_var_files) NOT using /local /work /net (tmp_dir = outdir/tmp/ )')
-        tmp_dir = f"{outdir}/tmp/"
+        print(f'(create_tmp_dir) NOT using /local /work /net (tmp_dir = {outdir}/tmp/ )')
+        tmp_dir = str( Path(f"{outdir}/tmp/").resolve() )
     try:
         os.makedirs(tmp_dir, exist_ok=True)
     except Exception as exc:
-        raise OSError('problem creating temp output directory. stop.') from exc
+        raise OSError('(create_tmp_dir) problem creating temp output directory. stop.') from exc
     return tmp_dir
 
 
@@ -166,12 +169,23 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                               target_var = None,
                               json_exp_config = None,
                               json_table_config = None):#, tmp_dir = None            ):
-    ''' rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
+    ''' 
+    rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
+    accepts six arguments, all required:
+        proj_table_vars: json dictionary object, variable table read from json_table_config.
+        local_var: string, variable name used for finding files locally containing target_var,
+                   this argument is often equal to target_var.
+        netcdf_file: string, representing path to intput netcdf file.
+        target_var: string, representing the variable name attached to the data object in the netcdf file.
+        json_exp_config: string, representing path to json configuration file holding metadata for appending to output
+                         this argument is most used for making sure the right grid label is getting attached to the right output
+        json_table_config: string, representing path to json configuration file holding variable names for a given table.
+                           proj_table_vars is read from this file, but both are passed anyways. 
     '''
     print('\n\n-------------------------- START rewrite_netcdf_file_var call -----')
     print( "(rewrite_netcdf_file_var) input data: " )
-    print(f"(rewrite_netcdf_file_var)     local_var   =  {local_var}" )
-    print(f"(rewrite_netcdf_file_var)     target_var = {target_var}")
+    print(f"                              local_var   =  {local_var}" )
+    print(f"                              target_var = {target_var}")
 
 
     # open the input file
@@ -209,33 +223,29 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print( "(rewrite_netcdf_file_var) WARNING grabbing time_bnds didnt work... moving on")
 
 
-
-
-
-    # read the input... units?
+    # read the input variable data, i believe
     var = ds[target_var][:]
 
-
     # determine the vertical dimension by looping over netcdf variables
-    vert_dim = get_vertical_dimension(ds,target_var) #0#vert_dim = None
+    vert_dim = get_vertical_dimension(ds, target_var)
     print(f"(rewrite_netcdf_file_var) Vertical dimension of {target_var}: {vert_dim}")
 
-
-    # Check var_dim, vert_dim
+    # grab var_dim
     var_dim = len(var.shape)
+    print(f"(rewrite_netcdf_file_var) var_dim = {var_dim}, local_var = {local_var}")
+
+    # Check var_dim
     if var_dim not in [3, 4]:
         raise ValueError(f"var_dim == {var_dim} != 3 nor 4. stop.")
 
-    # check for vert_dim error condition. if pass, assign lev for later use.
+    # Check var_dim and vert_dim and assign lev if relevant.
+    # error if vert_dim wrong given var_dim
     lev = None
     if var_dim == 4:
         if vert_dim not in [ "plev30", "plev19", "plev8",
                                           "height2m", "level", "lev", "levhalf"] :
             raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
         lev = ds[vert_dim]
-
-    print(f"(rewrite_netcdf_file_var) var_dim = {var_dim}, local_var = {local_var}")
-
 
 
     # now we set up the cmor module object
@@ -249,14 +259,13 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     )
 
     # read experiment configuration file
+    print(f"(rewrite_netcdf_file_var) cmor is opening: json_exp_config = {json_exp_config}")
     cmor.dataset_json(json_exp_config)
-    print(f"(rewrite_netcdf_file_var) json_exp_config = {json_exp_config}")
-    print(f"(rewrite_netcdf_file_var) json_table_config = {json_table_config}")
 
-    # load variable list (CMOR table)
+    # load CMOR table
+    print(f"(rewrite_netcdf_file_var) cmor is opening json_table_config = {json_table_config}")
     cmor.load_table(json_table_config)
 
-    #units = proj_table_vars["variable_entry"] [local_var] ["units"]
     units = proj_table_vars["variable_entry"] [target_var] ["units"]
     print(f"(rewrite_netcdf_file_var) units={units}")
 
@@ -264,15 +273,14 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
     try:
         print( f"(rewrite_netcdf_file_var) Executing cmor.axis('time', \n"
-               f"(rewrite_netcdf_file_var) coord_vals = \n{time_coords}, \n"
-               f"(rewrite_netcdf_file_var) cell_bounds = time_bnds, units = {time_coord_units})   ")
+               f"                         coord_vals = \n{time_coords}, \n"
+               f"                         cell_bounds = time_bnds, units = {time_coord_units})   ")
         cmor_time = cmor.axis("time", coord_vals = time_coords,
                               cell_bounds = time_bnds, units = time_coord_units)
-        #cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
     except ValueError as exc:
-        print(f"(rewrite_netcdf_file_var) WARNING exception raised... exc={exc}")
-        print( "(rewrite_netcdf_file_var) cmor_time = cmor.axis('time', "
-              "coord_vals = time_coords, units = time_coord_units)")
+        print(f"(rewrite_netcdf_file_var) WARNING exception raised... exc={exc}\n"
+               "                          cmor_time = cmor.axis('time', \n"
+               "                          coord_vals = time_coords, units = time_coord_units)")
         cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
 
     # initializations
@@ -300,7 +308,10 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             ds_ps.close()
 
             # assign lev_half specifics
-            if vert_dim == "lev_half":
+            if vert_dim == "levhalf":
+                cmor_lev = cmor.axis( "alternate_hybrid_sigma_half",
+                                      coord_vals = lev[:],
+                                      units = lev.units )
                 ierr_ap = cmor.zfactor( zaxis_id       = cmor_lev,
                                         zfactor_name   = "ap_half",
                                         axis_ids       = [cmor_lev, ],
@@ -311,10 +322,11 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                        axis_ids       = [cmor_lev, ],
                                        zfactor_values = ds["b_bnds"][:],
                                        units          = ds["b_bnds"].units )
-                cmor_lev = cmor.axis( "alternate_hybrid_sigma_half",
-                                      coord_vals = lev[:],
-                                      units = lev.units )
             else:
+                cmor_lev = cmor.axis( "alternate_hybrid_sigma",
+                                      coord_vals  = lev[:],
+                                      units       = lev.units,
+                                      cell_bounds = ds[vert_dim+"_bnds"] )
                 ierr_ap = cmor.zfactor( zaxis_id       = cmor_lev,
                                         zfactor_name   = "ap",
                                         axis_ids       = [cmor_lev, ],
@@ -327,13 +339,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                        zfactor_values = ds["b"][:],
                                        zfactor_bounds = ds["b_bnds"][:],
                                        units          = ds["b"].units )
-                cmor_lev = cmor.axis( "alternate_hybrid_sigma",
-                                      coord_vals  = lev[:],
-                                      units       = lev.units,
-                                      cell_bounds = ds[vert_dim+"_bnds"] )
 
-            print(f'(rewrite_netcdf_file_var) ierr_ap after calling cmor_zfactor: {ierr_ap}')
-            print(f'(rewrite_netcdf_file_var) ierr_b after calling cmor_zfactor: {ierr_b}')
+            print(f'(rewrite_netcdf_file_var) ierr_ap after calling cmor_zfactor: {ierr_ap}\n'
+                  f'(rewrite_netcdf_file_var) ierr_b after calling cmor_zfactor: {ierr_b}'  )
             ips = cmor.zfactor( zaxis_id     = cmor_lev,
                                 zfactor_name = "ps",
                                 axis_ids     = [cmor_time, cmor_lat, cmor_lon],
@@ -355,9 +363,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     cmor.write(cmor_var, var)
     if save_ps:
         if any( [ ips is None, ps is None ] ):
-            print( 'WARNING: ps or ips is None!, but save_ps is True!')
-            print(f'ps = {ps}, ips = {ips}')
-            print( 'skipping ps writing!')
+            print( '(rewrite_netcdf_file_var) WARNING: ps or ips is None!, but save_ps is True!\n'
+                  f'                                   ps = {ps}, ips = {ips}\n'
+                   '                                   skipping ps writing!'    )
         else:
             cmor.write(ips, ps, store_with = cmor_var)
             cmor.close(ips, file_name = True, preserve = False)
@@ -394,25 +402,22 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
 
     '''
     print('\n\n-------------------------- START cmorize_target_var_files call -----')
-    print(f"(cmorize_target_var_files) local_var = {local_var} to be used for file-targeting.")
-    print(f"(cmorize_target_var_files) target_var = {target_var} to be used for reading the data "
-          "from the file")
-    print(f"(cmorize_target_var_files) outdir = {outdir}")
+    print(f"(cmorize_target_var_files) local_var = {local_var} to be used for file-targeting.\n"
+          f"                           target_var = {target_var} to be used for reading the data \n"
+           "                           from the file\n"
+          f"                           outdir = {outdir}")
 
 
     #determine a tmp dir for working on files.
-    tmp_dir = create_tmp_dir( outdir )
+    tmp_dir = create_tmp_dir( outdir ) + '/'
     print(f'(cmorize_target_var_files) will use tmp_dir={tmp_dir}')
 
-    print("\n\n==== begin (???) mysterious file movement ====================================")
 
     # loop over sets of dates, each one pointing to a file
     nc_fls = {}
     for i, iso_datetime in enumerate(iso_datetime_arr):
 
-
         # why is nc_fls a filled list/array/object thingy here? see above line
-        #nc_fls[i] = f"{indir}/{name_of_set}.{iso_datetime}.{target_var}.nc"
         nc_fls[i] = f"{indir}/{name_of_set}.{iso_datetime}.{local_var}.nc"
         print(f"(cmorize_target_var_files) input file = {nc_fls[i]}")
         if not Path(nc_fls[i]).exists():
@@ -421,8 +426,8 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
 
 
         # create a copy of the input file with local var name into the work directory
-        #nc_file_work = f"{tmp_dir}{name_of_set}.{iso_datetime}.{target_var}.nc"
         nc_file_work = f"{tmp_dir}{name_of_set}.{iso_datetime}.{local_var}.nc"
+
         print(f"(cmorize_target_var_files) nc_file_work = {nc_file_work}")
         copy_nc( nc_fls[i], nc_file_work)
 
@@ -434,20 +439,35 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
             copy_nc(nc_ps_file, nc_ps_file_work)
 
 
+        # TODO think of better way to write this kind of conditional data movement...
         # now we have a file in our targets, point CMOR to the configs and the input file(s)
+        make_cmor_write_here = None
+        print( Path( tmp_dir     ) )
+        print( Path( os.getcwd() ) )
+        if Path( tmp_dir ).is_absolute():
+            print(f'tmp_dir is absolute')
+            make_cmor_write_here = tmp_dir
+        elif Path( tmp_dir ).exists(): # relative to where we are
+            print(f'tmp_dir is relative to CWD!')
+            make_cmor_write_here = os.getcwd() + '/'+tmp_dir # unavoidable, cmor module FORCES write to CWD
+        assert make_cmor_write_here is not None
+
+        gotta_go_back_here=os.getcwd()
+        try:
+            print(f"cd'ing to \n {make_cmor_write_here}" )
+            os.chdir( make_cmor_write_here )
+        except:
+            raise OSError(f'could not chdir to {make_cmor_write_here}')
+
         print ("(cmorize_target_var_files) calling rewrite_netcdf_file_var")
-        gotta_go_back_here=os.getcwd()+'/'
-        os.chdir(gotta_go_back_here+tmp_dir) # this is unavoidable, cmor module FORCES write to CWD
-        local_file_name = rewrite_netcdf_file_var( proj_table_vars                       ,
-                                                   local_var                             ,
-                                                   gotta_go_back_here + nc_file_work     ,
-                                                   target_var                            ,
-                                                   gotta_go_back_here + json_exp_config  ,
-                                                   gotta_go_back_here + json_table_config)#,
-#                                                   gotta_go_back_here + tmp_dir            )
-        os.chdir(gotta_go_back_here)
-        assert Path( gotta_go_back_here+tmp_dir+local_file_name ).exists()
-        #assert False
+        local_file_name = rewrite_netcdf_file_var( proj_table_vars      ,
+                                                   local_var            ,
+                                                   nc_file_work         ,
+                                                   target_var           ,
+                                                   json_exp_config      ,
+                                                   json_table_config      )
+        os.chdir( gotta_go_back_here )
+
 
         # now that CMOR has rewritten things... we can take our post-rewriting actions
         # the final output filename will be...
@@ -465,11 +485,11 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
             print(f'(cmorize_target_var_files) WARNING: directory {filedir} already exists!')
 
         # hmm.... this is making issues for pytest
-        mv_cmd = f"mv {tmp_dir}{local_file_name} {filedir}"
+        mv_cmd = f"mv {tmp_dir}/{local_file_name} {filedir}"
         print(f"(cmorize_target_var_files) moving files...\n {mv_cmd}")
-        subprocess.run(mv_cmd, shell=True, check=True)
+        subprocess.run(mv_cmd, shell = True, check = True)
 
-        # ------ refactor this into function? TODO
+        # ------ refactor this into function? #TODO
         # ------ what is the use case for this logic really??
         filename_no_nc = filename[:filename.rfind(".nc")]
         chunk_str = filename_no_nc[-6:]
@@ -479,7 +499,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
             filename_corr = "{filename[:filename.rfind('.nc')]}_{iso_datetime}.nc"
             mv_cmd = f"mv {filename} {filename_corr}"
             print(f"(cmorize_target_var_files) moving files, strange chunkstr logic...\n {mv_cmd}")
-            subprocess.run(mv_cmd, shell=True, check=True)
+            subprocess.run(mv_cmd, shell = True, check = True)
         # ------ end refactor this into function?
 
         # delete files in work dirs
@@ -489,6 +509,10 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         if Path(nc_ps_file_work).exists():
             Path(nc_ps_file_work).unlink()
 
+        if DEBUG_MODE_RUN_ONE:
+            print(f'WARNING: DEBUG_MODE_RUN_ONE is True!!!!')
+            print(f'WARNING: done processing one file!!!')
+            break
 
 
 
@@ -497,9 +521,10 @@ def cmor_run_subtool( indir = None,
                       json_var_list = None,
                       json_table_config = None,
                       json_exp_config = None ,
-                      outdir = None):
+                      outdir = None, opt_var_name = None
+                      ):
     '''
-    primary steering function for the cmor_mixer tool, i.e essentially main. Accepts five args:
+    primary steering function for the cmor_mixer tool, i.e essentially main. Accepts six args:
         indir: string, directory containing netCDF files. keys specified in json_var_list are local
                variable names used for targeting specific files
         json_var_list: string, path pointing to a json file containing directory of key/value
@@ -510,18 +535,23 @@ def cmor_run_subtool( indir = None,
         json_table_config: json file containing CMIP-compliant per-variable/metadata for specific
                            MIP table. The MIP table can generally be identified by the specific
                            filename (e.g. "Omon")
-        json_exp_config: json file containing other configuration details (FILL IN TO DO #TODO)
+        json_exp_config: json file containing metadata dictionary for CMORization. this metadata is effectively
+                         appended to the final output file's header
         outdir: string, directory root that will contain the full output and output directory
                 structure generated by the cmor module upon request.
+        opt_var_name: string, optional, specify a variable name to specifically process only filenames matching
+                      that variable name. I.e., this string help target local_vars, not target_vars.
     '''
+    # check req'd inputs
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
-        raise ValueError(f'all input arguments are required!\n'
-                          '[indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
-                         f'[{indir}, {json_var_list}, {json_table_config}, '
-                          '{json_exp_config}, {outdir}]' )
+        raise ValueError(f'(cmor_run_subtool) all input arguments except opt_var_name are required!\n'
+                          '                   [indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
+                         f'                   [{indir}, {json_var_list}, {json_table_config}, '
+                          '                   {json_exp_config}, {outdir}]' )
 
     # open CMOR table config file
-    print('(cmor_run_subtool) getting table variables from json_table_config')
+    print( '(cmor_run_subtool) getting table variables from json_table_config = \n'
+           f'                      {json_table_config}'                             )
     try:
         with open( json_table_config, "r", encoding = "utf-8") as table_config_file:
             proj_table_vars=json.load(table_config_file)
@@ -530,6 +560,9 @@ def cmor_run_subtool( indir = None,
         raise FileNotFoundError(
             f'ERROR: json_table_config file cannot be opened.\n'
             f'       json_table_config = {json_table_config}' ) from exc
+
+    # now resolve the json_table_config path after confirming it can be open
+    json_table_config= str( Path(json_table_config).resolve() )
 
     # open input variable list
     print('(cmor_run_subtool) opening variable list json_var_list')
@@ -542,41 +575,58 @@ def cmor_run_subtool( indir = None,
             f'ERROR: json_var_list file cannot be opened.\n'
             f'       json_var_list = {json_var_list}' ) from exc
 
-    # examine input directory to obtain a list of input file targets
-    var_filenames = []
-    get_var_filenames(indir, var_filenames)
-    print(f"(cmor_run_subtool) found filenames = \n {var_filenames}")
-
-    # examine input files to obtain target date ranges
-    iso_datetime_arr = []
-    get_iso_datetimes(var_filenames, iso_datetime_arr)
-    print(f"(cmor_run_subtool) found iso datetimes = \n {iso_datetime_arr}")
-
-    # name_of_set == component label...
-    # which is not relevant for CMOR/CMIP... or is it?
-    name_of_set = var_filenames[0].split(".")[0]
-    print(f"(cmor_run_subtool) setting name_of_set = {name_of_set}")
+    # make sure the exp config exists too while we're at it...
+    if Path(json_exp_config).exists(): # if so, resolve to absolute path
+        json_exp_config = str( Path( json_exp_config).resolve() )
+    else:
+        raise FileNotFoundError(
+            f'ERROR: json_exp_config file cannot be opened.\n'
+            f'       json_exp_config = {json_exp_config}' )
 
     # loop over entries in the json_var_list, read into var_list
     for local_var in var_list:
 
         # if its not in the table configurations variable_entry list, skip
         if var_list[local_var] not in proj_table_vars["variable_entry"]:
-            print(f"(cmor_run_subtool) WARNING: skipping local_var={local_var} /"
-                  f" target_var={target_var}")
-            print( "(cmor_run_subtool)         ... target_var not found in CMOR variable group")
+            print(f"(cmor_run_subtool) WARNING: skipping local_var  = {local_var} /\n"
+                  f"                                     target_var = {var_list[local_var]}\n"
+                   "                        ... target_var not found in CMOR variable group")
+            continue
+
+        if all( [ opt_var_name is not None,
+                  local_var != opt_var_name ] ):
+            print(f'(cmor_run_subtool) WARNING: skipping local_var={local_var} as it is not equal\n'
+                   '                            to the opt_var_name argument.')
             continue
 
         # it is in there, get the name of the data inside the netcdf file.
         target_var=var_list[local_var] # often equiv to local_var but not necessarily.
         if local_var != target_var:
-            print(f'(cmor_run_subtool) WARNING: local_var == {local_var} '
-                  f'!= {target_var} == target_var')
-            print(f'i am expecting {local_var} to be in the filename, and i expect the variable'
-                  f' in that file to be {target_var}')
+            print(f'(cmor_run_subtool) WARNING: local_var == {local_var} \n'
+                  f'                            != {target_var} == target_var\n'
+                  f'                            i am expecting {local_var} to be in the filename, and i expect the variable\n'
+                  f'                            in that file to be {target_var}')
 
-        print(f'(cmor_run_subtool) ..............beginning CMORization for {local_var}/'
-              f'{target_var}..........')
+
+        # examine input directory to obtain a list of input file targets
+        var_filenames = []
+        get_var_filenames(indir, var_filenames, local_var)
+        print(f"(cmor_run_subtool) found filenames = \n {var_filenames}")
+
+        # examine input files to obtain target date ranges
+        iso_datetime_arr = []
+        get_iso_datetimes(var_filenames, iso_datetime_arr)
+        print(f"(cmor_run_subtool) found iso datetimes = \n {iso_datetime_arr}")
+
+        # name_of_set == component label...
+        # which is not relevant for CMOR/CMIP... or is it?
+        name_of_set = var_filenames[0].split(".")[0]
+        print(f"(cmor_run_subtool) setting name_of_set = {name_of_set}")
+
+
+
+        print(f'(cmor_run_subtool) ..............beginning CMORization for {local_var}/\n'
+              f'                                                 {target_var}..........')
         cmorize_target_var_files(
             indir, target_var, local_var, iso_datetime_arr, # OK
             name_of_set, json_exp_config,
@@ -584,13 +634,18 @@ def cmor_run_subtool( indir = None,
             proj_table_vars, json_table_config # a little redundant
         )
 
+        if DEBUG_MODE_RUN_ONE:
+            print(f'WARNING: DEBUG_MODE_RUN_ONE is True. breaking var_list loop')
+            break
+    return 0
+
 
 @click.command()
 def _cmor_run_subtool(indir = None,
                       json_var_list = None, json_table_config = None, json_exp_config = None,
-                      outdir = None):
+                      outdir = None, opt_var_name = None):
     ''' entry point to fre cmor run for click. see cmor_run_subtool for argument descriptions.'''
-    return cmor_run_subtool(indir, json_var_list, json_table_config, json_exp_config, outdir)
+    return cmor_run_subtool(indir, json_var_list, json_table_config, json_exp_config, outdir, opt_var_name)
 
 
 if __name__ == '__main__':
