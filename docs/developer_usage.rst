@@ -88,6 +88,7 @@ Please refer to this issue when encountering naming issues:
 Example ``fre/`` Directory Structure
 ------------------------------------
 
+``fre/``
 ├── ``__init__.py``
 ├── ``fre.py``
 ├── ``fre<subtool>``
