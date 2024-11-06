@@ -17,15 +17,15 @@ Adding New Tools
 
 
 From Other Repositories
--------------------------
+-----------------------
 
 Currently, the solution to this task is to approach it using Conda packages. The tool that is being
-added must reside within a repository that contains a meta.yaml that includes Conda dependencies
+added must reside within a repository that contains a ``meta.yaml`` that includes Conda dependencies
 like the one in this repository and ideally a ``setup.py`` (may be subject to change due to deprecation)
 that may include any potentially needed pip dependencies
 
 * Once published as a Conda package, ideally on the `NOAA-GFDL conda channel<https://anaconda.org/NOAA-GFDL>`_,
-  an addition can be made to the "run" section under "requirements" in ``meta.yaml`` of the ``fre-cli``
+  an addition can be made to the ``run`` section under ``requirements`` in ``meta.yaml`` of the ``fre-cli``
   following the syntax ``channel::package``
 
 * On pushes to the main branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically
@@ -86,7 +86,7 @@ Please refer to this issue when encountering naming issues:
 
 
 Example ``fre/`` Directory Structure
---------------------------------
+------------------------------------
 
 ├── ``__init__.py``
 ├── ``fre.py``
