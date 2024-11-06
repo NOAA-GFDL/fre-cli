@@ -37,8 +37,8 @@ How to Contribute to ``fre-cli``'s documentation
    * You should be able to find the deployed webpage from a successful workflow at
 	 https://your_username.github.io/fre-cli (if you did not change the fork’s name from ``fre-cli``, that is).
    * If you’re only editing docs, you can make the turn-around time on your workflow ~3 min faster by
-   commenting-out the ``pylint`` and ``pytest`` steps in ``create_test_conda_env.yml``, and disable running the
-   ``build_conda.yml`` workflow
+	 commenting-out the ``pylint`` and ``pytest`` steps in ``create_test_conda_env.yml``, and disable running the
+	 ``build_conda.yml`` workflow
 
 
 
