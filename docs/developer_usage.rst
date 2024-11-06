@@ -24,7 +24,7 @@ added must reside within a repository that contains a ``meta.yaml`` that include
 like the one in this repository and ideally a ``setup.py`` (may be subject to change due to deprecation)
 that may include any potentially needed pip dependencies
 
-* Once published as a Conda package, ideally on the `NOAA-GFDL conda channel<https://anaconda.org/NOAA-GFDL>`_,
+* Once published as a Conda package, ideally on the `NOAA-GFDL conda channel <https://anaconda.org/NOAA-GFDL>`_,
   an addition can be made to the ``run`` section under ``requirements`` in ``meta.yaml`` of the ``fre-cli``
   following the syntax ``channel::package``
 
