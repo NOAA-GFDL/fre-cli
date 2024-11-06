@@ -11,7 +11,7 @@ various options work quite well:
 If on workstation
 -----------------
 
-``module load fre/canopy``
+``module load fre/2024.01``
 
 
 Create new Conda environment

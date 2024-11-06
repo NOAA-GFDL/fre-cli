@@ -6,7 +6,7 @@ Developers are free to use the user guide above to familiarize with the CLI and 
 having to install any dependencies, but development within a Conda environment is heavily
 recommended regardless.
 
-Gain access to the repository with ``git clone git@github.com:NOAA-GFDL/fre-cli.git`` or your fork's
+Gain access to the repository with ``git clone --recursive git@github.com:NOAA-GFDL/fre-cli.git`` or your fork's
 link (recommended) and an SSH RSA key. Once inside the repository, developers can test local changes
 by running a ``pip install .`` inside of the root directory to install the ``fre-cli`` package locally
 with the newest local changes. Test as a normal user would use the CLI.
