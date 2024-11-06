@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: continuumio/miniconda3:latest
+      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
     steps:
       - name: Checkout Files
         uses: actions/checkout@v4
