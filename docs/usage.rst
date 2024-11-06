@@ -5,8 +5,9 @@ Usage
 for setup, see the setup section.
 
 
-**Calling ``fre``**
-===================
+Calling ``fre``
+===============
+
 Brief rundown of commands also provided below:
 
 * Enter commands and follow ``--help`` messages for guidance 
@@ -24,18 +25,19 @@ Brief rundown of commands also provided below:
 
 Tools
 =====
+
 A few subtools are currently in development:
 
 
-**fre app**
------------
+fre app
+-------
 
 1. ``generate-time-averages``
 2. ``regrid_xy``
 
    
-**fre catalog**
----------------
+fre catalog
+-----------
 
 1. ``builder`` Generate a catalog
 
@@ -47,24 +49,24 @@ A few subtools are currently in development:
 2. ``validate`` Validate the catalog
 
 
-**fre cmor**
-------------
+fre cmor
+--------
 
 1. ``run``
 
 * placehold
 
   
-**fre make**
-------------
+fre make
+--------
 
 1. ``run-fremake``
 
 * placehold
 
   
-**fre pp**
-----------
+fre pp
+------
 
 1. ``configure`` 
 
@@ -81,16 +83,16 @@ A few subtools are currently in development:
 * Example: ``fre pp checkout -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp``
 
 
-**fre yamltools**
------------------
+fre yamltools
+-------------
 
 1. ``combine-yamls``
 
 * placehold
 
 
-**not-yet-implemented**
------------------------
+not-yet-implemented
+-------------------
 
 #. ``fre check``
 #. ``fre list``
