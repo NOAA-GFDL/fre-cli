@@ -6,27 +6,11 @@ User Usage
 
 **Conda environment set up**
 
-Load Conda
+See "Setup".
 
-.. code-block::console
-    module load conda
 
-Create new Conda environment
+**Calling ``fre``**
 
-.. code-block::console
-    conda create -n [environmentName]
-
-Append necessary channels
-
-.. code-block::console
-    conda config --append channels noaa-gfdl
-    conda config --append channels conda-forge
-
-Install needed dependencies
-
-.. code-block::console
-    conda install noaa-gfdl::fre-cli
- 
 * ``fre/setup.py`` allows ``fre/fre.py`` to be ran as ``fre`` on the command line by defining it as an **entry point**. Without it, the call would be, instead, ``python fre/fre.py``
 * Enter commands and follow ``--help`` messages for guidance (brief rundown of commands also provided below)
 * If the user just runs ``fre``, it will list all the command groups following ``fre``, such as ``run``, ``make``, ``pp``, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown
@@ -41,16 +25,38 @@ Tools
 
 A few subtools are currently in development:
 
+
+**fre app**
+
+1. ``generate-time-averages``
+2. ``regrid_xy``
+
+**fre catalog**
+
+1. ``builder`` (out of date)
+* Builds json and csv format catalogs from user input directory path
+* Minimal Syntax: ``fre catalog builder -i [input path] -o [output path]``
+* Module(s) needed: n/a
+* Example: ``fre catalog builder -i /archive/am5/am5/am5f3b1r0/c96L65_am5f3b1r0_pdclim1850F/gfdl.ncrc5-deploy-prod-openmp/pp -o ~/output --overwrite``
+
+2. ``validate``
+
+**fre cmor**
+1. ``run``
+
+
+**fre make**
+
 **fre pp**
 
-1. configure 
+1. ``configure`` 
 
 * Postprocessing yaml configuration
 * Minimal Syntax: ``fre pp configure -y [user-edit yaml file]``
 * Module(s) needed: n/a
 * Example: ``fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml``
 
-2. checkout
+2. ``checkout``
 
 * Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository
 * Minimal Syntax: ``fre pp checkout -e [experiment name] -p [platform name] -t [target name]``
@@ -58,22 +64,15 @@ A few subtools are currently in development:
 * Example: ``fre pp checkout -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp``
 
 
-**fre catalog**
+**fre yamltools**
 
-1. buildCatalog1
-* Builds json and csv format catalogs from user input directory path
-* Minimal Syntax: ``fre catalog buildCatalog -i [input path] -o [output path]``
-* Module(s) needed: n/a
-* Example: ``fre catalog buildCatalog -i /archive/am5/am5/am5f3b1r0/c96L65_am5f3b1r0_pdclim1850F/gfdl.ncrc5-deploy-prod-openmp/pp -o ~/output --overwrite``
 
 **To be developed:**
 
 #. fre check
 #. fre list
-#. fre make
 #. fre run
 #. fre test
-#. fre yamltools
 
 
 Usage (Developers)
