@@ -83,6 +83,7 @@ Developers are free to use the user guide above to familiarize with the CLI and 
 having to install any dependencies, but development within a Conda environment is heavily
 recommended regardless.
 
+
 Gain access to the repository with ``git clone git@github.com:NOAA-GFDL/fre-cli.git`` or your fork's
  link (recommended) and an SSH RSA key.
 
