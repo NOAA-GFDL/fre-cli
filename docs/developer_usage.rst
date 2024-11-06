@@ -60,7 +60,7 @@ For the new tool you are trying to develop, there are a few criteria to satisfy
 
 6. Be sure to import the contents of the needed subcommand scripts inside of ``fre<tool>.py``
 
-* i.e. from ``fre.fre<tool>.toolCommandScript import *``
+* i.e. from ``fre.<tool>.toolCommandScript import *``
 
 7. At this point, you can copy and paste the parts of your main ``click`` command from its script
    into ``fre<tool>.py`` when implementing the function reflective of the command function
@@ -76,12 +76,9 @@ For the new tool you are trying to develop, there are a few criteria to satisfy
 8. From here, all that needs to be added after defining the command with a name is
    ``context.forward(mainFunctionOfToolCommand)``, and done!
 
-9. After this step, it is important to add ``from fre.fre<tool> import`` to ``__init__.py``
-   within the /fre folder
-
-10. The last step is to replicate the command in the same way as done in ``fre<tool>.py``
-	inside of ``fre.py``, but make sure to add ``from fre import fre<tool>`` and
-	``from fre.fre<tool>.fre<tool> import *``
+9. The last step is to replicate the command in the same way as done in ``fre<tool>.py``
+	inside of ``fre.py``, but make sure to add ``from fre import <tool>`` and
+	``from fre.<tool> import *``
 
 Please refer to this issue when encountering naming issues:
 `NOAA-GFDL#31 <https://github.com/NOAA-GFDL/fre-cli/issues/31>`_
