@@ -12,7 +12,7 @@ jobs:
       - name: Checkout Files
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: 'recursive'
       - name: Add mkmf to PATH
         run: |
           echo $PWD/mkmf/bin >> $GITHUB_PATH

@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: 'recursive'
       - name: Create fre-cli environment
         run: |
           # create environment containing all dependencies
