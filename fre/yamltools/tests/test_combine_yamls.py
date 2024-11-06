@@ -16,6 +16,7 @@ from fre.yamltools import combine_yamls as cy
 #CWD = Path.cwd()
 TEST_DIR = Path("fre/yamltools/tests")
 IN_DIR = Path(f"{TEST_DIR}/AM5_example")
+SCHEMA_DIR = Path("fre/gfdl_msd_schemas/FRE")
 
 # Create output directories
 COMP_OUT_DIR = Path(f"{TEST_DIR}/combine_yamls_out/compile")
@@ -81,7 +82,7 @@ def test_combined_compileyaml_validation():
     Validate the combined compile yaml
     """
     combined_yamlfile =f"{COMP_OUT_DIR}/combined-{COMP_EXPERIMENT}.yaml"
-    schema_file = os.path.join(Path(TEST_DIR).resolve().parents[1], "gfdl_msd_schemas", "FRE", "fre_make.json")
+    schema_file = os.path.join(SCHEMA_DIR, "fre_make.json")
     
     with open(combined_yamlfile,'r') as cf:
         yml = yaml.safe_load(cf)
@@ -134,7 +135,7 @@ def test_combined_compileyaml_validatefail():
 
     # Validate against schema; should fail
     wrong_combined = Path(f"{COMP_OUT_DIR}/combined-am5-wrong_datatype.yaml")
-    schema_file = os.path.join(Path(TEST_DIR).resolve().parents[1], "gfdl_msd_schemas", "FRE", "fre_make.json")
+    schema_file = os.path.join(SCHEMA_DIR, "fre_make.json")
 
     # Open/load combined yaml file
     with open(wrong_combined,'r') as cf:
