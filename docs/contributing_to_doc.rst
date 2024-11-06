@@ -20,7 +20,8 @@ How to Contribute to ``fre-cli``'s documentation
   nor interact with anything in that branch directly.
 
 
-2. enable workflows for your fork 
+2. enable workflows for your fork
+* note: this step may depend on user-specific settings!
 * Back on top where you found “settings”, find and click “actions” to the left
 * Enable running the workflow actions assoc with the ``fre-cli`` repo under ``.github/workflows``
 
