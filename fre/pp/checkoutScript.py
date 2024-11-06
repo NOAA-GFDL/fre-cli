@@ -20,7 +20,7 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
 
 #############################################
 
-def _checkoutTemplate(experiment, platform, target, branch='main'):
+def _checkoutTemplate(experiment, platform, target):
     """
     Checkout the workflow template files from the repo
     """
@@ -53,10 +53,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
     cloneproc = subprocess.run(clonecmd, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
 
     if branch == 'main':
-        local_version = subprocess.run(['fre' ,'--version'])
-        if local_version != '2024.01':
-            subprocess.run(['git' ,'checkout' ,'tags/2024.01'])
-
+        subprocess.run('git checkout tags/2024.01')
     if not cloneproc.returncode == 0:
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
             argstring = f" -e {experiment} -p {platform} -t {target}"
