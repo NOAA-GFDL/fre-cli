@@ -1,5 +1,8 @@
-contributing_to_doc
-================================================
+Documentation-Documentation
+===========================
+
+Welcome to `fre-cli`'s Documentation-documentation- where we document how the documentation is
+documented
 
 How to Contribute to ``fre-cli``'s documentation
 ------------------------------------------------

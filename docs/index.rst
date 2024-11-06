@@ -9,11 +9,12 @@ Welcome to Fre-Cli's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   setup
-   usage
-   contributing_to_doc
+   Setup
+   Usage
+   Developer Usage
+   Documentation Documentation
    FAQ
-   badges
+   Badges
 
 Indices and tables
 ==================
