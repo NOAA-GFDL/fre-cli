@@ -13,7 +13,7 @@ Append necessary channels:
 ``conda config --append channels noaa-gfdl; conda config --append channels conda-forge;``
 
 Run conda install on needed dependencies, should install the CLI package located at
-https://anaconda.org/NOAA-GFDL/fre-cli :
+`the GFDL conda channel https://anaconda.org/NOAA-GFDL/fre-cli`_ :
 ``conda install noaa-gfdl::fre-cli``
 
 All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
