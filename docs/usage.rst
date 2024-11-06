@@ -19,21 +19,21 @@ Create new Conda environment
 Append necessary channels
 
 .. code-block::console
- conda config --append channels noaa-gfdl
- conda config --append channels conda-forge
+conda config --append channels noaa-gfdl
+conda config --append channels conda-forge
 
 Install needed dependencies
 
 .. code-block::console
- conda install noaa-gfdl::fre-cli
+conda install noaa-gfdl::fre-cli
  
-setup.py file allows fre.py to be ran with fre as the entry point on the command line instead of python fre.py
+``fre/setup.py`` allows ``fre/fre.py`` to be ran as ``fre`` on the command line by defining it as an **entry point**. Without it, the call would be, instead, ``python fre/fre.py``
 
-Enter commands and follow *--help* messages for guidance (brief rundown of commands also provided below)
+Enter commands and follow *``--help``* messages for guidance (brief rundown of commands also provided below)
 
-If the user just runs *fre*, it will list all the command groups following *fre*, such as *run*, *make*, *pp*, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown
+If the user just runs ``fre``, it will list all the command groups following ``fre``, such as ``run``, ``make``, ``pp``, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown
 
-Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if *--help* is executed
+Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if ``--help`` is executed
 
 Argument flags are not positional, can be specified in any order as long as they are specified
 
