@@ -111,7 +111,5 @@ MANIFEST.in file saying something like *include fre/fre(subTool)/fileName.fileEx
 see section "Documentation-Documentation"
 
 
-**other note**
---------------
-``fre/setup.py`` allows ``fre/fre.py`` to be ran as ``fre`` on the command line by defining it as an
-**entry point**. Without it, the call would be, instead, ``python fre/fre.py``
+
+
