@@ -16,9 +16,14 @@ If on workstation
 
 Create new Conda environment
 ----------------------------
+
+if you're at GFDL:
+``module load miniforge``
+
+create an empty environment to start
 ``conda create -n [environmentName]``
 
-activate:
+activate the empty environment:
 ``conda activate [environmentName]``
 
 append necessary channels:
