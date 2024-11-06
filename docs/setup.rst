@@ -14,7 +14,7 @@ If on workstation
 ``module load fre/2024.01``
 
 
-Create new Conda environment
+Create New Conda environment
 ----------------------------
 
 if you're at GFDL:
