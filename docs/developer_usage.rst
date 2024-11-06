@@ -49,19 +49,21 @@ For the new tool you are trying to develop, there are a few criteria to satisfy
 
 4. Add a ``click`` group named after ``<tool>`` within ``fre/<tool>/fre<tool>.py``
 
-* This ``click`` group will contain all the subcommands under the ``<tool>``'s functionality
+* This ``click`` group will contain all the functionality under the ``<tool>``
 
-5. Create separate files as needed for different subcommands; do not code out the full
+5. Create separate files as needed for different commands; do not code out the full
    implemetation of ``<tool>`` inside of a ``click`` command within ``fre/<tool>/fre<tool>.py``.
 
-* better yet, consider what structure your subtool may need in the future for maintainability's sake
+* better yet, consider what structure your tool may need in the future for maintainability's sake
+* if you need, specify a ``<subtool>`` like ``fre/<tool>/<subtool>``. ``fre/app`` currently has
+  this structure
 
 6. Be sure to import the contents of the needed subcommand scripts inside of ``fre<tool>.py``
 
-* i.e. from ``fre.fre<tool>.subCommandScript import *``
+* i.e. from ``fre.fre<tool>.toolCommandScript import *``
 
-7. At this point, you can copy and paste the parts of your main ``click`` subcommand from its script
-   into ``fre<tool>.py`` when implementing the function reflective of the subcommand function
+7. At this point, you can copy and paste the parts of your main ``click`` command from its script
+   into ``fre<tool>.py`` when implementing the function reflective of the command function
 
 * Everything will remain the same; i.e. arguments, options, etc.
 
@@ -72,12 +74,12 @@ For the new tool you are trying to develop, there are a few criteria to satisfy
   (preferably at the beginning, but it won't break it if it's not)
 
 8. From here, all that needs to be added after defining the command with a name is
-   ``context.forward(mainFunctionOfSubcommand)``, and done!
+   ``context.forward(mainFunctionOfToolCommand)``, and done!
 
 9. After this step, it is important to add ``from fre.fre<tool> import`` to ``__init__.py``
    within the /fre folder
 
-10. The last step is to replicate the subcommand in the same way as done in ``fre<tool>.py``
+10. The last step is to replicate the command in the same way as done in ``fre<tool>.py``
 	inside of ``fre.py``, but make sure to add ``from fre import fre<tool>`` and
 	``from fre.fre<tool>.fre<tool> import *``
 

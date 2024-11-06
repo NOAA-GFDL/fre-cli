@@ -11,14 +11,19 @@ various options work quite well:
 If on workstation
 -----------------
 
-``module load fre/canopy``
+``module load fre/2024.01``
 
 
 Create new Conda environment
 ----------------------------
+
+if you're at GFDL:
+``module load miniforge``
+
+create an empty environment to start
 ``conda create -n [environmentName]``
 
-activate:
+activate the empty environment:
 ``conda activate [environmentName]``
 
 append necessary channels:
