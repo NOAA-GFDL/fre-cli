@@ -57,7 +57,7 @@ Brief rundown of commands also provided below:
 
 1. **Bare-metal Build:**
 
-.. codeblock:: bash
+.. code-block:: 
 
   # Create checkout script
   fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod
@@ -76,7 +76,7 @@ Brief rundown of commands also provided below:
 
 2. **Bare-metal Build Multi-target:**
 
-.. codeblock:: bash
+.. code-block:: 
 
   # Create checkout script
   fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod -t debug
@@ -97,7 +97,7 @@ Brief rundown of commands also provided below:
 
 In order for the container to build successfully, a `-npc`, or `--no-parallel-checkout` is needed.
 
-.. codeblock:: bash
+.. code-block:: 
 
   # Create checkout script
   fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod -npc
@@ -116,7 +116,7 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
 
 4. **Run all of fremake:**
 
-.. codeblock:: 
+.. code-block:: 
 
   # Bare-metal
   fre make run-fremake -y am5.yaml -p ncrc5.intel23 -t prod
@@ -126,9 +126,9 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
 
 **Guide**
 
-#. **Bare-metal Build:**
+1. **Bare-metal Build:**
 
-.. codeblock:: 
+.. code-block:: 
 
   # Create checkout script
   fre make create-checkout -y [model yaml file] -p [platform] -t [target]
@@ -148,13 +148,13 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
   # Run all of fremake
   fre make run-fremake -y [model yaml file] -p [platform] -t [target] [other options...]
 
-#. **Container Build:**
+2. **Container Build:**
 
 For the container build, parallel checkouts are not supported, so the `-npc` options must be used for the checkout script. In addition the platform must be a container platform.
 
 ***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
 
-.. codeblock:: 
+.. code-block:: 
 
   # Create checkout script
   fre make create-checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
