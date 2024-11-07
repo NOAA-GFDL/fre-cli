@@ -27,49 +27,61 @@ Usage-By-Tool
 =============
 
 
-fre app
--------
+``fre app``
+-----------
 
 .. include:: fre_app.rst
 
-
    
-fre catalog
------------
+``fre catalog``
+---------------
 
 .. include:: fre_catalog.rst
 
 
-fre cmor
---------
+``fre cmor``
+------------
 
 .. include:: fre_cmor.rst
 
   
-fre make
---------
+``fre make``
+------------
 
 .. include:: fre_make.rst
   
 
-fre pp
-------
+``fre pp``
+----------
 
 .. include:: fre_pp.rst
 
 
-fre yamltools
--------------
+``fre yamltools``
+-----------------
 
 .. include:: fre_yamltools.rst
 
 
-not-yet-implemented
--------------------
+Tools Not-Yet-Implemented
+=========================
 
-#. ``fre check``
-#. ``fre list``
-#. ``fre run``
-#. ``fre test``
+``fre check``
+-------------
 
+to-do
 
+``fre list``
+------------
+
+to-do
+
+``fre run``
+-----------
+
+to-do
+
+``fre test``
+------------
+
+to-do
