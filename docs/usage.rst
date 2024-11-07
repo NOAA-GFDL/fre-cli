@@ -39,6 +39,10 @@ Brief rundown of commands also provided below:
 ``fre cmor``
 ============
 
+This set of tools leverages the external ``cmor`` python package within the ``fre`` ecosystem. ``cmor`` is an
+acronym for "climate model output rewriter". The process of rewriting model-specific output files for model
+intercomparisons (MIPs) using the ``cmor`` module is, quite cleverly, referred to as "CMORizing". 
+
 .. include:: fre_cmor.rst
 
   
