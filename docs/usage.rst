@@ -45,6 +45,8 @@ Brief rundown of commands also provided below:
 ``fre make``
 ============
 
+.. include:: fre_make.rst
+
 Through the fre-cli, `fre make` can be used to create and run a checkout script, makefile, and compile a model.
 
 * Fremake Canopy Supports:
