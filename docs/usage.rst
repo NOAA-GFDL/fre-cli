@@ -1,12 +1,13 @@
-=====
-Usage
-=====
+.. NEEDS UPDATING #TODO
+=============
+Usage-By-Tool
+=============
 
 for setup, see the setup section.
 
 
-Calling ``fre``
-===============
+``fre``
+=======
 
 Brief rundown of commands also provided below:
 
@@ -23,80 +24,62 @@ Brief rundown of commands also provided below:
   *entry point*. Without it, the call would be instead, something like ``python fre/fre.py``
 
 
-Tools
-=====
+``fre app``
+===========
 
-A few subtools are currently in development:
-
-
-fre app
--------
-
-1. ``generate-time-averages``
-2. ``regrid_xy``
+.. include:: fre_app.rst
 
    
-fre catalog
------------
+``fre catalog``
+===============
 
-1. ``builder`` Generate a catalog
-
-* Builds json and csv format catalogs from user input directory path
-* Minimal Syntax: ``fre catalog builder -i [input path] -o [output path]``
-* Module(s) needed: n/a
-* Example: ``fre catalog builder -i /archive/am5/am5/am5f3b1r0/c96L65_am5f3b1r0_pdclim1850F/gfdl.ncrc5-deploy-prod-openmp/pp -o ~/output --overwrite``
-
-2. ``validate`` Validate the catalog
+.. include:: fre_catalog.rst
 
 
-fre cmor
---------
+``fre cmor``
+============
 
-1. ``run``
-
-* placehold
+.. include:: fre_cmor.rst
 
   
-fre make
---------
+``fre make``
+============
 
-1. ``run-fremake``
-
-* placehold
-
+.. include:: fre_make.rst
   
-fre pp
-------
 
-1. ``configure`` 
+``fre pp``
+==========
 
-* Postprocessing yaml configuration
-* Minimal Syntax: ``fre pp configure -y [user-edit yaml file]``
-* Module(s) needed: n/a
-* Example: ``fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml``
-
-2. ``checkout``
-
-* Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository
-* Minimal Syntax: ``fre pp checkout -e [experiment name] -p [platform name] -t [target name]``
-* Module(s) needed: n/a
-* Example: ``fre pp checkout -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp``
+.. include:: fre_pp.rst
 
 
-fre yamltools
--------------
+``fre yamltools``
+=================
 
-1. ``combine-yamls``
-
-* placehold
+.. include:: fre_yamltools.rst
 
 
-not-yet-implemented
--------------------
+``fre check``
+=============
 
-#. ``fre check``
-#. ``fre list``
-#. ``fre run``
-#. ``fre test``
+**not-yet-implemented**
 
+
+``fre list``
+============
+
+**not-yet-implemented**
+
+
+``fre run``
+===========
+
+**not-yet-implemented**
+
+
+``fre test``
+============
+
+**not-yet-implemented**
 
