@@ -59,9 +59,16 @@ arguments
 
 examples
 ~~~~~~~~
-.. code-block:: python
-				fre cmor run 
+with a local clone of ``fre-cli``, the following call should work out-of-the-box from
+the root directory of the repository.
 
+.. code-block:: python
+                fre cmor run \
+                   -d fre/tests/test_files/ocean_sos_var_file \
+                   -l fre/tests/test_files/varlist \
+                   -r fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json \
+                   -p fre/tests/test_files/CMOR_input_example.json \
+                   -o fre/tests/test_files/outdir
 
 background
 ~~~~~~~~~~
