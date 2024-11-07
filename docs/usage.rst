@@ -1,12 +1,11 @@
 =============
 Usage
 =============
+Using a set of YAML configuration files, ``fre make`` compiles a FMS-based model, and ``fre pp`` can postprocesses the history output and runs diagnostic analysis scripts. Please note that model running is not yet supported in FRE 2024; continue to use FRE Bronx frerun.
 
 Build FMS model
 =======================
-Using a set of YAML configuration files, FRE compiles and runs a FMS-based model, and then postprocesses the history output and runs diagnostic analysis scripts. (Note: presently FRE model running is not yet supported in FRE 2024; please continue to use FRE Bronx frerun).
-FRE 2024 can compile a FMS-based model using a set of YAML configuration files, and can also create an executable within a containerized environment.
-FRE builds the FMS executable from source code and build instructions specified in YAML configuration files. Currently, the mkmf build system is used (https://github.com/NOAA-GFDL/mkmf). FRE 2024 supports traditional “bare metal” build environments (environment defined by a set of “module load”s) and a containerized environment (environment defined by a Dockerfile).
+``fre make`` can compile a traditional "bare metal" executable or a containerized executable using a set of YAML configuration files.
 
 https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/make/README.md
 
@@ -14,101 +13,12 @@ Run FMS model
 =======================
 Check back in the latter half of 2025 or so.
 
-Postprocess FMS history
-========================
-FRE regrids FMS history files and generates climatologies with instructions specified in YAML.
+Postprocess FMS history output
+==============================
+``fre pp`` regrids FMS history files and generates timeseries, climatologies, and static postprocessed files, with instructions specified in YAML.
 
-Bronx plug-in refineDiag and analysis scripts can be run as-is.
+Bronx plug-in refineDiag and analysis scripts can also be used, and a reimagined analysis script ecosystem is being developed and is available now (for adventurous users). The new analysis script framework is independent of and compatible with FRE (https://github.com/NOAA-GFDL/analysis-scripts). The goal is to combine the ease-of-use of legacy FRE analysis scripts with the standardization of model output data catalogs and python virtual environments.
 
-A new analysis script framework is being developed as an independent capability, and the FRE interface is being co-developed. The goal is to combine the ease-of-use of legacy FRE analysis scripts with the standardization of model output data catalogs and python virtual environments.
+In the future, output NetCDF files will be rewritten by CMOR by default, ready for publication to community archives (e.g. ESGF). Presently, standalone CMOR tooling is available as ``fre cmor``.
 
-In the future, output NetCDF files will be rewritten by CMOR by default, ready for publication to community archives (e.g. ESGF). (Note: Not yet available. Standalone CMOR tooling is available.)
-
-By default, an intake-esm-compatible data catalog is generated and updated, containing a programmatic metadata-enriched searchable interface to the postprocessed output.
-
-General notes on command-line interface
-=======
-The “cli” in fre-cli derives from the shell “fre SUBCOMMAND COMMAND” structure inspired by git, cylc, and other modern Linux command-line tools. Compared to other command-line structures, this enables discovery of the tooling capability, useful for complex tools with multiple options.
-
-To discover subcommands, e.g.
-
-``fre --help``
-
-``fre make --help``
-
-``fre pp --help``
-
-Commands that require arguments to run will alert user about missing arguments, and will also list
-the rest of the optional parameters if ``--help`` is executed. e.g.
-
-``fre pp configure-yaml --help``
-
-Argument flags are not positional, can be specified in any order. Some arguments expect sub-arguments.
-
-``fre app``
-===========
-
-.. include:: fre_app.rst
-
-   
-``fre catalog``
-===============
-
-.. include:: fre_catalog.rst
-
-
-``fre cmor``
-============
-
-* See also, ``fre cmor``'s `README <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/cmor/README.md>`_
-* See also, ``fre cmor``'s `project board <https://github.com/orgs/NOAA-GFDL/projects/35>`_
-
-This set of tools leverages the external ``cmor`` python package within the ``fre`` ecosystem. ``cmor`` is an
-acronym for "climate model output rewriter". The process of rewriting model-specific output files for model
-intercomparisons (MIPs) using the ``cmor`` module is, quite cleverly, referred to as "CMORizing".
-
-
-.. include:: fre_cmor.rst
-
-  
-``fre make``
-============
-
-.. include:: fre_make.rst
-  
-
-``fre pp``
-==========
-
-.. include:: fre_pp.rst
-
-
-``fre yamltools``
-=================
-
-.. include:: fre_yamltools.rst
-
-
-``fre check``
-=============
-
-**not-yet-implemented**
-
-
-``fre list``
-============
-
-**not-yet-implemented**
-
-
-``fre run``
-===========
-
-**not-yet-implemented**
-
-
-``fre test``
-============
-
-**not-yet-implemented**
-
+By default, an intake-esm-compatible data catalog is generated and updated, containing a programmatic metadata-enriched searchable interface to the postprocessed output. The catalog tooling can be independently assessed as ``fre catalog``.

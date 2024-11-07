@@ -1,11 +1,12 @@
 =====
 Setup
 =====
-fre-cli is conda-installable from the “noaa-gfdl” anaconda channel.
+fre-cli is conda-installable from the “noaa-gfdl” anaconda channel (https://anaconda.org/NOAA-GFDL/fre-cli)
+and is deployed on GFDL systems as Environment Modules.
 
 On GFDL systems
 ========================
-If you are at GFDL (gaea, PP/AN, workstations), you may skip installation as modules are available:
+If you are at GFDL (gaea, PP/AN, workstations), you may skip installation:
 
 ``module load fre/2024.01``
 
@@ -13,13 +14,13 @@ If you are at GFDL (gaea, PP/AN, workstations), you may skip installation as mod
 
 Generic
 =======================
-If you are outside GFDL or are a FRE developer, it's easy to install through conda. If you're at GFDL,
+If you are outside GFDL or are a FRE developer, install with conda. If you're at GFDL, bring conda into your PATH with
 
 ``module load miniforge``
 
-If you are outside, install the miniconda tool with the standard instructions (https://docs.anaconda.com/miniconda/miniconda-install/).
+If you are outside GFDL, install the miniconda tool with the standard instructions (https://docs.anaconda.com/miniconda/miniconda-install/).
 
-Then, install the latest fre-cli from the NOAA-GFDL anaconda channel (https://anaconda.org/NOAA-GFDL/fre-cli):
+Once you have conda available, install the latest fre-cli from the NOAA-GFDL anaconda channel:
 
 ``conda create --name fre --channel noaa-gfdl --channel conda-forge fre-cli``
 
