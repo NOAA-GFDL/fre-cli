@@ -1,4 +1,4 @@
-name: create_test_conda_env
+name: own_create_test_conda_env
 
 on: [push]
 
