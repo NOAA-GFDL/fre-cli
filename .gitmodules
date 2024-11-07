@@ -1,0 +1,3 @@
+[submodule "fre/gfdl_msd_schemas"]
+	path = fre/gfdl_msd_schemas
+	url = https://github.com/NOAA-GFDL/gfdl_msd_schemas
