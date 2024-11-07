@@ -4,9 +4,9 @@
    Some sphinx markdown examples:
    https://gist.github.com/SMotaal/24006b13b354e6edad0c486749171a70
 
-===================================
-Welcome to Fre-Cli's documentation!
-===================================
+=======================================
+Welcome to ``fre-cli``'s documentation!
+=======================================
 
 .. the entry in the toc must be the .rst filename.
    what shows in the webpage is the first header or title

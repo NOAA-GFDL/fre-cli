@@ -60,6 +60,14 @@ Argument flags are not positional, can be specified in any order. Some arguments
 ``fre cmor``
 ============
 
+* See also, ``fre cmor``'s `README <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/cmor/README.md>`_
+* See also, ``fre cmor``'s `project board <https://github.com/orgs/NOAA-GFDL/projects/35>`_
+
+This set of tools leverages the external ``cmor`` python package within the ``fre`` ecosystem. ``cmor`` is an
+acronym for "climate model output rewriter". The process of rewriting model-specific output files for model
+intercomparisons (MIPs) using the ``cmor`` module is, quite cleverly, referred to as "CMORizing".
+
+
 .. include:: fre_cmor.rst
 
   

@@ -27,9 +27,9 @@ jobs:
           # add conda env's executables to github's PATH equiv.
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
 
-          ## use *conda environment's pip* to install fre-cli
-          ## called w/ full path to conda's python for explicitness
-          ## called as a module (-m pip) for explicitness
+          # use *conda environment's pip* to install fre-cli
+          # called w/ full path to conda's python for explicitness
+          # called as a module (-m pip) for explicitness
           $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
 
       - name: Run pytest in fre-cli environment
