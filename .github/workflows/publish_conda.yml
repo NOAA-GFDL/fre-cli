@@ -13,11 +13,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Run Conda to Build and Publish
-        run: |
-          conda config --append channels conda-forge
-          conda config --append channels noaa-gfdl
-          conda install conda-build anaconda-client conda-verify
-          export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
-          conda config --set anaconda_upload yes
-          conda build .
+#      - name: Run Conda to Build and Publish
+#        run: |
+#          conda config --append channels conda-forge
+#          conda config --append channels noaa-gfdl
+#          conda install conda-build anaconda-client conda-verify
+#          export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
+#          conda config --set anaconda_upload yes
+#          conda build .
