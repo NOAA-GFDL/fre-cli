@@ -1,11 +1,14 @@
-1. ``configure`` 
+.. NEEDS UPDATING #TODO
+``configure``
+-------------
 
 * Postprocessing yaml configuration
 * Minimal Syntax: ``fre pp configure -y [user-edit yaml file]``
 * Module(s) needed: n/a
 * Example: ``fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml``
 
-2. ``checkout``
+``checkout``
+------------
 
 * Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository
 * Minimal Syntax: ``fre pp checkout -e [experiment name] -p [platform name] -t [target name]``

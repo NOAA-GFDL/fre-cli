@@ -1,3 +1,4 @@
+.. this file is explicitly for the hyperlinkage in the base README.md to the badge image files
 ======
 Badges
 ======

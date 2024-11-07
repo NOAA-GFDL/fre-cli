@@ -1,3 +1,5 @@
+.. last updated early Nov 2024.
+   could use some refinement
 ===========================
 Documentation-Documentation
 ===========================

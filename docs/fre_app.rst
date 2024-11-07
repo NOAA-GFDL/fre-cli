@@ -1,2 +1,6 @@
-1. ``generate-time-averages``
-2. ``regrid_xy``
+.. NEEDS UPDATING #TODO
+``generate-time-averages``
+--------------------------
+
+``regrid_xy``
+-------------
