@@ -2,8 +2,7 @@ name: build_conda
 on:
   pull_request:
     branches:
-      - FOO
-#      - main
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
