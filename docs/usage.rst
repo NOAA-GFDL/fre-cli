@@ -45,13 +45,66 @@ Brief rundown of commands also provided below:
 ``fre make``
 ============
 
-.. include:: fre_make.rst
+Through the fre-cli, `fre make` can be used to create and run a checkout script, makefile, and compile a model.
 
-1. create-checkuot
-2. create-makefile
-3. create-compile
-4. create-dockerfile
-5. run-fremake
+* Fremake Canopy Supports:
+   - multiple targets; use `-t` flag to define each target
+   - bare-metal build
+   - container creation
+   - parallel checkouts for bare-metal build**
+
+** **Note: Users will not be able to create containers without access to podman**
+
+The fremake canopy fre-cli subcommands are described below ([Subtools](#subtools)), as well as a Guide on the order in which to use them ([Guide](#guide)).
+
+Additionally, as mentioned, multiple targets can be used more multiple target-platform combinations.
+
+**Subtools**
+
+- `fre make create-checkout [options]`
+   - Purpose: Creates the checkout script and can check out source code (with execute option)
+   - Options:
+        - `-y, --yamlfile [experiment yaml] (required)`
+        - `-p, --platform [platform] (required)`
+        - `-t, --target [target] (required)`
+        - `-j, --jobs [number of jobs to run simultneously]`
+        - `-npc, --no-parallel-checkout (for container build)`
+        - `-e, --execute`
+
+- `fre make create-makefile [options]`
+   - Purpose: Creates the makefile
+   - Options:
+        - `-y, --yamlfile [experiment yaml] (required)`
+        - `-p, --platform [platform] (required)`
+        - `-t, --target [target] (required)`
+
+- `fre make create-compile [options]`
+   - Purpose: Creates the compile script and compiles the model (with execute option)
+   - Options:
+        - `-y, --yamlfile [experiment yaml] (required)`
+        - `-p, --platform [platform] (required)`
+        - `-t, --target [target] (required)`
+        - `-j, --jobs [number of jobs to run simultneously]`
+        - `-n, --parallel [number of concurrent modile compiles]`
+        - `-e, --execute`
+
+- `fre make create-dockerfile [options]`
+   - Purpose: Creates the dockerfile and creates the container (with execute option)
+   - With the creation of the dockerfile, the Makefile, checkout script, and any other necessary script is copied into the container from a temporary location
+   - Options:
+        - `-y, --yamlfile [experiment yaml] (required)`
+        - `-p, --platform [platform] (required)`
+        - `-t, --target [target] (required)`
+
+- `fre make run-fremake [options]`
+   - Purpose: Create the checkout script, Makefile, compile script, and dockerfile (platform dependent) for the compilation of the model
+   - Options:
+        - `-y, --yamlfile [experiment yaml] (required)`
+        - `-p, --platform [platform] (required)`
+        - `-t, --target [target] (required)`
+        - `-npc, --no-parallel-checkout (for container build)`
+        - `-j, --jobs [number of jobs to run simultneously]`
+        - `-n, --parallel [number of concurrent modile compiles]`
 
 **Quickstart**
 
