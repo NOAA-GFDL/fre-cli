@@ -52,8 +52,33 @@ variables:
 		:git_hash = "b86d27037f755a82c586e55073dd575245c144b1" ;
 		:creationtime = "Mon Jun 17 18:57:22 2024" ;
 		:hostname = "pp337" ;
-		:history = "Tue Oct 22 11:05:33 2024: ncks --dmn lat,0,1 --dmn lon,0,1 --dmn time,0,1 ocean_monthly_1x1deg.199301-199712.sos.nc -o reduced_ocean_monthly_1x1deg.199301-199712.sos.nc\n",
+		:history = "Wed Nov  6 19:17:52 2024: ncks -d lat,0,1 -d lon,0,1 -d time,0,1 ocean_monthly_1x1deg.199301-199712.sos.nc -o reduced_ocean_monthly_1x1deg.199301-199712.sos.nc\n",
 			"fregrid --standard_dimension --input_mosaic ocean_mosaic.nc --input_file all --interp_method conserve_order1 --remap_file .fregrid_remap_file_360_by_180.nc --nlon 360 --nlat 180 --scalar_field (**please see the field list in this file**) --output_file out.nc" ;
 		:external_variables = "areacello" ;
 		:NCO = "netCDF Operators version 5.1.5 (Homepage = http://nco.sf.net, Code = http://github.com/nco/nco)" ;
+data:
+
+ lat = -89.5, -88.5 ;
+
+ lat_bnds =
+  -90, -89,
+  -89, -88 ;
+
+ lon = 0.5, 1.5 ;
+
+ lon_bnds =
+  0, 1,
+  1, 2 ;
+
+ sos =
+  _, _,
+  _, _,
+  _, _,
+  _, _ ;
+
+ time = 12799.5, 12829 ;
+
+ time_bnds =
+  12784, 12815,
+  12815, 12843 ;
 }
