@@ -11,58 +11,58 @@ arguments
 ~~~~~~~~~
 
 * (required) ``-d, --indir TEXT``, input directory containing netCDF files to CMORize.
-   
+
   - all netCDF files within ``indir`` will have their filename checked for local variables
     specified in ``varlist`` as keys, and ISO datetime strings extracted and kept in a list
     for later iteration over target files
-	 
+
   - a debugging-oriented boolean flag constant at the top of ``cmor_mixer.py``, if ``True``
     will process one file of all files found within ``indir`` and cease processing for that
     variable after succeeding on one file
-	 
+
 * (required) ``-l, --varlist TEXT``, path to variable list dictionary.
-  
+
   - each entry in the variable list dictionary corresponds to a key/value pair
-	
+
   - the key (local variable) is used for ID'ing files within ``indir`` to be processed
-	
+
   - associated with the key (local variable), is the value (target variable), which should
     be the label attached to the data within the targeted file(s)
- 
+
 * (required) ``-r, --table_config TEXT``, path to MIP json configuration holding variable
   metadata.
-  
+
   - typically, this is to be provided by a data-request associated with the MIP and
-	participating experiments
-	 
+    participating experiments
+
 * (required) ``-p, --exp_config TEXT``, path to json configuration holding experiment/model
   metadata
-  
+
   - contains e.g. ``grid_label``, and points to other important configuration files
     associated with the MIP
-  	 
+
   - the other configuration files are typically housing metadata associated with ``coordinates``,
     ``formula_terms``, and controlled-vocabulary (``CV``).
-	 
+
 * (required) ``-o, --outdir TEXT``, path-prefix inwhich the output directory structure is created.
 
   - further output-directories and structure/template information is specified specified in ``exp_config``
-	 
+
   - in addition to the output-structure/template used, an additional directory corresponding to the
     date the CMORizing was done is created near the end of the directory tree structure
-	 
+
 * (optional) ``-v, --opt_var_name TEXT``, a specific variable to target for processing
-  
+
   - largely a debugging convenience functionality, this can be helpful for targeting more specific
     input files as desired. 
 
-   
+
 examples
 ~~~~~~~~
 .. code-block:: python
 				fre cmor run 
 
-				
+
 background
 ~~~~~~~~~~
 
