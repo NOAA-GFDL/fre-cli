@@ -1,12 +1,13 @@
-=====
-Usage
-=====
+.. NEEDS UPDATING #TODO
+=============
+Usage-By-Tool
+=============
 
 for setup, see the setup section.
 
 
-Calling ``fre``
-===============
+``fre``
+=======
 
 Brief rundown of commands also provided below:
 
@@ -23,65 +24,62 @@ Brief rundown of commands also provided below:
   *entry point*. Without it, the call would be instead, something like ``python fre/fre.py``
 
 
-Usage-By-Tool
-=============
-
-
 ``fre app``
------------
+===========
 
 .. include:: fre_app.rst
 
    
 ``fre catalog``
----------------
+===============
 
 .. include:: fre_catalog.rst
 
 
 ``fre cmor``
-------------
+============
 
 .. include:: fre_cmor.rst
 
   
 ``fre make``
-------------
+============
 
 .. include:: fre_make.rst
   
 
 ``fre pp``
-----------
+==========
 
 .. include:: fre_pp.rst
 
 
 ``fre yamltools``
------------------
+=================
 
 .. include:: fre_yamltools.rst
 
 
-Tools Not-Yet-Implemented
-=========================
-
 ``fre check``
--------------
+=============
 
-to-do
+**not-yet-implemented**
+
 
 ``fre list``
-------------
+============
 
-to-do
+**not-yet-implemented**
+
 
 ``fre run``
------------
+===========
 
-to-do
+**not-yet-implemented**
+
 
 ``fre test``
-------------
+============
 
-to-do
+**not-yet-implemented**
+
