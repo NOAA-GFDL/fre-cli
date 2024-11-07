@@ -2,9 +2,9 @@
    You can adapt this file completely to your liking, but it should at least contain the root
    \`toctree\` directive (no backslashes)
 
-===================================
-Welcome to Fre-Cli's documentation!
-===================================
+=======================================
+Welcome to ``fre-cli``'s documentation!
+=======================================
 
 .. the entry in the toc must be the .rst filename.
    what shows in the webpage is the first header or title

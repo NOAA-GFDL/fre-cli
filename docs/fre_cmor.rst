@@ -63,6 +63,7 @@ with a local clone of ``fre-cli``, the following call should work out-of-the-box
 the root directory of the repository.
 
 .. code-block:: python
+
                 fre cmor run \
                    -d fre/tests/test_files/ocean_sos_var_file \
                    -l fre/tests/test_files/varlist \
