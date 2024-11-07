@@ -55,7 +55,7 @@ Brief rundown of commands also provided below:
 
 **Quickstart**
 
-#. **Bare-metal Build:**
+1. **Bare-metal Build:**
 
 .. codeblock:: bash
 
@@ -74,7 +74,7 @@ Brief rundown of commands also provided below:
   # Create and run the compile script
   fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod --execute
 
-#. **Bare-metal Build Multi-target:**
+2. **Bare-metal Build Multi-target:**
 
 .. codeblock:: bash
 
@@ -93,7 +93,7 @@ Brief rundown of commands also provided below:
   # Create and run the compile script
   fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
-#. **Container Build:**
+3. **Container Build:**
 
 In order for the container to build successfully, a `-npc`, or `--no-parallel-checkout` is needed.
 
@@ -114,9 +114,9 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
   # Create and run the Dockerfile
   fre make create-dockerfile -y am5.yaml -p hpcme.2023 -t prod --execute
 
-#. **Run all of fremake:**
+4. **Run all of fremake:**
 
-.. codeblock:: bash
+.. codeblock:: 
 
   # Bare-metal
   fre make run-fremake -y am5.yaml -p ncrc5.intel23 -t prod
@@ -124,9 +124,11 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
   # Container
   fre make run-fremake -y am5.yaml -p hpcme.2023 -t prod -npc
 
+**Guide**
+
 #. **Bare-metal Build:**
 
-.. codeblock:: bash
+.. codeblock:: 
 
   # Create checkout script
   fre make create-checkout -y [model yaml file] -p [platform] -t [target]
@@ -152,7 +154,7 @@ For the container build, parallel checkouts are not supported, so the `-npc` opt
 
 ***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
 
-.. codeblock:: bash
+.. codeblock:: 
 
   # Create checkout script
   fre make create-checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
