@@ -7,27 +7,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '>=3.9'
-      
       - name: Add conda to system path
         run: |
           # $CONDA is an env var pointing to root of miniconda dir
           echo $CONDA/bin >> $GITHUB_PATH
-          # info #1
-          echo "----------------------------------------------------------------"
-          ls ~
-          pwd
-          # info # 2
-          echo "----------------------------------------------------------------"
-          mkdir ~/cylc-src
-          git clone https://github.com/noaa-gfdl/fre-workflows.git ~/cylc-src/FOO__BAR__BAZ
-          ls ~/cylc-src/FOO__BAR__BAZ
-          # done 
-          echo "----------------------------------------------------------------"
-          
+
       - name: Create fre-cli environment
         run: |
           # create environment containing all dependencies
