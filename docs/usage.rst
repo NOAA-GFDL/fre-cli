@@ -52,9 +52,8 @@ fre catalog
 fre cmor
 --------
 
-1. ``run``
+.. include:: fre_cmor.rst
 
-* placehold
 
   
 fre make
