@@ -14,9 +14,10 @@ Welcome to Fre-Cli's documentation!
    :maxdepth: 1
    :caption: Contents:
 
-   overview
+   what-is-fre
    setup
    usage
+   tools
    for-developers
 
 Indices
