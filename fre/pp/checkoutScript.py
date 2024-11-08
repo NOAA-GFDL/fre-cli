@@ -20,7 +20,7 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
 
 #############################################
 
-def _checkoutTemplate(experiment, platform, target, branch='empty'):
+def _checkoutTemplate(experiment, platform, target, branch=None):
     """
     Checkout the workflow template files from the repo
     """
@@ -36,7 +36,7 @@ def _checkoutTemplate(experiment, platform, target, branch='empty'):
 
     # branch and version parameters
     default_tag = subprocess.run(["fre","--version"],capture_output=True, text=True).stdout.split()[2]
-    if branch != 'empty':   
+    if branch == None:   
         if os.path.isdir(name): #scenario 4
             os.chdir(name)
             name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout
@@ -93,7 +93,7 @@ def _checkoutTemplate(experiment, platform, target, branch='empty'):
 #############################################
 
 @click.command()
-def checkoutTemplate(experiment, platform, target, branch = 'empty'):
+def checkoutTemplate(experiment, platform, target, branch = None):
     '''
     Wrapper script for calling checkoutTemplate - allows the decorated version
     of the function to be separate from the undecorated version
