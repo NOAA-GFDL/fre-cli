@@ -60,9 +60,11 @@ Additionally, as mentioned, multiple targets can be used more multiple target-pl
 .. include:: fre_make.rst
 
 Guide to `fre make` subtools:
+
 :ref:`fre-make-guide`
 
 Quickstart:
+
 :ref:`fre-make-quickstart`
 
 ``fre pp``
