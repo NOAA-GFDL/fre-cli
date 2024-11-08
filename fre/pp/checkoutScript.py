@@ -20,7 +20,7 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
 
 #############################################
 
-def _checkoutTemplate(experiment, platform, target):
+def _checkoutTemplate(experiment, platform, target, branch='empty'):
     """
     Checkout the workflow template files from the repo
     """
@@ -34,14 +34,31 @@ def _checkoutTemplate(experiment, platform, target):
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
 
-    # Get name of local branch and check branch rquest
-    branch_names = subprocess.run(["git","branch"],capture_output=True, text=True)
-    local_branch_name = branch_names.stdout.split()[1]
-    if branch != 'main':
-        if branch != local_branch_name:
-            stop_report = ("Error in branch: local branch does not match branch input")
-            sys.exit(stop_report)
-            return 1
+    # branch and version parameters
+    default_tag = subprocess.run(["fre","--version"],capture_output=True, text=True).stdout.split()[2]
+    if branch != 'empty':   
+        if os.path.isdir(name): #scenario 4
+            os.chdir(name)
+            name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout
+            name_path_branch=subprocess.run(["git","branch"],capture_output=True, text=True).stdout.split()[1]
+            os.chdir(directory)
+            if default_tag not in name_path_tag and name_path_branch != branch:
+                stop_report = f"Tag and branch of prexisting directory {diretory}/{name} does not match fre --version or branch requested"
+                sys.exit(stop_report)
+                return 1
+        else:   #scenario 2
+            subprocess.run(f'git clone --branch={branch} https://github.com/NOAA-GFDL/fre-cli.git')
+    else:
+        if os.path.isdir(name): #scenario 3
+            os.chdir(name)
+            name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout.split()
+            os.chdir(directory)
+            if not default_tag in name_path_tag:
+                stop_report = f"Tag of prexisting directory {diretory}/{name} does not match fre --version"
+                sys.exit(stop_report)
+                return 1
+        else:   #scenario 1
+            subprocess.run(f'git checkout tags/{default_tags}')
 
     # Clone the repository with depth=1; check for errors
     click.echo("cloning experiment into directory " + directory + "/" + name)
@@ -52,8 +69,6 @@ def _checkoutTemplate(experiment, platform, target):
     click.echo(clonecmd)
     cloneproc = subprocess.run(clonecmd, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
 
-    if branch == 'main':
-        subprocess.run('git checkout tags/2024.01')
     if not cloneproc.returncode == 0:
         if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
             argstring = f" -e {experiment} -p {platform} -t {target}"
@@ -78,7 +93,7 @@ def _checkoutTemplate(experiment, platform, target):
 #############################################
 
 @click.command()
-def checkoutTemplate(experiment, platform, target, branch="main"):
+def checkoutTemplate(experiment, platform, target, branch = 'empty'):
     '''
     Wrapper script for calling checkoutTemplate - allows the decorated version
     of the function to be separate from the undecorated version
