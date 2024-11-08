@@ -30,6 +30,6 @@ activate the empty environment:
 append necessary channels:
 ``conda config --append channels noaa-gfdl; conda config --append channels conda-forge;``
 
-install ``fre-cli`` into the activated environment from `the GFDL conda channel https://anaconda.org/NOAA-GFDL/fre-cli`_ :
+install ``fre-cli`` into the activated environment from `the GFDL conda channel <https://anaconda.org/NOAA-GFDL/fre-cli>`_ :
 ``conda install noaa-gfdl::fre-cli``
 
