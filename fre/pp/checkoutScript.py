@@ -39,8 +39,9 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
     if branch == None:   
         if os.path.isdir(name): #scenario 4
             os.chdir(name)
-            name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout
-            name_path_branch=subprocess.run(["git","branch"],capture_output=True, text=True).stdout.split()[1]
+            name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout.split('*')
+            name_path_branch = name_path_branch[1].split()[0]
+            name_path_branch=subprocess.run(["git","branch"],capture_output=True, text=True).stdout
             os.chdir(directory)
             if default_tag not in name_path_tag and name_path_branch != branch:
                 stop_report = f"Tag and branch of prexisting directory {diretory}/{name} does not match fre --version or branch requested"
@@ -51,14 +52,14 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
     else:
         if os.path.isdir(name): #scenario 3
             os.chdir(name)
-            name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout.split()
+            name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout.split()[0]
             os.chdir(directory)
             if not default_tag in name_path_tag:
                 stop_report = f"Tag of prexisting directory {diretory}/{name} does not match fre --version"
                 sys.exit(stop_report)
                 return 1
         else:   #scenario 1
-            subprocess.run(f'git checkout tags/{default_tags}')
+            git clone --branch={default_tag} https://github.com/NOAA-GFDL/fre-cli.git
 
     # Clone the repository with depth=1; check for errors
     click.echo("cloning experiment into directory " + directory + "/" + name)
