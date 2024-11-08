@@ -17,7 +17,7 @@ Guides for the process in which subtools are used with tools.
 
 .. _fre-make-guide:
 
-``fre make``
+``fre make guide``
 ============
 
 1. **Bare-metal Build:**
