@@ -1,3 +1,16 @@
+# https://pytest-cov.readthedocs.io/en/latest/config.html
 [run]
 omit =
-    ./*/tests
+    tests/*
+    catalog/tests/*
+    # check/tests/*
+    cmor/tests/*
+    # list/tests/*
+    make/tests/*
+    pp/tests/*
+    # run/tests/*
+    # test/tests/*
+    yamltools/tests/*
+    # app/tests/*
+    app/generate_time_averages/tests/*
+    app/regrid_xy/tests/*
