@@ -5,9 +5,6 @@ package:
   version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
 
 source:
-#  path: .
-# ideally we want this git_url path, but it messes with conda publish
-# where it builds only the sourced url and not local/branch changes
   git_url: https://github.com/NOAA-GFDL/fre-cli.git
 
 build:
@@ -48,9 +45,6 @@ test:
   source_files:
     - fre/
   imports:
-    - click
-    - pytest
-    - pylint
     - fre
     - fre.pp
     - fre.pp.install
@@ -63,7 +57,7 @@ test:
     - fre.catalog
   commands:
     - pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
-    - pip install GitPython && pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
+    - pip install GitPython && pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report term-missing --cov=fre fre/
     - fre --help
     - fre pp --help
     - fre pp install --help
