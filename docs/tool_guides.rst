@@ -1,4 +1,5 @@
-**Tool Guides**
+Tool Guides
+=============
 
 ``fre app``
 ============
