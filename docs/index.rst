@@ -14,6 +14,7 @@ Welcome to Fre-Cli's documentation!
 
    setup
    usage
+   guides
    developer_usage
    contributing_to_doc
    badges

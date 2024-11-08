@@ -9,7 +9,7 @@
 ``fre cmor``
 ============
 
-.. _reference-name: 
+.. _fre-make-guide: 
 
 ``fre make guide``
 ============
