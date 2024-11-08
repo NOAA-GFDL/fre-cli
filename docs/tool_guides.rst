@@ -15,11 +15,10 @@ Guides for the process in which subtools are used with tools.
 ``fre cmor``
 ============
 
+.. _fre-make-guide:
 
 ``fre make``
 ============
-
-.. _fre-make-guide:
 
 1. **Bare-metal Build:**
 
@@ -66,7 +65,6 @@ For the container build, parallel checkouts are not supported, so the `-npc` opt
   # Create and run the Dockerfile
   fre make create-dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 
-.. _fre-make-quickstart:
 
 1. **Bare-metal Build:**
 
