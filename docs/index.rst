@@ -14,10 +14,7 @@ Welcome to Fre-Cli's documentation!
 
    setup
    usage
-
-   .. dropdown:: Tool Guides
-       tool_guides
-
+   tool_guides
    developer_usage
    contributing_to_doc
    badges
