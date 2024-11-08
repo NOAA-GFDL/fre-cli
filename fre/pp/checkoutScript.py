@@ -59,7 +59,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
                 sys.exit(stop_report)
                 return 1
         else:   #scenario 1
-            git clone --branch={default_tag} https://github.com/NOAA-GFDL/fre-cli.git
+            subprocess.run(f'git clone --branch={branch} https://github.com/NOAA-GFDL/fre-cli.git')
 
     # Clone the repository with depth=1; check for errors
     click.echo("cloning experiment into directory " + directory + "/" + name)
