@@ -20,7 +20,7 @@ Guides for the process in which subtools are used with tools.
 ``fre make guide``
 ============
 
-1. **Bare-metal Build:**
+1. Bare-metal Build:
 
 .. code-block::
 
@@ -42,11 +42,11 @@ Guides for the process in which subtools are used with tools.
   # Run all of fremake
   fre make run-fremake -y [model yaml file] -p [platform] -t [target] [other options...]
 
-2. **Container Build:**
+2. Container Build:
 
 For the container build, parallel checkouts are not supported, so the `-npc` options must be used for the checkout script. In addition the platform must be a container platform.
 
-***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
+Users will not be able to create containers unless they have podman access on gaea.
 
 .. code-block::
 
@@ -66,7 +66,9 @@ For the container build, parallel checkouts are not supported, so the `-npc` opt
   fre make create-dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 
 
-1. **Bare-metal Build:**
+** Quickstart **
+
+1. Bare-metal Build:
 
 .. code-block::
 
@@ -85,7 +87,7 @@ For the container build, parallel checkouts are not supported, so the `-npc` opt
   # Create and run the compile script
   fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod --execute
 
-2. **Bare-metal Build Multi-target:**
+2. Bare-metal Build Multi-target:
 
 .. code-block::
 
@@ -104,7 +106,7 @@ For the container build, parallel checkouts are not supported, so the `-npc` opt
   # Create and run the compile script
   fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
-3. **Container Build:**
+3. Container Build:
 
 In order for the container to build successfully, a `-npc`, or `--no-parallel-checkout` is needed.
 
@@ -125,7 +127,7 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
   # Create and run the Dockerfile
   fre make create-dockerfile -y am5.yaml -p hpcme.2023 -t prod --execute
 
-4. **Run all of fremake:**
+4. Run all of fremake:
 
 .. code-block::
 
