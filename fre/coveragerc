@@ -5,11 +5,11 @@ omit =
     fre/app/generate_time_averages/tests/*
     fre/app/regrid_xy/tests/*
     fre/catalog/tests/*
-    fre/check/* # not-yet-implemented
+    fre/check
     fre/cmor/tests/*
-    fre/list/* # not-yet-implemented
+    fre/list
     fre/make/tests/*
     fre/pp/tests/*
-    fre/run/* # not-yet-implemented
-    fre/test/* # not-yet-implemented
+    fre/run
+    fre/test
     fre/yamltools/tests/*
