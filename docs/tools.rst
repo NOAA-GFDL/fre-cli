@@ -2,38 +2,38 @@
 Tools
 =============
 
-General notes on command-line interface
+Notes on command-line interface
 ========================================
-The “cli” in fre-cli derives from the shell “fre SUBCOMMAND COMMAND” structure inspired by git, cylc, and other modern Linux command-line tools. Compared to other command-line structures, this enables discovery of the tooling capability, useful for complex tools with multiple options.
+The “cli” in fre-cli derives from the shell “fre SUBCOMMAND COMMAND” structure inspired by git, cylc, and other modern Linux command-line tools. This enables discovery of the tooling capability, useful for complex tools with multiple options.
 
-To discover subcommands, e.g.
+To discover subcommands, use ``--help``, e.g.::
 
-``fre --help``
+  fre --help
 
-``fre make --help``
+  fre make --help
 
-``fre pp --help``
+  fre pp --help
 
 Commands that require arguments to run will alert user about missing arguments, and will also list
-the rest of the optional parameters if ``--help`` is executed. e.g.
+the rest of the optional parameters if ``--help`` is executed. e.g.::
 
-``fre pp configure-yaml --help``
+  fre pp configure-yaml --help
 
 Argument flags are not positional, can be specified in any order. Some arguments expect sub-arguments.
 
-``fre app``
+fre app
 ===========
 
-.. include:: fre_app.rst
+.. include:: tools/app.rst
 
    
-``fre catalog``
+fre catalog
 ===============
 
-.. include:: fre_catalog.rst
+.. include:: tools/catalog.rst
 
 
-``fre cmor``
+fre cmor
 ============
 
 * See also, ``fre cmor``'s `README <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/cmor/README.md>`_
@@ -44,47 +44,22 @@ acronym for "climate model output rewriter". The process of rewriting model-spec
 intercomparisons (MIPs) using the ``cmor`` module is, quite cleverly, referred to as "CMORizing".
 
 
-.. include:: fre_cmor.rst
+.. include:: tools/cmor.rst
 
   
-``fre make``
+fre make
 ============
 
-.. include:: fre_make.rst
+.. include:: tools/make.rst
   
 
-``fre pp``
+fre pp
 ==========
 
-.. include:: fre_pp.rst
+.. include:: tools/pp.rst
 
 
-``fre yamltools``
+fre yamltools
 =================
 
-.. include:: fre_yamltools.rst
-
-
-``fre check``
-=============
-
-**not-yet-implemented**
-
-
-``fre list``
-============
-
-**not-yet-implemented**
-
-
-``fre run``
-===========
-
-**not-yet-implemented**
-
-
-``fre test``
-============
-
-**not-yet-implemented**
-
+.. include:: tools/yamltools.rst

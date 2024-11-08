@@ -18,6 +18,7 @@ Welcome to ``fre-cli``'s documentation!
    setup
    usage
    tools
+   api
    for-developers
 
 Indices
