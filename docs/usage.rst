@@ -1,107 +1,24 @@
-.. NEEDS UPDATING #TODO
 =============
-Usage-By-Tool
+Usage
 =============
+Using a set of YAML configuration files, ``fre make`` compiles a FMS-based model, and ``fre pp`` postprocesses the history output and runs diagnostic analysis scripts. Please note that model running is not yet supported in FRE 2024; continue to use FRE Bronx frerun.
 
-for setup, see the setup section.
+Build FMS model
+=======================
+.. include:: usage/compile.rst
 
+Run FMS model
+=======================
+Check back in the latter half of 2025 or so.
 
-``fre``
-=======
+Postprocess FMS history output
+==============================
+.. include:: usage/postprocess.rst
 
-Brief rundown of commands also provided below:
+CMORize postprocessed output
+============================
+.. include:: usage/cmor.rst
 
-* Enter commands and follow ``--help`` messages for guidance 
-* If the user just runs ``fre``, it will list all the command groups following ``fre``, such as
-  ``run``, ``make``, ``pp``, etc. and once the user specifies a command group, the list of available
-  subcommands for that group will be shown
-* Commands that require arguments to run will alert user about missing arguments, and will also list
-  the rest of the optional parameters if ``--help`` is executed
-* Argument flags are not positional, can be specified in any order as long as they are specified
-* Can run directly from any directory, no need to clone repository
-* May need to deactivate environment and reactivate it in order for changes to apply
-* ``fre/setup.py`` allows ``fre/fre.py`` to be ran as ``fre`` on the command line by defining it as an
-  *entry point*. Without it, the call would be instead, something like ``python fre/fre.py``
-
-
-``fre app``
-===========
-
-.. include:: fre_app.rst
-
-   
-``fre catalog``
-===============
-
-.. include:: fre_catalog.rst
-
-
-``fre cmor``
-============
-
-* See also, ``fre cmor``'s `README <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/cmor/README.md>`_
-* See also, ``fre cmor``'s `project board <https://github.com/orgs/NOAA-GFDL/projects/35>`_
-
-This set of tools leverages the external ``cmor`` python package within the ``fre`` ecosystem. ``cmor`` is an
-acronym for "climate model output rewriter". The process of rewriting model-specific output files for model
-intercomparisons (MIPs) using the ``cmor`` module is, quite cleverly, referred to as "CMORizing".
-
-
-.. include:: fre_cmor.rst
-
-  
-``fre make``
-============
-
-Through the fre-cli, `fre make` can be used to create and run a checkout script, makefile, and compile a model.
-
-Fremake Canopy Supports:
-   - multiple targets; use `-t` flag to define each target
-   - bare-metal build
-   - container creation
-   - parallel checkouts for bare-metal build**
-
-** **Note: Users will not be able to create containers without access to podman**
-
-.. include:: fre_make.rst
-
-Guide and quickstart to `fre make` subtools:
-
-:ref:`fre-make-guide`
-
-
-``fre pp``
-==========
-
-.. include:: fre_pp.rst
-
-
-``fre yamltools``
-=================
-
-.. include:: fre_yamltools.rst
-
-
-``fre check``
-=============
-
-**not-yet-implemented**
-
-
-``fre list``
-============
-
-**not-yet-implemented**
-
-
-``fre run``
-===========
-
-**not-yet-implemented**
-
-
-``fre test``
-============
-
-**not-yet-implemented**
-
+Generate data catalogs
+======================
+.. include:: usage/catalogs.rst

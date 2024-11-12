@@ -1,37 +1,36 @@
-.. NEEDS UPDATING #TODO
 =====
 Setup
 =====
+fre-cli is conda-installable from the “noaa-gfdl” anaconda channel (https://anaconda.org/NOAA-GFDL/fre-cli)
+and is deployed on GFDL systems as Environment Modules.
 
-Set up Conda environment
+On GFDL systems
 ========================
+If you are at GFDL (gaea, PP/AN, workstations), you may skip installation::
 
-various options work quite well:
+  module load fre/2024.01
 
+  fre --help
 
-If on workstation
------------------
+Generic
+=======================
+If you are outside GFDL or are a FRE developer, install with conda. If you're at GFDL, bring conda into your PATH::
 
-``module load fre/2024.01``
+  module load miniforge
 
+If you are outside GFDL, install the miniconda tool with the standard instructions (https://docs.anaconda.com/miniconda/miniconda-install/).
 
-Create New Conda environment
-----------------------------
+Once you have conda available, install the latest fre-cli from the NOAA-GFDL anaconda channel::
 
-if you're at GFDL:
-``module load miniforge``
+  conda create --name fre --channel noaa-gfdl --channel conda-forge fre-cli
 
-create an empty environment to start
-``conda create -n [environmentName]``
+To install a specific version::
 
-activate the empty environment:
-``conda activate [environmentName]``
+  conda create --name fre-202401 --channel noaa-gfdl --channel conda-forge fre-cli::2024.01
 
-append necessary channels:
-``conda config --append channels noaa-gfdl; conda config --append channels conda-forge;``
+and activate it::
 
-install ``fre-cli`` into the activated environment from `the GFDL conda channel <https://anaconda.org/NOAA-GFDL/fre-cli>`_ :
-``conda install noaa-gfdl::fre-cli``
+  conda activate fre
 
 YAML Framework
 ========================
@@ -58,3 +57,5 @@ Post-Processing Yaml
 
 The post-processing yamls include information specific to experiments, such as directories to data and other scripts used, switches, and component information. 
 
+=======
+  fre --help
