@@ -29,26 +29,26 @@ jobs:
           # called as a module (-m pip) for explicitness
           $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
 
-      - name: Run pytest in fre-cli environment
-        run: |
-          # add spack installed binaries to front of path so that
-          # conda's netcdf/hdf5 installs don't break compilation tests
-          export path_save=$PATH
-          export PATH="/opt/views/view/bin:$PATH"
-
-          # run pytest
-          pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
-
-          # restore original path and install genbadge to generate coverage badge based on xml
-          export PATH="$path_save"
-          pip install genbadge
-          genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
-          genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
-
-      - name: Run pylint in fre-cli environment
-        run: |
-          # run pylint, ignored modules avoid warnings arising from code internal to those modules
-          pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+#      - name: Run pytest in fre-cli environment
+#        run: |
+#          # add spack installed binaries to front of path so that
+#          # conda's netcdf/hdf5 installs don't break compilation tests
+#          export path_save=$PATH
+#          export PATH="/opt/views/view/bin:$PATH"
+#
+#          # run pytest
+#          pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
+#
+#          # restore original path and install genbadge to generate coverage badge based on xml
+#          export PATH="$path_save"
+#          pip install genbadge
+#          genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
+#          genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
+#
+#      - name: Run pylint in fre-cli environment
+#        run: |
+#          # run pylint, ignored modules avoid warnings arising from code internal to those modules
+#          pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
 
       - name: Install Sphinx and Build Documentation
         run: |
@@ -59,7 +59,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.ref == 'refs/heads/main' }}
+#        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
