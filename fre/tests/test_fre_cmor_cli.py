@@ -68,7 +68,7 @@ def test_cli_fre_cmor_run_case1(capfd):
     ''' fre cmor run, test-use case '''
 
     # explicit inputs to tool
-    indir = f'{rootdir}/ocean_sos_var_file'
+    indir = f'{rootdir}/reduced_ascii_files'
     varlist = f'{rootdir}/varlist'
     table_config = f'{rootdir}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
     exp_config = f'{rootdir}/CMOR_input_example.json'
