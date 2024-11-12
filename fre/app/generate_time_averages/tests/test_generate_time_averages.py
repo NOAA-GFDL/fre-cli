@@ -95,32 +95,32 @@ def test_cdo_time_unwgt_stddevs():
 #def test_cdo_time_stddevs():
 
 ## frepythontools avgs+stddevs, weighted+unweighted, all ------------------------
-def test_fre_python_tools_time_avgs():
-    ''' generates a time averaged file using fre_python_tools's version '''
+def test_fre_cli_time_avgs():
+    ''' generates a time averaged file using fre_cli's version '''
     ''' weighted average, no std deviation '''
     assert run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
         outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
         pkg='fre-python-tools',avg_type='all', unwgt=False )
 
-def test_fre_python_tools_time_unwgt_avgs():
-    ''' generates a time averaged file using fre_python_tools's version '''
+def test_fre_cli_time_unwgt_avgs():
+    ''' generates a time averaged file using fre_cli's version '''
     ''' weighted average, no std deviation '''
     assert run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
         outfile = (time_avg_file_dir+'frepytools_unwgt_timavg_'+test_file_name),
         pkg='fre-python-tools',avg_type='all', unwgt=True )
 
-def test_fre_python_tools_time_avgs_stddevs():
-    ''' generates a time averaged file using fre_python_tools's version '''
+def test_fre_cli_time_avgs_stddevs():
+    ''' generates a time averaged file using fre_cli's version '''
     ''' weighted average, no std deviation '''
     assert run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
         outfile = (time_avg_file_dir+'frepytools_stddev_'+test_file_name),
         pkg='fre-python-tools',avg_type='all', stddev_type='samp', unwgt=False )
 
-def test_fre_python_tools_time_unwgt_avgs_stddevs():
-    ''' generates a time averaged file using fre_python_tools's version '''
+def test_fre_cli_time_unwgt_avgs_stddevs():
+    ''' generates a time averaged file using fre_cli's version '''
     ''' weighted average, no std deviation '''
     assert run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
@@ -128,15 +128,15 @@ def test_fre_python_tools_time_unwgt_avgs_stddevs():
         pkg='fre-python-tools',avg_type='all', stddev_type='samp', unwgt=True )
 
 ## (TODO) WRITE THESE VERSIONS FOR FREPYTOOLSTIMEAVERAGER CLASS THEN MAKE THESE TESTS
-#def test_monthly_fre_python_tools_time_avgs():
-#def test_monthly_fre_python_tools_time_unwgt_avgs():
-#def test_monthly_fre_python_tools_time_avgs_stddevs():
-#def test_monthly_fre_python_tools_time_unwgt_avgs_stddevs():
+#def test_monthly_fre_cli_time_avgs():
+#def test_monthly_fre_cli_time_unwgt_avgs():
+#def test_monthly_fre_cli_time_avgs_stddevs():
+#def test_monthly_fre_cli_time_unwgt_avgs_stddevs():
 #
-#def test_seasonal_fre_python_tools_time_avgs():
-#def test_seasonal_fre_python_tools_time_unwgt_avgs():
-#def test_seasonal_fre_python_tools_time_avgs_stddevs():
-#def test_seasonal_fre_python_tools_time_unwgt_avgs_stddevs(:)
+#def test_seasonal_fre_cli_time_avgs():
+#def test_seasonal_fre_cli_time_unwgt_avgs():
+#def test_seasonal_fre_cli_time_avgs_stddevs():
+#def test_seasonal_fre_cli_time_unwgt_avgs_stddevs(:)
 
 
 
@@ -144,7 +144,7 @@ def test_fre_python_tools_time_unwgt_avgs_stddevs():
 #alt_str_fre_nctools_inf= \
 #    'tests/time_avg_test_files/fre_nctools_timavg_CLI_test_r8_b_atmos_LWP_1979_5y.nc'
 #def test_fre_nctools_time_avgs():
-#    ''' generates a time averaged file using fre_python_tools's version '''
+#    ''' generates a time averaged file using fre_cli's version '''
 #    ''' weighted average, no std deviation '''
 #    infile =time_avg_file_dir+test_file_name
 #    all_outfile=time_avg_file_dir+'frenctools_timavg_'+test_file_name
@@ -153,7 +153,7 @@ def test_fre_python_tools_time_unwgt_avgs_stddevs():
 #        print('output test file exists. deleting before remaking.')
 #        pl.Path(all_outfile).unlink() #delete file so we check that it can be recreated
 #
-#    from fre_python_tools.generate_time_averages import generate_time_averages as gtas
+#    from fre_cli.generate_time_averages import generate_time_averages as gtas
 #    gtas.generate_time_average(infile = infile, outfile = all_outfile,
 #        pkg='fre-nctools', unwgt=False, avg_type='all')
 #    assert pl.Path(all_outfile).exists()
@@ -169,8 +169,8 @@ str_unwgt_fre_pytools_inf=time_avg_file_dir+'frepytools_unwgt_timavg_'+test_file
 str_unwgt_cdo_inf=time_avg_file_dir+'timmean_unwgt_'+test_file_name
 
 
-def test_compare_fre_python_tools_to_fre_nctools():
-    ''' compares fre_python_tools pkg answer to fre_nctools pkg answer '''
+def test_compare_fre_cli_to_fre_nctools():
+    ''' compares fre_cli pkg answer to fre_nctools pkg answer '''
     import numpy as np
     import netCDF4 as nc
     fre_pytools_inf=nc.Dataset(str_fre_pytools_inf,'r')
@@ -208,8 +208,8 @@ def test_compare_fre_python_tools_to_fre_nctools():
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 @pytest.mark.skip(reason='test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
-def test_compare_fre_python_tools_to_cdo():
-    ''' compares fre_python_tools pkg answer to cdo pkg answer '''    
+def test_compare_fre_cli_to_cdo():
+    ''' compares fre_cli pkg answer to cdo pkg answer '''    
     import numpy as np
     import netCDF4 as nc
     fre_pytools_inf=nc.Dataset(str_fre_pytools_inf,'r')
@@ -239,8 +239,8 @@ def test_compare_fre_python_tools_to_cdo():
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 
-def test_compare_unwgt_fre_python_tools_to_unwgt_cdo():
-    ''' compares fre_python_tools pkg answer to cdo pkg answer '''
+def test_compare_unwgt_fre_cli_to_unwgt_cdo():
+    ''' compares fre_cli pkg answer to cdo pkg answer '''
     import numpy as np
     import netCDF4 as nc
     fre_pytools_inf=nc.Dataset(str_unwgt_fre_pytools_inf,'r')
