@@ -55,15 +55,13 @@ intercomparisons (MIPs) using the ``cmor`` module is, quite cleverly, referred t
 
 Through the fre-cli, `fre make` can be used to create and run a checkout script, makefile, and compile a model.
 
-* Fremake Canopy Supports:
+Fremake Canopy Supports:
    - multiple targets; use `-t` flag to define each target
    - bare-metal build
    - container creation
    - parallel checkouts for bare-metal build**
 
 ** **Note: Users will not be able to create containers without access to podman**
-
-Additionally, as mentioned, multiple targets can be used more multiple target-platform combinations.
 
 .. include:: fre_make.rst
 
