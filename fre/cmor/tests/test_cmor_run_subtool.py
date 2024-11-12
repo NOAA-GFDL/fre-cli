@@ -30,7 +30,7 @@ def test_setup_cmor_cmip_table_repo():
     assert Path(TABLE_CONFIG).exists()
 
 # explicit inputs to tool
-INDIR = f'{ROOTDIR}/ocean_sos_var_file'
+INDIR = f'{ROOTDIR}/reduced_ascii_files'
 VARLIST = f'{ROOTDIR}/varlist'
 EXP_CONFIG = f'{ROOTDIR}/CMOR_input_example.json'
 OUTDIR = f'{ROOTDIR}/outdir'
@@ -46,7 +46,7 @@ FULL_OUTPUTFILE = \
 f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
 
 # FYI but helpful for tests
-FILENAME = 'ocean_monthly_1x1deg.199301-199712.sos.nc' # unneeded, this is mostly for reference
+FILENAME = 'reduced_ocean_monthly_1x1deg.199301-199712.sos.nc' # unneeded, this is mostly for reference
 FULL_INPUTFILE=f"{INDIR}/{FILENAME}"
 
 def test_setup_fre_cmor_run_subtool(capfd):
