@@ -66,7 +66,7 @@ Users will not be able to create containers unless they have podman access on ga
   fre make create-dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 
 
-** Quickstart **
+**Quickstart**
 
 1. Bare-metal Build:
 
