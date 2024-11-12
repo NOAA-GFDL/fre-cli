@@ -1,7 +1,7 @@
 ``create-checkout``
 -------------
 
-`fre make create-checkout [options]`
+``fre make create-checkout [options]``
    - Purpose: Creates the checkout script and can check out source code (with execute option)
    - Options:
         - `-y, --yamlfile [experiment yaml] (required)`
@@ -14,7 +14,7 @@
 ``create-makefile`` 
 -------------
 
-`fre make create-makefile [options]`
+``fre make create-makefile [options]``
    - Purpose: Creates the makefile
    - Options:
         - `-y, --yamlfile [experiment yaml] (required)`
@@ -24,7 +24,7 @@
 ``create-compile``
 -------------
 
-`fre make create-compile [options]`
+``fre make create-compile [options]``
    - Purpose: Creates the compile script and compiles the model (with execute option)
    - Options:
         - `-y, --yamlfile [experiment yaml] (required)`
@@ -37,7 +37,7 @@
 ``create-dockerfile``
 -------------
 
-`fre make create-dockerfile [options]`
+``fre make create-dockerfile [options]``
    - Purpose: Creates the dockerfile and creates the container (with execute option)
    - With the creation of the dockerfile, the Makefile, checkout script, and any other necessary script is copied into the container from a temporary location
    - Options:
@@ -48,7 +48,7 @@
 ``run-fremake``
 -------------
 
-`fre make run-fremake [options]`
+``fre make run-fremake [options]``
    - Purpose: Create the checkout script, Makefile, compile script, and dockerfile (platform dependent) for the compilation of the model
    - Options:
         - `-y, --yamlfile [experiment yaml] (required)`
