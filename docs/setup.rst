@@ -32,5 +32,4 @@ and activate it::
 
   conda activate fre
 
-=======
   fre --help
