@@ -33,3 +33,6 @@ append necessary channels:
 install ``fre-cli`` into the activated environment from `the GFDL conda channel <https://anaconda.org/NOAA-GFDL/fre-cli>`_ :
 ``conda install noaa-gfdl::fre-cli``
 
+YAML Framework
+========================
+In order to utilize FRE Canopy tools, a distrubuted YAML structure is required. 
