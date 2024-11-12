@@ -1,32 +1,35 @@
+.. NEEDS UPDATING #TODO
+=====
 Setup
 =====
 
-Need to set up Conda environment first and foremost
+Set up Conda environment
+========================
 
-If on workstation:
-module load conda
+various options work quite well:
 
-Create new Conda environment
-conda create -n [environmentName]
 
-Append necessary channels
-conda config --append channels noaa-gfdl
-conda config --append channels conda-forge
+If on workstation
+-----------------
 
-Run conda install on needed dependencies
-conda install noaa-gfdl::fre-cli should install the CLI package located at https://anaconda.org/NOAA-GFDL/fre-cli created from the meta.yaml file
+``module load fre/2024.01``
 
-All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
-setup.py file allows fre.py to be ran with fre as the entry point on the command line instead of python fre.py
 
-Enter commands and follow --help messages for guidance (brief rundown of commands also provided below)
+Create New Conda environment
+----------------------------
 
-If the user just runs fre, it will list all the command groups following fre, such as run, make, pp, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown
+if you're at GFDL:
+``module load miniforge``
 
-Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if --help is executed
+create an empty environment to start
+``conda create -n [environmentName]``
 
-Argument flags are not positional, can be specified in any order as long as they are specified
+activate the empty environment:
+``conda activate [environmentName]``
 
-Can run directly from any directory, no need to clone repository
+append necessary channels:
+``conda config --append channels noaa-gfdl; conda config --append channels conda-forge;``
 
-May need to deactivate environment and reactivate it in order for changes to apply
+install ``fre-cli`` into the activated environment from `the GFDL conda channel https://anaconda.org/NOAA-GFDL/fre-cli`_ :
+``conda install noaa-gfdl::fre-cli``
+

@@ -8,7 +8,6 @@ import click
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls as cy
 
-@click.command()
 def dockerfile_create(yamlfile,platform,target,execute):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
@@ -52,7 +51,7 @@ def dockerfile_create(yamlfile,platform,target,execute):
             ## Make the bldDir based on the modelRoot, the platform, and the target
             srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
-            if iscontainer == True:
+            if iscontainer is True:
                 image="ecpe4s/noaa-intel-prototype:2023.09.25"
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
@@ -77,6 +76,14 @@ def dockerfile_create(yamlfile,platform,target,execute):
                 dockerBuild.build(containerBuild, containerRun)
             else:
                 sys.exit()
+
+@click.command()
+def _dockerfile_create(yamlfile,platform,target,execute):
+    '''
+    Decorator for calling dockerfile_create - allows the decorated version
+    of the function to be separate from the undecorated version
+    '''
+    return dockerfile_create(yamlfile,platform,target,execute)
 
 if __name__ == "__main__":
     dockerfile_create()

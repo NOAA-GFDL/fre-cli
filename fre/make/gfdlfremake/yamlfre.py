@@ -1,5 +1,6 @@
 import os
 import json
+from pathlib import Path
 import yaml
 from jsonschema import validate, ValidationError, SchemaError
 from . import platformfre
@@ -176,8 +177,8 @@ class freyaml():
         #self.freyaml.update(self.platformsyaml)
 
         ## VALIDATION OF COMBINED YAML FOR COMPILATION
-        fremake_package_dir = os.path.dirname(os.path.abspath(__file__))
-        schema_path = os.path.join(fremake_package_dir, 'schema.json')
+        fremake_package_dir = Path(__file__).resolve().parents[2]
+        schema_path = os.path.join(fremake_package_dir, 'gfdl_msd_schemas', 'FRE', 'fre_make.json')
         with open(schema_path, 'r') as f:
             s = f.read()
         schema = json.loads(s)
