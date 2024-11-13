@@ -48,7 +48,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
                 sys.exit(stop_report)
                 return 1
         else:   #scenario 2
-            subprocess.run(f'git clone --branch={branch} https://github.com/NOAA-GFDL/fre-cli.git')
+            subprocess.run(['git', 'clone', f'--branch={branch}', '--single-branch', '--recursive', 'https://github.com/NOAA-GFDL/fre-cli.git', f'{name}'])
     else:
         if os.path.isdir(name): #scenario 3
             os.chdir(name)
