@@ -12,8 +12,8 @@ test_dir = Path("fre/make/tests/null_example")
 yamlfile = Path(f"{test_dir}/null_model.yaml")
 
 #set platform and target
-platform = "ncrc5.intel"
-target = "debug"
+platform = ["ncrc5.intel"]
+target = ["debug"]
 
 #set output directory
 #out_dir = Path(f"fre/make/tests/null_example/fre_make_out")
