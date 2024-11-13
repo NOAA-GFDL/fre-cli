@@ -38,7 +38,8 @@ def test_checkout_execute():
     """
     check if --execute option works
     """
-    subprocess.run(["rm","-rf",f"{out_dir}"])
+    #subprocess.run(["rm","-rf",f"{out_dir}"])
+    subprocess.run(["rm","-rf"])
     result = runner.invoke(fre.fre, args=["make","create-checkout","-y",yamlfile,"-p",platform,"-t",target,"--execute"])
     assert (result.exit_code == 0)
 
