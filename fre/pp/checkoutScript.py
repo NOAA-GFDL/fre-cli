@@ -44,7 +44,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
             name_path_branch = name_path_branch.split('*')[1].split()[0]
             os.chdir(directory)
             if default_tag not in name_path_tag and name_path_branch != branch:
-                stop_report = f"Tag and branch of prexisting directory {diretory}/{name} does not match fre --version or branch requested"
+                stop_report = f"Tag and branch of prexisting directory {directory}/{name} does not match fre --version or branch requested"
                 sys.exit(stop_report)
                 return 1
         else:   #scenario 2
