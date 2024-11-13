@@ -36,12 +36,12 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
 
     # branch and version parameters
     default_tag = subprocess.run(["fre","--version"],capture_output=True, text=True).stdout.split()[2]
-    if branch is None:   
+    if branch is not None:   
         if os.path.isdir(name): #scenario 4
             os.chdir(name)
             name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout.split('*')
-            name_path_branch = name_path_branch[1].split()[0]
             name_path_branch=subprocess.run(["git","branch"],capture_output=True, text=True).stdout
+            name_path_branch = name_path_branch.split('*')[1].split()[0]
             os.chdir(directory)
             if default_tag not in name_path_tag and name_path_branch != branch:
                 stop_report = f"Tag and branch of prexisting directory {diretory}/{name} does not match fre --version or branch requested"
@@ -59,7 +59,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
                 sys.exit(stop_report)
                 return 1
         else:   #scenario 1
-            subprocess.run(f'git clone --branch={branch} https://github.com/NOAA-GFDL/fre-cli.git')
+            subprocess.run(['git', 'clone', f'--branch={default_tag}', '--single-branch', '--depth=1', '--recursive', 'https://github.com/NOAA-GFDL/fre-cli.git', f'{name}'])
 
 
 #############################################
