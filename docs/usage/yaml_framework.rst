@@ -1,8 +1,8 @@
-In order to utilize FRE 2024.01 tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with `[key]: [value]` fields. 
+In order to utilize FRE 2024.01 tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with ``[key]: [value]`` fields. 
 
 Helpful information and format recommendations for creating yaml files.
 
-1. You can define a block of values as well as individual `[key]: [value]` pairs: 
+1. You can define a block of values as well as individual ``[key]: [value]`` pairs: 
 
 .. code-block::
 
@@ -10,7 +10,7 @@ Helpful information and format recommendations for creating yaml files.
     key: value
     key: value
 
-2. `[key]: [value]` pairs can be made a list by utilizing a `dash`:
+2. ``[key]: [value]`` pairs can be made a list by utilizing a ``-``:
 
 .. code-block::
 
@@ -59,11 +59,12 @@ Where each dash indicates a list.
 
 Model Yaml
 ----------
-The model yaml defines reusable variables, shared directories, switches, and post-processing settings, and paths to compile and post-processing yamls. Required fields in the model yaml include: `fre_properties`, `build`, `shared`, and `experiments`.
+The model yaml defines reusable variables, shared directories, switches, and post-processing settings, and paths to compile and post-processing yamls. Required fields in the model yaml include: ``fre_properties``, ``build``, ``shared``, and ``experiments``.
 
 * **fre_properties**: Reusable variables
 
   - list
+  - these values can be extracted from ``fre_properties`` in a group's XML
   - value type: string
 
   .. code-block::
@@ -73,32 +74,33 @@ The model yaml defines reusable variables, shared directories, switches, and pos
 
 * **build**: paths to information needed for compilation
 
-  - subsections: `compileYaml`, `platformYaml`
+  - subsections: ``compileYaml``, ``platformYaml``
   - value type: string
 
   .. code-block::
 
      build:
-       compileYaml: path the compile yaml in relation to model yaml
-       platformYaml: path to platforms.yaml in relation to model yaml
+       compileYaml: "path the compile yaml in relation to model yaml"
+       platformYaml: "path to platforms.yaml in relation to model yaml"
 
 * **shared**: shared settings across experiments
 
-  - subsections: `directories`, `postprocess`
+  - subsections: ``directories``, ``postprocess``
 
   .. code-block::
 
      shared: 
        directories: &shared_directories
-         key: value (string)
+         key: "value" (string)
 
        postprocess: 
          settings: &shared_settings
-           key: value (string)
+           key: "value" (string)
          switches: &shared_switches
            key: value (boolean)
 
   - **Be sure to define directories, settings, and switches as reusable variables as well**
+
     + they will be "inherited" in the post-processing yamls created
 
 * **experiments**: list of post-processing experiments
@@ -114,7 +116,7 @@ The model yaml defines reusable variables, shared directories, switches, and pos
 
 Compile Yaml
 ----------
-The compile yaml defines compilation information including copmonent names, repos, branches, necessary flags, and necessary overrides. In order to create the compile yaml, one can refer to compile information defined in an XML.
+The compile yaml defines compilation information including component names, repos, branches, necessary flags, and necessary overrides.
 
 Platform Yaml
 ----------
@@ -122,4 +124,4 @@ The platform yaml defines information for both bare-metal and container platform
 
 Post-Processing Yaml
 ----------
-The post-processing yamls include information specific to experiments, such as directories to data and other scripts used, switches, and component information. The post-processing yaml can further define more `fre_properties` that may be experiment specific. If there are any repeated reuable variables, the ones set in this yaml will overwrite those set in the model yaml. 
+The post-processing yamls include information specific to experiments, such as directories to data and other scripts used, switches, and component information. The post-processing yaml can further define more ``fre_properties`` that may be experiment specific. If there are any repeated reusable variables, the ones set in this yaml will overwrite those set in the model yaml. 
