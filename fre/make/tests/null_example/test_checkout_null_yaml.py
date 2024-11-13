@@ -16,12 +16,12 @@ platform = "ncrc5.intel"
 target = "debug"
 
 #set output directory
-out_dir = Path(f"fre/make/tests/null_example/fre_make_out")
-Path(out_dir).mkdir(parents=True,exist_ok=True)
+#out_dir = Path(f"fre/make/tests/null_example/fre_make_out")
+#Path(out_dir).mkdir(parents=True,exist_ok=True)
 
 # Set home for ~/cylc-src location in script
-os.environ["HOME"]=str(Path(f"{out_dir}"))
-
+#os.environ["HOME"]=str(Path(f"{out_dir}"))
+HOME_DIR = os.environ["HOME"]
 #run checkout command
 runner = CliRunner()
 
@@ -32,7 +32,7 @@ def test_checkout_script_exists():
     result = runner.invoke(fre.fre, args=["make","create-checkout","-y",yamlfile,"-p",platform,"-t",target])
     #createCheckout.checkout_create(["null_model.yaml","ncrc5.intel","debug"])
     assert result.exit_code == 0
-    assert Path(f"{out_dir}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
+    assert Path(f"{HOME_DIR}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
 def test_checkout_execute():
     """
