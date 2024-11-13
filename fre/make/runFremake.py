@@ -15,7 +15,7 @@ from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -188,25 +188,27 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                 dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
 
                 ## Run the dockerfile; build the container
-                dockerBuild.build(containerBuild,containerRun)
+                if execute:
+                    dockerBuild.build(containerBuild,containerRun)
 
                 #freCheckout.cleanup()
                 #buildDockerfile(fremakeYaml,image)
 
     if baremetalRun:
         if __name__ == '__main__':
-            # Create a multiprocessing Pool
-            pool = Pool(processes=nparallel)
-            # process data_inputs iterable with pool
-            pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)
+            if execute:
+                # Create a multiprocessing Pool
+                pool = Pool(processes=nparallel)
+                # process data_inputs iterable with pool
+                pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)
 
 @click.command()
-def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
     '''
     Decorator for calling _fremake_run - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose)
+    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose)
 
 if __name__ == "__main__":
     fremake_run()
