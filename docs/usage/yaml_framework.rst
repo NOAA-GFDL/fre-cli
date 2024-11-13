@@ -69,8 +69,8 @@ The model yaml defines reusable variables, shared directories, switches, and pos
 
   .. code-block::
 
-     - &variable1  "value1"
-     - &variable2  "value2"
+     - &variable1  "value1"  (srting)
+     - &variable2  "value2"  (string)
 
 * **build**: paths to information needed for compilation
 
@@ -80,8 +80,8 @@ The model yaml defines reusable variables, shared directories, switches, and pos
   .. code-block::
 
      build:
-       compileYaml: "path the compile yaml in relation to model yaml"
-       platformYaml: "path to platforms.yaml in relation to model yaml"
+       compileYaml: "path the compile yaml in relation to model yaml"   (string)
+       platformYaml: "path to platforms.yaml in relation to model yaml" (string)
 
 * **shared**: shared settings across experiments
 
@@ -91,13 +91,13 @@ The model yaml defines reusable variables, shared directories, switches, and pos
 
      shared: 
        directories: &shared_directories
-         key: "value" (string)
+         key: "value"               (string)
 
        postprocess: 
          settings: &shared_settings
-           key: "value" (string)
+           key: "value"             (string)
          switches: &shared_switches
-           key: value (boolean)
+           key: value               (boolean)
 
   - **Be sure to define directories, settings, and switches as reusable variables as well**
 
@@ -108,11 +108,11 @@ The model yaml defines reusable variables, shared directories, switches, and pos
   .. code-block::
 
      experiments:
-       - name: name of post-processing experiment (string)
+       - name: name of post-processing experiment                                       (string)
          pp: 
            - path/to/post-processing/yaml for that experiment in relation to model yaml (string)
          analysis: 
-           - path/to/analysis/yaml for that experiment in relation to model yaml (string)
+           - path/to/analysis/yaml for that experiment in relation to model yaml        (string)
 
 Compile Yaml
 ----------
