@@ -2,83 +2,107 @@ In order to utilize FRE Canopy tools, a distrubuted YAML structure is required. 
 
 Helpful information and format recommendations for creating yaml files.
 1. You can define a block of values as well as individual `[key]: [value]` pairs: 
-```
-section name:
-  key: value
-  key: value
-```
+
+.. code-block::
+
+  section name:
+    key: value
+    key: value
 
 2. `[key]: [value]` pairs can be made a list by utilizing a `-`:
-```
-section name:
-  - key: value
-  - key: value
-```
+
+.. code-block::
+
+  section name:
+    - key: value
+    - key: value
 
 3. If you want to associate information with a certain listed element, follow this structure:
-```
-section name:
-  - key: value
-    key: value
-  - key: value
-    key: value
-```
+
+.. code-block::
+
+  section name:
+    - key: value
+      key: value
+    - key: value
+      key: value
+
 Where each `-` indicates a different list.
 
 4. Yamls also allow for the capability of reusable variables. These variables are defined by:
 `&ReusableVariable Value`
 
 5. Users can apply a reuable variable on a block of values as well. Everything under that section can be included in the reusable variable.
-```
-section: &ReusableVariable
-  - key: value
-  - key: value
-```
+
+.. code-block::
+
+  section: &ReusableVariable
+    - key: value
+    - key: value
 
 6. In order to use them as a reference else where in either the same or other yamls, follow:
 `*ReusableVariable`
 
-7. If the reusable variable must be combined with other strings, the `!join` constructor is used. Example:
-```
-&version "2024"
-&stem !join [FRE/, *version]
-```
+7. If the reusable variable must be combined with other strings, the `!join` constructor is used. Example: 
+
+.. code-block::
+
+  &version "2024"::
+  &stem !join [FRE/, *version]
 
 Model Yaml
 ----------
 The model yaml defines reusable variables, shared directories, switches, and post-processing settings, and paths to compile and post-processing yamls. Required fields in the model yaml include: `fre_properties`, `build`, `shared`, and `experiments`.
 
 * `fre_properties`: Reusable variables
+
   - list
   - value type: string
+
   .. code-block::
+
      - &variable1  "value1"
      - &variable2  "value2"
+
 * `build`: paths to information needed for compilation
+
   - subsections: `compileYaml`, `platformYaml`
   - value type: string
-  .. code-block::
-     compileYaml: path the compile yaml in relation to model yaml
-     platformYaml: path to platforms.yaml in relation to model yaml
-* `shared`: shared settings across experiments
-  - subsections: `directories`, `postprocess`
-  .. code-block::
-     directories: &shared_directories
-       key: value (string)
-     postprocess: 
-       settings: &shared_settings
-         key: value (string)
-       switches: &shared_switches
-         key: value (boolean)
-* `experiments`: list of post-processing experiments
-  .. code-block::
-     - name: name of post-processing experiment (string)
-       pp: 
-         - path to post-processing yaml for that experiment in relation to model yaml (string)
-       analysis: 
-         - path to analysis yaml for that experiment in relation to model yaml (string)
 
-*Be sure to define directories, settings, and switches as reusable variables as well; they will be "inherited" in the post-processing yamls created.*
+  .. code-block::
+
+     build:
+       compileYaml: path the compile yaml in relation to model yaml
+       platformYaml: path to platforms.yaml in relation to model yaml
+
+* `shared`: shared settings across experiments
+
+  - subsections: `directories`, `postprocess`
+
+  .. code-block::
+
+     shared: 
+       directories: &shared_directories
+         key: value (string)
+
+       postprocess: 
+         settings: &shared_settings
+           key: value (string)
+         switches: &shared_switches
+           key: value (boolean)
+
+  - **Be sure to define directories, settings, and switches as reusable variables as well; they will be "inherited" in the post-processing yamls created.**
+
+* `experiments`: list of post-processing experiments
+
+  .. code-block::
+
+     experiments:
+       - name: name of post-processing experiment (string)
+         pp: 
+           - path/to/post-processing/yaml for that experiment in relation to model yaml (string)
+         analysis: 
+           - path/to/analysis/yaml for that experiment in relation to model yaml (string)
 
 Compile Yaml
 ----------
