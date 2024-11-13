@@ -18,6 +18,8 @@ Required configuration files:
 
 These yamls are combined and further parsed through the ``fre make`` tools.
 
+Compile Yaml
+----------
 To create the compile yaml, reference the compile section on an XML. Certain fields should be included under "compile". These include ``experiment``, ``container_addlibs``, ``baremetal_linkerflags``, and ``src``. 
 
   - The experiment can be explicitly defined or can be used in conjunction with defined ``fre_properties`` from the model yaml, as seen in the code block below
@@ -48,5 +50,124 @@ The ``src`` section is used to include component information. This will include:
        otherFlags: "Include flags needed to retrieve other necessary code" (string)
        doF90Cpp: True if the preprocessor needs to be run                  (boolean) 
 
-Guide and quickstart to ``fre make`` subtools:
-:ref:`fre-make-guide`
+Guide
+----------
+1. Bare-metal Build:
+
+.. code-block::
+
+  # Create checkout script
+  fre make create-checkout -y [model yaml file] -p [platform] -t [target]
+
+  # Create and run checkout script
+  fre make create-checkout -y [model yaml file] -p [platform] -t [target] --execute
+
+  # Create Makefile
+  fre make create-makefile -y [model yaml file] -p [platform] -t [target]
+
+  # Creat the compile script
+  fre make create-compile -y [model yaml file] -p [platform] -t [target]
+
+  # Create and run the compile script
+  fre make create-compile -y [model yaml file] -p [platform] -t [target] --execute
+
+  # Run all of fremake
+  fre make run-fremake -y [model yaml file] -p [platform] -t [target] [other options...]
+
+2. Container Build:
+
+For the container build, parallel checkouts are not supported, so the `-npc` options must be used for the checkout script. In addition the platform must be a container platform.
+
+Users will not be able to create containers unless they have podman access on gaea.
+
+.. code-block::
+
+  # Create checkout script
+  fre make create-checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
+
+  # Create and run checkout script
+  fre make create-checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
+
+  # Create Makefile
+  fre make create-makefile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
+
+  # Create a Dockerfile
+  fre make create-dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
+
+  # Create and run the Dockerfile
+  fre make create-dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
+
+Quickstart
+----------
+The quickstart instructions can be used with the am5-compile examples located in the fre-examples repository: https://github.com/NOAA-GFDL/fre-examples/tree/main/AM5/am5-compile
+
+1. Bare-metal Build:
+
+.. code-block::
+
+  # Create checkout script
+  fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod
+
+  # Create and run checkout script
+  fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod --execute
+
+  # Create Makefile
+  fre make create-makefile -y am5.yaml -p ncrc5.intel23 -t prod
+
+  # Create the compile script
+  fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod
+
+  # Create and run the compile script
+  fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod --execute
+
+2. Bare-metal Build Multi-target:
+
+.. code-block::
+
+  # Create checkout script
+  fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod -t debug
+
+  # Create and run checkout script
+  fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod -t debug --execute
+
+  # Create Makefile
+  fre make create-makefile -y am5.yaml -p ncrc5.intel23 -t prod -t debug
+
+  # Create the compile script
+  fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod -t debug
+
+  # Create and run the compile script
+  fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod -t debug --execute
+
+3. Container Build:
+
+In order for the container to build successfully, a `-npc`, or `--no-parallel-checkout` is needed.
+
+.. code-block::
+
+  # Create checkout script
+  fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod -npc
+
+  # Create and run checkout script
+  fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod -npc --execute
+
+  # Create Makefile
+  fre make create-makefile -y am5.yaml -p hpcme.2023 -t prod
+
+  # Create Dockerfile
+  fre make create-dockerfile -y am5.yaml -p hpcme.2023 -t prod
+
+  # Create and run the Dockerfile
+  fre make create-dockerfile -y am5.yaml -p hpcme.2023 -t prod --execute
+
+4. Run all of fremake:
+
+Currently, run-fremake kicks off the compilation automatically; no ``--execute`` option needed.
+
+.. code-block::
+
+  # Bare-metal
+  fre make run-fremake -y am5.yaml -p ncrc5.intel23 -t prod
+
+  # Container
+  fre make run-fremake -y am5.yaml -p hpcme.2023 -t prod -npc

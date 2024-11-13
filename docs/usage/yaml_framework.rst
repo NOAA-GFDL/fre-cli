@@ -1,5 +1,7 @@
 In order to utilize FRE 2024.01 tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with ``[key]: [value]`` fields. 
 
+Yaml Formatting
+----------
 Helpful information and format recommendations for creating yaml files.
 
 1. You can define a block of values as well as individual ``[key]: [value]`` pairs: 
