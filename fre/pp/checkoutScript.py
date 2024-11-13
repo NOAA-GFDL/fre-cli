@@ -36,7 +36,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
 
     # branch and version parameters
     default_tag = subprocess.run(["fre","--version"],capture_output=True, text=True).stdout.split()[2]
-    if branch == None:   
+    if branch is None:   
         if os.path.isdir(name): #scenario 4
             os.chdir(name)
             name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout.split('*')
