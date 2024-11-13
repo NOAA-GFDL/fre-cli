@@ -15,5 +15,3 @@ Fremake Canopy Supports:
 Guide and quickstart to `fre make` subtools:
 
 :ref:`fre-make-guide`
-
-https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/make/README.md

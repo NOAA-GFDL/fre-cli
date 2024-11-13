@@ -1,6 +1,7 @@
 In order to utilize FRE Canopy tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with `[key]: [value]` fields. 
 
 Helpful information and format recommendations for creating yaml files.
+
 1. You can define a block of values as well as individual `[key]: [value]` pairs: 
 
 .. code-block::
@@ -9,7 +10,7 @@ Helpful information and format recommendations for creating yaml files.
     key: value
     key: value
 
-2. `[key]: [value]` pairs can be made a list by utilizing a `-`:
+2. `[key]: [value]` pairs can be made a list by utilizing a `dash`:
 
 .. code-block::
 
@@ -27,10 +28,13 @@ Helpful information and format recommendations for creating yaml files.
     - key: value
       key: value
 
-Where each `-` indicates a different list.
+Where each dash indicates a list.
 
 4. Yamls also allow for the capability of reusable variables. These variables are defined by:
-`&ReusableVariable Value`
+
+.. code-block::
+
+  &ReusableVariable Value
 
 5. Users can apply a reuable variable on a block of values as well. Everything under that section can be included in the reusable variable.
 
@@ -41,20 +45,22 @@ Where each `-` indicates a different list.
     - key: value
 
 6. In order to use them as a reference else where in either the same or other yamls, follow:
-`*ReusableVariable`
+
+.. code-block:: 
+  *ReusableVariable
 
 7. If the reusable variable must be combined with other strings, the `!join` constructor is used. Example: 
 
-.. code-block::
+.. code-block:: 
 
-  &version "2024"::
+  &version "2024"
   &stem !join [FRE/, *version]
 
 Model Yaml
 ----------
 The model yaml defines reusable variables, shared directories, switches, and post-processing settings, and paths to compile and post-processing yamls. Required fields in the model yaml include: `fre_properties`, `build`, `shared`, and `experiments`.
 
-* `fre_properties`: Reusable variables
+* **fre_properties**: Reusable variables
 
   - list
   - value type: string
@@ -64,7 +70,7 @@ The model yaml defines reusable variables, shared directories, switches, and pos
      - &variable1  "value1"
      - &variable2  "value2"
 
-* `build`: paths to information needed for compilation
+* **build**: paths to information needed for compilation
 
   - subsections: `compileYaml`, `platformYaml`
   - value type: string
@@ -75,7 +81,7 @@ The model yaml defines reusable variables, shared directories, switches, and pos
        compileYaml: path the compile yaml in relation to model yaml
        platformYaml: path to platforms.yaml in relation to model yaml
 
-* `shared`: shared settings across experiments
+* **shared**: shared settings across experiments
 
   - subsections: `directories`, `postprocess`
 
@@ -93,7 +99,7 @@ The model yaml defines reusable variables, shared directories, switches, and pos
 
   - **Be sure to define directories, settings, and switches as reusable variables as well; they will be "inherited" in the post-processing yamls created.**
 
-* `experiments`: list of post-processing experiments
+* **experiments**: list of post-processing experiments
 
   .. code-block::
 
