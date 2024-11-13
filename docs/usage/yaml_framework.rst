@@ -1,4 +1,4 @@
-In order to utilize FRE Canopy tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with `[key]: [value]` fields. 
+In order to utilize FRE 2024.01 tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with `[key]: [value]` fields. 
 
 Helpful information and format recommendations for creating yaml files.
 
@@ -36,7 +36,7 @@ Where each dash indicates a list.
 
   &ReusableVariable Value
 
-5. Users can apply a reuable variable on a block of values as well. Everything under that section can be included in the reusable variable.
+5. Users can apply a reusable variable on a block of values as well. For example, everything under that "section" is included in the reusable variable.
 
 .. code-block::
 
@@ -47,6 +47,7 @@ Where each dash indicates a list.
 6. In order to use them as a reference else where in either the same or other yamls, follow:
 
 .. code-block:: 
+
   *ReusableVariable
 
 7. If the reusable variable must be combined with other strings, the `!join` constructor is used. Example: 
@@ -97,7 +98,8 @@ The model yaml defines reusable variables, shared directories, switches, and pos
          switches: &shared_switches
            key: value (boolean)
 
-  - **Be sure to define directories, settings, and switches as reusable variables as well; they will be "inherited" in the post-processing yamls created.**
+  - **Be sure to define directories, settings, and switches as reusable variables as well**
+    + they will be "inherited" in the post-processing yamls created
 
 * **experiments**: list of post-processing experiments
 
