@@ -48,7 +48,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
                 sys.exit(stop_report)
                 return 1
         else:   #scenario 2
-            subprocess.run(['git', 'clone', f'--branch={branch}', '--single-branch', '--recursive', 'https://github.com/NOAA-GFDL/fre-cli.git', f'{name}'])
+            subprocess.run(['git', 'clone', f'--branch={branch}', '--single-branch', '--depth=1', '--recursive', 'https://github.com/NOAA-GFDL/fre-cli.git', f'{name}'])
     else:
         if os.path.isdir(name): #scenario 3
             os.chdir(name)
@@ -61,35 +61,6 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
         else:   #scenario 1
             subprocess.run(f'git clone --branch={branch} https://github.com/NOAA-GFDL/fre-cli.git')
 
-    # Clone the repository with depth=1; check for errors
-    click.echo("cloning experiment into directory " + directory + "/" + name)
-    clonecmd = (
-        f"git clone -b {branch} --single-branch --depth=1 --recursive "
-        f"https://github.com/NOAA-GFDL/fre-workflows.git {name}" )
-    preexist_error = f"fatal: destination path '{name}' exists and is not an empty directory."
-    click.echo(clonecmd)
-    cloneproc = subprocess.run(clonecmd, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
-
-    if not cloneproc.returncode == 0:
-        if re.search(preexist_error.encode('ASCII'),cloneproc.stdout) is not None:
-            argstring = f" -e {experiment} -p {platform} -t {target}"
-            stop_report = (
-                "Error in checkoutTemplate: the workflow definition specified by -e/-p/-t already"
-                f" exists at the location ~/cylc-src/{name}!\n"
-                f"In the future, we will confirm that ~/cylc-src/{name} is usable and will check "
-                "whether it is up-to-date.\n"
-                "But for now, if you wish to proceed, you must delete the workflow definition.\n"
-                "To start over, try:\n"
-                f"\t cylc stop {name}\n"
-                f"\t cylc clean {name}\n"
-                f"\t rm -r ~/cylc-src/{name}" )
-            sys.exit(stop_report)
-            return 1
-        else:
-            #if not identified, just print the error
-            click.echo(clonecmd)
-            click.echo(cloneproc.stdout)
-        return 1
 
 #############################################
 
