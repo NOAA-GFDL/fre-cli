@@ -59,7 +59,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
                 sys.exit(stop_report)
                 return 1
         else:   #scenario 1
-            subprocess.run(['git', 'clone', f'--branch={default_tag}', '--recursive', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'])
+            subprocess.run(['git', 'clone', '-b',f'{default_tag}', '--recursive', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'])
 
 
 #############################################
