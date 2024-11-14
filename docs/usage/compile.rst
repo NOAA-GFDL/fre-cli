@@ -3,10 +3,13 @@
 Through the fre-cli, ``fre make`` can be used to create and run a checkout script, makefile, and compile a model.
 
 Fremake Canopy Supports:
-  - multiple targets; use ``-t`` flag to define each target
+  - multiple target use; ``-t`` flag to define each target (for multiple platform-target combinations)
   - bare-metal build
   - container creation
   - parallel checkouts for bare-metal build
+  - parallel model builds
+  - one yaml format
+  - additional library support if needed
 
 **Note: Users will not be able to create containers without access to podman. To get access, submit a helpdesk ticket.**
 
