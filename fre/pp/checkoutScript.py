@@ -38,7 +38,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
     default_tag = subprocess.run(["fre","--version"],capture_output=True, text=True).stdout.split()[2]
     if default_tag == '2024.1':   #hard coded solution to current discrepencies with fre --version
         default_tag = '2024.01'
-        
+    print('the default tag for directory ',directory,'/',name, ' is ', default_tag)
     if branch is not None:   
         if os.path.isdir(name):   #scenario 4
             os.chdir(name)
@@ -56,7 +56,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
             clone_output = subprocess.run(['git', 'clone', f'--branch={branch}', '--recursive', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'], capture_output=True, text=True)
             print('output of fre pp checkouts git clone command is as follows:',clone_output)
     else:
-        print('the default tag for directory ',directory,'/',name, ' is ', default_tag)
+        
         
         if os.path.isdir(name): #scenario 3
             os.chdir(name)
