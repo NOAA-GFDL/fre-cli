@@ -16,9 +16,6 @@ from click.testing import CliRunner
 
 #############################################
 
-package_dir = os.path.dirname(os.path.abspath(__file__))
-
-#############################################
 
 def _checkoutTemplate(experiment, platform, target, branch=None):
     """
@@ -39,7 +36,8 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
     if default_tag == '2024.1':   #hard coded solution to current discrepencies with fre --version
         default_tag = '2024.01'
     print('the default tag for directory ',directory,'/',name, ' is ', default_tag)
-    if branch is not None:   
+    if branch != None:
+        print(branch)
         if os.path.isdir(name):   #scenario 4
             os.chdir(name)
             name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout.split('*')
@@ -50,11 +48,11 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
                 stop_report = f"Tag and branch of prexisting directory {directory}/{name} does not match fre --version or branch requested"
                 sys.exit(stop_report)
                 return 1
-            print('directory exists, and branch requested matches branch in use')
+            print('scenario 4: directory exists, and branch requested matches branch in use')
                 
         else:   #scenario 2
-            clone_output = subprocess.run(['git', 'clone', f'--branch={branch}', '--recursive', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'], capture_output=True, text=True)
-            print('output of fre pp checkouts git clone command is as follows:',clone_output)
+            clone_output = subprocess.run(['git', 'clone','--recursive', f'--branch={branch}', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'], capture_output=True, text=True)
+            print('scenario 2: output of fre pp checkouts git clone command is as follows:',clone_output)
     else:
         
         
@@ -66,11 +64,11 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
                 stop_report = f"Tag of prexisting directory {diretory}/{name} does not match fre --version"
                 sys.exit(stop_report)
                 return 1
-            print('directory exists, and its branch matches default tag') 
+            print('scenario 3: directory exists, and its branch matches default tag') 
             
         else:   #scenario 1
             clone_output = subprocess.run(['git', 'clone', '--recursive', '-b',f'{default_tag}', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'], capture_output=True, text=True)
-            print('output of fre pp checkouts git clone command is as follows:',clone_output)
+            print('scenario 1: output of fre pp checkouts git clone command is as follows:',clone_output)
 
 #############################################
 
