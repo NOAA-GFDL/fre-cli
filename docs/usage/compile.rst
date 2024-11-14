@@ -40,15 +40,16 @@ The ``src`` section is used to include component information. This will include:
 .. code-block::
    
    src:
-     - component: "component name"                                         (string)
-       requires: ["list of components that this component depends on"]     (list of string)
-       repo: "url of code repository"                                      (string)
-       branch: "version of code to clone"                                  (string / list of strings)
-       paths: ["paths in the component to compile"]                        (list of strings)
-       cppdefs: "CPPDEFS ot include in compiling componenet                (string)
-       makeOverrides: "overrides openmp target for MOM6"                   ('OPENMP=""') (string)
-       otherFlags: "Include flags needed to retrieve other necessary code" (string)
-       doF90Cpp: True if the preprocessor needs to be run                  (boolean) 
+     - component: "component name"                                            (string)
+       requires: ["list of components that this component depends on"]        (list of string)
+       repo: "url of code repository"                                         (string)
+       branch: "version of code to clone"                                     (string / list of strings)
+       paths: ["paths in the component to compile"]                           (list of strings)
+       cppdefs: "CPPDEFS ot include in compiling componenet                   (string)
+       makeOverrides: "overrides openmp target for MOM6"                      ('OPENMP=""') (string)
+       otherFlags: "Include flags needed to retrieve other necessary code"    (string)
+       doF90Cpp: True if the preprocessor needs to be run                     (boolean) 
+       additionalInstructions: additional instructions to run after checkout  (string)
 
 Guide
 ----------
