@@ -69,7 +69,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
             print('directory exists, and its branch matches default tag') 
             
         else:   #scenario 1
-            clone_output = subprocess.run(['git', 'clone', '-b',f'{default_tag}', '--recursive', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'], capture_output=True, text=True)
+            clone_output = subprocess.run(['git', 'clone', '--recursive', '-b',f'{default_tag}', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'], capture_output=True, text=True)
             print('output of fre pp checkouts git clone command is as follows:',clone_output)
 
 #############################################
