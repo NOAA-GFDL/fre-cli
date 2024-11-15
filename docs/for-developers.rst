@@ -1,6 +1,5 @@
-.. NEEDS UPDATING #TODO
 ===============
-Developer Usage
+For developers
 ===============
 
 Developers are free to use the user guide above to familiarize with the CLI and save time from
