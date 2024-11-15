@@ -73,7 +73,7 @@ def make_cli():
 @click.pass_context
 def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, verbose):
     """ - Perform all fremake functions to run checkout and compile model"""
-    context.forward(runfremake._fremake_run)
+    context.forward(runFremake._fremake_run)
 
 ####
 @make_cli.command()
