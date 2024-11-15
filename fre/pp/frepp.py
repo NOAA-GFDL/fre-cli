@@ -114,9 +114,9 @@ def configure_yaml(context,yamlfile,experiment,platform,target):
               required=True)
 @click.option("-b", "--branch",
               show_default=True,
-              default="main", type=str,
+              default=None, type=NoneType,
               help="Name of fre2/workflows/postproc branch to clone; " \
-                   "defaults to 'main'. Not intended for production use, " \
+                   "defaults to None. Not intended for production use, " \
                    "but needed for branch testing."  )
 @click.pass_context
 def checkout(context, experiment, platform, target, branch='main'):
