@@ -114,12 +114,12 @@ def configure_yaml(context,yamlfile,experiment,platform,target):
               required=True)
 @click.option("-b", "--branch",
               show_default=True,
-              default=None, type=NoneType,
+              default=None, type='NoneType',
               help="Name of fre2/workflows/postproc branch to clone; " \
                    "defaults to None. Not intended for production use, " \
                    "but needed for branch testing."  )
 @click.pass_context
-def checkout(context, experiment, platform, target, branch='main'):
+def checkout(context, experiment, platform, target, branch=None):
     # pylint: disable=unused-argument
     """ - Execute fre pp checkout """
     context.forward(checkoutTemplate)
@@ -198,12 +198,12 @@ def configure_xml(context, xml, platform, target, experiment, do_analysis, histo
               required=True)
 @click.option("-b", "--branch",
               show_default=True,
-              default="main", type=str,
+              default=None, type='NoneType',
               help="Name of fre2/workflows/postproc branch to clone; " \
-                   "defaults to 'main'. Not intended for production use, " \
+                   "defaults to None. Not intended for production use, " \
                    "but needed for branch testing."             )
 @click.pass_context
-def wrapper(context, experiment, platform, target, config_file, branch='main'):
+def wrapper(context, experiment, platform, target, config_file, branch=None):
     # pylint: disable=unused-argument
     """ - Execute fre pp steps in order """
     context.forward(runFre2pp)
