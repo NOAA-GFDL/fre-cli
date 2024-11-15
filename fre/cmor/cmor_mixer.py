@@ -198,24 +198,48 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     check_dataset_for_ocean_grid(ds)
 
 
-    # figure out the dimension names programmatically TODO
-    # Define lat and lon dimensions
-    # Assume input file is lat/lon grid
-    lat = ds["lat"][:]
-    lon = ds["lon"][:]
-    lat_bnds = ds["lat_bnds"][:]
-    lon_bnds = ds["lon_bnds"][:]
+    # try to read what coordinate(s) we're going to be expecting for the variable
+    expected_mip_coord_dims=None
+    try:
+        expected_mip_coord_dims = proj_table_vars["variable_entry"] [target_var] ["dimensions"]
+        print( '(rewrite_netcdf_file_var) i am hoping to find data for the following coordinate dimensions:\n'
+              f'                          expected_mip_coord_dims = {expected_mip_coord_dims}' ) 
+    except Exception as exc:
+        print(f'(rewrite_netcdf_file_var) WARNING could not get expected coordinate dimensions for {target_var}. '
+               '                          in proj_table_vars file {json_table_config}. \n exc = {exc}')
+        
 
-    ## Define time
-    #time = ds["time"][:]
+    ## figure out the coordinate/dimension names programmatically TODO
+
+    # Attempt to read lat coordinates
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate(s), lat, lat_bnds')
+    lat, lat_bnds = None, None
+    try:
+        lat, lat_bnds = ds["lat"][:], ds["lat_bnds"][:]
+    except Exception as exc:
+        print(f'(rewrite_netcdf_file_var) WARNING could not read latitude coordinate. moving on.\n exc = {exc}')
+        print(f'                          lat = {lat}')
+        print(f'                          lat_bnds = {lat_bnds}')
+        pass
+    
+    # Attempt to read lon coordinates
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate(s), lon, lon_bnds')
+    lon, lon_bnds = None, None
+    try:
+        lon, lon_bnds = ds["lon"][:], ds["lon_bnds"][:]
+    except Exception as exc:
+        print(f'(rewrite_netcdf_file_var) WARNING could not read longitude coordinate. moving on.\n exc = {exc}')
+        print(f'                          lon = {lon}')
+        print(f'                          lon_bnds = {lon_bnds}')
+        pass
 
     # read in time_coords + units
-    time_coords = ds["time"][:]
+    time_coords = ds["time"][:] # out this in a try/except thingy, initializing like others? 
     time_coord_units = ds["time"].units
     print(f"(rewrite_netcdf_file_var) time_coord_units = {time_coord_units}")
 
     # read in time_bnds , if present
-    time_bnds = []
+    time_bnds = [] # shouldnt this be initialized like the others?
     try:
         time_bnds = ds["time_bnds"][:]
         #print(f"(rewrite_netcdf_file_var) time_bnds  = {time_bnds}")
@@ -226,10 +250,6 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # read the input variable data, i believe
     var = ds[target_var][:]
 
-    # determine the vertical dimension by looping over netcdf variables
-    vert_dim = get_vertical_dimension(ds, target_var)
-    print(f"(rewrite_netcdf_file_var) Vertical dimension of {target_var}: {vert_dim}")
-
     # grab var_dim
     var_dim = len(var.shape)
     print(f"(rewrite_netcdf_file_var) var_dim = {var_dim}, local_var = {local_var}")
@@ -238,11 +258,17 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     if var_dim not in [3, 4]:
         raise ValueError(f"var_dim == {var_dim} != 3 nor 4. stop.")
 
+    # determine the vertical dimension by looping over netcdf variables
+    vert_dim = get_vertical_dimension(ds, target_var) # returns int( 0 ) if not present
+    print(f"(rewrite_netcdf_file_var) Vertical dimension of {target_var}: {vert_dim}")
+
     # Check var_dim and vert_dim and assign lev if relevant.
     # error if vert_dim wrong given var_dim
     lev = None
-    if var_dim == 4:
-        if vert_dim not in [ "plev30", "plev19", "plev8",
+    #if var_dim == 4:
+    #    if vert_dim not in [ "plev30", "plev19", "plev8",
+    if vert_dim != 0:
+        if vert_dim not in [ "plev39", "plev30", "plev19", "plev8",
                                           "height2m", "level", "lev", "levhalf"] :
             raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
         lev = ds[vert_dim]
@@ -269,8 +295,27 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     units = proj_table_vars["variable_entry"] [target_var] ["units"]
     print(f"(rewrite_netcdf_file_var) units={units}")
 
-    cmor_lat = cmor.axis("latitude", coord_vals = lat, cell_bounds = lat_bnds, units = "degrees_N")
-    cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
+
+    # setup cmor latitude axis if relevant
+    #cmor_lat = cmor.axis("latitude", coord_vals = lat, cell_bounds = lat_bnds, units = "degrees_N")
+    #cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
+    print(f'(rewrite_netcdf_file_var) assigning cmor_lat')
+    cmor_lat = None
+    if any( [ lat is None, lat_bnds is None ] ):
+        print(f'(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_lat')
+    else:
+        cmor_lat = cmor.axis("latitude", coord_vals = lat, cell_bounds = lat_bnds, units = "degrees_N")
+
+    # setup cmor longitude axis if relevant
+    print(f'(rewrite_netcdf_file_var) assigning cmor_lon')
+    cmor_lon = None
+    if any( [ lon is None, lon_bnds is None ] ):
+        print(f'(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_lon')
+    else:
+        cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
+
+    # setup cmor time axis if relevant
+    cmor_time = None
     try:
         print( f"(rewrite_netcdf_file_var) Executing cmor.axis('time', \n"
                f"                         coord_vals = \n{time_coords}, \n"
@@ -283,20 +328,18 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                "                          coord_vals = time_coords, units = time_coord_units)")
         cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
 
-    # initializations
+
+    
+    # other vertical-axis-relevant initializations
     save_ps = False
     ps = None
     ierr_ap, ierr_b = None, None
     ips = None
 
-    # set axes for 3-dim case
-    if var_dim == 3:
-        axes = [cmor_time, cmor_lat, cmor_lon]
-        print(f"(rewrite_netcdf_file_var) axes = {axes}")
-    # set axes for 4-dim case
-    elif var_dim == 4:
-
-        if vert_dim in ["plev30", "plev19", "plev8", "height2m"]:
+    # set cmor vertical axis if relevant
+    cmor_lev = None
+    if lev is not None:
+        if vert_dim in ["plev39", "plev30", "plev19", "plev8", "height2m"]:
             cmor_lev = cmor.axis( vert_dim,
                                   coord_vals = lev[:], units = lev.units )
 
@@ -342,15 +385,44 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
             print(f'(rewrite_netcdf_file_var) ierr_ap after calling cmor_zfactor: {ierr_ap}\n'
                   f'(rewrite_netcdf_file_var) ierr_b after calling cmor_zfactor: {ierr_b}'  )
+            axis_ids = []
+            if cmor_time is not None:
+                print(f'(rewrite_netcdf_file_var) appending cmor_time to axis_ids list...')
+                axis_ids.append(cmor_time)
+                print(f'                          axis_ids now = {axis_ids}')
+            if cmor_lat is not None:
+                print(f'(rewrite_netcdf_file_var) appending cmor_lat to axis_ids list...')        
+                axis_ids.append(cmor_lat)
+                print(f'                          axis_ids now = {axis_ids}')
+            if cmor_lon is not None:
+                print(f'(rewrite_netcdf_file_var) appending cmor_lon to axis_ids list...')        
+                axis_ids.append(cmor_lon)
+                print(f'                          axis_ids now = {axis_ids}')
+            
             ips = cmor.zfactor( zaxis_id     = cmor_lev,
                                 zfactor_name = "ps",
-                                axis_ids     = [cmor_time, cmor_lat, cmor_lon],
+                                axis_ids     = axis_ids, #[cmor_time, cmor_lat, cmor_lon],
                                 units        = "Pa" )
             save_ps = True
-        # assign axes at end of 4-dim case
-        axes = [cmor_time, cmor_lev, cmor_lat, cmor_lon]
+    
 
-
+    axes = []
+    if cmor_time is not None:
+        print(f'(rewrite_netcdf_file_var) appending cmor_time to axes list...')
+        axes.append(cmor_time)
+        print(f'                          axes now = {axes}')
+    if cmor_lev is not None:
+        print(f'(rewrite_netcdf_file_var) appending cmor_lev to axes list...')        
+        axes.append(cmor_lev)
+        print(f'                          axes now = {axes}')
+    if cmor_lat is not None:
+        print(f'(rewrite_netcdf_file_var) appending cmor_lat to axes list...')        
+        axes.append(cmor_lat)
+        print(f'                          axes now = {axes}')
+    if cmor_lon is not None:
+        print(f'(rewrite_netcdf_file_var) appending cmor_lon to axes list...')        
+        axes.append(cmor_lon)
+        print(f'                          axes now = {axes}')
 
 
     # read positive attribute and create cmor_var? can this return none? TODO
@@ -359,7 +431,6 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     cmor_var = cmor.variable(target_var, units, axes, positive = positive)
 
     # Write the output to disk
-    #var = ds[target_var][:] #was this ever needed? why?
     cmor.write(cmor_var, var)
     if save_ps:
         if any( [ ips is None, ps is None ] ):
@@ -371,7 +442,6 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             cmor.close(ips, file_name = True, preserve = False)
     filename = cmor.close(cmor_var, file_name = True, preserve = False)
     print(f"(rewrite_netcdf_file_var) returned by cmor.close: filename = {filename}")
-    #cmor.close()
     ds.close()
 
     print('-------------------------- END rewrite_netcdf_file_var call -----\n\n')

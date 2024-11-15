@@ -65,51 +65,80 @@ def run_cmor_RUN(filename, table, opt_var_name):
     return FOO_return
 
 
-## 1) SUCCEEDs
-## land, Lmon, gr1
-#testfile_land_gr1_Lmon = \
-#    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/land.005101-005512.lai.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
-#except:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1
-#    pass
-#print_the_outcome(some_return,'land_gr1_Lmon / lai')
+# 8) FAIL (no latitude nor longitude coordinates cases)
+# atmos, Amon / ch4global
+# Result - error,
+#     File "src/netCDF4/_netCDF4.pyx", line 2519, in netCDF4._netCDF4.Dataset.__getitem__ IndexError:
+#         lat not found in /
+testfile_atmos_scalar_gn_Amon_nolon_nolat = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_scalar/ts/monthly/5yr/' + \
+    'atmos_scalar.197001-197412.ch4global.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
 
 
-## 2) SUCCEEDs
-## atmos, Amon / cl
-#testfile_atmos_level_cmip_gr1_Amon_complex_vert = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/atmos_level_cmip.196001-196412.cl.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_complex_vert, 'Amon', opt_var_name = 'cl')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_complex_vert / cl')
+sys.exit()
 
 
-## 3) SUCCEEDs
-## atmos, Amon / mc
-#testfile_atmos_level_cmip_gr1_Amon_fullL = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/atmos_level_cmip.195501-195912.mc.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_fullL, 'Amon', opt_var_name = 'mc')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_fullL / mc')
+# 1) SUCCEEDs
+# land, Lmon, gr1
+testfile_land_gr1_Lmon = \
+    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+    'pp/land/ts/monthly/5yr/' + \
+    'land.005101-005512.lai.nc'
+try:
+    some_return = run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
+except:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1
+    pass
+print_the_outcome(some_return,'land_gr1_Lmon / lai')
 
 
-# 4) FAIL (no longitude coordinate case)
+# 2) SUCCEEDs
+# atmos, Amon / cl
+testfile_atmos_level_cmip_gr1_Amon_complex_vert = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
+    'atmos_level_cmip.196001-196412.cl.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_complex_vert, 'Amon', opt_var_name = 'cl')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_complex_vert / cl')
+
+
+# 3) SUCCEEDs
+# atmos, Amon / mc
+testfile_atmos_level_cmip_gr1_Amon_fullL = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
+    'atmos_level_cmip.195501-195912.mc.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_fullL, 'Amon', opt_var_name = 'mc')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_fullL / mc')
+
+
+
+# 4) SUCCEEDs (no longitude coordinate case)
 # atmos, AERmonZ / ta
 # just like #1, but lack longitude
-# Result - error, File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py", line 195, in rewrite_netcdf_file_var    lon = ds["lon"][:]  File "src/netCDF4/_netCDF4.pyx", line 2519, in netCDF4._netCDF4.Dataset.__getitem__ IndexError: lon not found in /
 testfile_atmos_gr1_AERmonZ_nolons = \
-    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/atmos_plev39_cmip.201001-201412.ta.nc'
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/' + \
+    'atmos_plev39_cmip.201001-201412.ta.nc'
 try:
     some_return = run_cmor_RUN(testfile_atmos_gr1_AERmonZ_nolons, 'AERmonZ', opt_var_name = 'ta')
 except Exception as exc:
@@ -118,19 +147,20 @@ except Exception as exc:
     pass
 print_the_outcome(some_return,'atmos_gr1_AERmonZ_nolons / ta')
 
-sys.exit()
 
-## 5) SUCCEEDS
-## ocean, Omon / sos
-#testfile_ocean_monthly_1x1deg_gr = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/ocean_monthly_1x1deg/ts/monthly/5yr/ocean_monthly_1x1deg.190001-190412.sos.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'ocean_monthly_1x1deg_gr / sos')
+# 5) SUCCEEDs
+# ocean, Omon / sos
+testfile_ocean_monthly_1x1deg_gr = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/ocean_monthly_1x1deg/ts/monthly/5yr/' + \
+    'ocean_monthly_1x1deg.190001-190412.sos.nc'
+try:
+    some_return = run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'ocean_monthly_1x1deg_gr / sos')
 
 
 
@@ -138,7 +168,9 @@ sys.exit()
 ## ocean, Omon / sos
 ## Result - error, AttributeError: NetCDF: Attempt to define fill value when data already exists.
 #testfile_ocean_monthly_gn = \
-#    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/ocean_monthly.002101-002512.sos.nc'
+#    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+#    'pp/ocean_monthly/ts/monthly/5yr/' + \
+#    'ocean_monthly.002101-002512.sos.nc'
 #try:
 #    some_return = run_cmor_RUN(testfile_ocean_monthly_gn, 'Omon', opt_var_name = 'sos')
 #except Exception as exc:
@@ -153,7 +185,9 @@ sys.exit()
 ## ocean, Omon / so
 ## Result - identical failure to #6
 #testfile_ocean_monthly_z_1x1deg_gr = \
-#    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/ocean_monthly_z_1x1deg.000101-000512.so.nc'
+#    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+#    'pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/' + \
+#    'ocean_monthly_z_1x1deg.000101-000512.so.nc'
 #try:
 #    some_return = run_cmor_RUN(testfile_ocean_monthly_z_1x1deg_gr, 'Omon', opt_var_name = 'so')
 #except Exception as exc:
@@ -163,27 +197,15 @@ sys.exit()
 #print_the_outcome(some_return,'ocean_monthly_z_1x1deg_gr / so')
 
 
-# 8) FAIL (no latitude nor longitude coordinates cases)
-# atmos, Amon / ch4global
-# Result - error,   File "src/netCDF4/_netCDF4.pyx", line 2519, in netCDF4._netCDF4.Dataset.__getitem__ IndexError: lat not found in /
-testfile_atmos_scalar_gn_Amon_nolon_nolat = \
-    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/atmos_scalar.197001-197412.ch4global.nc'
-try:
-    some_return = run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
-except Exception as exc:
-    print(f'exception caught: exc=\n{exc}')
-    some_return=-1    
-    pass
-print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
-
-
 ## 9) FAIL (4 dimensional data with no vertical) 
 ## Result - error,
 ## File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py",
 ##    line 134, in get_vertical_dimension    if not (ds[dim].axis and ds[dim].axis == "Z"):
 ## AttributeError: NetCDF: Attribute not found
 #testfile_LUmip_refined_gr1_Emon_landusedim = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/LUmip_refined.185001-185412.gppLut.nc'
+#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#    'pp/LUmip_refined/ts/monthly/5yr/' + \
+#    'LUmip_refined.185001-185412.gppLut.nc'
 #try:
 #    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
 #except Exception as exc:
