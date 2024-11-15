@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-# Author: Bennett Chang
-# Description:
-
+# Author: Avery Kiihne
+'''
+Description: Checkout script which accounts for 4 different scenarios: 1. branch not given, folder does not exist,
+2. branch given, folder does not exist, 3. branch not given, folder exists, 4. branch given and folder exists
+'''
 import os
 import sys
 import subprocess
