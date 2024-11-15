@@ -10,14 +10,14 @@ import os
 def fremake_parallel(fremakeBuildList):
     """
     Brief: Called for parallel execution purposes.  Runs the builds.
-    Param: 
+    Param:
         - fremakeBuildList : fremakeBuild object list passes by pool.map
     """
     fremakeBuildList.run()
 
 class buildBaremetal():
     """
-    Brief: Creates the build script to compile the model 
+    Brief: Creates the build script to compile the model
     Param:
         - self : The buildScript object
         - exp  : The experiment name
@@ -50,6 +50,8 @@ class buildBaremetal():
         if self.modules != "":
             self.setup.extend(modulesInit) #extend - this is a list
             self.setup.append("module load "+self.modules+" \n") # Append -this is a single string
+            # make sure our modules are loaded correctly
+            self.setup.append("test $? != 0 && echo \"**********Modules failed to load, check platform yaml\" && exit 1\n")
 
         ## Create the build directory
         os.system("mkdir -p "+self.bld)

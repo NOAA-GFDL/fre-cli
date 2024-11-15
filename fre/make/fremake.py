@@ -66,7 +66,8 @@ def make_cli():
               "--no-parallel-checkout",
               is_flag = True,
               help = no_parallel_checkout_opt_help)
-@click.option("--execute",
+@click.option("-e",
+              "--execute",
               is_flag = True,
               default = False,
               help = "Use this to run the created compilation script.")

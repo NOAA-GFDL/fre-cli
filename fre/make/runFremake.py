@@ -142,8 +142,11 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                     fremakeBuild.writeBuildComponents(c)
                 fremakeBuild.writeScript()
                 fremakeBuildList.append(fremakeBuild)
-                ## Run the build
-                fremakeBuild.run()
+                ## Run the build if --execute option given, otherwise print out compile script path
+                if execute:
+                    fremakeBuild.run()
+                else:
+                    print("Compile script created at "+ bldDir+"/compile.sh\n\n")
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
@@ -187,9 +190,13 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
 
                 dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
 
-                ## Run the dockerfile; build the container
+                ## Run the dockerfile and create the container if execute option is given
+                ## otherwise create a build script and print out its path
                 if execute:
                     dockerBuild.build(containerBuild,containerRun)
+                else:
+                    dockerBuild.createBuildScript(containerBuild, containerRun)
+                    print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 #freCheckout.cleanup()
                 #buildDockerfile(fremakeYaml,image)
