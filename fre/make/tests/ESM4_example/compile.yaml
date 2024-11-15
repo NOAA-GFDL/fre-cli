@@ -5,7 +5,7 @@ compile:
      src:
           - component: "FMS"
             repo: "https://github.com/NOAA-GFDL/FMS.git"
-            cppdefs: "-Duse_libMPI -Duse_netCDF -DMAXFIELDMETHODS_=500"
+            cppdefs: "-Duse_libMPI -Duse_netCDF -DMAXFIELDMETHODS_=500 -DHAVE_GETTID"
             branch: *FMS_GIT_TAG 
           - component: "atmos_phys"
             requires: ["FMS"]
