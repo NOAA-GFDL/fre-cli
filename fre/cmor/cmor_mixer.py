@@ -144,7 +144,7 @@ def get_vertical_dimension(ds,target_var):
             vert_dim = dim
     return vert_dim
 
-def create_tmp_dir(outdir):
+def create_tmp_dir(outdir, json_exp_config = None):
     '''
     creates a tmp_dir based on targeted output directory root. returns the name of the tmp dir.
     accepts one argument:
@@ -152,7 +152,20 @@ def create_tmp_dir(outdir):
                 file output. tmp_dir will be slightly different depending on the output directory
                 targeted
     '''
+    outdir_from_exp_config=None
+    if json_exp_config is not None:
+        with open(json_exp_config, "r", encoding = "utf-8") as table_config_file:
+            try:
+                print('                   FOO')
+                exp_config = json.load(table_config_file)
+                print('                   BAR')
+                outdir_from_exp_config = exp_config["outpath"]
+            except:
+                print(f'(create_tmp_dir) could not read outdir from json_exp_config... oh well!')
+                
+        
     print(f"(create_tmp_dir) outdir = {outdir}")
+    assert False
     tmp_dir = None
     if any( [ outdir == "/local2",
               outdir.find("/work") != -1,
@@ -164,6 +177,8 @@ def create_tmp_dir(outdir):
         tmp_dir = str( Path(f"{outdir}/tmp/").resolve() )
     try:
         os.makedirs(tmp_dir, exist_ok=True)
+        if outdir_from_exp_config is not None:
+            os.makedirs(tmp_dir+'/'+outdir_from_exp_config, exist_ok=True)
     except Exception as exc:
         raise OSError('(create_tmp_dir) problem creating temp output directory. stop.') from exc
     return tmp_dir
@@ -275,7 +290,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # Check var_dim and vert_dim and assign lev if relevant.
     # error if vert_dim wrong given var_dim
-    lev, lev_units = None, ""
+    lev, lev_units = None, "1" #1 #"none" #None #""
     if vert_dim != 0:
         if vert_dim not in [ "landuse", "plev39", "plev30", "plev19", "plev8",
                                           "height2m", "level", "lev", "levhalf"] :
@@ -289,7 +304,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     cmor.setup(
         netcdf_file_action    = cmor.CMOR_PRESERVE,
         set_verbosity         = cmor.CMOR_NORMAL, #CMOR_QUIET, #default is CMOR_NORMAL
-        exit_control          = cmor.CMOR_NORMAL,
+        exit_control          = cmor.CMOR_EXIT_ON_WARNING,#CMOR_NORMAL,
         logfile               = './foo.log',
         create_subdirectories = 1
     )
@@ -374,7 +389,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             cmor_vert_dim_name = vert_dim
             if vert_dim == "landuse":
                 cmor_vert_dim_name = "landUse" # this is why can't we have nice things
-            cmor_lev = cmor.axis( vert_dim,
+            cmor_lev = cmor.axis( cmor_vert_dim_name,
                                   coord_vals = lev[:], units = lev_units )
 
         elif vert_dim in ["level", "lev", "levhalf"]:
@@ -514,7 +529,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
 
 
     #determine a tmp dir for working on files.
-    tmp_dir = create_tmp_dir( outdir ) + '/'
+    tmp_dir = create_tmp_dir( outdir,  json_exp_config) + '/'
     print(f'(cmorize_target_var_files) will use tmp_dir={tmp_dir}')
 
 
