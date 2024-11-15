@@ -20,61 +20,6 @@ DEBUG_MODE_RUN_ONE = True
 # ----- \end consts
 
 ### ------ helper functions  ------ ###
-def check_table_dims_v_var_dims(json_table_config = None, table_var_dims = None, var_dims = None):
-    '''
-    checks the mip table's required dimensions against the current input netcdf file's dimensions. if a req'd
-    dimension isn't found in the input netcdf file, either as an exact match or a match to a standard/long/out name field,
-    we throw an error. currently accepts three arguments, two required and one optional
-        json_table_config: string, optional
-        table_var_dims: tuple of strings, req'd
-        var_dims: tuple of strings, req'd
-    '''
-    # check if the information req'd by the table is present in the list assoc with the variable    
-    print(f'\n\n(check_table_dims_v_var_dims) attempting to compare target_var dimension names with table variable entry dimension names...')
-    for proj_table_var_dim in table_var_dims:
-        print(f'-----------------------------------------------------------------------------------------------------------------------------------------')
-        print(f'(check_table_dims_v_var_dims) proj_table_var_dim = {proj_table_var_dim}')
-
-        # check the mip coordinate file for accepted standard_name, out_name, long_name flavors
-        cmip_coords = None
-        try:
-            json_coordinate_config = str(Path(json_table_config).parent) + '/CMIP6_coordinate.json'
-            print(f'(check_table_dims_v_var_dims) json_coordinate_config = {json_coordinate_config}')
-            with open ( json_coordinate_config, 'r', encoding="utf-8") as json_cmip_coords:
-                cmip_coords = json.load( json_cmip_coords )
-        except Exception as exc:
-            print(f'(check_table_dims_v_var_dims) trying to open MIP coordinate files... caught exception: exc = \n {exc}')
-            print(f'                              WARNING wont be making extra checks against accepted coordinat names...')
-                  
-        dim_is_present=False        
-        for var_dim in var_dims:
-            print(f'(check_table_dims_v_var_dims) var_dim = {var_dim}')
-            if var_dim == proj_table_var_dim:
-                print(f'          required coordinate dimension {proj_table_var_dim} is present in the netcdf file')
-                dim_is_present=True
-                break
-
-            if cmip_coords is not None:
-                print(f' did not find the exact coordinate name {proj_table_var_dim} is present in the netcdf file ')
-                print(f'                    .... checking standard/out/long names ....'   )
-                accepted_names = [
-                    cmip_coords['axis_entry'][proj_table_var_dim]['standard_name'],
-                    cmip_coords['axis_entry'][proj_table_var_dim]['out_name'],
-                    cmip_coords['axis_entry'][proj_table_var_dim]['long_name']     ]
-                print(f'(check_table_dims_v_var_dims) accepted_names = \n {accepted_names}')
-                if var_dim in accepted_names:
-                    print(f'          required coordinate dimension {proj_table_var_dim} is present in the netcdf file')
-                    print(f'          WARNING!!!! not an exact match for {proj_table_var_dim}.. it actually matches one of... {accepted_names}')                
-                    dim_is_present=True
-                    break
-                
-        print(f'-----------------------------------------------------------------------------------------------------------------------------------------\n\n')
-        if not dim_is_present:
-            raise ValueError(f'(check_table_dims_v_var_dims)'
-                             f' ERROR: dimension {proj_table_var_dim} is required for variable {target_var} / table {Path(json_table_config).name}')
-    print(f'(check_table_dims_v_var_dims) done comparing dimension names of between the table and the file\'s data.')
-
-
 def copy_nc(in_nc, out_nc):
     '''
     copy target input netcdf file in_nc to target out_nc. I have to think this is not a trivial copy
@@ -248,74 +193,23 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     ds = nc.Dataset(netcdf_file,'a')
 
 
-    # read what specific dimensions are req'd by the table for this variable
-    print(f'(rewrite_netcdf_file_var) attempting to read target_var dimension names FROM proj_table_vars...')
-    proj_table_var_dims = tuple( [
-                                  var_dim for var_dim in proj_table_vars['variable_entry'][target_var]["dimensions"].split(' ')
-                                   ] )
-    print(f'                          proj_table_var_dims = {proj_table_var_dims}')
-    print(f'                          type(proj_table_var_dims) = {type(proj_table_var_dims)}')
-    
-
-
-    
-    # read what specific dimensions are assoc with the variable (lat/lon/plev etc.)
-    print(f'(rewrite_netcdf_file_var) attempting to read target_var dimension names...')
-    var_dims = ds[target_var].dimensions
-    print(f'                          var_dims = {var_dims}')
-
-
-
-    check_table_dims_v_var_dims(
-        json_table_config = json_table_config, 
-        table_var_dims = ('latitude',  'time', 'plev19', 'longitude'),#proj_table_var_dims,
-        var_dims = var_dims
-    )
-    #    # check if the information req'd by the table is present in the list assoc with the variable
-    #    print(f'(rewrite_netcdf_file_var) attempting to compare target_var dimension names with table variable entry dimension names...')
-    #    for proj_table_var_dim in proj_table_var_dims:
-    #        dim_is_present=False
-    #        for var_dim in var_dims:
-    #            if proj_table_var_dim == var_dim:
-    #                print(f'required coordinate dimension {proj_table_var_dim} is present in the netcdf file')
-    #                dim_is_present=True
-    #                break
-    #            
-    #        if not dim_is_present:
-    #            raise ValueError(f'(rewrite_netcdf_file_var) ERROR: dimension {proj_table_var_dim} is required for variable {target_var} / table {Path(json_table_config).name}')
-    #    print(f'(rewrite_netcdf_file_var) done comparing dimension names of between the table and the file\'s data.')
-
-
-
     # ocean grids are not implemented yet.
     print( '(rewrite_netcdf_file_var) checking input netcdf file for oceangrid condition')
     check_dataset_for_ocean_grid(ds)
 
 
-    # Attempt to read lat coordinates
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate(s), lat, lat_bnds')
-    lat, lat_bnds = None, None
-    try:
-        lat, lat_bnds = ds["lat"][:], ds["lat_bnds"][:]
-    except Exception as exc:
-        print(f'(rewrite_netcdf_file_var) WARNING could not read latitude coordinate. moving on.\n exc = {exc}')
-        print(f'                          lat = {lat}')
-        print(f'                          lat_bnds = {lat_bnds}')
-        pass
+    # figure out the dimension names programmatically TODO
+    # Define lat and lon dimensions
+    # Assume input file is lat/lon grid
+    lat = ds["lat"][:]
+    lon = ds["lon"][:]
+    lat_bnds = ds["lat_bnds"][:]
+    lon_bnds = ds["lon_bnds"][:]
 
-    # Attempt to read lon coordinates
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate(s), lon, lon_bnds')          
-    lon, lon_bnds = None, None    
-    try:
-        lon, lon_bnds = ds["lon"][:], ds["lon_bnds"][:]
-    except Exception as exc:
-        print(f'(rewrite_netcdf_file_var) WARNING could not read longitude coordinate. moving on.\n exc = {exc}')
-        print(f'                          lon = {lon}')
-        print(f'                          lon_bnds = {lon_bnds}')
-        pass
+    ## Define time
+    #time = ds["time"][:]
 
     # read in time_coords + units
-    #time = ds["time"][:]
     time_coords = ds["time"][:]
     time_coord_units = ds["time"].units
     print(f"(rewrite_netcdf_file_var) time_coord_units = {time_coord_units}")
@@ -336,27 +230,21 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     vert_dim = get_vertical_dimension(ds, target_var)
     print(f"(rewrite_netcdf_file_var) Vertical dimension of {target_var}: {vert_dim}")
 
+    # grab var_dim
+    var_dim = len(var.shape)
+    print(f"(rewrite_netcdf_file_var) var_dim = {var_dim}, local_var = {local_var}")
 
-    # grab var_N_dims and check it's values
-    var_N_dims = len(var.shape)    
-    print(f"(rewrite_netcdf_file_var) var_N_dims = {var_N_dims}, local_var = {local_var}")
-    if var_N_dims not in [3, 4]:
-        raise ValueError(f"var_N_dims == {var_N_dims} != 3 nor 4. stop.")
+    # Check var_dim
+    if var_dim not in [3, 4]:
+        raise ValueError(f"var_dim == {var_dim} != 3 nor 4. stop.")
 
-
-    print(f'(rewrite_netcdf_file_var) ASSERTING FALSE NOW')
-    raise Exception()
-
-
-
-
-    # Check var_N_dims and vert_dim and assign lev if relevant.
-    # error if vert_dim wrong given var_N_dims
+    # Check var_dim and vert_dim and assign lev if relevant.
+    # error if vert_dim wrong given var_dim
     lev = None
-    if var_N_dims == 4:
+    if var_dim == 4:
         if vert_dim not in [ "plev30", "plev19", "plev8",
                                           "height2m", "level", "lev", "levhalf"] :
-            raise ValueError(f'var_N_dims={var_N_dims}, vert_dim = {vert_dim} is not supported')
+            raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
         lev = ds[vert_dim]
 
 
@@ -378,27 +266,11 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     print(f"(rewrite_netcdf_file_var) cmor is opening json_table_config = {json_table_config}")
     cmor.load_table(json_table_config)
 
-    # read units
     units = proj_table_vars["variable_entry"] [target_var] ["units"]
     print(f"(rewrite_netcdf_file_var) units={units}")
 
-    # setup cmor latitude axis if relevant
-    print(f'(rewrite_netcdf_file_var) assigning cmor_lat')
-    cmor_lat = None
-    if any( [ lat is None, lat_bnds is None ] ):
-        print(f'(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_lat')
-    else:
-        cmor_lat = cmor.axis("latitude", coord_vals = lat, cell_bounds = lat_bnds, units = "degrees_N")
-
-    # setup cmor longitude axis if relevant
-    print(f'(rewrite_netcdf_file_var) assigning cmor_lon')
-    cmor_lon = None
-    if any( [ lon is None, lon_bnds is None ] ):
-        print(f'(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_lon')
-    else:
-        cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
-
-    # setup cmor_time axis if relevant
+    cmor_lat = cmor.axis("latitude", coord_vals = lat, cell_bounds = lat_bnds, units = "degrees_N")
+    cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
     try:
         print( f"(rewrite_netcdf_file_var) Executing cmor.axis('time', \n"
                f"                         coord_vals = \n{time_coords}, \n"
@@ -418,27 +290,11 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     ips = None
 
     # set axes for 3-dim case
-    if var_N_dims == 3:
-        axes = []
-        if cmor_time is not None:
-            axes.append(cmor_time)
-        else:
-            print(f'(rewrite_netcdf_file_var) WARNING: cmor_time is None!!! moving on...')
-        if cmor_lat is not None:
-            axes.append(cmor_lat)
-        else:
-            print(f'(rewrite_netcdf_file_var) WARNING: cmor_lat is None!!! moving on...')
-        if cmor_lon is not None:
-            axes.append(cmor_lon)
-        else:
-            print(f'(rewrite_netcdf_file_var) WARNING: cmor_lon is None!!! moving on...')
+    if var_dim == 3:
+        axes = [cmor_time, cmor_lat, cmor_lon]
         print(f"(rewrite_netcdf_file_var) axes = {axes}")
-                
-        #axes2 = [cmor_time, cmor_lat, cmor_lon]
-        #print(f"(rewrite_netcdf_file_var) axes2 = {axes2}")
-
     # set axes for 4-dim case
-    elif var_N_dims == 4:
+    elif var_dim == 4:
 
         if vert_dim in ["plev30", "plev19", "plev8", "height2m"]:
             cmor_lev = cmor.axis( vert_dim,
@@ -501,7 +357,6 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     positive = proj_table_vars["variable_entry"] [target_var] ["positive"]
     print(f"(rewrite_netcdf_file_var) positive = {positive}")
     cmor_var = cmor.variable(target_var, units, axes, positive = positive)
-
 
     # Write the output to disk
     #var = ds[target_var][:] #was this ever needed? why?
