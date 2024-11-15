@@ -65,25 +65,23 @@ def run_cmor_RUN(filename, table, opt_var_name):
     return FOO_return
 
 
-# 8) FAIL (no latitude nor longitude coordinates cases)
-# atmos, Amon / ch4global
-# Result - error,
-#     File "src/netCDF4/_netCDF4.pyx", line 2519, in netCDF4._netCDF4.Dataset.__getitem__ IndexError:
-#         lat not found in /
-testfile_atmos_scalar_gn_Amon_nolon_nolat = \
-    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-    'pp/atmos_scalar/ts/monthly/5yr/' + \
-    'atmos_scalar.197001-197412.ch4global.nc'
-try:
-    some_return = run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
-except Exception as exc:
-    print(f'exception caught: exc=\n{exc}')
-    some_return=-1    
-    pass
-print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
-
-
-sys.exit()
+## 9) FAIL (4 dimensional data with no vertical) 
+## Result - error,
+## File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py",
+##    line 134, in get_vertical_dimension    if not (ds[dim].axis and ds[dim].axis == "Z"):
+## AttributeError: NetCDF: Attribute not found
+#testfile_LUmip_refined_gr1_Emon_landusedim = \
+#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#    'pp/LUmip_refined/ts/monthly/5yr/' + \
+#    'LUmip_refined.185001-185412.gppLut.nc'
+#try:
+#    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'LUmip_refined_gr1_Emon_langusedim / gppLut')
+#sys.exit()
 
 
 # 1) SUCCEEDs
@@ -197,22 +195,20 @@ print_the_outcome(some_return,'ocean_monthly_1x1deg_gr / sos')
 #print_the_outcome(some_return,'ocean_monthly_z_1x1deg_gr / so')
 
 
-## 9) FAIL (4 dimensional data with no vertical) 
-## Result - error,
-## File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py",
-##    line 134, in get_vertical_dimension    if not (ds[dim].axis and ds[dim].axis == "Z"):
-## AttributeError: NetCDF: Attribute not found
-#testfile_LUmip_refined_gr1_Emon_landusedim = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/LUmip_refined/ts/monthly/5yr/' + \
-#    'LUmip_refined.185001-185412.gppLut.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'LUmip_refined_gr1_Emon_langusedim / gppLut')
+# 8) SUCCEEDs (no latitude, nor longitude, nor vertical coordinates cases)
+# atmos, Amon / ch4global
+testfile_atmos_scalar_gn_Amon_nolon_nolat = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_scalar/ts/monthly/5yr/' + \
+    'atmos_scalar.197001-197412.ch4global.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
+
 
 
 

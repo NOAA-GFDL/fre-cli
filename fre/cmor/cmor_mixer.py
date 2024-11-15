@@ -254,9 +254,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     var_dim = len(var.shape)
     print(f"(rewrite_netcdf_file_var) var_dim = {var_dim}, local_var = {local_var}")
 
-    # Check var_dim
-    if var_dim not in [3, 4]:
-        raise ValueError(f"var_dim == {var_dim} != 3 nor 4. stop.")
+    ## Check var_dim
+    #if var_dim not in [3, 4]:
+    #    raise ValueError(f"var_dim == {var_dim} != 3 nor 4. stop.")
 
     # determine the vertical dimension by looping over netcdf variables
     vert_dim = get_vertical_dimension(ds, target_var) # returns int( 0 ) if not present
@@ -265,8 +265,6 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # Check var_dim and vert_dim and assign lev if relevant.
     # error if vert_dim wrong given var_dim
     lev = None
-    #if var_dim == 4:
-    #    if vert_dim not in [ "plev30", "plev19", "plev8",
     if vert_dim != 0:
         if vert_dim not in [ "plev39", "plev30", "plev19", "plev8",
                                           "height2m", "level", "lev", "levhalf"] :
@@ -297,21 +295,19 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
     # setup cmor latitude axis if relevant
-    #cmor_lat = cmor.axis("latitude", coord_vals = lat, cell_bounds = lat_bnds, units = "degrees_N")
-    #cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
-    print(f'(rewrite_netcdf_file_var) assigning cmor_lat')
     cmor_lat = None
     if any( [ lat is None, lat_bnds is None ] ):
         print(f'(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_lat')
     else:
+        print(f'(rewrite_netcdf_file_var) assigning cmor_lat')
         cmor_lat = cmor.axis("latitude", coord_vals = lat, cell_bounds = lat_bnds, units = "degrees_N")
 
     # setup cmor longitude axis if relevant
-    print(f'(rewrite_netcdf_file_var) assigning cmor_lon')
     cmor_lon = None
     if any( [ lon is None, lon_bnds is None ] ):
         print(f'(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_lon')
     else:
+        print(f'(rewrite_netcdf_file_var) assigning cmor_lon')
         cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
 
     # setup cmor time axis if relevant
@@ -320,14 +316,15 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print( f"(rewrite_netcdf_file_var) Executing cmor.axis('time', \n"
                f"                         coord_vals = \n{time_coords}, \n"
                f"                         cell_bounds = time_bnds, units = {time_coord_units})   ")
+        print(f'(rewrite_netcdf_file_var) assigning cmor_time using time_bnds...')        
         cmor_time = cmor.axis("time", coord_vals = time_coords,
                               cell_bounds = time_bnds, units = time_coord_units)
     except ValueError as exc:
         print(f"(rewrite_netcdf_file_var) WARNING exception raised... exc={exc}\n"
                "                          cmor_time = cmor.axis('time', \n"
                "                          coord_vals = time_coords, units = time_coord_units)")
+        print(f'(rewrite_netcdf_file_var) assigning cmor_time WITHOUT time_bnds...')        
         cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
-
 
     
     # other vertical-axis-relevant initializations
