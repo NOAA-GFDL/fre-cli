@@ -65,23 +65,23 @@ def run_cmor_RUN(filename, table, opt_var_name):
     return FOO_return
 
 
-## 9) FAIL (4 dimensional data with no vertical) 
-## Result - error,
-## File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py",
-##    line 134, in get_vertical_dimension    if not (ds[dim].axis and ds[dim].axis == "Z"):
-## AttributeError: NetCDF: Attribute not found
-#testfile_LUmip_refined_gr1_Emon_landusedim = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/LUmip_refined/ts/monthly/5yr/' + \
-#    'LUmip_refined.185001-185412.gppLut.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'LUmip_refined_gr1_Emon_langusedim / gppLut')
-#sys.exit()
+# 9) FAIL (4 dimensional data with no vertical) 
+# Result - error,
+# File "/home/Ian.Laflotte/Working/fre-cli/fre/cmor/cmor_mixer.py",
+#    line 134, in get_vertical_dimension    if not (ds[dim].axis and ds[dim].axis == "Z"):
+# AttributeError: NetCDF: Attribute not found
+testfile_LUmip_refined_gr1_Emon_landusedim = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/LUmip_refined/ts/monthly/5yr/' + \
+    'LUmip_refined.185001-185412.gppLut.nc'
+try:
+    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'LUmip_refined_gr1_Emon_langusedim / gppLut')
+sys.exit()
 
 
 # 1) SUCCEEDs

@@ -130,8 +130,16 @@ def get_vertical_dimension(ds,target_var):
             # if it is not a vertical axis, move on.
             print(f'(get_vertical_dimension) dim={dim}')
             if dim == 'landuse':
-                continue
+                #continue
+                print(f'(get_vertical_dimension) i think i will crash... NOW')                
+                vert_dim = dim
+                break
+
+            if dim == 'landuse':
+                print(f'(get_vertical_dimension) i think i will crash... NOW')                
             if not (ds[dim].axis and ds[dim].axis == "Z"):
+                if dim == 'landuse':
+                    print(f'(get_vertical_dimension) I WILL NOT SEE THIS PRINTOUT!!!')                
                 continue
             vert_dim = dim
     return vert_dim
@@ -221,6 +229,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print(f'                          lat = {lat}')
         print(f'                          lat_bnds = {lat_bnds}')
         pass
+    print(f'                          DONE attempting to read coordinate(s), lat, lat_bnds')
     
     # Attempt to read lon coordinates
     print(f'(rewrite_netcdf_file_var) attempting to read coordinate(s), lon, lon_bnds')
@@ -232,11 +241,13 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print(f'                          lon = {lon}')
         print(f'                          lon_bnds = {lon_bnds}')
         pass
-
+    print(f'                          DONE attempting to read coordinate(s), lon, lon_bnds')
+    
     # read in time_coords + units
+    print(f'(rewrite_netcdf_file_var) attempting to read time_coords, and units...')
     time_coords = ds["time"][:] # out this in a try/except thingy, initializing like others? 
     time_coord_units = ds["time"].units
-    print(f"(rewrite_netcdf_file_var) time_coord_units = {time_coord_units}")
+    print(f"                          time_coord_units = {time_coord_units}")
 
     # read in time_bnds , if present
     time_bnds = [] # shouldnt this be initialized like the others?
@@ -264,21 +275,22 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # Check var_dim and vert_dim and assign lev if relevant.
     # error if vert_dim wrong given var_dim
-    lev = None
+    lev, lev_units = None, ""
     if vert_dim != 0:
-        if vert_dim not in [ "plev39", "plev30", "plev19", "plev8",
+        if vert_dim not in [ "landuse", "plev39", "plev30", "plev19", "plev8",
                                           "height2m", "level", "lev", "levhalf"] :
             raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
         lev = ds[vert_dim]
-
+        if vert_dim != "landuse":
+            lev_units = ds[vert_dim].units
 
     # now we set up the cmor module object
     # initialize CMOR
     cmor.setup(
         netcdf_file_action    = cmor.CMOR_PRESERVE,
-        set_verbosity         = cmor.CMOR_QUIET, #default is CMOR_NORMAL
+        set_verbosity         = cmor.CMOR_NORMAL, #CMOR_QUIET, #default is CMOR_NORMAL
         exit_control          = cmor.CMOR_NORMAL,
-        logfile               = None,
+        logfile               = './foo.log',
         create_subdirectories = 1
     )
 
@@ -301,6 +313,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     else:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lat')
         cmor_lat = cmor.axis("latitude", coord_vals = lat, cell_bounds = lat_bnds, units = "degrees_N")
+        print(f'                          DONE assigning cmor_lat')
 
     # setup cmor longitude axis if relevant
     cmor_lon = None
@@ -309,22 +322,41 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     else:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lon')
         cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
+        print(f'                          DONE assigning cmor_lon')
 
     # setup cmor time axis if relevant
     cmor_time = None
-    try:
+    print(f'(rewrite_netcdf_file_var) assigning cmor_time')
+    try: #if vert_dim != 'landuse':     
         print( f"(rewrite_netcdf_file_var) Executing cmor.axis('time', \n"
                f"                         coord_vals = \n{time_coords}, \n"
                f"                         cell_bounds = time_bnds, units = {time_coord_units})   ")
-        print(f'(rewrite_netcdf_file_var) assigning cmor_time using time_bnds...')        
+        print(f'(rewrite_netcdf_file_var) assigning cmor_time using time_bnds...')
         cmor_time = cmor.axis("time", coord_vals = time_coords,
                               cell_bounds = time_bnds, units = time_coord_units)
-    except ValueError as exc:
-        print(f"(rewrite_netcdf_file_var) WARNING exception raised... exc={exc}\n"
-               "                          cmor_time = cmor.axis('time', \n"
+    except ValueError as exc: #else: 
+        print(f"(rewrite_netcdf_file_var) cmor_time = cmor.axis('time', \n"
                "                          coord_vals = time_coords, units = time_coord_units)")
         print(f'(rewrite_netcdf_file_var) assigning cmor_time WITHOUT time_bnds...')        
         cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
+    print(f'                          DONE assigning cmor_time')
+    
+#    # setup cmor time axis if relevant
+#    cmor_time = None
+#    try:
+#        print( f"(rewrite_netcdf_file_var) Executing cmor.axis('time', \n"
+#               f"                         coord_vals = \n{time_coords}, \n"
+#               f"                         cell_bounds = time_bnds, units = {time_coord_units})   ")
+#        print(f'(rewrite_netcdf_file_var) assigning cmor_time using time_bnds...')
+#        cmor_time = cmor.axis("time", coord_vals = time_coords,
+#                              cell_bounds = time_bnds, units = time_coord_units)
+#    except ValueError as exc:
+#        print(f"(rewrite_netcdf_file_var) WARNING exception raised... exc={exc}\n"
+#               "                          cmor_time = cmor.axis('time', \n"
+#               "                          coord_vals = time_coords, units = time_coord_units)")
+#        print(f'(rewrite_netcdf_file_var) assigning cmor_time WITHOUT time_bnds...')        
+#        cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)        
+        
 
     
     # other vertical-axis-relevant initializations
@@ -336,9 +368,14 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # set cmor vertical axis if relevant
     cmor_lev = None
     if lev is not None:
-        if vert_dim in ["plev39", "plev30", "plev19", "plev8", "height2m"]:
+        print(f'(rewrite_netcdf_file_var) assigning cmor_lev')
+        if vert_dim in ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]:
+            print(f'(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
+            cmor_vert_dim_name = vert_dim
+            if vert_dim == "landuse":
+                cmor_vert_dim_name = "landUse" # this is why can't we have nice things
             cmor_lev = cmor.axis( vert_dim,
-                                  coord_vals = lev[:], units = lev.units )
+                                  coord_vals = lev[:], units = lev_units )
 
         elif vert_dim in ["level", "lev", "levhalf"]:
             # find the ps file nearby
@@ -351,7 +388,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             if vert_dim == "levhalf":
                 cmor_lev = cmor.axis( "alternate_hybrid_sigma_half",
                                       coord_vals = lev[:],
-                                      units = lev.units )
+                                      units = lev_units )
                 ierr_ap = cmor.zfactor( zaxis_id       = cmor_lev,
                                         zfactor_name   = "ap_half",
                                         axis_ids       = [cmor_lev, ],
@@ -365,7 +402,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             else:
                 cmor_lev = cmor.axis( "alternate_hybrid_sigma",
                                       coord_vals  = lev[:],
-                                      units       = lev.units,
+                                      units       = lev_units,
                                       cell_bounds = ds[vert_dim+"_bnds"] )
                 ierr_ap = cmor.zfactor( zaxis_id       = cmor_lev,
                                         zfactor_name   = "ap",
@@ -401,6 +438,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                 axis_ids     = axis_ids, #[cmor_time, cmor_lat, cmor_lon],
                                 units        = "Pa" )
             save_ps = True
+        print(f'                          DONE assigning cmor_lev')
     
 
     axes = []
