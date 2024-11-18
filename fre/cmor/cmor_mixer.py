@@ -112,13 +112,12 @@ def check_dataset_for_ocean_grid(ds):
             "(check_dataset_for_ocean_grid) 'xh' found in var_list. ocean grid req'd but not yet unimplemented. stop.")
 
 
-def get_vertical_dimension(ds,target_var):
+def get_vertical_dimension(ds, target_var):
     '''
     determines the vertical dimensionality of target_var within netCDF4 Dataset ds. accepts two
     arguments and returns an object represnting the vertical dimensions assoc with the target_var.
         ds: netCDF4.Dataset object containing variables with associated dimensional information.
         target_var: string, representating a variable contained within the netCDF4.Dataset ds
-
     '''
     vert_dim = 0
     for name, variable in ds.variables.items():
@@ -152,20 +151,16 @@ def create_tmp_dir(outdir, json_exp_config = None):
                 file output. tmp_dir will be slightly different depending on the output directory
                 targeted
     '''
-    outdir_from_exp_config=None
+    outdir_from_exp_config = None
     if json_exp_config is not None:
         with open(json_exp_config, "r", encoding = "utf-8") as table_config_file:
             try:
-                print('                   FOO')
-                exp_config = json.load(table_config_file)
-                print('                   BAR')
-                outdir_from_exp_config = exp_config["outpath"]
+                outdir_from_exp_config = json.load(table_config_file)["outpath"]
             except:
-                print(f'(create_tmp_dir) could not read outdir from json_exp_config... oh well!')
-                
-        
+                print(f'(create_tmp_dir) could not read outdir from json_exp_config... oh well!')        
+
+    print(f"(create_tmp_dir) outdir_from_exp_config = {outdir_from_exp_config}")        
     print(f"(create_tmp_dir) outdir = {outdir}")
-    assert False
     tmp_dir = None
     if any( [ outdir == "/local2",
               outdir.find("/work") != -1,
@@ -178,9 +173,16 @@ def create_tmp_dir(outdir, json_exp_config = None):
     try:
         os.makedirs(tmp_dir, exist_ok=True)
         if outdir_from_exp_config is not None:
-            os.makedirs(tmp_dir+'/'+outdir_from_exp_config, exist_ok=True)
+            print(f'(create_tmp_dir) attempting to create {outdir_from_exp_config} dir in tmp_dir targ')
+            try:
+                os.makedirs(tmp_dir+'/'+outdir_from_exp_config, exist_ok=True)
+            except:
+                print(f'(create_tmp_dir) attempting to create {outdir_from_exp_config} dir in tmp_dir targ did not work')
+                print( '                 .... oh well! it was ust to try to avoid a warning anyways.... moving on')
+                pass
     except Exception as exc:
-        raise OSError('(create_tmp_dir) problem creating temp output directory. stop.') from exc
+        raise OSError(f'(create_tmp_dir) problem creating tmp output directory {tmp_dir}. stop.') from exc
+
     return tmp_dir
 
 
@@ -302,9 +304,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # now we set up the cmor module object
     # initialize CMOR
     cmor.setup(
-        netcdf_file_action    = cmor.CMOR_PRESERVE,
-        set_verbosity         = cmor.CMOR_NORMAL, #CMOR_QUIET, #default is CMOR_NORMAL
-        exit_control          = cmor.CMOR_EXIT_ON_WARNING,#CMOR_NORMAL,
+        netcdf_file_action    = cmor.CMOR_PRESERVE, #CMOR_APPEND,#
+        set_verbosity         = cmor.CMOR_NORMAL, #CMOR_QUIET,#
+        exit_control          = cmor.CMOR_NORMAL,#CMOR_EXIT_ON_WARNING,#
         logfile               = './foo.log',
         create_subdirectories = 1
     )
@@ -389,6 +391,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             cmor_vert_dim_name = vert_dim
             if vert_dim == "landuse":
                 cmor_vert_dim_name = "landUse" # this is why can't we have nice things
+            print(f'(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
             cmor_lev = cmor.axis( cmor_vert_dim_name,
                                   coord_vals = lev[:], units = lev_units )
 
