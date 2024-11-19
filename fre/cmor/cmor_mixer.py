@@ -121,26 +121,21 @@ def get_vertical_dimension(ds, target_var):
     '''
     vert_dim = 0
     for name, variable in ds.variables.items():
-        # not the var we are looking for? move on.
-        if name != target_var:
-            continue
+        if name != target_var: # not the var we are looking for? move on.
+            continue        
         dims = variable.dimensions
-        for dim in dims:
-            # if it is not a vertical axis, move on.
-            print(f'(get_vertical_dimension) dim={dim}')
-            if dim == 'landuse':
-                #continue
-                print(f'(get_vertical_dimension) i think i will crash... NOW')                
+        for dim in dims: #print(f'(get_vertical_dimension) dim={dim}')
+
+            # check for special case
+            if dim == 'landuse': # aux coordinate, so has no axis property
                 vert_dim = dim
                 break
 
-            if dim == 'landuse':
-                print(f'(get_vertical_dimension) i think i will crash... NOW')                
+            # if it is not a vertical axis, move on.
             if not (ds[dim].axis and ds[dim].axis == "Z"):
-                if dim == 'landuse':
-                    print(f'(get_vertical_dimension) I WILL NOT SEE THIS PRINTOUT!!!')                
                 continue
             vert_dim = dim
+            
     return vert_dim
 
 def create_tmp_dir(outdir, json_exp_config = None):
@@ -151,32 +146,36 @@ def create_tmp_dir(outdir, json_exp_config = None):
                 file output. tmp_dir will be slightly different depending on the output directory
                 targeted
     '''
+    # first see if the exp_config has any additional output path structure to create
     outdir_from_exp_config = None
     if json_exp_config is not None:
         with open(json_exp_config, "r", encoding = "utf-8") as table_config_file:
             try:
                 outdir_from_exp_config = json.load(table_config_file)["outpath"]
             except:
-                print(f'(create_tmp_dir) could not read outdir from json_exp_config... oh well!')        
+                print(f'(create_tmp_dir) WARNING could not read outdir from json_exp_config.'
+                       '                 the cmor module will throw a toothless warning'     )
 
-    print(f"(create_tmp_dir) outdir_from_exp_config = {outdir_from_exp_config}")        
-    print(f"(create_tmp_dir) outdir = {outdir}")
+    # assign an appropriate temporary working directory
     tmp_dir = None
     if any( [ outdir == "/local2",
               outdir.find("/work") != -1,
               outdir.find("/net" ) != -1 ] ):
-        print(f'(create_tmp_dir) using /local /work /net ( tmp_dir = {outdir}/ )')
         tmp_dir = str( Path("{outdir}/").resolve() )
+        print(f'(create_tmp_dir) using /local /work /net ( tmp_dir = {tmp_dir} )')
     else:
-        print(f'(create_tmp_dir) NOT using /local /work /net (tmp_dir = {outdir}/tmp/ )')
         tmp_dir = str( Path(f"{outdir}/tmp/").resolve() )
+        print(f'(create_tmp_dir) NOT using /local /work /net ( tmp_dir = {tmp_dir} )')
+
+    # once we know where the tmp_dir should be, create it
     try:
         os.makedirs(tmp_dir, exist_ok=True)
+        # and if we need to additionally create outdir_from_exp_config... try doing that too    
         if outdir_from_exp_config is not None:
             print(f'(create_tmp_dir) attempting to create {outdir_from_exp_config} dir in tmp_dir targ')
             try:
                 os.makedirs(tmp_dir+'/'+outdir_from_exp_config, exist_ok=True)
-            except:
+            except: # ... but don't error out for lack of success here, not worth it. cmor can do the lift too.
                 print(f'(create_tmp_dir) attempting to create {outdir_from_exp_config} dir in tmp_dir targ did not work')
                 print( '                 .... oh well! it was ust to try to avoid a warning anyways.... moving on')
                 pass
