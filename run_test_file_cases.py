@@ -65,6 +65,33 @@ def run_cmor_RUN(filename, table, opt_var_name):
     return FOO_return
 
 
+# 9) FAIL (4 dimensional data with no vertical) 
+# Result - error,
+# the variable gppLut needs coordinate variables time lat lon and landuse
+# the landuse coordinate is expected to be of character type, and one of four different specific strings,
+# each string representing primary/secondary, pasture, crops, urban style land usage.
+# this file's landuse coordinate is an integer between 0 and 3, so it's not clear to the CMOR module
+# how to map the integers to the string values (though it's obvious to me)
+testfile_LUmip_refined_gr1_Emon_landusedim = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/LUmip_refined/ts/monthly/5yr/' + \
+    'LUmip_refined.185001-185412.gppLut.nc'
+try:
+    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'LUmip_refined_gr1_Emon_langusedim / gppLut')
+if some_return != 0:
+    print('didnt pass the land-file test. exit.')
+#    sys.exit()
+
+
+
+
+
+
 # 6) FAIL (copy_nc failure!!! WEIRD)
 # ocean, Omon / sos
 # Result - error, AttributeError: NetCDF: Attempt to define fill value when data already exists.
@@ -81,7 +108,7 @@ except Exception as exc:
 print_the_outcome(some_return,'ocean_monthly_gn / sos')
 if some_return != 0:
     print('didnt pass ocean-file test number 1... exit.')
-    sys.exit()
+#    sys.exit()
 
 
 
@@ -101,7 +128,7 @@ except Exception as exc:
 print_the_outcome(some_return,'ocean_monthly_z_1x1deg_gr / so')
 if some_return != 0:
     print('didnt pass ocean-file test number 2... exit.')
-    sys.exit()
+#    sys.exit()
 
 
 ## 1) SUCCEEDs
@@ -224,3 +251,4 @@ if some_return != 0:
     sys.exit()
 
 
+kk
