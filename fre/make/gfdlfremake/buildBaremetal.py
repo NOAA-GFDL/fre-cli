@@ -50,8 +50,6 @@ class buildBaremetal():
         if self.modules != "":
             self.setup.extend(modulesInit) #extend - this is a list
             self.setup.append("module load "+self.modules+" \n") # Append -this is a single string
-            # make sure our modules are loaded correctly
-            self.setup.append("test $? != 0 && echo \"**********Modules failed to load, check platform yaml\" && exit 1\n")
 
         ## Create the build directory
         os.system("mkdir -p "+self.bld)
