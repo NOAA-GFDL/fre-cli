@@ -20,6 +20,7 @@ DEBUG_MODE_RUN_ONE = True
 # ----- \end consts
 
 ### ------ helper functions  ------ ###
+import shutil
 def copy_nc(in_nc, out_nc):
     '''
     copy target input netcdf file in_nc to target out_nc. I have to think this is not a trivial copy
@@ -27,34 +28,40 @@ def copy_nc(in_nc, out_nc):
         in_nc: string, path to an input netcdf file we wish to copy
         out_nc: string, an output path to copy the targeted input netcdf file to
     '''
-    print(f'(copy_nc)  in_nc: {in_nc}\n'
-          f'          out_nc: {out_nc}')
+    shutil.copy(in_nc, out_nc)
+#    print(f'(copy_nc)  in_nc: {in_nc}\n'
+#          f'          out_nc: {out_nc}')
+#
+#    # input file
+#    dsin = nc.Dataset(in_nc)
+#
+#    # output file, same exact data_model as input file.
+#    # note- totally infuriating...
+#    #       the correct value for the format arg is netCDF4.Dataset.data_model
+#    #       and NOT netCDF4.Dataset.disk_format
+#    dsout = nc.Dataset(out_nc, "w",
+#                       format = dsin.data_model)
+#
+#    #Copy dimensions
+#    for dname, the_dim in dsin.dimensions.items():
+#        dsout.createDimension( dname,
+#                               len(the_dim) if not the_dim.isunlimited() else None )
+#
+#    # Copy variables and attributes
+#    for v_name, varin in dsin.variables.items():
+#        print(f'(copy_nc) v_name = {v_name}, datatype = {varin.datatype}, dimensions={varin.dimensions}')
+#        varin_dims_str_tuple = varin.dimensions
+#        out_var_dims_tuple = (dsout.dimensions[dim] for dim in varin_dims_str_tuple)
+#        #out_var = dsout.createVariable(v_name, varin.datatype, varin.dimensions)
+#        out_var = dsout.createVariable(v_name, varin.datatype, out_var_dims_tuple)
+#        out_var.setncatts({k: varin.getncattr(k) for k in varin.ncattrs()})
+#        out_var[:] = varin[:]
+#    dsout.setncatts({a:dsin.getncattr(a) for a in dsin.ncattrs()})
+#
+#    # close up
+#    dsin.close()
+#    dsout.close()
 
-    # input file
-    dsin = nc.Dataset(in_nc)
-
-    # output file, same exact data_model as input file.
-    # note- totally infuriating...
-    #       the correct value for the format arg is netCDF4.Dataset.data_model
-    #       and NOT netCDF4.Dataset.disk_format
-    dsout = nc.Dataset(out_nc, "w",
-                       format = dsin.data_model)
-
-    #Copy dimensions
-    for dname, the_dim in dsin.dimensions.items():
-        dsout.createDimension( dname,
-                               len(the_dim) if not the_dim.isunlimited() else None )
-
-    # Copy variables and attributes
-    for v_name, varin in dsin.variables.items():
-        out_var = dsout.createVariable(v_name, varin.datatype, varin.dimensions)
-        out_var.setncatts({k: varin.getncattr(k) for k in varin.ncattrs()})
-        out_var[:] = varin[:]
-    dsout.setncatts({a:dsin.getncattr(a) for a in dsin.ncattrs()})
-
-    # close up
-    dsin.close()
-    dsout.close()
 
 
 def get_var_filenames(indir, var_filenames = None, local_var = None):
@@ -108,8 +115,9 @@ def check_dataset_for_ocean_grid(ds):
         ds: netCDF4.Dataset object containing variables with associated dimensional information.
     '''
     if "xh" in list(ds.variables.keys()):
-        raise NotImplementedError(
-            "(check_dataset_for_ocean_grid) 'xh' found in var_list. ocean grid req'd but not yet unimplemented. stop.")
+        pass
+        #raise NotImplementedError(
+        print(    "(check_dataset_for_ocean_grid) 'xh' found in var_list. ocean grid req'd but not yet unimplemented. stop.")
 
 
 def get_vertical_dimension(ds, target_var):
@@ -127,7 +135,7 @@ def get_vertical_dimension(ds, target_var):
         for dim in dims: #print(f'(get_vertical_dimension) dim={dim}')
 
             # check for special case
-            if dim == 'landuse': # aux coordinate, so has no axis property
+            if dim.lower() == 'landuse': # aux coordinate, so has no axis property
                 vert_dim = dim
                 break
 
@@ -293,11 +301,11 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # error if vert_dim wrong given var_dim
     lev, lev_units = None, "1" #1 #"none" #None #""
     if vert_dim != 0:
-        if vert_dim not in [ "landuse", "plev39", "plev30", "plev19", "plev8",
+        if vert_dim.lower() not in [ "landuse", "plev39", "plev30", "plev19", "plev8",
                                           "height2m", "level", "lev", "levhalf"] :
             raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
         lev = ds[vert_dim]
-        if vert_dim != "landuse":
+        if vert_dim.lower() != "landuse":
             lev_units = ds[vert_dim].units
 
     # now we set up the cmor module object
@@ -306,7 +314,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         netcdf_file_action    = cmor.CMOR_PRESERVE, #CMOR_APPEND,#
         set_verbosity         = cmor.CMOR_NORMAL, #CMOR_QUIET,#
         exit_control          = cmor.CMOR_NORMAL,#CMOR_EXIT_ON_WARNING,#
-        logfile               = './foo.log',
+#        logfile               = './foo.log',
         create_subdirectories = 1
     )
 
@@ -385,10 +393,10 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     cmor_lev = None
     if lev is not None:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lev')
-        if vert_dim in ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]:
+        if vert_dim.lower() in ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]:
             print(f'(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
             cmor_vert_dim_name = vert_dim
-            if vert_dim == "landuse":
+            if vert_dim.lower() == "landuse":
                 cmor_vert_dim_name = "landUse" # this is why can't we have nice things
             print(f'(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
             cmor_lev = cmor.axis( cmor_vert_dim_name,
