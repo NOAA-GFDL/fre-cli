@@ -51,7 +51,8 @@ def test_bm_makefile_creation():
     Check the makefile is created when a bare-metal platform is used
     """
     # Set output directory as home for fre make output
-    os.environ["HOME"]=str(Path(out))
+    def_home = str(os.environ["HOME"])
+    os.environ["HOME"]=out#str(Path(out))
 
     bm_plat = BM_PLATFORM[0]
     targ = TARGET[0]
@@ -60,6 +61,8 @@ def test_bm_makefile_creation():
     createMakefile.makefile_create(yamlfile_path,BM_PLATFORM,TARGET)
 
     assert Path(f"{out}/fremake_canopy/test/{EXPERIMENT}/{bm_plat}-{targ}/exec/Makefile").exists()
+    os.environ["HOME"]=def_home
+    assert os.environ["HOME"] == def_home
 
 def test_container_makefile_creation():
     """
