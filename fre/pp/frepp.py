@@ -1,7 +1,7 @@
 ''' fre pp '''
 
 import click
-from .checkoutScript import checkoutTemplate
+from .checkoutScript import _checkoutTemplate
 from .configure_script_yaml import _yamlInfo
 from .configure_script_xml import convert
 from .validate import _validate_subtool
@@ -122,7 +122,7 @@ def configure_yaml(context,yamlfile,experiment,platform,target):
 def checkout(context, experiment, platform, target, branch='main'):
     # pylint: disable=unused-argument
     """ - Execute fre pp checkout """
-    context.forward(checkoutTemplate)
+    context.forward(_checkoutTemplate)
 
 @pp_cli.command()
 @click.option('-x', '--xml',
