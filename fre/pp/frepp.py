@@ -2,7 +2,7 @@
 
 import click
 from .checkoutScript import checkoutTemplate
-from .configure_script_yaml import yamlInfo
+from .configure_script_yaml import _yamlInfo
 from .configure_script_xml import convert
 from .validate import validate_subtool
 from .install import install_subtool
@@ -100,7 +100,7 @@ def install(context, experiment, platform, target):
 def configure_yaml(context,yamlfile,experiment,platform,target):
     # pylint: disable=unused-argument
     """ - Execute fre pp configure """
-    context.forward(yamlInfo)
+    context.forward(_yamlInfo)
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,

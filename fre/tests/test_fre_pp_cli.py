@@ -71,6 +71,18 @@ def test_cli_fre_pp_configure_yaml_opt_dne():
     result = runner.invoke(fre.fre, args=["pp", "configure-yaml", "optionDNE"])
     assert result.exit_code == 2
 
+def test_cli_fre_pp_configure_yaml_fail1():
+    ''' fre pp configure-yaml '''
+    result = runner.invoke(fre.fre, args = [ "pp", "configure-yaml",
+                                             "-e", "FOO",
+                                             "-p", "BAR",
+                                             "-t", "BAZ",
+                                             "-y", "BOO"              ] )
+    assert all( [ result.exit_code == 1,
+                  isinstance(result.exception, FileNotFoundError )
+               ] )
+
+
 #-- fre pp install
 def test_cli_fre_pp_install():
     ''' fre pp install '''
