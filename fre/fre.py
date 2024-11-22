@@ -21,7 +21,8 @@ from .lazy_group import LazyGroup
                        "yamltools": ".yamltools.freyamltools.yamltools_cli",
                        "make": ".make.fremake.make_cli",
                        "app": ".app.freapp.app_cli",
-                       "cmor": ".cmor.frecmor.cmor_cli"                      },
+                       "cmor": ".cmor.frecmor.cmor_cli",
+                       "analysis": ".analysis.freanalysis.analysis_cli"},
     help = click.style(
         "'fre' is the main CLI click group that houses the other tool groups as lazy subcommands.",
         fg='cyan')
