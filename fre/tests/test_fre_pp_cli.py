@@ -1,5 +1,7 @@
 ''' test "fre pp" calls '''
 
+import os
+
 from click.testing import CliRunner
 
 from fre import fre
