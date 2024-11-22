@@ -4,7 +4,7 @@ import click
 from .checkoutScript import checkoutTemplate
 from .configure_script_yaml import _yamlInfo
 from .configure_script_xml import convert
-from .validate import validate_subtool
+from .validate import _validate_subtool
 from .install import install_subtool
 from .run import pp_run_subtool
 from .status import status_subtool
@@ -64,7 +64,7 @@ def run(context, experiment, platform, target):
 def validate(context, experiment, platform, target):
     # pylint: disable=unused-argument
     """ - Validate PP configuration"""
-    context.forward(validate_subtool)
+    context.forward(_validate_subtool)
 
 # fre pp install
 @pp_cli.command()
