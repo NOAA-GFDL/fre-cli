@@ -111,11 +111,10 @@ class checkout():
 ## TODO: batch script building
     def run (self):
         """
-        Brief: Changes the permission on the checkout script and runs it
+        Brief: Runs the checkout script
         Param:
             - self The checkout script object
         """
-        os.chmod(self.src+"/"+self.fname, 0o744)
         try:
             subprocess.run(args=[self.src+"/"+self.fname], check=True)
         except:

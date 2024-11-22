@@ -38,7 +38,7 @@ def get_compile_paths(mainyaml_dir,comb):
 
     # set platform yaml filepath
     if comb_model["build"]["platformYaml"] is not None:
-        if Path(comb_model["build"]["platformYaml"]).exists():
+        if Path(os.path.join(mainyaml_dir,comb_model["build"]["platformYaml"])).exists():
             py=comb_model["build"]["platformYaml"]
             py_path=Path(os.path.join(mainyaml_dir,py))
         else:
@@ -49,7 +49,7 @@ def get_compile_paths(mainyaml_dir,comb):
 
     # set compile yaml filepath
     if comb_model["build"]["compileYaml"] is not None:
-        if Path(comb_model["build"]["compileYaml"]).exists():
+        if Path(os.path.join(mainyaml_dir,comb_model["build"]["compileYaml"])).exists():
             cy=comb_model["build"]["compileYaml"]
             cy_path=Path(os.path.join(mainyaml_dir,cy))
         else:
@@ -90,7 +90,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
             if expyaml is not None:
                 ey_path=[]
                 for e in expyaml:
-                    if Path(e).exists():
+                    if Path(os.path.join(mainyaml_dir,e)).exists():
                         ey=Path(os.path.join(mainyaml_dir,e))
                         ey_path.append(ey)
                     else:
@@ -115,21 +115,22 @@ def experiment_check(mainyaml_dir,comb,experiment):
 class init_compile_yaml():
   def __init__(self,yamlfile,platform,target):
     """
-    Process to combine yamls appllicable to compilation
+    Process to combine yamls applicable to compilation
     """
     self.yml = yamlfile
     self.name = yamlfile.split(".")[0]
+    self.namenopath = self.name.split("/")[-1].split(".")[0]
     self.platform = platform
     self.target = target
 
-    # Regsiter tag handler
+    # Register tag handler
     yaml.add_constructor('!join', join_constructor)
 
     # Path to the main model yaml
     self.mainyaml_dir = os.path.dirname(self.yml)
 
     # Name of the combined yaml
-    self.combined=f"combined-{self.name}.yaml"
+    self.combined= f"combined-{self.namenopath}.yaml" if len(self.mainyaml_dir) == 0 else  f"{self.mainyaml_dir}/combined-{self.namenopath}.yaml"
 
     print("Combining yaml files: ")
 

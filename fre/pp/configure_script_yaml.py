@@ -147,7 +147,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
                             value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
 ####################
-def _yamlInfo(yamlfile,experiment,platform,target):
+def yamlInfo(yamlfile,experiment,platform,target):
     """
     Using a valid pp.yaml, the rose-app and rose-suite
     configuration files are created in the cylc-src
@@ -200,12 +200,12 @@ def _yamlInfo(yamlfile,experiment,platform,target):
     print("  " + outfile)
 
 @click.command()
-def yamlInfo(yamlfile,experiment,platform,target):
+def _yamlInfo(yamlfile,experiment,platform,target):
     '''
     Wrapper script for calling yamlInfo - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _yamlInfo(yamlfile,experiment,platform,target)
+    return yamlInfo(yamlfile,experiment,platform,target)
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':

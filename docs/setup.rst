@@ -1,32 +1,35 @@
+=====
 Setup
 =====
+fre-cli is conda-installable from the “noaa-gfdl” anaconda channel (https://anaconda.org/NOAA-GFDL/fre-cli)
+and is deployed on GFDL systems as Environment Modules.
 
-Need to set up Conda environment first and foremost
+On GFDL systems
+========================
+If you are at GFDL (gaea, PP/AN, workstations), you may skip installation::
 
-If on workstation:
-module load conda
+  module load fre/2024.01
 
-Create new Conda environment
-conda create -n [environmentName]
+  fre --help
 
-Append necessary channels
-conda config --append channels noaa-gfdl
-conda config --append channels conda-forge
+Generic
+=======================
+If you are outside GFDL or are a FRE developer, install with conda. If you're at GFDL, bring conda into your PATH::
 
-Run conda install on needed dependencies
-conda install noaa-gfdl::fre-cli should install the CLI package located at https://anaconda.org/NOAA-GFDL/fre-cli created from the meta.yaml file
+  module load miniforge
 
-All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
-setup.py file allows fre.py to be ran with fre as the entry point on the command line instead of python fre.py
+If you are outside GFDL, install the miniconda tool with the standard instructions (https://docs.anaconda.com/miniconda/miniconda-install/).
 
-Enter commands and follow --help messages for guidance (brief rundown of commands also provided below)
+Once you have conda available, install the latest fre-cli from the NOAA-GFDL anaconda channel::
 
-If the user just runs fre, it will list all the command groups following fre, such as run, make, pp, etc. and once the user specifies a command group, the list of available subcommands for that group will be shown
+  conda create --name fre --channel noaa-gfdl --channel conda-forge fre-cli
 
-Commands that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if --help is executed
+To install a specific version::
 
-Argument flags are not positional, can be specified in any order as long as they are specified
+  conda create --name fre-202401 --channel noaa-gfdl --channel conda-forge fre-cli::2024.01
 
-Can run directly from any directory, no need to clone repository
+and activate it::
 
-May need to deactivate environment and reactivate it in order for changes to apply
+  conda activate fre
+
+  fre --help

@@ -1,9 +1,9 @@
 import click
-from .createCheckout import checkout_create
-from .createCompile import compile_create
-from .createDocker import dockerfile_create
-from .createMakefile import makefile_create
-from .runFremake import fremake_run
+from fre.make import createCheckout
+from fre.make import createMakefile
+from fre.make import createCompile
+from fre.make import createDocker
+from fre.make import runFremake
 
 yamlfile_opt_help = """Experiment yaml compile FILE
 """
@@ -73,7 +73,7 @@ def make_cli():
 @click.pass_context
 def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, verbose):
     """ - Perform all fremake functions to run checkout and compile model"""
-    context.forward(fremake_run)
+    context.forward(runFremake._fremake_run)
 
 ####
 @make_cli.command()
@@ -114,7 +114,7 @@ def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel
 @click.pass_context
 def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
     """ - Write the checkout script """
-    context.forward(checkout_create)
+    context.forward(createCheckout._checkout_create)
 
 #####
 @make_cli.command
@@ -136,7 +136,7 @@ def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,e
 @click.pass_context
 def create_makefile(context,yamlfile,platform,target):
     """ - Write the makefile """
-    context.forward(makefile_create)
+    context.forward(createMakefile._makefile_create)
 
 #####
 
@@ -178,7 +178,7 @@ def create_makefile(context,yamlfile,platform,target):
 @click.pass_context
 def create_compile(context,yamlfile,platform,target,jobs,parallel,execute,verbose):
     """ - Write the compile script """
-    context.forward(compile_create)
+    context.forward(createCompile._compile_create)
 
 @make_cli.command
 @click.option("-y",
@@ -202,8 +202,7 @@ def create_compile(context,yamlfile,platform,target,jobs,parallel,execute,verbos
 @click.pass_context
 def create_dockerfile(context,yamlfile,platform,target,execute):
     """ - Write the dockerfile """
-    context.forward(dockerfile_create)
-
+    context.forward(createDocker._dockerfile_create)
 
 if __name__ == "__main__":
     make_cli()
