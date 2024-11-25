@@ -40,22 +40,22 @@ class buildBaremetal():
         self.template = mkTemplatePath
         self.modules = ""
         for m in modules:
-            self.modules = self.modules +" "+ m
+            self.modules = f"{self.modules} {m}"
 
         ## Set up the top portion of the compile script
         self.setup=[   "#!/bin/sh -fx \n",
-                       "bld_dir="+self.bld+"/ \n",
-                       "src_dir="+self.src+"/ \n",
-                       "mkmf_template="+self.template+" \n"]
+                       f"bld_dir={self.bld}/ \n",
+                       f"src_dir={self.src}/ \n",
+                       f"mkmf_template={self.template} \n"]
         if self.modules != "":
             self.setup.extend(modulesInit) #extend - this is a list
-            self.setup.append("module load "+self.modules+" \n") # Append -this is a single string
+            self.setup.append(f"module load {self.modules} \n") # Append -this is a single string
 
         ## Create the build directory
-        os.system("mkdir -p "+self.bld)
+        os.system(f"mkdir -p {self.bld}")
 
         ## Create the compile script
-        self.f=open(self.bld+"/compile.sh","w")
+        self.f=open(f"{self.bld}/compile.sh","w")
         self.f.writelines(self.setup)
 
     def writeBuildComponents(self, c):
@@ -69,7 +69,7 @@ class buildBaremetal():
         comp = c["component"]
 
         # Make the component directory
-        self.f.write("\n mkdir -p $bld_dir/"+comp+"\n")
+        self.f.write(f"\n mkdir -p $bld_dir/{comp}\n")
 
         # Get the paths needed for compiling
         pstring = ""
@@ -77,16 +77,22 @@ class buildBaremetal():
             pstring = pstring+"$src_dir/"+paths+" "
 
         # Run list_paths
-        self.f.write(" list_paths -l -o $bld_dir/"+comp+"/pathnames_"+comp+" "+pstring+"\n")
-        self.f.write(" cd $bld_dir/"+comp+"\n")
+        self.f.write(f" list_paths -l -o $bld_dir/{comp}/pathnames_{comp} {pstring}\n")
+        self.f.write(f" cd $bld_dir/{comp}\n")
 
         # Create the mkmf line
         # If this lib doesnt have any code dependencies and
         # it requires the preprocessor (no -o and yes --use-cpp)
         if c["requires"] == [] and c["doF90Cpp"]:
-            self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template --use-cpp -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+            self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir "
+                         "-p lib"+comp+".a -t $mkmf_template --use-cpp "
+                         "-c \""+c["cppdefs"]+"\" "+c["otherFlags"]
+                         +" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
         elif c["requires"] == []: # If this lib doesnt have any code dependencies (no -o)
-            self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+            self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir "
+                         "-p lib"+comp+".a -t $mkmf_template -c \""
+                         +c["cppdefs"]+"\" "+c["otherFlags"]
+                         +" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
         else: #Has requirements
             #Set up the requirements as a string to inclue after the -o
             reqstring = ""
@@ -95,9 +101,15 @@ class buildBaremetal():
 
             #Figure out if we need the preprocessor
             if c["doF90Cpp"]:
-                self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template --use-cpp -c \""+c["cppdefs"]+"\" -o \""+reqstring+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+                self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir "
+                             "-p lib"+comp+".a -t $mkmf_template --use-cpp "
+                             "-c \""+c["cppdefs"]+"\" -o \""+reqstring+"\" "
+                             +c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
             else:
-                self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template -c \""+c["cppdefs"]+"\" -o \""+reqstring+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+                self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir "
+                             "-p lib"+comp+".a -t $mkmf_template -c \""
+                             +c["cppdefs"]+"\" -o \""+reqstring+"\" "+c["otherFlags"]
+                             +" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
 
 ##TODO: add targets input
     def writeScript(self):
@@ -106,8 +118,8 @@ class buildBaremetal():
         Param:
             - self : The buildScript object
         """
-        self.f.write("cd "+self.bld+"\n")
-        self.f.write(self.make+"\n")
+        self.f.write(f"cd {self.bld}\n")
+        self.f.write(f"{self.make}\n")
         self.f.close()
 
         # Make compile script executable
@@ -120,10 +132,18 @@ class buildBaremetal():
         Param:
             - self : The dockerfile object
         """
-###### TODO make the Makefile
-        command = [self.bld+"/compile.sh","|","tee",self.bld+"/log.compile"]
-        try:
-            subprocess.run(args=command, check=True)
-        except:
-            print("There was an error running "+self.bld+"/compile.sh")
-            raise
+        command = [self.bld+"/compile.sh"]
+
+        # Run compile script
+        p1 = subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+
+        # Direct output to log file as well
+        p2 = subprocess.Popen(["tee",self.bld+"/log.compile"], stdin=p1.stdout)
+
+        # Allow p1 to receive SIGPIPE is p2 exits
+        p1.stdout.close()
+        p2.communicate()
+
+        if p1.returncode != 0:
+            print("\nThere was an error running {self.bld}/compile.sh")
+            print(f"Check the log file: {self.bld}/log.compile")
