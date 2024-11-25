@@ -145,5 +145,5 @@ class buildBaremetal():
         p2.communicate()
 
         if p1.returncode != 0:
-            print("\nThere was an error running {self.bld}/compile.sh")
+            print(f"\nThere was an error running {self.bld}/compile.sh")
             print(f"Check the log file: {self.bld}/log.compile")
