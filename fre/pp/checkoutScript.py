@@ -16,7 +16,7 @@ package_dir = os.path.dirname(os.path.abspath(__file__))
 
 #############################################
 
-def _checkoutTemplate(experiment, platform, target, branch='main'):
+def checkoutTemplate(experiment, platform, target, branch='main'):
     """
     Checkout the workflow template files from the repo
     """
@@ -25,7 +25,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
     os.makedirs(directory, exist_ok=True)
 
     # Change the current working directory
-    os.chdir(directory)
+    #os.chdir(directory)
 
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
@@ -34,7 +34,7 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
     click.echo("cloning experiment into directory " + directory + "/" + name)
     clonecmd = (
         f"git clone -b {branch} --single-branch --depth=1 --recursive "
-        f"https://github.com/NOAA-GFDL/fre-workflows.git {name}" )
+        f"https://github.com/NOAA-GFDL/fre-workflows.git {directory}/{name}" )
     preexist_error = f"fatal: destination path '{name}' exists and is not an empty directory."
     click.echo(clonecmd)
     cloneproc = subprocess.run(clonecmd, shell=True, check=False, stdout=PIPE, stderr=STDOUT)
@@ -43,8 +43,8 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
             argstring = f" -e {experiment} -p {platform} -t {target}"
             stop_report = (
                 "Error in checkoutTemplate: the workflow definition specified by -e/-p/-t already"
-                f" exists at the location ~/cylc-src/{name}!\n"
-                f"In the future, we will confirm that ~/cylc-src/{name} is usable and will check "
+                f" exists at the location {directory}/{name}!\n"
+                f"In the future, we will confirm that {directory}/{name} is usable and will check "
                 "whether it is up-to-date.\n"
                 "But for now, if you wish to proceed, you must delete the workflow definition.\n"
                 "To start over, try:\n"
@@ -62,12 +62,12 @@ def _checkoutTemplate(experiment, platform, target, branch='main'):
 #############################################
 
 @click.command()
-def checkoutTemplate(experiment, platform, target, branch="main"):
+def _checkoutTemplate(experiment, platform, target, branch="main"):
     '''
     Wrapper script for calling checkoutTemplate - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _checkoutTemplate(experiment, platform, target, branch)
+    return checkoutTemplate(experiment, platform, target, branch)
 
 
 if __name__ == '__main__':
