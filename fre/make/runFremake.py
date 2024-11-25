@@ -147,8 +147,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
-                #          image="hpc-me-intel:2021.1.1"
-                image="ecpe4s/noaa-intel-prototype:2023.09.25"
+                image=modelYaml.platforms.getContainerImage(platformName)
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
 

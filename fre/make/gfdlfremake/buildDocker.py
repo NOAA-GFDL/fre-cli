@@ -54,6 +54,13 @@ class container():
                        " && mkmf_template="+self.template+ " \\ \n"]
         self.d=open("Dockerfile","w")
         self.d.writelines("FROM "+self.base+" \n")
+        if self.base == "ecpe4s/noaa-intel-prototype:2023.09.25":
+            self.prebuild = '''RUN 
+            '''
+            self.postbuild = '''
+            '''
+            self.secondstage = '''
+            '''
 
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """

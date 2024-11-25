@@ -52,7 +52,7 @@ def dockerfile_create(yamlfile,platform,target,execute):
             srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
             if iscontainer is True:
-                image="ecpe4s/noaa-intel-prototype:2023.09.25"
+                image=modelYaml.platforms.getContainerImage(platformName)
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
 

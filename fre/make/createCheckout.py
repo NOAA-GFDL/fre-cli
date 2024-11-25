@@ -96,7 +96,6 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                         sys.exit()
 
          else:
-              image="ecpe4s/noaa-intel-prototype:2023.09.25"
               bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
               tmpDir = "tmp/"+platformName
               freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)

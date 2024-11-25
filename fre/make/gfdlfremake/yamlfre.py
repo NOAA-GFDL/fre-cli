@@ -53,14 +53,17 @@ class compileYaml():
         """
         # compile information from the combined yaml
         self.yaml = compileinfo
+        # Check if self.yaml is None
+        if self.yaml is None:
+            raise ValueError("The provided compileinfo is None. It must be a valid dictionary.")
 
-        ## Check the yaml for required things
         ## Check for required experiment name
         try:
             self.yaml["experiment"]
-        except:
+        except KeyError:
             print("You must set an experiment name to compile \n")
             raise
+
         ## Check for optional libraries and packages for linking in container
         try:
             self.yaml["container_addlibs"]
@@ -171,6 +174,7 @@ class freyaml():
 
         #get platform info
         self.platformsdict = self.freyaml.get("platforms")
+        print(self.platformsdict)
         self.platforms = platformfre.platforms(self.platformsdict)
         self.platformsyaml = self.platforms.getPlatformsYaml()
 
