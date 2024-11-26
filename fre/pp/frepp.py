@@ -1,10 +1,10 @@
 ''' fre pp '''
 
 import click
-from .checkoutScript import checkoutTemplate
-from .configure_script_yaml import yamlInfo
+from .checkoutScript import _checkoutTemplate
+from .configure_script_yaml import _yamlInfo
 from .configure_script_xml import convert
-from .validate import validate_subtool
+from .validate import _validate_subtool
 from .install import install_subtool
 from .run import pp_run_subtool
 from .status import status_subtool
@@ -64,7 +64,7 @@ def run(context, experiment, platform, target):
 def validate(context, experiment, platform, target):
     # pylint: disable=unused-argument
     """ - Validate PP configuration"""
-    context.forward(validate_subtool)
+    context.forward(_validate_subtool)
 
 # fre pp install
 @pp_cli.command()
@@ -100,7 +100,7 @@ def install(context, experiment, platform, target):
 def configure_yaml(context,yamlfile,experiment,platform,target):
     # pylint: disable=unused-argument
     """ - Execute fre pp configure """
-    context.forward(yamlInfo)
+    context.forward(_yamlInfo)
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
@@ -119,7 +119,7 @@ def configure_yaml(context,yamlfile,experiment,platform,target):
 def checkout(context, experiment, platform, target, branch=None):
     # pylint: disable=unused-argument
     """ - Execute fre pp checkout """
-    context.forward(checkoutTemplate)
+    context.forward(_checkoutTemplate)
 
 @pp_cli.command()
 @click.option('-x', '--xml',

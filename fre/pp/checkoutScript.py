@@ -15,11 +15,9 @@ import click
 from fre import fre
 from click.testing import CliRunner
 
-
 #############################################
 
-
-def _checkoutTemplate(experiment, platform, target, branch=None):
+def checkoutTemplate(experiment, platform, target, branch=None):
     """
     Checkout the workflow template files from the repo
     """
@@ -27,9 +25,8 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
     directory = os.path.expanduser("~/cylc-src")
     os.makedirs(directory, exist_ok=True)
 
-    # Change the current working directory
+    # Chdir back to here before we exit
     go_back_here = os.getcwd()
-    os.chdir(directory)
 
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
@@ -74,12 +71,12 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
 #############################################
 
 @click.command()
-def checkoutTemplate(experiment, platform, target, branch = None):
+def _checkoutTemplate(experiment, platform, target, branch=None):
     '''
     Wrapper script for calling checkoutTemplate - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return _checkoutTemplate(experiment, platform, target, branch)
+    return checkoutTemplate(experiment, platform, target, branch)
 
 
 if __name__ == '__main__':

@@ -52,7 +52,7 @@ class platforms ():
                 p["container"]
             except:
                 p["container"] = False
-                p["RUNenv"] = ""
+                p["RUNenv"] = [""]
                 p["containerBuild"] = ""
                 p["containerRun"] = ""
             if p["container"]:

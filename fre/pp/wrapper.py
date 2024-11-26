@@ -16,10 +16,8 @@ import time
 import click
 
 # Import from the local packages
-from .checkoutScript import _checkoutTemplate
-from .configure_script_xml import _convert
-from .configure_script_yaml import _yamlInfo
-from .validate import _validate_subtool
+from .checkoutScript import checkoutTemplate
+from .configure_script_yaml import yamlInfo
 from .install import _install_subtool
 from .run import _pp_run_subtool
 from .status import _status_subtool
@@ -37,31 +35,14 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     #env_setup
     #todo: check for experiment existing, call frepp_stop to clean experiment,
     try:
-        print("calling _checkoutTemplate")
-        _checkoutTemplate(experiment, platform, target, branch)
+        checkoutTemplate(experiment, platform, target, branch)
     except Exception as err:
         raise
 
-    #dumb xml check;does it need to be smarter?
-    is_xml = config_file[-3:] == "xml"
-    if is_xml:
-        #TODO: should this prompt for pp start/stop years?
-        try:
-            _convert(config_file, platform, target, experiment, do_analysis=False)
-            #note: arg list for this function is a looooot longer, but all those
-            #args can be deduced from the xml when given default vals
-        except Exception as err:
-            raise
-        try:
-            _validate_subtool(experiment, platform, target)
-            #See notes in main() function
-        except Exception as err:
-            raise
-    else:
-        try:
-            _yamlInfo(config_file, experiment, platform, target)
-        except Exception as err:
-            raise
+    try:
+        yamlInfo(config_file, experiment, platform, target)
+    except Exception as err:
+        raise
 
     try:
         _install_subtool(experiment, platform, target)

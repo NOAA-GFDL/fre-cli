@@ -90,9 +90,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
             if expyaml is not None:
                 ey_path=[]
                 for e in expyaml:
-                    # prepend the directory containing the yaml
-                    e = Path(mainyaml_dir, e)
-                    if Path(e).exists():
+                    if Path(os.path.join(mainyaml_dir,e)).exists():
                         ey=Path(os.path.join(mainyaml_dir,e))
                         ey_path.append(ey)
                     else:
@@ -119,7 +117,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
 class init_compile_yaml():
   def __init__(self,yamlfile,platform,target):
     """
-    Process to combine yamls appllicable to compilation
+    Process to combine yamls applicable to compilation
     """
     self.yml = yamlfile
     self.name = yamlfile.split(".")[0]
@@ -147,10 +145,12 @@ class init_compile_yaml():
         f1.write(f'name: &name "{self.name}"\n')
         f1.write(f'platform: &platform "{self.platform}"\n')
         f1.write(f'target: &target "{self.target}"\n\n')
-        with open(self.yml,'r',encoding='UTF-8') as f2:
-            f1.write("### MODEL YAML SETTINGS ###\n")
-            shutil.copyfileobj(f2,f1)
-
+        try:
+            with open(self.yml,'r',encoding='UTF-8') as f2:
+                f1.write("### MODEL YAML SETTINGS ###\n")
+                shutil.copyfileobj(f2,f1)
+        except Exception as exc:
+            raise FileNotFoundError(f'{self.yml} not found') from exc
     print(f"   model yaml: {self.yml}")
 
   def combine_compile(self):
@@ -235,10 +235,12 @@ class init_pp_yaml():
         f1.write(f'name: &name "{self.name}"\n')
         f1.write(f'platform: &platform "{self.platform}"\n')
         f1.write(f'target: &target "{self.target}"\n\n')
-        with open(self.yml,'r',encoding='UTF-8') as f2:
-            f1.write("### MODEL YAML SETTINGS ###\n")
-            shutil.copyfileobj(f2,f1)
-
+        try:
+            with open(self.yml,'r',encoding='UTF-8') as f2:
+                f1.write("### MODEL YAML SETTINGS ###\n")
+                shutil.copyfileobj(f2,f1)
+        except Exception as exc:
+            raise FileNotFoundError(f'{self.yml} not found') from exc
     print(f"   model yaml: {self.yml}")
 
   def combine_experiment(self):
