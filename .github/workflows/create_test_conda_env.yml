@@ -1,6 +1,6 @@
 name: create_test_conda_env
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build-linux:

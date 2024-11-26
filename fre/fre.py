@@ -27,10 +27,9 @@ from .lazy_group import LazyGroup
         fg='cyan')
 )
 
+
 @click.version_option(
-    package_name = "fre-cli",
-    message = click.style("%(package)s | %(version)s",
-                          fg = (155,255,172) )
+    package_name = "fre-cli"
 )
 
 def fre():
