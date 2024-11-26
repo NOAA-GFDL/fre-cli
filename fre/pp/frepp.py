@@ -189,13 +189,13 @@ def configure_xml(context, xml, platform, target, experiment, do_analysis, histo
 @click.option("-p", "--platform", type=str,
               help="Platform name",
               required=True)
-@click.option("-t", "--target", type=str,
+@click.option("-T", "--target", type=str,
               help="Target name",
               required=True)
 @click.option("-c", "--config-file", type=str,
               help="Path to a configuration file in either XML or YAML",
               required=True)
-@click.option("-T", "--time",
+@click.option("-t", "--time",
               required=False,
               help="Time whose history files are ready")
 @click.option("-b", "--branch",
@@ -214,10 +214,10 @@ def wrapper(context, experiment, platform, target, config_file, time=None, branc
 @click.option("-p", "--platform", type=str,
               help="Platform name",
               required=True)
-@click.option("-t", "--target", type=str,
+@click.option("-T", "--target", type=str,
               help="Target name",
               required=True)
-@click.option("-T", "--time",
+@click.option("-t", "--time",
               required=True,
               help="Time whose history files are ready")
 @click.pass_context
