@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
     Script creates rose-apps and rose-suite
     files for the workflow from the pp yaml.
