@@ -90,6 +90,8 @@ def experiment_check(mainyaml_dir,comb,experiment):
             if expyaml is not None:
                 ey_path=[]
                 for e in expyaml:
+                    # prepend the directory containing the yaml
+                    e = Path(mainyaml_dir, e)
                     if Path(e).exists():
                         ey=Path(os.path.join(mainyaml_dir,e))
                         ey_path.append(ey)
@@ -101,6 +103,8 @@ def experiment_check(mainyaml_dir,comb,experiment):
             if analysisyaml is not None:
                 ay_path=[]
                 for a in analysisyaml:
+                    # prepend the directory containing the yaml
+                    a = Path(mainyaml_dir, a)
                     if Path(a).exists():
                         ay=Path(os.path.join(mainyaml_dir,a))
                         ay_path.append(ay)
