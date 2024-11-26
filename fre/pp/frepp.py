@@ -7,6 +7,7 @@ from .configure_script_xml import convert
 from .validate import _validate_subtool
 from .install import install_subtool
 from .run import pp_run_subtool
+from .trigger import _trigger
 from .status import status_subtool
 from .wrapper import runFre2pp
 
@@ -187,20 +188,42 @@ def configure_xml(context, xml, platform, target, experiment, do_analysis, histo
 @click.option("-p", "--platform", type=str,
               help="Platform name",
               required=True)
-@click.option("-t", "--target", type=str,
+@click.option("-T", "--target", type=str,
               help="Target name",
               required=True)
 @click.option("-c", "--config-file", type=str,
               help="Path to a configuration file in either XML or YAML",
               required=True)
+@click.option("-t", "--time",
+              required=False,
+              help="Time whose history files are ready")
 @click.option("-b", "--branch",
-              show_default=True,
+              required=False,
               help="fre-workflows branch/tag to clone; default is $(fre --version)")
 @click.pass_context
-def wrapper(context, experiment, platform, target, config_file, branch=None):
+def wrapper(context, experiment, platform, target, config_file, time=None, branch=None):
     # pylint: disable=unused-argument
     """ - Execute fre pp steps in order """
     context.forward(runFre2pp)
+
+@pp_cli.command()
+@click.option("-e", "--experiment", type=str,
+              help="Experiment name",
+              required=True)
+@click.option("-p", "--platform", type=str,
+              help="Platform name",
+              required=True)
+@click.option("-T", "--target", type=str,
+              help="Target name",
+              required=True)
+@click.option("-t", "--time",
+              required=True,
+              help="Time whose history files are ready")
+@click.pass_context
+def trigger(context, experiment, platform, target, time):
+    # pylint: disable=unused-argument
+    """ - Start postprocessing for a particular time """
+    context.forward(_trigger)
 
 if __name__ == "__main__":
     ''' entry point for click to fre pp commands '''

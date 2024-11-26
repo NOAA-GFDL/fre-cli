@@ -20,14 +20,14 @@ from .checkoutScript import checkoutTemplate
 from .configure_script_yaml import yamlInfo
 from .install import install_subtool
 from .run import pp_run_subtool
+from .trigger import trigger
 from .status import status_subtool
 
 @click.command()
-def runFre2pp(experiment, platform, target, config_file, branch):
+def runFre2pp(experiment, platform, target, config_file, branch, time):
     '''
     Wrapper script for calling a FRE2 pp experiment with the canopy-style
     infrastructure and fre-cli
-    time=0000
     '''
 
     config_file = os.path.abspath(config_file)
@@ -39,6 +39,9 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     install_subtool(experiment, platform, target)
 
     pp_run_subtool(experiment, platform, target)
+
+    if time:
+        trigger(experiment, platform, target, time)
 
     status_subtool(experiment, platform, target)
 
