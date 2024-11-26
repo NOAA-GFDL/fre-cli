@@ -1,10 +1,9 @@
-#!/usr/bin/env python
 ''' fre pp status '''
 
 import subprocess
 import click
 
-def _status_subtool(experiment, platform, target):
+def status_subtool(experiment, platform, target):
     """
     Report workflow state for the Cylc workflow
     <experiment>__<platform>__<target>
@@ -16,6 +15,6 @@ def _status_subtool(experiment, platform, target):
 
 
 @click.command()
-def status_subtool(experiment, platform, target):
+def _status_subtool(experiment, platform, target):
     ''' entry point to status for click '''
     return _status_subtool(experiment, platform, target)

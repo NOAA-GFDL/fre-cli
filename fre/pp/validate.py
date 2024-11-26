@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 ''' fre pp validate '''
 
 import os
