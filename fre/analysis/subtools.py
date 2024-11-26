@@ -8,26 +8,27 @@ from yaml import safe_load
 
 
 dora_token = getenv("DORA_TOKEN")
-dora_url = "https://dora.gfdl.noaa.gov"
+production_dora_url = "https://dora.gfdl.noaa.gov"
 
 
-def get_request(url):
+def get_request(url, params=None):
     """Sends a get request to the input url.
 
     Args:
         url: String url to send the get request to.
+        params: Dictionary of data that will be passed as URL parameters.
 
     Returns:
-        Dictionary of response body data.
+        Dictionary of response body data and string response text.
 
     Raises:
         ValueError if the response does not return status 200.
     """
-    response = get(url)
+    response = get(url, params)
     if response.status_code != 200:
         print(response.text)
         return ValueError("get from {url} failed.")
-    return response.json()
+    return response.json(), response.text
 
 
 def post_request(url, data, auth):
@@ -35,7 +36,8 @@ def post_request(url, data, auth):
 
     Args:
         url: String url to post the http request to.
-        data: Dictionary of data that will be passed as json in the body of the request.
+        data: Dictionary of data that will be sent in the body of the request.
+        auth: String authentication username.
 
     Returns:
         String text from the http response.
@@ -46,7 +48,7 @@ def post_request(url, data, auth):
     response = post(url, json=data, auth=(auth, None))
     if response.status_code != 200:
         print(response.text)
-        raise ValueError(f"post to {url} with {data} failed.")
+        raise ValueError(f"post to {url} with {data['expName']} failed.")
     return response.text
 
 
@@ -94,19 +96,21 @@ def parse_experiment_yaml_for_dora(path):
             "expYear": start,
             "modelType": model_type,
             "owner": user,
-            "pathAnalysis": analysis_path,
-            "pathDB": database_path,
-            "pathPP": pp_path,
-            "pathXML": path,
+            "pathAnalysis": analysis_path.rstrip("/"),
+            "pathDB": database_path.rstrip("/"),
+            "pathPP": pp_path.rstrip("/"),
+            "pathXML": path.rstrip("/"),
             "userName": user,
         }
 
 
-def get_dora_experiment_id(path):
+@click.command()
+def get_dora_experiment_id(experiment_yaml, dora_url=None):
     """Gets the experiment id using a http request after parsing the experiment yaml.
 
     Args:
-        path: Path to the experiment yaml.
+        experiment_yaml: Path to the experiment yaml.
+        dora_url: String URL for dora.
 
     Returns:
         Integer dora experiment id.
@@ -115,30 +119,33 @@ def get_dora_experiment_id(path):
         ValueError if the unique experiment (identified by the pp directory path)
         cannot be found.
     """
-    data = parse_experiment_yaml_for_dora(path)
-    url = f"{dora_url}/api/search?search={data['owner']}"
-#   url = f"http://127.0.0.1:5000/api/search?search={data['owner']}"
-    response = get_request(url)
-    for experiment in response.values():
-        if experiment["pathPP"] == data["pathPP"]:
+    # Parse the experiment yaml to get the data needed to get the experiment id from.
+    data = parse_experiment_yaml_for_dora(experiment_yaml)
+
+    # Get the experiment id from dora.
+    url = dora_url or production_dora_url
+    response = get_request(f"{url}/api/search?search={data['owner']}")
+    for experiment in response[0].values():
+        if experiment["pathPP"] and experiment["pathPP"].rstrip("/") == data["pathPP"]:
             return int(experiment["id"])
     raise ValueError("could not find experiment with pp directory - {data['pathPP']}")
 
 
 @click.command()
-def add_experiment_to_dora(experiment_yaml):
+def add_experiment_to_dora(experiment_yaml, dora_url=None):
     """Adds the experiment to dora using a http request.
 
     Args:
         experiment_yaml: Path to the experiment yaml.
+        dora_url: String URL for dora.
     """
     # Parse the experiment yaml to get the data needed to add the experiment to dora.
-    data = parse_experiment_yaml(experiment_yaml)
+    data = parse_experiment_yaml_for_dora(experiment_yaml)
+    data["token"] = dora_token
 
     # Add the experiment to dora.
-#   url = "https://dora.gfdl.noaa.gov/api/add-experiment"
-    url = f"{dora_url}/api/add-experiment"
-    post_request(url, data)
+    url = dora_url or production_dora_url
+    return get_request(f"{url}/api/add", data)[1]
 
 
 @click.command()
@@ -180,22 +187,24 @@ def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml):
 
 
 @click.command()
-def publish_analysis_figures(name, experiment_yaml, figures_yaml):
+def publish_analysis_figures(name, experiment_yaml, figures_yaml, dora_url=None):
     """Uploads the analysis figures to dora.
 
     Args:
         name: String name of the analysis script.
         experiment_yaml: Path to the experiment yaml file.
         figures_yaml: Path to the yaml that contains the figure paths.
+        dora_url: String URL for dora.
     """
     # Check to make sure that the experiment was added to dora and get it id.
     dora_id = get_dora_experiment_id(experiment_yaml)
 
     # Parse out the list of paths from the input yaml file and upload them.
-    url = f"{dora_url}/api/add-png"
+    url = dora_url or production_dora_url
+    url = f"{url}/api/add-png"
     data = {"id": dora_id, "name": name}
     with open(figures_yaml) as file_:
         paths = safe_load(file_)["figure_paths"]
         for path in paths:
             data["path"] = path
-            post_request(url, data)
+            post_request(url, data, dora_token)
