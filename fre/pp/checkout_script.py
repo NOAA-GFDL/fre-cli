@@ -1,6 +1,9 @@
 '''
-Description: Checkout script which accounts for 4 different scenarios: 1. branch not given, folder does not exist,
-2. branch given, folder does not exist, 3. branch not given, folder exists, 4. branch given and folder exists
+Description: Checkout script which accounts for 4 different scenarios: 
+1. branch not given, folder does not exist,
+2. branch given, folder does not exist, 
+3. branch not given, folder exists, 
+4. branch given and folder exists
 '''
 import os
 import sys
@@ -20,8 +23,6 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     go_back_here = os.getcwd()
 
     # branch and version parameters
-    #default_tag = subprocess.run( ["fre","--version"],
-    #                              capture_output = True, text = True, check = True).stdout.split()[2]
     default_tag = fre.__version__
     print(f'(checkout_script) default_tag is {default_tag}')
 
@@ -37,43 +38,49 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     try:
         os.makedirs(directory, exist_ok = True)
     except Exception as exc:
-        raise OSError('(checkoutScript) directory {directory} wasnt able to be created. exit!') from exc
+        raise OSError(
+            '(checkoutScript) directory {directory} wasnt able to be created. exit!') from exc
 
     print(f'(checkout_script) branch is {branch}')
     checkout_exists = os.path.isdir(f'{directory}/{name}')
     git_clone_branch_arg = branch if branch is not None else default_tag
     if branch is not None:
-        print(f'(checkout_script) WARNING using default_tag as branch argument for git clone!')
+        print('(checkout_script) WARNING using default_tag as branch argument for git clone!')
 
 
-    if not checkout_exists:     # scenarios 1 and 2, repo checkout doesn't exist, branch specified (or not)
-        clone_output = subprocess.run(['git', 'clone','--recursive',
-                                       f'--branch={git_clone_branch_arg}',
-                                       FRE_WORKFLOWS_URL, f'{directory}/{name}'],
-                                      capture_output = True, text = True, check = True)
+    if not checkout_exists: # scenarios 1+2, checkout doesn't exist, branch specified (or not)
+        clone_output = subprocess.run( ['git', 'clone','--recursive',
+                                        f'--branch={git_clone_branch_arg}',
+                                        FRE_WORKFLOWS_URL, f'{directory}/{name}'],
+                                       capture_output = True, text = True, check = True)
         print(f'(checkout_script) output git clone command: {clone_output}')
 
     else:     # the repo checkout does exist, scenarios 3 and 4.
         os.chdir(f'{directory}/{name}')
-        
-        name_path_tag_subproc_out = subprocess.run(["git","describe","--tags"],capture_output = True, text = True, check = True).stdout
+
+        name_path_tag_subproc_out = subprocess.run(["git","describe","--tags"],
+                                                   capture_output = True,
+                                                   text = True, check = True).stdout
         if branch is not None:
             name_path_tag = name_path_tag_subproc_out.split('*')
-            name_path_branch = subprocess.run(["git","branch"],capture_output = True, text = True,check = True).stdout.split()[0]
+            name_path_branch = subprocess.run(["git","branch"],
+                                              capture_output = True,
+                                              text = True, check = True).stdout.split()[0]
             if all( [ default_tag not in name_path_tag,
                       name_path_branch != branch ] ):
                 sys.exit(
-                    f"Tag and branch of prexisting directory {directory}/{name} does not match fre --version or branch requested")
+                    f"Tag and branch of prexisting directory {directory}/{name} does not match "
+                    "fre --version or branch requested"                                            )
         else:
             name_path_tag = name_path_tag_subproc_out.split()[0]
             if not default_tag in name_path_tag:
-                    sys.exit(
-                        f"Tag of prexisting directory {directory}/{name} does not match fre --version")
+                sys.exit(
+                    f"Tag of prexisting directory {directory}/{name} does not match fre --version")
 
     # make sure we are back where we should be
     if os.getcwd() != go_back_here:
         os.chdir(go_back_here)
-            
+
     return 0
 
 #############################################
