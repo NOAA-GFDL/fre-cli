@@ -14,9 +14,8 @@ import click
 from fre import fre
 
 FRE_WORKFLOWS_URL='https://github.com/NOAA-GFDL/fre-workflows.git'
-#############################################
 
-def checkoutTemplate(experiment, platform, target, branch=None):
+def checkout_template(experiment, platform, target, branch=None):
     """
     Checkout the workflow template files from the repo
     """
@@ -26,7 +25,7 @@ def checkoutTemplate(experiment, platform, target, branch=None):
         os.makedirs(directory, exist_ok=True)
     except Exception as exc:
         raise OSError('(checkoutScript) directory {directory} wasnt able to be created. exit!') from exc
-    
+
 
     ## Chdir back to here before we exit
     #go_back_here = os.getcwd()
@@ -53,13 +52,13 @@ def checkoutTemplate(experiment, platform, target, branch=None):
                 sys.exit(stop_report)
                 return 1
             print('scenario 4: directory exists, and branch requested matches branch in use')
-                
+
         else:   #scenario 2
             clone_output = subprocess.run(['git', 'clone','--recursive', f'--branch={branch}',
                                            FRE_WORKFLOWS_URL, f'{directory}/{name}'], capture_output=True, text=True)
             print('scenario 2: output of fre pp checkouts git clone command is as follows:',clone_output)
     else:
-                
+
         if os.path.isdir(name): #scenario 3
             os.chdir(name)
             name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout.split()[0]
@@ -68,8 +67,8 @@ def checkoutTemplate(experiment, platform, target, branch=None):
                 stop_report = f"Tag of prexisting directory {diretory}/{name} does not match fre --version"
                 sys.exit(stop_report)
                 return 1
-            print('scenario 3: directory exists, and its branch matches default tag') 
-            
+            print('scenario 3: directory exists, and its branch matches default tag')
+
         else:   #scenario 1
             clone_output = subprocess.run(['git', 'clone', '--recursive', '-b',f'{default_tag}',
                                            FRE_WORKFLOWS_URL, f'{directory}/{name}'], capture_output=True, text=True)
@@ -79,13 +78,13 @@ def checkoutTemplate(experiment, platform, target, branch=None):
 #############################################
 
 @click.command()
-def _checkoutTemplate(experiment, platform, target, branch=None):
+def _checkout_template(experiment, platform, target, branch=None):
     '''
-    Wrapper script for calling checkoutTemplate - allows the decorated version
+    Wrapper script for calling checkout_template - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return checkoutTemplate(experiment, platform, target, branch)
+    return checkout_template(experiment, platform, target, branch)
 
 
 if __name__ == '__main__':
-    checkoutTemplate()
+    checkout_template()

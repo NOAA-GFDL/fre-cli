@@ -16,7 +16,7 @@ import time
 import click
 
 # Import from the local packages
-from .checkoutScript import checkoutTemplate
+from .checkoutScript import checkout_template
 from .configure_script_yaml import yamlInfo
 from .install import install_subtool
 from .run import pp_run_subtool
@@ -32,7 +32,7 @@ def runFre2pp(experiment, platform, target, config_file, branch, time):
 
     config_file = os.path.abspath(config_file)
 
-    checkoutTemplate(experiment, platform, target, branch)
+    checkout_template(experiment, platform, target, branch)
 
     yamlInfo(config_file, experiment, platform, target)
 
