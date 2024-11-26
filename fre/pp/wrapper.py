@@ -16,7 +16,7 @@ import time
 import click
 
 # Import from the local packages
-from .checkoutScript import checkout_template
+from .checkout_script import checkout_template
 from .configure_script_yaml import yamlInfo
 from .install import install_subtool
 from .run import pp_run_subtool

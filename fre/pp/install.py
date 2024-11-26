@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 ''' fre pp install '''
 
 from pathlib import Path
