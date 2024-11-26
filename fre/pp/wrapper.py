@@ -73,13 +73,10 @@ def runFre2pp(experiment, platform, target, config_file, branch):
     except Exception as err:
         raise
 
-    #send off a watcher script that reports on how it's going
-    for n in range(1,12):
-        try:
-            _status_subtool(experiment, platform, target)
-        except Exception as err:
-            raise
-        time.sleep(300)
+    try:
+        _status_subtool(experiment, platform, target)
+    except Exception as err:
+        raise
 
 if __name__ == '__main__':
     runFre2pp()
