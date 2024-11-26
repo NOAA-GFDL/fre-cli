@@ -1,10 +1,9 @@
-#!/usr/bin/env python
 ''' fre pp run '''
 
 import subprocess
 import click
 
-def _pp_run_subtool(experiment, platform, target):
+def pp_run_subtool(experiment, platform, target):
     """
     Start or restart the Cylc workflow identified by:
     <experiment>__<platform>__<target>
@@ -15,6 +14,6 @@ def _pp_run_subtool(experiment, platform, target):
     subprocess.run(cmd, shell=True, check=True)
 
 @click.command()
-def pp_run_subtool(experiment, platform, target):
+def _pp_run_subtool(experiment, platform, target):
     ''' entry point to run for click '''
     return _pp_run_subtool(experiment, platform, target)

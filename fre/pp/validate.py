@@ -1,16 +1,15 @@
-#!/usr/bin/env python
 ''' fre pp validate '''
 
 import os
 import subprocess
 import click
 
-def _validate_subtool(experiment, platform, target):
+def validate_subtool(experiment, platform, target):
     """
     Validate the Cylc workflow definition located in
     ~/cylc-src/<experiment>__<platform>__<target>
     """
-
+    go_back_here = os.getcwd()
     directory = os.path.expanduser('~/cylc-src/' + experiment + '__' + platform + '__' + target)
 
     # Change the current working directory
@@ -23,8 +22,9 @@ def _validate_subtool(experiment, platform, target):
     # Validate the Cylc configuration
     cmd = "cylc validate ."
     subprocess.run(cmd, shell=True, check=True)
+    os.chdir(go_back_here)
 
 @click.command()
-def validate_subtool(experiment, platform, target):
+def _validate_subtool(experiment, platform, target):
     ''' entry point to validate for click '''
-    return _validate_subtool(experiment, platform, target)
+    return validate_subtool(experiment, platform, target)
