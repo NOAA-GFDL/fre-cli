@@ -28,6 +28,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
     os.makedirs(directory, exist_ok=True)
 
     # Change the current working directory
+    go_back_here = os.getcwd()
     os.chdir(directory)
 
     # Set the name of the directory
@@ -71,6 +72,7 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
         else:   #scenario 1
             clone_output = subprocess.run(['git', 'clone', '--recursive', '-b',f'{default_tag}', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'], capture_output=True, text=True)
             print('scenario 1: output of fre pp checkouts git clone command is as follows:',clone_output)
+    os.chdir(go_back_here)
 
 #############################################
 
