@@ -94,13 +94,15 @@ def experiment_check(mainyaml_dir,comb,experiment):
                         ey=Path(os.path.join(mainyaml_dir,e))
                         ey_path.append(ey)
                     else:
-                        raise ValueError("Incorrect experiment yaml path given; does not exist.")
+                        raise ValueError(f"Incorrect experiment yaml path given ({e}); does not exist.")
             else:
                 raise ValueError("No experiment yaml path given!")
 
             if analysisyaml is not None:
                 ay_path=[]
                 for a in analysisyaml:
+                    # prepend the directory containing the yaml
+                    a = Path(mainyaml_dir, a)
                     if Path(a).exists():
                         ay=Path(os.path.join(mainyaml_dir,a))
                         ay_path.append(ay)

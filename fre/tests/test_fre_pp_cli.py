@@ -1,6 +1,7 @@
 ''' test "fre pp" calls '''
 
 import os
+import shutil
 from pathlib import Path
 
 from click.testing import CliRunner
@@ -44,11 +45,13 @@ def test_cli_fre_pp_checkout_opt_dne():
 
 def test_cli_fre_pp_checkout_case():
     ''' fre pp checkout -e FOO -p BAR -t BAZ'''
+    directory = os.path.expanduser("~/cylc-src")+'/FOO__BAR__BAZ'
+    if Path(directory).exists():
+        shutil.rmtree(directory)
     result = runner.invoke(fre.fre, args=["pp", "checkout", 
                                           "-e", "FOO", 
                                           "-p", "BAR", 
                                           "-t", "BAZ"] )
-    directory = os.path.expanduser("~/cylc-src")+'/FOO__BAR__BAZ'
     assert all( [ result.exit_code == 0,
                   Path(directory).exists()] )                           
 
