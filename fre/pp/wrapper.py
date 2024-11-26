@@ -18,9 +18,9 @@ import click
 # Import from the local packages
 from .checkoutScript import checkoutTemplate
 from .configure_script_yaml import yamlInfo
-from .install import _install_subtool
-from .run import _pp_run_subtool
-from .status import _status_subtool
+from .install import install_subtool
+from .run import pp_run_subtool
+from .status import status_subtool
 
 @click.command()
 def runFre2pp(experiment, platform, target, config_file, branch):
@@ -32,32 +32,15 @@ def runFre2pp(experiment, platform, target, config_file, branch):
 
     config_file = os.path.abspath(config_file)
 
-    #env_setup
-    #todo: check for experiment existing, call frepp_stop to clean experiment,
-    try:
-        checkoutTemplate(experiment, platform, target, branch)
-    except Exception as err:
-        raise
+    checkoutTemplate(experiment, platform, target, branch)
 
-    try:
-        yamlInfo(config_file, experiment, platform, target)
-    except Exception as err:
-        raise
+    yamlInfo(config_file, experiment, platform, target)
 
-    try:
-        _install_subtool(experiment, platform, target)
-    except:
-        raise
+    install_subtool(experiment, platform, target)
 
-    try:
-        _pp_run_subtool(experiment, platform, target)
-    except Exception as err:
-        raise
+    pp_run_subtool(experiment, platform, target)
 
-    try:
-        _status_subtool(experiment, platform, target)
-    except Exception as err:
-        raise
+    status_subtool(experiment, platform, target)
 
 if __name__ == '__main__':
     runFre2pp()
