@@ -1,8 +1,12 @@
 ''' test "fre make run-fremake" calls '''
 
 import os
-from fre.make import runFremake
 from pathlib import Path
+
+import pytest
+
+from fre.make import runFremake
+
 
 # command options
 YAMLFILE = "fre/make/tests/null_example/null_model.yaml"
