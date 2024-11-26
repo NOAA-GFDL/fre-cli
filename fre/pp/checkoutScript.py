@@ -36,9 +36,6 @@ def _checkoutTemplate(experiment, platform, target, branch=None):
 
     # branch and version parameters
     default_tag = subprocess.run(["fre","--version"],capture_output=True, text=True).stdout.split()[2]
-    if default_tag == '2024.1':   #hard coded solution to current discrepencies with fre --version
-        default_tag = '2024.01'
-    print('the default tag for directory ',directory,'/',name, ' is ', default_tag)
     if branch != None:
         print(branch)
         if os.path.isdir(name):   #scenario 4
