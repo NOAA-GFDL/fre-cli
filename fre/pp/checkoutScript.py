@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-
-# Author: Avery Kiihne
 '''
 Description: Checkout script which accounts for 4 different scenarios: 1. branch not given, folder does not exist,
 2. branch given, folder does not exist, 3. branch not given, folder exists, 4. branch given and folder exists
@@ -11,10 +8,12 @@ import subprocess
 from subprocess import PIPE
 from subprocess import STDOUT
 import re
-import click
-from fre import fre
-from click.testing import CliRunner
 
+import click
+
+from fre import fre
+
+FRE_WORKFLOWS_URL='https://github.com/NOAA-GFDL/fre-workflows.git'
 #############################################
 
 def checkoutTemplate(experiment, platform, target, branch=None):
@@ -25,8 +24,8 @@ def checkoutTemplate(experiment, platform, target, branch=None):
     directory = os.path.expanduser("~/cylc-src")
     os.makedirs(directory, exist_ok=True)
 
-    # Chdir back to here before we exit
-    go_back_here = os.getcwd()
+    ## Chdir back to here before we exit
+    #go_back_here = os.getcwd()
 
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
@@ -48,7 +47,8 @@ def checkoutTemplate(experiment, platform, target, branch=None):
             print('scenario 4: directory exists, and branch requested matches branch in use')
                 
         else:   #scenario 2
-            clone_output = subprocess.run(['git', 'clone','--recursive', f'--branch={branch}', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'], capture_output=True, text=True)
+            clone_output = subprocess.run(['git', 'clone','--recursive', f'--branch={branch}',
+                                           FRE_WORKFLOWS_URL, f'{directory}/{name}'], capture_output=True, text=True)
             print('scenario 2: output of fre pp checkouts git clone command is as follows:',clone_output)
     else:
         
@@ -64,9 +64,10 @@ def checkoutTemplate(experiment, platform, target, branch=None):
             print('scenario 3: directory exists, and its branch matches default tag') 
             
         else:   #scenario 1
-            clone_output = subprocess.run(['git', 'clone', '--recursive', '-b',f'{default_tag}', 'https://github.com/NOAA-GFDL/fre-workflows.git', f'{name}'], capture_output=True, text=True)
+            clone_output = subprocess.run(['git', 'clone', '--recursive', '-b',f'{default_tag}',
+                                           FRE_WORKFLOWS_URL, f'{directory}/{name}'], capture_output=True, text=True)
             print('scenario 1: output of fre pp checkouts git clone command is as follows:',clone_output)
-    os.chdir(go_back_here)
+    #os.chdir(go_back_here)
 
 #############################################
 
