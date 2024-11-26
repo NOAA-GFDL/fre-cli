@@ -8,7 +8,7 @@ import subprocess
 
 import click
 
-from fre import fre
+import fre
 
 FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 

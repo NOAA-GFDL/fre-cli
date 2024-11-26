@@ -29,8 +29,8 @@ from .lazy_group import LazyGroup
 
 
 @click.version_option(
-    package_name = "fre-cli",
-    version=version
+    package_name = "fre-cli"
+#    version=fre.__version__
 )
 
 def fre():
