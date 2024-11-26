@@ -10,6 +10,7 @@ import logging
 from multiprocessing.dummy import Pool
 from pathlib import Path
 import click
+import subprocess
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
@@ -190,13 +191,13 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
 
                 dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
 
-                ## Run the dockerfile and create the container if execute option is given
-                ## otherwise create a build script and print out its path
+                # Create build script for container
+                dockerBuild.createBuildScript(containerBuild, containerRun)
+                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
+
+                # Execute if flag is given
                 if execute:
-                    dockerBuild.build(containerBuild,containerRun)
-                else:
-                    dockerBuild.createBuildScript(containerBuild, containerRun)
-                    print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
+                    subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
                 #freCheckout.cleanup()
                 #buildDockerfile(fremakeYaml,image)

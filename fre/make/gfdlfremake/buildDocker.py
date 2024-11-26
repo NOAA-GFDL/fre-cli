@@ -184,24 +184,10 @@ class container():
         self.d.write('ENTRYPOINT ["/bin/bash"]')
         self.d.close()
 
-    def build(self,containerBuild,containerRun):
-        """
-        Brief: Builds the container image for the model
-        Param:
-            - self : The dockerfile object
-            - containerBuild : The tool used to build the container;
-                               docker or podman used
-            - containerRun : The container platform used with `exec` to
-                             run the container; apptainer or singularity used
-        """
-        os.system(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName())
-        os.system("rm -f "+self.e+".tar "+self.e+".sif")
-        os.system(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName())
-        os.system(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar")
-
     def createBuildScript(self,containerBuild,containerRun):
         """
-        Brief: Writes out the build commands for the created dockerfile in a script, uses the same commands as the routine above
+        Brief: Writes out the build commands for the created dockerfile in a script,
+               which builds the dockerfile and then converts the format to a singularity image file.
         Param:
             - self : The dockerfile object
             - containerBuild : The tool used to build the container;
@@ -216,6 +202,7 @@ class container():
         self.userScript.append(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar\n")
         self.userScriptFile = open("createContainer.sh","w")
         self.userScriptFile.writelines(self.userScript)
+        self.userScriptFile.close()
         os.chmod("createContainer.sh", 0o744)
         self.userScriptPath = os.getcwd()+"/createContainer.sh"
 
