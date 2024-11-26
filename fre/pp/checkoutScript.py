@@ -22,7 +22,11 @@ def checkoutTemplate(experiment, platform, target, branch=None):
     """
     # Create the directory if it doesn't exist
     directory = os.path.expanduser("~/cylc-src")
-    os.makedirs(directory, exist_ok=True)
+    try:
+        os.makedirs(directory, exist_ok=True)
+    except Exception as exc:
+        raise OSError('(checkoutScript) directory {directory} wasnt able to be created. exit!') from exc
+    
 
     ## Chdir back to here before we exit
     #go_back_here = os.getcwd()
@@ -32,7 +36,11 @@ def checkoutTemplate(experiment, platform, target, branch=None):
 
     # branch and version parameters
     default_tag = subprocess.run(["fre","--version"],capture_output=True, text=True).stdout.split()[2]
+
+
+
     if branch != None:
+
         print(branch)
         if os.path.isdir(name):   #scenario 4
             os.chdir(name)
@@ -51,8 +59,7 @@ def checkoutTemplate(experiment, platform, target, branch=None):
                                            FRE_WORKFLOWS_URL, f'{directory}/{name}'], capture_output=True, text=True)
             print('scenario 2: output of fre pp checkouts git clone command is as follows:',clone_output)
     else:
-        
-        
+                
         if os.path.isdir(name): #scenario 3
             os.chdir(name)
             name_path_tag=subprocess.run(["git","describe","--tags"],capture_output=True, text=True).stdout.split()[0]
