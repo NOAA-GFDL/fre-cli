@@ -10,6 +10,16 @@ be called via this script. I.e. 'fre' is the entry point
 import click
 from .lazy_group import LazyGroup
 
+# Horrible way to turn xxxx.y into xxxx.0y
+import importlib.metadata
+version_unexpanded = importlib.metadata.version('fre-cli')
+version_unexpanded_split = version_unexpanded.split('.')
+if len(version_unexpanded_split[1]) == 1:
+    version_minor = "0" + version_unexpanded_split[1]
+else:
+    version_minor = version_unexpanded_split[1]
+version = version_unexpanded_split[0] + '.' + version_minor
+
 @click.group(
     cls = LazyGroup,
     lazy_subcommands = {"pp": ".pp.frepp.pp_cli",
@@ -27,10 +37,10 @@ from .lazy_group import LazyGroup
         fg='cyan')
 )
 
+
 @click.version_option(
     package_name = "fre-cli",
-    message = click.style("%(package)s | %(version)s",
-                          fg = (155,255,172) )
+    version=version
 )
 
 def fre():
