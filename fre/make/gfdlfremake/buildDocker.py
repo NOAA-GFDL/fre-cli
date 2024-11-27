@@ -9,12 +9,12 @@ import os
 class container():
     """
     Brief: Opens the Dockerfile for writing
-    Param: 
+    Param:
         - self : The dockerfile object
         - base : The docker base image to start from
         - libs : Additional libraries defined by user
         - exp : The experiment name
-        - RUNenv : The commands that have to be run at 
+        - RUNenv : The commands that have to be run at
                    the beginning of a RUN in the dockerfile
                    to set up the environment
     """
@@ -58,7 +58,7 @@ class container():
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """
         Brief: writes to the checkout part of the Dockerfile and sets up the compile
-        Param: 
+        Param:
             - self : The dockerfile object
             - cScriptName : The name of the checkout script in the container
             - cOnDisk : The relative path to the checkout script on disk
@@ -74,7 +74,7 @@ class container():
     def writeDockerfileMakefile(self, makefileOnDiskPath, linklineonDiskPath):
         """
         Brief: Copies the Makefile into the bldDir in the dockerfile
-        Param: 
+        Param:
             - self : The dockerfile object
             - makefileOnDiskPath : The path to Makefile on the local disk
             - linklineonDiskPath : The path to the link line script on the local disk
@@ -98,8 +98,8 @@ class container():
 
     def writeDockerfileMkmf(self, c):
         """
-        Brief: Adds components to the build part of the Dockerfile                    
-        Param: 
+        Brief: Adds components to the build part of the Dockerfile            
+        Param:
             - self : The dockerfile object
             - c : Component from the compile yaml
         """
@@ -141,14 +141,14 @@ class container():
     def writeRunscript(self,RUNenv,containerRun,runOnDisk):
         """
         Brief: Writes a runscript to set up spack loads/environment
-               in order to run the executable in the container; 
+               in order to run the executable in the container;
                runscript copied into container
-        Param: 
+        Param:
             - self : The dockerfile object
-            - RUNEnv : The commands that have to be run at 
+            - RUNEnv : The commands that have to be run at
                        the beginning of a RUN in the dockerfile
-            - containerRun : The container platform used with `exec` 
-                             to run the container; apptainer 
+            - containerRun : The container platform used with `exec`
+                             to run the container; apptainer
                              or singularity used
             - runOnDisk : The path to the run script on the local disk
         """
@@ -184,17 +184,25 @@ class container():
         self.d.write('ENTRYPOINT ["/bin/bash"]')
         self.d.close()
 
-    def build(self,containerBuild,containerRun):
+    def createBuildScript(self,containerBuild,containerRun):
         """
-        Brief: Builds the container image for the model
-        Param: 
+        Brief: Writes out the build commands for the created dockerfile in a script,
+               which builds the dockerfile and then converts the format to a singularity image file.
+        Param:
             - self : The dockerfile object
-            - containerBuild : The tool used to build the container; 
+            - containerBuild : The tool used to build the container;
                                docker or podman used
-            - containerRun : The container platform used with `exec` to 
+            - containerRun : The container platform used with `exec` to
                              run the container; apptainer or singularity used
         """
-        os.system(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName())
-        os.system("rm -f "+self.e+".tar "+self.e+".sif")
-        os.system(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName())
-        os.system(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar")
+        self.userScript = ["#!/bin/bash\n"]
+        self.userScript.append(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName()+"\n")
+        self.userScript.append("rm -f "+self.e+".tar "+self.e+".sif\n")
+        self.userScript.append(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
+        self.userScript.append(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar\n")
+        self.userScriptFile = open("createContainer.sh","w")
+        self.userScriptFile.writelines(self.userScript)
+        self.userScriptFile.close()
+        os.chmod("createContainer.sh", 0o744)
+        self.userScriptPath = os.getcwd()+"/createContainer.sh"
+
