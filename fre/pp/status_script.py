@@ -17,4 +17,7 @@ def status_subtool(experiment, platform, target):
 @click.command()
 def _status_subtool(experiment, platform, target):
     ''' entry point to status for click '''
-    return _status_subtool(experiment, platform, target)
+    return status_subtool(experiment, platform, target)
+
+if __name__ == "__main__":
+    status_subtool()

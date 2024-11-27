@@ -86,7 +86,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
 #############################################
 
 @click.command()
-def _checkout_template(experiment, platform, target, branch = None):
+def _checkout_template(experiment, platform, target, branch ):
     '''
     Wrapper script for calling checkout_template - allows the decorated version
     of the function to be separate from the undecorated version
