@@ -4,7 +4,7 @@ Test fre make create-makefile
 import os
 import shutil
 from pathlib import Path
-from fre.make import createMakefile
+from fre.make import create_makefile_script
 
 # SET-UP
 TEST_DIR = Path("fre/make/tests")
@@ -58,7 +58,7 @@ def test_bm_makefile_creation():
     targ = TARGET[0]
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
-    createMakefile.makefile_create(yamlfile_path,BM_PLATFORM,TARGET)
+    create_makefile_script.makefile_create(yamlfile_path,BM_PLATFORM,TARGET)
 
     assert Path(f"{OUT}/fremake_canopy/test/{EXPERIMENT}/{bm_plat}-{targ}/exec/Makefile").exists()
     os.environ["HOME"] = def_home
@@ -70,6 +70,6 @@ def test_container_makefile_creation():
     """
     container_plat = CONTAINER_PLATFORM[0]
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
-    createMakefile.makefile_create(yamlfile_path,CONTAINER_PLATFORM,TARGET)
+    create_makefile_script.makefile_create(yamlfile_path,CONTAINER_PLATFORM,TARGET)
 
     assert Path(f"tmp/{container_plat}/Makefile").exists()
