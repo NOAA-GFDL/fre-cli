@@ -28,3 +28,6 @@ def validate_subtool(experiment, platform, target):
 def _validate_subtool(experiment, platform, target):
     ''' entry point to validate for click '''
     return validate_subtool(experiment, platform, target)
+
+if __name__ == "__main__":
+    validate_subtool()
