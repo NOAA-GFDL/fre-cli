@@ -11,7 +11,7 @@ import subprocess
 
 import click
 
-import fre
+from fre import fre
 
 FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 
@@ -23,7 +23,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     go_back_here = os.getcwd()
 
     # branch and version parameters
-    default_tag = fre.__version__
+    default_tag = fre.version
     print(f'(checkout_script) default_tag is {default_tag}')
 
 
