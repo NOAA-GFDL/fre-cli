@@ -15,7 +15,6 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
     name = yamlfile.split(".")[0]
     nparallel = parallel
     jobs = str(jobs)
-    run = execute
 
     if verbose:
       logging.basicCOnfig(level=logging.INFO)
@@ -83,8 +82,10 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
                   print("\nCompile script created in " + bldDir + "/compile.sh" + "\n")
               else:
                   if force_compile:
-                      print("Re-creating the compile script...")
+                      # Remove compile script
+                      os.remove(bldDir + "/compile.sh")
                       # Re-create compile script
+                      print("Re-creating the compile script...")
                       fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
                                                                mkTemplatePath = mkTemplate,
                                                                srcDir = srcDir,
@@ -101,7 +102,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
                   else:
                       print("\nCompile script PREVIOUSLY created in " + bldDir + "/compile.sh" + "\n")
 
-    if run:
+    if execute:
         if baremetalRun:
             pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
