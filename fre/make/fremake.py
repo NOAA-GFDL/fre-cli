@@ -65,7 +65,7 @@ def make_cli():
 @click.option("-npc",
               "--no-parallel-checkout",
               is_flag = True,
-              help = NO_PARALLEL_CHECKOUIT_OPT_HELP)
+              help = NO_PARALLEL_CHECKOUT_OPT_HELP)
 @click.option("-v",
               "--verbose",
               is_flag = True,
@@ -103,7 +103,7 @@ def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel
 @click.option("-npc",
               "--no-parallel-checkout",
               is_flag = True,
-              help = no_parallel_checkout_OPT_HELP)
+              help = NO_PARALLEL_CHECKOUT_OPT_HELP)
 @click.option("--execute",
               is_flag = True,
               default = False,
