@@ -20,3 +20,15 @@ def test_cli_fre_option_dne():
     ''' fre optionDNE '''
     result = runner.invoke(fre.fre, args='optionDNE')
     assert result.exit_code == 2
+
+
+def test_fre_version():
+    ''' module import flavor of below cli test '''
+    assert '2024.01' == fre.version
+    
+def test_cli_fre_version():
+    ''' fre --version '''
+    result = runner.invoke(fre.fre, args='--version')
+    expected_out = 'fre, version 2024.01'
+    assert all( [ result.exit_code == 0,
+                  expected_out in result.stdout.split('\n') ] )
