@@ -3,6 +3,8 @@
 import subprocess
 import click
 
+TIMEOUT_SECS=120#30
+
 def status_subtool(experiment, platform, target):
     """
     Report workflow state for the Cylc workflow
@@ -11,7 +13,7 @@ def status_subtool(experiment, platform, target):
 
     name = experiment + '__' + platform + '__' + target
     cmd = f"cylc workflow-state {name}"
-    subprocess.run(cmd, shell=True, check=True, timeout=30)
+    subprocess.run(cmd, shell=True, check=True, timeout=TIMEOUT_SECS)
 
 
 @click.command()
