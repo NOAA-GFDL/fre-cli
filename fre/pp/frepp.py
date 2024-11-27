@@ -1,16 +1,15 @@
 ''' fre pp '''
 
 import click
-
-from fre.pp import checkout_script 
-from fre.pp import configure_script_yaml 
-from fre.pp import configure_script_xml 
-#from fre.pp import validate 
-from fre.pp import install 
-from fre.pp import run 
-from fre.pp import trigger 
-from fre.pp import status 
-from fre.pp import wrapper 
+from .checkout_script import _checkout_template
+from .configure_script_yaml import _yamlInfo
+from .configure_script_xml import convert
+from .validate import _validate_subtool
+from .install import _install_subtool
+from .run import _pp_run_subtool
+from .trigger import _trigger
+from .status import _status_subtool
+from .wrapper import runFre2pp
 
 @click.group(help=click.style(" - access fre pp subcommands", fg=(57,139,210)))
 def pp_cli():
@@ -32,7 +31,7 @@ def pp_cli():
 def status(context, experiment, platform, target):
     # pylint: disable=unused-argument
     """ - Report status of PP configuration"""
-    context.forward(status.status_subtool)
+    context.forward(_status_subtool)
 
 # fre pp run
 @pp_cli.command()
@@ -49,7 +48,7 @@ def status(context, experiment, platform, target):
 def run(context, experiment, platform, target):
     # pylint: disable=unused-argument
     """ - Run PP configuration"""
-    context.forward(run.pp_run_subtool)
+    context.forward(_pp_run_subtool)
 
 # fre pp validate
 @pp_cli.command()
@@ -83,7 +82,7 @@ def validate(context, experiment, platform, target):
 def install(context, experiment, platform, target):
     # pylint: disable=unused-argument
     """ - Install PP configuration"""
-    context.forward(install.install_subtool)
+    context.forward(_install_subtool)
 
 @pp_cli.command()
 @click.option("-y", "--yamlfile", type=str,
@@ -102,7 +101,7 @@ def install(context, experiment, platform, target):
 def configure_yaml(context,yamlfile,experiment,platform,target):
     # pylint: disable=unused-argument
     """ - Execute fre pp configure """
-    context.forward(configure_script_yaml._yamlInfo)
+    context.forward(_yamlInfo)
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
@@ -121,7 +120,7 @@ def configure_yaml(context,yamlfile,experiment,platform,target):
 def checkout(context, experiment, platform, target, branch=None):
     # pylint: disable=unused-argument
     """ - Execute fre pp checkout """
-    context.forward(checkout_script._checkout_template)
+    context.forward(_checkout_template)
 
 @pp_cli.command()
 @click.option('-x', '--xml',
@@ -179,7 +178,7 @@ def configure_xml(context, xml, platform, target, experiment, do_analysis, histo
                   ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
     # pylint: disable=unused-argument
     """ - Converts a Bronx XML to a Canopy rose-suite.conf """
-    context.forward(configure_script_xml.convert)
+    context.forward(convert)
 
 #fre pp wrapper
 @pp_cli.command()
@@ -205,7 +204,7 @@ def configure_xml(context, xml, platform, target, experiment, do_analysis, histo
 def wrapper(context, experiment, platform, target, config_file, time=None, branch=None):
     # pylint: disable=unused-argument
     """ - Execute fre pp steps in order """
-    context.forward(wrapper.runFre2pp)
+    context.forward(runFre2pp)
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
@@ -224,7 +223,7 @@ def wrapper(context, experiment, platform, target, config_file, time=None, branc
 def trigger(context, experiment, platform, target, time):
     # pylint: disable=unused-argument
     """ - Start postprocessing for a particular time """
-    context.forward(trigger._trigger)
+    context.forward(_trigger)
 
 if __name__ == "__main__":
     ''' entry point for click to fre pp commands '''

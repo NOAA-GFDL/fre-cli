@@ -8,14 +8,17 @@ Description: Checkout script which accounts for 4 different scenarios:
 import os
 import sys
 import subprocess
+from subprocess import PIPE
+from subprocess import STDOUT
+import re
 
 import click
 
 import fre
 
-FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
+FRE_WORKFLOWS_URL='https://github.com/NOAA-GFDL/fre-workflows.git'
 
-def checkout_template(experiment = None, platform = None, target = None, branch = None):
+def checkout_template(experiment, platform, target, branch=None):
     """
     Checkout the workflow template files from the repo
     """
@@ -36,7 +39,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     # Create the directory if it doesn't exist
     directory = os.path.expanduser("~/cylc-src")
     try:
-        os.makedirs(directory, exist_ok = True)
+        os.makedirs(directory, exist_ok=True)
     except Exception as exc:
         raise OSError(
             '(checkoutScript) directory {directory} wasnt able to be created. exit!') from exc
@@ -86,7 +89,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
 #############################################
 
 @click.command()
-def _checkout_template(experiment, platform, target, branch = None):
+def _checkout_template(experiment, platform, target, branch=None):
     '''
     Wrapper script for calling checkout_template - allows the decorated version
     of the function to be separate from the undecorated version

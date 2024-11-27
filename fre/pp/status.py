@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ''' fre pp status '''
 
 import subprocess
@@ -17,4 +18,4 @@ def status_subtool(experiment, platform, target):
 @click.command()
 def _status_subtool(experiment, platform, target):
     ''' entry point to status for click '''
-    return _status_subtool(experiment, platform, target)
+    return status_subtool(experiment, platform, target)
