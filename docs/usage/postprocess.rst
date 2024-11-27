@@ -52,19 +52,87 @@ the 19790101.nc.tar tarfile might contain::
 The name of the history file, while often predictably named, are arbitrary labels within the Diagnostic Manager configuration
 (diag yamls). Each history file is a CF-standard NetCDF file that can be inspected with common NetCDF tools such as the NCO or CDO tools, or even ``ncdump``.
 
+Required configuration
+
+1. Set the history directory in your postprocessing yaml::
+
+  directories:
+    history: /arch5/am5/am5/am5f7c1r0/c96L65_am5f7c1r0_amip/gfdl.ncrc5-deploy-prod-openmp/history
+
+2. Set the segment size as an ISO8601 duration (e.g. P1Y is "one year")::
+
+  postprocess:
+    settings:
+      history_segment: P1Y
+
+3. Set the date range to postprocess as ISO8601 dates::
+
+  postprocess:
+    settings:
+      pp_start: 1979-01-01T0000Z
+
+      pp_stop: 2020-01-01T0000Z
+
 Postprocess components
 ----------------------
-History files are not immediately convenient for analysis.
-On native grid, named in a single namespace.
-Desire: regridded, renamed, ts
+The history-file namespace is a single layer as shown above. By longtime tradition, FRE postprocessing namespaces are richer, with
+a distinction for timeseries, timeaveraged, and static output datasets, and includes frequency and chunk-size in the directory structure.
 
-Timeseries
-----------
-Set chunk_a, and chunk_b if desired.
+Postprocessed files within a "component" share a horizontal grid; which can be the native grid or regridded to lat/lon.
+
+Required configuration
+
+4. Define the atmos and ocean postprocess components::
+
+  postprocess:
+    components:
+      - type: atmos
+
+        sources: [atmos_month, atmos_annual]
+      - type: ocean
+
+        sources: [ocean_month, ocean_annual]
 
 XY-regridding
 -------------
-blahblah
+Commonly, native grid history files are regridded during postprocessing. To regrid to a lat/lon grid, configure your
+desired output grid, interpolation method, input grid type, and path to your FMS exchange grid definition.
+
+Optional configuration (i.e. if xy-regridding is desired)
+
+5. Regrid the atmos and ocean components to a 1x1 degree grid::
+
+  directories:
+    pp_grid_spec: /archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar
+
+  postprocess:
+    components:
+      - type: atmos
+
+        sources: [atmos_month, atmos_annual]
+
+        sourceGrid: cubedsphere
+
+        inputRealm: atmos
+
+        xyInterp: [180, 360]
+
+        interpMethod: conserve_order2
+      - type: ocean
+
+        sources: [ocean_month, ocean_annual]
+
+        sourceGrid: tripolar
+
+        inputRealm: ocean
+
+        xyInterp: [180, 360]
+
+        interpMethod: conserve_order1
+
+Timeseries
+----------
+Timeseries output is the most common type of postprocessed output.
 
 Climatologies
 -------------
