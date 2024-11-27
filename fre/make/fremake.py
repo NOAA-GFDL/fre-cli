@@ -66,12 +66,17 @@ def make_cli():
               "--no-parallel-checkout",
               is_flag = True,
               help = no_parallel_checkout_opt_help)
+@click.option("-e",
+              "--execute",
+              is_flag = True,
+              default = False,
+              help = "Use this to run the created compilation script.")
 @click.option("-v",
               "--verbose",
               is_flag = True,
               help = verbose_opt_help)
 @click.pass_context
-def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, verbose):
+def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose):
     """ - Perform all fremake functions to run checkout and compile model"""
     context.forward(runFremake._fremake_run)
 

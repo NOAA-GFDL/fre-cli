@@ -10,14 +10,14 @@ import os
 def fremake_parallel(fremakeBuildList):
     """
     Brief: Called for parallel execution purposes.  Runs the builds.
-    Param: 
+    Param:
         - fremakeBuildList : fremakeBuild object list passes by pool.map
     """
     fremakeBuildList.run()
 
 class buildBaremetal():
     """
-    Brief: Creates the build script to compile the model 
+    Brief: Creates the build script to compile the model
     Param:
         - self : The buildScript object
         - exp  : The experiment name
