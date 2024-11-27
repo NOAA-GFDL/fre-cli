@@ -58,6 +58,7 @@ def app_cli():
 def regrid(context,
               input_dir, output_dir, begin, tmp_dir,
               remap_dir, source, grid_spec, def_xy_interp ):
+    # pylint: disable=unused-argument
     ''' regrid target netcdf file '''
     context.forward(_regrid_xy)
 

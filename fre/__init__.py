@@ -1,3 +1,8 @@
+''' 
+initialization file for the fre-cli module. 
+sets __version__ to 'YYYY.XX'
+'''
+
 # turn xxxx.y into xxxx.0y
 import importlib.metadata
 version_unexpanded = importlib.metadata.version('fre-cli')

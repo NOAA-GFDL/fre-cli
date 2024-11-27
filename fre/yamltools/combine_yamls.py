@@ -94,7 +94,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
                         ey=Path(os.path.join(mainyaml_dir,e))
                         ey_path.append(ey)
                     else:
-                        raise ValueError(f"Incorrect experiment yaml path given ({e}); does not exist.")
+                        raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
             else:
                 raise ValueError("No experiment yaml path given!")
 
@@ -115,6 +115,7 @@ def experiment_check(mainyaml_dir,comb,experiment):
 
 ## COMPILE CLASS ##
 class init_compile_yaml():
+  """ class holding routines for initalizing compilation yamls """
   def __init__(self,yamlfile,platform,target):
     """
     Process to combine yamls applicable to compilation
@@ -132,7 +133,8 @@ class init_compile_yaml():
     self.mainyaml_dir = os.path.dirname(self.yml)
 
     # Name of the combined yaml
-    self.combined= f"combined-{self.namenopath}.yaml" if len(self.mainyaml_dir) == 0 else  f"{self.mainyaml_dir}/combined-{self.namenopath}.yaml"
+    base_name=f"combined-{self.namenopath}.yaml"
+    self.combined = base_name if len(self.mainyaml_dir) == 0 else f"{self.mainyaml_dir}/{base_name}"
 
     print("Combining yaml files: ")
 
@@ -206,6 +208,7 @@ class init_compile_yaml():
 
 ## PP CLASS ##
 class init_pp_yaml():
+  """ class holding routines for initalizing post-processing yamls """
   def __init__(self,yamlfile,experiment,platform,target):
     """
     Process to combine the applicable yamls for post-processing

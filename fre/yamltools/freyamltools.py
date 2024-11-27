@@ -33,6 +33,7 @@ def yamltools_cli():
               required=True)
 @click.pass_context
 def combine_yamls(context,yamlfile,experiment,platform,target,use):
+    # pylint: disable=unused-argument
     """ 
     - Combine the model yaml with the compile, platform,
     experiment, and analysis yamls
