@@ -91,14 +91,11 @@ class platforms ():
                     raise Exception("You must specify the program used to run the container (containerRun) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerRun"] != "apptainer" and p["containerRun"] != "singularity":
                     raise ValueError("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n")
-                ## set the location of the mkTemplate.
-                ## In a container, it uses the hpc-me template cloned from mkmf
-                p["mkTemplate"] = "/apps/mkmf/templates/hpcme-intel21.mk"
             else:
                 try:
                     p["mkTemplate"]
                 except:
-                    raise ValueError("The non-container platform "+p["name"]+" must specify a mkTemplate \n")
+                    raise ValueError("The platform "+p["name"]+" must specify a mkTemplate \n")
 
     def hasPlatform(self,name):
         """

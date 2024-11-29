@@ -18,7 +18,7 @@ class container():
                    the beginning of a RUN in the dockerfile
                    to set up the environment
     """
-    def __init__(self,base,exp,libs,RUNenv,target):
+    def __init__(self,base,exp,libs,RUNenv,target,mkTemplate):
         """
         Initialize variables and write to the dockerfile
         """
@@ -29,7 +29,7 @@ class container():
         self.bld = "/apps/"+self.e+"/exec"
         self.mkmf = True
         self.target = target
-        self.template = "/apps/mkmf/templates/hpcme-intel21.mk"
+        self.template = mkTemplate
 
         # Set up spack loads in RUN commands in dockerfile
         if RUNenv == "":
@@ -74,7 +74,11 @@ class container():
         self.d.write("COPY " + cOnDisk +" "+ self.checkoutPath  +" \n")
         self.d.write("RUN chmod 744 "+self.src+"/checkout.sh \n")
         self.d.writelines(self.setup)
-        self.d.write(" && "+self.src+"/checkout.sh \n")
+        # Check if there is a RUNenv.  If there is not, then do not use the &&
+        if self.setup == ["RUN \\ \n"]:
+            self.d.write(self.src+"/checkout.sh \n")
+        else:
+            self.d.write(" && "+self.src+"/checkout.sh \n")
         # Clone mkmf
         self.d.writelines(self.mkmfclone)
 
@@ -160,34 +164,42 @@ class container():
             - runOnDisk : The path to the run script on the local disk
         """
         #create runscript in tmp - create spack environment, install necessary packages,
-        self.createscript = ["#!/bin/bash \n",
-                             "export BACKUP_LD_LIBRARY_PATH=$LD_LIBRARY_PATH\n",
-                             "# Set up spack loads\n",
-                             RUNenv[0]+"\n"]
-        with open(runOnDisk,"w") as f:
-            f.writelines(self.createscript)
-            f.write("# Load spack packages\n")
-            for env in RUNenv[1:]:
-                f.write(env+"\n")
-
-            if self.l:
-                for l in self.l:
-                    self.spackloads = "spack load "+l+"\n"
-                    f.write(self.spackloads)
-
-            f.write("export LD_LIBRARY_PATH=$BACKUP_LD_LIBRARY_PATH:$LD_LIBRARY_PATH\n")
+        if isinstance(RUNenv, list):
+            self.createscript = ["#!/bin/bash \n",
+                                 "export BACKUP_LD_LIBRARY_PATH=$LD_LIBRARY_PATH\n",
+                                 "# Set up spack loads\n",
+                                 RUNenv[0]+"\n"]
+            with open(runOnDisk,"w") as f:
+                f.writelines(self.createscript)
+                f.write("# Load spack packages\n")
+                for env in RUNenv[1:]:
+                    f.write(env+"\n")
+                if self.l:
+                    for l in self.l:
+                        self.spackloads = "spack load "+l+"\n"
+                        f.write(self.spackloads)
+                f.write("export LD_LIBRARY_PATH=$BACKUP_LD_LIBRARY_PATH:$LD_LIBRARY_PATH\n")
+        else:
+            self.createscript = ["#!/bin/bash \n"]
+            with open(runOnDisk,"w") as f:
+                f.writelines(self.createscript)
+        with open(runOnDisk,"a") as f:
             f.write("# Run executable\n")
             f.write(self.bld+"/"+self.e+".x\n")
-        #copy runscript into container in dockerfile
+            #copy runscript into container in dockerfile
         self.d.write("COPY "+runOnDisk+" "+self.bld+"/execrunscript.sh\n")
         #make runscript executable
         self.d.write("RUN chmod 744 "+self.bld+"/execrunscript.sh\n")
         #link runscript to more general location (for frerun container usage)
         self.d.write("RUN mkdir -p /apps/bin \ \n")
         self.d.write(" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh \n")
-        #finish the dockerfile
+    #finish the dockerfile
         self.d.writelines(self.setup)
-        self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
+        # Check if there is a RUNenv.  If there is not, then do not use the &&
+        if self.setup == ["RUN \\ \n"]:
+            self.d.write(" cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
+        else:
+            self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
         self.d.write('ENTRYPOINT ["/bin/bash"]')
         self.d.close()
 

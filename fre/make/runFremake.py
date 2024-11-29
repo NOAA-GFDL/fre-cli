@@ -148,14 +148,13 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                 ###################### container stuff below #######################################
                 ## Run the checkout script
                 image=modelYaml.platforms.getContainerImage(platformName)
+                srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
-
                 ## Create the checkout script
                 freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                 freCheckout.finish(pc)
-
                 ## Create the makefile
                 ### Should this even be a separate class from "makefile" in makefilefre? ~ ejs
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
@@ -175,7 +174,8 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                                                     exp = fremakeYaml["experiment"],
                                                     libs = fremakeYaml["container_addlibs"],
                                                     RUNenv = RUNenv,
-                                                    target = target)
+                                                    target = target,
+                                                    mkTemplate = mkTemplate)
 
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
                 dockerBuild.writeDockerfileMakefile(freMakefile.getTmpDir() + "/Makefile",

@@ -60,7 +60,8 @@ def dockerfile_create(yamlfile,platform,target,execute):
                                               exp = fremakeYaml["experiment"],
                                               libs = fremakeYaml["container_addlibs"],
                                               RUNenv = RUNenv,
-                                              target = targetObject)
+                                              target = targetObject,
+                                              mkTemplate = mkTemplate)
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
                 dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
 
