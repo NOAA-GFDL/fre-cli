@@ -584,19 +584,24 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
 
         gotta_go_back_here=os.getcwd()
         try:
-            print(f"cd'ing to \n {make_cmor_write_here}" )
+            print(f"(cmorize_target_var_files) WARNING changing directory to: \n {make_cmor_write_here}" )
             os.chdir( make_cmor_write_here )
         except:
             raise OSError(f'could not chdir to {make_cmor_write_here}')
 
         print ("(cmorize_target_var_files) calling rewrite_netcdf_file_var")
-        local_file_name = rewrite_netcdf_file_var( proj_table_vars      ,
-                                                   local_var            ,
-                                                   nc_file_work         ,
-                                                   target_var           ,
-                                                   json_exp_config      ,
-                                                   json_table_config      )
-        os.chdir( gotta_go_back_here )
+        try:
+            local_file_name = rewrite_netcdf_file_var( proj_table_vars      ,
+                                                       local_var            ,
+                                                       nc_file_work         ,
+                                                       target_var           ,
+                                                       json_exp_config      ,
+                                                       json_table_config      )
+        except:
+            raise Exception('(cmorize_target_var_files) problem with rewrite_netcdf_file_var. exiting and executing finally block.')
+        finally:
+            print(f'(cmorize_target_var_files) WARNING changing directory to: \n      {gotta_go_back_here}')
+            os.chdir( gotta_go_back_here )
 
 
         # now that CMOR has rewritten things... we can take our post-rewriting actions
