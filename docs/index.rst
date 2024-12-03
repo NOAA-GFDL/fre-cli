@@ -11,7 +11,7 @@ Welcome to ``fre-cli``'s documentation!
 .. the entry in the toc must be the .rst filename.
    what shows in the webpage is the first header or title
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    what-is-fre

@@ -10,12 +10,13 @@ import logging
 from multiprocessing.dummy import Pool
 from pathlib import Path
 import click
+import subprocess
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -87,6 +88,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                 freCheckout.finish(pc)
                 os.chmod(srcDir+"/checkout.sh", 0o744)
+                print("\nCheckout script created at "+ srcDir + "/checkout.sh \n")
                 ## TODO: Options for running on login cluster?
                 freCheckout.run()
 
@@ -126,6 +128,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                 # Loop through components, send component name/requires/overrides for Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
+                print("\nMakefile created at " + bldDir + "/Makefile" + "\n")
                 freMakefile.writeMakefile()
 
                 ## Create a list of compile scripts to run in parallel
@@ -142,8 +145,11 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                     fremakeBuild.writeBuildComponents(c)
                 fremakeBuild.writeScript()
                 fremakeBuildList.append(fremakeBuild)
-                ## Run the build
-                fremakeBuild.run()
+                ## Run the build if --execute option given, otherwise print out compile script path
+                if execute:
+                    fremakeBuild.run()
+                else:
+                    print("Compile script created at "+ bldDir+"/compile.sh\n\n")
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
@@ -186,26 +192,32 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
 
                 dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
 
-                ## Run the dockerfile; build the container
-                dockerBuild.build(containerBuild,containerRun)
+                # Create build script for container
+                dockerBuild.createBuildScript(containerBuild, containerRun)
+                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
+
+                # Execute if flag is given
+                if execute:
+                    subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
                 #freCheckout.cleanup()
                 #buildDockerfile(fremakeYaml,image)
 
     if baremetalRun:
         if __name__ == '__main__':
-            # Create a multiprocessing Pool
-            pool = Pool(processes=nparallel)
-            # process data_inputs iterable with pool
-            pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)
+            if execute:
+                # Create a multiprocessing Pool
+                pool = Pool(processes=nparallel)
+                # process data_inputs iterable with pool
+                pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)
 
 @click.command()
-def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
     '''
     Decorator for calling _fremake_run - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose)
+    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose)
 
 if __name__ == "__main__":
     fremake_run()

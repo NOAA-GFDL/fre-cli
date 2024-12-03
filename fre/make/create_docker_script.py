@@ -2,6 +2,7 @@
 
 import os
 import sys
+import subprocess
 from pathlib import Path
 import click
 #from .gfdlfremake import varsfre, targetfre, makefilefre, platformfre, yamlfre, buildDocker
@@ -73,10 +74,13 @@ def dockerfile_create(yamlfile,platform,target,execute):
                 click.echo("\ntmpDir created in " + currDir + "/tmp")
                 click.echo("Dockerfile created in " + currDir +"\n")
 
-            if run:
-                dockerBuild.build(containerBuild, containerRun)
-            else:
-                sys.exit()
+                # create build script for container
+                dockerBuild.createBuildScript(containerBuild, containerRun)
+                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
+
+                # run the script if option is given
+                if run:
+                    subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
 @click.command()
 def _dockerfile_create(yamlfile,platform,target,execute):

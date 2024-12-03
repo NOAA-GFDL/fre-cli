@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 '''
  Primary Usage: fre-bronx-to-canopy -x XML -e EXP -p PLATFORM -t TARGET
 
