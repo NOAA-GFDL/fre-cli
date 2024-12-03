@@ -27,6 +27,8 @@ gppLut_var_data = gppLut_fin.variables['gppLut'][:]
 gppLut_var_atts = gppLut_fin.variables['gppLut'].__dict__
 
 # coordinate variables, their _bnds, and their identically named dimensions
+# coordinate variable == a variable with the same name as a dimension.
+# pitfall: an "axis" in netcdf is not analagous to a dimension, overloaded term
 bnds_coord_data = gppLut_fin.variables['bnds'][:]
 bnds_coord_atts = gppLut_fin.variables['bnds'].__dict__
 bnds_coord_dims = gppLut_fin.dimensions['bnds'].size
