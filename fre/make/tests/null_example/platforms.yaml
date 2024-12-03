@@ -16,7 +16,8 @@ platforms:
      container: True
      containerBuild: "podman"
      containerRun: "apptainer" 
-   - name: ci.gnu
+     containerBase: "ecpe4s/noaa-intel-prototype:2023.09.25" 
+  - name: ci.gnu
      compiler: gnu
      fc: mpifort
      cc: mpicc

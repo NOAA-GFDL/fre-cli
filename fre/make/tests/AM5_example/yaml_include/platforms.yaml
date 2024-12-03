@@ -23,4 +23,5 @@ platforms:
      cc: mpiicc
      container: True
      containerBuild: "podman"
-     containerRun: "apptainer" 
+     containerRun: "apptainer"
+     containerBase: "ecpe4s/noaa-intel-prototype:2023.09.25"
