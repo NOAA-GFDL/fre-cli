@@ -269,9 +269,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # now we set up the cmor module object
     # initialize CMOR
     cmor.setup(
-        netcdf_file_action    = cmor.CMOR_PRESERVE, #CMOR_APPEND,#
-        set_verbosity         = cmor.CMOR_NORMAL, #CMOR_QUIET,#
-        exit_control          = cmor.CMOR_NORMAL,#CMOR_EXIT_ON_WARNING,#
+        netcdf_file_action    = cmor.CMOR_PRESERVE, #.CMOR_APPEND,#
+        set_verbosity         = cmor.CMOR_QUIET,#.CMOR_NORMAL, #
+        exit_control          = cmor.CMOR_NORMAL,#.CMOR_EXIT_ON_WARNING,#
 #        logfile               = './foo.log',
         create_subdirectories = 1
     )

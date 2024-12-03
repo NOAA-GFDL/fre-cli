@@ -132,3 +132,20 @@ def test_cli_fre_cmor_run_case2():
     assert all ( [ result.exit_code == 0,
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
+
+
+# fre cmor list
+def test_cli_fre_cmor_list():
+    ''' fre cmor list '''
+    result = runner.invoke(fre.fre, args=["cmor", "list"])
+    assert result.exit_code == 2
+
+def test_cli_fre_cmor_list_help():
+    ''' fre cmor list --help '''
+    result = runner.invoke(fre.fre, args=["cmor", "list", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_cmor_list_opt_dne():
+    ''' fre cmor list optionDNE '''
+    result = runner.invoke(fre.fre, args=["cmor", "list", "optionDNE"])
+    assert result.exit_code == 2
