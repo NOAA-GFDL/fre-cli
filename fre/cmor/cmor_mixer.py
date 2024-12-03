@@ -7,6 +7,7 @@ see README.md for additional information on `fre cmor run` (cmor_mixer.py) usage
 import os
 import glob
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -16,53 +17,10 @@ import cmor
 
 # ----- \start consts
 DEBUG_MODE_RUN_ONE = True
-
 # ----- \end consts
 
-### ------ helper functions  ------ ###
-import shutil
-def copy_nc(in_nc, out_nc):
-    '''
-    copy target input netcdf file in_nc to target out_nc. I have to think this is not a trivial copy
-    operation, as if it were, using shutil's copy would be sufficient. accepts two arguments
-        in_nc: string, path to an input netcdf file we wish to copy
-        out_nc: string, an output path to copy the targeted input netcdf file to
-    '''
-    shutil.copy(in_nc, out_nc)
-#    print(f'(copy_nc)  in_nc: {in_nc}\n'
-#          f'          out_nc: {out_nc}')
-#
-#    # input file
-#    dsin = nc.Dataset(in_nc)
-#
-#    # output file, same exact data_model as input file.
-#    # note- totally infuriating...
-#    #       the correct value for the format arg is netCDF4.Dataset.data_model
-#    #       and NOT netCDF4.Dataset.disk_format
-#    dsout = nc.Dataset(out_nc, "w",
-#                       format = dsin.data_model)
-#
-#    #Copy dimensions
-#    for dname, the_dim in dsin.dimensions.items():
-#        dsout.createDimension( dname,
-#                               len(the_dim) if not the_dim.isunlimited() else None )
-#
-#    # Copy variables and attributes
-#    for v_name, varin in dsin.variables.items():
-#        print(f'(copy_nc) v_name = {v_name}, datatype = {varin.datatype}, dimensions={varin.dimensions}')
-#        varin_dims_str_tuple = varin.dimensions
-#        out_var_dims_tuple = (dsout.dimensions[dim] for dim in varin_dims_str_tuple)
-#        #out_var = dsout.createVariable(v_name, varin.datatype, varin.dimensions)
-#        out_var = dsout.createVariable(v_name, varin.datatype, out_var_dims_tuple)
-#        out_var.setncatts({k: varin.getncattr(k) for k in varin.ncattrs()})
-#        out_var[:] = varin[:]
-#    dsout.setncatts({a:dsin.getncattr(a) for a in dsin.ncattrs()})
-#
-#    # close up
-#    dsin.close()
-#    dsout.close()
 
-
+#### ------ helper functions  ------ ###
 
 def get_var_filenames(indir, var_filenames = None, local_var = None):
     '''
@@ -559,14 +517,14 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         nc_file_work = f"{tmp_dir}{name_of_set}.{iso_datetime}.{local_var}.nc"
 
         print(f"(cmorize_target_var_files) nc_file_work = {nc_file_work}")
-        copy_nc( nc_fls[i], nc_file_work)
+        shutil.copy(nc_fls[i], nc_file_work)
 
         # if the ps file exists, we'll copy it to the work directory too
         nc_ps_file      =    nc_fls[i].replace(f'.{local_var}.nc', '.ps.nc')
         nc_ps_file_work = nc_file_work.replace(f'.{local_var}.nc', '.ps.nc')
         if Path(nc_ps_file).exists():
             print(f"(cmorize_target_var_files) nc_ps_file_work = {nc_ps_file_work}")
-            copy_nc(nc_ps_file, nc_ps_file_work)
+            shutil.copy(nc_ps_file, nc_ps_file_work)
 
 
         # TODO think of better way to write this kind of conditional data movement...
@@ -597,9 +555,11 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
                                                        target_var           ,
                                                        json_exp_config      ,
                                                        json_table_config      )
-        except:
-            raise Exception('(cmorize_target_var_files) problem with rewrite_netcdf_file_var. exiting and executing finally block.')
-        finally:
+        except Exception as exc:
+            raise Exception('(cmorize_target_var_files) problem with rewrite_netcdf_file_var. exc=\n'
+                            f'                           {exc}\n'
+                            '                           exiting and executing finally block.')
+        finally: # should always execute, errors or not!
             print(f'(cmorize_target_var_files) WARNING changing directory to: \n      {gotta_go_back_here}')
             os.chdir( gotta_go_back_here )
 
