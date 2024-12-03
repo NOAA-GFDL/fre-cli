@@ -17,7 +17,8 @@ platforms:
      containerBuild: "podman"
      containerRun: "apptainer" 
      containerBase: "ecpe4s/noaa-intel-prototype:2023.09.25" 
-  - name: ci.gnu
+     mkTemplate: "/apps/mkmf/templates/hpcme-intel21.mk"
+   - name: ci.gnu
      compiler: gnu
      fc: mpifort
      cc: mpicc
