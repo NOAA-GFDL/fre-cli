@@ -99,7 +99,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                     sys.exit()
 
         else:
-            src_dir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+            src_dir = model_root + "/" + fremake_yaml["experiment"] + "/src"
             bld_dir = model_root + "/" + fremake_yaml["experiment"] + "/exec"
             tmp_dir = "tmp/"+platform_name
             fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
