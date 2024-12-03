@@ -5,7 +5,6 @@ it will not be maintained. it will not be supported.
 it is for a very context-dependent set of tests for a very specific point in time.
 '''
 
-
 import sys
 import os
 from pathlib import Path
@@ -16,12 +15,12 @@ from fre.cmor.cmor_mixer import cmor_run_subtool as run_cmor
 def print_the_outcome(some_return,case_str):
     print('-----------------------------------------------------------------------------------------------------------------')
     if some_return != 0:
-        print(f'{case_str} case failed[[[FAIL -_-]]]: some_return={some_return}')
+        print(f'{case_str} case failed      [[[  FAIL  -_-  ]]]: some_return={some_return}')
     else:
-        print(f'{case_str} case probably OK [[[PROB-OK ^-^]]]: some_return={some_return}')
+        print(f'{case_str} case probably OK [[[ PROB-OK ^-^ ]]]: some_return={some_return}')
     print('-----------------------------------------------------------------------------------------------------------------')
     print(f'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
-#    assert some_return == 0
+    #assert some_return == 0
 
 # global consts for these tests, with no/trivial impact on the results
 ROOTDIR='fre/tests/test_files'
@@ -90,32 +89,29 @@ def run_cmor_RUN(filename, table, opt_var_name):
 
 
 
+# 6) FAIL 
+# ocean, Omon / sos
+# Result - error, 
+testfile_ocean_monthly_gn = \
+    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+    'pp/ocean_monthly/ts/monthly/5yr/' + \
+    'ocean_monthly.002101-002512.sos.nc'
+try:
+    some_return = run_cmor_RUN(testfile_ocean_monthly_gn, 'Omon', opt_var_name = 'sos')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'ocean_monthly_gn / sos')
+if some_return != 0:
+    print('didnt pass ocean-file test number 1... exit.')
+    sys.exit()
 
 
 
-## 6) FAIL (copy_nc failure!!! WEIRD)
-## ocean, Omon / sos
-## Result - error, AttributeError: NetCDF: Attempt to define fill value when data already exists.
-#testfile_ocean_monthly_gn = \
-#    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
-#    'pp/ocean_monthly/ts/monthly/5yr/' + \
-#    'ocean_monthly.002101-002512.sos.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_ocean_monthly_gn, 'Omon', opt_var_name = 'sos')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'ocean_monthly_gn / sos')
-#if some_return != 0:
-#    print('didnt pass ocean-file test number 1... exit.')
-##    sys.exit()
-
-
-
-# 7) FAIL (copy_nc failure!!! WEIRD)
+# 7) FAIL 
 # ocean, Omon / so
-# Result - identical failure to #6
+# Result - error, 
 testfile_ocean_monthly_z_1x1deg_gr = \
     '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
     'pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/' + \
