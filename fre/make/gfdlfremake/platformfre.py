@@ -23,15 +23,6 @@ class platforms ():
                 p["compiler"]
             except:
                 raise Exception("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n")
-            ## Check for the Fortran (fc) and C (cc) compilers
-            try:
-                p["fc"]
-            except:
-                raise Exception("You must specify the name of the Fortran compiler as fc on the "+p["name"]+" platform in the file "+fname+"\n")
-            try:
-                p["cc"]
-            except:
-                raise Exception("You must specify the name of the Fortran compiler as cc on the "+p["name"]+" platform in the file "+fname+"\n")
             ## Check for modules to load
             try:
                 p["modules"]
