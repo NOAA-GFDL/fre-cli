@@ -9,6 +9,26 @@ import click
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
+def compile_script_write_steps(yaml_obj,build_list,mkTemplate,src_dir,bld_dir,target,modules,modulesInit,jobs):
+    """
+    Go through steps to create the compile script
+    """
+    ## Create a list of compile scripts to run in parallel
+    fremakeBuild = buildBaremetal.buildBaremetal(exp = yaml_obj["experiment"],
+                                                 mkTemplatePath = mkTemplate,
+                                                 srcDir = src_dir,
+                                                 bldDir = bld_dir,
+                                                 target = target,
+                                                 modules = modules,
+                                                 modulesInit = modulesInit,
+                                                 jobs = jobs)
+    for c in yaml_obj['src']:
+        fremakeBuild.writeBuildComponents(c)
+    fremakeBuild.writeScript()
+    build_list.append(fremakeBuild)
+
+    print("    Compile script created in " + bld_dir + "/compile.sh" + "\n")
+
 def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
     # Define variables
     yml = yamlfile
@@ -21,8 +41,8 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
     else:
       logging.basicConfig(level=logging.ERROR)
 
-    srcDir="src"
-    checkoutScriptName = "checkout.sh"
+    src_dir="src"
+    checkout_script_name = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
 
     ## Split and store the platforms and targets in a list
@@ -37,10 +57,10 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
     full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined)
+    fre_vars = varsfre.frevars(full_combined)
 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined,freVars)
+    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
@@ -59,48 +79,42 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
 
          (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
          ## Make the bldDir based on the modelRoot, the platform, and the target
-         srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+         src_dir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
          ## Check for type of build
          if iscontainer is False:
               baremetalRun = True
-              bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
-              os.system("mkdir -p " + bldDir)
-              if not os.path.exists(bldDir+"/compile.sh"): 
-                  ## Create a list of compile scripts to run in parallel
-                  fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
-                                                           mkTemplatePath = mkTemplate,
-                                                           srcDir = srcDir,
-                                                           bldDir = bldDir,
-                                                           target = target,
-                                                           modules = modules,
-                                                           modulesInit = modulesInit,
-                                                           jobs = jobs)
-                  for c in fremakeYaml['src']:
-                       fremakeBuild.writeBuildComponents(c)
-                  fremakeBuild.writeScript()
-                  fremakeBuildList.append(fremakeBuild)
-                  print("\nCompile script created in " + bldDir + "/compile.sh" + "\n")
+              bld_dir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
+              os.system("mkdir -p " + bld_dir)
+              if not os.path.exists(bld_dir+"/compile.sh"):
+                  print("\nCreating the compile script...")
+                  compile_script_write_steps(yaml_obj = fremakeYaml,
+                                             build_list = fremakeBuildList,
+                                             #exp_name = fremakeYaml["experiment"],
+                                             mkTemplate = mkTemplate,
+                                             src_dir = src_dir,
+                                             bld_dir = bld_dir,
+                                             target = target,
+                                             modules = modules,
+                                             modulesInit = modulesInit,
+                                             jobs = jobs)
               else:
                   if force_compile:
                       # Remove compile script
-                      os.remove(bldDir + "/compile.sh")
+                      os.remove(bld_dir + "/compile.sh")
                       # Re-create compile script
-                      print("Re-creating the compile script...")
-                      fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
-                                                               mkTemplatePath = mkTemplate,
-                                                               srcDir = srcDir,
-                                                               bldDir = bldDir,
-                                                               target = target,
-                                                               modules = modules,
-                                                               modulesInit = modulesInit,
-                                                               jobs = jobs)
-                      for c in fremakeYaml['src']:
-                           fremakeBuild.writeBuildComponents(c)
-                      fremakeBuild.writeScript()
-                      fremakeBuildList.append(fremakeBuild)
-                      print("   Compile script created in " + bldDir + "/compile.sh" + "\n")
+                      print("\nRe-creating the compile script...")
+                      compile_script_write_steps(yaml_obj = fremakeYaml,
+                                                 build_list = fremakeBuildList,
+                                                 #exp_name = fremakeYaml["experiment"],
+                                                 mkTemplate = mkTemplate,
+                                                 src_dir = src_dir,
+                                                 bld_dir = bld_dir,
+                                                 target = target,
+                                                 modules = modules,
+                                                 modulesInit = modulesInit,
+                                                 jobs = jobs)
                   else:
-                      print("\nCompile script PREVIOUSLY created in " + bldDir + "/compile.sh" + "\n")
+                      print("\nCompile script PREVIOUSLY created in " + bld_dir + "/compile.sh" + "\n")
 
     if execute:
         if baremetalRun:
