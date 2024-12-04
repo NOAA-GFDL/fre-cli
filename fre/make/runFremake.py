@@ -11,6 +11,7 @@ from multiprocessing.dummy import Pool
 from pathlib import Path
 import click
 import subprocess
+import shutil
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
@@ -78,7 +79,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
           RUNenv ) = modelYaml.platforms.getPlatformFromName(platformName)
 
         ## Create the checkout script
-        if not iscontainer:
+        if iscontainer is False:
             ## Create the source directory for the platform
             srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
             if not os.path.exists(srcDir):
@@ -91,6 +92,28 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 print("\nCheckout script created at "+ srcDir + "/checkout.sh \n")
                 ## TODO: Options for running on login cluster?
                 freCheckout.run()
+            else:
+                if force_checkout:
+                    print("Re-creating the checkout script...\n")
+                    # Remove previous checkout
+                    shutil.rmtree(srcDir)
+                    # Create checkout script
+                    freCheckout = checkout.checkout("checkout.sh",srcDir)
+                    freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
+                    freCheckout.finish(pc)
+                    # Make checkout script executable
+                    os.chmod(srcDir+"/"+checkoutScriptName, 0o744)
+                    print("   Checkout script created in "+ srcDir + "/checkout.sh \n")
+                    # Run the checkout script
+                    freCheckout.run()
+                else:
+                    print("\nCheckout script PREVIOUSLY created in "+ srcDir + "/checkout.sh \n")
+                    try:
+                         subprocess.run(args=[srcDir+"/checkout.sh"], check=True)
+                    except:
+                         print("\nThere was an error with the checkout script "+srcDir+"/checkout.sh.",
+                               "\nTry removing test folder: " + modelRoot +"\n")
+                         raise
 
     fremakeBuildList = []
     ## Loop through platforms and targets
@@ -110,7 +133,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
             srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
 
             ## Check for type of build
-            if not iscontainer:
+            if iscontainer is False:
                 baremetalRun = True
                 ## Make the build directory based on the modelRoot, the platform, and the target
                 bldDir = f'{modelRoot}/{fremakeYaml["experiment"]}/' + \
@@ -131,25 +154,52 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 print("\nMakefile created at " + bldDir + "/Makefile" + "\n")
                 freMakefile.writeMakefile()
 
-                ## Create a list of compile scripts to run in parallel
-                fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
-                                                             mkTemplatePath = mkTemplate,
-                                                             srcDir = srcDir,
-                                                             bldDir = bldDir,
-                                                             target = target,
-                                                             modules = modules,
-                                                             modulesInit = modulesInit,
-                                                             jobs = jobs)
+                if not os.path.exists(bldDir+"/compile.sh"):
+                    ## Create a list of compile scripts to run in parallel
+                    fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
+                                                                 mkTemplatePath = mkTemplate,
+                                                                 srcDir = srcDir,
+                                                                 bldDir = bldDir,
+                                                                 target = target,
+                                                                 modules = modules,
+                                                                 modulesInit = modulesInit,
+                                                                 jobs = jobs)
 
-                for c in fremakeYaml['src']:
-                    fremakeBuild.writeBuildComponents(c)
-                fremakeBuild.writeScript()
-                fremakeBuildList.append(fremakeBuild)
-                ## Run the build if --execute option given, otherwise print out compile script path
-                if execute:
-                    fremakeBuild.run()
-                else:
+                    for c in fremakeYaml['src']:
+                        fremakeBuild.writeBuildComponents(c)
+                    fremakeBuild.writeScript()
+                    fremakeBuildList.append(fremakeBuild)
+#                    ## Run the build if --execute option given, otherwise print out compile script path
+#                    if execute:
+#                        fremakeBuild.run()
+#                    else:
+#                        print("Compile script created at "+ bldDir+"/compile.sh\n\n")
                     print("Compile script created at "+ bldDir+"/compile.sh\n\n")
+                else:
+                    if force_compile:
+                        # Remove compile script
+                        os.remove(bldDir + "/compile.sh")
+                        # Re-create compile script
+                        print("Re-creating the compile script...")
+                        fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
+                                                                 mkTemplatePath = mkTemplate,
+                                                                 srcDir = srcDir,
+                                                                 bldDir = bldDir,
+                                                                 target = target,
+                                                                 modules = modules,
+                                                                 modulesInit = modulesInit,
+                                                                 jobs = jobs)
+                        for c in fremakeYaml['src']:
+                             fremakeBuild.writeBuildComponents(c)
+                        fremakeBuild.writeScript()
+                        fremakeBuildList.append(fremakeBuild)
+                        print("   Compile script created in " + bldDir + "/compile.sh" + "\n")
+#                        if execute:
+#                            fremakeBuild.run()
+#                        else:
+#                            print("Compile script created at "+ bldDir+"/compile.sh\n\n")
+                    else:
+                        print("\nCompile script PREVIOUSLY created in " + bldDir + "/compile.sh" + "\n")
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
@@ -200,9 +250,6 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 # Execute if flag is given
                 if execute:
                     subprocess.run(args=[dockerBuild.userScriptPath], check=True)
-
-                #freCheckout.cleanup()
-                #buildDockerfile(fremakeYaml,image)
 
     if baremetalRun:
         if __name__ == '__main__':
