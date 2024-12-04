@@ -10,14 +10,14 @@ import os
 def fremake_parallel(fremakeBuildList):
     """
     Brief: Called for parallel execution purposes.  Runs the builds.
-    Param: 
+    Param:
         - fremakeBuildList : fremakeBuild object list passes by pool.map
     """
     fremakeBuildList.run()
 
 class buildBaremetal():
     """
-    Brief: Creates the build script to compile the model 
+    Brief: Creates the build script to compile the model
     Param:
         - self : The buildScript object
         - exp  : The experiment name
@@ -140,10 +140,14 @@ class buildBaremetal():
         # Direct output to log file as well
         p2 = subprocess.Popen(["tee",self.bld+"/log.compile"], stdin=p1.stdout)
 
-        # Allow p1 to receive SIGPIPE is p2 exits
+        # Allow process1 to receive SIGPIPE is process2 exits
         p1.stdout.close()
         p2.communicate()
 
+        # wait for process1 to finish before checking return code
+        p1.wait()
         if p1.returncode != 0:
-            print("\nThere was an error running {self.bld}/compile.sh")
+            print(f"\nThere was an error running {self.bld}/compile.sh")
             print(f"Check the log file: {self.bld}/log.compile")
+        else:
+            print(f"\nSuccessful run of {self.bld}/compile.sh")

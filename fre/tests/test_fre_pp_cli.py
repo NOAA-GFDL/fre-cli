@@ -1,5 +1,9 @@
 ''' test "fre pp" calls '''
 
+import os
+import shutil
+from pathlib import Path
+
 from click.testing import CliRunner
 
 from fre import fre
@@ -39,6 +43,18 @@ def test_cli_fre_pp_checkout_opt_dne():
     result = runner.invoke(fre.fre, args=["pp", "checkout", "optionDNE"])
     assert result.exit_code == 2
 
+def test_cli_fre_pp_checkout_case():
+    ''' fre pp checkout -e FOO -p BAR -t BAZ'''
+    directory = os.path.expanduser("~/cylc-src")+'/FOO__BAR__BAZ'
+    if Path(directory).exists():
+        shutil.rmtree(directory)
+    result = runner.invoke(fre.fre, args=["pp", "checkout", 
+                                          "-e", "FOO", 
+                                          "-p", "BAR", 
+                                          "-t", "BAZ"] )
+    assert all( [ result.exit_code == 0,
+                  Path(directory).exists()] )                           
+
 #-- fre pp configure-xml
 def test_cli_fre_pp_configure_xml():
     ''' fre pp configure-xml '''
@@ -70,6 +86,18 @@ def test_cli_fre_pp_configure_yaml_opt_dne():
     ''' fre pp configure-yaml optionDNE '''
     result = runner.invoke(fre.fre, args=["pp", "configure-yaml", "optionDNE"])
     assert result.exit_code == 2
+
+def test_cli_fre_pp_configure_yaml_fail1():
+    ''' fre pp configure-yaml '''
+    result = runner.invoke(fre.fre, args = [ "pp", "configure-yaml",
+                                             "-e", "FOO",
+                                             "-p", "BAR",
+                                             "-t", "BAZ",
+                                             "-y", "BOO"              ] )
+    assert all( [ result.exit_code == 1,
+                  isinstance(result.exception, FileNotFoundError )
+               ] )
+
 
 #-- fre pp install
 def test_cli_fre_pp_install():
