@@ -115,7 +115,7 @@ def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force
     Decorator for calling compile_create - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose)
+    return compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile)
 
 if __name__ == "__main__":
     compile_create()
