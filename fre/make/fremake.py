@@ -28,6 +28,8 @@ FORCE_CHECKOUT_OPT_HELP = """Force checkout in case the source directory exists.
 """
 FORCE_COMPILE_OPT_HELP = """Force compile in case the executable directory exists.
 """
+FORCE_DOCKERFILE_OPT_HELP = """Force dockerfile creation in case dockerfile exists.
+"""
 
 @click.group(help=click.style(" - access fre make subcommands", fg=(210,73,57)))
 def make_cli():
@@ -82,8 +84,12 @@ def make_cli():
               "--force-compile",
               is_flag=True,
               help = FORCE_COMPILE_OPT_HELP)
+@click.option("-FD",
+              "--force-dockerfile",
+              is_flag=True,
+              help = FORCE_DOCKERFILE_OPT_HELP)
 @click.pass_context
-def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile):
+def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile, force_dockerfile):
     # pylint: disable=unused-argument
     """
     - Perform all fremake functions to run checkout and compile model\n
