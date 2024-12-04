@@ -5,11 +5,32 @@ import sys
 import subprocess
 from pathlib import Path
 import click
-#from .gfdlfremake import varsfre, targetfre, makefilefre, platformfre, yamlfre, buildDocker
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls as cy
 
-def dockerfile_create(yamlfile,platform,target,execute):
+def dockerfile_write_steps(yaml_obj,img,run_env,target,td,cr,cb,cd):
+    """
+    """
+    dockerBuild = buildDocker.container(base = img,
+                                        exp = yaml_obj["experiment"],
+                                        libs = yaml_obj["container_addlibs"],
+                                        RUNenv = run_env,
+                                        target = target)
+
+    dockerBuild.writeDockerfileCheckout("checkout.sh", td+"/checkout.sh")
+    dockerBuild.writeDockerfileMakefile(td+"/Makefile", td+"/linkline.sh")
+
+    for c in yaml_obj['src']:
+        dockerBuild.writeDockerfileMkmf(c)
+
+    dockerBuild.writeRunscript(run_env,cr,td+"/execrunscript.sh")
+    print(f"    Dockerfile created here: {cd}")
+
+    # Create build script for container
+    dockerBuild.createBuildScript(cb, cr)
+    print(f"    Container build script created here: {dockerBuild.userScriptPath}\n")
+
+def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -57,37 +78,49 @@ def dockerfile_create(yamlfile,platform,target,execute):
                 bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
 
-                dockerBuild = buildDocker.container(base = image,
-                                              exp = fremakeYaml["experiment"],
-                                              libs = fremakeYaml["container_addlibs"],
-                                              RUNenv = RUNenv,
-                                              target = targetObject)
-                dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
-                dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
+                curr_dir = os.getcwd()
+                if not os.path.exists(f"{curr_dir}/Dockerfile"):
+                    dockerfile_write_steps(yaml_obj = fremakeYaml,
+                                           #makefile_obj = freMakefile,
+                                           img = image,
+                                           run_env = RUNenv,
+                                           target = targetObject,
+                                           td = tmpDir,
+                                           cr = containerRun,
+                                           cb = containerBuild,
+                                           cd = curr_dir)
+                else:
+                    if force_dockerfile:
+                        # Remove the dockerfile
+                        print("\nRemoving previously made dockerfile")
+                        os.remove(curr_dir+"/Dockerfile")
 
-                for c in fremakeYaml['src']:
-                    dockerBuild.writeDockerfileMkmf(c)
+                        # Create the checkout script
+                        print("Re-creating Dockerfile...")
+                        dockerfile_write_steps(yaml_obj = fremakeYaml,
+#                                               makefile_obj = freMakefile,
+                                               img = image,
+                                               run_env = RUNenv,
+                                               target = targetObject,
+                                               td = tmpDir,
+                                               cr = containerRun,
+                                               cb = containerBuild,
+                                               cd = curr_dir)
+                    else:
+                        print(f"Dockerfile PREVIOUSLY created here: {curr_dir}/Dockerfile")
+                        print(f"Container build script created here: {curr_dir}/createContainer.sh\n")
 
-                dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
-                currDir = os.getcwd()
-                click.echo("\ntmpDir created in " + currDir + "/tmp")
-                click.echo("Dockerfile created in " + currDir +"\n")
-
-                # create build script for container
-                dockerBuild.createBuildScript(containerBuild, containerRun)
-                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
-
-                # run the script if option is given
-                if run:
+                # Execute if flag is given
+                if execute:
                     subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
 @click.command()
-def _dockerfile_create(yamlfile,platform,target,execute):
+def _dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
     '''
     Decorator for calling dockerfile_create - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return dockerfile_create(yamlfile,platform,target,execute)
+    return dockerfile_create(yamlfile,platform,target,execute,force_dockerfile)
 
 if __name__ == "__main__":
     dockerfile_create()
