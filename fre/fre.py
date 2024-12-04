@@ -7,6 +7,21 @@ principal click group for main/fre allows for subgroup functions to
 be called via this script. I.e. 'fre' is the entry point
 """
 
+#versioning... always fun...
+# turn xxxx.y into xxxx.0y
+import importlib.metadata
+version_unexpanded = importlib.metadata.version('fre-cli')
+version_unexpanded_split = version_unexpanded.split('.')
+if len(version_unexpanded_split[1]) == 1:
+    version_minor = "0" + version_unexpanded_split[1]
+else:
+    version_minor = version_unexpanded_split[1]
+version = version_unexpanded_split[0] + '.' + version_minor
+
+
+
+
+
 import click
 from .lazy_group import LazyGroup
 
@@ -29,12 +44,12 @@ from .lazy_group import LazyGroup
 
 
 @click.version_option(
-    package_name = "fre-cli"
+    package_name = "fre-cli",
+    version=version
 )
 
 def fre():
     ''' entry point function to subgroup functions '''
-
 
 if __name__ == '__main__':
     fre()

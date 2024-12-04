@@ -17,3 +17,6 @@ def trigger(experiment, platform, target, time):
 def _trigger(experiment, platform, target, time):
     ''' entry point to trigger for click '''
     return trigger(experiment, platform, target, time)
+
+if __name__ == "__main__":
+    trigger()

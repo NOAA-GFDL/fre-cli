@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from fre.make import runFremake
+from fre.make import run_fremake_script
 
 
 # command options

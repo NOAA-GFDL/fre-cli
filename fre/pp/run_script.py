@@ -16,4 +16,8 @@ def pp_run_subtool(experiment, platform, target):
 @click.command()
 def _pp_run_subtool(experiment, platform, target):
     ''' entry point to run for click '''
-    return _pp_run_subtool(experiment, platform, target)
+    return pp_run_subtool(experiment, platform, target)
+
+
+if __name__ == "__main__":
+    pp_run_subtool()
