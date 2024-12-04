@@ -176,7 +176,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
 #                        print("Compile script created at "+ bldDir+"/compile.sh\n\n")
                     print("Compile script created at "+ bldDir+"/compile.sh\n\n")
                 else:
-                    if force_compile:
+                    if force_compile or force_checkout:
                         # Remove compile script
                         os.remove(bldDir + "/compile.sh")
                         # Re-create compile script
