@@ -38,11 +38,11 @@ def container_checkout_write_steps(model_yaml,src_dir,tmp_dir,jobs,pc):
     fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
     fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
     fre_checkout.finish(pc)
-    print("    Checkout script created here: " + tmp_dir + "/checkout.sh" + "\n")
+    print("    Checkout script created here: " + tmp_dir + "/checkout.sh")
 
     return fre_checkout
 
-def compile_script_write_steps(yaml_obj,build_list,mkTemplate,src_dir,bld_dir,target,modules,modulesInit,jobs):
+def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,modules,modulesInit,jobs):
     """
     Go through steps to create compile script
     """
@@ -58,12 +58,13 @@ def compile_script_write_steps(yaml_obj,build_list,mkTemplate,src_dir,bld_dir,ta
     for c in yaml_obj['src']:
         fremakeBuild.writeBuildComponents(c)
     fremakeBuild.writeScript()
-    build_list.append(fremakeBuild)
-
     print("    Compile script created here: " + bld_dir + "/compile.sh" + "\n")
+
+    return fremakeBuild
 
 def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,td,cr,cb,cd):
     """
+    Go through steps to create Dockerfile and container build script.
     """
     dockerBuild = buildDocker.container(base = img,
                                         exp = yaml_obj["experiment"],
@@ -221,9 +222,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 if not os.path.exists(bld_dir+"/compile.sh"):
                     ## Create a list of compile scripts to run in parallel
                     print("\nCreating the compile script...")
-                    compile_script_write_steps(yaml_obj = fremake_yaml,
-                                               build_list = fremakeBuildList,
-                                               #exp_name = fremake_yaml["experiment"],
+                    fremakeBuild = compile_script_write_steps(yaml_obj = fremake_yaml,
                                                mkTemplate = mkTemplate,
                                                src_dir = src_dir,
                                                bld_dir = bld_dir,
@@ -231,21 +230,17 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                                modules = modules,
                                                modulesInit = modulesInit,
                                                jobs = jobs)
-
-#                    ## Run the build if --execute option given, otherwise print out compile script path
-#                    if execute:
-#                        fremakeBuild.run()
-#                    else:
-#                        print("Compile script created at "+ bldDir+"/compile.sh\n\n")
+                    fremakeBuildList.append(fremakeBuild)
+                    ## Run the build if --execute option given, otherwise print out compile script path
+                    if execute:
+                        fremakeBuild.run()
                 else:
                     if force_compile or force_checkout:
                         # Remove compile script
                         os.remove(bld_dir + "/compile.sh")
                         # Re-create compile script
                         print("\nRe-creating the compile script...")
-                        compile_script_write_steps(yaml_obj = fremake_yaml,
-                                                   build_list = fremakeBuildList,
-                                                   #exp_name = fremake_yaml["experiment"],
+                        fremakeBuild = compile_script_write_steps(yaml_obj = fremake_yaml,
                                                    mkTemplate = mkTemplate,
                                                    src_dir = src_dir,
                                                    bld_dir = bld_dir,
@@ -253,12 +248,14 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                                    modules = modules,
                                                    modulesInit = modulesInit,
                                                    jobs = jobs)
-#                        if execute:
-#                            fremakeBuild.run()
-#                        else:
-#                            print("Compile script created at "+ bldDir+"/compile.sh\n\n")
+                        fremakeBuildList.append(fremakeBuild)
+                        if execute:
+                            fremakeBuild.run()
                     else:
                         print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
+                        if execute:
+                            subprocess.run(args=[bld_dir+"/compile.sh"], check=True)
+                        ##TO-DO: log file here
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
@@ -303,6 +300,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 #if is doesn't exist, write
                 curr_dir = os.getcwd()
                 if not os.path.exists(f"{curr_dir}/Dockerfile"):
+                    print("Creating Dockerfile and build script...")
                     dockerfile_write_steps(yaml_obj = fremake_yaml,
                                            makefile_obj = freMakefile,
                                            img = image,

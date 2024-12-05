@@ -6,10 +6,11 @@ import logging
 from pathlib import Path
 from multiprocessing.dummy import Pool
 import click
+import subprocess
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
-def compile_script_write_steps(yaml_obj,build_list,mkTemplate,src_dir,bld_dir,target,modules,modulesInit,jobs):
+def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,modules,modulesInit,jobs):
     """
     Go through steps to create the compile script
     """
@@ -25,9 +26,9 @@ def compile_script_write_steps(yaml_obj,build_list,mkTemplate,src_dir,bld_dir,ta
     for c in yaml_obj['src']:
         fremakeBuild.writeBuildComponents(c)
     fremakeBuild.writeScript()
-    build_list.append(fremakeBuild)
 
     print("    Compile script created in " + bld_dir + "/compile.sh" + "\n")
+    return fremakeBuild
 
 def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
     # Define variables
@@ -87,38 +88,45 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
               os.system("mkdir -p " + bld_dir)
               if not os.path.exists(bld_dir+"/compile.sh"):
                   print("\nCreating the compile script...")
-                  compile_script_write_steps(yaml_obj = fremakeYaml,
-                                             build_list = fremakeBuildList,
-                                             #exp_name = fremakeYaml["experiment"],
-                                             mkTemplate = mkTemplate,
-                                             src_dir = src_dir,
-                                             bld_dir = bld_dir,
-                                             target = target,
-                                             modules = modules,
-                                             modulesInit = modulesInit,
-                                             jobs = jobs)
+                  fremakeBuild = compile_script_write_steps(yaml_obj = fremakeYaml,
+                                                            mkTemplate = mkTemplate,
+                                                            src_dir = src_dir,
+                                                            bld_dir = bld_dir,
+                                                            target = target,
+                                                            modules = modules,
+                                                            modulesInit = modulesInit,
+                                                            jobs = jobs)
+                  fremakeBuildList.append(fremakeBuild)
+                  if execute:
+                      print("Running the compile script\n")
+                      fremakeBuild.run()
               else:
                   if force_compile:
                       # Remove compile script
                       os.remove(bld_dir + "/compile.sh")
                       # Re-create compile script
                       print("\nRe-creating the compile script...")
-                      compile_script_write_steps(yaml_obj = fremakeYaml,
-                                                 build_list = fremakeBuildList,
-                                                 #exp_name = fremakeYaml["experiment"],
-                                                 mkTemplate = mkTemplate,
-                                                 src_dir = src_dir,
-                                                 bld_dir = bld_dir,
-                                                 target = target,
-                                                 modules = modules,
-                                                 modulesInit = modulesInit,
-                                                 jobs = jobs)
+                      fremakeBuild = compile_script_write_steps(yaml_obj = fremakeYaml,
+                                                                mkTemplate = mkTemplate,
+                                                                src_dir = src_dir,
+                                                                bld_dir = bld_dir,
+                                                                target = target,
+                                                                modules = modules,
+                                                                modulesInit = modulesInit,
+                                                                jobs = jobs)
+                      fremakeBuildList.append(fremakeBuild)
+                      if execute:
+                          print("Running the compile script\n")
+                          fremakeBuild.run()
                   else:
-                      print("\nCompile script PREVIOUSLY created in " + bld_dir + "/compile.sh" + "\n")
+                        print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
+                        if execute:
+                            subprocess.run(args=[bld_dir+"/compile.sh"], check=True)
+                        ##TO-DO --> THIS COULD CAUSE PROBLEMS IF USER FORGOT TO DO FORCE-COMPILE AFTER A CHANGE --> IT'LL JUST RUN PREVIOUS ONE. I have the message about running previous compile script, but is it better to just do --force-compile (even after no change?)
 
     if execute:
         if baremetalRun:
-            pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
+            pool = Pool(processes=nparallel)                            # Create a multiprocessing Pool
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
     else:
         sys.exit()
