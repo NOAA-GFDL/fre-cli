@@ -101,7 +101,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                 os.system("mkdir -p " + src_dir)
             # if the checkout script does not exist, it is created
             if not os.path.exists(src_dir+"/checkout.sh"):
-                print("Creating checkout script...")
+                print("\nCreating checkout script...")
                 fre_checkout = baremetal_checkout_write_steps(model_yaml,src_dir,jobs,pc)
 
                 # Run the checkout script
@@ -116,7 +116,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                     shutil.rmtree(src_dir)
 
                     # Create checkout script
-                    print("Re-creating the checkout script...\n")
+                    print("Re-creating the checkout script...")
                     fre_checkout = baremetal_checkout_write_steps(model_yaml,src_dir,jobs,pc)
                 else:
                     print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
