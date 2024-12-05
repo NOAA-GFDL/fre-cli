@@ -112,7 +112,11 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
 
                 # Execute if flag is given
                 if execute:
-                    subprocess.run(args=[dockerBuild.userScriptPath], check=True)
+                    try:
+                        subprocess.run(args=[f"{curr_dir}/createContainer.sh"], check=True)
+                    except:
+                        print(f"There was an error in runnning the container build script: {curr_dir}/createContainer.sh")
+                        raise
 
 @click.command()
 def _dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
