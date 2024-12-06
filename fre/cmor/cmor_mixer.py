@@ -21,7 +21,6 @@ DEBUG_MODE_RUN_ONE = True
 
 
 #### ------ helper functions  ------ ###
-
 def get_var_filenames(indir, var_filenames = None, local_var = None):
     '''
     appends files ending in .nc located within indir to list var_filenames accepts three arguments
@@ -202,28 +201,50 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     ## figure out the coordinate/dimension names programmatically TODO
 
     # Attempt to read lat coordinates
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate(s), lat, lat_bnds')
-    lat, lat_bnds = None, None
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate, lat')
+    lat = None
     try:
-        lat, lat_bnds = ds["lat"][:], ds["lat_bnds"][:]
+        lat = ds["lat"][:]
     except Exception as exc:
-        print(f'(rewrite_netcdf_file_var) WARNING could not read latitude coordinate. moving on.\n exc = {exc}')
-        print(f'                          lat = {lat}')
-        print(f'                          lat_bnds = {lat_bnds}')
+        print(f'(rewrite_netcdf_file_var) WARNING could not read latitude coordinate. moving on.\n exc = {exc}'
+              f'                          lat = {lat}'                                                         )
         pass
-    print(f'                          DONE attempting to read coordinate(s), lat, lat_bnds')
-    
+    print(f'                          DONE attempting to read coordinate, lat')
+
+    # Attempt to read lat coordinate bnds
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, lat_bnds')
+    lat_bnds = None
+    try:
+        lat_bnds = ds["lat_bnds"][:]
+    except Exception as exc:
+        print(f'(rewrite_netcdf_file_var) WARNING could not read latitude bnds. moving on.\n exc = {exc}'
+              f'                          lat_bnds = {lat_bnds}'                                              )
+        pass
+    print(f'                          DONE attempting to read lat coord bnds')
+
     # Attempt to read lon coordinates
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate(s), lon, lon_bnds')
-    lon, lon_bnds = None, None
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate, lon')
+    lon = None
     try:
-        lon, lon_bnds = ds["lon"][:], ds["lon_bnds"][:]
+        lon = ds["lon"][:]
     except Exception as exc:
-        print(f'(rewrite_netcdf_file_var) WARNING could not read longitude coordinate. moving on.\n exc = {exc}')
-        print(f'                          lon = {lon}')
-        print(f'                          lon_bnds = {lon_bnds}')
+        print(f'(rewrite_netcdf_file_var) WARNING could not read longitude coordinate. moving on.\n exc = {exc}'
+              f'                          lon = {lon}'                                                         )
         pass
-    print(f'                          DONE attempting to read coordinate(s), lon, lon_bnds')
+    print(f'                          DONE attempting to read coordinate, lon')
+
+    # Attempt to read lon coordinate bnds
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, lon_bnds')
+    lon_bnds = None
+    try:
+        lon_bnds = ds["lon_bnds"][:]
+    except Exception as exc:
+        print(f'(rewrite_netcdf_file_var) WARNING could not read longitude bnds. moving on.\n exc = {exc}'
+              f'                          lon_bnds = {lon_bnds}'                                              )
+        pass
+    print(f'                          DONE attempting to read lon coord bnds')
+
+    #assert False
     
     # read in time_coords + units
     print(f'(rewrite_netcdf_file_var) attempting to read time_coords, and units...')
