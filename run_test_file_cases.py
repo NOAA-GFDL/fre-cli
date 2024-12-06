@@ -70,30 +70,43 @@ def run_cmor_RUN(filename, table, opt_var_name):
     return FOO_return
 
 
-### THIS CASE MAY WORK if i rewrite the land file correctly
-# 9) FAIL (4 dimensional data with no vertical) 
-# Result - type error, expecting landuse dimension to be string, not an int flag with interpretation
-# Fix - rewrite the file and it's data, mapping it's landuse int flag coord to the desired string values
-testfile_LUmip_refined_gr1_Emon_landusedim = \
-    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-    'pp/LUmip_refined/ts/monthly/5yr/' + \
-    'LUmip_refined.185001-185412.gppLut.nc'
+
+
+# 7) FAIL 
+# ocean, Omon / so
+# Result - error, there's no coordinate called "olevel". only "z_i" and "z_l" available.
+# from cmip6-cmor-tables CMIP6_coordinate.json, three candidates pointed to by olevel...
+#     'depth_coord', 'ocean_sigma', 'ocean_sigma_z'
+# from cmip6-cmor-tables CMIP6_formula_terms.json, two candidates pointed to by olevel...
+#     'zlev', 'zlev_bnds'
+# see https://github.com/search?q=repo%3APCMDI%2Fcmip6-cmor-tables%20olevel&type=code
+testfile_ocean_monthly_z_1x1deg_gr = \
+    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+    'pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/' + \
+    'ocean_monthly_z_1x1deg.000101-000512.so.nc'
 try:
-    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
+    some_return = run_cmor_RUN(testfile_ocean_monthly_z_1x1deg_gr, 'Omon', opt_var_name = 'so')
 except Exception as exc:
     print(f'exception caught: exc=\n{exc}')
     some_return=-1    
     pass
-print_the_outcome(some_return,'LUmip_refined_gr1_Emon_landusedim / gppLut')
+print_the_outcome(some_return,'ocean_monthly_z_1x1deg_gr / so')
 if some_return != 0:
-    print('didnt pass the land-file test. exit.')
-    #sys.exit()
+    print('didnt pass ocean-file test number 2... exit.')
+#    sys.exit()
 
 
 
-# 6) FAIL 
+
+#### THIS CASE MAY WORK if i rewrite the ocean file correctly, effectively appending the lat/lon data from a statics file.
+####                    for this case, that file is:
+####                        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \ 
+####                        'pp/ocean_monthly/' + \ 
+####                        'ocean_monthly.static.nc'
+####                    and that data is stored under "geolon" and "geolat" consuming dims "x" and "y".
+# 6) FAIL
 # ocean, Omon / sos
-# Result - error, 
+# Result - error, it wants lat/lon, but only xh, yh coordinates are available
 testfile_ocean_monthly_gn = \
     '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
     'pp/ocean_monthly/ts/monthly/5yr/' + \
@@ -111,23 +124,25 @@ if some_return != 0:
 
 
 
-# 7) FAIL 
-# ocean, Omon / so
-# Result - error, 
-testfile_ocean_monthly_z_1x1deg_gr = \
-    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
-    'pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/' + \
-    'ocean_monthly_z_1x1deg.000101-000512.so.nc'
-try:
-    some_return = run_cmor_RUN(testfile_ocean_monthly_z_1x1deg_gr, 'Omon', opt_var_name = 'so')
-except Exception as exc:
-    print(f'exception caught: exc=\n{exc}')
-    some_return=-1    
-    pass
-print_the_outcome(some_return,'ocean_monthly_z_1x1deg_gr / so')
-if some_return != 0:
-    print('didnt pass ocean-file test number 2... exit.')
-#    sys.exit()
+
+#### THIS CASE MAY WORK if i rewrite the land file correctly, with the right landuse dimension strings
+## 9) FAIL (4 dimensional data with no vertical) 
+## Result - type error, expecting landuse dimension to be string, not an int flag with interpretation
+## Fix - rewrite the file and it's data, mapping it's landuse int flag coord to the desired string values
+#testfile_LUmip_refined_gr1_Emon_landusedim = \
+#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#    'pp/LUmip_refined/ts/monthly/5yr/' + \
+#    'LUmip_refined.185001-185412.gppLut.nc'
+#try:
+#    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'LUmip_refined_gr1_Emon_landusedim / gppLut')
+#if some_return != 0:
+#    print('didnt pass the land-file test. exit.')
+#    #sys.exit()
 
 
 
