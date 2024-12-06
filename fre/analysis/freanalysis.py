@@ -11,10 +11,11 @@ def analysis_cli():
 
 @analysis_cli.command()
 @click.option("--url", type=str, required=True, help="URL of the github repository.")
+@click.option("--name", type=str, required=False, help="Subdirectory to pip install.")
 @click.option("--library-directory", type=str, required=False,
               help="Path to a custom lib directory.")
 @click.pass_context
-def install(context, url, library_directory):
+def install(context, url, name, library_directory):
     """Installs an analysis package."""
     context.forward(install_analysis_package)
 

@@ -1,29 +1,53 @@
-from os import environ, getenv
+from os import chdir, getcwd
 from pathlib import Path
 from subprocess import run
 from sys import executable
+from tempfile import TemporaryDirectory
 
 from analysis_scripts import find_plugins, run_plugin
 import click
 from yaml import safe_load
 
 
+def install(name, library_directory=None):
+    """Helper function to install possibly using a target directory.
+
+    Args:
+        name: String name of the package to install.
+        library_directory: Path to target directory you want to install the package in.
+    """
+    if library_directory:
+        run([executable, "-m", "pip", "install", f"--target={library_directory}", name])
+    else:
+        run([executable, "-m", "pip", "install", name])
+
+
 @click.command()
-def install_analysis_package(url, library_directory=None):
+def install_analysis_package(url, name=None, library_directory=None):
     """Installs the analysis package.
 
     Args:
         url: URL to the github repository for the analysis package.
-        env_path: Path to a virtual environment that contains the installed analysis script.
+        name: String name of the analysis-script package.
+        library_directory: Directory to install the package in.
     """
     if not url.startswith("https://"):
         url = f"https://{url}"
+    if not url.endswith(".git"):
+        url = f"{url}.git"
 
-    if library_directory:
-        run([executable, "-m", "pip", "install", f"--target={library_directory}",
-             f"git+{url}.git@main"])
+    if name:
+        go_back_here = Path(getcwd())
+        with TemporaryDirectory() as tmpdirname:
+            chdir(tmpdirname)
+            run(["git", "clone", url, "scripts"])
+            chdir(go_back_here / "scripts" / "core" / "figure_tools")
+            install(".", library_directory)
+            chdir(go_back_here / "scripts" / "user-analysis-scripts" / name)
+            install(".", library_directory)
+            chdir(go_back_here)
     else:
-        run([executable, "-m", "pip", "install", f"git+{url}.git@main"])
+        install(f"{url}@main", library_directory)
 
 
 @click.command()
@@ -37,7 +61,7 @@ def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
         output_directory: Path to the output directory.
         output_yaml:  Path to the output yaml.
         experiment: Path to the experiment yaml.
-        env_path: Path to a virtual environment that contains the installed analysis script.
+        library_directory: Directory where the analysis package is installed.
     """
 
     # Create the directory for the figures.
@@ -67,6 +91,12 @@ def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
 
 @click.command()
 def uninstall_analysis_package(name, library_directory=None):
+    """Uninstalls the analysis package.
+
+    Args:
+        name: String name of the analysis-script package.
+        library_directory: Directory where the package was installed.
+    """
     if library_directory:
         run(["python", "-m", "pip", "uninstall", f"--target={library_directory}", name])
     else:
