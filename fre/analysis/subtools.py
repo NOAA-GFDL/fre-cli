@@ -39,11 +39,12 @@ def install_analysis_package(url, name=None, library_directory=None):
     if name:
         go_back_here = Path(getcwd())
         with TemporaryDirectory() as tmpdirname:
-            chdir(tmpdirname)
+            tmp = Path(tmpdirname)
+            chdir(tmp)
             run(["git", "clone", url, "scripts"])
-            chdir(go_back_here / "scripts" / "core" / "figure_tools")
+            chdir(tmp / "scripts" / "core" / "figure_tools")
             install(".", library_directory)
-            chdir(go_back_here / "scripts" / "user-analysis-scripts" / name)
+            chdir(tmp / "scripts" / "user-analysis-scripts" / name)
             install(".", library_directory)
             chdir(go_back_here)
     else:
