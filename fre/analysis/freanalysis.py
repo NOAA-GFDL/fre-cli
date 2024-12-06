@@ -13,8 +13,9 @@ def analysis_cli():
 @analysis_cli.command()
 @click.option("--url", type=str, required=True, help="URL of the github repository.")
 @click.option("--env-path", type=str, required=False, help="Path for the virtual environment.")
+@click.option("--name", type=str, required=False, help="Subdirectory to pip install.")
 @click.pass_context
-def install(context, url, env_path):
+def install(context, url, env_path, name):
     """Installs an analysis package."""
     context.forward(install_analysis_package)
 
