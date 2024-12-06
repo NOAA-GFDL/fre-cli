@@ -72,6 +72,113 @@ def run_cmor_RUN(filename, table, opt_var_name):
 
 
 
+
+
+
+
+# 1) SUCCEEDs
+# land, Lmon, gr1
+testfile_land_gr1_Lmon = \
+    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+    'pp/land/ts/monthly/5yr/' + \
+    'land.005101-005512.lai.nc'
+try:
+    some_return = run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
+except:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1
+#    pass
+print_the_outcome(some_return,'land_gr1_Lmon / lai')
+
+
+# 2) SUCCEEDs
+# atmos, Amon / cl
+testfile_atmos_level_cmip_gr1_Amon_complex_vert = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
+    'atmos_level_cmip.196001-196412.cl.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_complex_vert, 'Amon', opt_var_name = 'cl')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+#    pass
+print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_complex_vert / cl')
+
+
+# 3) SUCCEEDs
+# atmos, Amon / mc
+testfile_atmos_level_cmip_gr1_Amon_fullL = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
+    'atmos_level_cmip.195501-195912.mc.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_fullL, 'Amon', opt_var_name = 'mc')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+#    pass
+print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_fullL / mc')
+
+
+
+# 4) SUCCEEDs (no longitude coordinate case)
+# atmos, AERmonZ / ta
+# just like #1, but lack longitude
+testfile_atmos_gr1_AERmonZ_nolons = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/' + \
+    'atmos_plev39_cmip.201001-201412.ta.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_gr1_AERmonZ_nolons, 'AERmonZ', opt_var_name = 'ta')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+#   pass
+print_the_outcome(some_return,'atmos_gr1_AERmonZ_nolons / ta')
+
+
+# 5) SUCCEEDs
+# ocean, Omon / sos
+testfile_ocean_monthly_1x1deg_gr = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/ocean_monthly_1x1deg/ts/monthly/5yr/' + \
+    'ocean_monthly_1x1deg.190001-190412.sos.nc'
+try:
+    some_return = run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'ocean_monthly_1x1deg_gr / sos')
+
+
+
+
+# 8) SUCCEEDs (no latitude, nor longitude, nor vertical coordinates cases)
+# atmos, Amon / ch4global
+testfile_atmos_scalar_gn_Amon_nolon_nolat = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_scalar/ts/monthly/5yr/' + \
+    'atmos_scalar.197001-197412.ch4global.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+#    pass
+print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
+
+
+
+
+
+
+
+sys.exit()
+
+
+
 # 7) FAIL 
 # ocean, Omon / so
 # Result - error, there's no coordinate called "olevel". only "z_i" and "z_l" available.
@@ -125,125 +232,21 @@ if some_return != 0:
 
 
 
-#### THIS CASE MAY WORK if i rewrite the land file correctly, with the right landuse dimension strings
-## 9) FAIL (4 dimensional data with no vertical) 
-## Result - type error, expecting landuse dimension to be string, not an int flag with interpretation
-## Fix - rewrite the file and it's data, mapping it's landuse int flag coord to the desired string values
-#testfile_LUmip_refined_gr1_Emon_landusedim = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/LUmip_refined/ts/monthly/5yr/' + \
-#    'LUmip_refined.185001-185412.gppLut.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'LUmip_refined_gr1_Emon_landusedim / gppLut')
-#if some_return != 0:
-#    print('didnt pass the land-file test. exit.')
-#    #sys.exit()
-
-
-
-
-## 1) SUCCEEDs
-## land, Lmon, gr1
-#testfile_land_gr1_Lmon = \
-#    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
-#    'pp/land/ts/monthly/5yr/' + \
-#    'land.005101-005512.lai.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
-#except:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1
-#    pass
-#print_the_outcome(some_return,'land_gr1_Lmon / lai')
-#
-#
-## 2) SUCCEEDs
-## atmos, Amon / cl
-#testfile_atmos_level_cmip_gr1_Amon_complex_vert = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
-#    'atmos_level_cmip.196001-196412.cl.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_complex_vert, 'Amon', opt_var_name = 'cl')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_complex_vert / cl')
-#
-#
-## 3) SUCCEEDs
-## atmos, Amon / mc
-#testfile_atmos_level_cmip_gr1_Amon_fullL = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
-#    'atmos_level_cmip.195501-195912.mc.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_fullL, 'Amon', opt_var_name = 'mc')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_fullL / mc')
-#
-#
-#
-## 4) SUCCEEDs (no longitude coordinate case)
-## atmos, AERmonZ / ta
-## just like #1, but lack longitude
-#testfile_atmos_gr1_AERmonZ_nolons = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/' + \
-#    'atmos_plev39_cmip.201001-201412.ta.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_gr1_AERmonZ_nolons, 'AERmonZ', opt_var_name = 'ta')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'atmos_gr1_AERmonZ_nolons / ta')
-#
-#
-## 5) SUCCEEDs
-## ocean, Omon / sos
-#testfile_ocean_monthly_1x1deg_gr = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/ocean_monthly_1x1deg/ts/monthly/5yr/' + \
-#    'ocean_monthly_1x1deg.190001-190412.sos.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'ocean_monthly_1x1deg_gr / sos')
-#
-#
-#
-#
-## 8) SUCCEEDs (no latitude, nor longitude, nor vertical coordinates cases)
-## atmos, Amon / ch4global
-#testfile_atmos_scalar_gn_Amon_nolon_nolat = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/atmos_scalar/ts/monthly/5yr/' + \
-#    'atmos_scalar.197001-197412.ch4global.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
-
-
-
-
-
-
-
-
+### THIS CASE MAY WORK if i rewrite the land file correctly, with the right landuse dimension strings
+# 9) FAIL (4 dimensional data with no vertical) 
+# Result - type error, expecting landuse dimension to be string, not an int flag with interpretation
+# Fix - rewrite the file and it's data, mapping it's landuse int flag coord to the desired string values
+testfile_LUmip_refined_gr1_Emon_landusedim = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/LUmip_refined/ts/monthly/5yr/' + \
+    'LUmip_refined.185001-185412.gppLut.nc'
+try:
+    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'LUmip_refined_gr1_Emon_landusedim / gppLut')
+if some_return != 0:
+    print('didnt pass the land-file test. exit.')
+    #sys.exit()

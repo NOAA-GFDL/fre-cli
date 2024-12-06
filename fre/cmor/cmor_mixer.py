@@ -21,6 +21,23 @@ DEBUG_MODE_RUN_ONE = True
 
 
 #### ------ helper functions  ------ ###
+def from_dis_gimme_dis(from_dis, gimme_dis):
+    '''
+    gives you gimme_dis from from_dis. accepts two arguments, both mandatory.
+        from_dis: the target netCDF4.Dataset object to try reading from
+        gimme_dis: what from_dis is hopefully gonna have and you're gonna get
+    '''
+    try:
+        return from_dis[gimme_dis][:].copy()
+    except Exception as exc:
+        print(f'(gimme_dis) WARNING I am sorry, I could not not give you this: {gimme_dis}'
+              f'                                                     from this: {from_dis} '
+              f'             exc = {exc}'              
+              f'            returning None!'                                                      )
+        return None
+
+
+
 def get_var_filenames(indir, var_filenames = None, local_var = None):
     '''
     appends files ending in .nc located within indir to list var_filenames accepts three arguments
@@ -202,67 +219,37 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # Attempt to read lat coordinates
     print(f'(rewrite_netcdf_file_var) attempting to read coordinate, lat')
-    lat = None
-    try:
-        lat = ds["lat"][:]
-    except Exception as exc:
-        print(f'(rewrite_netcdf_file_var) WARNING could not read latitude coordinate. moving on.\n exc = {exc}'
-              f'                          lat = {lat}'                                                         )
-        pass
-    print(f'                          DONE attempting to read coordinate, lat')
-
-    # Attempt to read lat coordinate bnds
+    lat = from_dis_gimme_dis( from_dis  = ds,
+                              gimme_dis = "lat")
     print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, lat_bnds')
-    lat_bnds = None
-    try:
-        lat_bnds = ds["lat_bnds"][:]
-    except Exception as exc:
-        print(f'(rewrite_netcdf_file_var) WARNING could not read latitude bnds. moving on.\n exc = {exc}'
-              f'                          lat_bnds = {lat_bnds}'                                              )
-        pass
-    print(f'                          DONE attempting to read lat coord bnds')
-
-    # Attempt to read lon coordinates
+    lat_bnds = from_dis_gimme_dis( from_dis  = ds,
+                              gimme_dis = "lat_bnds")
     print(f'(rewrite_netcdf_file_var) attempting to read coordinate, lon')
-    lon = None
-    try:
-        lon = ds["lon"][:]
-    except Exception as exc:
-        print(f'(rewrite_netcdf_file_var) WARNING could not read longitude coordinate. moving on.\n exc = {exc}'
-              f'                          lon = {lon}'                                                         )
-        pass
-    print(f'                          DONE attempting to read coordinate, lon')
-
-    # Attempt to read lon coordinate bnds
+    lon = from_dis_gimme_dis( from_dis  = ds,
+                              gimme_dis = "lon")
     print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, lon_bnds')
-    lon_bnds = None
-    try:
-        lon_bnds = ds["lon_bnds"][:]
-    except Exception as exc:
-        print(f'(rewrite_netcdf_file_var) WARNING could not read longitude bnds. moving on.\n exc = {exc}'
-              f'                          lon_bnds = {lon_bnds}'                                              )
-        pass
-    print(f'                          DONE attempting to read lon coord bnds')
-
-    #assert False
+    lon_bnds = from_dis_gimme_dis( from_dis  = ds,
+                              gimme_dis = "lon_bnds")
     
     # read in time_coords + units
-    print(f'(rewrite_netcdf_file_var) attempting to read time_coords, and units...')
-    time_coords = ds["time"][:] # out this in a try/except thingy, initializing like others? 
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate time, and units...')
+    time_coords = from_dis_gimme_dis( from_dis = ds,
+                                      gimme_dis = 'time' )
+
     time_coord_units = ds["time"].units
     print(f"                          time_coord_units = {time_coord_units}")
 
     # read in time_bnds , if present
-    time_bnds = [] # shouldnt this be initialized like the others?
-    try:
-        time_bnds = ds["time_bnds"][:]
-        #print(f"(rewrite_netcdf_file_var) time_bnds  = {time_bnds}")
-    except ValueError:
-        print( "(rewrite_netcdf_file_var) WARNING grabbing time_bnds didnt work... moving on")
-
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, time_bnds')
+    time_bnds = from_dis_gimme_dis( from_dis = ds,
+                                    gimme_dis = 'time_bnds' ) 
 
     # read the input variable data, i believe
-    var = ds[target_var][:]
+    print(f'(rewrite_netcdf_file_var) attempting to read variable data, {target_var}')
+    var = from_dis_gimme_dis( from_dis = ds,
+                              gimme_dis = target_var ) 
+    #var = ds[target_var][:]
+    
 
     # grab var_dim
     var_dim = len(var.shape)
