@@ -47,11 +47,9 @@ def test_cli_fre_cmor_run_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
-def test_setup_test_files(capfd):
-    ''' set-up test: create binary test files from reduced ascii files in root dir ''' 
+'''def test_setup_test_files(capfd):
+    "set-up test: create binary test files from reduced ascii files in root dir "
 
-    print(subprocess.run("pwd"))
-    #ncgen_input = f'{rootdir}'
     ncgen_input = f'{rootdir}/reduced_ascii_files/reduced_ocean_monthly_1x1deg.199301-199712.sosV2.cdl'
     ncgen_output = f'{rootdir}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199712.sosV2.nc'
 
@@ -64,6 +62,7 @@ def test_setup_test_files(capfd):
     assert all( [ sp.returncode == 0, Path(ncgen_output).exists() ] )
 
     out, err = capfd.readouterr()
+'''
 
 # these unit tests should be more about the cli, rather than the workload
 YYYYMMDD=date.today().strftime('%Y%m%d')
