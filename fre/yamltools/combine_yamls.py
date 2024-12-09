@@ -299,7 +299,7 @@ class init_pp_yaml():
         with open(self.combined,'w') as f:
             yaml.safe_dump(full_yaml,f,default_flow_style=False,sort_keys=False)
 
-        print(f"Combined yaml located here: {os.path.dirname(self.combined)}/{self.combined}")
+        print(f"Combined yaml located here: {os.path.abspath(self.combined)}")
         return self.combined
 
 ## Functions to combine the yaml files ##
