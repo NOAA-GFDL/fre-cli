@@ -30,8 +30,8 @@ def from_dis_gimme_dis(from_dis, gimme_dis):
     try:
         return from_dis[gimme_dis][:].copy()
     except Exception as exc:
-        print(f'(gimme_dis) WARNING I am sorry, I could not not give you this: {gimme_dis}'
-              f'                                                     from this: {from_dis} '
+        print(f'(from_dis_gimme_dis) WARNING I am sorry, I could not not give you this: {gimme_dis}'
+              f'                                                             from this: {from_dis} '
               f'             exc = {exc}'              
               f'            returning None!'                                                      )
         return None
@@ -89,9 +89,10 @@ def check_dataset_for_ocean_grid(ds):
         ds: netCDF4.Dataset object containing variables with associated dimensional information.
     '''
     if "xh" in list(ds.variables.keys()):
+        print("(check_dataset_for_ocean_grid) WARNING: 'xh' found in var_list: ocean grid req'd"
+              "                                        sometimes i don't cmorize right! check me!")
         pass
-        #raise NotImplementedError(
-        print(    "(check_dataset_for_ocean_grid) 'xh' found in var_list. ocean grid req'd but not yet unimplemented. stop.")
+        
 
 
 def get_vertical_dimension(ds, target_var):

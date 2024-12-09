@@ -18,7 +18,9 @@ from netCDF4 import Dataset #, stringtochar
 landuse_str_list=[b"primary_and_secondary_land", b"pastures", b"crops", b"urban"]
 
 
-# open netcdf file in append mode? write mode? read+?
+# open netcdf file in append mode? write mode? read?
+# '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+# 'pp/LUmip_refined/ts/monthly/5yr/' + \
 gppLut_fin=Dataset('./tmp/LUmip_refined.185001-185412.gppLut.nc', mode='r')
 gppLut_fin_ncattrs=gppLut_fin.__dict__ #dictionary
 
