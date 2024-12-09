@@ -17,7 +17,7 @@ def install(name, library_directory=None):
         library_directory: Path to target directory you want to install the package in.
     """
     if library_directory:
-        run([executable, "-m", "pip", "install", f"--target={library_directory}", name])
+        run([executable, "-m", "pip", "install", f"--target={str(library_directory)}", name])
     else:
         run([executable, "-m", "pip", "install", name])
 
@@ -35,6 +35,9 @@ def install_analysis_package(url, name=None, library_directory=None):
         url = f"https://{url}"
     if not url.endswith(".git"):
         url = f"{url}.git"
+
+    if library_directory:
+        library_directory = Path(library_directory).resolve()
 
     if name:
         go_back_here = Path(getcwd())
