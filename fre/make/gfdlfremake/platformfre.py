@@ -96,4 +96,4 @@ class platforms ():
         """
         for p in self.yaml:
             if p["name"] == name:
-                return (p["compiler"], p["modules"], p["modulesInit"], p["fc"], p["cc"], p["modelRoot"],p["container"], p["mkTemplate"],p["containerBuild"], p["containerRun"], p["RUNenv"])
+                return p
