@@ -379,14 +379,23 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     cmor_lev = None
     if lev is not None:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lev')
+
         if vert_dim.lower() in ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]:
             print(f'(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
-            cmor_vert_dim_name = vert_dim
-            if vert_dim.lower() == "landuse":
+            if vert_dim.lower() != "landuse":
+                cmor_vert_dim_name = vert_dim
+                cmor_lev = cmor.axis( cmor_vert_dim_name,
+                                      coord_vals = lev[:], units = lev_units )
+            else:
+                landuse_str_list=['primary_and_secondary_land', 'pastures', 'crops', 'urban']
                 cmor_vert_dim_name = "landUse" # this is why can't we have nice things
-            print(f'(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
-            cmor_lev = cmor.axis( cmor_vert_dim_name,
-                                  coord_vals = lev[:], units = lev_units )
+                cmor_lev = cmor.axis( cmor_vert_dim_name,
+                                      coord_vals = np.array(
+                                                            landuse_str_list,
+                                                            dtype=f'S{len(landuse_str_list[0])}' ),
+                                      units = lev_units )
+
+
         elif vert_dim in ["z_l"]:
             lev_bnds = create_lev_bnds( bound_these = lev,
                                          with_these = ds['z_i'] )

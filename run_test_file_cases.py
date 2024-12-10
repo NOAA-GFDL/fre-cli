@@ -121,7 +121,6 @@ except Exception as exc:
 print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_fullL / mc')
 
 
-
 # 4) SUCCEEDs (no longitude coordinate case)
 # atmos, AERmonZ / ta
 # just like #1, but lack longitude
@@ -164,7 +163,7 @@ try:
 except Exception as exc:
     print(f'exception caught: exc=\n{exc}')
     some_return=-1    
-    pass
+#    pass
 print_the_outcome(some_return,'ocean_monthly_z_1x1deg_gr / so')
 if some_return != 0:
     print('didnt pass ocean-file test number 7. exit.')
@@ -184,6 +183,29 @@ except Exception as exc:
     some_return=-1    
 #    pass
 print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
+
+
+
+# 9) SUCCEEDs (needs coordinate variable axis with character string values)
+# land, Emon / gppLut
+testfile_LUmip_refined_gr1_Emon_landusedim = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/LUmip_refined/ts/monthly/5yr/' + \
+    'LUmip_refined.185001-185412.gppLut.nc'
+try:
+    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+    pass
+print_the_outcome(some_return,'LUmip_refined_gr1_Emon_landusedim / gppLut')
+if some_return != 0:
+    print('didnt pass the land-file test. exit.')
+    #sys.exit()
+
+
+
+
 
 
 ##-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -242,66 +264,3 @@ print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
 
 
 
-## 7-alt) 
-## Result - , last checked  VERY carfulyl
-## Note:  rm -f alt_Omon_so_gr_input//*nc; rm -rf tmp/CMIP6; # clean up
-##        python run_test_file_cases.py; # see initial failure of both this test and the alt test
-##        python scratchwork_rewrite_so_ocean_monthly_z_1x1deg_gr_file.py; # rewrite the input into alt location
-##        rm -rf tmp/CMIP6; python run_test_file_cases.py; # rerun these cases, 9 still fails, but 9-alt succeeds.
-#testfile_ALT_ocean_monthly_z_1x1deg_gr = \
-#    './alt_Omon_so_gr_input/' + \
-#    'ocean_monthly_z_1x1deg.000101-000512.so.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_ALT_ocean_monthly_z_1x1deg_gr, 'Omon', opt_var_name = 'so')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'ALT ocean_monthly_z_1x1deg_gr / so')
-#if some_return != 0:
-#    print('didnt pass ALT ocean-file test number 7. exit.')
-#    sys.exit()
-
-
-##-----------------------------------------------------------------------------------------------------------------------------------------------
-#
-#
-#### THIS CASE MAY WORK if i rewrite the land file correctly, with the right landuse dimension strings
-## 9) FAIL (4 dimensional data with no vertical) 
-## Result - type error, expecting landuse dimension to be string, not an int flag with interpretation
-## Fix - rewrite the file and it's data, mapping it's landuse int flag coord to the desired string values
-#testfile_LUmip_refined_gr1_Emon_landusedim = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/LUmip_refined/ts/monthly/5yr/' + \
-#    'LUmip_refined.185001-185412.gppLut.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'LUmip_refined_gr1_Emon_landusedim / gppLut')
-#if some_return != 0:
-#    print('didnt pass the land-file test. exit.')
-#    #sys.exit()
-#
-#
-## 9-alt) PASS
-## Result - success, last checked Dec 10 10:40 am VERY carfully
-## Note:  rm -f alt_LUmip_input/*nc; rm -rf tmp/CMIP6; # clean up 
-##        python run_test_file_cases.py; # see initial failure of both this test and the alt test
-##        python scratchwork_rewrite_gppLut_LUmip_refined_gr1_file.py; # rewrite the input into alt location
-##        rm -rf tmp/CMIP6; python run_test_file_cases.py; # rerun these cases, 9 still fails, but 9-alt succeeds.
-#testfile_ALT_LUmip_refined_gr1_Emon_landusedim = \
-#    './alt_LUmip_input/' + \
-#    'LUmip_refined.185001-185412.gppLut.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_ALT_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-#    pass
-#print_the_outcome(some_return,'ALT LUmip_refined_gr1_Emon_landusedim / gppLut')
-#if some_return != 0:
-#    print('didnt pass ALT the land-file test. exit.')
-#    sys.exit()
