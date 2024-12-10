@@ -11,6 +11,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import numpy as np
+
 import netCDF4 as nc
 import click
 import cmor
@@ -36,7 +38,22 @@ def from_dis_gimme_dis(from_dis, gimme_dis):
               f'            returning None!'                                                      )
         return None
 
+def create_lev_bnds(bound_these = None, with_these = None):
+    the_bnds = None    
+    assert len(with_these) == len(bound_these) + 1
+    print(f'(create_lev_bnds) bound_these is... ')
+    print(f'                  bound_these = \n{bound_these}')
+    print(f'(create_lev_bnds) with_these is... ')
+    print(f'                  with_these = \n{with_these}')
 
+    
+    the_bnds = np.arange(len(bound_these)*2).reshape(len(bound_these),2)    
+    for i in range(0,len(bound_these)):
+        the_bnds[i][0]=with_these[i]
+        the_bnds[i][1]=with_these[i+1]
+    print(f'(create_lev_bnds) the_bnds is... ')
+    print(f'                  the_bnds = \n{the_bnds}')
+    return the_bnds
 
 def get_var_filenames(indir, var_filenames = None, local_var = None):
     '''
@@ -91,7 +108,8 @@ def check_dataset_for_ocean_grid(ds):
     if "xh" in list(ds.variables.keys()):
         print("(check_dataset_for_ocean_grid) WARNING: 'xh' found in var_list: ocean grid req'd"
               "                                        sometimes i don't cmorize right! check me!")
-        pass
+        return True
+    return False
         
 
 
@@ -202,7 +220,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # ocean grids are not implemented yet.
     print( '(rewrite_netcdf_file_var) checking input netcdf file for oceangrid condition')
-    check_dataset_for_ocean_grid(ds)
+    uses_ocean_grid = check_dataset_for_ocean_grid(ds)
 
 
     # try to read what coordinate(s) we're going to be expecting for the variable
@@ -267,8 +285,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # Check var_dim and vert_dim and assign lev if relevant.
     # error if vert_dim wrong given var_dim
     lev, lev_units = None, "1" #1 #"none" #None #""
+    lev_bnds = None
     if vert_dim != 0:
-        if vert_dim.lower() not in [ "landuse", "plev39", "plev30", "plev19", "plev8",
+        if vert_dim.lower() not in [ "z_l", "landuse", "plev39", "plev30", "plev19", "plev8",
                                           "height2m", "level", "lev", "levhalf"] :
             raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
         lev = ds[vert_dim]
@@ -368,6 +387,15 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             print(f'(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
             cmor_lev = cmor.axis( cmor_vert_dim_name,
                                   coord_vals = lev[:], units = lev_units )
+        elif vert_dim in ["z_l"]:
+            lev_bnds = create_lev_bnds( bound_these = lev,
+                                         with_these = ds['z_i'] )
+            print('(rewrite_netcdf_file_var) created lev_bnds...')
+            print(f'                          lev_bnds = \n{lev_bnds}')
+            cmor_lev = cmor.axis( 'depth_coord',
+                                  coord_vals = lev[:],
+                                  units = lev_units,
+                                  cell_bounds = lev_bnds)
 
         elif vert_dim in ["level", "lev", "levhalf"]:
             # find the ps file nearby
