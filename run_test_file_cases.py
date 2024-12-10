@@ -76,117 +76,85 @@ def run_cmor_RUN(filename, table, opt_var_name):
 
 
 
-## 1) SUCCEEDs
-## land, Lmon, gr1
-#testfile_land_gr1_Lmon = \
-#    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
-#    'pp/land/ts/monthly/5yr/' + \
-#    'land.005101-005512.lai.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
-#except:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1
-##    pass
-#print_the_outcome(some_return,'land_gr1_Lmon / lai')
-#
-#
-## 2) SUCCEEDs
-## atmos, Amon / cl
-#testfile_atmos_level_cmip_gr1_Amon_complex_vert = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
-#    'atmos_level_cmip.196001-196412.cl.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_complex_vert, 'Amon', opt_var_name = 'cl')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-##    pass
-#print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_complex_vert / cl')
-#
-#
-## 3) SUCCEEDs
-## atmos, Amon / mc
-#testfile_atmos_level_cmip_gr1_Amon_fullL = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
-#    'atmos_level_cmip.195501-195912.mc.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_fullL, 'Amon', opt_var_name = 'mc')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-##    pass
-#print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_fullL / mc')
-#
-#
-#
-## 4) SUCCEEDs (no longitude coordinate case)
-## atmos, AERmonZ / ta
-## just like #1, but lack longitude
-#testfile_atmos_gr1_AERmonZ_nolons = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/' + \
-#    'atmos_plev39_cmip.201001-201412.ta.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_gr1_AERmonZ_nolons, 'AERmonZ', opt_var_name = 'ta')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-##   pass
-#print_the_outcome(some_return,'atmos_gr1_AERmonZ_nolons / ta')
-#
-#
-## 5) SUCCEEDs
-## ocean, Omon / sos
-#testfile_ocean_monthly_1x1deg_gr = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/ocean_monthly_1x1deg/ts/monthly/5yr/' + \
-#    'ocean_monthly_1x1deg.190001-190412.sos.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
+# 1) SUCCEEDs
+# land, Lmon, gr1
+testfile_land_gr1_Lmon = \
+    '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+    'pp/land/ts/monthly/5yr/' + \
+    'land.005101-005512.lai.nc'
+try:
+    some_return = run_cmor_RUN(testfile_land_gr1_Lmon, 'Lmon', opt_var_name = 'lai')
+except:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1
 #    pass
-#print_the_outcome(some_return,'ocean_monthly_1x1deg_gr / sos')
-#
-#
-#
-#
-## 8) SUCCEEDs (no latitude, nor longitude, nor vertical coordinates cases)
-## atmos, Amon / ch4global
-#testfile_atmos_scalar_gn_Amon_nolon_nolat = \
-#    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-#    'pp/atmos_scalar/ts/monthly/5yr/' + \
-#    'atmos_scalar.197001-197412.ch4global.nc'
-#try:
-#    some_return = run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
-#except Exception as exc:
-#    print(f'exception caught: exc=\n{exc}')
-#    some_return=-1    
-##    pass
-#print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
+print_the_outcome(some_return,'land_gr1_Lmon / lai')
+
+
+# 2) SUCCEEDs
+# atmos, Amon / cl
+testfile_atmos_level_cmip_gr1_Amon_complex_vert = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
+    'atmos_level_cmip.196001-196412.cl.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_complex_vert, 'Amon', opt_var_name = 'cl')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+#    pass
+print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_complex_vert / cl')
+
+
+# 3) SUCCEEDs
+# atmos, Amon / mc
+testfile_atmos_level_cmip_gr1_Amon_fullL = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_level_cmip/ts/monthly/5yr/' + \
+    'atmos_level_cmip.195501-195912.mc.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_level_cmip_gr1_Amon_fullL, 'Amon', opt_var_name = 'mc')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+#    pass
+print_the_outcome(some_return,'atmos_level_cmip_gr1_Amon_fullL / mc')
 
 
 
+# 4) SUCCEEDs (no longitude coordinate case)
+# atmos, AERmonZ / ta
+# just like #1, but lack longitude
+testfile_atmos_gr1_AERmonZ_nolons = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/' + \
+    'atmos_plev39_cmip.201001-201412.ta.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_gr1_AERmonZ_nolons, 'AERmonZ', opt_var_name = 'ta')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+#   pass
+print_the_outcome(some_return,'atmos_gr1_AERmonZ_nolons / ta')
 
 
+# 5) SUCCEEDs
+# ocean, Omon / sos
+testfile_ocean_monthly_1x1deg_gr = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/ocean_monthly_1x1deg/ts/monthly/5yr/' + \
+    'ocean_monthly_1x1deg.190001-190412.sos.nc'
+try:
+    some_return = run_cmor_RUN(testfile_ocean_monthly_1x1deg_gr, 'Omon', opt_var_name = 'sos')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+#    pass
+print_the_outcome(some_return,'ocean_monthly_1x1deg_gr / sos')
 
 
-
-
-
-
-# 7) FAIL 
+# 7) SUCCEEDs
 # ocean, Omon / so
-# Result - error, there's no coordinate called "olevel". only "z_i" and "z_l" available.
-# from cmip6-cmor-tables CMIP6_coordinate.json, three candidates pointed to by olevel...
-#     'depth_coord', 'ocean_sigma', 'ocean_sigma_z'
-# from cmip6-cmor-tables CMIP6_formula_terms.json, two candidates pointed to by olevel...
-#     'zlev', 'zlev_bnds'
-# see https://github.com/search?q=repo%3APCMDI%2Fcmip6-cmor-tables%20olevel&type=code
 testfile_ocean_monthly_z_1x1deg_gr = \
     '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
     'pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/' + \
@@ -199,12 +167,28 @@ except Exception as exc:
     pass
 print_the_outcome(some_return,'ocean_monthly_z_1x1deg_gr / so')
 if some_return != 0:
-    print('didnt pass ocean-file test number 2... exit.')
-#    sys.exit()
+    print('didnt pass ocean-file test number 7. exit.')
+    sys.exit()
 
 
+# 8) SUCCEEDs (no latitude, nor longitude, nor vertical coordinates cases)
+# atmos, Amon / ch4global
+testfile_atmos_scalar_gn_Amon_nolon_nolat = \
+    '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+    'pp/atmos_scalar/ts/monthly/5yr/' + \
+    'atmos_scalar.197001-197412.ch4global.nc'
+try:
+    some_return = run_cmor_RUN(testfile_atmos_scalar_gn_Amon_nolon_nolat, 'Amon', opt_var_name = 'ch4global')
+except Exception as exc:
+    print(f'exception caught: exc=\n{exc}')
+    some_return=-1    
+#    pass
+print_the_outcome(some_return,'atmos_scalar_gn_Amon_nolon_nolat / ch4global')
 
 
+##-----------------------------------------------------------------------------------------------------------------------------------------------
+#
+#
 ##### THIS CASE MAY WORK if i rewrite the ocean file correctly, effectively appending the lat/lon data from a statics file.
 #####                    for this case, that file is:
 #####                        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \ 
@@ -226,10 +210,60 @@ if some_return != 0:
 #    pass
 #print_the_outcome(some_return,'ocean_monthly_gn / sos')
 #if some_return != 0:
-#    print('didnt pass ocean-file test number 1... exit.')
+#    print('didnt pass ocean-file test 6... exit.')
 ##    sys.exit()
 #
 #
+#
+## 6-alt)
+## Result - , last checked  VERY carfully
+## Note:  rm -f alt_Omon_sos_gn_input/*nc; rm -rf tmp/CMIP6; # clean up
+##        python run_test_file_cases.py; # see initial failure of both this test and the alt test
+##        python scratchwork_rewrite_sos_ocean_monthly_gn_file.py; # rewrite the input into alt location
+##        rm -rf tmp/CMIP6; python run_test_file_cases.py; # rerun these cases, 9 still fails, but 9-alt succeeds.
+#testfile_ALT_ocean_monthly_gn = \
+#    './alt_Omon_sos_gn_input/' + \
+#    'ocean_monthly.002101-002512.sos.nc'
+#try:
+#    some_return = run_cmor_RUN(testfile_ALT_ocean_monthly_gn, 'Omon', opt_var_name = 'sos')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'ALT ocean_monthly_gn / sos')
+#if some_return != 0:
+#    print('didnt pass ALT ocean-file test 6... exit.')
+#    sys.exit()
+#
+#
+##-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+## 7-alt) 
+## Result - , last checked  VERY carfulyl
+## Note:  rm -f alt_Omon_so_gr_input//*nc; rm -rf tmp/CMIP6; # clean up
+##        python run_test_file_cases.py; # see initial failure of both this test and the alt test
+##        python scratchwork_rewrite_so_ocean_monthly_z_1x1deg_gr_file.py; # rewrite the input into alt location
+##        rm -rf tmp/CMIP6; python run_test_file_cases.py; # rerun these cases, 9 still fails, but 9-alt succeeds.
+#testfile_ALT_ocean_monthly_z_1x1deg_gr = \
+#    './alt_Omon_so_gr_input/' + \
+#    'ocean_monthly_z_1x1deg.000101-000512.so.nc'
+#try:
+#    some_return = run_cmor_RUN(testfile_ALT_ocean_monthly_z_1x1deg_gr, 'Omon', opt_var_name = 'so')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'ALT ocean_monthly_z_1x1deg_gr / so')
+#if some_return != 0:
+#    print('didnt pass ALT ocean-file test number 7. exit.')
+#    sys.exit()
+
+
+##-----------------------------------------------------------------------------------------------------------------------------------------------
 #
 #
 #### THIS CASE MAY WORK if i rewrite the land file correctly, with the right landuse dimension strings
@@ -250,3 +284,24 @@ if some_return != 0:
 #if some_return != 0:
 #    print('didnt pass the land-file test. exit.')
 #    #sys.exit()
+#
+#
+## 9-alt) PASS
+## Result - success, last checked Dec 10 10:40 am VERY carfully
+## Note:  rm -f alt_LUmip_input/*nc; rm -rf tmp/CMIP6; # clean up 
+##        python run_test_file_cases.py; # see initial failure of both this test and the alt test
+##        python scratchwork_rewrite_gppLut_LUmip_refined_gr1_file.py; # rewrite the input into alt location
+##        rm -rf tmp/CMIP6; python run_test_file_cases.py; # rerun these cases, 9 still fails, but 9-alt succeeds.
+#testfile_ALT_LUmip_refined_gr1_Emon_landusedim = \
+#    './alt_LUmip_input/' + \
+#    'LUmip_refined.185001-185412.gppLut.nc'
+#try:
+#    some_return = run_cmor_RUN(testfile_ALT_LUmip_refined_gr1_Emon_landusedim, 'Emon', opt_var_name = 'gppLut')
+#except Exception as exc:
+#    print(f'exception caught: exc=\n{exc}')
+#    some_return=-1    
+#    pass
+#print_the_outcome(some_return,'ALT LUmip_refined_gr1_Emon_landusedim / gppLut')
+#if some_return != 0:
+#    print('didnt pass ALT the land-file test. exit.')
+#    sys.exit()
