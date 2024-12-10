@@ -1,0 +1,51 @@
+''' test "fre make run-fremake" calls '''
+''' these tests assume your os is the ci image (gcc 14 + mpich on rocky 8)'''
+
+import os
+from shutil  import rmtree
+from pathlib import Path
+
+import pytest
+
+from fre.make import run_fremake_script
+
+# command options
+YAMLDIR = "fre/make/tests/null_example"
+YAMLFILE = "null_model.yaml"
+YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
+PLATFORM = [ "ci.gnu" ]
+CONTAINER_PLATFORM = ["hpcme.2023"]
+TARGET = ["debug"]
+EXPERIMENT = "null_model_full"
+VERBOSE = False
+
+# set up some paths for the tests to build in
+# the TEST_BUILD_DIR env var is used in the null model's platform.yaml
+# so the model root directory path can be changed
+currPath=os.getcwd()
+SERIAL_TEST_PATH=f"{currPath}/fre/make/tests/compilation/serial_build"
+MULTIJOB_TEST_PATH=f"{currPath}/fre/make/tests/compilation/multijob_build"
+Path(SERIAL_TEST_PATH).mkdir(parents=True,exist_ok=True)
+Path(MULTIJOB_TEST_PATH).mkdir(parents=True,exist_ok=True)
+
+
+# test building the null model using gnu compilers
+def test_fre_make_run_fremake_serial_compile():
+    ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
+    os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, False, 1, False, True, VERBOSE)
+    assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
+
+def test_fre_make_run_fremake_multijob_compile():
+    ''' test run-fremake parallel compile with gnu'''
+    os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, True, 4, False, True, VERBOSE)
+    assert Path(f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
+
+
+# dockerfile tests
+
+#def test_fre_make_run_fremake_dockerfile_creation():
+#    ''' checks dockerfile creation for the container build'''
+#    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, False, False, VERBOSE)
+
