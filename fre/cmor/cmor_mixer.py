@@ -33,10 +33,28 @@ def from_dis_gimme_dis(from_dis, gimme_dis):
         return from_dis[gimme_dis][:].copy()
     except Exception as exc:
         print(f'(from_dis_gimme_dis) WARNING I am sorry, I could not not give you this: {gimme_dis}'
-              f'                                                             from this: {from_dis} '
+#              f'                                                             from this: {from_dis} '
               f'             exc = {exc}'              
               f'            returning None!'                                                      )
         return None
+
+def find_statics_file(bronx_file_path):
+    print('(find_statics_file) HELLO WORLD!')
+    #assert type(bronx_file_path) == "<class 'str'>"
+    bronx_file_path_elem=bronx_file_path.split('/')
+    num_elem=len(bronx_file_path_elem)
+    print(f'bronx_file_path_elem = {bronx_file_path_elem}')
+    while bronx_file_path_elem[num_elem-2] != 'pp':
+        bronx_file_path_elem.pop()
+        num_elem=num_elem-1
+        print(bronx_file_path_elem)
+    statics_path='/'.join(bronx_file_path_elem)
+    statics_file=glob.glob(statics_path+'/*static*.nc')[0]
+    if Path(statics_file).exists():
+        return statics_file
+    else:
+        return None
+    
 
 def create_lev_bnds(bound_these = None, with_these = None):
     the_bnds = None    
@@ -98,6 +116,7 @@ def get_iso_datetimes(var_filenames, iso_datetime_arr = None):
     #print(f"(get_iso_datetimes) Available dates: {iso_datetime_arr}")
     if len(iso_datetime_arr) < 1:
         raise ValueError('(get_iso_datetimes) ERROR: iso_datetime_arr has length 0!')
+
 
 def check_dataset_for_ocean_grid(ds):
     '''
@@ -193,7 +212,8 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                               netcdf_file = None,
                               target_var = None,
                               json_exp_config = None,
-                              json_table_config = None):#, tmp_dir = None            ):
+                              json_table_config = None, prev_path=None,
+                              ):#, tmp_dir = None            ):
     ''' 
     rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
     accepts six arguments, all required:
@@ -221,7 +241,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # ocean grids are not implemented yet.
     print( '(rewrite_netcdf_file_var) checking input netcdf file for oceangrid condition')
     uses_ocean_grid = check_dataset_for_ocean_grid(ds)
-
+    if uses_ocean_grid:
+        print('(rewrite_netcdf_file_var) OH BOY you have a file on the native tripolar grid...\n'
+              '                          ... this is gonna be fun!' )    
 
     # try to read what coordinate(s) we're going to be expecting for the variable
     expected_mip_coord_dims=None
@@ -249,7 +271,44 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, lon_bnds')
     lon_bnds = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lon_bnds")
-    
+
+    # the tripolar grid is designed to reduce distortions in ocean data brought on
+    # by singularities (poles) being placed in oceans (e.g. the N+S poles of standard sphere grid)
+    # but, the tripolar grid is complex, so the values stored in the file are a lat/lon *on the tripolar grid*
+    # in order to get spherical lat/lon, one would need to convert on the fly, but implementing such an inverse is not trivial
+    # thankfully, the spherical lat/lons tend to already be computed in advance, and stored elsewhere. at GFDL they're in "statics"
+    statics_file_path = None
+    if all( [ uses_ocean_grid,
+              lat is None,
+              lon is None      ] ):
+        try:
+            print(f'(rewrite_netcdf_file_var) netcdf_file is {netcdf_file}')
+            statics_file_path = find_statics_file(prev_path)
+            print(f'(rewrite_netcdf_file_var) statics_file_path is {statics_file_path}')
+        except Exception as exc:
+            print(f'(rewrite_netcdf_file_var) WARNING: pretty sure an ocean statics file is needed, but it could not be found.'
+                  '                                    moving on and doing my best, but i am probably going to break' )
+            raise Exception('EXITING BC STATICS') from exc
+        print(f"statics file found.")
+        statics_file_name=Path(statics_file_path).name
+        put_statics_file_here=str(Path(netcdf_file).parent)
+        shutil.copy(statics_file_path, put_statics_file_here)
+        del statics_file_path
+        statics_file_path = put_statics_file_here + '/' + statics_file_name
+        print(f'statics file path is now: {statics_file_path}')
+
+        statics_ds=nc.Dataset(statics_file_path, 'r')
+        lat = statics_ds['geolat'][:].copy()
+        lon = statics_ds['geolon'][:].copy()
+
+        #print(f' geolat = {lat}')
+        #assert False
+        
+
+        
+
+                  
+            
     # read in time_coords + units
     print(f'(rewrite_netcdf_file_var) attempting to read coordinate time, and units...')
     time_coords = from_dis_gimme_dis( from_dis = ds,
@@ -318,16 +377,19 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # setup cmor latitude axis if relevant
     cmor_lat = None
-    if any( [ lat is None, lat_bnds is None ] ):
+    if any( [ lat is None ] ):
         print(f'(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_lat')
     else:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lat')
-        cmor_lat = cmor.axis("latitude", coord_vals = lat, cell_bounds = lat_bnds, units = "degrees_N")
+        if lat_bnds is None:
+            cmor_lat = cmor.axis("latitude", coord_vals = lat[:], units = "degrees_N")
+        else:
+            cmor_lat = cmor.axis("latitude", coord_vals = lat[:], cell_bounds = lat_bnds, units = "degrees_N")
         print(f'                          DONE assigning cmor_lat')
 
     # setup cmor longitude axis if relevant
     cmor_lon = None
-    if any( [ lon is None, lon_bnds is None ] ):
+    if any( [ lon is None ] ):
         print(f'(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_lon')
     else:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lon')
@@ -600,7 +662,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
                                                        nc_file_work         ,
                                                        target_var           ,
                                                        json_exp_config      ,
-                                                       json_table_config      )
+                                                       json_table_config    , nc_fls[i]  )
         except Exception as exc:
             raise Exception('(cmorize_target_var_files) problem with rewrite_netcdf_file_var. exc=\n'
                             f'                           {exc}\n'
