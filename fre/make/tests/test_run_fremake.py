@@ -1,5 +1,4 @@
-''' test "fre make run-fremake" calls '''
-''' these tests assume your os is the ci image (gcc 14 + mpich on rocky 8)'''
+''' test "fre make run-fremake" calls without actual compilation '''
 
 import os
 from shutil  import rmtree
