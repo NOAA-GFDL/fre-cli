@@ -45,8 +45,8 @@ def test_run_fremake_multijob_compile():
     assert Path(f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # containerized build
-def test_run_fremake_dockerfile_creation():
-    ''' checks dockerfile creation for the container build'''
+def test_run_fremake_container_build():
+    ''' checks image creation for the container build'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, True, VERBOSE)
     assert Path("null_model_full-debug.sif").exists()
 
