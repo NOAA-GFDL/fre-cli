@@ -106,23 +106,23 @@ def test_run_fremake_container():
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, False, VERBOSE)
 
 def test_run_fremake_build_script_creation_container():
-    ''' checks container build script creation from previous set '''
+    ''' checks container build script creation from previous test '''
     assert Path("createContainer.sh").exists()
 
 def test_run_fremake_dockerfile_creation_container():
-    ''' checks dockerfile creation from previous set '''
-    assert Path("createContainer.sh").exists()
+    ''' checks dockerfile creation from previous test '''
+    assert Path("Dockerfile").exists()
 
 def test_run_fremake_checkout_script_creation_container():
-    ''' checks checkout script creation from previous set '''
+    ''' checks checkout script creation from previous test '''
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists()
 
 def test_run_fremake_makefile_creation_container():
-    ''' checks makefile creation from previous set '''
+    ''' checks makefile creation from previous test '''
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/Makefile").exists()
 
 def test_run_fremake_run_script_creation_container():
-    ''' checks (internal) container run script creation from previous set '''
+    ''' checks (internal) container run script creation from previous test '''
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
 
 # tests for builds with multiple targets
