@@ -150,4 +150,4 @@ class buildBaremetal():
             print(f"\nThere was an error running {self.bld}/compile.sh")
             print(f"Check the log file: {self.bld}/log.compile")
         else:
-            print(f"\nSuccessful run of {self.bld}/compile.sh")
+            print(f"\nSuccessful creation of {self.bld}/compile.sh")
