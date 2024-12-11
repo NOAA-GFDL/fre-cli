@@ -10,6 +10,7 @@ import fre.yamltools.combine_yamls as cy
 
 def dockerfile_write_steps(yaml_obj,img,run_env,target,td,cr,cb,cd):
     """
+    Go through steps to write the Dockerfile
     """
     dockerBuild = buildDocker.container(base = img,
                                         exp = yaml_obj["experiment"],
@@ -66,28 +67,25 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
                 raise ValueError (platformName + " does not exist in " + \
                                   modelYaml.combined.get("compile").get("platformYaml"))
 
-            ( compiler, modules, modulesInit, fc, cc, modelRoot,
-              iscontainer, mkTemplate, containerBuild, containerRun,
-              RUNenv ) = modelYaml.platforms.getPlatformFromName(platformName)
+            platform = modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the bldDir based on the modelRoot, the platform, and the target
-            srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+            srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
-            if iscontainer is True:
+            if platform["container"] is True:
                 image="ecpe4s/noaa-intel-prototype:2023.09.25"
-                bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
+                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
-
                 curr_dir = os.getcwd()
                 if not os.path.exists(f"{curr_dir}/Dockerfile"):
                     dockerfile_write_steps(yaml_obj = fremakeYaml,
                                            #makefile_obj = freMakefile,
                                            img = image,
-                                           run_env = RUNenv,
+                                           run_env = platform["RUNenv"],
                                            target = targetObject,
                                            td = tmpDir,
-                                           cr = containerRun,
-                                           cb = containerBuild,
+                                           cr = platform["containerRun"],
+                                           cb = platform["containerBuild"],
                                            cd = curr_dir)
                 else:
                     if force_dockerfile:

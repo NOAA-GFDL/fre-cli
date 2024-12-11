@@ -89,13 +89,12 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
             pass
         else:
             raise ValueError (platform_name + " does not exist in platforms.yaml")
-        ( compiler, modules, modules_init, fc, cc, model_root,
-          iscontainer, mk_template, container_build, container_run,
-          RUNenv ) = model_yaml.platforms.getPlatformFromName(platform_name)
 
-        ## Create the source directory for the platform
-        if iscontainer is False:
-            src_dir = model_root + "/" + fremake_yaml["experiment"] + "/src"
+        platform = model_yaml.platforms.getPlatformFromName(platform_name)
+
+        # Create the source directory for the platform
+        if not platform["container"]:
+            src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
             # if the source directory does not exist, it is created
             if not os.path.exists(src_dir):
                 os.system("mkdir -p " + src_dir)
@@ -126,14 +125,14 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                         subprocess.run(args=[src_dir+"/checkout.sh"], check=True)
                     except:
                         print("\nThere was an error with the checkout script "+src_dir+"/checkout.sh.",
-                              "\nTry removing test folder: " + model_root +"\n")
+                              "\nTry removing test folder: " + platform["modelRoot"] +"\n")
                         raise
                 else:
                     sys.exit()
 
         else:
             image="ecpe4s/noaa-intel-prototype:2023.09.25"
-            bld_dir = model_root + "/" + fremake_yaml["experiment"] + "/exec"
+            bld_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/exec"
             tmp_dir = "tmp/"+platform_name
             if not os.path.exists(tmp_dir+"/checkout.sh"):
                 # Create the checkout script
