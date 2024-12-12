@@ -28,7 +28,8 @@ def install(context, url, name, library_directory):
 @click.pass_context
 def list(context, library_directory):
     """List available plugins."""
-    print(available_plugins(library_directory))
+    for name in sorted(available_plugins(library_directory)):
+        print(name)
 
 
 @analysis_cli.command()
