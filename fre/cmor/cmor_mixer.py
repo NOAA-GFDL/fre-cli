@@ -22,7 +22,6 @@ DEBUG_MODE_RUN_ONE = True
 # ----- \end consts
 
 
-#### ------ helper functions  ------ ###
 def from_dis_gimme_dis(from_dis, gimme_dis):
     '''
     gives you gimme_dis from from_dis. accepts two arguments, both mandatory.
@@ -235,7 +234,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # open the input file
     print(f"(rewrite_netcdf_file_var) opening {netcdf_file}" )
-    ds = nc.Dataset(netcdf_file,'a')
+    ds = nc.Dataset(netcdf_file,'r+')#'a')
 
 
     # ocean grids are not implemented yet.
@@ -288,19 +287,60 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         except Exception as exc:
             print(f'(rewrite_netcdf_file_var) WARNING: pretty sure an ocean statics file is needed, but it could not be found.'
                   '                                    moving on and doing my best, but i am probably going to break' )
-            raise Exception('EXITING BC STATICS') from exc
-        print(f"statics file found.")
+            raise Exception('(rewrite_netcdf_file_var) EXITING BC STATICS') from exc
+        print(f"(rewrite_netcdf_file_var) statics file found.")
         statics_file_name=Path(statics_file_path).name
         put_statics_file_here=str(Path(netcdf_file).parent)
         shutil.copy(statics_file_path, put_statics_file_here)
         del statics_file_path
         statics_file_path = put_statics_file_here + '/' + statics_file_name
-        print(f'statics file path is now: {statics_file_path}')
+        print(f'(rewrite_netcdf_file_var) statics file path is now: {statics_file_path}')
 
         statics_ds=nc.Dataset(statics_file_path, 'r')
-        lat = statics_ds['geolat'][:].copy()
-        lon = statics_ds['geolon'][:].copy()
 
+        # grab the lat/lon points, have shape (yh, xh)
+        statics_lat = from_dis_gimme_dis(statics_ds, 'geolat')#statics_ds['geolat'][:]#.copy()
+        statics_lon = from_dis_gimme_dis(statics_ds, 'geolon')#statics_ds['geolon'][:]#.copy()
+        print(f'FOO min entry of geolat: {statics_lat[:].data.min()}')
+        print(f'BAR min entry of geolon: {statics_lon[:].data.min()}')
+
+        lat = ds.createVariable('lat', np.float32, ('yh', 'xh') )
+        lat[:] = statics_lat[:]        
+        lon = ds.createVariable('lon', np.float32, ('yh', 'xh') )
+        lon[:] = statics_lon[:]        
+        print(f'FOO min entry of lat: {lat[:].data.min()}')
+        print(f'BAR min entry of lon: {lon[:].data.min()}')
+
+        # grab the corners of the cells, should have shape (yh+1, xh+1)
+        lat_c = from_dis_gimme_dis(statics_ds,'geolat_c')
+        lon_c = from_dis_gimme_dis(statics_ds,'geolon_c')
+        print(f'FOO min entry of geolat_c: {lat_c[:].data.min()}')
+        print(f'BAR min entry of geolon_c: {lon_c[:].data.min()}')
+
+        vertex = 4
+        ds.createDimension('vertex', vertex)
+
+        lat_bnds = ds.createVariable('lat_bnds', np.float32, ('yh', 'xh', 'vertex') )
+        lat_bnds[:,:,0] = lat_c[1:,1:] # NE corner
+        lat_bnds[:,:,1] = lat_c[1:,:-1] # NW corner
+        lat_bnds[:,:,2] = lat_c[:-1,:-1] # SW corner
+        lat_bnds[:,:,3] = lat_c[:-1,1:] # SE corner
+
+
+        lon_bnds = ds.createVariable('lon_bnds', np.float32, ('yh', 'xh', 'vertex') )
+        lon_bnds[:,:,0] = lon_c[1:,1:] # NE corner
+        lon_bnds[:,:,1] = lon_c[1:,:-1] # NW corner
+        lon_bnds[:,:,2] = lon_c[:-1,:-1] # SW corner
+        lon_bnds[:,:,3] = lon_c[:-1,1:] # SE corner
+
+        #print ('EXITINGEXITINGEXITINGEXITINGEXITINGEXITINGEXITINGEXITINGEXITINGEXITING')
+        #assert False
+
+        
+
+        
+
+        
         #print(f' geolat = {lat}')
         #assert False
         
