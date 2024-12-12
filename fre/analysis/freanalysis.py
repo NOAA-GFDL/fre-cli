@@ -2,6 +2,8 @@ import click
 
 from .subtools import install_analysis_package, run_analysis, uninstall_analysis_package
 
+from analysis_scripts import available_plugins
+
 
 @click.group(help=click.style(" - access fre analysis subcommands", fg=(250, 154, 90)))
 def analysis_cli():
@@ -18,6 +20,15 @@ def analysis_cli():
 def install(context, url, name, library_directory):
     """Installs an analysis package."""
     install_analysis_package(url, name, library_directory)
+
+
+@analysis_cli.command()
+@click.option("--library-directory", type=str, required=False,
+              help="Path to a custom lib directory.")
+@click.pass_context
+def list(context, library_directory):
+    """List available plugins."""
+    print(available_plugins(library_directory))
 
 
 @analysis_cli.command()
