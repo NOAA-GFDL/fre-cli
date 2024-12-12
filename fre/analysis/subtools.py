@@ -90,7 +90,7 @@ def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
     with open(output_yaml, "w") as output:
         output.write("figure_paths:\n")
         for path in figure_paths:
-            output.write("  -{Path(path).resolve()}\n")
+            output.write(f"  -{Path(path).resolve()}\n")
 
 
 @click.command()
