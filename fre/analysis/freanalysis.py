@@ -17,7 +17,7 @@ def analysis_cli():
 @click.pass_context
 def install(context, url, name, library_directory):
     """Installs an analysis package."""
-    context.forward(install_analysis_package)
+    install_analysis_package(url, name, library_directory)
 
 
 @analysis_cli.command()
@@ -33,7 +33,8 @@ def install(context, url, name, library_directory):
 def run(context, name, catalog, output_directory, output_yaml, experiment_yaml,
         library_directory):
     """Runs the analysis script and writes the paths to the created figures to a yaml file."""
-    context.forward(run_analysis)
+    run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
+                 library_directory)
 
 
 @analysis_cli.command()
@@ -43,7 +44,7 @@ def run(context, name, catalog, output_directory, output_yaml, experiment_yaml,
 @click.pass_context
 def uninstall(context, name, library_directory):
     """Uninstall an analysis package."""
-    context.forward(uninstall_analysis_package)
+    uninstall_analysis_package(name, library_directory)
 
 
 if __name__ == "__main__":

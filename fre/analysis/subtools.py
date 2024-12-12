@@ -5,7 +5,6 @@ from sys import executable
 from tempfile import TemporaryDirectory
 
 from analysis_scripts import find_plugins, run_plugin
-import click
 from yaml import safe_load
 
 
@@ -22,7 +21,6 @@ def install(name, library_directory=None):
         run([executable, "-m", "pip", "install", name])
 
 
-@click.command()
 def install_analysis_package(url, name=None, library_directory=None):
     """Installs the analysis package.
 
@@ -54,7 +52,6 @@ def install_analysis_package(url, name=None, library_directory=None):
         install(f"{url}@main", library_directory)
 
 
-@click.command()
 def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
                  library_directory=None):
     """Runs the analysis script and writes the paths to the created figures to a yaml file.
@@ -93,7 +90,6 @@ def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
             output.write(f"  -{Path(path).resolve()}\n")
 
 
-@click.command()
 def uninstall_analysis_package(name, library_directory=None):
     """Uninstalls the analysis package.
 
