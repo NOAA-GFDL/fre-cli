@@ -1,24 +1,9 @@
-from os import chdir, getcwd
 from pathlib import Path
 from subprocess import run
-from sys import executable
 from tempfile import TemporaryDirectory
 
-from analysis_scripts import find_plugins, run_plugin
+from analysis_scripts import available_plugins, run_plugin, VirtualEnvManager
 from yaml import safe_load
-
-
-def install(name, library_directory=None):
-    """Helper function to install possibly using a target directory.
-
-    Args:
-        name: String name of the package to install.
-        library_directory: Path to target directory you want to install the package in.
-    """
-    if library_directory:
-        run([executable, "-m", "pip", "install", f"--target={str(library_directory)}", name])
-    else:
-        run([executable, "-m", "pip", "install", name])
 
 
 def install_analysis_package(url, name=None, library_directory=None):
@@ -29,27 +14,60 @@ def install_analysis_package(url, name=None, library_directory=None):
         name: String name of the analysis-script package.
         library_directory: Directory to install the package in.
     """
+    # Clean up the url if necessary.
     if not url.startswith("https://"):
         url = f"https://{url}"
     if not url.endswith(".git"):
         url = f"{url}.git"
 
+    # Get the absolute path of the input library_directory.
     if library_directory:
         library_directory = Path(library_directory).resolve()
 
     if name:
-        go_back_here = Path(getcwd())
-        with TemporaryDirectory() as tmpdirname:
-            tmp = Path(tmpdirname)
-            chdir(tmp)
-            run(["git", "clone", url, "scripts"])
-            chdir(tmp / "scripts" / "core" / "figure_tools")
-            install(".", library_directory)
-            chdir(tmp / "scripts" / "user-analysis-scripts" / name)
-            install(".", library_directory)
-            chdir(go_back_here)
+        # If a name is given, then expect that the analysis script is part or the noaa-gfdl
+        # github repository.
+        with TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            run(["git", "clone", url, str(tmp_path / "scripts")], check=True)
+
+            if library_directory:
+                # If a library directory is given, install the analysis script in a virtual
+                # environment.
+                env = VirtualEnvManager(library_directory)
+                env.create_env()
+                env.install_package(str(tmp_path / "scripts" / "core" / "analysis_scripts"))
+                env.install_package(str(tmp_path / "scripts" / "core" / "figure_tools"))
+                env.install_package(str(tmp_path / "scripts" / "user-analysis-scripts" / name))
+            else:
+                run(["pip", "install", str(tmp_path / "scripts" / "core" / "figure_tools")],
+                    check=True)
+                run(["pip", "install", str(tmp_path / "scripts" / "user-analysis-scripts" / name)],
+                    check=True)
     else:
-        install(f"{url}@main", library_directory)
+        if library_directory:
+            env = VirtualEnvManager(library_directory)
+            env.create_env()
+            env.install_package(str(tmp_path / "scripts" / "core" / "analysis_scripts"))
+            env.install_package(f"{url}@main")
+        else:
+            run(["pip", "install", f"{url}@main"])
+
+
+def list_plugins(library_directory=None):
+    """Finds the list of analysis scripts.
+
+    Args:
+        library_directory: Directory where the analysis package is installed.
+
+    Returns:
+        List of string plugin names.
+    """
+    if library_directory:
+        env = VirtualEnvManager(library_directory)
+        return env.list_plugins()
+    else:
+        return available_plugins()
 
 
 def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
@@ -76,12 +94,13 @@ def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
         except KeyError:
             configuration = None
 
-    # If using plugins installed in a custom directory, have python try to find them.
-    if library_directory:
-        find_plugins(library_directory)
-
     # Run the analysis.
-    figure_paths = run_plugin(name, catalog, output_directory, config=configuration)
+    if library_directory:
+        env = VirtualEnvManager(library_directory)
+        figure_paths = env.run_analysis_plugin(name, catalog, output_directory,
+                                               config=configuration)
+    else:
+        figure_paths = run_plugin(name, catalog, output_directory, config=configuration)
 
     # Write out the figure paths to a file.
     with open(output_yaml, "w") as output:
@@ -98,6 +117,7 @@ def uninstall_analysis_package(name, library_directory=None):
         library_directory: Directory where the package was installed.
     """
     if library_directory:
-        run(["python", "-m", "pip", "uninstall", f"--target={library_directory}", name])
+        env = VirtualEnvManager(library_directory)
+        env.uninstall_package(name)
     else:
-        run(["python", "-m", "pip", "uninstall", name])
+        run(["pip", "uninstall", name], check=True)

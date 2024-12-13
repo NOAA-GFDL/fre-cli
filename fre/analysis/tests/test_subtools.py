@@ -1,9 +1,10 @@
 from pathlib import Path
 import pytest
+from subprocess import CalledProcessError
 from tempfile import TemporaryDirectory
 
-from analysis_scripts import find_plugins, available_plugins, UnknownPluginError
-from fre.analysis.subtools import install_analysis_package, run_analysis
+from analysis_scripts import available_plugins, UnknownPluginError
+from fre.analysis.subtools import install_analysis_package, list_plugins, run_analysis
 
 
 def make_experiment_yaml(path, name, whitespace="  "):
@@ -27,9 +28,8 @@ def test_install_analysis_package():
     name = "freanalysis_clouds"
     with TemporaryDirectory() as tmp:
          install_analysis_package(url, name, tmp)
-         assert Path(tmp) / name in [x for x  in Path(tmp).iterdir() if x.is_dir()]
-         find_plugins(tmp)
-         assert name in available_plugins()
+         plugins = list_plugins(tmp)
+         assert name in list_plugins(tmp)
 
 
 def test_run_analysis():
@@ -38,13 +38,17 @@ def test_run_analysis():
     with TemporaryDirectory() as tmp:
         experiment_yaml = Path(tmp) / "experiment.yaml"
         make_experiment_yaml(experiment_yaml, name)
-        library_directory = Path(tmp) / "lib"
+        library_directory = Path(tmp) / "env"
         url = "github.com/noaa-gfdl/analysis-scripts"
+        catalog = Path(tmp) / "fake-catalog"
         install_analysis_package(url, name, library_directory)
-        find_plugins(str(library_directory))
-        with pytest.raises(FileNotFoundError):
-            run_analysis(name, "fake-catalog", ".", "output.yaml", experiment_yaml,
+        with pytest.raises(CalledProcessError) as err:
+            run_analysis(name, str(catalog), ".", "output.yaml", experiment_yaml,
                          library_directory)
+        for line in err._excinfo[1].output.decode("utf-8").split("\n"):
+            if f"No such file or directory: '{str(catalog)}'" in line:
+                return
+        assert False
 
 
 def test_run_unknown_analysis():
@@ -53,5 +57,5 @@ def test_run_unknown_analysis():
     with TemporaryDirectory() as tmp:
         experiment_yaml = Path(tmp) / "experiment.yaml"
         make_experiment_yaml(experiment_yaml, name)
-        with pytest.raises(UnknownPluginError):
-            run_analysis(name, "fake-catalog", ".", "output.yaml", experiment_yaml, tmp)
+        with pytest.raises(UnknownPluginError) as err:
+            run_analysis(name, "fake-catalog", ".", "output.yaml", experiment_yaml)
