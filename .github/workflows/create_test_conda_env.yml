@@ -1,12 +1,13 @@
 name: create_test_conda_env
 
-on: [pull_request]
+on: [pull_request, push]
 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
+      options: "--cap-add CAP_SYS_ADMIN --security-opt apparmor=unconfined" # needed for podman
     steps:
       - uses: actions/checkout@v4
         with:
