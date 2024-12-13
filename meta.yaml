@@ -62,6 +62,7 @@ test:
     # - fre.run
     # - fre.test
     - fre.yamltools
+    - fre.analysis
   commands:
     - pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     # run pytest but ignore any tests that require compilation
@@ -72,11 +73,12 @@ test:
     # - fre check --help
     - fre cmor --help
     # - fre list --help
-    - fre make --help    
+    - fre make --help
     - fre pp --help
     # - fre run --help
     # - fre test --help
     - fre yamltools --help
+    - fre analysis --help
 
 
 about:
