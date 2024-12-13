@@ -41,20 +41,20 @@ def makefile_create(yamlfile,platform,target):
             else:
                 raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
 
-            (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
+            platform=modelYaml.platforms.getPlatformFromName(platformName)
   ## Make the bldDir based on the modelRoot, the platform, and the target
-            srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+            srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
-            if iscontainer is False:
+            if platform["container"] is False:
                 baremetalRun = True
-                bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + targetObject.gettargetName() + "/exec"
+                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + targetObject.gettargetName() + "/exec"
                 os.system("mkdir -p " + bldDir)
                 ## Create the Makefile
                 freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
                                              libs = fremakeYaml["baremetal_linkerflags"],
                                              srcDir = srcDir,
                                              bldDir = bldDir,
-                                             mkTemplatePath = mkTemplate)
+                                             mkTemplatePath = platform["mkTemplate"])
                 # Loop through components and send the component name, requires, and overrides for the Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
@@ -62,13 +62,13 @@ def makefile_create(yamlfile,platform,target):
                 click.echo("\nMakefile created at " + bldDir + "/Makefile" + "\n")
             else:
                 image="ecpe4s/noaa-intel-prototype:2023.09.25"
-                bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
+                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
                                                       libs = fremakeYaml["container_addlibs"],
                                                       srcDir = srcDir,
                                                       bldDir = bldDir,
-                                                      mkTemplatePath = mkTemplate,
+                                                      mkTemplatePath = platform["mkTemplate"],
                                                       tmpDir = tmpDir)
 
                 # Loop through compenents and send the component name and requires for the Makefile

@@ -2,6 +2,7 @@
 
 import os
 import sys
+import subprocess
 from pathlib import Path
 import click
 #from .gfdlfremake import varsfre, targetfre, makefilefre, platformfre, yamlfre, buildDocker
@@ -44,22 +45,20 @@ def dockerfile_create(yamlfile,platform,target,execute):
                 raise ValueError (platformName + " does not exist in " + \
                                   modelYaml.combined.get("compile").get("platformYaml"))
 
-            ( compiler, modules, modulesInit, fc, cc, modelRoot,
-              iscontainer, mkTemplate, containerBuild, containerRun,
-              RUNenv ) = modelYaml.platforms.getPlatformFromName(platformName)
+            platform = modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the bldDir based on the modelRoot, the platform, and the target
-            srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+            srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
-            if iscontainer is True:
+            if platform["container"] is True:
                 image="ecpe4s/noaa-intel-prototype:2023.09.25"
-                bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
+                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
 
                 dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],
                                               libs = fremakeYaml["container_addlibs"],
-                                              RUNenv = RUNenv,
+                                              RUNenv = platform["RUNenv"],
                                               target = targetObject)
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
                 dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
@@ -67,15 +66,18 @@ def dockerfile_create(yamlfile,platform,target,execute):
                 for c in fremakeYaml['src']:
                     dockerBuild.writeDockerfileMkmf(c)
 
-                dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
+                dockerBuild.writeRunscript(platform["RUNenv"],platform["containerRun"],tmpDir+"/execrunscript.sh")
                 currDir = os.getcwd()
                 click.echo("\ntmpDir created in " + currDir + "/tmp")
                 click.echo("Dockerfile created in " + currDir +"\n")
 
-            if run:
-                dockerBuild.build(containerBuild, containerRun)
-            else:
-                sys.exit()
+                # create build script for container
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
+                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
+
+                # run the script if option is given
+                if run:
+                    subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
 @click.command()
 def _dockerfile_create(yamlfile,platform,target,execute):

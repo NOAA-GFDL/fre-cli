@@ -10,12 +10,13 @@ import logging
 from multiprocessing.dummy import Pool
 from pathlib import Path
 import click
+import subprocess
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -71,15 +72,12 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
             raise ValueError(f'{platformName} does not exist in '
                              f'{modelYaml.combined.get("compile").get("platformYaml")}')
 
-        ( compiler, modules, modulesInit,
-          fc, cc, modelRoot, iscontainer,
-          mkTemplate, containerBuild, ContainerRun,
-          RUNenv ) = modelYaml.platforms.getPlatformFromName(platformName)
+        platform = modelYaml.platforms.getPlatformFromName(platformName)
 
         ## Create the checkout script
-        if not iscontainer:
+        if not platform["container"]:
             ## Create the source directory for the platform
-            srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+            srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             if not os.path.exists(srcDir):
                 os.system("mkdir -p " + srcDir)
             if not os.path.exists(srcDir+"/checkout.sh"):
@@ -87,6 +85,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                 freCheckout.finish(pc)
                 os.chmod(srcDir+"/checkout.sh", 0o744)
+                print("\nCheckout script created at "+ srcDir + "/checkout.sh \n")
                 ## TODO: Options for running on login cluster?
                 freCheckout.run()
 
@@ -99,19 +98,16 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                 pass
             else:
                 raise ValueError (platformName + " does not exist in " + modelYaml.platformsfile)
-            ( compiler, modules, modulesInit,
-              fc, cc, modelRoot, iscontainer,
-              mkTemplate, containerBuild, containerRun,
-              RUNenv ) = modelYaml.platforms.getPlatformFromName(platformName)
+            platform = modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the source directory based on the modelRoot and platform
-            srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+            srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
 
             ## Check for type of build
-            if not iscontainer:
+            if not platform["container"]:
                 baremetalRun = True
                 ## Make the build directory based on the modelRoot, the platform, and the target
-                bldDir = f'{modelRoot}/{fremakeYaml["experiment"]}/' + \
+                bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
                          f'{platformName}-{target.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
 
@@ -120,36 +116,40 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                                                    libs = fremakeYaml["baremetal_linkerflags"],
                                                    srcDir = srcDir,
                                                    bldDir = bldDir,
-                                                   mkTemplatePath = mkTemplate)
+                                                   mkTemplatePath = platform["mkTemplate"])
 
 
                 # Loop through components, send component name/requires/overrides for Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
+                print("\nMakefile created at " + bldDir + "/Makefile" + "\n")
                 freMakefile.writeMakefile()
 
                 ## Create a list of compile scripts to run in parallel
                 fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
-                                                             mkTemplatePath = mkTemplate,
+                                                             mkTemplatePath = platform["mkTemplate"],
                                                              srcDir = srcDir,
                                                              bldDir = bldDir,
                                                              target = target,
-                                                             modules = modules,
-                                                             modulesInit = modulesInit,
+                                                             modules = platform["modules"],
+                                                             modulesInit = platform["modulesInit"],
                                                              jobs = jobs)
 
                 for c in fremakeYaml['src']:
                     fremakeBuild.writeBuildComponents(c)
                 fremakeBuild.writeScript()
                 fremakeBuildList.append(fremakeBuild)
-                ## Run the build
-                fremakeBuild.run()
+                ## Run the build if --execute option given, otherwise print out compile script path
+                if execute:
+                    fremakeBuild.run()
+                else:
+                    print("Compile script created at "+ bldDir+"/compile.sh\n\n")
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
                 #          image="hpc-me-intel:2021.1.1"
                 image="ecpe4s/noaa-intel-prototype:2023.09.25"
-                bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/exec"
+                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
 
                 ## Create the checkout script
@@ -163,7 +163,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                                                             libs = fremakeYaml["container_addlibs"],
                                                             srcDir = srcDir,
                                                             bldDir = bldDir,
-                                                            mkTemplatePath = mkTemplate,
+                                                            mkTemplatePath = platform["mkTemplate"],
                                                             tmpDir = tmpDir)
 
                 # Loop through components and send the component name and requires for the Makefile
@@ -175,7 +175,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                 dockerBuild = buildDocker.container(base = image,
                                                     exp = fremakeYaml["experiment"],
                                                     libs = fremakeYaml["container_addlibs"],
-                                                    RUNenv = RUNenv,
+                                                    RUNenv = platform["RUNenv"],
                                                     target = target)
 
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
@@ -185,28 +185,34 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verb
                 for c in fremakeYaml['src']:
                     dockerBuild.writeDockerfileMkmf(c)
 
-                dockerBuild.writeRunscript(RUNenv,containerRun,tmpDir+"/execrunscript.sh")
+                dockerBuild.writeRunscript(platform["RUNenv"],platform["containerRun"],tmpDir+"/execrunscript.sh")
 
-                ## Run the dockerfile; build the container
-                dockerBuild.build(containerBuild,containerRun)
+                # Create build script for container
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
+                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
+
+                # Execute if flag is given
+                if execute:
+                    subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
                 #freCheckout.cleanup()
                 #buildDockerfile(fremakeYaml,image)
 
     if baremetalRun:
         if __name__ == '__main__':
-            # Create a multiprocessing Pool
-            pool = Pool(processes=nparallel)
-            # process data_inputs iterable with pool
-            pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)
+            if execute:
+                # Create a multiprocessing Pool
+                pool = Pool(processes=nparallel)
+                # process data_inputs iterable with pool
+                pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)
 
 @click.command()
-def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose):
+def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
     '''
     Decorator for calling _fremake_run - allows the decorated version
     of the function to be separate from the undecorated version
     '''
-    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,verbose)
+    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose)
 
 if __name__ == "__main__":
     fremake_run()

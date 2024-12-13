@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 '''
  Primary Usage: fre-bronx-to-canopy -x XML -e EXP -p PLATFORM -t TARGET
 
@@ -686,11 +685,11 @@ def _convert(xml, platform, target, experiment, do_analysis=False, historydir=No
 ##############################################
 
 @click.command()
-def convert():
+def _convert():
     '''
     Wrapper for convert call - allows users to call without command-line args
     '''
-    _convert()
+    convert()
 
 if __name__ == '__main__':
     convert()
