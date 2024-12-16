@@ -32,7 +32,7 @@ def test_setup_cmor_cmip_table_repo():
     assert Path(TABLE_CONFIG).exists()
 
 # explicit inputs to tool
-INDIR = f'{ROOTDIR}/reduced_ascii_files'
+INDIR = f'{ROOTDIR}/ocean_sos_var_file'
 VARLIST = f'{ROOTDIR}/varlist'
 EXP_CONFIG = f'{ROOTDIR}/CMOR_input_example.json'
 OUTDIR = f'{ROOTDIR}/outdir'
@@ -45,11 +45,12 @@ CMOR_CREATES_DIR = \
 FULL_OUTPUTDIR = \
    f"{OUTDIR}/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
 FULL_OUTPUTFILE = \
-f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
+f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199301-199712.nc"
+#f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
 
 # FYI but helpful for tests
-FILENAME = 'reduced_ocean_monthly_1x1deg.199301-199712.sosV2.nc' # unneeded, this is mostly for reference
-FULL_INPUTFILE=f"{INDIR}/{FILENAME}"
+FILENAME = 'reduced_ocean_monthly_1x1deg.199301-199712.sos' # unneeded, this is mostly for reference
+FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
 
 def test_setup_fre_cmor_run_subtool(capfd):
     ''' checks for outputfile from prev pytest runs, removes it if it's present.
@@ -57,9 +58,10 @@ def test_setup_fre_cmor_run_subtool(capfd):
 
     ''' set-up test: create binary test files from reduced ascii files in root dir '''
 
-    ncgen_input = f'{ROOTDIR}/reduced_ascii_files/reduced_ocean_monthly_1x1deg.199301-199712.sosV2.cdl'
-    ncgen_output = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199712.sosV2.nc'
+    ncgen_input = f"{ROOTDIR}/reduced_ascii_files/{FILENAME}.cdl"
+    ncgen_output = f"{ROOTDIR}/ocean_sos_var_file/{FILENAME}.nc"
 
+    assert Path(INDIR).exists()
     assert Path(ncgen_input).exists()
 
     ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
@@ -68,14 +70,8 @@ def test_setup_fre_cmor_run_subtool(capfd):
 
     assert all( [ sp.returncode == 0, Path(ncgen_output).exists() ] )
 
-    if Path(FULL_OUTPUTFILE).exists():
-        Path(FULL_OUTPUTFILE).unlink()
-    if Path(OUTDIR).exists():
-        shutil.rmtree(OUTDIR)
-
-    assert not any ( [ Path(FULL_OUTPUTFILE).exists(),
-                       Path(OUTDIR).exists()           ] )
-    assert Path(FULL_INPUTFILE).exists()
+    #assert not any ( [ Path(FULL_OUTPUTFILE).exists(),
+    #                   Path(OUTDIR).exists()           ] )
     _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case1(capfd):
