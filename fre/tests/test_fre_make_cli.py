@@ -49,7 +49,7 @@ def test_cli_fre_make_create_checkout_container():
     ''' fre make create-checkout -y am5.yaml -p hpcme.2023 -t debug'''
     # Set paths and click options
     test_dir = Path("fre/tests")
-    yamlfile = Path("fre/make/tests/AM5_example/")
+    yamlfile = Path("fre/make/tests/null_example/")
     platform = "hpcme.2023"
     target = "debug"
 
