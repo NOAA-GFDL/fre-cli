@@ -1,71 +1,58 @@
 name: create_test_conda_env
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '>=3.9'
-      - name: Add conda to system path
-        run: |
-          # $CONDA is an env var pointing to root of miniconda dir
-          echo $CONDA/bin >> $GITHUB_PATH
-
       - name: Create fre-cli environment
         run: |
           # create environment containing all dependencies
           # the env cannot be explicitly activated in github CI/CD
           conda env create -f environment.yml --name fre-cli
 
-          # add conda env's executables to github's PATH equiv.
-          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+          # sets CONDA to wherever it may be on the image
+          source /root/.bashrc
 
-          ## use *conda environment's pip* to install fre-cli
-          ## called w/ full path to conda's python for explicitness
-          ## called as a module (-m pip) for explicitness
+          # add conda env's executables and mkmf to github's PATH equiv.
+          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+          echo $PWD/mkmf/bin >> $GITHUB_PATH
+
+          # use *conda environment's pip* to install fre-cli
+          # called w/ full path to conda's python for explicitness
+          # called as a module (-m pip) for explicitness
           $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
 
       - name: Run pytest in fre-cli environment
         run: |
-          # try to make sure the right things are in GITHUB_PATH
-          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-          
-          # are we talking to the right python?
-          which python
-          python --version
-          $CONDA/envs/fre-cli/bin/python --version
-          
+          # add spack installed binaries to front of path so that
+          # conda's netcdf/hdf5 installs don't break compilation tests
+          export path_save=$PATH
+          export PATH="/opt/views/view/bin:$PATH"
+
           # run pytest
           pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
-          
-          # install genbadge to generate coverage badge based on xml
+
+          # restore original path and install genbadge to generate coverage badge based on xml
+          export PATH="$path_save"
           pip install genbadge
           genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
           genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
-        
+
       - name: Run pylint in fre-cli environment
         run: |
-          # try to make sure the right things are in GITHUB_PATH
-          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-
-          # are we talking to the right python?
-          which python
-          python --version
-          $CONDA/envs/fre-cli/bin/python --version
-          
-          # run pylint, ignored modules avoid warnings arising from code internal to those modules 
+          # run pylint, ignored modules avoid warnings arising from code internal to those modules
           pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
 
       - name: Install Sphinx and Build Documentation
         run: |
-          pip install sphinx renku-sphinx-theme sphinx-rtd-theme          
+          pip install sphinx renku-sphinx-theme sphinx-rtd-theme
           pip install --upgrade sphinx-rtd-theme
           sphinx-apidoc --output-dir docs fre/ --separate
           sphinx-build docs build
