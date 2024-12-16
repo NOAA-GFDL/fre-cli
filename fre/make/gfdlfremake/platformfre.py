@@ -23,15 +23,6 @@ class platforms ():
                 p["compiler"]
             except:
                 raise Exception("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n")
-            ## Check for the Fortran (fc) and C (cc) compilers
-            try:
-                p["fc"]
-            except:
-                raise Exception("You must specify the name of the Fortran compiler as fc on the "+p["name"]+" platform in the file "+fname+"\n")
-            try:
-                p["cc"]
-            except:
-                raise Exception("You must specify the name of the Fortran compiler as cc on the "+p["name"]+" platform in the file "+fname+"\n")
             ## Check for modules to load
             try:
                 p["modules"]
@@ -118,7 +109,7 @@ class platforms ():
         """
         for p in self.yaml:
             if p["name"] == name:
-                return (p["compiler"], p["modules"], p["modulesInit"], p["fc"], p["cc"], p["modelRoot"],p["container"], p["mkTemplate"],p["containerBuild"], p["containerRun"], p["RUNenv"])
+                return p
     def getContainerInfoFromName(self,name):
         """
         Brief: Return a tuple of the container information
