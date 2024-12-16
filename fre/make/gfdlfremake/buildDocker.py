@@ -186,14 +186,14 @@ class container():
         with open(runOnDisk,"a") as f:
             f.write("# Run executable\n")
             f.write(self.bld+"/"+self.e+".x\n")
-            #copy runscript into container in dockerfile
+        #copy runscript into container in dockerfile
         self.d.write("COPY "+runOnDisk+" "+self.bld+"/execrunscript.sh\n")
         #make runscript executable
         self.d.write("RUN chmod 744 "+self.bld+"/execrunscript.sh\n")
         #link runscript to more general location (for frerun container usage)
         self.d.write("RUN mkdir -p /apps/bin \ \n")
         self.d.write(" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh \n")
-    #finish the dockerfile
+        #finish the dockerfile
         self.d.writelines(self.setup)
         # Check if there is a RUNenv.  If there is not, then do not use the &&
         if self.setup == ["RUN \\ \n"]:

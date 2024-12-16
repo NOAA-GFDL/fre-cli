@@ -82,7 +82,7 @@ Guide
 
 For the container build, parallel checkouts are not supported, so the `-npc` options must be used for the checkout script. In addition the platform must be a container platform.
 
-Users will not be able to create containers unless they have podman access on gaea.
+Gaea users will not be able to create containers unless they have requested and been given podman access.
 
 .. code-block::
 

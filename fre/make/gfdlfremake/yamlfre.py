@@ -56,14 +56,11 @@ class compileYaml():
         # Check if self.yaml is None
         if self.yaml is None:
             raise ValueError("The provided compileinfo is None. It must be a valid dictionary.")
-
         ## Check for required experiment name
         try:
             self.yaml["experiment"]
         except KeyError:
-            print("You must set an experiment name to compile \n")
-            raise
-
+            raise KeyError("You must set an experiment name to compile \n")
         ## Check for optional libraries and packages for linking in container
         try:
             self.yaml["container_addlibs"]
