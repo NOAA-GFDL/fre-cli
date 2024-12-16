@@ -15,4 +15,4 @@ platforms:
    - name: ci.gnu
      compiler: gnu
      mkTemplate: /__w/fre-cli/fre-cli/mkmf/templates/linux-ubuntu-xenial-gnu.mk
-     modelRoot: ${HOME}/fremake_canopy/test
+     modelRoot: ${TEST_BUILD_DIR}/fremake_canopy/test
