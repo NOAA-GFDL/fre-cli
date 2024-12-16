@@ -1,19 +1,16 @@
 #tests for the create-checkout step of fre-make, for null_model.yaml
-import os
-from fre import fre
 from pathlib import Path
-from fre.pp import configure_script_yaml as csy
-from click.testing import CliRunner
+import os
 import subprocess
 from fre.make import createCheckout
 
 # Set example yaml paths, input directory
-test_dir = Path("fre/make/tests/null_example")
-yamlfile = Path(f"{test_dir}/null_model.yaml")
+TEST_DIR = Path("fre/make/tests")
+YAMLFILE = Path(f"{TEST_DIR}/null_example/null_model.yaml")
 
 #set platform and target
-platform = ["ncrc5.intel"]
-target = ["debug"]
+PLATFORM = "ncrc5.intel"
+TARGET = "debug"
 
 #set output directory
 #out_dir = Path(f"fre/make/tests/null_example/fre_make_out")
@@ -21,16 +18,17 @@ target = ["debug"]
 
 # Set home for ~/cylc-src location in script
 #os.environ["HOME"]=str(Path(f"{out_dir}"))
-HOME_DIR = os.environ["HOME"]
+OUT = f"{TEST_DIR}/checkout_out"
+def_home = str(os.environ["HOME"]) 
+os.environ["HOME"]=OUT#str(Path(OUT)) 
+
 #run checkout command
-runner = CliRunner()
 
 def test_checkout_script_exists():
     """
     Make sure checkout file exists
     """
-    result = runner.invoke(fre.fre, args=["make","create-checkout","-y",yamlfile,"-p",platform,"-t",target])
-    #createCheckout.checkout_create(["null_model.yaml","ncrc5.intel","debug"])
+    result = createCheckout.checkout_create(YAMLFILE,PLATFORM,TARGET,no_parallel_checkout=False, jobs=False, verbose=False, execute=False)
     assert result.exit_code == 0
     assert Path(f"{HOME_DIR}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
@@ -40,6 +38,6 @@ def test_checkout_execute():
     """
     #subprocess.run(["rm","-rf",f"{out_dir}"])
     subprocess.run(["rm","-rf"])
-    result = runner.invoke(fre.fre, args=["make","create-checkout","-y",yamlfile,"-p",platform,"-t",target,"--execute"])
+    result = createCheckout.checkout_create(YAMLFILE,PLATFORM,TARGET,no_parallel_checkout=False, jobs=False, verbose=False, execute=False)
     assert (result.exit_code == 0)
 
