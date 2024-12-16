@@ -103,45 +103,45 @@ Users will not be able to create containers unless they have podman access on ga
 
 Quickstart
 ----------
-The quickstart instructions can be used with the am5-compile examples located in the fre-examples repository: https://github.com/NOAA-GFDL/fre-examples/tree/main/AM5/am5-compile
+The quickstart instructions can be used with the null model example located in the fre-cli repository: https://github.com/NOAA-GFDL/fre-cli/tree/main/fre/make/tests/null_example
 
 1. Bare-metal Build:
 
 .. code-block::
 
   # Create checkout script
-  fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod
+  fre make create-checkout -y null_model.yaml -p ncrc5.intel23 -t prod
 
   # Create and run checkout script
-  fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod --execute
+  fre make create-checkout -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
   # Create Makefile
-  fre make create-makefile -y am5.yaml -p ncrc5.intel23 -t prod
+  fre make create-makefile -y null_model.yaml -p ncrc5.intel23 -t prod
 
   # Create the compile script
-  fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod
+  fre make create-compile -y null_model.yaml -p ncrc5.intel23 -t prod
 
   # Create and run the compile script
-  fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod --execute
+  fre make create-compile -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
 2. Bare-metal Build Multi-target:
 
 .. code-block::
 
   # Create checkout script
-  fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod -t debug
+  fre make create-checkout -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
   # Create and run checkout script
-  fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t prod -t debug --execute
+  fre make create-checkout -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
   # Create Makefile
-  fre make create-makefile -y am5.yaml -p ncrc5.intel23 -t prod -t debug
+  fre make create-makefile -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
   # Create the compile script
-  fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod -t debug
+  fre make create-compile -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
   # Create and run the compile script
-  fre make create-compile -y am5.yaml -p ncrc5.intel23 -t prod -t debug --execute
+  fre make create-compile -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
 3. Container Build:
 
@@ -150,28 +150,34 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
 .. code-block::
 
   # Create checkout script
-  fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod -npc
+  fre make create-checkout -y null_model.yaml -p hpcme.2023 -t prod -npc
 
   # Create and run checkout script
-  fre make create-checkout -y am5.yaml -p hpcme.2023 -t prod -npc --execute
+  fre make create-checkout -y null_model.yaml -p hpcme.2023 -t prod -npc --execute
 
   # Create Makefile
-  fre make create-makefile -y am5.yaml -p hpcme.2023 -t prod
+  fre make create-makefile -y null_model.yaml -p hpcme.2023 -t prod
 
   # Create Dockerfile
-  fre make create-dockerfile -y am5.yaml -p hpcme.2023 -t prod
+  fre make create-dockerfile -y null_model.yaml -p hpcme.2023 -t prod
 
   # Create and run the Dockerfile
-  fre make create-dockerfile -y am5.yaml -p hpcme.2023 -t prod --execute
+  fre make create-dockerfile -y null_model.yaml -p hpcme.2023 -t prod --execute
 
 4. Run all of fremake:
 
-Currently, run-fremake kicks off the compilation automatically; no ``--execute`` option needed.
+`run-fremake` kicks off the compilation automatically
 
 .. code-block::
 
-  # Bare-metal
-  fre make run-fremake -y am5.yaml -p ncrc5.intel23 -t prod
+  # Bare-metal: create and run checkout script, create makefile, create compile script
+  fre make run-fremake -y null_model.yaml -p ncrc5.intel23 -t prod
 
-  # Container
-  fre make run-fremake -y am5.yaml -p hpcme.2023 -t prod -npc
+  # Bare-metal: create and run checkout script, create makefile, create and run compile script
+  fre make run-fremake -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+
+  # Container: create checkout script, makefile, and dockerfile
+  fre make run-fremake -y null_model.yaml -p hpcme.2023 -t prod -npc
+
+  # Container: create checkout script, makefile, create and run dockerfile to build container
+  fre make run-fremake -y null_model.yaml -p hpcme.2023 -t prod -npc --execute
