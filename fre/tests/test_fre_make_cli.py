@@ -23,7 +23,7 @@ def test_cli_fre_make_opt_dne():
     assert result.exit_code == 2
 
 def test_cli_fre_make_create_checkout_baremetal():
-    ''' fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t debug'''
+    ''' fre make create-checkout -y null_model.yaml -p ncrc5.intel23 -t debug'''
     # Set paths and click options
     test_dir = Path("fre/tests")
     yamlfile = Path("fre/make/tests/null_example")
@@ -46,7 +46,7 @@ def test_cli_fre_make_create_checkout_baremetal():
                  os.access(Path(f"{out_path}/fremake_canopy/test/null_model_full/src/checkout.sh"), os.X_OK)])
 
 def test_cli_fre_make_create_checkout_container():
-    ''' fre make create-checkout -y am5.yaml -p hpcme.2023 -t debug'''
+    ''' fre make create-checkout -y null_model.yaml -p hpcme.2023 -t debug'''
     # Set paths and click options
     test_dir = Path("fre/tests")
     yamlfile = Path("fre/make/tests/null_example/")
@@ -54,7 +54,7 @@ def test_cli_fre_make_create_checkout_container():
     target = "debug"
 
     # run create-checkout
-    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/am5.yaml", "-p", platform, "-t", target])
+    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target])
 
     # Check for successful command, creation of checkout script, and that script is executable (os.access - checks is file has specific access mode, os.X_OK - checks executable permission)
     assert all ([result.exit_code == 0,
