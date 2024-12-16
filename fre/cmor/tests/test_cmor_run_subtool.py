@@ -45,11 +45,10 @@ CMOR_CREATES_DIR = \
 FULL_OUTPUTDIR = \
    f"{OUTDIR}/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
 FULL_OUTPUTFILE = \
-f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199301-199712.nc"
-#f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
+f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199308.nc"
 
 # FYI but helpful for tests
-FILENAME = 'reduced_ocean_monthly_1x1deg.199301-199712.sos' # unneeded, this is mostly for reference
+FILENAME = 'reduced_ocean_monthly_1x1deg.199307-199308.sos' # unneeded, this is mostly for reference
 FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
 
 def test_setup_fre_cmor_run_subtool(capfd):
@@ -115,10 +114,11 @@ def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
                              check=False,
                              capture_output=True
     )
+    print("aaaaaaaaaaaaaaaaaaaaaaaa", result)
     # err_list has length two if end in newline
     err_list = result.stderr.decode().split('\n')
     expected_err = \
-        "DIFFER : FILE FORMATS : NC_FORMAT_64BIT <> NC_FORMAT_NETCDF4_CLASSIC"
+        "DIFFER : FILE FORMATS : NC_FORMAT_NETCDF4 <> NC_FORMAT_NETCDF4_CLASSIC"
     assert all( [result.returncode == 1,
                  len(err_list)==2,
                  '' in err_list,
@@ -237,7 +237,7 @@ def test_fre_cmor_run_subtool_case2_output_compare_data(capfd):
                           )
 
     err_list = result.stderr.decode().split('\n')#length two if end in newline
-    expected_err="DIFFER : FILE FORMATS : NC_FORMAT_64BIT <> NC_FORMAT_NETCDF4_CLASSIC"
+    expected_err="DIFFER : FILE FORMATS : NC_FORMAT_NETCDF4 <> NC_FORMAT_NETCDF4_CLASSIC"
     assert all( [result.returncode == 1,
                  len(err_list)==2,
                  '' in err_list,
