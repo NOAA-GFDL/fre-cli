@@ -2,7 +2,7 @@
 from pathlib import Path
 import os
 import subprocess
-from fre.make import createCheckout
+from fre.make import create_checkout_script
 
 # Set example yaml paths, input directory
 TEST_DIR = Path("fre/make/tests")
