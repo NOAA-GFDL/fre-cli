@@ -1,5 +1,6 @@
 import os
 import json
+from pathlib import Path
 import yaml
 from jsonschema import validate, ValidationError, SchemaError
 from . import platformfre
@@ -52,14 +53,14 @@ class compileYaml():
         """
         # compile information from the combined yaml
         self.yaml = compileinfo
-
-        ## Check the yaml for required things
+        # Check if self.yaml is None
+        if self.yaml is None:
+            raise ValueError("The provided compileinfo is None. It must be a valid dictionary.")
         ## Check for required experiment name
         try:
             self.yaml["experiment"]
-        except:
-            print("You must set an experiment name to compile \n")
-            raise
+        except KeyError:
+            raise KeyError("You must set an experiment name to compile \n")
         ## Check for optional libraries and packages for linking in container
         try:
             self.yaml["container_addlibs"]
@@ -170,14 +171,15 @@ class freyaml():
 
         #get platform info
         self.platformsdict = self.freyaml.get("platforms")
+        print(self.platformsdict)
         self.platforms = platformfre.platforms(self.platformsdict)
         self.platformsyaml = self.platforms.getPlatformsYaml()
 
         #self.freyaml.update(self.platformsyaml)
 
         ## VALIDATION OF COMBINED YAML FOR COMPILATION
-        fremake_package_dir = os.path.dirname(os.path.abspath(__file__))
-        schema_path = os.path.join(fremake_package_dir, 'schema.json')
+        fremake_package_dir = Path(__file__).resolve().parents[2]
+        schema_path = os.path.join(fremake_package_dir, 'gfdl_msd_schemas', 'FRE', 'fre_make.json')
         with open(schema_path, 'r') as f:
             s = f.read()
         schema = json.loads(s)

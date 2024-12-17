@@ -37,7 +37,7 @@ def test_configure_script():
     model_yaml = str(Path(f"{test_dir}/{test_yaml}"))
 
     # Invoke configure_yaml_script.py
-    csy.yamlInfo(model_yaml,EXPERIMENT,PLATFORM,TARGET)
+    csy.yaml_info(model_yaml,EXPERIMENT,PLATFORM,TARGET)
 
     # Check for configuration creation and final combined yaml
     assert all([Path(f"{out_dir}/{EXPERIMENT}.yaml").exists(),

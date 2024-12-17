@@ -7,10 +7,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: continuumio/miniconda3:latest
+      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
     steps:
       - name: Checkout Files
         uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+      - name: Add mkmf to PATH
+        run: |
+          echo $PWD/mkmf/bin >> $GITHUB_PATH
       - name: Run Conda to Build
         run: |
           conda config --append channels conda-forge

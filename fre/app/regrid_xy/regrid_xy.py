@@ -164,7 +164,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
     """
 
     ## rose config load check
-    config_name = os.getcwd()
+    config_name = os.getcwd() #REMOVE ME TODO
     config_name += '/rose-app-run.conf'
     #config_name += '/rose-app.conf'
     print(f'config_name = {config_name}')
@@ -235,8 +235,6 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 
 
     # grid_spec file management
-    #starting_dir = os.getcwd()
-    #os.chdir(work_dir) # i hate it
     if '.tar' in grid_spec:
         untar_sp = \
             subprocess.run( ['tar', '-xvf', grid_spec, '-C', input_dir],
@@ -463,7 +461,6 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 
         continue # end of comp loop, exit or next one.
 
-    #os.chdir(starting_dir) # not clear this is necessary.
     print('done running regrid_xy()')
     return 0
 

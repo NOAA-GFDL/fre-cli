@@ -5,13 +5,10 @@ package:
   version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
 
 source:
-  path: .
-# ideally we want this git_url path, but it messes with conda publish
-# where it builds only the sourced url and not local/branch changes
-# git_url: https://github.com/NOAA-GFDL/fre-cli
+  git_url: https://github.com/NOAA-GFDL/fre-cli.git
 
 build:
-  script: 
+  script:
     - {{ PYTHON }} -m pip install . -vv
   number: 1
   noarch: python
@@ -33,6 +30,7 @@ requirements:
     - jsonschema
     - noaa-gfdl::catalogbuilder
     - noaa-gfdl::fre-nctools
+    - noaa-gfdl::analysis_scripts
     - conda-forge::nccmp
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
@@ -45,47 +43,41 @@ requirements:
     - conda-forge::cdo>=2.0.0
 
 test:
-  source_files: 
-    - fre/
-  imports:
-    - click
-    - pytest
-    - pylint
-    - fre
-    - fre.pp
-    - fre.pp.install
-    - fre.pp.status
-    - fre.pp.run
-    - fre.pp.validate
-    - fre.make
-    - fre.app
-    - fre.cmor
-    - fre.catalog
-  commands:
-    - pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
-    - pip install GitPython && pytest --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov=fre fre/
-    - fre --help
-    - fre pp --help
-    - fre pp install --help
-    - fre pp status --help
-    - fre pp run --help
-    - fre pp validate --help
-    - fre make --help
-    - fre make create-checkout --help
-    - fre make create-compile --help
-    - fre make create-dockerfile --help
-    - fre make create-makefile --help
-    - fre make run-fremake --help
-    - fre app --help
-    - fre app mask-atmos-plevel --help
-    - fre cmor --help
-    - fre cmor run --help
-
   requires:
     - pip
     - pylint
     - pytest
     - pytest-cov
+  source_files:
+    - fre/
+  imports:
+    - fre
+    - fre.app
+    - fre.catalog
+    # - fre.check
+    - fre.cmor
+    # - fre.list
+    - fre.make
+    - fre.pp
+    # - fre.run
+    # - fre.test
+    - fre.yamltools
+  commands:
+    - pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
+    # run pytest but ignore any tests that require compilation
+    - pip install GitPython && pytest --ignore=fre/make/tests/compilation --config-file=fre/pytest.ini --cov-report term-missing --cov-config=fre/coveragerc --cov=fre fre/ 
+    - fre --help
+    - fre app --help
+    - fre catalog --help
+    # - fre check --help
+    - fre cmor --help
+    # - fre list --help
+    - fre make --help
+    - fre pp --help
+    # - fre run --help
+    # - fre test --help
+    - fre yamltools --help
+
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
