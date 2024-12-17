@@ -61,7 +61,6 @@ def makefile_create(yamlfile,platform,target):
                 freMakefile.writeMakefile()
                 click.echo("\nMakefile created at " + bldDir + "/Makefile" + "\n")
             else:
-                image="ecpe4s/noaa-intel-prototype:2023.09.25"
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "./tmp/"+platformName
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],

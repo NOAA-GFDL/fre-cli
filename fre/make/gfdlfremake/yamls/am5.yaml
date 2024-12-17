@@ -1,6 +1,0 @@
-platformYaml: platforms.yaml
-compileYaml: compile.yaml
-release: f1a1r1
-INTEL: "intel-classic"
-FMSincludes: "-IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include"
-momIncludes: "-Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include" 

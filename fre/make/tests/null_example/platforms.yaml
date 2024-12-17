@@ -12,6 +12,8 @@ platforms:
      container: True
      containerBuild: "podman"
      containerRun: "apptainer" 
+     containerBase: "ecpe4s/noaa-intel-prototype:2023.09.25" 
+     mkTemplate: "/apps/mkmf/templates/hpcme-intel21.mk"
    - name: ci.gnu
      compiler: gnu
      mkTemplate: /__w/fre-cli/fre-cli/mkmf/templates/linux-ubuntu-xenial-gnu.mk
