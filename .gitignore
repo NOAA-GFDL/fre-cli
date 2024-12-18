@@ -1,3 +1,8 @@
+# fremake generated files that should be ignored
+combined-null_model.yaml
+combined-am5.yaml
+tmp
+makefile_out
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

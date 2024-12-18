@@ -30,6 +30,7 @@ requirements:
     - jsonschema
     - noaa-gfdl::catalogbuilder
     - noaa-gfdl::fre-nctools
+    - noaa-gfdl::analysis_scripts
     - conda-forge::nccmp
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
@@ -71,7 +72,7 @@ test:
     # - fre check --help
     - fre cmor --help
     # - fre list --help
-    - fre make --help    
+    - fre make --help
     - fre pp --help
     # - fre run --help
     # - fre test --help

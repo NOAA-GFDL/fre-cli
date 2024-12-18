@@ -58,22 +58,22 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
          else:
               raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
 
-         (compiler,modules,modulesInit,fc,cc,modelRoot,iscontainer,mkTemplate,containerBuild,ContainerRun,RUNenv)=modelYaml.platforms.getPlatformFromName(platformName)
+         platform=modelYaml.platforms.getPlatformFromName(platformName)
          ## Make the bldDir based on the modelRoot, the platform, and the target
-         srcDir = modelRoot + "/" + fremakeYaml["experiment"] + "/src"
+         srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
          ## Check for type of build
-         if iscontainer is False:
+         if platform["container"] is False:
               baremetalRun = True
-              bldDir = modelRoot + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
+              bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
               os.system("mkdir -p " + bldDir)
               ## Create a list of compile scripts to run in parallel
               fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
-                                                       mkTemplatePath = mkTemplate,
+                                                       mkTemplatePath = platform["mkTemplate"],
                                                        srcDir = srcDir,
                                                        bldDir = bldDir,
                                                        target = target,
-                                                       modules = modules,
-                                                       modulesInit = modulesInit,
+                                                       modules = platform["modules"],
+                                                       modulesInit = platform["modulesInit"],
                                                        jobs = jobs)
               for c in fremakeYaml['src']:
                    fremakeBuild.writeBuildComponents(c)
