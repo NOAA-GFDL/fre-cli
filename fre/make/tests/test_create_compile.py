@@ -3,16 +3,24 @@ Test fre make create-compile
 """
 import os
 import shutil
+import pytest
 from pathlib import Path
 from fre.make import create_compile_script
 
-# SET-UP
+## SET-UP
 TEST_DIR = Path("fre/make/tests")
 NM_EXAMPLE = Path("null_example")
 YAMLFILE = "null_model.yaml"
 PLATFORM = ["ci.gnu"]
 TARGET = ["debug"]
 EXPERIMENT = "null_model_full"
+
+# Multi-plat-targ
+MULTI_TARGET = ["prod","repro"]
+
+# Bad plat/targ
+BAD_PLATFORM=["no_plat"]
+BAD_TARGET=["no_targ"]
 
 # Create output location
 OUT = f"{TEST_DIR}/compile_out"
@@ -57,8 +65,7 @@ def test_compile_creation():
     create_compile_script.compile_create(yamlfile_path, PLATFORM, TARGET, 4, 1, False, False)
 
     # Check for creation of compile script
-    # Check for correct default HOME location set
-    assert [Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()]
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
 
 def test_compile_execution():
     """
@@ -74,9 +81,40 @@ def test_compile_execution():
     # Check for creation of compile script
     # Check for FMS directory
     # Check for log.compile file
-    # Check for correct default HOME location set
-    assert [Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists(),
-            Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir(),
-            Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/log.compile")]
+    assert [Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists(),
+            Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir(),
+            Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile")]
 
-#TO-DO: check for failures, ETC....
+@pytest.mark.xfail()
+def test_bad_platform():
+    """
+    Check for the failure of compile script creation
+    due to a bad platform passed.
+    """
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+
+    # Create the compile script
+    create_compile_script.compile_create(yamlfile_path, BAD_PLATFORM, TARGET, 4, 1, False, False)
+
+@pytest.mark.xfail()
+def test_bad_target():
+    """
+    Check for the failure of compile script creation
+    due to a bad target passed.
+    """
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+
+    # Create the compile script
+    create_compile_script.compile_create(yamlfile_path, PLATFORM, BAD_TARGET, 4, 1, False, False)
+
+def test_multi_target():
+    """
+    Check for the creation of the compile script for each target passed
+    """
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+
+    # Create the compile script
+    create_compile_script.compile_create(yamlfile_path, PLATFORM, MULTI_TARGET, 4, 1, False, False)
+
+    for t in MULTI_TARGET:
+        assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{t}/exec/compile.sh").exists()
