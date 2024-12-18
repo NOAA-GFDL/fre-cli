@@ -10,7 +10,7 @@ from fre.make import create_compile_script
 TEST_DIR = Path("fre/make/tests")
 NM_EXAMPLE = Path("null_example")
 YAMLFILE = "null_model.yaml"
-PLATFORM = ["ncrc5.intel23"]
+PLATFORM = ["ci.gnu"]
 TARGET = ["debug"]
 EXPERIMENT = "null_model_full"
 
@@ -23,6 +23,9 @@ if Path(OUT).exists():
     Path(OUT).mkdir(parents=True,exist_ok=True)
 else:
     Path(OUT).mkdir(parents=True,exist_ok=True)
+
+# Set environment variable for use in ci.gnu platform
+os.environ["TEST_BUILD_DIR"] = OUT
 
 def test_modelyaml_exists():
     """
@@ -46,11 +49,6 @@ def test_compile_creation():
     """
     Check for the creation of the compile script
     """
-    # Save default HOME location
-    def_home = str(os.environ["HOME"])
-    # Change HOME for compile script output
-    os.environ["HOME"]=OUT
-
     plat = PLATFORM[0]
     targ = TARGET[0]
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
@@ -58,23 +56,14 @@ def test_compile_creation():
     # Create the compile script
     create_compile_script.compile_create(yamlfile_path, PLATFORM, TARGET, 4, 1, False, False)
 
-    # Set HOME back to default
-    os.environ["HOME"] = def_home
-
     # Check for creation of compile script
     # Check for correct default HOME location set
-    assert [Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists(),
-            os.environ["HOME"] == def_home]
+    assert [Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()]
 
 def test_compile_execution():
     """
     Check for the successful execution of the compile script
     """
-    # Save default HOME location
-    def_home = str(os.environ["HOME"])
-    # Change HOME for compile script output
-    os.environ["HOME"]=OUT
-
     plat = PLATFORM[0]
     targ = TARGET[0]
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
@@ -82,16 +71,12 @@ def test_compile_execution():
     # Execute the compile script
     create_compile_script.compile_create(yamlfile_path, PLATFORM, TARGET, 4, 1, True, False)
 
-    # Set HOME back to default
-    os.environ["HOME"] = def_home
-
     # Check for creation of compile script
     # Check for FMS directory
     # Check for log.compile file
     # Check for correct default HOME location set
     assert [Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists(),
             Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir(),
-            Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/log.compile"),
-            os.environ["HOME"] == def_home]
+            Path(f"{OUT}/fremake_Canopy/test/null_model_full/{plat}-{targ}/exec/log.compile")]
 
 #TO-DO: check for failures, ETC....
