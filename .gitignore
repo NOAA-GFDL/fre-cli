@@ -61,6 +61,10 @@ fre/tests/test_files/outdirfre/
 fre/pp/tests/configure_yaml_out/
 fre/yamltools/tests/combine_yamls_out/
 fre/app/generate_time_averages/tests/time_avg_test_files/
+fre/make/tests/null_example/combined-null_model.yaml
+fre/make/tests/makefile_out
+fre/make/tests/compile_out
+fre/tests/fremake_out
 
 # Translations
 *.mo
