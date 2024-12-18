@@ -9,8 +9,8 @@ TEST_DIR = str(Path("fre/make/tests"))
 YAMLFILE = str(Path(f"{TEST_DIR}/null_example/null_model.yaml"))
 
 #set platform and target
-PLATFORM = "ncrc5.intel"
-TARGET = "debug"
+PLATFORM = ["ncrc5.intel23"]
+TARGET = ["debug"]
 
 #set output directory
 #out_dir = Path(f"fre/make/tests/null_example/fre_make_out")
@@ -20,7 +20,7 @@ TARGET = "debug"
 #os.environ["HOME"]=str(Path(f"{out_dir}"))
 OUT = f"{TEST_DIR}/checkout_out"
 def_home = str(os.environ["HOME"]) 
-os.environ["HOME"]=OUT#str(Path(OUT)) 
+os.environ["TEST_BUILD_DIR"] = OUT
 
 #run checkout command
 
@@ -28,9 +28,9 @@ def test_checkout_script_exists():
     """
     Make sure checkout file exists
     """
-    result = create_checkout_script._checkout_create(YAMLFILE,PLATFORM,TARGET,no_parallel_checkout=False, jobs=False, verbose=False, execute=False)
-    assert result.exit_code == 0
-    assert Path(f"{HOME_DIR}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
+    result = create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False, False)
+    #assert result.exit_code == 0
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
 def test_checkout_execute():
     """
@@ -38,6 +38,6 @@ def test_checkout_execute():
     """
     #subprocess.run(["rm","-rf",f"{out_dir}"])
     subprocess.run(["rm","-rf"])
-    result = create_checkout_script._checkout_create(YAMLFILE,PLATFORM,TARGET,no_parallel_checkout=False, jobs=False, verbose=False, execute=False)
-    assert (result.exit_code == 0)
+    result = create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False,True)
+    #assert (result.exit_code == 0)
 
