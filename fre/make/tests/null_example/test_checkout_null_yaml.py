@@ -5,8 +5,8 @@ import subprocess
 from fre.make import create_checkout_script
 
 # Set example yaml paths, input directory
-TEST_DIR = Path("fre/make/tests")
-YAMLFILE = Path(f"{TEST_DIR}/null_example/null_model.yaml")
+TEST_DIR = str(Path("fre/make/tests"))
+YAMLFILE = str(Path(f"{TEST_DIR}/null_example/null_model.yaml"))
 
 #set platform and target
 PLATFORM = "ncrc5.intel"
