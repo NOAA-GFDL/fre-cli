@@ -85,7 +85,7 @@ def test_compile_execution():
             Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir(),
             Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile")]
 
-@pytest.mark.xfail()
+@pytest.mark.xfail(raises=AttributeError)
 def test_bad_platform():
     """
     Check for the failure of compile script creation
@@ -96,7 +96,20 @@ def test_bad_platform():
     # Create the compile script
     create_compile_script.compile_create(yamlfile_path, BAD_PLATFORM, TARGET, 4, 1, False, False)
 
-@pytest.mark.xfail()
+def test_bad_platform_compilelog():
+    """
+    Check that compile log still created from the failure 
+    of compile script creation due to a bad platform passed.
+    """
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+
+    try:
+        # Create the compile script
+        create_compile_script.compile_create(yamlfile_path, BAD_PLATFORM, TARGET, 4, 1, False, False)
+    except:
+        assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
+
+@pytest.mark.xfail(raises=AttributeError)
 def test_bad_target():
     """
     Check for the failure of compile script creation
@@ -106,6 +119,19 @@ def test_bad_target():
 
     # Create the compile script
     create_compile_script.compile_create(yamlfile_path, PLATFORM, BAD_TARGET, 4, 1, False, False)
+
+def test_bad_target_compilelog():
+    """
+    Check that compile log still created from the failure
+    of compile script creation due to a bad target passed.
+    """
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+
+    try:
+        # Create the compile script
+        create_compile_script.compile_create(yamlfile_path, PLATFORM, BAD_TARGET, 4, 1, False, False)
+    except:
+        assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
 
 def test_multi_target():
     """
