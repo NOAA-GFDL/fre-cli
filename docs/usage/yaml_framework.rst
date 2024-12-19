@@ -1,4 +1,4 @@
-In order to utilize FRE 2024.01 tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with ``[key]: [value]`` fields. 
+In order to utilize FRE 2025.01 tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with ``[key]: [value]`` fields. 
 
 Yaml Formatting
 ----------
@@ -57,10 +57,10 @@ Where each dash indicates a list.
 
 .. code-block:: 
 
-  &version "2024.01"
+  &version "2025.01"
   &stem !join [FRE/, *version]
 
-In this example, the reuasble variable ``stem`` will be parsed as ``FRE/2024.01``.
+In this example, the reuasble variable ``stem`` will be parsed as ``FRE/2025.01``.
 
 Model Yaml
 ----------
