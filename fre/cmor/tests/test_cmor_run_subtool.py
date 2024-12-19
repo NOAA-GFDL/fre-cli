@@ -52,15 +52,15 @@ FILENAME = 'reduced_ocean_monthly_1x1deg.199307-199308.sos' # unneeded, this is 
 FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
 
 def test_setup_fre_cmor_run_subtool(capfd):
-    ''' checks for outputfile from prev pytest runs, removes it if it's present.
-    this routine also checks to make sure the desired input file is present'''
+    ''' The routine generates a netCDF file from an ascii (cdl) file. It also checks for a ncgen output file from prev pytest runs,removes it if it's present, and ensures the new file is created without error. '''
 
     ''' set-up test: create binary test files from reduced ascii files in root dir '''
 
     ncgen_input = f"{ROOTDIR}/reduced_ascii_files/{FILENAME}.cdl"
     ncgen_output = f"{ROOTDIR}/ocean_sos_var_file/{FILENAME}.nc"
 
-    assert Path(INDIR).exists()
+    if Path(ncgen_output).exists():
+        Path(ncgen_output).unlink() 
     assert Path(ncgen_input).exists()
 
     ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
@@ -68,6 +68,11 @@ def test_setup_fre_cmor_run_subtool(capfd):
     sp = subprocess.run(ex, check = True)
 
     assert all( [ sp.returncode == 0, Path(ncgen_output).exists() ] )
+
+    if Path(FULL_OUTPUTFILE).exists():
+        Path(FULL_OUTPUTFILE).unlink()
+
+    assert not Path(FULL_OUTPUTFILE).exists()
 
     #assert not any ( [ Path(FULL_OUTPUTFILE).exists(),
     #                   Path(OUTDIR).exists()           ] )
@@ -114,7 +119,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
                              check=False,
                              capture_output=True
     )
-    print("aaaaaaaaaaaaaaaaaaaaaaaa", result)
+    
     # err_list has length two if end in newline
     err_list = result.stderr.decode().split('\n')
     expected_err = \
@@ -145,7 +150,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
 
 # FYI, but again, helpful for tests
 FILENAME_DIFF = \
-    'ocean_monthly_1x1deg.199301-199712.sosV2.nc'
+    'ocean_monthly_1x1deg.199307-199308.sosV2.nc'
 FULL_INPUTFILE_DIFF = \
     f"{INDIR}/{FILENAME_DIFF}"
 VARLIST_DIFF = \
