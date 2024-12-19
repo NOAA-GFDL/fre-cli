@@ -271,15 +271,38 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     lon_bnds = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lon_bnds")
 
-    # the tripolar grid is designed to reduce distortions in ocean data brought on
+    # read in time_coords + units
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate time, and units...')
+    time_coords = from_dis_gimme_dis( from_dis = ds,
+                                      gimme_dis = 'time' )
+
+    time_coord_units = ds["time"].units
+    print(f"                          time_coord_units = {time_coord_units}")
+
+    # read in time_bnds , if present
+    print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, time_bnds')
+    time_bnds = from_dis_gimme_dis( from_dis = ds,
+                                    gimme_dis = 'time_bnds' ) 
+
+    # read the input variable data, i believe
+    print(f'(rewrite_netcdf_file_var) attempting to read variable data, {target_var}')
+    var = from_dis_gimme_dis( from_dis = ds,
+                              gimme_dis = target_var ) 
+    #var = ds[target_var][:]
+        # the tripolar grid is designed to reduce distortions in ocean data brought on
     # by singularities (poles) being placed in oceans (e.g. the N+S poles of standard sphere grid)
     # but, the tripolar grid is complex, so the values stored in the file are a lat/lon *on the tripolar grid*
     # in order to get spherical lat/lon, one would need to convert on the fly, but implementing such an inverse is not trivial
     # thankfully, the spherical lat/lons tend to already be computed in advance, and stored elsewhere. at GFDL they're in "statics"
+    do_special_ocean_file_stuff=all( [ uses_ocean_grid,    
+                                       lat is None,        
+                                       lon is None      ] )
+    
     statics_file_path = None
-    if all( [ uses_ocean_grid,
-              lat is None,
-              lon is None      ] ):
+    x, y = None, None
+    i_ind, j_ind = None, None
+    cmor_grid_id = None
+    if do_special_ocean_file_stuff:
         try:
             print(f'(rewrite_netcdf_file_var) netcdf_file is {netcdf_file}')
             statics_file_path = find_statics_file(prev_path)
@@ -333,8 +356,36 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         lon_bnds[:,:,2] = lon_c[:-1,:-1] # SW corner
         lon_bnds[:,:,3] = lon_c[:-1,1:] # SE corner
 
-        #print ('EXITINGEXITINGEXITINGEXITINGEXITINGEXITINGEXITINGEXITINGEXITINGEXITING')
-        #assert False
+
+        print(f'(rewrite_netcdf_file_var) HARD PART: creating indices (j_index) from y (yh)')
+        y = from_dis_gimme_dis(ds, 'yh')
+
+        print(f'                          ds.createVariable...')
+        #j_ind = ds.createVariable('j', int, ('yh') )
+        j_ind = ds.createVariable('j_index', np.int32, ('yh') )
+        print(f'                          np.arange...')
+        #j_ind[:] = np.zeros(len(y), dtype=int )
+        j_ind[:] = np.arange(0, len(y), dtype=np.int32 ) 
+
+
+        print(f'(rewrite_netcdf_file_var) HARD PART: creating indices (i_index) from x (xh)')
+        x = from_dis_gimme_dis(ds, 'xh')
+
+        print(f'                          ds.createVariable...')
+        #i_ind = ds.createVariable('i', int,  ('xh') )
+        i_ind = ds.createVariable('i_index', np.int32,  ('xh') )
+        print(f'                          np.arange...')
+        #i_ind[:] = np.zeros(len(x), dtype=int )
+        i_ind[:] = np.arange(0, len(x), dtype=np.int32 )
+
+        #cmor_grid_id = cmor.grid( )
+
+        #var.coordinates = 'lat lon'
+        var.coordinates = 'j_index i_index'
+        #var.coordinates = ''
+        
+        
+        
 
         
 
@@ -349,25 +400,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
                   
             
-    # read in time_coords + units
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate time, and units...')
-    time_coords = from_dis_gimme_dis( from_dis = ds,
-                                      gimme_dis = 'time' )
 
-    time_coord_units = ds["time"].units
-    print(f"                          time_coord_units = {time_coord_units}")
-
-    # read in time_bnds , if present
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, time_bnds')
-    time_bnds = from_dis_gimme_dis( from_dis = ds,
-                                    gimme_dis = 'time_bnds' ) 
-
-    # read the input variable data, i believe
-    print(f'(rewrite_netcdf_file_var) attempting to read variable data, {target_var}')
-    var = from_dis_gimme_dis( from_dis = ds,
-                              gimme_dis = target_var ) 
-    #var = ds[target_var][:]
-    
 
     # grab var_dim
     var_dim = len(var.shape)
@@ -409,7 +442,11 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # load CMOR table
     print(f"(rewrite_netcdf_file_var) cmor is opening json_table_config = {json_table_config}")
-    cmor.load_table(json_table_config)
+    if do_special_ocean_file_stuff:
+        print("FOOOOOOOOOOOOOOOOOOOOOOO"+ str(Path(json_table_config).parent) + '/CMIP6_grids.json')
+        cmor.load_table( str(Path(json_table_config).parent) + '/CMIP6_grids.json' )
+    else:
+        cmor.load_table(json_table_config)
 
     units = proj_table_vars["variable_entry"] [target_var] ["units"]
     print(f"(rewrite_netcdf_file_var) units={units}")
@@ -417,7 +454,12 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # setup cmor latitude axis if relevant
     cmor_lat = None
-    if any( [ lat is None ] ):
+    if do_special_ocean_file_stuff:
+        print(f'(rewrite_netcdf_file_var) WARNING: calling cmor.axis for an index!')
+        #cmor_lat = cmor.axis("j", coord_vals = j_ind[:], units = "1")
+        cmor_lat = cmor.axis("j_index", coord_vals = j_ind[:], units = "1")
+        #cmor_lat = cmor.axis("projection_y_coordinate", coord_vals = y[:], units = "degrees")
+    elif any( [ lat is None ] ):
         print(f'(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_lat')
     else:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lat')
@@ -429,12 +471,29 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # setup cmor longitude axis if relevant
     cmor_lon = None
-    if any( [ lon is None ] ):
+    if do_special_ocean_file_stuff:
+        print(f'(rewrite_netcdf_file_var) WARNING: calling cmor.axis for an index!')
+        #cmor_lon = cmor.axis("i", coord_vals = i_ind[:], units = "1")
+        cmor_lon = cmor.axis("i_index", coord_vals = i_ind[:], units = "1")
+        #cmor_lon = cmor.axis("projection_x_coordinate", coord_vals = x[:], units = "degrees")
+    elif any( [ lon is None ] ):
         print(f'(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_lon')
     else:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lon')
         cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
         print(f'                          DONE assigning cmor_lon')
+
+
+    # setup the cmor_grid when needed (ocean things, typically)
+    cmor_grid = None
+    if do_special_ocean_file_stuff:
+        cmor_grid = cmor.grid([cmor_lat, cmor_lon],
+                              latitude = lat[:], longitude = lon[:],
+                              latitude_vertices = lat_bnds[:],
+                              longitude_vertices = lon_bnds[:])
+                              
+        # load back up the normal table file?
+        cmor.load_table(json_table_config)        
 
     # setup cmor time axis if relevant
     cmor_time = None
