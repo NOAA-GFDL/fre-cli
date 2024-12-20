@@ -136,16 +136,12 @@ The platform yaml contains user defined information for both bare-metal and cont
         compiler: the compiler you are using
         modulesInit: ["array of commands that are needed to load modules." , "each command must end with a newline character"]
         modules: [array of modules to load including compiler]
-        fc: the name of the fortran compiler
-        cc: the name of the C compiler
         mkTemplate: The location of the mkmf make template
         modelRoot: The root directory of the model (where src, exec, experiments will go)
       - container platform: container platform name
         compiler: compiler you are using
         RUNenv: Commands needed at the beginning of a RUN in dockerfile
         modelRoot: The root directory of the model (where src, exec, experiments will go) INSIDE of the container (/apps)
-        fc: name of fortan compiler
-        cc: name of C compiler
         container: True if this is a container platform
         containerBuild: "podman" - the container build program
         containerRun: "apptainer" - the container run program
