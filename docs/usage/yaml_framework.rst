@@ -1,4 +1,4 @@
-In order to utilize FRE 2025.01 tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with ``[key]: [value]`` fields. 
+In order to utilize these FRE tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with ``[key]: [value]`` fields. 
 
 Yaml Formatting
 ----------
@@ -53,14 +53,15 @@ Where each dash indicates a list.
 
   *ReusableVariable
 
-7. If the reusable variable must be combined with other strings, the **`!join`** constructor is used. Example: 
+7. If the reusable variable must be combined with other strings, the **`!join`** constructor is used. Simplified example: 
 
 .. code-block:: 
 
-  &version "2025.01"
-  &stem !join [FRE/, *version]
+  &name "experiment-name"
+  ...
+  pp_dir: !join [/archive/$USER/, *name, /, pp]
 
-In this example, the reuasble variable ``stem`` will be parsed as ``FRE/2025.01``.
+In this example, the variable ``pp_dir`` will be parsed as ``/archive/$USER/experiment-name/pp``.
 
 Model Yaml
 ----------
