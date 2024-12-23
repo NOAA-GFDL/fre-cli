@@ -142,5 +142,5 @@ def test_multi_target():
     # Create the compile script
     create_compile_script.compile_create(yamlfile_path, PLATFORM, MULTI_TARGET, 4, 1, False, False)
 
-    for t in MULTI_TARGET:
-        assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{t}/exec/compile.sh").exists()
+    assert [Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI-TARGET[0]}/exec/compile.sh").exists(),
+            Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI-TARGET[1]}/exec/compile.sh").exists()]
