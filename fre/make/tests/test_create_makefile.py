@@ -81,6 +81,6 @@ def test_container2step_makefile_creation():
     """
     container_plat = CONTAINER_PLAT2[0]
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
-    create_makefile_script.makefile_create(yamlfile_path,container_plat,TARGET)
+    create_makefile_script.makefile_create(yamlfile_path,CONTAINER_PLAT2,TARGET)
 
     assert Path(f"tmp/{container_plat}/Makefile").exists()
