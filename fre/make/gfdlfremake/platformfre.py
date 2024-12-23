@@ -56,15 +56,14 @@ class platforms ():
                 try:
                     p["containerBuild"]
                 except:
-                    raise Exception("You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
+                    raise Exception("Platform "+p["name"]+": You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerBuild"] != "podman" and p["containerBuild"] != "docker":
-                    raise ValueError("Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
-                print (p["containerBuild"])
+                    raise ValueError("Platform "+p["name"]+": Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
                 ## Get the name of the base container
                 try:
                     p["containerBase"]
-                except NameError:
-                    print("You must specify the base container you wish to use to build your application")
+                except:
+                    raise NameError("Platform "+p["name"]+": You must specify the base container you wish to use to build your application")
                 ## Check if this is a 2 step (multi stage) build
                 try:
                     p["container2step"]
@@ -74,8 +73,8 @@ class platforms ():
                 if p["container2step"]:
                     try:
                         p["container2base"]
-                    except TypeError:
-                        print ("If container2step is True, you must include a container2base\n")
+                    except:
+                        raise NameError ("Platform "+p["name"]+": container2step is True, so you must define a container2base\n")
                     ## Check if there is anything special to copy over
                     try:
                         p["container2copy"]
@@ -88,7 +87,7 @@ class platforms ():
                     except:
                         p["container2base"] = ""
                     else:
-                        raise ValueError ("You defined container2base "+p["container2base"]+" but container2step is false\n")
+                        raise ValueError ("Platform "+p["name"]+": You defined container2base "+p["container2base"]+" but container2step is False\n")
                     try:
                         p["container2copy"]
                     except:
