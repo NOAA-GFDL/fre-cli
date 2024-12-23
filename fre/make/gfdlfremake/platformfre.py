@@ -50,7 +50,6 @@ class platforms ():
                 p["containerBase"] = ""
                 p["container2step"] = False
                 p["container2base"] = ""
-                p["container2copy"] = [""]
             if p["container"]:
                 ## Check the container builder
                 try:
@@ -76,10 +75,6 @@ class platforms ():
                     except:
                         raise NameError ("Platform "+p["name"]+": container2step is True, so you must define a container2base\n")
                     ## Check if there is anything special to copy over
-                    try:
-                        p["container2copy"]
-                    except:
-                        p["container2copy"] = ""
                 else:
                     ## There should not be a second base if this is not a 2 step build
                     try:
@@ -88,12 +83,6 @@ class platforms ():
                         p["container2base"] = ""
                     else:
                         raise ValueError ("Platform "+p["name"]+": You defined container2base "+p["container2base"]+" but container2step is False\n")
-                    try:
-                        p["container2copy"]
-                    except:
-                        p["container2copy"] = ""
-                    else:
-                        raise ValueError ("You defined container2copy "+p["container2copy"]+" but container2step is false\n")
                 ## Get any commands to execute in the dockerfile RUN command
                 try:
                     p["RUNenv"]
@@ -175,11 +164,3 @@ class platforms ():
         for p in self.yaml:
             if p["name"] == name:
                 return p["container2base"]
-    def getContainer2copy(self,name):
-        """
-        Brief: returns anything copied from the first stage to the second stage of the Dockerfile
-        """
-        for p in self.yaml:
-            if p["name"] == name:
-                return p["container2copy"]
-
