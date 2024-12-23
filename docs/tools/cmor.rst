@@ -75,7 +75,7 @@ background
 ~~~~~~~~~~
 
 The bulk of this routine is housed in ``fre/cmor/cmor_mixer.py``, which is a rewritten version of
-Sergey Malyshev's original ``CMORcommander.py`` script, utilized during GFDL's CMIP6 publishing run.
+Sergey Nikonov's original ``CMORcommander.py`` script, utilized during GFDL's CMIP6 publishing run.
 
 This code is dependent on two primary json configuration files- a MIP
 variable table and another containing experiment (i.e. model) specific metdata (e.g. grid) to append

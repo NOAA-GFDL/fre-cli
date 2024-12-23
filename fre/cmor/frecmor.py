@@ -2,8 +2,17 @@
 
 import click
 
+from .cmor_lister import _cmor_list_subtool
 from .cmor_mixer import _cmor_run_subtool
 
+OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
+                  "matching that variable name. I.e., this string help target local_vars, not " + \
+                  "target_vars."
+VARLIST_HELP="path pointing to a json file containing directory of key/value pairs. " + \
+             "the keys are the \'local\' names used in the filename, and the values " + \
+             "pointed to by those keys are strings representing the name of the variable " + \
+             "contained in targeted files. the key and value are often the same, " + \
+             "but it is not required."
 @click.group(help=click.style(" - access fre cmor subcommands", fg=(232,91,204)))
 def cmor_cli():
     ''' entry point to fre cmor click commands '''
@@ -16,11 +25,7 @@ def cmor_cli():
               required=True)
 @click.option("-l", "--varlist",
               type=str,
-              help="path pointing to a json file containing directory of key/value pairs. " + \
-                   "the keys are the \'local\' names used in the filename, and the values " + \
-                   "pointed to by those keys are strings representing the name of the variable " + \
-                   "contained in targeted files. the key and value are often the same, " + \
-                   "but it is not required.",
+              help=VARLIST_HELP,
               required=True)
 @click.option("-r", "--table_config",
               type=str,
@@ -40,9 +45,7 @@ def cmor_cli():
               required=True)
 @click.option('-v', "--opt_var_name",
               type = str,
-              help="optional, specify a variable name to specifically process only filenames " + \
-                   "matching that variable name. I.e., this string help target local_vars, not " + \
-                   "target_vars.",
+              help=OPT_VAR_NAME_HELP,
               required=False)
 @click.pass_context
 def run(context, indir, varlist, table_config, exp_config, outdir, opt_var_name):
@@ -61,6 +64,47 @@ def run(context, indir, varlist, table_config, exp_config, outdir, opt_var_name)
     )
     #    context.forward(
     #        _cmor_run_subtool() )
+
+
+@cmor_cli.command()
+@click.option("-l", "--varlist",
+              type=str,
+              help=VARLIST_HELP,
+              required=False)
+@click.option("-r", "--table_config_dir",
+              type=str,
+              help="directory holding MIP tables to search for variables in var list",
+              required=True)
+@click.option('-v', "--opt_var_name",
+              type = str,
+              help=OPT_VAR_NAME_HELP,
+              required=False)
+@click.pass_context
+def list(context, varlist, table_config_dir, opt_var_name):
+    '''
+    loop over json table files in config_dir and show which tables contain variables in var list/
+    the tool will also print what that table entry is expecting of that variable as well. if given
+    an opt_var_name in addition to varlist, only that variable name will be printed out.
+    accepts 3 arguments, two of the three required. 
+    '''
+    #context.forward( _cmor_list_subtool )
+
+    # if opt_var_name specified, forget the list. 
+    if opt_var_name is not None:
+        varlist=None
+
+    # custom arg requirement of "one of the two or both" in click should be implemented with
+    # logic before calling context.invoke( <thingy>, *args )
+    if opt_var_name is None and varlist is None:
+        raise ValueError('opt_var_name and varlist cannot both be None')
+        
+    context.invoke(
+        _cmor_list_subtool,
+        json_var_list = varlist,
+        json_table_config_dir = table_config_dir,
+        opt_var_name = opt_var_name
+    )
+        
 
 if __name__ == "__main__":
     cmor_cli()

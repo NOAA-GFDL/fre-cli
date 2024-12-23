@@ -685,11 +685,11 @@ def _convert(xml, platform, target, experiment, do_analysis=False, historydir=No
 ##############################################
 
 @click.command()
-def convert():
+def _convert():
     '''
     Wrapper for convert call - allows users to call without command-line args
     '''
-    _convert()
+    convert()
 
 if __name__ == '__main__':
     convert()

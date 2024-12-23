@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 '''
-date 2023
 fre make is used to create, run and checkout code, and compile a model.
 '''
 
@@ -253,9 +252,10 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 ###################### container stuff below #######################################
                 ## Run the checkout script
                 #          image="hpc-me-intel:2021.1.1"
-                image="ecpe4s/noaa-intel-prototype:2023.09.25"
-                bld_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
-                tmp_dir = "tmp/"+platformName
+                image=modelYaml.platforms.getContainerImage(platformName)
+                srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
+                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
+                tmpDir = "tmp/"+platformName
 
                 ## Create the checkout script
                 if not os.path.exists(tmp_dir+"/checkout.sh"):
