@@ -109,7 +109,7 @@ def test_bad_platform_compilelog():
     except:
         assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
 
-@pytest.mark.xfail(raises=AttributeError)
+@pytest.mark.xfail(raises=ValueError)
 def test_bad_target():
     """
     Check for the failure of compile script creation
