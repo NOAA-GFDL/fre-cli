@@ -19,7 +19,7 @@ YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
 PLATFORM = [ "ci.gnu" ]
 CONTAINER_PLATFORM = ["hpcme.2023"]
-CONTAINER_PLAT2 = = ["con.twostep"]
+CONTAINER_PLAT2 = ["con.twostep"]
 TARGET = ["debug"]
 BADOPT = ["foo"]
 EXPERIMENT = "null_model_full"
