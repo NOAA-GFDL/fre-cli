@@ -5,5 +5,5 @@
 	path = fre/gfdl_msd_schemas
 	url = https://github.com/NOAA-GFDL/gfdl_msd_schemas
 [submodule "fre/tests/test_files/cmip6-cmor-tables"]
-    path = fre/tests/test_files/cmip6-cmor-tables
-	url = https://github.com/PCMDI/cmip6-cmor-tables
+	path = fre/tests/test_files/cmip6-cmor-tables
+	url = https://github.com/pcmdi/cmip6-cmor-tables
