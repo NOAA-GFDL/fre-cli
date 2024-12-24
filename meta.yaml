@@ -19,10 +19,11 @@ channels:
 
 requirements:
   host:
-    - python>=3.10
+    - python>=3.9
     - pip
   run:
-    - python>=3.10
+    - python>=3.9
+    - pip
     - click
     - pyyaml
     - pylint
@@ -34,7 +35,7 @@ requirements:
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
-    - conda-forge::cmor
+    - conda-forge::cmor>=3.9.0
     - conda-forge::cylc-uiserver
     - conda-forge::pytest
     - conda-forge::pytest-cov
