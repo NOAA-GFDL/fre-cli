@@ -1,10 +1,9 @@
-name: fre-cli
+name: fre-cli-test
 channels:
-  - defaults
   - conda-forge
   - noaa-gfdl
 dependencies:
-  - python
+  - python>=3.10
   - pip
   - click
   - pyyaml
@@ -23,5 +22,3 @@ dependencies:
   - conda-forge::pytest-cov
   - conda-forge::python-cdo
   - conda-forge::cdo>=2.0.0
-  - pip:
-    - GitPython
