@@ -19,8 +19,9 @@ TABLE_CONFIG = \
 
 def test_setup_cmor_cmip_table_repo():
     ''' setup routine, make sure the recursively cloned tables exist '''
-    assert Path(TABLE_CONFIG).exists():
-    assert Path(CLONE_REPO_PATH).exists()
+    assert all( [ Path(CLONE_REPO_PATH).exists(),
+                  Path(TABLE_CONFIG).exists()
+                  ] )
 
 # explicit inputs to tool
 INDIR = f'{ROOTDIR}/ocean_sos_var_file'
