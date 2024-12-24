@@ -33,7 +33,7 @@ def from_dis_gimme_dis(from_dis, gimme_dis):
     except Exception as exc:
         print(f'(from_dis_gimme_dis) WARNING I am sorry, I could not not give you this: {gimme_dis}'
 #              f'                                                             from this: {from_dis} '
-              f'             exc = {exc}'              
+              f'             exc = {exc}'
               f'            returning None!'                                                      )
         return None
 
@@ -53,18 +53,18 @@ def find_statics_file(bronx_file_path):
         return statics_file
     else:
         return None
-    
+
 
 def create_lev_bnds(bound_these = None, with_these = None):
-    the_bnds = None    
+    the_bnds = None
     assert len(with_these) == len(bound_these) + 1
     print(f'(create_lev_bnds) bound_these is... ')
     print(f'                  bound_these = \n{bound_these}')
     print(f'(create_lev_bnds) with_these is... ')
     print(f'                  with_these = \n{with_these}')
 
-    
-    the_bnds = np.arange(len(bound_these)*2).reshape(len(bound_these),2)    
+
+    the_bnds = np.arange(len(bound_these)*2).reshape(len(bound_these),2)
     for i in range(0,len(bound_these)):
         the_bnds[i][0]=with_these[i]
         the_bnds[i][1]=with_these[i+1]
@@ -128,7 +128,7 @@ def check_dataset_for_ocean_grid(ds):
               "                                        sometimes i don't cmorize right! check me!")
         return True
     return False
-        
+
 
 
 def get_vertical_dimension(ds, target_var):
@@ -141,7 +141,7 @@ def get_vertical_dimension(ds, target_var):
     vert_dim = 0
     for name, variable in ds.variables.items():
         if name != target_var: # not the var we are looking for? move on.
-            continue        
+            continue
         dims = variable.dimensions
         for dim in dims: #print(f'(get_vertical_dimension) dim={dim}')
 
@@ -154,7 +154,7 @@ def get_vertical_dimension(ds, target_var):
             if not (ds[dim].axis and ds[dim].axis == "Z"):
                 continue
             vert_dim = dim
-            
+
     return vert_dim
 
 def create_tmp_dir(outdir, json_exp_config = None):
@@ -189,7 +189,7 @@ def create_tmp_dir(outdir, json_exp_config = None):
     # once we know where the tmp_dir should be, create it
     try:
         os.makedirs(tmp_dir, exist_ok=True)
-        # and if we need to additionally create outdir_from_exp_config... try doing that too    
+        # and if we need to additionally create outdir_from_exp_config... try doing that too
         if outdir_from_exp_config is not None:
             print(f'(create_tmp_dir) attempting to create {outdir_from_exp_config} dir in tmp_dir targ')
             try:
@@ -213,7 +213,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                               json_exp_config = None,
                               json_table_config = None, prev_path=None,
                               ):#, tmp_dir = None            ):
-    ''' 
+    '''
     rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
     accepts six arguments, all required:
         proj_table_vars: json dictionary object, variable table read from json_table_config.
@@ -224,7 +224,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         json_exp_config: string, representing path to json configuration file holding metadata for appending to output
                          this argument is most used for making sure the right grid label is getting attached to the right output
         json_table_config: string, representing path to json configuration file holding variable names for a given table.
-                           proj_table_vars is read from this file, but both are passed anyways. 
+                           proj_table_vars is read from this file, but both are passed anyways.
     '''
     print('\n\n-------------------------- START rewrite_netcdf_file_var call -----')
     print( "(rewrite_netcdf_file_var) input data: " )
@@ -242,18 +242,18 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     uses_ocean_grid = check_dataset_for_ocean_grid(ds)
     if uses_ocean_grid:
         print('(rewrite_netcdf_file_var) OH BOY you have a file on the native tripolar grid...\n'
-              '                          ... this is gonna be fun!' )    
+              '                          ... this is gonna be fun!' )
 
     # try to read what coordinate(s) we're going to be expecting for the variable
     expected_mip_coord_dims=None
     try:
         expected_mip_coord_dims = proj_table_vars["variable_entry"] [target_var] ["dimensions"]
         print( '(rewrite_netcdf_file_var) i am hoping to find data for the following coordinate dimensions:\n'
-              f'                          expected_mip_coord_dims = {expected_mip_coord_dims}' ) 
+              f'                          expected_mip_coord_dims = {expected_mip_coord_dims}' )
     except Exception as exc:
         print(f'(rewrite_netcdf_file_var) WARNING could not get expected coordinate dimensions for {target_var}. '
                '                          in proj_table_vars file {json_table_config}. \n exc = {exc}')
-        
+
 
     ## figure out the coordinate/dimension names programmatically TODO
 
@@ -282,22 +282,22 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # read in time_bnds , if present
     print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, time_bnds')
     time_bnds = from_dis_gimme_dis( from_dis = ds,
-                                    gimme_dis = 'time_bnds' ) 
+                                    gimme_dis = 'time_bnds' )
 
     # read the input variable data, i believe
     print(f'(rewrite_netcdf_file_var) attempting to read variable data, {target_var}')
     var = from_dis_gimme_dis( from_dis = ds,
-                              gimme_dis = target_var ) 
+                              gimme_dis = target_var )
     #var = ds[target_var][:]
         # the tripolar grid is designed to reduce distortions in ocean data brought on
     # by singularities (poles) being placed in oceans (e.g. the N+S poles of standard sphere grid)
     # but, the tripolar grid is complex, so the values stored in the file are a lat/lon *on the tripolar grid*
     # in order to get spherical lat/lon, one would need to convert on the fly, but implementing such an inverse is not trivial
     # thankfully, the spherical lat/lons tend to already be computed in advance, and stored elsewhere. at GFDL they're in "statics"
-    do_special_ocean_file_stuff=all( [ uses_ocean_grid,    
-                                       lat is None,        
+    do_special_ocean_file_stuff=all( [ uses_ocean_grid,
+                                       lat is None,
                                        lon is None      ] )
-    
+
     statics_file_path = None
     x, y = None, None
     i_ind, j_ind = None, None
@@ -328,9 +328,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print(f'BAR min entry of geolon: {statics_lon[:].data.min()}')
 
         lat = ds.createVariable('lat', np.float32, ('yh', 'xh') )
-        lat[:] = statics_lat[:]        
+        lat[:] = statics_lat[:]
         lon = ds.createVariable('lon', np.float32, ('yh', 'xh') )
-        lon[:] = statics_lon[:]        
+        lon[:] = statics_lon[:]
         print(f'FOO min entry of lat: {lat[:].data.min()}')
         print(f'BAR min entry of lon: {lon[:].data.min()}')
 
@@ -365,7 +365,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         j_ind = ds.createVariable('j_index', np.int32, ('yh') )
         print(f'                          np.arange...')
         #j_ind[:] = np.zeros(len(y), dtype=int )
-        j_ind[:] = np.arange(0, len(y), dtype=np.int32 ) 
+        j_ind[:] = np.arange(0, len(y), dtype=np.int32 )
 
 
         print(f'(rewrite_netcdf_file_var) HARD PART: creating indices (i_index) from x (xh)')
@@ -383,23 +383,23 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         #var.coordinates = 'lat lon'
         var.coordinates = 'j_index i_index'
         #var.coordinates = ''
-        
-        
-        
 
-        
 
-        
 
-        
+
+
+
+
+
+
         #print(f' geolat = {lat}')
         #assert False
-        
 
-        
 
-                  
-            
+
+
+
+
 
 
     # grab var_dim
@@ -491,27 +491,27 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                               latitude = lat[:], longitude = lon[:],
                               latitude_vertices = lat_bnds[:],
                               longitude_vertices = lon_bnds[:])
-                              
+
         # load back up the normal table file?
-        cmor.load_table(json_table_config)        
+        cmor.load_table(json_table_config)
 
     # setup cmor time axis if relevant
     cmor_time = None
     print(f'(rewrite_netcdf_file_var) assigning cmor_time')
-    try: #if vert_dim != 'landuse':     
+    try: #if vert_dim != 'landuse':
         print( f"(rewrite_netcdf_file_var) Executing cmor.axis('time', \n"
                f"                         coord_vals = \n{time_coords}, \n"
                f"                         cell_bounds = time_bnds, units = {time_coord_units})   ")
         print(f'(rewrite_netcdf_file_var) assigning cmor_time using time_bnds...')
         cmor_time = cmor.axis("time", coord_vals = time_coords,
                               cell_bounds = time_bnds, units = time_coord_units)
-    except ValueError as exc: #else: 
+    except ValueError as exc: #else:
         print(f"(rewrite_netcdf_file_var) cmor_time = cmor.axis('time', \n"
                "                          coord_vals = time_coords, units = time_coord_units)")
-        print(f'(rewrite_netcdf_file_var) assigning cmor_time WITHOUT time_bnds...')        
+        print(f'(rewrite_netcdf_file_var) assigning cmor_time WITHOUT time_bnds...')
         cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
     print(f'                          DONE assigning cmor_time')
-    
+
 #    # setup cmor time axis if relevant
 #    cmor_time = None
 #    try:
@@ -525,11 +525,11 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 #        print(f"(rewrite_netcdf_file_var) WARNING exception raised... exc={exc}\n"
 #               "                          cmor_time = cmor.axis('time', \n"
 #               "                          coord_vals = time_coords, units = time_coord_units)")
-#        print(f'(rewrite_netcdf_file_var) assigning cmor_time WITHOUT time_bnds...')        
-#        cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)        
-        
+#        print(f'(rewrite_netcdf_file_var) assigning cmor_time WITHOUT time_bnds...')
+#        cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
 
-    
+
+
     # other vertical-axis-relevant initializations
     save_ps = False
     ps = None
@@ -615,21 +615,21 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                 axis_ids.append(cmor_time)
                 print(f'                          axis_ids now = {axis_ids}')
             if cmor_lat is not None:
-                print(f'(rewrite_netcdf_file_var) appending cmor_lat to axis_ids list...')        
+                print(f'(rewrite_netcdf_file_var) appending cmor_lat to axis_ids list...')
                 axis_ids.append(cmor_lat)
                 print(f'                          axis_ids now = {axis_ids}')
             if cmor_lon is not None:
-                print(f'(rewrite_netcdf_file_var) appending cmor_lon to axis_ids list...')        
+                print(f'(rewrite_netcdf_file_var) appending cmor_lon to axis_ids list...')
                 axis_ids.append(cmor_lon)
                 print(f'                          axis_ids now = {axis_ids}')
-            
+
             ips = cmor.zfactor( zaxis_id     = cmor_lev,
                                 zfactor_name = "ps",
                                 axis_ids     = axis_ids, #[cmor_time, cmor_lat, cmor_lon],
                                 units        = "Pa" )
             save_ps = True
         print(f'                          DONE assigning cmor_lev')
-    
+
 
     axes = []
     if cmor_time is not None:
@@ -637,15 +637,15 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         axes.append(cmor_time)
         print(f'                          axes now = {axes}')
     if cmor_lev is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_lev to axes list...')        
+        print(f'(rewrite_netcdf_file_var) appending cmor_lev to axes list...')
         axes.append(cmor_lev)
         print(f'                          axes now = {axes}')
     if cmor_lat is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_lat to axes list...')        
+        print(f'(rewrite_netcdf_file_var) appending cmor_lat to axes list...')
         axes.append(cmor_lat)
         print(f'                          axes now = {axes}')
     if cmor_lon is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_lon to axes list...')        
+        print(f'(rewrite_netcdf_file_var) appending cmor_lon to axes list...')
         axes.append(cmor_lon)
         print(f'                          axes now = {axes}')
 

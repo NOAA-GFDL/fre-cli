@@ -44,16 +44,16 @@ FILENAME = 'reduced_ocean_monthly_1x1deg.199307-199308.sos' # unneeded, this is 
 FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
 
 def test_setup_fre_cmor_run_subtool(capfd):
-    ''' The routine generates a netCDF file from an ascii (cdl) file. It also checks for a ncgen 
-    output file from prev pytest runs, removes it if it's present, and ensures the new file is 
-    created without error. 
+    ''' The routine generates a netCDF file from an ascii (cdl) file. It also checks for a ncgen
+    output file from prev pytest runs, removes it if it's present, and ensures the new file is
+    created without error.
     '''
 
     ncgen_input = f"{ROOTDIR}/reduced_ascii_files/{FILENAME}.cdl"
     ncgen_output = f"{ROOTDIR}/ocean_sos_var_file/{FILENAME}.nc"
 
     if Path(ncgen_output).exists():
-        Path(ncgen_output).unlink() 
+        Path(ncgen_output).unlink()
     assert Path(ncgen_input).exists()
 
     ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
@@ -112,7 +112,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
                              check=False,
                              capture_output=True
     )
-    
+
     # err_list has length two if end in newline
     err_list = result.stderr.decode().split('\n')
     expected_err = \
