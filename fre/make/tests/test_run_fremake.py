@@ -17,7 +17,7 @@ runner=CliRunner()
 YAMLDIR = "fre/make/tests/null_example"
 YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
-PLATFORM = [ "ci.gnu" ]
+PLATFORM = ["ci.gnu"]
 CONTAINER_PLATFORM = ["hpcme.2023"]
 TARGET = ["debug"]
 BADOPT = ["foo"]
@@ -51,24 +51,24 @@ def test_platformyaml_exists():
 @pytest.mark.xfail()
 def test_bad_platform_option():
     ''' test run-fremake with a invalid platform option'''
-    run_fremake_script.fremake_run(YAMLPATH, BADOPT, TARGET, False, 1, False, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, BADOPT, TARGET, False, 1, False, False, VERBOSE, False, False, False)
 
 @pytest.mark.xfail()
 def test_bad_target_option():
     ''' test run-fremake with a invalid target option'''
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT, False, 1, False, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT, False, 1, False, False, VERBOSE, False, False, False)
 
 @pytest.mark.xfail()
 def test_bad_yamlpath_option():
     ''' test run-fremake with a invalid target option'''
-    run_fremake_script.fremake_run(BADOPT[0], PLATFORM, TARGET, False, 1, False, False, VERBOSE)
+    run_fremake_script.fremake_run(BADOPT[0], PLATFORM, TARGET, False, 1, False, False, VERBOSE, False, False, False)
 
 # tests script/makefile creation without executing (serial compile)
 # first test runs the run-fremake command, subsequent tests check for creation of scripts
 def test_run_fremake_serial():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, False, 1, False, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, False, 1, False, False, VERBOSE, False, False, False)
 
 def test_run_fremake_compile_script_creation_serial():
     ''' check for compile script creation from previous test '''
@@ -86,7 +86,7 @@ def test_run_fremake_makefile_creation_serial():
 def test_run_fremake_multijob():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, True, 4, True, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, True, 4, True, False, VERBOSE, False, False, False)
 
 def test_run_fremake_compile_script_creation_multijob():
     ''' check for compile script creation from previous test '''
@@ -103,7 +103,7 @@ def test_run_fremake_makefile_creation_multijob():
 # tests container build script/makefile/dockerfile creation
 def test_run_fremake_container():
     '''run run-fremake with options for containerized build'''
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, False, VERBOSE, False, False, False)
 
 def test_run_fremake_build_script_creation_container():
     ''' checks container build script creation from previous test '''
@@ -126,16 +126,15 @@ def test_run_fremake_run_script_creation_container():
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
 
 # tests for builds with multiple targets
-
 def test_run_fremake_bad_target():
     ''' checks invalid target returns an error '''
     os.environ["TEST_BUILD_DIR"] = MULTITARGET_TEST_PATH
-    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM[0], "-t", "prod-repro"])
+    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM, "-t", "prod-repro"])
     assert result.exit_code == 1
 
 def test_run_fremake_multiple_targets():
     ''' passes all valid targets for a build '''
-    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM[0], "-t",  \
+    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM, "-t",  \
                                           "debug", "-t", "prod", "-t", "repro", "-t", "debug-openmp", "-t",\
                                           "prod-openmp", "-t", "repro-openmp"])
     assert result.exit_code == 0
