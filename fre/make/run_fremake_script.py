@@ -46,12 +46,12 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
     """
     ## Create a list of compile scripts to run in parallel
     fremakeBuild = buildBaremetal.buildBaremetal(exp = yaml_obj["experiment"],
-                                                 mkTemplatePath = platform["mkTemplate"],
+                                                 mkTemplatePath = mkTemplate,
                                                  srcDir = src_dir,
                                                  bldDir = bld_dir,
                                                  target = target,
-                                                 modules = platform["modules"],
-                                                 modulesInit = platform["modulesInit"],
+                                                 modules = modules,
+                                                 modulesInit = modulesInit,
                                                  jobs = jobs)
     for c in yaml_obj['src']:
         fremakeBuild.writeBuildComponents(c)
@@ -60,7 +60,7 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
 
     return fremakeBuild
 
-def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,td,cr,cb,cd):
+def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,td,cr,cb,cd):
     """
     Go through steps to create Dockerfile and container build script.
     """
@@ -68,7 +68,8 @@ def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,td,cr,cb,cd)
                                         exp = yaml_obj["experiment"],
                                         libs = yaml_obj["container_addlibs"],
                                         RUNenv = run_env,
-                                        target = target)
+                                        target = target,
+                                        mkTemplate = mkTemplate)
 
     dockerBuild.writeDockerfileCheckout("checkout.sh", td+"/checkout.sh")
     dockerBuild.writeDockerfileMakefile(makefile_obj.getTmpDir() + "/Makefile",
@@ -140,7 +141,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
             raise ValueError(f'{platformName} does not exist in '
                              f'{model_yaml.combined.get("compile").get("platformYaml")}')
 
-        platform = modelYaml.platforms.getPlatformFromName(platformName)
+        platform = model_yaml.platforms.getPlatformFromName(platformName)
 
         ## Create the checkout script
         if not platform["container"]:
@@ -185,7 +186,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
             else:
                 raise ValueError (platformName + " does not exist in " + model_yaml.platformsfile)
 
-            platform = modelYaml.platforms.getPlatformFromName(platformName)
+        #    platform = model_yaml.platforms.getPlatformFromName(platformName)
 
             ## Make the source directory based on the modelRoot and platform
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
@@ -252,10 +253,10 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 ###################### container stuff below #######################################
                 ## Run the checkout script
                 #          image="hpc-me-intel:2021.1.1"
-                image=modelYaml.platforms.getContainerImage(platformName)
-                srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
-                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
-                tmpDir = "tmp/"+platformName
+                image=model_yaml.platforms.getContainerImage(platformName)
+                src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
+                bld_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/exec"
+                tmp_dir = "tmp/"+platformName
 
                 ## Create the checkout script
                 if not os.path.exists(tmp_dir+"/checkout.sh"):
@@ -299,6 +300,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                            img = image,
                                            run_env = platform["RUNenv"],
                                            target = target,
+                                           mkTemplate = platform["mkTemplate"],
                                            td = tmp_dir,
                                            cr = platform["containerRun"],
                                            cb = platform["containerBuild"],
@@ -317,6 +319,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                                run_env = platform["RUNenv"],
                                                target = target,
                                                td = tmp_dir,
+                                               mkTemplate = platform["mkTemplate"],
                                                cr = platform["containerRun"],
                                                cb = platform["containerBuild"],
                                                cd = curr_dir)
