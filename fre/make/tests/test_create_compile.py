@@ -32,9 +32,6 @@ if Path(OUT).exists():
 else:
     Path(OUT).mkdir(parents=True,exist_ok=True)
 
-# Set environment variable for use in ci.gnu platform
-os.environ["TEST_BUILD_DIR"] = OUT
-
 def test_modelyaml_exists():
     """
     Check the model yaml exists
@@ -57,6 +54,9 @@ def test_compile_creation():
     """
     Check for the creation of the compile script
     """
+    # Set environment variable for use in ci.gnu platform
+    os.environ["TEST_BUILD_DIR"] = OUT
+
     plat = PLATFORM[0]
     targ = TARGET[0]
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
@@ -71,6 +71,9 @@ def test_compile_execution():
     """
     Check for the successful execution of the compile script
     """
+    # Set environment variable for use in ci.gnu platform
+    os.environ["TEST_BUILD_DIR"] = OUT
+
     plat = PLATFORM[0]
     targ = TARGET[0]
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
@@ -91,6 +94,9 @@ def test_bad_platform():
     Check for the failure of compile script creation
     due to a bad platform passed.
     """
+    # Set environment variable for use in ci.gnu platform
+    os.environ["TEST_BUILD_DIR"] = OUT
+
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
@@ -101,6 +107,9 @@ def test_bad_platform_compilelog():
     Check that compile log still created from the failure 
     of compile script creation due to a bad platform passed.
     """
+    # Set environment variable for use in ci.gnu platform
+    os.environ["TEST_BUILD_DIR"] = OUT
+
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     try:
@@ -115,6 +124,9 @@ def test_bad_target():
     Check for the failure of compile script creation
     due to a bad target passed.
     """
+    # Set environment variable for use in ci.gnu platform
+    os.environ["TEST_BUILD_DIR"] = OUT
+
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
@@ -125,6 +137,9 @@ def test_bad_target_compilelog():
     Check that compile log still created from the failure
     of compile script creation due to a bad target passed.
     """
+    # Set environment variable for use in ci.gnu platform
+    os.environ["TEST_BUILD_DIR"] = OUT
+
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     try:
@@ -137,6 +152,9 @@ def test_multi_target():
     """
     Check for the creation of the compile script for each target passed
     """
+    # Set environment variable for use in ci.gnu platform
+    os.environ["TEST_BUILD_DIR"] = OUT
+
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
