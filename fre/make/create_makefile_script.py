@@ -39,7 +39,7 @@ def makefile_create(yamlfile,platform,target):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+                raise ValueError (platformName + " does not exist in platforms.yaml")
 
             platform=modelYaml.platforms.getPlatformFromName(platformName)
   ## Make the bldDir based on the modelRoot, the platform, and the target
