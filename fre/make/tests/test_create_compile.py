@@ -63,7 +63,6 @@ def test_compile_creation():
 
     # Create the compile script
     create_compile_script.compile_create(yamlfile_path, PLATFORM, TARGET, 4, 1, False, False)
-    print(os.getcwd())
     # Check for creation of compile script
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
 
