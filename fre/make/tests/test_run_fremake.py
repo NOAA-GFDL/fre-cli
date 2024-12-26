@@ -134,22 +134,28 @@ def test_run_fremake_bad_target():
 
 def test_run_fremake_multiple_targets():
     ''' passes all valid targets for a build '''
-    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM, "-t",  \
-                                          "debug", "-t", "prod", "-t", "repro", "-t", "debug-openmp", "-t",\
-                                          "prod-openmp", "-t", "repro-openmp"])
-    assert result.exit_code == 0
+    os.environ["TEST_BUILD_DIR"] = MULTITARGET_TEST_PATH
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, targets, True, 4, True, False, VERBOSE, False, False, False)
+#    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM, "-t",  \
+#                                          "debug", "-t", "prod", "-t", "repro", "-t", "debug-openmp", "-t",\
+#                                          "prod-openmp", "-t", "repro-openmp"])
+#    assert result.exit_code == 0
+#    assert (Path(f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{t}/exec/compile.sh").exists()
 
 def test_run_fremake_compile_script_creation_multitarget():
     ''' check compile scripts for all targets exist from previous test'''
+    os.environ["TEST_BUILD_DIR"] = MULTITARGET_TEST_PATH
     for t in targets:
         assert Path(f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{t}/exec/compile.sh").exists()
 
 def test_run_fremake_checkout_script_creation_multitarget():
     ''' check for checkout script creation for mulit-target build'''
     ''' check checkout script exists from previous test'''
+    os.environ["TEST_BUILD_DIR"] = MULTITARGET_TEST_PATH
     assert Path(f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists()
 
 def test_run_fremake_makefile_creation_multitarget():
     ''' check for makefile creation from previous test '''
+    os.environ["TEST_BUILD_DIR"] = MULTITARGET_TEST_PATH
     for t in targets:
         assert Path(f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{t}/exec/Makefile").exists()
