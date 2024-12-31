@@ -7,7 +7,7 @@ import pytest
 
 
 def _make_experiment_yaml(path, name, whitespace="  "):
-    """Creates and experiment yaml configuration file for testing.
+    """Creates an experiment yaml configuration file for testing.
 
     Args:
         path: Path to the experiment yaml file that will be created.
@@ -31,6 +31,20 @@ def _make_experiment_yaml(path, name, whitespace="  "):
         yaml_.write(f"{2*whitespace}pp_start: {pp_stop}\n")
 
 
+def _make_figures_yaml(path, whitespace="  "):
+    """Creates and experiment yaml configuration file for testing.
+
+    Args:
+        path: Path to the figures yaml file that will be created.
+        whitespace: Amount of whitespace each block will be indented by.
+    """
+    figure_paths = ["foo", "bar"]
+    with open(path, "w") as yaml_:
+        yaml_.write("figure_paths:\n")
+        for path in figure_paths:
+            yaml_.write(f"{whitespace}-{Path(path).resolve()}\n")
+
+
 def test_add_experiment_to_dora():
     name = "freanalysis_clouds"
     with TemporaryDirectory() as tmp:
@@ -52,5 +66,7 @@ def test_publish_analysis_figures():
     with TemporaryDirectory() as tmp:
         experiment_yaml = Path(tmp) / "experiment.yaml"
         _make_experiment_yaml(experiment_yaml, name)
+        figures_yaml = Path(tmp) / "figures.yml"
+        _make_figures_yaml(figures_yaml)
         publish_analysis_figures(name, experiment_yaml, figures_yaml,
                                  "https://dora-dev.gfdl.noaa.gov")

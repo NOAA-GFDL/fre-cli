@@ -1,14 +1,14 @@
 from pathlib import Path
-import pytest
 from subprocess import CalledProcessError
 from tempfile import TemporaryDirectory
 
 from analysis_scripts import available_plugins, UnknownPluginError
 from fre.analysis.subtools import install_analysis_package, list_plugins, run_analysis
+import pytest
 
 
 def make_experiment_yaml(path, name, whitespace="  "):
-    """Creates and experiment yaml configuration file for testing.
+    """Creates an experiment yaml configuration file for testing.
 
     Args:
         path: Path to the experiment yaml file that will be created.
@@ -27,9 +27,9 @@ def test_install_analysis_package():
     url = "github.com/noaa-gfdl/analysis-scripts"
     name = "freanalysis_clouds"
     with TemporaryDirectory() as tmp:
-         install_analysis_package(url, name, tmp)
-         plugins = list_plugins(tmp)
-         assert name in list_plugins(tmp)
+        install_analysis_package(url, name, tmp)
+        plugins = list_plugins(tmp)
+        assert name in list_plugins(tmp)
 
 
 def test_run_analysis():
