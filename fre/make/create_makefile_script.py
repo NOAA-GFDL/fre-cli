@@ -9,6 +9,9 @@ from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 import fre.yamltools.combine_yamls as cy
 
 def makefile_create(yamlfile,platform,target):
+    """
+    Create the makefile
+    """
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -39,7 +42,7 @@ def makefile_create(yamlfile,platform,target):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise ValueError (platformName + " does not exist in platforms.yaml")
+                raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
             platform=modelYaml.platforms.getPlatformFromName(platformName)
   ## Make the bldDir based on the modelRoot, the platform, and the target
