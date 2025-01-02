@@ -46,6 +46,9 @@ class platforms ():
                 p["RUNenv"] = [""]
                 p["containerBuild"] = ""
                 p["containerRun"] = ""
+                p["containerViews"] = False
+                p["containerBase"] = ""
+                p["container2step"] = ""
             if p["container"]:
                 ## Check the container builder
                 try:
@@ -54,7 +57,20 @@ class platforms ():
                     raise Exception("You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerBuild"] != "podman" and p["containerBuild"] != "docker":
                     raise ValueError("Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
-                ## Check for container environment set up for RUN commands
+                print (p["containerBuild"])
+## Check for container environment set up for RUN commands
+                try:
+                    p["containerBase"]
+                except NameError:
+                    print("You must specify the base container you wish to use to build your application")
+                try:
+                    p["containerViews"]
+                except:
+                    p["containerViews"] = False
+                try:
+                    p["container2step"]
+                except:
+                    p["container2step"] = ""
                 try:
                     p["RUNenv"]
                 except:
@@ -66,14 +82,11 @@ class platforms ():
                     raise Exception("You must specify the program used to run the container (containerRun) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerRun"] != "apptainer" and p["containerRun"] != "singularity":
                     raise ValueError("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n")
-                ## set the location of the mkTemplate.
-                ## In a container, it uses the hpc-me template cloned from mkmf
-                p["mkTemplate"] = "/apps/mkmf/templates/hpcme-intel21.mk"
             else:
                 try:
                     p["mkTemplate"]
                 except:
-                    raise ValueError("The non-container platform "+p["name"]+" must specify a mkTemplate \n")
+                    raise ValueError("The platform "+p["name"]+" must specify a mkTemplate \n")
 
     def hasPlatform(self,name):
         """
@@ -97,3 +110,30 @@ class platforms ():
         for p in self.yaml:
             if p["name"] == name:
                 return p
+    def getContainerInfoFromName(self,name):
+        """
+        Brief: Return a tuple of the container information
+        """
+        for p in self.yaml:
+            if p["name"] == name:
+                return (p["container"], \
+                p["RUNenv"], \
+                p["containerBuild"], \
+                p["containerRun"], \
+                p["containerViews"], \
+                p["containerBase"], \
+                p["container2step"])
+    def isContainer(self, name):
+        """
+        Brief: Returns boolean of if this platform is a container based on the name
+        """
+        for p in self.yaml:
+            if p["name"] == name:
+                return p["container"]
+    def getContainerImage(self,name):
+        """
+        Brief: Returns the image name from the platform
+        """
+        for p in self.yaml:
+            if p["name"] == name:
+                return p["containerBase"]

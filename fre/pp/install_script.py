@@ -38,4 +38,4 @@ def install_subtool(experiment, platform, target):
 @click.command()
 def _install_subtool(experiment, platform, target):
     ''' entry point to install for click '''
-    return _install_subtool(experiment, platform, target)
+    return install_subtool(experiment, platform, target)
