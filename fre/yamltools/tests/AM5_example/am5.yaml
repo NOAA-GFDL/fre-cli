@@ -71,3 +71,6 @@ experiments:
     pp:
       - "pp_yamls/pp.c96_amip.yaml"
       - "pp_yamls/pp-TEST.c96_amip.yaml"
+    analysis:
+      - "analysis_yamls/clouds.yaml"
+      - "analysis_yamls/land.yaml"
