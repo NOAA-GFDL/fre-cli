@@ -5,7 +5,8 @@ package:
   version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
 
 source:
-  git_url: https://github.com/NOAA-GFDL/fre-cli.git
+  path: .
+#  git_url: https://github.com/NOAA-GFDL/fre-cli.git
 
 build:
   script:
