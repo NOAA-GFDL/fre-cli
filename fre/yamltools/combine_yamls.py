@@ -44,8 +44,8 @@ def get_compile_paths(mainyaml_dir,comb):
         else:
             raise ValueError("Incorrect platform yaml path given; does not exist.")
     else:
+        py_path=None
         raise ValueError("No platform yaml path given!")
-        #py_path=None
 
     # set compile yaml filepath
     if comb_model["build"]["compileYaml"] is not None:
@@ -55,11 +55,10 @@ def get_compile_paths(mainyaml_dir,comb):
         else:
             raise ValueError("Incorrect compile yaml path given; does not exist.")
     else:
+        cy_path=None
         raise ValueError("No compile yaml path given!")
-        #cy_path=None
 
     return (py_path,cy_path)
-
 
 def experiment_check(mainyaml_dir,comb,experiment):
     """
@@ -249,7 +248,8 @@ class init_pp_yaml():
 
     def combine_experiment(self):
         """
-        Combine experiment yamls with the defined combined.yaml
+        Combine experiment yamls with the defined combined.yaml.
+        If more than 1 pp yaml defined, return a list of paths.
         """
         # Experiment Check
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
@@ -267,12 +267,11 @@ class init_pp_yaml():
         elif ey_path is not None and len(ey_path) > 1:
             pp_yamls = []
             for i in ey_path:
-                #print(i)
-                #quit()
-                pp_exp=str(i).split("/")[-1]
+                pp_exp = str(i).rsplit('/', maxsplit=1)[-1]
+
                 #create yamlfiles in folder
                 cwd=os.getcwd()
-                tmp_yaml_folder = os.path.join(cwd,f"model_x_exp_yamls")
+                tmp_yaml_folder = os.path.join(cwd,"model_x_exp_yamls")
                 os.makedirs(tmp_yaml_folder, exist_ok=True)
                 shutil.copy(self.combined, os.path.join(tmp_yaml_folder,f"combined-{pp_exp}"))
                 with open(os.path.join(tmp_yaml_folder,f"combined-{pp_exp}"),'a',encoding='UTF-8') as f1:
@@ -280,35 +279,33 @@ class init_pp_yaml():
                         #copy expyaml into combined
                         shutil.copyfileobj(f2,f1)
                 pp_yamls.append(os.path.join(tmp_yaml_folder,f"combined-{pp_exp}"))
-                #print(f"   experiment yaml: {i}") 
 
-        return(pp_yamls)
+            return pp_yamls
 
     def combine_analysis(self):
         """
         Combine analysis yamls with the defined combined.yaml
+        If more than 1 analysis yaml defined, return a list of paths.
         """
         # Experiment Check
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
 
-        ## COMBINE EXPERIMENT YAML INFO
+        ## COMBINE ANALYSIS YAML INFO
         if ay_path is not None and len(ay_path) == 1:
-            #analysisyaml_path = os.path.join(mainyaml_dir, i)
             with open(self.combined,'a',encoding='UTF-8') as f1:
-                with open(i,'r',encoding='UTF-8') as f2:
+                with open(ay_path[0],'r',encoding='UTF-8') as f2:
                     #f1.write(f"\n### {i.upper()} settings ###\n")
                     #copy expyaml into combined
                     shutil.copyfileobj(f2,f1)
-            #print(f"   analysis yaml: {i}")
 
         elif ay_path is not None and len(ay_path) > 1:
             analysis_yamls=[]
             for i in ay_path:
-                analysis=str(i).split("/")[-1]
+                analysis = str(i).rsplit('/', maxsplit=1)[-1]
 
                 #create yamlfiles in folder
                 cwd=os.getcwd()
-                tmp_yaml_folder = os.path.join(cwd,f"model_x_analysis_yamls")
+                tmp_yaml_folder = os.path.join(cwd,"model_x_analysis_yamls")
                 os.makedirs(tmp_yaml_folder, exist_ok=True)
 
                 shutil.copy(self.combined, os.path.join(tmp_yaml_folder,f"combined-{analysis}"))
@@ -318,45 +315,59 @@ class init_pp_yaml():
                         shutil.copyfileobj(f2,f1)
 
                 analysis_yamls.append(os.path.join(tmp_yaml_folder,f"combined-{analysis}"))
-                #print(f"   analysis yaml: {i}")
 
-        return(analysis_yamls)
+            return analysis_yamls
 
-    def merge(self, pp_list, analysis_list):
+    def merge_multiple_yamls(self, pp_list, analysis_list):
         """
+        Merge separately combined post-processing and analysis 
+        yamls into fully combined yaml (without overwriting).
         """
         result = {}
-        result.update(yaml_load(pp_list[0]))
-        for i in pp_list[1:]:
-            yf = yaml_load(i)
-            for key in result:
-                if key in yf:
-                    if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                        if key == "postprocess":
-                            result[key]["components"] = yf[key]["components"] + result[key]["components"]
+        if pp_list is not None and len(pp_list) > 1:
+            result.update(yaml_load(pp_list[0]))
+            for i in pp_list[1:]:
+                yf = yaml_load(i)
+                for key in result:
+                    if key in yf:
+                        if isinstance(result[key],dict) and isinstance(yf[key],dict):
+                            if key == "postprocess":
+                                result[key]["components"] = yf[key]["components"] + result[key]["components"]
+        elif pp_list is not None and len(pp_list) == 1:
+            pass
 
-        result.update(yaml_load(analysis_list[0]))
-        for i in analysis_list[1:]:
-            yf = yaml_load(i)
-            for key in result:
-                if key in yf:
-                    if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                        if key == "analysis":
-                            result[key] = yf[key] | result[key]
+        if analysis_list is not None and len(analysis_list) > 1:
+            result.update(yaml_load(analysis_list[0]))
+            for i in analysis_list[1:]:
+                yf = yaml_load(i)
+                for key in result:
+                    if key in yf:
+                        if isinstance(result[key],dict) and isinstance(yf[key],dict):
+                            if key == "analysis":
+                                result[key] = yf[key] | result[key]
+        elif analysis_list is not None and len(analysis_list) == 1:
+            pass
 
         with open(self.combined,'w',encoding='UTF-8') as f:
             yaml.safe_dump(result,f,default_flow_style=False,sort_keys=False)
-            for i in pp_list:
-                exp = str(i).split("/")[-1].split("-",1)[1]
-                print(f"   experiment yaml: {exp}")
-            for i in analysis_list:
-                analysis = str(i).split("/")[-1].split("-",1)[1]
-                print(f"   analysis yaml: {analysis}")
+            if pp_list is not None:
+                for i in pp_list:
+                    exp = str(i).rsplit('/', maxsplit=1)[-1]
+                    print(f"   experiment yaml: {exp}")
+            if analysis_list is not None:
+                for i in analysis_list:
+                    analysis = str(i).rsplit('/', maxsplit=1)[-1]
+                    print(f"   analysis yaml: {analysis}")
 
     def remove_tmp_yamlfiles(self, exp_yamls, analysis_yamls):
-        if Path(exp_yamls[0]).exists():
+        """
+        Clean up seprately created model/pp experiment and 
+        model/analysis yamls. They are used for final combined 
+        yaml but not needed separately.
+        """
+        if exp_yamls is not None and Path(exp_yamls[0]).exists():
             shutil.rmtree(os.path.dirname(exp_yamls[0]))
-        if Path(analysis_yamls[0]).exists():
+        if analysis_yamls is not None and Path(analysis_yamls[0]).exists():
             shutil.rmtree(os.path.dirname(analysis_yamls[0]))
 
     def clean_yaml(self):
@@ -431,8 +442,8 @@ def get_combined_ppyaml(comb):
     comb_pp = comb.combine_experiment()
     # Merge analysis yamls, if defined, into combined file
     comb_analysis = comb.combine_analysis()
-    # Merge model/pp yamls
-    comb.merge(comb_pp, comb_analysis)
+    # Merge model/pp and model/analysis yamls if more than 1 is defined (without overwriting the yaml)
+    comb.merge_multiple_yamls(comb_pp, comb_analysis)
     # Remove separate combined pp yaml files
     comb.remove_tmp_yamlfiles(comb_pp, comb_analysis)
     # Clean the yaml
@@ -442,6 +453,10 @@ def get_combined_ppyaml(comb):
 
 ###########################################################################################
 def consolidate_yamls(yamlfile,experiment,platform,target,use):
+    """
+    Depending on `use` argument passed, either create the final
+    combined yaml for compilation or post-processing
+    """
     # Regsiter tag handler
     yaml.add_constructor('!join', join_constructor)
 
