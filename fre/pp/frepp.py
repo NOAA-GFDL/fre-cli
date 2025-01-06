@@ -62,7 +62,7 @@ def run(experiment, platform, target):
               required=True)
 def validate(experiment, platform, target):
     """ - Validate PP configuration"""
-    validate_script.validate_subtool(experiment, platform, target):
+    validate_script.validate_subtool(experiment, platform, target)
 
 # fre pp install
 @pp_cli.command()
