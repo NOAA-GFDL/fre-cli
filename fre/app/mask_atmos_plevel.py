@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 '''
 This script contains the refineDiags that produce data at the same
 frequency as the input data (no reduction) such as surface albedo,

@@ -3,6 +3,7 @@ entry point for fre catalog subcommands
 '''
 
 import click
+
 #import catalogbuilder
 from catalogbuilder.scripts import gen_intake_gfdl
 from catalogbuilder.scripts import test_catalog

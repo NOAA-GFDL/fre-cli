@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 ''' fre app calls '''
 
 import time

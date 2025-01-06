@@ -15,9 +15,6 @@ from jsonschema import validate
 import yaml
 import metomi.rose.config
 
-# Relative import
-#f = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-#sys.path.append(f)
 import fre.yamltools.combine_yamls as cy
 
 ####################
