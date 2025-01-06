@@ -1,6 +1,6 @@
-''' this file holds any run-fremake tests that actually compile the model code'''
-''' these tests assume your os is the ci image (gcc 14 + mpich on rocky 8)'''
-''' you may need to add mkmf to your path or make other adjustments to the mkmf template to run elsewhere'''
+''' this file holds any run-fremake tests that actually compile the model code
+ these tests assume your os is the ci image (gcc 14 + mpich on rocky 8)
+ you may need to add mkmf to your path or make other adjustments to the mkmf template to run elsewhere'''
 
 import os
 from shutil  import rmtree
