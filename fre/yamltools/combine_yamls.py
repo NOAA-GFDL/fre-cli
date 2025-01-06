@@ -255,6 +255,7 @@ class init_pp_yaml():
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
 
         ## COMBINE EXPERIMENT YAML INFO
+        # If only 1 pp yaml defined, combine with model yaml
         if ey_path is not None and len(ey_path) == 1:
             #expyaml_path = os.path.join(mainyaml_dir, i)
             with open(self.combined,'a',encoding='UTF-8') as f1:
@@ -263,7 +264,9 @@ class init_pp_yaml():
                     shutil.copyfileobj(f2,f1)
             print(f"   experiment yaml: {ey_path[0]}")
 
-        #if more than 1 pp yaml listed
+        # If more than 1 pp yaml listed, create an intermediate yaml folder to combine
+        # each model and pp yaml into own combined yaml file
+        # (Must be done for aliases defined)
         elif ey_path is not None and len(ey_path) > 1:
             pp_yamls = []
             for i in ey_path:
@@ -291,13 +294,15 @@ class init_pp_yaml():
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.combined,self.name)
 
         ## COMBINE ANALYSIS YAML INFO
+        # If only 1 analysis yaml listed, combine with model yaml
         if ay_path is not None and len(ay_path) == 1:
             with open(self.combined,'a',encoding='UTF-8') as f1:
                 with open(ay_path[0],'r',encoding='UTF-8') as f2:
-                    #f1.write(f"\n### {i.upper()} settings ###\n")
                     #copy expyaml into combined
                     shutil.copyfileobj(f2,f1)
 
+        # If more than 1 analysis yaml listed, create an intermediate yaml folder to combine
+        # each model and analysis yaml into own combined yaml file
         elif ay_path is not None and len(ay_path) > 1:
             analysis_yamls=[]
             for i in ay_path:
@@ -324,6 +329,11 @@ class init_pp_yaml():
         yamls into fully combined yaml (without overwriting).
         """
         result = {}
+
+        # If more than one post-processing yaml is listed, update dictionary with content from 1st yaml in list
+        # Looping through rest of yamls listed, compare key value pairs. 
+        # If instance of key is a dictionary in both result and loaded yamlfile, update the key in result to 
+        # include the loaded yaml file's value. 
         if pp_list is not None and len(pp_list) > 1:
             result.update(yaml_load(pp_list[0]))
             for i in pp_list[1:]:
@@ -333,9 +343,14 @@ class init_pp_yaml():
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
                             if key == "postprocess":
                                 result[key]["components"] = yf[key]["components"] + result[key]["components"]
+        # If only one post-processing yaml listed, do nothing --> already combined in 'combine_experiments' function
         elif pp_list is not None and len(pp_list) == 1:
             pass
 
+        # If more than one analysis yaml is listed, update dictionary with content from 1st yaml in list
+        # Looping through rest of yamls listed, compare key value pairs. 
+        # If instance of key is a dictionary in both result and loaded yamlfile, update the key in result 
+        # to include the loaded yaml file's value.
         if analysis_list is not None and len(analysis_list) > 1:
             result.update(yaml_load(analysis_list[0]))
             for i in analysis_list[1:]:
@@ -345,9 +360,11 @@ class init_pp_yaml():
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
                             if key == "analysis":
                                 result[key] = yf[key] | result[key]
+        # If only one analysis yaml listed, do nothing --> already combined in 'combine_analysis' function
         elif analysis_list is not None and len(analysis_list) == 1:
             pass
 
+        # Dump the updated result dictionary back into the final combined yaml file
         with open(self.combined,'w',encoding='UTF-8') as f:
             yaml.safe_dump(result,f,default_flow_style=False,sort_keys=False)
             if pp_list is not None:
@@ -361,12 +378,14 @@ class init_pp_yaml():
 
     def remove_tmp_yamlfiles(self, exp_yamls, analysis_yamls):
         """
-        Clean up seprately created model/pp experiment and 
+        Clean up separately created model/pp experiment and 
         model/analysis yamls. They are used for final combined 
         yaml but not needed separately.
         """
+        # Remove intermediate model_x_exp_yamls folder if it is not empty
         if exp_yamls is not None and Path(exp_yamls[0]).exists():
             shutil.rmtree(os.path.dirname(exp_yamls[0]))
+        # Remove intermediate model_x_analysis_yamls if not empty
         if analysis_yamls is not None and Path(analysis_yamls[0]).exists():
             shutil.rmtree(os.path.dirname(analysis_yamls[0]))
 
@@ -385,6 +404,7 @@ class init_pp_yaml():
             if kc in full_yaml.keys():
                 del full_yaml[kc]
 
+        # Dump cleaned dictionary back into combined yaml file
         with open(self.combined,'w') as f:
             yaml.safe_dump(full_yaml,f,default_flow_style=False,sort_keys=False)
 
