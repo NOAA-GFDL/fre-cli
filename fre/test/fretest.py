@@ -14,6 +14,7 @@ def test_cli():
 def function(uppercase):
     """ - Execute fre test test """
     test_test_function(uppercase)
+    raise NotImplementedError('fre test has not been implemented yet!')
 
 if __name__ == "__main__":
     test_cli()

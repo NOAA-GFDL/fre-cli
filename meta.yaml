@@ -56,13 +56,13 @@ test:
     - fre
     - fre.app
     - fre.catalog
-    # - fre.check
+    - fre.check
     - fre.cmor
-    # - fre.list
+    - fre.list
     - fre.make
     - fre.pp
-    # - fre.run
-    # - fre.test
+    - fre.run
+    - fre.test
     - fre.yamltools
   commands:
     - pylint --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
@@ -71,13 +71,13 @@ test:
     - fre --help
     - fre app --help
     - fre catalog --help
-    # - fre check --help
+    - fre check --help
     - fre cmor --help
-    # - fre list --help
+    - fre list --help
     - fre make --help
     - fre pp --help
-    # - fre run --help
-    # - fre test --help
+    - fre run --help
+    - fre test --help
     - fre yamltools --help
 
 
