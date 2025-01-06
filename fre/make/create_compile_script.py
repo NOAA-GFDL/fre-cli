@@ -1,15 +1,16 @@
-#!/usr/bin/python3
-
+'''
+TODO: make docstring
+'''
 import os
 import sys
 import logging
 from pathlib import Path
 from multiprocessing.dummy import Pool
-import click
+
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
-def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
+def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -79,21 +80,13 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
                    fremakeBuild.writeBuildComponents(c)
               fremakeBuild.writeScript()
               fremakeBuildList.append(fremakeBuild)
-              click.echo("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
+              print("\nCompile script created at " + bldDir + "/compile.sh" + "\n") #was click.echo
     if run:
         if baremetalRun:
             pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
     else:
-        sys.exit()
-
-@click.command()
-def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
-    '''
-    Decorator for calling compile_create - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose)
+        return #sys.exit()
 
 if __name__ == "__main__":
     compile_create()
