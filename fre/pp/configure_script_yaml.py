@@ -142,13 +142,17 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
                             value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
 ####################
-def yaml_info(yamlfile,experiment,platform,target):
+def yaml_info(yamlfile = None, experiment = None, platform = None, target = None):
     """
     Using a valid pp.yaml, the rose-app and rose-suite
     configuration files are created in the cylc-src
     directory. The pp.yaml is also copied to the
     cylc-src directory.
     """
+    if None in [yamlfile, experiment, platform, target]:
+        raise ValueError( 'yamlfile, experiment, platform, and target must all not be None.'
+                          'currently, their values are...'
+                          f'{yamlfile} / {experiment} / {platform} / {target}')
     e = experiment
     p = platform
     t = target
