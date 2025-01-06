@@ -133,7 +133,10 @@ class init_compile_yaml():
 
         # Name of the combined yaml
         base_name=f"combined-{self.namenopath}.yaml"
-        self.combined = base_name if len(self.mainyaml_dir) == 0 else f"{self.mainyaml_dir}/{base_name}"
+        if len(self.mainyaml_dir) == 0:
+            self.combined = base_name
+        else:
+            self.combined = f"{self.mainyaml_dir}/{base_name}"
 
         print("Combining yaml files: ")
 
@@ -277,7 +280,8 @@ class init_pp_yaml():
                 tmp_yaml_folder = os.path.join(cwd,"model_x_exp_yamls")
                 os.makedirs(tmp_yaml_folder, exist_ok=True)
                 shutil.copy(self.combined, os.path.join(tmp_yaml_folder,f"combined-{pp_exp}"))
-                with open(os.path.join(tmp_yaml_folder,f"combined-{pp_exp}"),'a',encoding='UTF-8') as f1:
+                with open(os.path.join(tmp_yaml_folder,f"combined-{pp_exp}"),'a',
+                          encoding='UTF-8') as f1:
                     with open(i,'r',encoding='UTF-8') as f2:
                         #copy expyaml into combined
                         shutil.copyfileobj(f2,f1)
@@ -314,7 +318,8 @@ class init_pp_yaml():
                 os.makedirs(tmp_yaml_folder, exist_ok=True)
 
                 shutil.copy(self.combined, os.path.join(tmp_yaml_folder,f"combined-{analysis}"))
-                with open(os.path.join(tmp_yaml_folder,f"combined-{analysis}"),'a',encoding='UTF-8') as f1:
+                with open(os.path.join(tmp_yaml_folder,f"combined-{analysis}"),'a',
+                          encoding='UTF-8') as f1:
                     with open(i,'r',encoding='UTF-8') as f2:
                         #copy expyaml into combined
                         shutil.copyfileobj(f2,f1)
@@ -330,10 +335,12 @@ class init_pp_yaml():
         """
         result = {}
 
-        # If more than one post-processing yaml is listed, update dictionary with content from 1st yaml in list
-        # Looping through rest of yamls listed, compare key value pairs. 
-        # If instance of key is a dictionary in both result and loaded yamlfile, update the key in result to 
-        # include the loaded yaml file's value. 
+        # If more than one post-processing yaml is listed, update
+        # dictionary with content from 1st yaml in list
+        # Looping through rest of yamls listed, compare key value pairs.
+        # If instance of key is a dictionary in both result and loaded
+        # yamlfile, update the key in result to
+        # include the loaded yaml file's value.
         if pp_list is not None and len(pp_list) > 1:
             result.update(yaml_load(pp_list[0]))
             for i in pp_list[1:]:
@@ -343,14 +350,15 @@ class init_pp_yaml():
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
                             if key == "postprocess":
                                 result[key]["components"] = yf[key]["components"] + result[key]["components"]
-        # If only one post-processing yaml listed, do nothing --> already combined in 'combine_experiments' function
+        # If only one post-processing yaml listed, do nothing
+        # (already combined in 'combine_experiments' function)
         elif pp_list is not None and len(pp_list) == 1:
             pass
 
-        # If more than one analysis yaml is listed, update dictionary with content from 1st yaml in list
-        # Looping through rest of yamls listed, compare key value pairs. 
-        # If instance of key is a dictionary in both result and loaded yamlfile, update the key in result 
-        # to include the loaded yaml file's value.
+        # If more than one analysis yaml is listed, update dictionary with content from 1st yaml
+        # Looping through rest of yamls listed, compare key value pairs.
+        # If instance of key is a dictionary in both result and loaded yamlfile, update the key
+        # in result to include the loaded yaml file's value.
         if analysis_list is not None and len(analysis_list) > 1:
             result.update(yaml_load(analysis_list[0]))
             for i in analysis_list[1:]:
@@ -360,7 +368,8 @@ class init_pp_yaml():
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
                             if key == "analysis":
                                 result[key] = yf[key] | result[key]
-        # If only one analysis yaml listed, do nothing --> already combined in 'combine_analysis' function
+        # If only one analysis yaml listed, do nothing
+        # (already combined in 'combine_analysis' function)
         elif analysis_list is not None and len(analysis_list) == 1:
             pass
 
@@ -420,9 +429,9 @@ def get_combined_compileyaml(comb):
     comb : combined yaml object
     """
     # Merge model into combined file
-    comb_model = comb.combine_model()
+    comb.combine_model()
     # Merge compile.yaml into combined file
-    comb_compile = comb.combine_compile()
+    comb.combine_compile()
     # Merge platforms.yaml into combined file
     full_combined = comb.combine_platforms()
     # Clean the yaml
@@ -457,12 +466,13 @@ def get_combined_ppyaml(comb):
     comb : combined yaml object
     """
     # Merge model into combined file
-    comb_model = comb.combine_model()
+    comb.combine_model()
     # Merge pp experiment yamls into combined file
     comb_pp = comb.combine_experiment()
     # Merge analysis yamls, if defined, into combined file
     comb_analysis = comb.combine_analysis()
-    # Merge model/pp and model/analysis yamls if more than 1 is defined (without overwriting the yaml)
+    # Merge model/pp and model/analysis yamls if more than 1 is defined
+    # (without overwriting the yaml)
     comb.merge_multiple_yamls(comb_pp, comb_analysis)
     # Remove separate combined pp yaml files
     comb.remove_tmp_yamlfiles(comb_pp, comb_analysis)
