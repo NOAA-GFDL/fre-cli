@@ -11,7 +11,7 @@ import subprocess
 
 import click
 
-from fre import fre
+from fre.fre import version as fre_ver
 
 FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 
@@ -23,7 +23,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     go_back_here = os.getcwd()
 
     # branch and version parameters
-    default_tag = fre.version
+    default_tag = fre_ver #fre.version
     git_clone_branch_arg = branch if branch is not None else default_tag
     if branch is None:
         print(f"(checkout_script) default tag is '{default_tag}'")
@@ -32,6 +32,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
 
     # check args + set the name of the directory
     if None in [experiment, platform, target]:
+        os.chdir(go_back_here)
         raise ValueError( 'one of these are None: experiment / platform / target = \n'
                          f'{experiment} / {platform} / {target}' )
     name = f"{experiment}__{platform}__{target}"
@@ -43,6 +44,8 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     except Exception as exc:
         raise OSError(
             '(checkoutScript) directory {directory} wasnt able to be created. exit!') from exc
+    finally:
+        os.chdir(go_back_here)
 
     checkout_exists = os.path.isdir(f'{directory}/{name}')
 
@@ -72,13 +75,15 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         else:
             print(f"(checkout_script) ERROR: checkout exists ('{directory}/{name}') and does not match '{git_clone_branch_arg}'")
             print(f"(checkout_script) ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
-            exit(1)
+            #exit(1)
+            os.chdir(go_back_here)
+            raise ValueError('(checkout_script) neither tag nor branch matches the git clone branch arg')
 
     # make sure we are back where we should be
     if os.getcwd() != go_back_here:
         os.chdir(go_back_here)
 
-    return 0
+    return 
 
 #############################################
 

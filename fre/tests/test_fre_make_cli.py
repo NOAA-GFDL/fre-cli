@@ -8,6 +8,9 @@ from fre import fre
 
 runner = CliRunner()
 
+def test_sanity1():
+    assert Path(os.getcwd()).name == "fre-cli"
+
 def test_cli_fre_make():
     ''' fre make '''
     result = runner.invoke(fre.fre, args=["make"])
@@ -40,10 +43,13 @@ def test_cli_fre_make_create_checkout_baremetal():
     Path(OUT_PATH).mkdir(parents=True,exist_ok=True)
 
     # Set HOME for modelRoot location (output location) in fre make
+    old_home = os.environ["HOME"]
     os.environ["HOME"]=str(Path(OUT_PATH))
     
     # run create-checkout
     result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/am5.yaml", "-p", platform, "-t", target])
+
+    os.environ["HOME"] = old_home
 
     # Check for successful command, creation of checkout script, and that script is executable 
     # os.access - checks is file has specific access mode, os.X_OK - checks executable permission
@@ -58,16 +64,26 @@ def test_cli_fre_make_create_checkout_container():
     platform = "hpcme.2023"
     target = "debug"
 
+    # Set HOME for modelRoot location (output location) in fre make
+    old_home = os.environ["HOME"]
+    os.environ["HOME"]=str(Path(OUT_PATH))
+
     # run create-checkout
     result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/am5.yaml", "-p", platform, "-t", target])
+
+    os.environ["HOME"] = old_home
 
     # Check for successful command, creation of checkout script, and that script is executable
     # os.access - checks is file has specific access mode, os.X_OK - checks executable permission
     assert all ([result.exit_code == 0,
                  Path(f"tmp/{platform}/checkout.sh").exists(),
                  os.access(Path(f"tmp/{platform}/checkout.sh"), os.X_OK) == False ])
+    
+def test_sanity2():
+    assert Path(os.getcwd()).name == "fre-cli"
 
 def test_cli_fre_make_create_checkout_cleanup():
     ''' make sure the checked out code doesnt stick around to mess up another pytest call '''
+    assert Path(OUT_PATH).exists()
     shutil.rmtree(OUT_PATH)
     assert not Path(OUT_PATH).exists()
