@@ -4,8 +4,10 @@ package:
   name: fre-cli
   version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
 
+# conda-build will always defer to what's specified here
 source:
-  git_url: https://github.com/NOAA-GFDL/fre-cli.git
+  path: .
+#  git_url: https://github.com/NOAA-GFDL/fre-cli.git
 
 build:
   script:
