@@ -4,9 +4,6 @@ authored by Bennett.Chang@noaa.gov | bcc2761
 NOAA | GFDL
 """
 
-import click
-
-@click.command()
 def list_test_function(uppercase=None):
     """Execute fre list testfunction2."""
     statement = "testingtestingtestingtesting"

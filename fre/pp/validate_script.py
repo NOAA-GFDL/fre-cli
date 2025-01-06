@@ -2,7 +2,6 @@
 
 import os
 import subprocess
-import click
 
 def validate_subtool(experiment, platform, target):
     """
@@ -23,11 +22,6 @@ def validate_subtool(experiment, platform, target):
     cmd = "cylc validate ."
     subprocess.run(cmd, shell=True, check=True)
     os.chdir(go_back_here)
-
-@click.command()
-def _validate_subtool(experiment, platform, target):
-    ''' entry point to validate for click '''
-    return validate_subtool(experiment, platform, target)
 
 if __name__ == "__main__":
     validate_subtool()

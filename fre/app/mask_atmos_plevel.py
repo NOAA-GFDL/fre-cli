@@ -10,9 +10,8 @@ are present.
 import os
 import netCDF4 as nc
 import xarray as xr
-import click
 
-@click.command()
+
 def mask_atmos_plevel_subtool(infile, outfile, psfile):
     ''' click entry point to fre cmor mask-atmos-plevel'''
 

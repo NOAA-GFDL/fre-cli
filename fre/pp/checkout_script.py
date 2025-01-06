@@ -9,8 +9,6 @@ import os
 import sys
 import subprocess
 
-import click
-
 from fre.fre import version as fre_ver
 
 FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
@@ -86,15 +84,6 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     return 
 
 #############################################
-
-@click.command()
-def _checkout_template(experiment, platform, target, branch ):
-    '''
-    Wrapper script for calling checkout_template - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return checkout_template(experiment, platform, target, branch)
-
 
 if __name__ == '__main__':
     checkout_template()

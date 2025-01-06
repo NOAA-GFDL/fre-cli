@@ -10,11 +10,9 @@ def check_cli():
 
 @check_cli.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-@click.pass_context
-def function(context, uppercase):
-    # pylint: disable=unused-argument
+def function(uppercase):
     """ - Execute fre check test """
-    context.forward(check_test_function)
+    check_test_function(uppercase)
 
 if __name__ == "__main__":
     check_cli()

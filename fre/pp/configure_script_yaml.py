@@ -10,7 +10,6 @@
 import os
 import json
 import shutil
-import click
 
 from jsonschema import validate
 import yaml
@@ -197,14 +196,6 @@ def yaml_info(yamlfile,experiment,platform,target):
     outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
     dumper(rose_remap, outfile)
     print("  " + outfile)
-
-@click.command()
-def _yaml_info(yamlfile,experiment,platform,target):
-    '''
-    Wrapper script for calling yaml_info - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return yaml_info(yamlfile,experiment,platform,target)
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':

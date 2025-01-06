@@ -10,11 +10,9 @@ def list_cli():
 
 @list_cli.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-@click.pass_context
-def function(context, uppercase):
-    # pylint: disable=unused-argument
+def function(uppercase):
     """ - Execute fre list test """
-    context.forward(list_test_function)
+    list_test_function(uppercase)
 
 if __name__ == "__main__":
     list_cli()

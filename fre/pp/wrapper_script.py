@@ -11,8 +11,6 @@ Author: Carolyn.Whitlock
 # error handling
 
 import os
-#import time
-import click
 
 # Import from the local packages
 from fre.pp.checkout_script import checkout_template
@@ -52,13 +50,6 @@ def run_all_fre_pp_steps(experiment, platform, target, config_file, branch=None,
 
     print('(run_all_fre_pp_steps) done.')
 
-
-@click.command()
-def _run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time):
-    '''
-    click entry point for run_all_fre_pp_steps.
-    '''
-    return run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
 
 if __name__ == '__main__':
     run_all_fre_pp_steps()

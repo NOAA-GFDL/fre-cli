@@ -3,7 +3,6 @@
 from pathlib import Path
 import os
 import subprocess
-import click
 
 def install_subtool(experiment, platform, target):
     """
@@ -35,7 +34,3 @@ def install_subtool(experiment, platform, target):
         cmd = f"cylc install --no-run-name {name}"
         subprocess.run(cmd, shell=True, check=True)
 
-@click.command()
-def _install_subtool(experiment, platform, target):
-    ''' entry point to install for click '''
-    return install_subtool(experiment, platform, target)
