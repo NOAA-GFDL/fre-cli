@@ -12,16 +12,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: test podman can run an image
-        run: podman exec alpine cat /etc/os-release
+      - name: install dependencies and test podman can run an image
+        run: |
+          dnf install fuse-overlayfs fuse3-libs fuse3-devel
+          podman run alpine cat /etc/os-release
       - name: Create fre-cli environment
         run: |
           # create environment containing all dependencies
           # the env cannot be explicitly activated in github CI/CD
           conda env create -f environment.yml --name fre-cli
-
-          # overlay issues during build
-          dnf install fuse-overlayfs fuse3-libs fuse3-devel
 
           # sets CONDA to wherever it may be on the image
           source /root/.bashrc
