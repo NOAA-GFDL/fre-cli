@@ -2,7 +2,7 @@
 
 import subprocess
 
-def trigger(experiment, platform, target, time):
+def trigger(experiment = None, platform = None, target = None, time = None):
     """
     Trigger the pp-starter task for the time indicated
     """

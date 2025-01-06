@@ -73,9 +73,8 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         else:
             print(f"(checkout_script) ERROR: checkout exists ('{directory}/{name}') and does not match '{git_clone_branch_arg}'")
             print(f"(checkout_script) ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
-            #exit(1)
-            os.chdir(go_back_here)
-            raise ValueError('(checkout_script) neither tag nor branch matches the git clone branch arg')
+            os.chdir(go_back_here) 
+            raise ValueError('(checkout_script) neither tag nor branch matches the git clone branch arg') #exit(1)
 
     # make sure we are back where we should be
     if os.getcwd() != go_back_here:
