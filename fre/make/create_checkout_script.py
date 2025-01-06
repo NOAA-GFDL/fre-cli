@@ -84,9 +84,9 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                 if run:
                     fre_checkout.run()
                 else:
-                    return #sys.exit()
+                    return #0 #sys.exit()
             else:
-                print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n") # was click.echo
+                print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n") 
                 if run:
                     try:
                         subprocess.run(args=[src_dir+"/checkout.sh"], check=True)
@@ -95,7 +95,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                                       "\nTry removing test folder: " + platform["modelRoot"] +"\n")
 
                 else:
-                    return #sys.exit()
+                    return #0 #sys.exit()
 
         else:
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"

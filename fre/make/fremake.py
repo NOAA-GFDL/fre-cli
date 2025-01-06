@@ -175,7 +175,7 @@ def create_makefile(yamlfile, platform, target):
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def create_compile(yamlfile, platform, target, jobs, parallel, execute, verbose)
+def create_compile(yamlfile, platform, target, jobs, parallel, execute, verbose):
     """ - Write the compile script """
     create_compile_script.compile_create(
         yamlfile, platform, target, jobs, parallel, execute, verbose)
