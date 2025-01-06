@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 
 import netCDF4 as nc
-import click
+#import click
 import cmor
 
 # ----- \start consts
@@ -940,15 +940,3 @@ def cmor_run_subtool( indir = None,
             print(f'WARNING: DEBUG_MODE_RUN_ONE is True. breaking var_list loop')
             break
     return 0
-
-
-@click.command()
-def _cmor_run_subtool(indir = None,
-                      json_var_list = None, json_table_config = None, json_exp_config = None,
-                      outdir = None, opt_var_name = None):
-    ''' entry point to fre cmor run for click. see cmor_run_subtool for argument descriptions.'''
-    return cmor_run_subtool(indir, json_var_list, json_table_config, json_exp_config, outdir, opt_var_name)
-
-
-if __name__ == '__main__':
-    cmor_run_subtool()

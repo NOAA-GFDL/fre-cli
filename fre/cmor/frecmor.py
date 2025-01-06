@@ -2,8 +2,8 @@
 
 import click
 
-from .cmor_lister import _cmor_list_subtool
-from .cmor_mixer import _cmor_run_subtool
+from .cmor_lister import cmor_list_subtool
+from .cmor_mixer import cmor_run_subtool
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
                   "matching that variable name. I.e., this string help target local_vars, not " + \
@@ -47,14 +47,12 @@ def cmor_cli():
               type = str,
               help=OPT_VAR_NAME_HELP,
               required=False)
-@click.pass_context
-def run(context, indir, varlist, table_config, exp_config, outdir, opt_var_name):
+def run(indir, varlist, table_config, exp_config, outdir, opt_var_name):
     # pylint: disable=unused-argument
     """ 
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing 
     """ 
-    context.invoke(
-        _cmor_run_subtool,
+    cmor_run_subtool(
         indir = indir,
         json_var_list = varlist,
         json_table_config = table_config,
@@ -62,8 +60,6 @@ def run(context, indir, varlist, table_config, exp_config, outdir, opt_var_name)
         outdir = outdir,
         opt_var_name = opt_var_name
     )
-    #    context.forward(
-    #        _cmor_run_subtool() )
 
 
 @cmor_cli.command()
@@ -79,8 +75,7 @@ def run(context, indir, varlist, table_config, exp_config, outdir, opt_var_name)
               type = str,
               help=OPT_VAR_NAME_HELP,
               required=False)
-@click.pass_context
-def list(context, varlist, table_config_dir, opt_var_name):
+def list(varlist, table_config_dir, opt_var_name):
     '''
     loop over json table files in config_dir and show which tables contain variables in var list/
     the tool will also print what that table entry is expecting of that variable as well. if given
@@ -98,13 +93,12 @@ def list(context, varlist, table_config_dir, opt_var_name):
     if opt_var_name is None and varlist is None:
         raise ValueError('opt_var_name and varlist cannot both be None')
         
-    context.invoke(
-        _cmor_list_subtool,
+    cmor_list_subtool(
         json_var_list = varlist,
         json_table_config_dir = table_config_dir,
         opt_var_name = opt_var_name
     )
-        
+    
 
 if __name__ == "__main__":
     cmor_cli()

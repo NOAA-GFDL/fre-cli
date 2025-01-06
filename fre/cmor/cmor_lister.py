@@ -10,14 +10,9 @@ done;
 
 '''
 
-#import os
 import glob
 import json
-#import shutil
-#import subprocess
 from pathlib import Path
-
-import click
 
 DO_NOT_PRINT_LIST=[ 'comment',
                     'ok_min_mean_abs', 'ok_max_mean_abs',
@@ -108,13 +103,3 @@ def cmor_list_subtool( json_var_list = None, json_table_config_dir = None, opt_v
         print(f'(FATAL) this line should be unreachable!!!')
 
     return
-
-
-@click.command()
-def _cmor_list_subtool( json_var_list = None, json_table_config_dir = None, opt_var_name = None):
-    ''' entry point to fre cmor run for click. see cmor_list_subtool for argument descriptions.'''
-    return cmor_list_subtool(json_var_list, json_table_config_dir, opt_var_name)
-
-
-if __name__ == '__main__':
-    cmor_list_subtool()
