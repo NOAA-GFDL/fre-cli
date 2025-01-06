@@ -30,34 +30,33 @@ def catalog_cli():
 @click.option('--append', is_flag = True, default = False)
 @click.option('--slow', is_flag = True, default = False,
     help = "Open NetCDF files to retrieve additional vocabulary (standard_name and intrafile static variables")
-def builder(input_path = None, output_path = None, config = None, filter_realm = None,
+@click.pass_context
+def builder(context, input_path = None, output_path = None, config = None, filter_realm = None,
             filter_freq = None, filter_chunk = None, overwrite = False, append = False, slow = False):
     # pylint: disable=unused-argument
     """ - Generate .csv and .json files for catalog """
-    gen_intake_gfdl.create_catalog_cli(
-        input_path, output_path, config, filter_realm,
-        filter_freq, filter_chunk, overwrite, append, slow)
-    
+    context.forward(gen_intake_gfdl.create_catalog_cli)
+
 @catalog_cli.command()
 @click.argument('json_path', nargs = 1 , required = True)
 @click.argument('json_template_path', nargs = 1 , required = False)
 @click.option('-tf', '--test-failure', is_flag=True, default = False,
               help="Errors are only printed. Program will not exit.")
-def validate(json_path, json_template_path, test_failure):
+@click.pass_context
+def validate(context, json_path, json_template_path, test_failure):
     # pylint: disable=unused-argument
     """ - Validate a catalog against catalog schema """
-    test_catalog.main(json_path, json_template_path, test_failure)
-        
-
+    context.forward(test_catalog.main)
 
 @catalog_cli.command()
 @click.option('--input', required = True, multiple = True,
               help = 'Catalog json files to be merged, space-separated')
 @click.option('--output', required = True, nargs = 1,
               help = 'Merged catalog')
-def merge(input, output):
+@click.pass_context
+def merge(context, input, output):
     """ - Merge two or more more catalogs into one """
-    combine_cats.combine_cats(inputfiles=input, output_path=output)
+    context.invoke(combine_cats.combine_cats, inputfiles=input, output_path=output)
 
 if __name__ == "__main__":
     catalog_cli()
