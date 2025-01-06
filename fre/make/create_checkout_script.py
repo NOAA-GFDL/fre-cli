@@ -84,7 +84,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                 if run:
                     fre_checkout.run()
                 else:
-                    return #0 #sys.exit()
+                    return
             else:
                 print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n") 
                 if run:

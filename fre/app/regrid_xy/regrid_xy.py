@@ -465,9 +465,9 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
     return 0
 
 
-#def main():
-#    """steering, local test/debug"""
-#    return regrid_xy()
-#
-#if __name__=='__main__':
-#    main()
+def main():
+    """steering, local test/debug"""
+    return regrid_xy()
+
+if __name__=='__main__':
+    main()

@@ -14,7 +14,6 @@ from pathlib import Path
 import numpy as np
 
 import netCDF4 as nc
-#import click
 import cmor
 
 # ----- \start consts
@@ -32,7 +31,7 @@ def from_dis_gimme_dis(from_dis, gimme_dis):
         return from_dis[gimme_dis][:].copy()
     except Exception as exc:
         print(f'(from_dis_gimme_dis) WARNING I am sorry, I could not not give you this: {gimme_dis}'
-#              f'                                                             from this: {from_dis} '
+              f'                                                             from this: {from_dis} '
               f'             exc = {exc}'
               f'            returning None!'                                                      )
         return None
