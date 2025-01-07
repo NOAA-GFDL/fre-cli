@@ -138,8 +138,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
         if model_yaml.platforms.hasPlatform(platformName):
             pass
         else:
-            raise ValueError(f'{platformName} does not exist in '
-                             f'{model_yaml.combined.get("compile").get("platformYaml")}')
+            raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
         platform = model_yaml.platforms.getPlatformFromName(platformName)
 

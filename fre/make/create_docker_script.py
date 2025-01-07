@@ -64,8 +64,7 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise ValueError (platformName + " does not exist in " + \
-                                  modelYaml.combined.get("compile").get("platformYaml"))
+                raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 
