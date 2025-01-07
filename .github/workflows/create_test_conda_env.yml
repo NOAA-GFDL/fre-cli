@@ -14,7 +14,7 @@ jobs:
           submodules: 'recursive'
       - name: test podman can run an image
         run: |
-          podman run alpine cat /etc/os-release
+          podman run --cgroups=disabled alpine cat /etc/os-release
       - name: Create fre-cli environment
         run: |
           # create environment containing all dependencies
