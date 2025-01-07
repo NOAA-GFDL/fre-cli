@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/rem1776/fre-cli:withfuse
-      options: "--cap-add CAP_SYS_ADMIN --security-opt apparmor=unconfined" # needed for podman
+      options: "--cap-add CAP_SYS_ADMIN --device /dev/fuse --security-opt label=disable" # needed for podman
     steps:
       - uses: actions/checkout@v4
         with:
