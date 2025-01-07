@@ -153,7 +153,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 ## Create the checkout script
                 freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
-                freCheckout.finish(pc)
+                freCheckout.finish(modelYaml.compile.getCompileYaml(),pc)
                 ## Create the makefile
                 ### Should this even be a separate class from "makefile" in makefilefre? ~ ejs
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],

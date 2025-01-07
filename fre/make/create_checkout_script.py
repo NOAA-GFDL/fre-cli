@@ -103,7 +103,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
             tmp_dir = "tmp/"+platform_name
             fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
             fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
-            fre_checkout.finish(pc)
+            fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
             print("\nCheckout script created at " + tmp_dir + "/checkout.sh" + "\n")
 
 @click.command()
