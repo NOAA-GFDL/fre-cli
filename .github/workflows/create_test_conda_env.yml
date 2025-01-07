@@ -12,9 +12,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: install dependencies and test podman can run an image
+      - name: test podman can run an image
         run: |
-          dnf install fuse-overlayfs fuse3-libs fuse3-devel
           podman run alpine cat /etc/os-release
       - name: Create fre-cli environment
         run: |
