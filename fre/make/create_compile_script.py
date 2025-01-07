@@ -16,12 +16,12 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
     """
     ## Create a list of compile scripts to run in parallel
     fremakeBuild = buildBaremetal.buildBaremetal(exp = yaml_obj["experiment"],
-                                                 mkTemplatePath = platform["mkTemplate"],
+                                                 mkTemplatePath = mkTemplate,
                                                  srcDir = src_dir,
                                                  bldDir = bld_dir,
                                                  target = target,
-                                                 modules = platform["modules"],
-                                                 modulesInit = platform["modulesInit"],
+                                                 modules = modules,
+                                                 modulesInit = modulesInit,
                                                  jobs = jobs)
     for c in yaml_obj['src']:
         fremakeBuild.writeBuildComponents(c)
@@ -84,8 +84,8 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
          ## Check for type of build
          if platform["container"] is False:
               baremetalRun = True
-              bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
-              os.system("mkdir -p " + bldDir)
+              bld_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
+              os.system("mkdir -p " + bld_dir)
               if not os.path.exists(bld_dir+"/compile.sh"):
                   print("\nCreating the compile script...")
                   fremakeBuild = compile_script_write_steps(yaml_obj = fremakeYaml,
