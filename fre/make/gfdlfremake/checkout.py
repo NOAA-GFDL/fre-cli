@@ -53,8 +53,6 @@ def writeRepo(file,repo,component,srcDir,branch,add,multi,jobs,pc):
     ## Make sure to go back up in the folder structure
     if multi:
         file.write("cd .. \n")
-    if add!="":
-        file.write(add)
 
 class checkout():
     """
@@ -91,7 +89,7 @@ class checkout():
             else:
                 writeRepo(self.checkoutScript,c['repo'],c['component'],self.src,c['branch'],c['additionalInstructions'],False,jobs,pc)
 
-    def finish (self,pc):
+    def finish (self,y,pc):
         """
         Brief: If pc is defined: Loops through dictionary of pids, 
                waits for each pid individually, writes exit code in 
@@ -100,12 +98,23 @@ class checkout():
                closes the checkout script when writing is done
         Param:
             - self The checkout script object
+            - y The fremake compile yaml
+            - pc Parallel checkout option
         """
         if pc:
             self.checkoutScript.write('for id in ${pids[@]}; do\n  wait ${id##*:}\n  check+=("clone of ${id%%:*} exited with status $?")\ndone\n')
-            self.checkoutScript.write('for stat in "${check[@]}"; do\n  echo $stat \n  if [ ${stat##* } -ne 0 ]; then\n    exit ${stat##* }\n  fi\ndone') 
+            self.checkoutScript.write('for stat in "${check[@]}"; do\n  echo $stat \n  if [ ${stat##* } -ne 0 ]; then\n    exit ${stat##* }\n  fi\ndone\n')
+
+            for c in y['src']:
+                if c['additionalInstructions']!="":
+                    self.checkoutScript.write(c['additionalInstructions'])
+
             self.checkoutScript.close()
         else:
+            for c in y['src']:
+                if c['additionalInstructions']!="":
+                    self.checkoutScript.write(c['additionalInstructions']!="")
+
             self.checkoutScript.close()
 
 ## TODO: batch script building
