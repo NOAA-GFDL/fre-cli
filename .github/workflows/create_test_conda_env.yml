@@ -6,7 +6,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
+      image: ghcr.io/rem1776/fre-cli:withfuse
       options: "--cap-add CAP_SYS_ADMIN --security-opt apparmor=unconfined" # needed for podman
     steps:
       - uses: actions/checkout@v4
