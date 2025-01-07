@@ -4,7 +4,9 @@ import shutil
 from pathlib import Path
 from datetime import date
 
-import fre
+#import fre
+#from fre import cmor
+from fre.cmor import cmor_run_subtool
 
 import subprocess
 
@@ -74,9 +76,13 @@ def test_setup_fre_cmor_run_subtool(capfd):
 def test_fre_cmor_run_subtool_case1(capfd):
     ''' fre cmor run, test-use case '''
 
+    #import sys
+    #assert False, f'{sys.path}'
+
+
     #debug
     #print(
-    #    f"fre.cmor.cmor_run_subtool("
+    #    f"cmor_run_subtool("
     #    f"\'{INDIR}\',"
     #    f"\'{VARLIST}\',"
     #    f"\'{TABLE_CONFIG}\',"
@@ -86,7 +92,7 @@ def test_fre_cmor_run_subtool_case1(capfd):
     #)
 
     # test call, where meat of the workload gets done
-    fre.cmor.cmor_run_subtool(
+    cmor_run_subtool(
         indir = INDIR,
         json_var_list = VARLIST,
         json_table_config = TABLE_CONFIG,
@@ -196,7 +202,7 @@ def test_fre_cmor_run_subtool_case2(capfd):
 
     #debug
     #print(
-    #    f"fre.cmor.cmor_run_subtool("
+    #    f"cmor_run_subtool("
     #    f"\'{INDIR}\',"
     #    f"\'{VARLIST_DIFF}\',"
     #    f"\'{TABLE_CONFIG}\',"
@@ -206,7 +212,7 @@ def test_fre_cmor_run_subtool_case2(capfd):
     #)
 
     # test call, where meat of the workload gets done
-    fre.cmor.cmor_run_subtool(
+    cmor_run_subtool(
         indir = INDIR,
         json_var_list = VARLIST_DIFF,
         json_table_config = TABLE_CONFIG,

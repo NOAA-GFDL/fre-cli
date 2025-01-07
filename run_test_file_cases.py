@@ -9,9 +9,7 @@ import sys
 import os
 from pathlib import Path
 
-import fre
-from fre.cmor.cmor_mixer import cmor_run_subtool as run_cmor
-
+from fre.cmor import cmor_run_subtool
 
 def print_cwd():
     print(f'os.getcwd() = {os.getcwd()}')
@@ -40,7 +38,7 @@ EXP_CONFIG_DEFAULT=f'{ROOTDIR}/CMOR_input_example.json' # this likely is not suf
 def run_cmor_RUN(filename, table, opt_var_name):
     func_debug1 = False
     if func_debug1:
-        print('run_cmor(\n'
+        print('cmor_run_subtool(\n'
              f'    indir = \"{str(Path(filename).parent)}\",\n'
              f'    json_var_list = \"{CMORBITE_VARLIST}\",\n'
              f'    json_table_config = \"{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_{table}.json\",\n'
@@ -59,7 +57,7 @@ def run_cmor_RUN(filename, table, opt_var_name):
                   f'-o {os.getcwd()} ' 
                   f'-v {opt_var_name} '
              )
-    FOO_return = run_cmor(
+    FOO_return = cmor_run_subtool(
         indir = str(Path(filename).parent),
         json_var_list = CMORBITE_VARLIST,
         json_table_config = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_{table}.json',
@@ -71,29 +69,29 @@ def run_cmor_RUN(filename, table, opt_var_name):
 
 
 
-
-#### THIS CASE MAY WORK if i rewrite the ocean file correctly, effectively appending the lat/lon data from a statics file.
-####                    for this case, that file is:
-####                        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \ 
-####                        'pp/ocean_monthly/' + \ 
-####                        'ocean_monthly.static.nc'
-####                    and that data is stored under "geolon" and "geolat" consuming dims "x" and "y".
-# 6) FAIL
-# ocean, Omon / sos
-# Result - error, it wants lat/lon, but only xh, yh coordinates are available
-testfile_ocean_monthly_gn = \
-    '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
-    'pp/ocean_monthly/ts/monthly/5yr/' + \
-    'ocean_monthly.002101-002512.sos.nc'
-try:
-    some_return = run_cmor_RUN(testfile_ocean_monthly_gn, 'Omon', opt_var_name = 'sos')
-except Exception as exc:
-    print(f'exception caught: exc=\n{exc}')
-    some_return=-1    
-
-print_the_outcome(some_return,'ocean_monthly_gn / sos')
-
-sys.exit()
+if False:
+    #### THIS CASE MAY WORK if i rewrite the ocean file correctly, effectively appending the lat/lon data from a statics file.
+    ####                    for this case, that file is:
+    ####                        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \ 
+    ####                        'pp/ocean_monthly/' + \ 
+    ####                        'ocean_monthly.static.nc'
+    ####                    and that data is stored under "geolon" and "geolat" consuming dims "x" and "y".
+    # 6) FAIL
+    # ocean, Omon / sos
+    # Result - error, it wants lat/lon, but only xh, yh coordinates are available
+    testfile_ocean_monthly_gn = \
+        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+        'pp/ocean_monthly/ts/monthly/5yr/' + \
+        'ocean_monthly.002101-002512.sos.nc'
+    try:
+        some_return = run_cmor_RUN(testfile_ocean_monthly_gn, 'Omon', opt_var_name = 'sos')
+    except Exception as exc:
+        print(f'exception caught: exc=\n{exc}')
+        some_return=-1    
+        
+        print_the_outcome(some_return,'ocean_monthly_gn / sos')
+        
+        sys.exit()
 
 
 
