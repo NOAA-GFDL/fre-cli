@@ -7,14 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/rem1776/fre-cli:withfuse
-      options: "--cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
+      options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
       - name: test podman can run an image
         run: |
-          podman run --privileged alpine cat /etc/os-release
+          podman run alpine cat /etc/os-release
       - name: Create fre-cli environment
         run: |
           # create environment containing all dependencies
