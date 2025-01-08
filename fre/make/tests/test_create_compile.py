@@ -66,9 +66,11 @@ def test_compile_creation():
     # Check for creation of compile script
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
 
-def test_compile_execution():
+def test_compile_executable_failure():
     """
-    Check for the successful execution of the compile script
+    Check for the failure in execution of the compile script.
+    Fails because it would need the makefile and checked out
+    source code.
     """
     # Set environment variable for use in ci.gnu platform
     os.environ["TEST_BUILD_DIR"] = OUT
@@ -80,14 +82,12 @@ def test_compile_execution():
     # Execute the compile script
     create_compile_script.compile_create(yamlfile_path, PLATFORM, TARGET, 4, 1, True, False)
 
-    # Check for creation of compile script
-    # Check for FMS directory
-    # Check for log.compile file
-    # Check for the executable
-    assert [Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists(),
-            Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir(),
-            Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile"),
-            Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/null_model_full.x")]
+    # Check for creation of compile script, FMS directory,
+    # log.compile file, the executable
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir()
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile").exists()
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/null_model_full.x").exists() == False
 
 @pytest.mark.xfail(raises=ValueError)
 def test_bad_platform():
@@ -161,5 +161,5 @@ def test_multi_target():
     # Create the compile script
     create_compile_script.compile_create(yamlfile_path, PLATFORM, MULTI_TARGET, 4, 1, False, False)
 
-    assert [Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[0]}/exec/compile.sh").exists(),
-            Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[1]}/exec/compile.sh").exists()]
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[0]}/exec/compile.sh").exists()
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[1]}/exec/compile.sh").exists()
