@@ -83,9 +83,11 @@ def test_compile_execution():
     # Check for creation of compile script
     # Check for FMS directory
     # Check for log.compile file
+    # Check for the executable
     assert [Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists(),
             Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir(),
-            Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile")]
+            Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile"),
+            Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/null_model_full.x")]
 
 @pytest.mark.xfail(raises=ValueError)
 def test_bad_platform():
