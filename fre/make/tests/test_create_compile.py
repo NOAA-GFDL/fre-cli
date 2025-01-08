@@ -87,7 +87,7 @@ def test_compile_execution():
             Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir(),
             Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile")]
 
-@pytest.mark.xfail(raises=AttributeError)
+@pytest.mark.xfail(raises=ValueError)
 def test_bad_platform():
     """
     Check for the failure of compile script creation
