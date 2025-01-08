@@ -8,6 +8,8 @@ import git
 
 import fre
 
+import subprocess
+
 # where are we? we're running pytest from the base directory of this repo
 ROOTDIR = 'fre/tests/test_files'
 
@@ -43,22 +45,37 @@ CMOR_CREATES_DIR = \
 FULL_OUTPUTDIR = \
    f"{OUTDIR}/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
 FULL_OUTPUTFILE = \
-f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199807.nc"
+f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199308.nc"
 
 # FYI but helpful for tests
-FILENAME = 'ocean_monthly_1x1deg.199301-199712.sos.nc' # unneeded, this is mostly for reference
-FULL_INPUTFILE=f"{INDIR}/{FILENAME}"
+FILENAME = 'reduced_ocean_monthly_1x1deg.199307-199308.sos' # unneeded, this is mostly for reference
+FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
 
 def test_setup_fre_cmor_run_subtool(capfd):
-    ''' checks for outputfile from prev pytest runs, removes it if it's present.
-    this routine also checks to make sure the desired input file is present'''
+    ''' The routine generates a netCDF file from an ascii (cdl) file. It also checks for a ncgen output file from prev pytest runs,removes it if it's present, and ensures the new file is created without error. '''
+
+    ''' set-up test: create binary test files from reduced ascii files in root dir '''
+
+    ncgen_input = f"{ROOTDIR}/reduced_ascii_files/{FILENAME}.cdl"
+    ncgen_output = f"{ROOTDIR}/ocean_sos_var_file/{FILENAME}.nc"
+
+    if Path(ncgen_output).exists():
+        Path(ncgen_output).unlink() 
+    assert Path(ncgen_input).exists()
+
+    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
+
+    sp = subprocess.run(ex, check = True)
+
+    assert all( [ sp.returncode == 0, Path(ncgen_output).exists() ] )
+
     if Path(FULL_OUTPUTFILE).exists():
         Path(FULL_OUTPUTFILE).unlink()
-    if Path(OUTDIR).exists():
-        shutil.rmtree(OUTDIR)
-    assert not any ( [ Path(FULL_OUTPUTFILE).exists(),
-                       Path(OUTDIR).exists()           ] )
-    assert Path(FULL_INPUTFILE).exists()
+
+    assert not Path(FULL_OUTPUTFILE).exists()
+
+    #assert not any ( [ Path(FULL_OUTPUTFILE).exists(),
+    #                   Path(OUTDIR).exists()           ] )
     _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case1(capfd):
@@ -102,10 +119,11 @@ def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
                              check=False,
                              capture_output=True
     )
+    
     # err_list has length two if end in newline
     err_list = result.stderr.decode().split('\n')
     expected_err = \
-        "DIFFER : FILE FORMATS : NC_FORMAT_64BIT <> NC_FORMAT_NETCDF4_CLASSIC"
+        "DIFFER : FILE FORMATS : NC_FORMAT_NETCDF4 <> NC_FORMAT_NETCDF4_CLASSIC"
     assert all( [result.returncode == 1,
                  len(err_list)==2,
                  '' in err_list,
@@ -132,7 +150,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
 
 # FYI, but again, helpful for tests
 FILENAME_DIFF = \
-    'ocean_monthly_1x1deg.199301-199712.sosV2.nc'
+    'ocean_monthly_1x1deg.199307-199308.sosV2.nc'
 FULL_INPUTFILE_DIFF = \
     f"{INDIR}/{FILENAME_DIFF}"
 VARLIST_DIFF = \
@@ -224,7 +242,7 @@ def test_fre_cmor_run_subtool_case2_output_compare_data(capfd):
                           )
 
     err_list = result.stderr.decode().split('\n')#length two if end in newline
-    expected_err="DIFFER : FILE FORMATS : NC_FORMAT_64BIT <> NC_FORMAT_NETCDF4_CLASSIC"
+    expected_err="DIFFER : FILE FORMATS : NC_FORMAT_NETCDF4 <> NC_FORMAT_NETCDF4_CLASSIC"
     assert all( [result.returncode == 1,
                  len(err_list)==2,
                  '' in err_list,
