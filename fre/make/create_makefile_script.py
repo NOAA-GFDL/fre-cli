@@ -9,6 +9,9 @@ from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 import fre.yamltools.combine_yamls as cy
 
 def makefile_create(yamlfile,platform,target):
+    """
+    Create the makefile
+    """
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -39,7 +42,7 @@ def makefile_create(yamlfile,platform,target):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+                raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
             platform=modelYaml.platforms.getPlatformFromName(platformName)
   ## Make the bldDir based on the modelRoot, the platform, and the target
@@ -61,9 +64,8 @@ def makefile_create(yamlfile,platform,target):
                 freMakefile.writeMakefile()
                 click.echo("\nMakefile created at " + bldDir + "/Makefile" + "\n")
             else:
-                image="ecpe4s/noaa-intel-prototype:2023.09.25"
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
-                tmpDir = "tmp/"+platformName
+                tmpDir = "./tmp/"+platformName
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
                                                       libs = fremakeYaml["container_addlibs"],
                                                       srcDir = srcDir,
@@ -75,7 +77,7 @@ def makefile_create(yamlfile,platform,target):
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
                 freMakefile.writeMakefile()
-                click.echo("\nMakefile created at " + bldDir + "/Makefile" + "\n")
+                click.echo("\nMakefile created at " + tmpDir + "/Makefile" + "\n")
 
 @click.command()
 def _makefile_create(yamlfile,platform,target):

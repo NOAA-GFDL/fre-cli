@@ -42,8 +42,7 @@ def dockerfile_create(yamlfile,platform,target,execute):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise ValueError (platformName + " does not exist in " + \
-                                  modelYaml.combined.get("compile").get("platformYaml"))
+                raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 
@@ -51,15 +50,15 @@ def dockerfile_create(yamlfile,platform,target,execute):
             srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
             if platform["container"] is True:
-                image="ecpe4s/noaa-intel-prototype:2023.09.25"
+                image=modelYaml.platforms.getContainerImage(platformName)
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
-
                 dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],
                                               libs = fremakeYaml["container_addlibs"],
                                               RUNenv = platform["RUNenv"],
-                                              target = targetObject)
+                                              target = targetObject,
+                                              mkTemplate = platform["mkTemplate"])
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
                 dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
 

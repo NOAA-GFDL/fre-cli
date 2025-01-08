@@ -32,7 +32,7 @@ def pp_cli():
 def status(context, experiment, platform, target):
     # pylint: disable=unused-argument
     """ - Report status of PP configuration"""
-    context.forward(status_script.status_subtool)
+    context.forward(status_script._status_subtool)
 
 # fre pp run
 @pp_cli.command()
@@ -49,7 +49,7 @@ def status(context, experiment, platform, target):
 def run(context, experiment, platform, target):
     # pylint: disable=unused-argument
     """ - Run PP configuration"""
-    context.forward(run_script.pp_run_subtool)
+    context.forward(run_script._pp_run_subtool)
 
 # fre pp validate
 @pp_cli.command()
@@ -83,7 +83,7 @@ def validate(context, experiment, platform, target):
 def install(context, experiment, platform, target):
     # pylint: disable=unused-argument
     """ - Install PP configuration"""
-    context.forward(install_script.install_subtool)
+    context.forward(install_script._install_subtool)
 
 @pp_cli.command()
 @click.option("-y", "--yamlfile", type=str,
@@ -179,7 +179,7 @@ def configure_xml(context, xml, platform, target, experiment, do_analysis, histo
                   ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
     # pylint: disable=unused-argument
     """ - Converts a Bronx XML to a Canopy rose-suite.conf """
-    context.forward(configure_script_xml.convert)
+    context.forward(configure_script_xml._convert)
 
 #fre pp wrapper
 @pp_cli.command()

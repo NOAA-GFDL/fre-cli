@@ -69,8 +69,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
         if modelYaml.platforms.hasPlatform(platformName):
             pass
         else:
-            raise ValueError(f'{platformName} does not exist in '
-                             f'{modelYaml.combined.get("compile").get("platformYaml")}')
+            raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
         platform = modelYaml.platforms.getPlatformFromName(platformName)
 
@@ -147,16 +146,14 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
-                #          image="hpc-me-intel:2021.1.1"
-                image="ecpe4s/noaa-intel-prototype:2023.09.25"
+                image=modelYaml.platforms.getContainerImage(platformName)
+                srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
-
                 ## Create the checkout script
                 freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                 freCheckout.finish(pc)
-
                 ## Create the makefile
                 ### Should this even be a separate class from "makefile" in makefilefre? ~ ejs
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
@@ -176,8 +173,8 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                                     exp = fremakeYaml["experiment"],
                                                     libs = fremakeYaml["container_addlibs"],
                                                     RUNenv = platform["RUNenv"],
-                                                    target = target)
-
+                                                    target = target,
+                                                    mkTemplate = platform["mkTemplate"])
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
                 dockerBuild.writeDockerfileMakefile(freMakefile.getTmpDir() + "/Makefile",
                                                     freMakefile.getTmpDir() + "/linkline.sh")

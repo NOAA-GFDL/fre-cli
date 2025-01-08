@@ -4,8 +4,10 @@ package:
   name: fre-cli
   version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
 
+# conda-build will always defer to what's specified here
 source:
-  git_url: https://github.com/NOAA-GFDL/fre-cli.git
+  path: .
+#  git_url: https://github.com/NOAA-GFDL/fre-cli.git
 
 build:
   script:
@@ -30,6 +32,7 @@ requirements:
     - jsonschema
     - noaa-gfdl::catalogbuilder
     - noaa-gfdl::fre-nctools
+    - noaa-gfdl::analysis_scripts
     - conda-forge::nccmp
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
@@ -71,7 +74,7 @@ test:
     # - fre check --help
     - fre cmor --help
     # - fre list --help
-    - fre make --help    
+    - fre make --help
     - fre pp --help
     # - fre run --help
     # - fre test --help
