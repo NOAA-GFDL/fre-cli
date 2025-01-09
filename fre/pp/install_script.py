@@ -19,10 +19,11 @@ def install_subtool(experiment, platform, target):
     source_dir = Path(os.path.expanduser("~/cylc-src"), name)
     install_dir = Path(os.path.expanduser("~/cylc-run"), name)
     if os.path.isdir(install_dir):
-        installed_def = subprocess.run(["cylc", "config", name],capture_output=True).stdout
+        # must convert from bytes to string for proper comparison
+        installed_def = subprocess.run(["cylc", "config", name],capture_output=True).stdout.decode('utf-8')
         go_back_here = os.getcwd()
         os.chdir(source_dir)
-        source_def = subprocess.run(['cylc', 'config', '.'], capture_output=True).stdout
+        source_def = subprocess.run(['cylc', 'config', '.'], capture_output=True).stdout.decode('utf-8')
         if installed_def == source_def:
             print(f"NOTE: Workflow '{install_dir}' already installed, and the definition is unchanged")
         else:
