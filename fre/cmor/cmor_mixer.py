@@ -134,15 +134,15 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # the tripolar grid is designed to reduce distortions in ocean data brought on
     # by singularities (poles) being placed in oceans
     # the spherical lat/lons tend to already be computed in advance at GFDL, they're in "statics"
-    do_special_ocean_file_stuff = all( [ uses_ocean_grid,
+    process_tripolar_data = all( [ uses_ocean_grid,
                                        lat is None,
                                        lon is None      ] )
     statics_file_path = None
     xh, yh = None, None    #cmor_x, cmor_y = None, None
     xh_dim, yh_dim = None, None
     xh_bnds, yh_bnds = None, None
-    bnds, vertex = None, None
-    if do_special_ocean_file_stuff:
+    vertex = None
+    if process_tripolar_data:
 
         # resolve location of statics file required for this processing.
         try:
@@ -277,15 +277,12 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print('\n')
 
 
-    ds.close()
-    assert False, 'pause+check output'    
-
     # now we set up the cmor module object 
     # initialize CMOR
     cmor.setup(
         netcdf_file_action    = cmor.CMOR_APPEND,#.CMOR_PRESERVE, #
         set_verbosity         = cmor.CMOR_QUIET,#.CMOR_NORMAL, #
-        exit_control          = cmor.CMOR_NORMAL,#.CMOR_EXIT_ON_WARNING,#
+        exit_control          = cmor.CMOR_EXIT_ON_MAJOR,#.CMOR_NORMAL,#.CMOR_EXIT_ON_WARNING,#
         #logfile               = './foo.log',
         create_subdirectories = 1
     )
@@ -303,9 +300,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     
     # if ocean tripolar grid, we need the CMIP grids configuration file. load it but don't set the table yet.
     json_grids_config, loaded_cmor_grids_cfg = None, None
-    if do_special_ocean_file_stuff:
-        print(f'(rewrite_netcdf_file_var) cmor is loading/opening {json_grids_config}')
+    if process_tripolar_data:
         json_grids_config = str(Path(json_table_config).parent) + '/CMIP6_grids.json'
+        print(f'(rewrite_netcdf_file_var) cmor is loading/opening {json_grids_config}')
         loaded_cmor_grids_cfg =  cmor.load_table( json_grids_config )
         cmor.set_table(loaded_cmor_grids_cfg)
 
@@ -313,36 +310,46 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     
     # setup cmor latitude axis if relevant
-    cmor_lat = None
-    if do_special_ocean_file_stuff:
+    cmor_y = None
+    if process_tripolar_data:
         print(f'(rewrite_netcdf_file_var) WARNING: calling cmor.axis for a projected y coordinate!!')
-        cmor_lat = cmor.axis("y_deg", coord_vals = yh[:], cell_bounds = yh_bnds[:], units = "degrees")
+        cmor_y = cmor.axis("y_deg", coord_vals = yh[:], cell_bounds = yh_bnds[:], units = "degrees")
     elif lat is None :
-        print(f'(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_lat')
+        print(f'(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_y')
     else:
-        print(f'(rewrite_netcdf_file_var) assigning cmor_lat')
+        print(f'(rewrite_netcdf_file_var) assigning cmor_y')
         if lat_bnds is None:
-            cmor_lat = cmor.axis("latitude", coord_vals = lat[:], units = "degrees_N")
+            cmor_y = cmor.axis("latitude", coord_vals = lat[:], units = "degrees_N")
         else:
-            cmor_lat = cmor.axis("latitude", coord_vals = lat[:], cell_bounds = lat_bnds, units = "degrees_N")
-        print(f'                          DONE assigning cmor_lat')
+            cmor_y = cmor.axis("latitude", coord_vals = lat[:], cell_bounds = lat_bnds, units = "degrees_N")
+        print(f'                          DONE assigning cmor_y')
 
     # setup cmor longitude axis if relevant
-    cmor_lon = None
-    if do_special_ocean_file_stuff:
+    cmor_x = None
+    if process_tripolar_data:
         print(f'(rewrite_netcdf_file_var) WARNING: calling cmor.axis for a projected x coordinate!!')
-        cmor_lon = cmor.axis("x_deg", coord_vals = xh[:], cell_bounds = xh_bnds[:], units = "degrees")
+        cmor_x = cmor.axis("x_deg", coord_vals = xh[:], cell_bounds = xh_bnds[:], units = "degrees")
     elif lon is None :
-        print(f'(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_lon')
+        print(f'(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_x')
     else:
-        print(f'(rewrite_netcdf_file_var) assigning cmor_lon')
-        cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
+        print(f'(rewrite_netcdf_file_var) assigning cmor_x')
+        cmor_x = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
         if lon_bnds is None:
-            cmor_lon = cmor.axis("longitude", coord_vals = lon[:], units = "degrees_E")
+            cmor_x = cmor.axis("longitude", coord_vals = lon[:], units = "degrees_E")
         else:
-            cmor_lon = cmor.axis("longitude", coord_vals = lon[:], cell_bounds = lon_bnds, units = "degrees_E")
-        print(f'                          DONE assigning cmor_lon')
+            cmor_x = cmor.axis("longitude", coord_vals = lon[:], cell_bounds = lon_bnds, units = "degrees_E")
+        print(f'                          DONE assigning cmor_x')
 
+    cmor_grid = None
+    if process_tripolar_data:
+        print(f'(rewrite_netcdf_file_var) WARNING setting cmor.grid, process_tripolar_data = {process_tripolar_data}')
+        cmor_grid = cmor.grid( axis_ids = [cmor_y, cmor_x],
+                               latitude = lat[:], longitude = lon[:],
+                               latitude_vertices = lat_bnds[:],
+                               longitude_vertices = lon_bnds[:] )
+        
+        # now that we are done with setting the grid, we can go back to the usual approach
+        cmor.set_table(loaded_cmor_table_cfg)
 
     # setup cmor time axis if relevant
     cmor_time = None
@@ -369,20 +376,20 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     ips = None
 
     # set cmor vertical axis if relevant
-    cmor_lev = None
+    cmor_z = None
     if lev is not None:
-        print(f'(rewrite_netcdf_file_var) assigning cmor_lev')
+        print(f'(rewrite_netcdf_file_var) assigning cmor_z')
 
         if vert_dim.lower() in ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]:
             print(f'(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
             if vert_dim.lower() != "landuse":
                 cmor_vert_dim_name = vert_dim
-                cmor_lev = cmor.axis( cmor_vert_dim_name,
+                cmor_z = cmor.axis( cmor_vert_dim_name,
                                       coord_vals = lev[:], units = lev_units )
             else:
                 landuse_str_list=['primary_and_secondary_land', 'pastures', 'crops', 'urban']
                 cmor_vert_dim_name = "landUse" # this is why can't we have nice things
-                cmor_lev = cmor.axis( cmor_vert_dim_name,
+                cmor_z = cmor.axis( cmor_vert_dim_name,
                                       coord_vals = np.array(
                                                             landuse_str_list,
                                                             dtype=f'S{len(landuse_str_list[0])}' ),
@@ -394,7 +401,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                          with_these = ds['z_i'] )
             print('(rewrite_netcdf_file_var) created lev_bnds...')
             print(f'                          lev_bnds = \n{lev_bnds}')
-            cmor_lev = cmor.axis( 'depth_coord',
+            cmor_z = cmor.axis( 'depth_coord',
                                   coord_vals = lev[:],
                                   units = lev_units,
                                   cell_bounds = lev_bnds)
@@ -408,33 +415,33 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
             # assign lev_half specifics
             if vert_dim == "levhalf":
-                cmor_lev = cmor.axis( "alternate_hybrid_sigma_half",
+                cmor_z = cmor.axis( "alternate_hybrid_sigma_half",
                                       coord_vals = lev[:],
                                       units = lev_units )
-                ierr_ap = cmor.zfactor( zaxis_id       = cmor_lev,
+                ierr_ap = cmor.zfactor( zaxis_id       = cmor_z,
                                         zfactor_name   = "ap_half",
-                                        axis_ids       = [cmor_lev, ],
+                                        axis_ids       = [cmor_z, ],
                                         zfactor_values = ds["ap_bnds"][:],
                                         units          = ds["ap_bnds"].units )
-                ierr_b = cmor.zfactor( zaxis_id       = cmor_lev,
+                ierr_b = cmor.zfactor( zaxis_id       = cmor_z,
                                        zfactor_name   = "b_half",
-                                       axis_ids       = [cmor_lev, ],
+                                       axis_ids       = [cmor_z, ],
                                        zfactor_values = ds["b_bnds"][:],
                                        units          = ds["b_bnds"].units )
             else:
-                cmor_lev = cmor.axis( "alternate_hybrid_sigma",
+                cmor_z = cmor.axis( "alternate_hybrid_sigma",
                                       coord_vals  = lev[:],
                                       units       = lev_units,
                                       cell_bounds = ds[vert_dim+"_bnds"] )
-                ierr_ap = cmor.zfactor( zaxis_id       = cmor_lev,
+                ierr_ap = cmor.zfactor( zaxis_id       = cmor_z,
                                         zfactor_name   = "ap",
-                                        axis_ids       = [cmor_lev, ],
+                                        axis_ids       = [cmor_z, ],
                                         zfactor_values = ds["ap"][:],
                                         zfactor_bounds = ds["ap_bnds"][:],
                                         units          = ds["ap"].units )
-                ierr_b = cmor.zfactor( zaxis_id       = cmor_lev,
+                ierr_b = cmor.zfactor( zaxis_id       = cmor_z,
                                        zfactor_name   = "b",
-                                       axis_ids       = [cmor_lev, ],
+                                       axis_ids       = [cmor_z, ],
                                        zfactor_values = ds["b"][:],
                                        zfactor_bounds = ds["b_bnds"][:],
                                        units          = ds["b"].units )
@@ -446,21 +453,21 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                 print(f'(rewrite_netcdf_file_var) appending cmor_time to axis_ids list...')
                 axis_ids.append(cmor_time)
                 print(f'                          axis_ids now = {axis_ids}')
-            if cmor_lat is not None:
-                print(f'(rewrite_netcdf_file_var) appending cmor_lat to axis_ids list...')
-                axis_ids.append(cmor_lat)
+            if cmor_y is not None:
+                print(f'(rewrite_netcdf_file_var) appending cmor_y to axis_ids list...')
+                axis_ids.append(cmor_y)
                 print(f'                          axis_ids now = {axis_ids}')
-            if cmor_lon is not None:
-                print(f'(rewrite_netcdf_file_var) appending cmor_lon to axis_ids list...')
-                axis_ids.append(cmor_lon)
+            if cmor_x is not None:
+                print(f'(rewrite_netcdf_file_var) appending cmor_x to axis_ids list...')
+                axis_ids.append(cmor_x)
                 print(f'                          axis_ids now = {axis_ids}')
 
-            ips = cmor.zfactor( zaxis_id     = cmor_lev,
+            ips = cmor.zfactor( zaxis_id     = cmor_z,
                                 zfactor_name = "ps",
-                                axis_ids     = axis_ids, #[cmor_time, cmor_lat, cmor_lon],
+                                axis_ids     = axis_ids, #[cmor_time, cmor_y, cmor_x],
                                 units        = "Pa" )
             save_ps = True
-        print(f'                          DONE assigning cmor_lev')
+        print(f'                          DONE assigning cmor_z')
 
 
     axes = []
@@ -468,17 +475,17 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print(f'(rewrite_netcdf_file_var) appending cmor_time to axes list...')
         axes.append(cmor_time)
         print(f'                          axes now = {axes}')
-    if cmor_lev is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_lev to axes list...')
-        axes.append(cmor_lev)
+    if cmor_z is not None:
+        print(f'(rewrite_netcdf_file_var) appending cmor_z to axes list...')
+        axes.append(cmor_z)
         print(f'                          axes now = {axes}')
-    if cmor_lat is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_lat to axes list...')
-        axes.append(cmor_lat)
+    if cmor_y is not None:
+        print(f'(rewrite_netcdf_file_var) appending cmor_y to axes list...')
+        axes.append(cmor_y)
         print(f'                          axes now = {axes}')
-    if cmor_lon is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_lon to axes list...')
-        axes.append(cmor_lon)
+    if cmor_x is not None:
+        print(f'(rewrite_netcdf_file_var) appending cmor_x to axes list...')
+        axes.append(cmor_x)
         print(f'                          axes now = {axes}')
 
 
