@@ -30,7 +30,7 @@ def test_checkout_script_exists():
     """
     result = create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False, False)
     #assert result.exit_code == 0
-    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
+    assert Path(f"{def_home}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
 def test_checkout_execute():
     """
