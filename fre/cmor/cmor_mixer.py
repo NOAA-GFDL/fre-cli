@@ -5,7 +5,6 @@ see README.md for additional information on `fre cmor run` (cmor_mixer.py) usage
 '''
 
 import os
-import glob
 import json
 import shutil
 import subprocess
@@ -15,194 +14,11 @@ import numpy as np
 
 import netCDF4 as nc
 import cmor
+from .cmor_helpers import *
 
-# ----- \start consts
+# ----- \start consts # TODO make this an input argument flag or smth. 
 DEBUG_MODE_RUN_ONE = True
 # ----- \end consts
-
-
-def from_dis_gimme_dis(from_dis, gimme_dis):
-    '''
-    gives you gimme_dis from from_dis. accepts two arguments, both mandatory.
-        from_dis: the target netCDF4.Dataset object to try reading from
-        gimme_dis: what from_dis is hopefully gonna have and you're gonna get
-    '''
-    try:
-        return from_dis[gimme_dis][:].copy()
-    except Exception as exc:
-        print(f'(from_dis_gimme_dis) WARNING I am sorry, I could not not give you this: {gimme_dis}\n'
-              #f'                                                             from this: {from_dis} \n'
-              #f'             exc = {exc}\n'
-              '            returning None!\n'                           )
-        return None
-
-def find_statics_file(bronx_file_path):
-    bronx_file_path_elem = bronx_file_path.split('/')
-    num_elem = len(bronx_file_path_elem)
-    print(f'(find_statics_file) bronx_file_path_elem = \n{bronx_file_path_elem}\n')
-    while bronx_file_path_elem[num_elem-2] != 'pp':
-        bronx_file_path_elem.pop()
-        num_elem = num_elem-1
-        #print(bronx_file_path_elem)
-    statics_path = '/'.join(bronx_file_path_elem)
-    statics_file = glob.glob(statics_path+'/*static*.nc')[0]
-    if Path(statics_file).exists():
-        return statics_file
-    else:
-        return None
-
-
-def create_lev_bnds(bound_these = None, with_these = None):
-    the_bnds = None
-    assert len(with_these) == len(bound_these) + 1
-    print(f'(create_lev_bnds) bound_these is... ')
-    print(f'                  bound_these = \n{bound_these}')
-    print(f'(create_lev_bnds) with_these is... ')
-    print(f'                  with_these = \n{with_these}')
-
-
-    the_bnds = np.arange(len(bound_these)*2).reshape(len(bound_these),2)
-    for i in range(0,len(bound_these)):
-        the_bnds[i][0] = with_these[i]
-        the_bnds[i][1] = with_these[i+1]
-    print(f'(create_lev_bnds) the_bnds is... ')
-    print(f'                  the_bnds = \n{the_bnds}')
-    return the_bnds
-
-def get_var_filenames(indir, var_filenames = None, local_var = None):
-    '''
-    appends files ending in .nc located within indir to list var_filenames accepts three arguments
-        indir: string, representing a path to a directory containing files ending in .nc extension
-        var_filenames: list of strings, empty or non-empty, to append discovered filenames to. the
-                       object pointed to by the reference var_filenames is manipulated, and so need
-                       not be returned.
-        local_var: string, optional, if not None, will be used for ruling out filename targets
-    '''
-    if var_filenames is None:
-        var_filenames = []
-    filename_pattern = '.nc' if local_var is None else f'.{local_var}.nc'
-    print(f'(get_var_filenames) filename_pattern = {filename_pattern}\n')
-    var_filenames_all = glob.glob(f'{indir}/*{filename_pattern}')
-    #print(f'(get_var_filenames) var_filenames_all = {var_filenames_all}')
-    for var_file in var_filenames_all:
-        var_filenames.append( Path(var_file).name )
-    #print(f"(get_var_filenames) var_filenames = {var_filenames}")
-    if len(var_filenames) < 1:
-        raise ValueError(f'target directory had no files with .nc ending. indir =\n {indir}')
-    var_filenames.sort()
-
-
-def get_iso_datetimes(var_filenames, iso_datetime_arr = None):
-    '''
-    appends iso datetime strings found amongst filenames to iso_datetime_arr.
-        var_filenames: non-empty list of strings representing filenames. some of which presumably
-                       contain datetime strings
-        iso_datetime_arr: list of strings, empty or non-empty, representing datetimes found in
-                          var_filenames entries. the objet pointed to by the reference
-                          iso_datetime_arr is manipulated, and so need-not be returned
-    '''
-    if iso_datetime_arr is None:
-        iso_datetime_arr = []
-    for filename in var_filenames:
-        iso_datetime = filename.split(".")[1]
-        if iso_datetime not in iso_datetime_arr:
-            iso_datetime_arr.append(
-                filename.split(".")[1] )
-    iso_datetime_arr.sort()
-    #print(f"(get_iso_datetimes) Available dates: {iso_datetime_arr}")
-    if len(iso_datetime_arr) < 1:
-        raise ValueError('(get_iso_datetimes) ERROR: iso_datetime_arr has length 0!')
-
-
-def check_dataset_for_ocean_grid(ds):
-    '''
-    checks netCDF4.Dataset ds for ocean grid origin, and throws an error if it finds one. accepts
-    one argument. this function has no return.
-        ds: netCDF4.Dataset object containing variables with associated dimensional information.
-    '''
-    if "xh" in list(ds.variables.keys()):
-        print("\n----------------------------------------------------------------------------------\n"
-              "(check_dataset_for_ocean_grid) WARNING: 'xh' found in var_list: ocean grid req'd\n"
-              "                                        sometimes i don't cmorize right! check me!\n"
-              "----------------------------------------------------------------------------------\n"
-        )
-        return True
-    return False
-
-
-
-def get_vertical_dimension(ds, target_var):
-    '''
-    determines the vertical dimensionality of target_var within netCDF4 Dataset ds. accepts two
-    arguments and returns an object represnting the vertical dimensions assoc with the target_var.
-        ds: netCDF4.Dataset object containing variables with associated dimensional information.
-        target_var: string, representating a variable contained within the netCDF4.Dataset ds
-    '''
-    vert_dim = 0
-    for name, variable in ds.variables.items():
-        if name != target_var: # not the var we are looking for? move on.
-            continue
-        dims = variable.dimensions
-        for dim in dims: #print(f'(get_vertical_dimension) dim={dim}')
-
-            # check for special case
-            if dim.lower() == 'landuse': # aux coordinate, so has no axis property
-                vert_dim = dim
-                break
-
-            # if it is not a vertical axis, move on.
-            if not (ds[dim].axis and ds[dim].axis == "Z"):
-                continue
-            vert_dim = dim
-
-    return vert_dim
-
-def create_tmp_dir(outdir, json_exp_config = None):
-    '''
-    creates a tmp_dir based on targeted output directory root. returns the name of the tmp dir.
-    accepts one argument:
-        outdir: string, representing the final output directory root for the cmor modules netcdf
-                file output. tmp_dir will be slightly different depending on the output directory
-                targeted
-    '''
-    # first see if the exp_config has any additional output path structure to create
-    outdir_from_exp_config = None
-    if json_exp_config is not None:
-        with open(json_exp_config, "r", encoding = "utf-8") as table_config_file:
-            try:
-                outdir_from_exp_config = json.load(table_config_file)["outpath"]
-            except:
-                print(f'(create_tmp_dir) WARNING could not read outdir from json_exp_config.'
-                       '                 the cmor module will throw a toothless warning'     )
-
-    # assign an appropriate temporary working directory
-    tmp_dir = None
-    if any( [ outdir == "/local2",
-              outdir.find("/work") != -1,
-              outdir.find("/net" ) != -1 ] ):
-        tmp_dir = str( Path("{outdir}/").resolve() )
-        print(f'(create_tmp_dir) using /local /work /net ( tmp_dir = {tmp_dir} )')
-    else:
-        tmp_dir = str( Path(f"{outdir}/tmp/").resolve() )
-        print(f'(create_tmp_dir) NOT using /local /work /net ( tmp_dir = {tmp_dir} )')
-
-    # once we know where the tmp_dir should be, create it
-    try:
-        os.makedirs(tmp_dir, exist_ok = True)
-        # and if we need to additionally create outdir_from_exp_config... try doing that too
-        if outdir_from_exp_config is not None:
-            print(f'(create_tmp_dir) attempting to create {outdir_from_exp_config} dir in tmp_dir targ')
-            try:
-                os.makedirs(tmp_dir+'/'+outdir_from_exp_config, exist_ok = True)
-            except: # ... but don't error out for lack of success here, not worth it. cmor can do the lift too.
-                print(f'(create_tmp_dir) attempting to create {outdir_from_exp_config} dir in tmp_dir targ did not work')
-                print( '                 .... oh well! it was ust to try to avoid a warning anyways.... moving on')
-                pass
-    except Exception as exc:
-        raise OSError(f'(create_tmp_dir) problem creating tmp output directory {tmp_dir}. stop.') from exc
-
-    return tmp_dir
-
 
 
 ### ------ BULK ROUTINES ------ ###
@@ -300,7 +116,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # determine the vertical dimension by looping over netcdf variables
     vert_dim = get_vertical_dimension(ds, target_var) # returns int( 0 ) if not present
     print(f"(rewrite_netcdf_file_var) Vertical dimension of {target_var}: {vert_dim}")
-
+    
     # Check var_dim and vert_dim and assign lev if relevant.
     # error if vert_dim wrong given var_dim
     lev, lev_units = None, "1" #1 #"none" #None #""
@@ -322,10 +138,13 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                        lat is None,
                                        lon is None      ] )
     statics_file_path = None
-    x, y = None, None
-    cmor_x, cmor_y = None, None
-    vertex = None
+    xh, yh = None, None    #cmor_x, cmor_y = None, None
+    xh_dim, yh_dim = None, None
+    xh_bnds, yh_bnds = None, None
+    bnds, vertex = None, None
     if do_special_ocean_file_stuff:
+
+        # resolve location of statics file required for this processing.
         try:
             print(f'(rewrite_netcdf_file_var) netcdf_file is {netcdf_file}')
             statics_file_path = find_statics_file(prev_path)
@@ -344,87 +163,161 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         statics_file_path = put_statics_file_here + '/' + statics_file_name
         print(f'(rewrite_netcdf_file_var) statics file path is now: {statics_file_path}')
 
+        # statics file read
         statics_ds = nc.Dataset(statics_file_path, 'r')
+        
 
         # grab the lat/lon points, have shape (yh, xh)
+        print(f'(rewrite_netcdf_file_var) reading geolat and geolon coordinates of cell centers from statics file \n')
         statics_lat = from_dis_gimme_dis(statics_ds, 'geolat')#statics_ds['geolat'][:]#.copy()
         statics_lon = from_dis_gimme_dis(statics_ds, 'geolon')#statics_ds['geolon'][:]#.copy()
-        print(f'(rewrite_netcdf_file_var) min entry of geolat: {statics_lat[:].data.min()}')
-        print(f'(rewrite_netcdf_file_var) min entry of geolon: {statics_lon[:].data.min()}\n')
+        
+        print('\n')
+        print_data_minmax(statics_lat, "statics_lat")
+        print_data_minmax(statics_lon, "statics_lon")
+        print('\n')
 
-        lat = ds.createVariable('lat', np.float32, ('yh', 'xh') )
+
+        # spherical lat and lon coords
+        print(f'(rewrite_netcdf_file_var) creating lat and lon variables in temp file \n')
+        lat = ds.createVariable('lat', statics_lat.dtype, ('yh', 'xh') )
+        lon = ds.createVariable('lon', statics_lon.dtype, ('yh', 'xh') )
         lat[:] = statics_lat[:]
-        lon = ds.createVariable('lon', np.float32, ('yh', 'xh') )
         lon[:] = statics_lon[:]
-        print(f'(rewrite_netcdf_file_var) min entry of lat: {lat[:].data.min()}')
-        print(f'(rewrite_netcdf_file_var) min entry of lon: {lon[:].data.min()}\n')
+        
+        print('\n')
+        print_data_minmax(lat[:], "lat")
+        print_data_minmax(lon[:], "lon")
+        print('\n')
+
 
         # grab the corners of the cells, should have shape (yh+1, xh+1)
+        print(f'(rewrite_netcdf_file_var) reading geolat and geolon coordinates of cell corners from statics file \n')
         lat_c = from_dis_gimme_dis(statics_ds,'geolat_c')
         lon_c = from_dis_gimme_dis(statics_ds,'geolon_c')
-        print(f'(rewrite_netcdf_file_var) min entry of geolat_c: {lat_c[:].data.min()}')
-        print(f'(rewrite_netcdf_file_var) min entry of geolon_c: {lon_c[:].data.min()}\n')
+        
+        print('\n')
+        print_data_minmax(lat_c, "lat_c")
+        print_data_minmax(lon_c, "lon_c")
+        print('\n')
 
+        
+        # vertex
+        print(f'(rewrite_netcdf_file_var) creating vertex dimension\n')
         vertex = 4
         ds.createDimension('vertex', vertex)
 
-        lat_bnds = ds.createVariable('lat_bnds', np.float32, ('yh', 'xh', 'vertex') )
+
+        # lat and lon bnds
+        print(f'(rewrite_netcdf_file_var) creating lat and lon bnds from geolat and geolon of corners\n')
+        lat_bnds = ds.createVariable('lat_bnds', lat_c.dtype, ('yh', 'xh', 'vertex') )
         lat_bnds[:,:,0] = lat_c[1:,1:] # NE corner
         lat_bnds[:,:,1] = lat_c[1:,:-1] # NW corner
         lat_bnds[:,:,2] = lat_c[:-1,:-1] # SW corner
         lat_bnds[:,:,3] = lat_c[:-1,1:] # SE corner
 
-
-        lon_bnds = ds.createVariable('lon_bnds', np.float32, ('yh', 'xh', 'vertex') )
+        lon_bnds = ds.createVariable('lon_bnds', lon_c.dtype, ('yh', 'xh', 'vertex') )
         lon_bnds[:,:,0] = lon_c[1:,1:] # NE corner
         lon_bnds[:,:,1] = lon_c[1:,:-1] # NW corner
         lon_bnds[:,:,2] = lon_c[:-1,:-1] # SW corner
         lon_bnds[:,:,3] = lon_c[:-1,1:] # SE corner
+        
+        print('\n')
+        print_data_minmax(lat_bnds[:], "lat_bnds")
+        print_data_minmax(lon_bnds[:], "lon_bnds")
+        print('\n')
 
 
-        print(f'(rewrite_netcdf_file_var) HARD PART: (yh)')
-        y = from_dis_gimme_dis(ds, 'yh')
+        # grab the h-point lat and lon
+        print(f'(rewrite_netcdf_file_var) reading yh, xh\n')
+        yh = from_dis_gimme_dis(ds, 'yh')
+        xh = from_dis_gimme_dis(ds, 'xh')
 
-        print(f'(rewrite_netcdf_file_var) HARD PART: (xh)\n')
-        x = from_dis_gimme_dis(ds, 'xh')
+        print('\n')
+        print_data_minmax(yh[:], "yh")
+        print_data_minmax(xh[:], "xh")
+        print('\n')
+
+        yh_dim = len(yh)
+        xh_dim = len(xh)
+
+        # read the q-point native-grid lat lon points
+        print(f'(rewrite_netcdf_file_var) reading yq, xq from statics file \n')
+        yq = from_dis_gimme_dis(statics_ds, 'yq')        
+        xq = from_dis_gimme_dis(statics_ds, 'xq')
+
+        print('\n')
+        print_data_minmax(yq, "yq")
+        print_data_minmax(xq, "xq")
+        print('\n')
+
+        assert yh_dim == (len(yq)-1)
+        assert xh_dim == (len(xq)-1)
+        
+        # create h-point bounds from the q-point lat lons
+        print(f'(rewrite_netcdf_file_var) creating yh_bnds, xh_bnds from yq, xq\n')
+
+        yh_bnds = ds.createVariable('yh_bnds', yq.dtype, ( 'yh', 'nv' ) )
+        for i in range(0,yh_dim):
+            yh_bnds[i,0] = yq[i]
+            yh_bnds[i,1] = yq[i+1]
+
+        xh_bnds = ds.createVariable('xh_bnds', xq.dtype, ( 'xh', 'nv' ) )
+        for i in range(0,xh_dim):
+            xh_bnds[i,0] = xq[i]
+            xh_bnds[i,1] = xq[i+1]
+            if i%200 == 0:
+                print(f' AFTER assignment: xh_bnds[{i}][0] = {xh_bnds[i][0]}')
+                print(f' AFTER assignment: xh_bnds[{i}][1] = {xh_bnds[i][1]}')
+                print(f'             type(xh_bnds[{i}][1]) = {type(xh_bnds[i][1])}')
+
+        print('\n')
+        print_data_minmax(yh_bnds[:], "yh_bnds")
+        print_data_minmax(xh_bnds[:], "xh_bnds")
+        print('\n')
 
 
-    
-    # now we set up the cmor module object
+    ds.close()
+    assert False, 'pause+check output'    
+
+    # now we set up the cmor module object 
     # initialize CMOR
     cmor.setup(
-        netcdf_file_action    = cmor.CMOR_PRESERVE, #.CMOR_APPEND,#
+        netcdf_file_action    = cmor.CMOR_APPEND,#.CMOR_PRESERVE, #
         set_verbosity         = cmor.CMOR_QUIET,#.CMOR_NORMAL, #
         exit_control          = cmor.CMOR_NORMAL,#.CMOR_EXIT_ON_WARNING,#
-#        logfile               = './foo.log',
+        #logfile               = './foo.log',
         create_subdirectories = 1
     )
 
+    
     # read experiment configuration file
     print(f"(rewrite_netcdf_file_var) cmor is opening: json_exp_config = {json_exp_config}")
     cmor.dataset_json(json_exp_config)
-
-    # if we need to do, e.g. cmor_grid, do that here, before the rest of the routine
-    if do_special_ocean_file_stuff:
-        print('(rewrite_netcdf_file_var) SPECIAL OCEAN STUFF opening' + str(Path(json_table_config).parent) + '/CMIP6_grids.json')
-        cmor.load_table( str(Path(json_table_config).parent) + '/CMIP6_grids.json' )
-
-    #assert False, 'DEBUG STOP AND CHECK'
-
+    
     # load CMOR table
-    print(f"(rewrite_netcdf_file_var) cmor is opening json_table_config = {json_table_config}")
-    cmor.load_table(json_table_config)
+    print(f"(rewrite_netcdf_file_var) cmor is loading+setting json_table_config = {json_table_config}")
+    loaded_cmor_table_cfg = cmor.load_table(json_table_config)
+    cmor.set_table(loaded_cmor_table_cfg)
+    
+    
+    # if ocean tripolar grid, we need the CMIP grids configuration file. load it but don't set the table yet.
+    json_grids_config, loaded_cmor_grids_cfg = None, None
+    if do_special_ocean_file_stuff:
+        print(f'(rewrite_netcdf_file_var) cmor is loading/opening {json_grids_config}')
+        json_grids_config = str(Path(json_table_config).parent) + '/CMIP6_grids.json'
+        loaded_cmor_grids_cfg =  cmor.load_table( json_grids_config )
+        cmor.set_table(loaded_cmor_grids_cfg)
 
-    units = proj_table_vars["variable_entry"] [target_var] ["units"]
-    print(f"(rewrite_netcdf_file_var) units = {units}")
 
 
+    
     # setup cmor latitude axis if relevant
     cmor_lat = None
     if do_special_ocean_file_stuff:
         print(f'(rewrite_netcdf_file_var) WARNING: calling cmor.axis for a projected y coordinate!!')
-        cmor_lat = cmor.axis("projection_y_coordinate", coord_vals = y[:], units = "degrees")
-    elif any( [ lat is None ] ):
+        cmor_lat = cmor.axis("y_deg", coord_vals = yh[:], cell_bounds = yh_bnds[:], units = "degrees")
+    elif lat is None :
         print(f'(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_lat')
     else:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lat')
@@ -438,12 +331,16 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     cmor_lon = None
     if do_special_ocean_file_stuff:
         print(f'(rewrite_netcdf_file_var) WARNING: calling cmor.axis for a projected x coordinate!!')
-        cmor_lon = cmor.axis("projection_x_coordinate", coord_vals = x[:], units = "degrees")
-    elif any( [ lon is None ] ):
+        cmor_lon = cmor.axis("x_deg", coord_vals = xh[:], cell_bounds = xh_bnds[:], units = "degrees")
+    elif lon is None :
         print(f'(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_lon')
     else:
         print(f'(rewrite_netcdf_file_var) assigning cmor_lon')
         cmor_lon = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
+        if lon_bnds is None:
+            cmor_lon = cmor.axis("longitude", coord_vals = lon[:], units = "degrees_E")
+        else:
+            cmor_lon = cmor.axis("longitude", coord_vals = lon[:], cell_bounds = lon_bnds, units = "degrees_E")
         print(f'                          DONE assigning cmor_lon')
 
 
@@ -585,9 +482,13 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print(f'                          axes now = {axes}')
 
 
-    # read positive attribute and create cmor_var? can this return none? TODO
+    # read positive/units attribute and create cmor_var
+    units = proj_table_vars["variable_entry"] [target_var] ["units"]
+    print(f"(rewrite_netcdf_file_var) units = {units}")
+
     positive = proj_table_vars["variable_entry"] [target_var] ["positive"]
     print(f"(rewrite_netcdf_file_var) positive = {positive}")
+    
     cmor_var = cmor.variable(target_var, units, axes, positive = positive)
 
     # Write the output to disk
