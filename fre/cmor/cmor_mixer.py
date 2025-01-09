@@ -453,6 +453,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                 print(f'(rewrite_netcdf_file_var) appending cmor_time to axis_ids list...')
                 axis_ids.append(cmor_time)
                 print(f'                          axis_ids now = {axis_ids}')
+            # might there need to be a conditional check for tripolar ocean data here as well? TODO
             if cmor_y is not None:
                 print(f'(rewrite_netcdf_file_var) appending cmor_y to axis_ids list...')
                 axis_ids.append(cmor_y)
@@ -475,18 +476,23 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print(f'(rewrite_netcdf_file_var) appending cmor_time to axes list...')
         axes.append(cmor_time)
         print(f'                          axes now = {axes}')
+
     if cmor_z is not None:
         print(f'(rewrite_netcdf_file_var) appending cmor_z to axes list...')
         axes.append(cmor_z)
         print(f'                          axes now = {axes}')
-    if cmor_y is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_y to axes list...')
-        axes.append(cmor_y)
-        print(f'                          axes now = {axes}')
-    if cmor_x is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_x to axes list...')
-        axes.append(cmor_x)
-        print(f'                          axes now = {axes}')
+        
+    if process_tripolar_data:        
+        axes.append(cmor_grid)
+    else:
+        if cmor_y is not None:
+            print(f'(rewrite_netcdf_file_var) appending cmor_y to axes list...')
+            axes.append(cmor_y)
+            print(f'                          axes now = {axes}')
+        if cmor_x is not None:
+            print(f'(rewrite_netcdf_file_var) appending cmor_x to axes list...')
+            axes.append(cmor_x)
+            print(f'                          axes now = {axes}')
 
 
     # read positive/units attribute and create cmor_var
