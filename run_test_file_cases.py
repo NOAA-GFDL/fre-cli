@@ -89,12 +89,12 @@ if True:
         print(f'exception caught: exc=\n{exc}')
         some_return=-1    
         
-        print_the_outcome(some_return,'ocean_monthly_gn / sos')
+    print_the_outcome(some_return,'ocean_monthly_gn / sos')
         
         #sys.exit()
 
 
-if False:
+if True:
     # 1) SUCCEEDs
     # land, Lmon, gr1
     testfile_land_gr1_Lmon = \
