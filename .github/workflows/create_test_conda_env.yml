@@ -40,7 +40,11 @@ jobs:
 
           # install genbadge to make badge from coverage/test stats
           pip install genbadge
+
+          # genbadge coverage
           genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
+
+          # genbadge tests
           genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
 
       - name: Archive code coverage results
