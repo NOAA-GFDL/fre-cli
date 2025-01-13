@@ -152,18 +152,18 @@ def test_cli_fre_cmor_run_case2(capfd):
                    Path(full_inputfile).exists() ] )
     _out, _err = capfd.readouterr()
 
-# fre cmor list
-def test_cli_fre_cmor_list():
-    ''' fre cmor list '''
-    result = runner.invoke(fre.fre, args=["cmor", "list"])
+# fre cmor find
+def test_cli_fre_cmor_find():
+    ''' fre cmor find '''
+    result = runner.invoke(fre.fre, args=["cmor", "find"])
     assert result.exit_code == 2
 
-def test_cli_fre_cmor_list_help():
-    ''' fre cmor list --help '''
-    result = runner.invoke(fre.fre, args=["cmor", "list", "--help"])
+def test_cli_fre_cmor_find_help():
+    ''' fre cmor find --help '''
+    result = runner.invoke(fre.fre, args=["cmor", "find", "--help"])
     assert result.exit_code == 0
 
-def test_cli_fre_cmor_list_opt_dne():
-    ''' fre cmor list optionDNE '''
-    result = runner.invoke(fre.fre, args=["cmor", "list", "optionDNE"])
+def test_cli_fre_cmor_find_opt_dne():
+    ''' fre cmor find optionDNE '''
+    result = runner.invoke(fre.fre, args=["cmor", "find", "optionDNE"])
     assert result.exit_code == 2
