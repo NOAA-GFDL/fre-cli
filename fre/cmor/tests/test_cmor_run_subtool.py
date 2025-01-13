@@ -14,14 +14,14 @@ import subprocess
 ROOTDIR = 'fre/tests/test_files'
 
 # setup- cmip/cmor variable table(s)
-CLONE_REPO_PATH = \
+CMIP6_TABLE_REPO_PATH = \
     f'{ROOTDIR}/cmip6-cmor-tables'
 TABLE_CONFIG = \
-    f'{CLONE_REPO_PATH}/Tables/CMIP6_Omon.json'
+    f'{CMIP6_TABLE_REPO_PATH}/Tables/CMIP6_Omon.json'
 
 def test_setup_cmor_cmip_table_repo():
     ''' setup routine, make sure the recursively cloned tables exist '''
-    assert all( [ Path(CLONE_REPO_PATH).exists(),
+    assert all( [ Path(CMIP6_TABLE_REPO_PATH).exists(),
                   Path(TABLE_CONFIG).exists()
                   ] )
 

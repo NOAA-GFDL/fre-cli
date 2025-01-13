@@ -83,6 +83,7 @@ def get_var_filenames(indir, var_filenames = None, local_var = None):
         var_filenames = []
     filename_pattern = '.nc' if local_var is None else f'.{local_var}.nc'
     print(f'(get_var_filenames) filename_pattern = {filename_pattern}\n')
+    print(f'(get_var_filenames) indir = {indir}\n')
     var_filenames_all = glob.glob(f'{indir}/*{filename_pattern}')
     #print(f'(get_var_filenames) var_filenames_all = {var_filenames_all}')
     for var_file in var_filenames_all:
