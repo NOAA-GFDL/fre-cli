@@ -67,7 +67,7 @@ test:
   commands:
     - pylint --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     # run pytest but ignore any tests that require compilation
-    - pytest --ignore=fre/make/tests/compilation --config-file=fre/pytest.ini --cov-report term-missing --cov-config=fre/coveragerc --cov=fre fre/ 
+    - coverage run -m pytest --ignore=fre/make/tests/compilation --config-file=fre/pytest.ini --cov-report term-missing --cov-config=fre/coveragerc --cov=fre fre/ 
     - fre --help
     - fre app --help
     - fre catalog --help
