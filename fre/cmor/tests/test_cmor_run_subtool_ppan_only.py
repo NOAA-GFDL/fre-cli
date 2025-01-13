@@ -47,8 +47,7 @@ def _cleanup():
 def _case_function(testfile_dir, table, opt_var_name, grid):
 
     # define inputs to the cmor run tool
-    #testfile = testfile
-    indir = testfile_dir#Path(testfile).parent
+    indir = testfile_dir
     table = table
     table_file = f'{CMIP6_TABLE_REPO_PATH}/Tables/CMIP6_{table}.json'
     opt_var_name = opt_var_name
@@ -75,7 +74,8 @@ def _case_function(testfile_dir, table, opt_var_name, grid):
 
     # outputs that should be created
     cmor_output_dir = f'{OUTDIR}/{CMOR_CREATES_DIR_BASE}/{table}/{opt_var_name}/gn/v{YYYYMMDD}'
-    cmor_output_file = glob.glob(f'{cmor_output_dir}/{opt_var_name}_{table}_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_??????-??????.nc')[0]
+    cmor_output_file = glob.glob(
+        f'{cmor_output_dir}/{opt_var_name}_{table}_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_??????-??????.nc')[0]
 
     # success criteria
     assert all( [ some_return == 0,

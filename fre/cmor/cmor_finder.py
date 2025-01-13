@@ -1,4 +1,4 @@
-''' fre cmor list
+''' fre cmor find
 because ian got tired of typing things like the following in bash...
 
 varname=sos; \
@@ -29,12 +29,12 @@ def print_var_content( table_config_file = None, var_name = None):
     try:
         var_content = proj_table_vars["variable_entry"].get(var_name)
     except:
-        #print(f'(cmor_list_subtool) WARNING no "variable_entry" key. for {json_table_config}.'
+        #print(f'(cmor_find_subtool) WARNING no "variable_entry" key. for {json_table_config}.'
         #       '                    not the right json file probably. moving on!')
         return
 
     if var_content is None:
-        #print(f'(cmor_list_subtool) variable {var_name} not found in {Path(json_table_config).name}, moving on!')
+        #print(f'(cmor_find_subtool) variable {var_name} not found in {Path(json_table_config).name}, moving on!')
         return
 
     table_name = None
@@ -61,20 +61,20 @@ def print_var_content( table_config_file = None, var_name = None):
 
     return
 
-def cmor_list_subtool( json_var_list = None, json_table_config_dir = None, opt_var_name = None):
+def cmor_find_subtool( json_var_list = None, json_table_config_dir = None, opt_var_name = None):
     '''
     finds tables in the CMIP json config directory containing variable data of interest. prints it
     out to screen, intended largely as a helper tool for cli users.
     '''
     if not Path(json_table_config_dir).exists():
-        raise OSError(f'(cmor_list_subtool) ERROR directory {json_table_config_dir} does not exist! exit.')
+        raise OSError(f'(cmor_find_subtool) ERROR directory {json_table_config_dir} does not exist! exit.')
 
-    print(f'(cmor_list_subtool) attempting to find and open files in dir: \n {json_table_config_dir} ')
+    print(f'(cmor_find_subtool) attempting to find and open files in dir: \n {json_table_config_dir} ')
     json_table_configs=glob.glob(f'{json_table_config_dir}/CMIP6_*.json')
     if json_table_configs is None:
         raise OSError(f'ERROR directory {json_table_config_dir} contains no JSON files, exit.')
     else:
-        print(f'(cmor_list_subtool) found content in json_table_config_dir')#: {json_table_configs}')
+        print(f'(cmor_find_subtool) found content in json_table_config_dir')#: {json_table_configs}')
 
     var_list = None
     if json_var_list is not None:
@@ -82,20 +82,20 @@ def cmor_list_subtool( json_var_list = None, json_table_config_dir = None, opt_v
             var_list=json.load(var_list_file)
 
     if opt_var_name is None and var_list is None:
-        raise ValueError(f'(cmor_list_subtool) ERROR: no opt_var_name given but also no content in variable list!!! exit!')
+        raise ValueError(f'(cmor_find_subtool) ERROR: no opt_var_name given but also no content in variable list!!! exit!')
 
     if opt_var_name is not None:
-        print(f'(cmor_list_subtool) opt_var_name is not None: looking for only ONE variables worth of info!')
+        print(f'(cmor_find_subtool) opt_var_name is not None: looking for only ONE variables worth of info!')
         for json_table_config in json_table_configs:
-            #print(f'(cmor_list_subtool) attempting to open {json_table_config}')
+            #print(f'(cmor_find_subtool) attempting to open {json_table_config}')
             with open( json_table_config, "r", encoding = "utf-8") as table_config_file:
                 print_var_content(table_config_file, opt_var_name)
 
     elif var_list is not None:
-        print(f'(cmor_list_subtool) opt_var_name is None, and var_list is not None, looking for many variables worth of info!')
+        print(f'(cmor_find_subtool) opt_var_name is None, and var_list is not None, looking for many variables worth of info!')
         for var in var_list:
             for json_table_config in json_table_configs:
-                #print(f'(cmor_list_subtool) attempting to open {json_table_config}')
+                #print(f'(cmor_find_subtool) attempting to open {json_table_config}')
                 with open( json_table_config, "r", encoding = "utf-8") as table_config_file:
                     #print(f'    var = {var}, var_list[{var}]={var_list[var]}')
                     print_var_content(table_config_file, str(var_list[var]))

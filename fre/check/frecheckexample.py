@@ -9,7 +9,7 @@ def check_test_function(uppercase=None):
     statement = "testingtestingtestingtesting"
     if uppercase:
         statement = statement.upper()
-    click.echo(statement)
+    print(statement)
 
 if __name__ == '__main__':
     check_test_function()

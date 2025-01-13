@@ -1,3 +1,5 @@
+''' fre analysis '''
+
 # a third party package
 import click
 

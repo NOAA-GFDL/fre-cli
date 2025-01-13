@@ -2,7 +2,7 @@
 
 import click
 
-from .cmor_lister import cmor_list_subtool
+from .cmor_finder import cmor_find_subtool
 from .cmor_mixer import cmor_run_subtool
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
@@ -49,9 +49,9 @@ def cmor_cli():
               required=False)
 def run(indir, varlist, table_config, exp_config, outdir, opt_var_name):
     # pylint: disable=unused-argument
-    """ 
-    Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing 
-    """ 
+    """
+    Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
+    """
     cmor_run_subtool(
         indir = indir,
         json_var_list = varlist,
@@ -75,16 +75,15 @@ def run(indir, varlist, table_config, exp_config, outdir, opt_var_name):
               type = str,
               help=OPT_VAR_NAME_HELP,
               required=False)
-def list(varlist, table_config_dir, opt_var_name):
+def find(varlist, table_config_dir, opt_var_name):
     '''
     loop over json table files in config_dir and show which tables contain variables in var list/
     the tool will also print what that table entry is expecting of that variable as well. if given
     an opt_var_name in addition to varlist, only that variable name will be printed out.
-    accepts 3 arguments, two of the three required. 
+    accepts 3 arguments, two of the three required.
     '''
-    #context.forward( _cmor_list_subtool )
 
-    # if opt_var_name specified, forget the list. 
+    # if opt_var_name specified, forget the list.
     if opt_var_name is not None:
         varlist=None
 
@@ -92,13 +91,13 @@ def list(varlist, table_config_dir, opt_var_name):
     # logic before calling context.invoke( <thingy>, *args )
     if opt_var_name is None and varlist is None:
         raise ValueError('opt_var_name and varlist cannot both be None')
-        
-    cmor_list_subtool(
+
+    cmor_find_subtool(
         json_var_list = varlist,
         json_table_config_dir = table_config_dir,
         opt_var_name = opt_var_name
     )
-    
+
 
 if __name__ == "__main__":
     cmor_cli()
