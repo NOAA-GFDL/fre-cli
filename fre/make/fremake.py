@@ -46,7 +46,7 @@ def make_cli():
               type = str,
               help = PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
-              multiple = True, 
+              multiple = True,
               type = str,
               help = TARGET_OPT_HELP,
               required = True)
@@ -121,7 +121,7 @@ def create_checkout(yamlfile, platform, target, no_parallel_checkout, jobs, exec
         yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose)
 
 @make_cli.command
-@click.option("-y", 
+@click.option("-y",
               "--yamlfile",
               type = str,
               help = YAMLFILE_OPT_HELP,
@@ -185,14 +185,14 @@ def create_compile(yamlfile, platform, target, jobs, parallel, execute, verbose)
               "--yamlfile",
               type = str,
               help = YAMLFILE_OPT_HELP,
-              required = True) 
+              required = True)
 @click.option("-p",
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
-              multiple = True, 
+              multiple = True,
               type = str,
               help = TARGET_OPT_HELP,
               required = True)

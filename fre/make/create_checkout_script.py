@@ -86,7 +86,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                 else:
                     return
             else:
-                print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n") 
+                print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
                 if run:
                     try:
                         subprocess.run(args=[src_dir+"/checkout.sh"], check=True)

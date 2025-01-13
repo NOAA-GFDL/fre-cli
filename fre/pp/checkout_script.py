@@ -1,8 +1,8 @@
 '''
-Description: Checkout script which accounts for 4 different scenarios: 
+Description: Checkout script which accounts for 4 different scenarios:
 1. branch not given, folder does not exist,
-2. branch given, folder does not exist, 
-3. branch not given, folder exists, 
+2. branch given, folder does not exist,
+3. branch not given, folder exists,
 4. branch given and folder exists
 '''
 import os
@@ -48,7 +48,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     checkout_exists = os.path.isdir(f'{directory}/{name}')
 
     if not checkout_exists: # scenarios 1+2, checkout doesn't exist, branch specified (or not)
-        print(f'(checkout_script) checkout does not yet exist; will create now')
+        print('(checkout_script) checkout does not yet exist; will create now')
         clone_output = subprocess.run( ['git', 'clone','--recursive',
                                         f'--branch={git_clone_branch_arg}',
                                         FRE_WORKFLOWS_URL, f'{directory}/{name}'],
@@ -73,14 +73,14 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         else:
             print(f"(checkout_script) ERROR: checkout exists ('{directory}/{name}') and does not match '{git_clone_branch_arg}'")
             print(f"(checkout_script) ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
-            os.chdir(go_back_here) 
+            os.chdir(go_back_here)
             raise ValueError('(checkout_script) neither tag nor branch matches the git clone branch arg') #exit(1)
 
     # make sure we are back where we should be
     if os.getcwd() != go_back_here:
         os.chdir(go_back_here)
 
-    return 
+    return
 
 #############################################
 

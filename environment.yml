@@ -1,4 +1,4 @@
-name: fre_cli
+name: fre-cli
 channels:
   - conda-forge
   - noaa-gfdl

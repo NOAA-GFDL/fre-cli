@@ -192,9 +192,9 @@ def configure_xml(xml, platform, target, experiment, do_analysis, historydir, re
               help="Time whose history files are ready")
 def wrapper(experiment, platform, target, config_file, branch, time):
     """ - Execute fre pp steps in order """
-    print(f'(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
+    print('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
-    print(f'(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
+    print('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,

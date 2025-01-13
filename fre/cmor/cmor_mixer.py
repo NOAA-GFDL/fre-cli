@@ -16,7 +16,7 @@ import netCDF4 as nc
 import cmor
 from .cmor_helpers import *
 
-# ----- \start consts # TODO make this an input argument flag or smth. 
+# ----- \start consts # TODO make this an input argument flag or smth.
 DEBUG_MODE_RUN_ONE = True
 # ----- \end consts
 
@@ -74,21 +74,21 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     ## figure out the coordinate/dimension names programmatically TODO
 
     # Attempt to read lat coordinates
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate, lat')
+    print('(rewrite_netcdf_file_var) attempting to read coordinate, lat')
     lat = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lat")
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, lat_bnds')
+    print('(rewrite_netcdf_file_var) attempting to read coordinate BNDS, lat_bnds')
     lat_bnds = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lat_bnds")
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate, lon')
+    print('(rewrite_netcdf_file_var) attempting to read coordinate, lon')
     lon = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lon")
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, lon_bnds')
+    print('(rewrite_netcdf_file_var) attempting to read coordinate BNDS, lon_bnds')
     lon_bnds = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lon_bnds")
 
     # read in time_coords + units
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate time, and units...')
+    print('(rewrite_netcdf_file_var) attempting to read coordinate time, and units...')
     time_coords = from_dis_gimme_dis( from_dis = ds,
                                       gimme_dis = 'time' )
 
@@ -96,7 +96,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     print(f"                          time_coord_units = {time_coord_units}")
 
     # read in time_bnds , if present
-    print(f'(rewrite_netcdf_file_var) attempting to read coordinate BNDS, time_bnds')
+    print('(rewrite_netcdf_file_var) attempting to read coordinate BNDS, time_bnds')
     time_bnds = from_dis_gimme_dis( from_dis = ds,
                                     gimme_dis = 'time_bnds' )
 
@@ -116,7 +116,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # determine the vertical dimension by looping over netcdf variables
     vert_dim = get_vertical_dimension(ds, target_var) # returns int( 0 ) if not present
     print(f"(rewrite_netcdf_file_var) Vertical dimension of {target_var}: {vert_dim}")
-    
+
     # Check var_dim and vert_dim and assign lev if relevant.
     # error if vert_dim wrong given var_dim
     lev, lev_units = None, "1" #1 #"none" #None #""
@@ -130,7 +130,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             lev_units = ds[vert_dim].units
 
 
-    
+
     # the tripolar grid is designed to reduce distortions in ocean data brought on
     # by singularities (poles) being placed in oceans
     # the spherical lat/lons tend to already be computed in advance at GFDL, they're in "statics"
@@ -150,28 +150,28 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             statics_file_path = find_statics_file(prev_path)
             print(f'(rewrite_netcdf_file_var) statics_file_path is {statics_file_path}')
         except Exception as exc:
-            print(f'(rewrite_netcdf_file_var) WARNING: pretty sure an ocean statics file is needed, but it could not be found.'
-                  '                                    moving on and doing my best, but i am probably going to break' )
+            print('(rewrite_netcdf_file_var) WARNING: an ocean statics file is needed, but it could not be found.\n'
+                  '                                   moving on and doing my best, but i am probably going to break' )
             raise Exception('(rewrite_netcdf_file_var) EXITING BC STATICS') from exc
 
-        print(f"(rewrite_netcdf_file_var) statics file found.")
+        print("(rewrite_netcdf_file_var) statics file found.")
         statics_file_name = Path(statics_file_path).name
         put_statics_file_here = str(Path(netcdf_file).parent)
         shutil.copy(statics_file_path, put_statics_file_here)
         del statics_file_path
-        
+
         statics_file_path = put_statics_file_here + '/' + statics_file_name
         print(f'(rewrite_netcdf_file_var) statics file path is now: {statics_file_path}')
 
         # statics file read
         statics_ds = nc.Dataset(statics_file_path, 'r')
-        
+
 
         # grab the lat/lon points, have shape (yh, xh)
-        print(f'(rewrite_netcdf_file_var) reading geolat and geolon coordinates of cell centers from statics file \n')
+        print('(rewrite_netcdf_file_var) reading geolat and geolon coordinates of cell centers from statics file \n')
         statics_lat = from_dis_gimme_dis(statics_ds, 'geolat')#statics_ds['geolat'][:]#.copy()
         statics_lon = from_dis_gimme_dis(statics_ds, 'geolon')#statics_ds['geolon'][:]#.copy()
-        
+
         print('\n')
         print_data_minmax(statics_lat, "statics_lat")
         print_data_minmax(statics_lon, "statics_lon")
@@ -179,12 +179,12 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
         # spherical lat and lon coords
-        print(f'(rewrite_netcdf_file_var) creating lat and lon variables in temp file \n')
+        print('(rewrite_netcdf_file_var) creating lat and lon variables in temp file \n')
         lat = ds.createVariable('lat', statics_lat.dtype, ('yh', 'xh') )
         lon = ds.createVariable('lon', statics_lon.dtype, ('yh', 'xh') )
         lat[:] = statics_lat[:]
         lon[:] = statics_lon[:]
-        
+
         print('\n')
         print_data_minmax(lat[:], "lat")
         print_data_minmax(lon[:], "lon")
@@ -192,24 +192,24 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
         # grab the corners of the cells, should have shape (yh+1, xh+1)
-        print(f'(rewrite_netcdf_file_var) reading geolat and geolon coordinates of cell corners from statics file \n')
+        print('(rewrite_netcdf_file_var) reading geolat and geolon coordinates of cell corners from statics file \n')
         lat_c = from_dis_gimme_dis(statics_ds,'geolat_c')
         lon_c = from_dis_gimme_dis(statics_ds,'geolon_c')
-        
+
         print('\n')
         print_data_minmax(lat_c, "lat_c")
         print_data_minmax(lon_c, "lon_c")
         print('\n')
 
-        
+
         # vertex
-        print(f'(rewrite_netcdf_file_var) creating vertex dimension\n')
+        print('(rewrite_netcdf_file_var) creating vertex dimension\n')
         vertex = 4
         ds.createDimension('vertex', vertex)
 
 
         # lat and lon bnds
-        print(f'(rewrite_netcdf_file_var) creating lat and lon bnds from geolat and geolon of corners\n')
+        print('(rewrite_netcdf_file_var) creating lat and lon bnds from geolat and geolon of corners\n')
         lat_bnds = ds.createVariable('lat_bnds', lat_c.dtype, ('yh', 'xh', 'vertex') )
         lat_bnds[:,:,0] = lat_c[1:,1:] # NE corner
         lat_bnds[:,:,1] = lat_c[1:,:-1] # NW corner
@@ -221,7 +221,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         lon_bnds[:,:,1] = lon_c[1:,:-1] # NW corner
         lon_bnds[:,:,2] = lon_c[:-1,:-1] # SW corner
         lon_bnds[:,:,3] = lon_c[:-1,1:] # SE corner
-        
+
         print('\n')
         print_data_minmax(lat_bnds[:], "lat_bnds")
         print_data_minmax(lon_bnds[:], "lon_bnds")
@@ -229,7 +229,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
         # grab the h-point lat and lon
-        print(f'(rewrite_netcdf_file_var) reading yh, xh\n')
+        print('(rewrite_netcdf_file_var) reading yh, xh\n')
         yh = from_dis_gimme_dis(ds, 'yh')
         xh = from_dis_gimme_dis(ds, 'xh')
 
@@ -242,8 +242,8 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         xh_dim = len(xh)
 
         # read the q-point native-grid lat lon points
-        print(f'(rewrite_netcdf_file_var) reading yq, xq from statics file \n')
-        yq = from_dis_gimme_dis(statics_ds, 'yq')        
+        print('(rewrite_netcdf_file_var) reading yq, xq from statics file \n')
+        yq = from_dis_gimme_dis(statics_ds, 'yq')
         xq = from_dis_gimme_dis(statics_ds, 'xq')
 
         print('\n')
@@ -253,9 +253,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
         assert yh_dim == (len(yq)-1)
         assert xh_dim == (len(xq)-1)
-        
+
         # create h-point bounds from the q-point lat lons
-        print(f'(rewrite_netcdf_file_var) creating yh_bnds, xh_bnds from yq, xq\n')
+        print('(rewrite_netcdf_file_var) creating yh_bnds, xh_bnds from yq, xq\n')
 
         yh_bnds = ds.createVariable('yh_bnds', yq.dtype, ( 'yh', 'nv' ) )
         for i in range(0,yh_dim):
@@ -277,7 +277,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print('\n')
 
 
-    # now we set up the cmor module object 
+    # now we set up the cmor module object
     # initialize CMOR
     cmor.setup(
         netcdf_file_action    = cmor.CMOR_APPEND,#.CMOR_PRESERVE, #
@@ -287,17 +287,17 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         create_subdirectories = 1
     )
 
-    
+
     # read experiment configuration file
     print(f"(rewrite_netcdf_file_var) cmor is opening: json_exp_config = {json_exp_config}")
     cmor.dataset_json(json_exp_config)
-    
+
     # load CMOR table
     print(f"(rewrite_netcdf_file_var) cmor is loading+setting json_table_config = {json_table_config}")
     loaded_cmor_table_cfg = cmor.load_table(json_table_config)
     cmor.set_table(loaded_cmor_table_cfg)
-    
-    
+
+
     # if ocean tripolar grid, we need the CMIP grids configuration file. load it but don't set the table yet.
     json_grids_config, loaded_cmor_grids_cfg = None, None
     if process_tripolar_data:
@@ -308,37 +308,37 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
 
-    
+
     # setup cmor latitude axis if relevant
     cmor_y = None
     if process_tripolar_data:
-        print(f'(rewrite_netcdf_file_var) WARNING: calling cmor.axis for a projected y coordinate!!')
+        print('(rewrite_netcdf_file_var) WARNING: calling cmor.axis for a projected y coordinate!!')
         cmor_y = cmor.axis("y_deg", coord_vals = yh[:], cell_bounds = yh_bnds[:], units = "degrees")
     elif lat is None :
-        print(f'(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_y')
+        print('(rewrite_netcdf_file_var) WARNING: lat or lat_bnds is None, skipping assigning cmor_y')
     else:
-        print(f'(rewrite_netcdf_file_var) assigning cmor_y')
+        print('(rewrite_netcdf_file_var) assigning cmor_y')
         if lat_bnds is None:
             cmor_y = cmor.axis("latitude", coord_vals = lat[:], units = "degrees_N")
         else:
             cmor_y = cmor.axis("latitude", coord_vals = lat[:], cell_bounds = lat_bnds, units = "degrees_N")
-        print(f'                          DONE assigning cmor_y')
+        print('                          DONE assigning cmor_y')
 
     # setup cmor longitude axis if relevant
     cmor_x = None
     if process_tripolar_data:
-        print(f'(rewrite_netcdf_file_var) WARNING: calling cmor.axis for a projected x coordinate!!')
+        print('(rewrite_netcdf_file_var) WARNING: calling cmor.axis for a projected x coordinate!!')
         cmor_x = cmor.axis("x_deg", coord_vals = xh[:], cell_bounds = xh_bnds[:], units = "degrees")
     elif lon is None :
-        print(f'(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_x')
+        print('(rewrite_netcdf_file_var) WARNING: lon or lon_bnds is None, skipping assigning cmor_x')
     else:
-        print(f'(rewrite_netcdf_file_var) assigning cmor_x')
+        print('(rewrite_netcdf_file_var) assigning cmor_x')
         cmor_x = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
         if lon_bnds is None:
             cmor_x = cmor.axis("longitude", coord_vals = lon[:], units = "degrees_E")
         else:
             cmor_x = cmor.axis("longitude", coord_vals = lon[:], cell_bounds = lon_bnds, units = "degrees_E")
-        print(f'                          DONE assigning cmor_x')
+        print('                          DONE assigning cmor_x')
 
     cmor_grid = None
     if process_tripolar_data:
@@ -347,26 +347,26 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                latitude = lat[:], longitude = lon[:],
                                latitude_vertices = lat_bnds[:],
                                longitude_vertices = lon_bnds[:] )
-        
+
         # now that we are done with setting the grid, we can go back to the usual approach
         cmor.set_table(loaded_cmor_table_cfg)
 
     # setup cmor time axis if relevant
     cmor_time = None
-    print(f'(rewrite_netcdf_file_var) assigning cmor_time')
+    print('(rewrite_netcdf_file_var) assigning cmor_time')
     try: #if vert_dim != 'landuse':
-        print( f"(rewrite_netcdf_file_var) Executing cmor.axis('time', \n"
+        print(  "(rewrite_netcdf_file_var) Executing cmor.axis('time', \n"
                f"                         coord_vals = \n{time_coords}, \n"
                f"                         cell_bounds = time_bnds, units = {time_coord_units})   ")
-        print(f'(rewrite_netcdf_file_var) assigning cmor_time using time_bnds...')
+        print('(rewrite_netcdf_file_var) assigning cmor_time using time_bnds...')
         cmor_time = cmor.axis("time", coord_vals = time_coords,
                               cell_bounds = time_bnds, units = time_coord_units)
     except ValueError as exc: #else:
-        print(f"(rewrite_netcdf_file_var) cmor_time = cmor.axis('time', \n"
+        print("(rewrite_netcdf_file_var) cmor_time = cmor.axis('time', \n"
                "                          coord_vals = time_coords, units = time_coord_units)")
-        print(f'(rewrite_netcdf_file_var) assigning cmor_time WITHOUT time_bnds...')
+        print('(rewrite_netcdf_file_var) assigning cmor_time WITHOUT time_bnds...')
         cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
-    print(f'                          DONE assigning cmor_time')
+    print('                          DONE assigning cmor_time')
 
 
     # other vertical-axis-relevant initializations
@@ -378,10 +378,10 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # set cmor vertical axis if relevant
     cmor_z = None
     if lev is not None:
-        print(f'(rewrite_netcdf_file_var) assigning cmor_z')
+        print('(rewrite_netcdf_file_var) assigning cmor_z')
 
         if vert_dim.lower() in ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]:
-            print(f'(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
+            print('(rewrite_netcdf_file_var) non-hybrid sigma coordinate case')
             if vert_dim.lower() != "landuse":
                 cmor_vert_dim_name = vert_dim
                 cmor_z = cmor.axis( cmor_vert_dim_name,
@@ -450,16 +450,16 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                   f'(rewrite_netcdf_file_var) ierr_b after calling cmor_zfactor: {ierr_b}'  )
             axis_ids = []
             if cmor_time is not None:
-                print(f'(rewrite_netcdf_file_var) appending cmor_time to axis_ids list...')
+                print('(rewrite_netcdf_file_var) appending cmor_time to axis_ids list...')
                 axis_ids.append(cmor_time)
                 print(f'                          axis_ids now = {axis_ids}')
             # might there need to be a conditional check for tripolar ocean data here as well? TODO
             if cmor_y is not None:
-                print(f'(rewrite_netcdf_file_var) appending cmor_y to axis_ids list...')
+                print('(rewrite_netcdf_file_var) appending cmor_y to axis_ids list...')
                 axis_ids.append(cmor_y)
                 print(f'                          axis_ids now = {axis_ids}')
             if cmor_x is not None:
-                print(f'(rewrite_netcdf_file_var) appending cmor_x to axis_ids list...')
+                print('(rewrite_netcdf_file_var) appending cmor_x to axis_ids list...')
                 axis_ids.append(cmor_x)
                 print(f'                          axis_ids now = {axis_ids}')
 
@@ -468,29 +468,29 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                 axis_ids     = axis_ids, #[cmor_time, cmor_y, cmor_x],
                                 units        = "Pa" )
             save_ps = True
-        print(f'                          DONE assigning cmor_z')
+        print('                          DONE assigning cmor_z')
 
 
     axes = []
     if cmor_time is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_time to axes list...')
+        print('(rewrite_netcdf_file_var) appending cmor_time to axes list...')
         axes.append(cmor_time)
         print(f'                          axes now = {axes}')
 
     if cmor_z is not None:
-        print(f'(rewrite_netcdf_file_var) appending cmor_z to axes list...')
+        print('(rewrite_netcdf_file_var) appending cmor_z to axes list...')
         axes.append(cmor_z)
         print(f'                          axes now = {axes}')
-        
-    if process_tripolar_data:        
+
+    if process_tripolar_data:
         axes.append(cmor_grid)
     else:
         if cmor_y is not None:
-            print(f'(rewrite_netcdf_file_var) appending cmor_y to axes list...')
+            print('(rewrite_netcdf_file_var) appending cmor_y to axes list...')
             axes.append(cmor_y)
             print(f'                          axes now = {axes}')
         if cmor_x is not None:
-            print(f'(rewrite_netcdf_file_var) appending cmor_x to axes list...')
+            print('(rewrite_netcdf_file_var) appending cmor_x to axes list...')
             axes.append(cmor_x)
             print(f'                          axes now = {axes}')
 
@@ -501,7 +501,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     positive = proj_table_vars["variable_entry"] [target_var] ["positive"]
     print(f"(rewrite_netcdf_file_var) positive = {positive}")
-    
+
     cmor_var = cmor.variable(target_var, units, axes, positive = positive)
 
     # Write the output to disk
@@ -659,8 +659,8 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
             Path(nc_ps_file_work).unlink()
 
         if DEBUG_MODE_RUN_ONE:
-            print(f'WARNING: DEBUG_MODE_RUN_ONE is True!!!!')
-            print(f'WARNING: done processing one file!!!')
+            print('WARNING: DEBUG_MODE_RUN_ONE is True!!!!')
+            print('WARNING: done processing one file!!!')
             break
 
 
@@ -693,10 +693,10 @@ def cmor_run_subtool( indir = None,
     '''
     # check req'd inputs
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
-        raise ValueError(f'(cmor_run_subtool) all input arguments except opt_var_name are required!\n'
+        raise ValueError( '(cmor_run_subtool) all input arguments except opt_var_name are required!\n'
                           '                   [indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
                          f'                   [{indir}, {json_var_list}, {json_table_config}, '
-                          '                   {json_exp_config}, {outdir}]' )
+                         f'                   {json_exp_config}, {outdir}]' )
 
     # open CMOR table config file
     print( '(cmor_run_subtool) loading json_table_config = \n'
@@ -749,7 +749,7 @@ def cmor_run_subtool( indir = None,
                    '                            to the opt_var_name argument.')
             continue
         print('\n')
-        
+
         # it is in there, get the name of the data inside the netcdf file.
         target_var = var_list[local_var] # often equiv to local_var but not necessarily.
         if local_var != target_var:
@@ -786,6 +786,6 @@ def cmor_run_subtool( indir = None,
         )
 
         if DEBUG_MODE_RUN_ONE:
-            print(f'WARNING: DEBUG_MODE_RUN_ONE is True. breaking var_list loop')
+            print('WARNING: DEBUG_MODE_RUN_ONE is True. breaking var_list loop')
             break
     return 0

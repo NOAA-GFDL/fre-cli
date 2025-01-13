@@ -22,7 +22,7 @@ def test_combinedyaml_exists():
     assert Path(f"{TEST_DIR}/{TEST_YAML}").exists()
 
 def test_configure_script():
-    """ 
+    """
     Tests success of confgure yaml script
     Creates rose-suite, regrid rose-app, remap rose-app
     TO-DO: will break this up for better tests
@@ -48,8 +48,7 @@ def test_configure_script():
                  Path(f"{OUT_DIR}/rose-suite.conf").exists(),
                  Path(f"{OUT_DIR}/app/regrid-xy/rose-app.conf").exists(),
                  Path(f"{OUT_DIR}/app/remap-pp-components/rose-app.conf").exists() ])
-    
+
 def test_cleanup():
     shutil.rmtree(f"{TEST_DIR}/configure_yaml_out")
     assert not Path(f"{TEST_DIR}/configure_yaml_out").exists()
-

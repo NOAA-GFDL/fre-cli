@@ -23,7 +23,7 @@ def print_var_content( table_config_file = None, var_name = None):
     try:
         proj_table_vars=json.load(table_config_file)
     except Exception as exc:
-        raise Exception(f'problem getting proj_table_vars... WHY')
+        raise Exception('problem getting proj_table_vars... WHY')
 
     var_content = None
     try:
@@ -44,7 +44,7 @@ def print_var_content( table_config_file = None, var_name = None):
         table_name = proj_table_vars["Header"].get('table_id').split(' ')[1]
         #print(f'                    table_name = {table_name}')
     except:
-        print(f'print_var_content) WARNING couldnt get header and table_name field')
+        print('print_var_content) WARNING couldnt get header and table_name field')
         pass
 
     if table_name is not None:
@@ -74,7 +74,7 @@ def cmor_find_subtool( json_var_list = None, json_table_config_dir = None, opt_v
     if json_table_configs is None:
         raise OSError(f'ERROR directory {json_table_config_dir} contains no JSON files, exit.')
     else:
-        print(f'(cmor_find_subtool) found content in json_table_config_dir')#: {json_table_configs}')
+        print('(cmor_find_subtool) found content in json_table_config_dir')
 
     var_list = None
     if json_var_list is not None:
@@ -82,17 +82,17 @@ def cmor_find_subtool( json_var_list = None, json_table_config_dir = None, opt_v
             var_list=json.load(var_list_file)
 
     if opt_var_name is None and var_list is None:
-        raise ValueError(f'(cmor_find_subtool) ERROR: no opt_var_name given but also no content in variable list!!! exit!')
+        raise ValueError('(cmor_find_subtool) ERROR: no opt_var_name given but also no content in variable list!!! exit!')
 
     if opt_var_name is not None:
-        print(f'(cmor_find_subtool) opt_var_name is not None: looking for only ONE variables worth of info!')
+        print('(cmor_find_subtool) opt_var_name is not None: looking for only ONE variables worth of info!')
         for json_table_config in json_table_configs:
             #print(f'(cmor_find_subtool) attempting to open {json_table_config}')
             with open( json_table_config, "r", encoding = "utf-8") as table_config_file:
                 print_var_content(table_config_file, opt_var_name)
 
     elif var_list is not None:
-        print(f'(cmor_find_subtool) opt_var_name is None, and var_list is not None, looking for many variables worth of info!')
+        print('(cmor_find_subtool) opt_var_name is None, and var_list is not None, looking for many variables worth of info!')
         for var in var_list:
             for json_table_config in json_table_configs:
                 #print(f'(cmor_find_subtool) attempting to open {json_table_config}')
@@ -100,6 +100,7 @@ def cmor_find_subtool( json_var_list = None, json_table_config_dir = None, opt_v
                     #print(f'    var = {var}, var_list[{var}]={var_list[var]}')
                     print_var_content(table_config_file, str(var_list[var]))
     else:
-        print(f'(FATAL) this line should be unreachable!!!')
+        print('(FATAL) this line should be unreachable!!!')
+        assert False
 
     return

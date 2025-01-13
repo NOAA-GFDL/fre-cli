@@ -20,7 +20,7 @@ def print_data_minmax(ds_variable = None, desc = None):
         pass
     print('----------------------------------------------------------------------------------------------------------')
     return
-    
+
 
 def from_dis_gimme_dis(from_dis, gimme_dis):
     '''
@@ -56,9 +56,9 @@ def find_statics_file(bronx_file_path):
 def create_lev_bnds(bound_these = None, with_these = None):
     the_bnds = None
     assert len(with_these) == len(bound_these) + 1
-    print(f'(create_lev_bnds) bound_these is... ')
+    print( '(create_lev_bnds) bound_these is... ')
     print(f'                  bound_these = \n{bound_these}')
-    print(f'(create_lev_bnds) with_these is... ')
+    print( '(create_lev_bnds) with_these is... ')
     print(f'                  with_these = \n{with_these}')
 
 
@@ -66,7 +66,7 @@ def create_lev_bnds(bound_these = None, with_these = None):
     for i in range(0,len(bound_these)):
         the_bnds[i][0] = with_these[i]
         the_bnds[i][1] = with_these[i+1]
-    print(f'(create_lev_bnds) the_bnds is... ')
+    print( '(create_lev_bnds) the_bnds is... ')
     print(f'                  the_bnds = \n{the_bnds}')
     return the_bnds
 
@@ -174,7 +174,7 @@ def create_tmp_dir(outdir, json_exp_config = None):
             try:
                 outdir_from_exp_config = json.load(table_config_file)["outpath"]
             except:
-                print(f'(create_tmp_dir) WARNING could not read outdir from json_exp_config.'
+                print( '(create_tmp_dir) WARNING could not read outdir from json_exp_config.'
                        '                 the cmor module will throw a toothless warning'     )
 
     # assign an appropriate temporary working directory
@@ -204,4 +204,3 @@ def create_tmp_dir(outdir, json_exp_config = None):
         raise OSError(f'(create_tmp_dir) problem creating tmp output directory {tmp_dir}. stop.') from exc
 
     return tmp_dir
-

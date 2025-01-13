@@ -60,7 +60,7 @@ def test_setup_test_files(capfd):
     if Path(full_copied_nc_filepath).exists():
         Path(full_copied_nc_filepath).unlink()
     assert not Path(full_copied_nc_filepath).exists()
- 
+
     shutil.copy(Path(original_nc_file), Path(full_copied_nc_filepath))
 
     assert (Path(full_copied_nc_filepath).exists())
