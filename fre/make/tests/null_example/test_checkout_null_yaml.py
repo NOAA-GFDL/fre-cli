@@ -19,16 +19,17 @@ TARGET = ["debug"]
 # Set home for ~/cylc-src location in script
 #os.environ["HOME"]=str(Path(f"{out_dir}"))
 #run checkout command
-OUT = f"{TEST_DIR}/checkout_out"
+OUT = f"{TEST_DIR}/configure_yaml_out"
 os.environ["TEST_BUILD_DIR"] = OUT
 
 def test_checkout_script_exists():
     """
     Make sure checkout file exists
     """
-    result = create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False, False)
+    print(create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False, False))
+    print(f"asserting this path:   {OUT}/fremake_canopy/test/null_model_full/src/checkout.sh")
     #assert result.exit_code == 0
-    assert Path(f"{def_home}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
 def test_checkout_execute():
     """
