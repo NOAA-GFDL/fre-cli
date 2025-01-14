@@ -13,11 +13,7 @@ PLATFORM = ["ncrc5.intel23"]
 TARGET = ["debug"]
 
 #set output directory
-#out_dir = Path(f"fre/make/tests/null_example/fre_make_out")
-#Path(out_dir).mkdir(parents=True,exist_ok=True)
-
 # Set home for ~/cylc-src location in script
-#os.environ["HOME"]=str(Path(f"{out_dir}"))
 #run checkout command
 OUT = f"{TEST_DIR}/configure_yaml_out"
 os.environ["TEST_BUILD_DIR"] = OUT
@@ -26,8 +22,7 @@ def test_checkout_script_exists():
     """
     Make sure checkout file exists
     """
-    print(create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False, False))
-    print(f"asserting this path:   {OUT}/fremake_canopy/test/null_model_full/src/checkout.sh")
+    create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False, False)
     #assert result.exit_code == 0
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
