@@ -18,11 +18,9 @@ TARGET = ["debug"]
 
 # Set home for ~/cylc-src location in script
 #os.environ["HOME"]=str(Path(f"{out_dir}"))
-OUT = f"{TEST_DIR}/checkout_out"
-def_home = str(os.environ["HOME"]) 
-os.environ["TEST_BUILD_DIR"] = OUT
-
 #run checkout command
+OUT = f"{TEST_DIR}/checkout_out"
+os.environ["TEST_BUILD_DIR"] = OUT
 
 def test_checkout_script_exists():
     """
