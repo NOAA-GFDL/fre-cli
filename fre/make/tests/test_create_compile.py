@@ -62,7 +62,13 @@ def test_compile_creation():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile_path, PLATFORM, TARGET, 4, 1, False, False)
+    create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                         platform = PLATFORM,
+                                         target = TARGET,
+                                         jobs = 4,
+                                         parallel = 1,
+                                         execute = False,
+                                         verbose = False)
     # Check for creation of compile script
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
 
@@ -80,7 +86,13 @@ def test_compile_executable_failure():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Execute the compile script
-    create_compile_script.compile_create(yamlfile_path, PLATFORM, TARGET, 4, 1, True, False)
+    create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                         platform = PLATFORM,
+                                         target = TARGET,
+                                         jobs = 4,
+                                         parallel = 1,
+                                         execute = True,
+                                         verbose = False)
 
     # Check for creation of compile script, FMS directory,
     # log.compile file, the executable
@@ -101,7 +113,13 @@ def test_bad_platform():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile_path, BAD_PLATFORM, TARGET, 4, 1, False, False)
+    create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                         platform = BAD_PLATFORM,
+                                         target = TARGET,
+                                         jobs = 4,
+                                         parallel = 1,
+                                         execute = False,
+                                         verbose = False)
 
 def test_bad_platform_compilelog():
     """
@@ -115,7 +133,13 @@ def test_bad_platform_compilelog():
 
     try:
         # Create the compile script
-        create_compile_script.compile_create(yamlfile_path, BAD_PLATFORM, TARGET, 4, 1, False, False)
+        create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                             platform = BAD_PLATFORM,
+                                             target = TARGET,
+                                             jobs = 4,
+                                             parallel = 1,
+                                             execute = False,
+                                             verbose = False)
     except:
         assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
 
@@ -131,7 +155,13 @@ def test_bad_target():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile_path, PLATFORM, BAD_TARGET, 4, 1, False, False)
+    create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                         platform = PLATFORM,
+                                         target = BAD_TARGET,
+                                         jobs = 4,
+                                         parallel = 1,
+                                         execute = False,
+                                         verbose = False)
 
 def test_bad_target_compilelog():
     """
@@ -145,7 +175,13 @@ def test_bad_target_compilelog():
 
     try:
         # Create the compile script
-        create_compile_script.compile_create(yamlfile_path, PLATFORM, BAD_TARGET, 4, 1, False, False)
+        create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                             platform = PLATFORM,
+                                             target = BAD_TARGET,
+                                             jobs = 4,
+                                             parallel = 1,
+                                             execute = False,
+                                             verbose = False)
     except:
         assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
 
@@ -159,7 +195,13 @@ def test_multi_target():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile_path, PLATFORM, MULTI_TARGET, 4, 1, False, False)
+    create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                         platform = PLATFORM,
+                                         target = MULTI_TARGET,
+                                         jobs = 4,
+                                         parallel = 1,
+                                         execute = False,
+                                         verbose = False)
 
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[0]}/exec/compile.sh").exists()
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[1]}/exec/compile.sh").exists()
