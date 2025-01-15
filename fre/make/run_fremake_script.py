@@ -269,7 +269,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                         os.remove(tmp_dir+"/checkout.sh")
 
                         # Create the checkout script
-                        print("Re-creating checkout script...")
+                        print("Re-creating the checkout script...")
                         container_checkout_write_steps(model_yaml,src_dir,tmp_dir,jobs,pc)
                     else:
                         print("\nCheckout script PREVIOUSLY created and run here: "+ tmp_dir + "/checkout.sh")

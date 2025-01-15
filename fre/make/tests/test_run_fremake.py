@@ -3,11 +3,8 @@
 import os
 from shutil  import rmtree
 from pathlib import Path
-
 from click.testing import CliRunner
-
 import pytest
-
 from fre import fre
 from fre.make import run_fremake_script
 
@@ -82,6 +79,30 @@ def test_run_fremake_makefile_creation_serial():
     ''' check for makefile creation from previous test '''
     assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/Makefile").exists()
 
+def test_run_fremake_serial_force_checkout(capfd):
+    '''run run-fremake with options for serial build with force-checkout'''
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, False, 1, False, False, VERBOSE, True, False, False)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    if "Re-creating the checkout script" in out and "Re-creating the compile script" in out:
+        assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists()
+        assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/Makefile").exists()
+        assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/compile.sh").exists()
+    else:
+       assert False
+
+def test_run_fremake_serial_force_compile(capfd):
+    '''run run-fremake with options for serial build with force-compile'''
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, False, 1, False, False, VERBOSE, False, True, False)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    if "Re-creating the compile script" in out:
+        assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/compile.sh").exists()
+    else:
+       assert False
+
 # same tests with multijob compile and non-parallel-checkout options enabled
 def test_run_fremake_multijob():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
@@ -125,6 +146,36 @@ def test_run_fremake_run_script_creation_container():
     ''' checks (internal) container run script creation from previous test '''
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
 
+def test_run_fremake_container_force_checkout(capfd):
+    '''run run-fremake with options for containerized build with force-checkout option'''
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, False, VERBOSE, True, False, False)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    print(out)
+
+    if "Re-creating the checkout script" in out:
+        assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists()
+        assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/Makefile").exists()
+        assert Path("Dockerfile").exists()
+        assert Path("createContainer.sh").exists()
+        assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
+    else:
+       assert False
+
+def test_run_fremake_container_force_dockerfile(capfd):
+    '''run run-fremake with options for containerized build with force-dockerfile option'''
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, False, VERBOSE, False, False, True)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    if "Re-creating Dockerfile" in out:
+        assert Path("Dockerfile").exists()
+        assert Path("createContainer.sh").exists()
+        assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
+    else:
+       assert False
+
 # tests for builds with multiple targets
 def test_run_fremake_bad_target():
     ''' checks invalid target returns an error '''
@@ -134,13 +185,10 @@ def test_run_fremake_bad_target():
 
 def test_run_fremake_multiple_targets():
     ''' passes all valid targets for a build '''
-    os.environ["TEST_BUILD_DIR"] = MULTITARGET_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, targets, True, 4, True, False, VERBOSE, False, False, False)
-#    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM, "-t",  \
-#                                          "debug", "-t", "prod", "-t", "repro", "-t", "debug-openmp", "-t",\
-#                                          "prod-openmp", "-t", "repro-openmp"])
-#    assert result.exit_code == 0
-#    assert (Path(f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{t}/exec/compile.sh").exists()
+    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM[0], "-t",  \
+                                          "debug", "-t", "prod", "-t", "repro", "-t", "debug-openmp", "-t",\
+                                          "prod-openmp", "-t", "repro-openmp"])
+    assert result.exit_code == 0
 
 def test_run_fremake_compile_script_creation_multitarget():
     ''' check compile scripts for all targets exist from previous test'''

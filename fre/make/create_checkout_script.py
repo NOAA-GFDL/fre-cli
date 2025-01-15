@@ -145,7 +145,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                     os.remove(tmp_dir+"/checkout.sh")
 
                     # Create the checkout script
-                    print("Re-creating checkout script...")
+                    print("Re-creating the checkout script...")
                     container_checkout_write_steps(model_yaml,src_dir,tmp_dir,jobs,pc)
                 else:
                     print("\nCheckout script PREVIOUSLY created in "+ tmp_dir + "/checkout.sh" + "\n")
