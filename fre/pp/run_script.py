@@ -2,13 +2,16 @@
 
 import subprocess
 import time
-import click
 
-def pp_run_subtool(experiment, platform, target):
+def pp_run_subtool(experiment = None, platform = None, target = None):
     """
     Start or restart the Cylc workflow identified by:
     <experiment>__<platform>__<target>
     """
+    if None in [experiment, platform, target]:
+        raise ValueError( 'experiment, platform, and target must all not be None.'
+                          'currently, their values are...'
+                          f'{experiment} / {platform} / {target}')
 
     # Check to see if the workflow is already running
     name = experiment + '__' + platform + '__' + target
@@ -28,12 +31,6 @@ def pp_run_subtool(experiment, platform, target):
 
     if not len(result):
         raise Exception('Cylc scheduler was started without error but is not running after 30 seconds')
-
-@click.command()
-def _pp_run_subtool(experiment, platform, target):
-    ''' entry point to run for click '''
-    return pp_run_subtool(experiment, platform, target)
-
 
 if __name__ == "__main__":
     pp_run_subtool()

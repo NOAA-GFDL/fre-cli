@@ -1,10 +1,9 @@
 name: fre-cli
 channels:
-  - defaults
   - conda-forge
   - noaa-gfdl
 dependencies:
-  - python
+  - python>=3.9.0
   - pip
   - click
   - pyyaml
@@ -17,11 +16,9 @@ dependencies:
   - conda-forge::cylc-flow>=8.2.0
   - conda-forge::cylc-rose
   - conda-forge::metomi-rose
-  - conda-forge::cmor
+  - conda-forge::cmor>=3.9.0
   - conda-forge::cylc-uiserver
   - conda-forge::pytest
   - conda-forge::pytest-cov
   - conda-forge::python-cdo
   - conda-forge::cdo>=2.0.0
-  - pip:
-    - GitPython

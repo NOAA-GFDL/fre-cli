@@ -20,7 +20,7 @@ class cdoTimeAverager(timeAverager):
 
         if self.var is not None:
             print(f'WARNING: variable specification (var={self.var})' + \
-                  f' not currently supported for cdo time averaging. ignoring!')
+                   ' not currently supported for cdo time averaging. ignoring!')
 
         import cdo
         print(f'python-cdo version is {cdo.__version__}')
