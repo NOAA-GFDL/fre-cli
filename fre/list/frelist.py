@@ -1,20 +1,32 @@
 ''' fre list '''
 
 import click
-
-from .frelistexample import list_test_function
+from fre.list import list_experiments_script
+from fre.list import list_platforms_script
 
 @click.group(help=click.style(" - access fre list subcommands", fg=(232,204,91)))
 def list_cli():
     ''' entry point to fre list click commands '''
 
 @list_cli.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-@click.pass_context
-def function(context, uppercase):
-    # pylint: disable=unused-argument
-    """ - Execute fre list test """
-    context.forward(list_test_function)
+@click.option("-y",
+              "--yamlfile",
+              type=str,
+              help="YAML file to be used for parsing",
+              required=True)
+def list_exps(yamlfile):
+    """ - List experiments  available"""
+    list_experiments_script.list_experiments_subtool(yamlfile)
+
+@list_cli.command()
+@click.option("-y",
+              "--yamlfile",
+              type=str,
+              help="YAML file to be used for parsing",
+              required=True)
+def list_platforms(yamlfile):
+    """ - List platforms available """
+    list_platforms_script.list_platforms_subtool(yamlfile)
 
 if __name__ == "__main__":
     list_cli()
