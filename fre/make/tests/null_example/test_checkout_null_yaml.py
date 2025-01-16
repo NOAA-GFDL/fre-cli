@@ -26,12 +26,15 @@ def test_checkout_script_exists():
     #assert result.exit_code == 0
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
+def test_checkout_verbose():
+    """
+    check if --verbose option works
+    """
+    result = create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False,True)
+
 def test_checkout_execute():
     """
     check if --execute option works
     """
-    #subprocess.run(["rm","-rf",f"{out_dir}"])
-    subprocess.run(["rm","-rf"])
-    result = create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False,True)
-    #assert (result.exit_code == 0)
-
+    subprocess.run(["rm","-rf",f"{OUT}"])
+    result = create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, True,False)
