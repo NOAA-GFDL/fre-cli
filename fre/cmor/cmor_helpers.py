@@ -1,6 +1,3 @@
-
-
-
 import glob
 import json
 
@@ -18,12 +15,12 @@ def print_data_minmax(ds_variable = None, desc = None):
     '''
     fre_logger.info('----------------------------------------------------------------------------------------------------------')
     try:
-        fre_logger.info(f' info for \n'
-              f'                     desc = {desc} \n {type(ds_variable)}')
-        #fre_logger.info(f' {ds_variable.data.min()} < {desc} < {ds_variable.data.max()}')
-        fre_logger.info(f' {ds_variable.min()} < {desc} < {ds_variable.max()}')
+        fre_logger.info(f'info for \n'
+              f'                    desc = {desc} \n {type(ds_variable)}')
+        #fre_logger.info(f'{ds_variable.data.min()} < {desc} < {ds_variable.data.max()}')
+        fre_logger.info(f'{ds_variable.min()} < {desc} < {ds_variable.max()}')
     except:
-        fre_logger.warning(f' could not print min/max entries for desc = {desc}')
+        fre_logger.warning(f'could not print min/max entries for desc = {desc}')
         pass
     fre_logger.info('----------------------------------------------------------------------------------------------------------')
     return
@@ -38,14 +35,14 @@ def from_dis_gimme_dis(from_dis, gimme_dis):
     try:
         return from_dis[gimme_dis][:].copy()
     except Exception as exc:
-        fre_logger.warning(f' I am sorry, I could not not give you this: {gimme_dis}\n'
-              '            returning None!\n'                           )
+        fre_logger.warning(f'I am sorry, I could not not give you this: {gimme_dis}\n'
+              '           returning None!\n'                           )
         return None
 
 def find_statics_file(bronx_file_path):
     bronx_file_path_elem = bronx_file_path.split('/')
     num_elem = len(bronx_file_path_elem)
-    fre_logger.info(f' bronx_file_path_elem = \n{bronx_file_path_elem}\n')
+    fre_logger.info(f'bronx_file_path_elem = \n{bronx_file_path_elem}\n')
     while bronx_file_path_elem[num_elem-2] != 'pp':
         bronx_file_path_elem.pop()
         num_elem = num_elem-1
@@ -55,25 +52,25 @@ def find_statics_file(bronx_file_path):
     if Path(statics_file).exists():
         return statics_file
     else:
-        fre_logger.warning(' could not find the statics file! returning None')
+        fre_logger.warning('could not find the statics file! returning None')
         return None
 
 
 def create_lev_bnds(bound_these = None, with_these = None):
     the_bnds = None
     assert len(with_these) == len(bound_these) + 1
-    fre_logger.info( ' bound_these is... ')
-    fre_logger.info(f' bound_these = \n{bound_these}')
-    fre_logger.info( ' with_these is... ')
-    fre_logger.info(f' with_these = \n{with_these}')
+    fre_logger.info( 'bound_these is... ')
+    fre_logger.info(f'bound_these = \n{bound_these}')
+    fre_logger.info( 'with_these is... ')
+    fre_logger.info(f'with_these = \n{with_these}')
 
 
     the_bnds = np.arange(len(bound_these)*2).reshape(len(bound_these),2)
     for i in range(0,len(bound_these)):
         the_bnds[i][0] = with_these[i]
         the_bnds[i][1] = with_these[i+1]
-    fre_logger.info( ' the_bnds is... ')
-    fre_logger.info(f' the_bnds = \n{the_bnds}')
+    fre_logger.info( 'the_bnds is... ')
+    fre_logger.info(f'the_bnds = \n{the_bnds}')
     return the_bnds
 
 def get_var_filenames(indir, var_filenames = None, local_var = None):
@@ -88,10 +85,10 @@ def get_var_filenames(indir, var_filenames = None, local_var = None):
     if var_filenames is None:
         var_filenames = []
     filename_pattern = '.nc' if local_var is None else f'.{local_var}.nc'
-    fre_logger.info(f' filename_pattern = {filename_pattern}\n')
-    fre_logger.info(f' indir = {indir}\n')
+    fre_logger.info(f'filename_pattern = {filename_pattern}\n')
+    fre_logger.info(f'indir = {indir}\n')
     var_filenames_all = glob.glob(f'{indir}/*{filename_pattern}')
-    #fre_logger.info(f' var_filenames_all = {var_filenames_all}')
+    #fre_logger.info(f'var_filenames_all = {var_filenames_all}')
     for var_file in var_filenames_all:
         var_filenames.append( Path(var_file).name )
     #fre_logger.info(f" var_filenames = {var_filenames}")
@@ -119,7 +116,7 @@ def get_iso_datetimes(var_filenames, iso_datetime_arr = None):
     iso_datetime_arr.sort()
     #fre_logger.info(f" Available dates: {iso_datetime_arr}")
     if len(iso_datetime_arr) < 1:
-        raise ValueError(' ERROR: iso_datetime_arr has length 0!')
+        raise ValueError('ERROR: iso_datetime_arr has length 0!')
 
 
 def check_dataset_for_ocean_grid(ds):
@@ -180,7 +177,7 @@ def create_tmp_dir(outdir, json_exp_config = None):
             try:
                 outdir_from_exp_config = json.load(table_config_file)["outpath"]
             except:
-                fre_logger.warning( ' could not read outdir from json_exp_config.'
+                fre_logger.warning( 'could not read outdir from json_exp_config.'
                        '   the cmor module will throw a toothless warning'     )
 
     # assign an appropriate temporary working directory
@@ -189,24 +186,24 @@ def create_tmp_dir(outdir, json_exp_config = None):
               outdir.find("/work") != -1,
               outdir.find("/net" ) != -1 ] ):
         tmp_dir = str( Path("{outdir}/").resolve() )
-        fre_logger.info(f' using /local /work /net ( tmp_dir = {tmp_dir} )')
+        fre_logger.info(f'using /local /work /net ( tmp_dir = {tmp_dir} )')
     else:
         tmp_dir = str( Path(f"{outdir}/tmp/").resolve() )
-        fre_logger.info(f' NOT using /local /work /net ( tmp_dir = {tmp_dir} )')
+        fre_logger.info(f'NOT using /local /work /net ( tmp_dir = {tmp_dir} )')
 
     # once we know where the tmp_dir should be, create it
     try:
         os.makedirs(tmp_dir, exist_ok = True)
         # and if we need to additionally create outdir_from_exp_config... try doing that too
         if outdir_from_exp_config is not None:
-            fre_logger.info(f' attempting to create {outdir_from_exp_config} dir in tmp_dir targ')
+            fre_logger.info(f'attempting to create {outdir_from_exp_config} dir in tmp_dir targ')
             try:
                 os.makedirs(tmp_dir+'/'+outdir_from_exp_config, exist_ok = True)
             except: # ... but don't error out for lack of success here, not worth it. cmor can do the lift too.
-                fre_logger.info(f' attempting to create {outdir_from_exp_config} dir in tmp_dir targ did not work')
-                fre_logger.info( '                 .... oh well! it was ust to try to avoid a warning anyways.... moving on')
+                fre_logger.info(f'attempting to create {outdir_from_exp_config} dir in tmp_dir targ did not work')
+                fre_logger.info( '                .... oh well! it was ust to try to avoid a warning anyways.... moving on')
                 pass
     except Exception as exc:
-        raise OSError(f' problem creating tmp output directory {tmp_dir}. stop.') from exc
+        raise OSError(f'problem creating tmp output directory {tmp_dir}. stop.') from exc
 
     return tmp_dir

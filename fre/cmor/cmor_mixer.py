@@ -57,41 +57,41 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
     # ocean grids are not implemented yet.
-    fre_logger.info( ' checking input netcdf file for oceangrid condition')
+    fre_logger.info( 'checking input netcdf file for oceangrid condition')
     uses_ocean_grid = check_dataset_for_ocean_grid(ds)
     if uses_ocean_grid:
-        fre_logger.info(' OH BOY you have a file on the native tripolar grid...\n'
+        fre_logger.info('OH BOY you have a file on the native tripolar grid...\n'
               '... this is gonna be fun!' )
 
     # try to read what coordinate(s) we're going to be expecting for the variable
     expected_mip_coord_dims = None
     try:
         expected_mip_coord_dims = proj_table_vars["variable_entry"] [target_var] ["dimensions"]
-        fre_logger.info( ' i am hoping to find data for the following coordinate dimensions:\n'
+        fre_logger.info( 'i am hoping to find data for the following coordinate dimensions:\n'
               f'    expected_mip_coord_dims = {expected_mip_coord_dims}\n' )
     except Exception as exc:
-        fre_logger.warning(f' could not get expected coordinate dimensions for {target_var}. '
+        fre_logger.warning(f'could not get expected coordinate dimensions for {target_var}. '
                '    in proj_table_vars file {json_table_config}. \n exc = {exc}')
 
 
     ## figure out the coordinate/dimension names programmatically TODO
 
     # Attempt to read lat coordinates
-    fre_logger.info(' attempting to read coordinate, lat')
+    fre_logger.info('attempting to read coordinate, lat')
     lat = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lat")
-    fre_logger.info(' attempting to read coordinate BNDS, lat_bnds')
+    fre_logger.info('attempting to read coordinate BNDS, lat_bnds')
     lat_bnds = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lat_bnds")
-    fre_logger.info(' attempting to read coordinate, lon')
+    fre_logger.info('attempting to read coordinate, lon')
     lon = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lon")
-    fre_logger.info(' attempting to read coordinate BNDS, lon_bnds')
+    fre_logger.info('attempting to read coordinate BNDS, lon_bnds')
     lon_bnds = from_dis_gimme_dis( from_dis  = ds,
                               gimme_dis = "lon_bnds")
 
     # read in time_coords + units
-    fre_logger.info(' attempting to read coordinate time, and units...')
+    fre_logger.info('attempting to read coordinate time, and units...')
     time_coords = from_dis_gimme_dis( from_dis = ds,
                                       gimme_dis = 'time' )
 
@@ -99,12 +99,12 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     fre_logger.info(f"                          time_coord_units = {time_coord_units}")
 
     # read in time_bnds , if present
-    fre_logger.info(' attempting to read coordinate BNDS, time_bnds')
+    fre_logger.info('attempting to read coordinate BNDS, time_bnds')
     time_bnds = from_dis_gimme_dis( from_dis = ds,
                                     gimme_dis = 'time_bnds' )
 
     # read the input variable data, i believe
-    fre_logger.info(f' attempting to read variable data, {target_var}')
+    fre_logger.info(f'attempting to read variable data, {target_var}')
     var = from_dis_gimme_dis( from_dis = ds,
                               gimme_dis = target_var )
 
@@ -149,13 +149,13 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
         # resolve location of statics file required for this processing.
         try:
-            fre_logger.info(f' netcdf_file is {netcdf_file}')
+            fre_logger.info(f'netcdf_file is {netcdf_file}')
             statics_file_path = find_statics_file(prev_path)
-            fre_logger.info(f' statics_file_path is {statics_file_path}')
+            fre_logger.info(f'statics_file_path is {statics_file_path}')
         except Exception as exc:
-            fre_logger.warning(' an ocean statics file is needed, but it could not be found.\n'
+            fre_logger.warning('an ocean statics file is needed, but it could not be found.\n'
                   '   moving on and doing my best, but i am probably going to break' )
-            raise Exception(' EXITING BC STATICS') from exc
+            raise Exception('EXITING BC STATICS') from exc
 
         fre_logger.info(" statics file found.")
         statics_file_name = Path(statics_file_path).name
@@ -164,14 +164,14 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         del statics_file_path
 
         statics_file_path = put_statics_file_here + '/' + statics_file_name
-        fre_logger.info(f' statics file path is now: {statics_file_path}')
+        fre_logger.info(f'statics file path is now: {statics_file_path}')
 
         # statics file read
         statics_ds = nc.Dataset(statics_file_path, 'r')
 
 
         # grab the lat/lon points, have shape (yh, xh)
-        fre_logger.info(' reading geolat and geolon coordinates of cell centers from statics file \n')
+        fre_logger.info('reading geolat and geolon coordinates of cell centers from statics file \n')
         statics_lat = from_dis_gimme_dis(statics_ds, 'geolat')#statics_ds['geolat'][:]#.copy()
         statics_lon = from_dis_gimme_dis(statics_ds, 'geolon')#statics_ds['geolon'][:]#.copy()
 
@@ -182,7 +182,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
         # spherical lat and lon coords
-        fre_logger.info(' creating lat and lon variables in temp file \n')
+        fre_logger.info('creating lat and lon variables in temp file \n')
         lat = ds.createVariable('lat', statics_lat.dtype, ('yh', 'xh') )
         lon = ds.createVariable('lon', statics_lon.dtype, ('yh', 'xh') )
         lat[:] = statics_lat[:]
@@ -195,7 +195,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
         # grab the corners of the cells, should have shape (yh+1, xh+1)
-        fre_logger.info(' reading geolat and geolon coordinates of cell corners from statics file \n')
+        fre_logger.info('reading geolat and geolon coordinates of cell corners from statics file \n')
         lat_c = from_dis_gimme_dis(statics_ds,'geolat_c')
         lon_c = from_dis_gimme_dis(statics_ds,'geolon_c')
 
@@ -206,13 +206,13 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
         # vertex
-        fre_logger.info(' creating vertex dimension\n')
+        fre_logger.info('creating vertex dimension\n')
         vertex = 4
         ds.createDimension('vertex', vertex)
 
 
         # lat and lon bnds
-        fre_logger.info(' creating lat and lon bnds from geolat and geolon of corners\n')
+        fre_logger.info('creating lat and lon bnds from geolat and geolon of corners\n')
         lat_bnds = ds.createVariable('lat_bnds', lat_c.dtype, ('yh', 'xh', 'vertex') )
         lat_bnds[:,:,0] = lat_c[1:,1:] # NE corner
         lat_bnds[:,:,1] = lat_c[1:,:-1] # NW corner
@@ -232,7 +232,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
         # grab the h-point lat and lon
-        fre_logger.info(' reading yh, xh\n')
+        fre_logger.info('reading yh, xh\n')
         yh = from_dis_gimme_dis(ds, 'yh')
         xh = from_dis_gimme_dis(ds, 'xh')
 
@@ -245,7 +245,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         xh_dim = len(xh)
 
         # read the q-point native-grid lat lon points
-        fre_logger.info(' reading yq, xq from statics file \n')
+        fre_logger.info('reading yq, xq from statics file \n')
         yq = from_dis_gimme_dis(statics_ds, 'yq')
         xq = from_dis_gimme_dis(statics_ds, 'xq')
 
@@ -258,7 +258,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         assert xh_dim == (len(xq)-1)
 
         # create h-point bounds from the q-point lat lons
-        fre_logger.info(' creating yh_bnds, xh_bnds from yq, xq\n')
+        fre_logger.info('creating yh_bnds, xh_bnds from yq, xq\n')
 
         yh_bnds = ds.createVariable('yh_bnds', yq.dtype, ( 'yh', 'nv' ) )
         for i in range(0,yh_dim):
@@ -270,9 +270,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
             xh_bnds[i,0] = xq[i]
             xh_bnds[i,1] = xq[i+1]
             if i%200 == 0:
-                fre_logger.info(f' AFTER assignment: xh_bnds[{i}][0] = {xh_bnds[i][0]}')
-                fre_logger.info(f' AFTER assignment: xh_bnds[{i}][1] = {xh_bnds[i][1]}')
-                fre_logger.info(f'             type(xh_bnds[{i}][1]) = {type(xh_bnds[i][1])}')
+                fre_logger.info(f'AFTER assignment: xh_bnds[{i}][0] = {xh_bnds[i][0]}')
+                fre_logger.info(f'AFTER assignment: xh_bnds[{i}][1] = {xh_bnds[i][1]}')
+                fre_logger.info(f'            type(xh_bnds[{i}][1]) = {type(xh_bnds[i][1])}')
 
         fre_logger.info('\n')
         print_data_minmax(yh_bnds[:], "yh_bnds")
@@ -305,7 +305,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     json_grids_config, loaded_cmor_grids_cfg = None, None
     if process_tripolar_data:
         json_grids_config = str(Path(json_table_config).parent) + '/CMIP6_grids.json'
-        fre_logger.info(f' cmor is loading/opening {json_grids_config}')
+        fre_logger.info(f'cmor is loading/opening {json_grids_config}')
         loaded_cmor_grids_cfg =  cmor.load_table( json_grids_config )
         cmor.set_table(loaded_cmor_grids_cfg)
 
@@ -315,37 +315,37 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # setup cmor latitude axis if relevant
     cmor_y = None
     if process_tripolar_data:
-        fre_logger.warning(' calling cmor.axis for a projected y coordinate!!')
+        fre_logger.warning('calling cmor.axis for a projected y coordinate!!')
         cmor_y = cmor.axis("y_deg", coord_vals = yh[:], cell_bounds = yh_bnds[:], units = "degrees")
     elif lat is None :
-        fre_logger.warning(' lat or lat_bnds is None, skipping assigning cmor_y')
+        fre_logger.warning('lat or lat_bnds is None, skipping assigning cmor_y')
     else:
-        fre_logger.info(' assigning cmor_y')
+        fre_logger.info('assigning cmor_y')
         if lat_bnds is None:
             cmor_y = cmor.axis("latitude", coord_vals = lat[:], units = "degrees_N")
         else:
             cmor_y = cmor.axis("latitude", coord_vals = lat[:], cell_bounds = lat_bnds, units = "degrees_N")
-        fre_logger.info('                          DONE assigning cmor_y')
+        fre_logger.info('                         DONE assigning cmor_y')
 
     # setup cmor longitude axis if relevant
     cmor_x = None
     if process_tripolar_data:
-        fre_logger.warning(' calling cmor.axis for a projected x coordinate!!')
+        fre_logger.warning('calling cmor.axis for a projected x coordinate!!')
         cmor_x = cmor.axis("x_deg", coord_vals = xh[:], cell_bounds = xh_bnds[:], units = "degrees")
     elif lon is None :
-        fre_logger.warning(' lon or lon_bnds is None, skipping assigning cmor_x')
+        fre_logger.warning('lon or lon_bnds is None, skipping assigning cmor_x')
     else:
-        fre_logger.info(' assigning cmor_x')
+        fre_logger.info('assigning cmor_x')
         cmor_x = cmor.axis("longitude", coord_vals = lon, cell_bounds = lon_bnds, units = "degrees_E")
         if lon_bnds is None:
             cmor_x = cmor.axis("longitude", coord_vals = lon[:], units = "degrees_E")
         else:
             cmor_x = cmor.axis("longitude", coord_vals = lon[:], cell_bounds = lon_bnds, units = "degrees_E")
-        fre_logger.info('                          DONE assigning cmor_x')
+        fre_logger.info('                         DONE assigning cmor_x')
 
     cmor_grid = None
     if process_tripolar_data:
-        fre_logger.warning(f' setting cmor.grid, process_tripolar_data = {process_tripolar_data}')
+        fre_logger.warning(f'setting cmor.grid, process_tripolar_data = {process_tripolar_data}')
         cmor_grid = cmor.grid( axis_ids = [cmor_y, cmor_x],
                                latitude = lat[:], longitude = lon[:],
                                latitude_vertices = lat_bnds[:],
@@ -356,20 +356,20 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
     # setup cmor time axis if relevant
     cmor_time = None
-    fre_logger.info(' assigning cmor_time')
+    fre_logger.info('assigning cmor_time')
     try: #if vert_dim != 'landuse':
         fre_logger.info(  " Executing cmor.axis('time', \n"
                f"    coord_vals = \n{time_coords}, \n"
                f"    cell_bounds = time_bnds, units = {time_coord_units})   ")
-        fre_logger.info(' assigning cmor_time using time_bnds...')
+        fre_logger.info('assigning cmor_time using time_bnds...')
         cmor_time = cmor.axis("time", coord_vals = time_coords,
                               cell_bounds = time_bnds, units = time_coord_units)
     except ValueError as exc: #else:
         fre_logger.info(" cmor_time = cmor.axis('time', \n"
                "                          coord_vals = time_coords, units = time_coord_units)")
-        fre_logger.info(' assigning cmor_time WITHOUT time_bnds...')
+        fre_logger.info('assigning cmor_time WITHOUT time_bnds...')
         cmor_time = cmor.axis("time", coord_vals = time_coords, units = time_coord_units)
-    fre_logger.info('                          DONE assigning cmor_time')
+    fre_logger.info('                         DONE assigning cmor_time')
 
 
     # other vertical-axis-relevant initializations
@@ -381,10 +381,10 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # set cmor vertical axis if relevant
     cmor_z = None
     if lev is not None:
-        fre_logger.info(' assigning cmor_z')
+        fre_logger.info('assigning cmor_z')
 
         if vert_dim.lower() in ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]:
-            fre_logger.info(' non-hybrid sigma coordinate case')
+            fre_logger.info('non-hybrid sigma coordinate case')
             if vert_dim.lower() != "landuse":
                 cmor_vert_dim_name = vert_dim
                 cmor_z = cmor.axis( cmor_vert_dim_name,
@@ -395,15 +395,15 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                 cmor_z = cmor.axis( cmor_vert_dim_name,
                                       coord_vals = np.array(
                                                             landuse_str_list,
-                                                            dtype=f'S{len(landuse_str_list[0])}' ),
+                                                            dtype=f'S{len(landuse_str_list[0])}'),
                                       units = lev_units )
 
 
         elif vert_dim in ["z_l"]:
             lev_bnds = create_lev_bnds( bound_these = lev,
                                          with_these = ds['z_i'] )
-            fre_logger.info(' created lev_bnds...')
-            fre_logger.info(f'  lev_bnds = \n{lev_bnds}')
+            fre_logger.info('created lev_bnds...')
+            fre_logger.info(f' lev_bnds = \n{lev_bnds}')
             cmor_z = cmor.axis( 'depth_coord',
                                   coord_vals = lev[:],
                                   units = lev_units,
@@ -449,53 +449,53 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                                        zfactor_bounds = ds["b_bnds"][:],
                                        units          = ds["b"].units )
 
-            fre_logger.info(f' ierr_ap after calling cmor_zfactor: {ierr_ap}\n'
-                  f' ierr_b after calling cmor_zfactor: {ierr_b}'  )
+            fre_logger.info(f'ierr_ap after calling cmor_zfactor: {ierr_ap}\n'
+                  f'ierr_b after calling cmor_zfactor: {ierr_b}'  )
             axis_ids = []
             if cmor_time is not None:
-                fre_logger.info(' appending cmor_time to axis_ids list...')
+                fre_logger.info('appending cmor_time to axis_ids list...')
                 axis_ids.append(cmor_time)
-                fre_logger.info(f'    axis_ids now = {axis_ids}')
+                fre_logger.info(f'   axis_ids now = {axis_ids}')
             # might there need to be a conditional check for tripolar ocean data here as well? TODO
             if cmor_y is not None:
-                fre_logger.info(' appending cmor_y to axis_ids list...')
+                fre_logger.info('appending cmor_y to axis_ids list...')
                 axis_ids.append(cmor_y)
-                fre_logger.info(f'    axis_ids now = {axis_ids}')
+                fre_logger.info(f'   axis_ids now = {axis_ids}')
             if cmor_x is not None:
-                fre_logger.info(' appending cmor_x to axis_ids list...')
+                fre_logger.info('appending cmor_x to axis_ids list...')
                 axis_ids.append(cmor_x)
-                fre_logger.info(f'    axis_ids now = {axis_ids}')
+                fre_logger.info(f'   axis_ids now = {axis_ids}')
 
             ips = cmor.zfactor( zaxis_id     = cmor_z,
                                 zfactor_name = "ps",
                                 axis_ids     = axis_ids, #[cmor_time, cmor_y, cmor_x],
                                 units        = "Pa" )
             save_ps = True
-        fre_logger.info('    DONE assigning cmor_z')
+        fre_logger.info('   DONE assigning cmor_z')
 
 
     axes = []
     if cmor_time is not None:
-        fre_logger.info(' appending cmor_time to axes list...')
+        fre_logger.info('appending cmor_time to axes list...')
         axes.append(cmor_time)
-        fre_logger.info(f'    axes now = {axes}')
+        fre_logger.info(f'   axes now = {axes}')
 
     if cmor_z is not None:
-        fre_logger.info(' appending cmor_z to axes list...')
+        fre_logger.info('appending cmor_z to axes list...')
         axes.append(cmor_z)
-        fre_logger.info(f'    axes now = {axes}')
+        fre_logger.info(f'   axes now = {axes}')
 
     if process_tripolar_data:
         axes.append(cmor_grid)
     else:
         if cmor_y is not None:
-            fre_logger.info(' appending cmor_y to axes list...')
+            fre_logger.info('appending cmor_y to axes list...')
             axes.append(cmor_y)
-            fre_logger.info(f'    axes now = {axes}')
+            fre_logger.info(f'   axes now = {axes}')
         if cmor_x is not None:
-            fre_logger.info(' appending cmor_x to axes list...')
+            fre_logger.info('appending cmor_x to axes list...')
             axes.append(cmor_x)
-            fre_logger.info(f'    axes now = {axes}')
+            fre_logger.info(f'   axes now = {axes}')
 
 
     # read positive/units attribute and create cmor_var
@@ -511,9 +511,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     cmor.write(cmor_var, var)
     if save_ps:
         if any( [ ips is None, ps is None ] ):
-            fre_logger.warning( ' ps or ips is None!, but save_ps is True!\n'
-                  f'    ps = {ps}, ips = {ips}\n'
-                   '    skipping ps writing!'    )
+            fre_logger.warning( 'ps or ips is None!, but save_ps is True!\n'
+                  f'   ps = {ps}, ips = {ips}\n'
+                   '   skipping ps writing!'   )
         else:
             cmor.write(ips, ps, store_with = cmor_var)
             cmor.close(ips, file_name = True, preserve = False)
@@ -614,8 +614,8 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
                                                        json_table_config    , nc_fls[i]  )
         except Exception as exc:
             raise Exception('(cmorize_target_var_files) problem with rewrite_netcdf_file_var. exc=\n'
-                            f'                           {exc}\n'
-                            '                           exiting and executing finally block.')
+                            f'                          {exc}\n'
+                            '                          exiting and executing finally block.')
         finally: # should always execute, errors or not!
             fre_logger.warning(f'changing directory to: \n      {gotta_go_back_here}')
             os.chdir( gotta_go_back_here )
@@ -634,7 +634,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
             fre_logger.info(f'attempting to create filedir={filedir}')
             os.makedirs(filedir)
         except FileExistsError:
-            fre_logger.warning(f' directory {filedir} already exists!')
+            fre_logger.warning(f'directory {filedir} already exists!')
 
         # hmm.... this is making issues for pytest
         mv_cmd = f"mv {tmp_dir}/{local_file_name} {filedir}"
@@ -646,7 +646,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         filename_no_nc = filename[:filename.rfind(".nc")]
         chunk_str = filename_no_nc[-6:]
         if not chunk_str.isdigit():
-            fre_logger.warning(f' chunk_str is not a digit: '
+            fre_logger.warning(f'chunk_str is not a digit: '
                   f'chunk_str = {chunk_str}')
             filename_corr = "{filename[:filename.rfind('.nc')]}_{iso_datetime}.nc"
             mv_cmd = f"mv {filename} {filename_corr}"
