@@ -7,11 +7,11 @@ import os
 import subprocess
 import logging
 import sys
-import click
+
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
-def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
+def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -84,18 +84,20 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                 if run:
                     fre_checkout.run()
                 else:
-                    print("\nCheckout script created in "+ src_dir + "/checkout.sh \n")
+
+                    return
+
             else:
                 print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
                 if run:
                     try:
                         subprocess.run(args=[src_dir+"/checkout.sh"], check=True)
                     except:
-                        print("\nThere was an error with the checkout script "+src_dir+"/checkout.sh.",
-                              "\nTry removing test folder: " + platform["modelRoot"] +"\n")
-                        raise
+                        raise OSError("\nThere was an error with the checkout script "+src_dir+"/checkout.sh.",
+                                      "\nTry removing test folder: " + platform["modelRoot"] +"\n")
+
                 else:
-                    print("\nCheckout script created in "+ src_dir + "/checkout.sh \n")
+                    return #0 #sys.exit()
 
         else:
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
@@ -105,14 +107,6 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
             fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
             fre_checkout.finish(pc)
             print("\nCheckout script created at " + tmp_dir + "/checkout.sh" + "\n")
-
-@click.command()
-def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose):
-    '''
-    Decorator for calling checkout_create - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose)
 
 if __name__ == "__main__":
     checkout_create()

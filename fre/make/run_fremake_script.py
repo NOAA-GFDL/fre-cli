@@ -9,14 +9,14 @@ import os
 import logging
 from multiprocessing.dummy import Pool
 from pathlib import Path
-import click
+
 import subprocess
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
+def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -48,13 +48,13 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
 
     ## If combined yaml exists, note message of its existence
     ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
+    full_combined = cy.combined_compile_existcheck(combined, yml, platform, target)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined)
 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined,freVars)
+    modelYaml = yamlfre.freyaml(full_combined, freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
@@ -80,8 +80,8 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
             if not os.path.exists(srcDir):
                 os.system("mkdir -p " + srcDir)
             if not os.path.exists(srcDir+"/checkout.sh"):
-                freCheckout = checkout.checkout("checkout.sh",srcDir)
-                freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
+                freCheckout = checkout.checkout("checkout.sh", srcDir)
+                freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(), jobs, pc)
                 freCheckout.finish(pc)
                 os.chmod(srcDir+"/checkout.sh", 0o744)
                 print("\nCheckout script created at "+ srcDir + "/checkout.sh \n")
@@ -120,7 +120,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
 
                 # Loop through components, send component name/requires/overrides for Makefile
                 for c in fremakeYaml['src']:
-                    freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
+                    freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 print("\nMakefile created at " + bldDir + "/Makefile" + "\n")
                 freMakefile.writeMakefile()
 
@@ -152,7 +152,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 tmpDir = "tmp/"+platformName
                 ## Create the checkout script
                 freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
-                freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
+                freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(), jobs, pc)
                 freCheckout.finish(pc)
                 ## Create the makefile
                 ### Should this even be a separate class from "makefile" in makefilefre? ~ ejs
@@ -165,7 +165,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
 
                 # Loop through components and send the component name and requires for the Makefile
                 for c in fremakeYaml['src']:
-                    freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
+                    freMakefile.addComponent(c['component'],c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
 
                 ## Build the dockerfile
@@ -182,7 +182,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 for c in fremakeYaml['src']:
                     dockerBuild.writeDockerfileMkmf(c)
 
-                dockerBuild.writeRunscript(platform["RUNenv"],platform["containerRun"],tmpDir+"/execrunscript.sh")
+                dockerBuild.writeRunscript(platform["RUNenv"], platform["containerRun"], tmpDir+"/execrunscript.sh")
 
                 # Create build script for container
                 dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
@@ -193,7 +193,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                     subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
                 #freCheckout.cleanup()
-                #buildDockerfile(fremakeYaml,image)
+                #buildDockerfile(fremakeYaml, image)
 
     if baremetalRun:
         if __name__ == '__main__':
@@ -201,15 +201,8 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 # Create a multiprocessing Pool
                 pool = Pool(processes=nparallel)
                 # process data_inputs iterable with pool
-                pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)
+                pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)
 
-@click.command()
-def _fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
-    '''
-    Decorator for calling _fremake_run - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose)
 
 if __name__ == "__main__":
     fremake_run()
