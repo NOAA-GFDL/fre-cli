@@ -56,6 +56,8 @@ def fre(verbose):
     ''' entry point function to subgroup functions '''
     if verbose:
         logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.WARN)
 
 if __name__ == '__main__':
     fre()
