@@ -10,15 +10,11 @@
 import os
 import json
 import shutil
-import click
 
 from jsonschema import validate
 import yaml
 import metomi.rose.config
 
-# Relative import
-#f = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-#sys.path.append(f)
 import fre.yamltools.combine_yamls as cy
 
 ####################
@@ -146,13 +142,17 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
                             value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
 ####################
-def yaml_info(yamlfile,experiment,platform,target):
+def yaml_info(yamlfile = None, experiment = None, platform = None, target = None):
     """
     Using a valid pp.yaml, the rose-app and rose-suite
     configuration files are created in the cylc-src
     directory. The pp.yaml is also copied to the
     cylc-src directory.
     """
+    if None in [yamlfile, experiment, platform, target]:
+        raise ValueError( 'yamlfile, experiment, platform, and target must all not be None.'
+                          'currently, their values are...'
+                          f'{yamlfile} / {experiment} / {platform} / {target}')
     e = experiment
     p = platform
     t = target
@@ -197,14 +197,6 @@ def yaml_info(yamlfile,experiment,platform,target):
     outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
     dumper(rose_remap, outfile)
     print("  " + outfile)
-
-@click.command()
-def _yaml_info(yamlfile,experiment,platform,target):
-    '''
-    Wrapper script for calling yaml_info - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return yaml_info(yamlfile,experiment,platform,target)
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':

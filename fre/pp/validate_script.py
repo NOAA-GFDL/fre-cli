@@ -2,13 +2,17 @@
 
 import os
 import subprocess
-import click
 
-def validate_subtool(experiment, platform, target):
+def validate_subtool(experiment = None, platform = None, target = None):
     """
     Validate the Cylc workflow definition located in
     ~/cylc-src/<experiment>__<platform>__<target>
     """
+    if None in [experiment, platform, target]:
+        raise ValueError( 'experiment, platform, and target must all not be None.'
+                          'currently, their values are...'
+                          f'{experiment} / {platform} / {target}')
+
     go_back_here = os.getcwd()
     directory = os.path.expanduser('~/cylc-src/' + experiment + '__' + platform + '__' + target)
 
@@ -23,11 +27,6 @@ def validate_subtool(experiment, platform, target):
     cmd = "cylc validate ."
     subprocess.run(cmd, shell=True, check=True)
     os.chdir(go_back_here)
-
-@click.command()
-def _validate_subtool(experiment, platform, target):
-    ''' entry point to validate for click '''
-    return validate_subtool(experiment, platform, target)
 
 if __name__ == "__main__":
     validate_subtool()

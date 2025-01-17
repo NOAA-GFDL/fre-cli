@@ -1,6 +1,12 @@
-from analysis_scripts import available_plugins
+''' fre analysis '''
+
+# a third party package
 import click
 
+## a diff gfdl package
+#from analysis_scripts import available_plugins
+
+# this package
 from .subtools import install_analysis_package, list_plugins, run_analysis, \
                       uninstall_analysis_package
 
@@ -8,7 +14,7 @@ from .subtools import install_analysis_package, list_plugins, run_analysis, \
 @click.group(help=click.style(" - access fre analysis subcommands", fg=(250, 154, 90)))
 def analysis_cli():
     """Entry point to fre analysis click commands."""
-    pass
+
 
 
 @analysis_cli.command()

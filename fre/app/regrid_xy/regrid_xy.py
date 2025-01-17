@@ -13,7 +13,7 @@ from pathlib import Path
 #3rd party
 import metomi.rose.config as rose_cfg
 from netCDF4 import Dataset
-import click
+
 
 FREGRID_SHARED_FILES='/home/fms/shared_fregrid_remap_files'
 
@@ -463,16 +463,6 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 
     print('done running regrid_xy()')
     return 0
-
-
-@click.command()
-def _regrid_xy( input_dir, output_dir, begin, tmp_dir,
-                remap_dir, source, grid_spec, def_xy_interp ):
-    """ click entrypoint """
-    click.echo(f'(_regrid_xy) locals={locals()}')
-    click.echo( '(_regrid_xy) click entrypoint hit- calling regrid_xy()')
-    return regrid_xy( input_dir, output_dir, begin, tmp_dir,
-                      remap_dir, source, grid_spec, def_xy_interp )
 
 
 def main():

@@ -287,7 +287,7 @@ def test_success_tar_grid_spec_regrid_xy(capfd):
             rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
             rose_app_run_config.write(  '\n'                             )
         assert Path('./rose-app-run.conf').exists()
-        
+
         rgxy_returncode = rgxy.regrid_xy(
             input_dir = WORK_YYYYMMDD_DIR,
             output_dir = TEST_OUT_DIR,
@@ -431,7 +431,7 @@ def test_failure_wrong_datetime_regrid_xy(capfd):
         rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
         rose_app_run_config.write(  '\n'                             )
     assert Path('./rose-app-run.conf').exists()
-    
+
     try:
         rgxy_returncode = rgxy.regrid_xy(
             input_dir = WORK_YYYYMMDD_DIR,
