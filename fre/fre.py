@@ -50,6 +50,8 @@ version = version_unexpanded_split[0] + '.' + version_minor
 
 def fre():
     ''' entry point function to subgroup functions '''
+    print('hello from fre.py fre()')
 
 if __name__ == '__main__':
+    print('hello from fre.py __main__')
     fre()
