@@ -12,7 +12,8 @@ import importlib.metadata
 import click
 from .lazy_group import LazyGroup
 
-
+import logging
+fre_logger = logging.getLogger(__name__)
 
 # versioning, turn xxxx.y into xxxx.0y
 version_unexpanded = importlib.metadata.version('fre-cli')
@@ -22,6 +23,13 @@ if len(version_unexpanded_split[1]) == 1:
 else:
     version_minor = version_unexpanded_split[1]
 version = version_unexpanded_split[0] + '.' + version_minor
+
+
+@click.version_option(
+    package_name = "fre-cli",
+    version=version
+)
+
 
 # click and lazy group loading
 @click.group(
@@ -38,20 +46,16 @@ version = version_unexpanded_split[0] + '.' + version_minor
                        "cmor": ".cmor.frecmor.cmor_cli",
                        "analysis": ".analysis.freanalysis.analysis_cli"},
     help = click.style(
-        "'fre' is the main CLI click group that houses the other tool groups as lazy subcommands.",
+        "'fre' is the main CLI click group. It houses the other tool groups as lazy subcommands.",
         fg='cyan')
 )
-
-
-@click.version_option(
-    package_name = "fre-cli",
-    version=version
-)
-
-def fre():
+@click.option('-v', '--verbose', is_flag=True,
+              default=False, help="set logging verbosity higher",
+              required=False)
+def fre(verbose):
     ''' entry point function to subgroup functions '''
-    print('hello from fre.py fre()')
+    if verbose:
+        logging.basicConfig(level=logging.INFO)
 
 if __name__ == '__main__':
-    print('hello from fre.py __main__')
     fre()

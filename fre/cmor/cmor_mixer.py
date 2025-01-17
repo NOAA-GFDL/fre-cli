@@ -4,11 +4,14 @@ click API entry points
 see README.md for additional information on `fre cmor run` (cmor_mixer.py) usage
 '''
 
-import os
 import json
+import logging
+fre_logger = logging.getLogger(__name__)
+
+import os
+from pathlib import Path
 import shutil
 import subprocess
-from pathlib import Path
 
 import numpy as np
 
@@ -698,9 +701,9 @@ def cmor_run_subtool( indir = None,
                          f'                   [{indir}, {json_var_list}, {json_table_config}, '
                          f'                   {json_exp_config}, {outdir}]' )
 
-    # open CMOR table config file
-    print( '(cmor_run_subtool) loading json_table_config = \n'
-           f'                      {json_table_config}\n'                     )
+    ## open CMOR table config file
+    fre_logger.info( 'loading json_table_config = \n'
+           f'    {json_table_config}\n'                     )
     try:
         with open( json_table_config, "r", encoding = "utf-8") as table_config_file:
             proj_table_vars = json.load(table_config_file)
