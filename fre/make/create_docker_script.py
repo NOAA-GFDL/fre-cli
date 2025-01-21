@@ -9,7 +9,7 @@ from pathlib import Path
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls as cy
 
-def dockerfile_write_steps(yaml_obj,img,run_env,target,td,cr,cb,cd):
+def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,td,cr,cb,cd):
     """
     Go through steps to write the Dockerfile
     """
@@ -17,7 +17,8 @@ def dockerfile_write_steps(yaml_obj,img,run_env,target,td,cr,cb,cd):
                                         exp = yaml_obj["experiment"],
                                         libs = yaml_obj["container_addlibs"],
                                         RUNenv = run_env,
-                                        target = target)
+                                        target = target,
+                                        mkTemplate = mkTemplate)
 
     dockerBuild.writeDockerfileCheckout("checkout.sh", td+"/checkout.sh")
     dockerBuild.writeDockerfileMakefile(td+"/Makefile", td+"/linkline.sh")
@@ -81,10 +82,10 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
                 curr_dir = os.getcwd()
                 if not os.path.exists(f"{curr_dir}/Dockerfile"):
                     dockerfile_write_steps(yaml_obj = fremakeYaml,
-                                           #makefile_obj = freMakefile,
                                            img = image,
                                            run_env = platform["RUNenv"],
                                            target = targetObject,
+                                           mkTemplate = platform["mkTemplate"],
                                            td = tmp_dir,
                                            cr = platform["containerRun"],
                                            cb = platform["containerBuild"],
@@ -98,13 +99,13 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
                         # Create the checkout script
                         print("Re-creating Dockerfile...")
                         dockerfile_write_steps(yaml_obj = fremakeYaml,
-#                                               makefile_obj = freMakefile,
                                                img = image,
-                                               run_env = RUNenv,
+                                               run_env = platform["RUNenv"],
                                                target = targetObject,
+                                               mkTemplate = platform["mkTemplate"],
                                                td = tmp_dir,
-                                               cr = containerRun,
-                                               cb = containerBuild,
+                                               cr = platform["containerRun"],
+                                               cb = platform["containerBuild"],
                                                cd = curr_dir)
                     else:
                         print(f"Dockerfile PREVIOUSLY created here: {curr_dir}/Dockerfile")
