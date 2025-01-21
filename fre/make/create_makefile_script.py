@@ -77,7 +77,7 @@ def makefile_create(yamlfile, platform, target):
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
-                print("\nMakefile created here: ./" + tmpDir + "/Makefile" + "\n")
+                print("\nMakefile created here: " + tmpDir + "/Makefile" + "\n")
 
 if __name__ == "__main__":
     makefile_create()
