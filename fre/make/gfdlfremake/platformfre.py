@@ -57,7 +57,6 @@ class platforms ():
                     raise Exception("You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerBuild"] != "podman" and p["containerBuild"] != "docker":
                     raise ValueError("Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
-                print (p["containerBuild"])
 ## Check for container environment set up for RUN commands
                 try:
                     p["containerBase"]

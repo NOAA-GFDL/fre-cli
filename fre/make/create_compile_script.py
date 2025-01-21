@@ -118,6 +118,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
                       fremakeBuildList.append(fremakeBuild)
                   else:
                         print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
+
     if execute:
         if baremetalRun:
             pool = Pool(processes=nparallel)                            # Create a multiprocessing Pool
