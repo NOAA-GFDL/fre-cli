@@ -68,7 +68,8 @@ def test_compile_creation():
                                          jobs = 4,
                                          parallel = 1,
                                          execute = False,
-                                         verbose = False)
+                                         verbose = False,
+                                         force_compile=False)
     # Check for creation of compile script
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
 
@@ -92,7 +93,8 @@ def test_compile_executable_failure():
                                          jobs = 4,
                                          parallel = 1,
                                          execute = True,
-                                         verbose = False)
+                                         verbose = False,
+                                         force_compile=False)
 
     # Check for creation of compile script, FMS directory,
     # log.compile file, the executable
@@ -119,7 +121,8 @@ def test_bad_platform():
                                          jobs = 4,
                                          parallel = 1,
                                          execute = False,
-                                         verbose = False)
+                                         verbose = False,
+                                         force_compile=False)
 
 def test_bad_platform_compilelog():
     """
@@ -139,7 +142,8 @@ def test_bad_platform_compilelog():
                                              jobs = 4,
                                              parallel = 1,
                                              execute = False,
-                                             verbose = False)
+                                             verbose = False,
+                                             force_compile=False)
     except:
         assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
 
@@ -161,7 +165,8 @@ def test_bad_target():
                                          jobs = 4,
                                          parallel = 1,
                                          execute = False,
-                                         verbose = False)
+                                         verbose = False,
+                                         force_compile=False)
 
 def test_bad_target_compilelog():
     """
@@ -181,7 +186,8 @@ def test_bad_target_compilelog():
                                              jobs = 4,
                                              parallel = 1,
                                              execute = False,
-                                             verbose = False)
+                                             verbose = False,
+                                             force_compile=False)
     except:
         assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
 
@@ -201,7 +207,8 @@ def test_multi_target():
                                          jobs = 4,
                                          parallel = 1,
                                          execute = False,
-                                         verbose = False)
+                                         verbose = False,
+                                         force_compile=False)
 
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[0]}/exec/compile.sh").exists()
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[1]}/exec/compile.sh").exists()
