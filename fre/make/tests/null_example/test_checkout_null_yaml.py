@@ -22,6 +22,7 @@ def test_checkout_script_exists():
     """
     Make sure checkout file exists
     """
+    subprocess.run(["rm","-rf",f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh"])
     create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False, False)
     #assert result.exit_code == 0
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
