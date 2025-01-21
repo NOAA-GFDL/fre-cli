@@ -31,11 +31,11 @@ def test_checkout_verbose():
     """
     check if --verbose option works
     """
-    result = create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False,True)
+    create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, False,True)
 
 def test_checkout_execute():
     """
     check if --execute option works
     """
-    subprocess.run(["rm","-rf",f"{OUT}/fremake_canopy/test"])
-    result = create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, True,False)
+    #subprocess.run(["rm","-rf",f"{OUT}/fremake_canopy/test"])
+    create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, True,False)
