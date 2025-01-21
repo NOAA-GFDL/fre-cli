@@ -34,6 +34,7 @@ def dockerfile_write_steps(yaml_obj,img,run_env,target,td,cr,cb,cd):
 
 def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
     """
+    Create the Dockerfile
     """
     srcDir="src"
     checkoutScriptName = "checkout.sh"

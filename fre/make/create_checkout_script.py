@@ -7,6 +7,7 @@ import subprocess
 import logging
 import sys
 import shutil
+from pathlib import Path
 
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
@@ -64,10 +65,16 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
     plist = platform
     tlist = target
 
-    # Combine model, compile, and platform yamls
-    # Default behavior - combine yamls / rewrite combined yaml
-    comb = cy.init_compile_yaml(yml,platform,target)
-    full_combined = cy.get_combined_compileyaml(comb)
+    # If force-checkout defined: re-combine model, compile, and platform yamls
+    if force_checkout:
+        print("Re-combine yaml files")
+        comb = cy.init_compile_yaml(yml,platform,target)
+        full_combined = cy.get_combined_compileyaml(comb)
+    else:
+        ## If combined yaml exists, note message of its existence
+        ## If combined yaml does not exist, combine model, compile, and platform yamls
+        combined = Path(f"combined-{name}.yaml")
+        full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)

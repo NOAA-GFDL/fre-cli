@@ -112,12 +112,15 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
     plist = platform
     tlist = target
 
-    # Combined compile yaml file
-    combined = Path(f"combined-{name}.yaml")
-
-    ## If combined yaml exists, note message of its existence
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined, yml, platform, target)
+    # If force-checkout defined: re-combine model, compile, and platform yamls
+    if force_checkout:
+        comb = cy.init_compile_yaml(yml,platform,target)
+        full_combined = cy.get_combined_compileyaml(comb)
+    else:
+        ## If combined yaml exists, note message of its existence
+        ## If combined yaml does not exist, combine model, compile, and platform yamls
+        combined = Path(f"combined-{name}.yaml")
+        full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined)

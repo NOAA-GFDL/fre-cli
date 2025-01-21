@@ -33,6 +33,7 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
 
 def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
     """
+    Create the compile script
     """
     # Define variables
     yml = yamlfile
