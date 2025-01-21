@@ -47,7 +47,7 @@ def make_cli():
               type = str,
               help = PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = TARGET_OPT_HELP,
               required = True)
@@ -88,9 +88,7 @@ def make_cli():
               "--force-dockerfile",
               is_flag=True,
               help = FORCE_DOCKERFILE_OPT_HELP)
-@click.pass_context
-def run_fremake(context, yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile, force_dockerfile):
-    # pylint: disable=unused-argument
+def run_fremake(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile, force_dockerfile):
     """
     - Perform all fremake functions to run checkout and compile model\n
     - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
@@ -109,9 +107,8 @@ current compile instructions don't match the experiment suite configuration file
 option --force-compile is used. This option allows the user to recreate the compile script
 according to the current configuration file.
     """
-    context.forward(run_fremake_script._fremake_run)
+    run_fremake_script.fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile, force_dockerfile)
 
-####
 @make_cli.command()
 @click.option("-y",
               "--yamlfile",
@@ -151,9 +148,7 @@ according to the current configuration file.
               "--force-checkout",
               is_flag = True,
               help = FORCE_CHECKOUT_OPT_HELP)
-@click.pass_context
-def create_checkout(context,yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout):
-    # pylint: disable=unused-argument
+def create_checkout(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout):
     """ 
     - Write the checkout script\n
     - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
@@ -167,9 +162,8 @@ However it might be an issue if current checkout instructions do not follow chan
 experiment suite configuration file. The option --force-checkout allows to get a fresh checkout
 according to the current configuration file.\n
     """
-    context.forward(create_checkout_script._checkout_create)
+    create_checkout_script.checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout)
 
-#####
 @make_cli.command
 @click.option("-y",
               "--yamlfile",
@@ -186,13 +180,9 @@ according to the current configuration file.\n
               type = str,
               help = TARGET_OPT_HELP,
               required = True)
-@click.pass_context
-def create_makefile(context,yamlfile,platform,target):
-    # pylint: disable=unused-argument
+def create_makefile(yamlfile, platform, target):
     """ - Write the makefile """
-    context.forward(create_makefile_script._makefile_create)
-
-#####
+    create_makefile_script.makefile_create(yamlfile, platform, target)
 
 @make_cli.command
 @click.option("-y",
@@ -233,8 +223,7 @@ def create_makefile(context,yamlfile,platform,target):
               "--force-compile",
               is_flag=True,
               help = FORCE_COMPILE_OPT_HELP)
-@click.pass_context
-def create_compile(context,yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
+def create_compile(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
     """ 
     - Write the compile script\n
     - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
@@ -247,23 +236,21 @@ current compile instructions don't match the experiment suite configuration file
 option --force-compile is used. This option allows the user to recreate the compile script 
 according to the current configuration file.
     """
-    # pylint: disable=unused-argument
-    """ - Write the compile script """
-    context.forward(create_compile_script._compile_create)
+    create_compile_script.compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile)
 
 @make_cli.command
 @click.option("-y",
               "--yamlfile",
               type = str,
               help = YAMLFILE_OPT_HELP,
-              required = True) # use click.option() over click.argument(), we want help statements
+              required = True)
 @click.option("-p",
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
               help = PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = TARGET_OPT_HELP,
               required = True)
@@ -274,11 +261,9 @@ according to the current configuration file.
               "--force-dockerfile",
               is_flag=True,
               help = FORCE_DOCKERFILE_OPT_HELP)
-@click.pass_context
-def create_dockerfile(context,yamlfile,platform,target,execute,force_dockerfile):
-    # pylint: disable=unused-argument
+def create_dockerfile(yamlfile,platform,target,execute,force_dockerfile):
     """ - Write the dockerfile """
-    context.forward(create_docker_script._dockerfile_create)
+    create_docker_script.dockerfile_create(yamlfile,platform,target,execute,force_dockerfile)
 
 if __name__ == "__main__":
     make_cli()

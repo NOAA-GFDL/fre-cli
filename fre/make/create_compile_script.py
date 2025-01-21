@@ -1,12 +1,13 @@
-#!/usr/bin/python3
-
+'''
+TODO: make docstring
+'''
 import os
 import sys
 import logging
 from pathlib import Path
 from multiprocessing.dummy import Pool
-import click
 import subprocess
+
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
@@ -31,6 +32,8 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
     return fremakeBuild
 
 def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
+    """
+    """
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -38,7 +41,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
     jobs = str(jobs)
 
     if verbose:
-      logging.basicCOnfig(level=logging.INFO)
+      logging.basicConfig(level=logging.INFO)
     else:
       logging.basicConfig(level=logging.ERROR)
 
@@ -80,7 +83,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
 
          platform=modelYaml.platforms.getPlatformFromName(platformName)
          ## Make the bldDir based on the modelRoot, the platform, and the target
-         srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
+         src_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
          ## Check for type of build
          if platform["container"] is False:
               baremetalRun = True
@@ -97,9 +100,6 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
                                                             modulesInit = platform["modulesInit"],
                                                             jobs = jobs)
                   fremakeBuildList.append(fremakeBuild)
-                  if execute:
-                      print("Running the compile script\n")
-                      fremakeBuild.run()
               else:
                   if force_compile:
                       # Remove compile script
@@ -115,28 +115,14 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
                                                                 modulesInit = platform["modulesInit"],
                                                                 jobs = jobs)
                       fremakeBuildList.append(fremakeBuild)
-                      if execute:
-                          print("Running the compile script\n")
-                          fremakeBuild.run()
                   else:
                         print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
-                        if execute:
-                            subprocess.run(args=[bld_dir+"/compile.sh"], check=True)
-                        ##TO-DO --> THIS COULD CAUSE PROBLEMS IF USER FORGOT TO DO FORCE-COMPILE AFTER A CHANGE --> IT'LL JUST RUN PREVIOUS ONE. I have the message about running previous compile script, but is it better to just do --force-compile (even after no change?)
     if execute:
         if baremetalRun:
             pool = Pool(processes=nparallel)                            # Create a multiprocessing Pool
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
     else:
-        sys.exit()
-
-@click.command()
-def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
-    '''
-    Decorator for calling compile_create - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile)
+        return
 
 if __name__ == "__main__":
     compile_create()

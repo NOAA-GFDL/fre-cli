@@ -26,7 +26,7 @@ class frenctoolsTimeAverager(timeAverager):
 
         if self.var is not None:
             print(f'WARNING: variable specification (var={self.var})' + \
-                  f' not currently supported for frenctols time averaging. ignoring!')
+                   ' not currently supported for frenctols time averaging. ignoring!')
 
         if infile is None:
             print('ERROR: I need an input file, specify a value for the infile argument')

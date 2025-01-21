@@ -1,17 +1,15 @@
 '''
-Description: Checkout script which accounts for 4 different scenarios: 
+Description: Checkout script which accounts for 4 different scenarios:
 1. branch not given, folder does not exist,
-2. branch given, folder does not exist, 
-3. branch not given, folder exists, 
+2. branch given, folder does not exist,
+3. branch not given, folder exists,
 4. branch given and folder exists
 '''
 import os
 import sys
 import subprocess
 
-import click
-
-from fre import fre
+from fre.fre import version as fre_ver
 
 FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 
@@ -23,7 +21,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     go_back_here = os.getcwd()
 
     # branch and version parameters
-    default_tag = fre.version
+    default_tag = fre_ver #fre.version
     git_clone_branch_arg = branch if branch is not None else default_tag
     if branch is None:
         print(f"(checkout_script) default tag is '{default_tag}'")
@@ -32,6 +30,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
 
     # check args + set the name of the directory
     if None in [experiment, platform, target]:
+        os.chdir(go_back_here)
         raise ValueError( 'one of these are None: experiment / platform / target = \n'
                          f'{experiment} / {platform} / {target}' )
     name = f"{experiment}__{platform}__{target}"
@@ -43,11 +42,13 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     except Exception as exc:
         raise OSError(
             '(checkoutScript) directory {directory} wasnt able to be created. exit!') from exc
+    finally:
+        os.chdir(go_back_here)
 
     checkout_exists = os.path.isdir(f'{directory}/{name}')
 
     if not checkout_exists: # scenarios 1+2, checkout doesn't exist, branch specified (or not)
-        print(f'(checkout_script) checkout does not yet exist; will create now')
+        print('(checkout_script) checkout does not yet exist; will create now')
         clone_output = subprocess.run( ['git', 'clone','--recursive',
                                         f'--branch={git_clone_branch_arg}',
                                         FRE_WORKFLOWS_URL, f'{directory}/{name}'],
@@ -72,24 +73,16 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         else:
             print(f"(checkout_script) ERROR: checkout exists ('{directory}/{name}') and does not match '{git_clone_branch_arg}'")
             print(f"(checkout_script) ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
-            exit(1)
+            os.chdir(go_back_here)
+            raise ValueError('(checkout_script) neither tag nor branch matches the git clone branch arg') #exit(1)
 
     # make sure we are back where we should be
     if os.getcwd() != go_back_here:
         os.chdir(go_back_here)
 
-    return 0
+    return
 
 #############################################
-
-@click.command()
-def _checkout_template(experiment, platform, target, branch ):
-    '''
-    Wrapper script for calling checkout_template - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return checkout_template(experiment, platform, target, branch)
-
 
 if __name__ == '__main__':
     checkout_template()

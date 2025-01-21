@@ -5,17 +5,16 @@ entry point for fre run subcommands
 import click
 from .frerunexample import run_test_function
 
-@click.group(help=click.style(" - access fre run subcommands", fg=(164,29,132)))
+@click.group(help=click.style(" - access fre run subcommands (not implemented yet!)", fg=(164,29,132)))
 def run_cli():
     ''' entry point to fre run click commands '''
 
 @run_cli.command()
 @click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-@click.pass_context
-def function(context, uppercase):
-    # pylint: disable=unused-argument
+def function(uppercase):
     """ - Execute fre run test """
-    context.forward(run_test_function)
+    run_test_function(uppercase)
+    raise NotImplementedError('fre run has not been implemented yet!')
 
 if __name__ == "__main__":
     run_cli()

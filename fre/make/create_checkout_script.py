@@ -7,7 +7,7 @@ import subprocess
 import logging
 import sys
 import shutil
-import click
+
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
@@ -107,7 +107,7 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                 if execute:
                     fre_checkout.run()
                 else:
-                    sys.exit()
+                    return
             else:
                 if force_checkout:
                     # Remove previous checkout
@@ -124,11 +124,11 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                     try:
                         subprocess.run(args=[src_dir+"/checkout.sh"], check=True)
                     except:
-                        print("\nThere was an error with the checkout script "+src_dir+"/checkout.sh.",
-                              "\nTry removing test folder: " + platform["modelRoot"] +"\n")
-                        raise
+                        raise OSError("\nThere was an error with the checkout script "+src_dir+"/checkout.sh.",
+                                      "\nTry removing test folder: " + platform["modelRoot"] +"\n")
+
                 else:
-                    sys.exit()
+                    return #0 #sys.exit()
 
         else:
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
@@ -149,14 +149,6 @@ def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,v
                     container_checkout_write_steps(model_yaml,src_dir,tmp_dir,jobs,pc)
                 else:
                     print("\nCheckout script PREVIOUSLY created in "+ tmp_dir + "/checkout.sh" + "\n")
-
-@click.command()
-def _checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout):
-    '''
-    Decorator for calling checkout_create - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout)
 
 if __name__ == "__main__":
     checkout_create()

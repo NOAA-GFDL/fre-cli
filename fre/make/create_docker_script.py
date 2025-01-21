@@ -1,10 +1,11 @@
-#!/usr/bin/python3
+'''
+TODO- make docstring
+'''
 
 import os
 import sys
 import subprocess
 from pathlib import Path
-import click
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls as cy
 
@@ -32,6 +33,8 @@ def dockerfile_write_steps(yaml_obj,img,run_env,target,td,cr,cb,cd):
     print(f"    Container build script created here: {dockerBuild.userScriptPath}\n")
 
 def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
+    """
+    """
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -40,7 +43,6 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
     tlist = target
     yml = yamlfile
     name = yamlfile.split(".")[0]
-    run = execute
 
     # Combined compile yaml file
     combined = Path(f"combined-{name}.yaml")
@@ -73,8 +75,8 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
             ## Check for type of build
             if platform["container"] is True:
                 image=modelYaml.platforms.getContainerImage(platformName)
-                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
-                tmpDir = "tmp/"+platformName
+                bld_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
+                tmp_dir = "tmp/"+platformName
                 curr_dir = os.getcwd()
                 if not os.path.exists(f"{curr_dir}/Dockerfile"):
                     dockerfile_write_steps(yaml_obj = fremakeYaml,
@@ -82,7 +84,7 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
                                            img = image,
                                            run_env = platform["RUNenv"],
                                            target = targetObject,
-                                           td = tmpDir,
+                                           td = tmp_dir,
                                            cr = platform["containerRun"],
                                            cb = platform["containerBuild"],
                                            cd = curr_dir)
@@ -99,7 +101,7 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
                                                img = image,
                                                run_env = RUNenv,
                                                target = targetObject,
-                                               td = tmpDir,
+                                               td = tmp_dir,
                                                cr = containerRun,
                                                cb = containerBuild,
                                                cd = curr_dir)
@@ -114,14 +116,6 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
                     except:
                         print(f"There was an error in runnning the container build script: {curr_dir}/createContainer.sh")
                         raise
-
-@click.command()
-def _dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
-    '''
-    Decorator for calling dockerfile_create - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return dockerfile_create(yamlfile,platform,target,execute,force_dockerfile)
 
 if __name__ == "__main__":
     dockerfile_create()
