@@ -20,6 +20,7 @@ Welcome to ``fre-cli``'s documentation!
    tools
    api
    for-developers
+   badges
 
 Indices
 =======

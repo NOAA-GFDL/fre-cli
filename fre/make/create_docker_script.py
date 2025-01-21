@@ -1,15 +1,16 @@
-#!/usr/bin/python3
+'''
+TODO- make docstring
+'''
 
 import os
 import sys
 import subprocess
 from pathlib import Path
-import click
-#from .gfdlfremake import varsfre, targetfre, makefilefre, platformfre, yamlfre, buildDocker
+
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls as cy
 
-def dockerfile_create(yamlfile,platform,target,execute):
+def dockerfile_create(yamlfile, platform, target, execute):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -42,8 +43,7 @@ def dockerfile_create(yamlfile,platform,target,execute):
             if modelYaml.platforms.hasPlatform(platformName):
                 pass
             else:
-                raise ValueError (platformName + " does not exist in " + \
-                                  modelYaml.combined.get("compile").get("platformYaml"))
+                raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 
@@ -70,24 +70,16 @@ def dockerfile_create(yamlfile,platform,target,execute):
 
                 dockerBuild.writeRunscript(platform["RUNenv"],platform["containerRun"],tmpDir+"/execrunscript.sh")
                 currDir = os.getcwd()
-                click.echo("\ntmpDir created in " + currDir + "/tmp")
-                click.echo("Dockerfile created in " + currDir +"\n")
 
                 # create build script for container
                 dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
+                print("\ntmpDir created in " + currDir + "/tmp") #was click.echo and a few lines above
+                print("Dockerfile created in " + currDir +"\n") #was click.echo and a few lines above
                 print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 # run the script if option is given
                 if run:
                     subprocess.run(args=[dockerBuild.userScriptPath], check=True)
-
-@click.command()
-def _dockerfile_create(yamlfile,platform,target,execute):
-    '''
-    Decorator for calling dockerfile_create - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return dockerfile_create(yamlfile,platform,target,execute)
 
 if __name__ == "__main__":
     dockerfile_create()

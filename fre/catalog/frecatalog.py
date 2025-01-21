@@ -3,6 +3,7 @@ entry point for fre catalog subcommands
 '''
 
 import click
+
 #import catalogbuilder
 from catalogbuilder.scripts import gen_intake_gfdl
 from catalogbuilder.scripts import test_catalog
@@ -26,13 +27,14 @@ def catalog_cli():
 @click.option('--filter_realm',  nargs = 1)
 @click.option('--filter_freq',  nargs = 1)
 @click.option('--filter_chunk',  nargs = 1)
+@click.option('--verbose', is_flag = True, default = False)
 @click.option('--overwrite', is_flag = True, default = False)
 @click.option('--append', is_flag = True, default = False)
 @click.option('--slow', is_flag = True, default = False,
     help = "Open NetCDF files to retrieve additional vocabulary (standard_name and intrafile static variables")
 @click.pass_context
 def builder(context, input_path = None, output_path = None, config = None, filter_realm = None,
-            filter_freq = None, filter_chunk = None, overwrite = False, append = False, slow = False):
+            filter_freq = None, filter_chunk = None, verbose = False, overwrite = False, append = False, slow = False):
     # pylint: disable=unused-argument
     """ - Generate .csv and .json files for catalog """
     context.forward(gen_intake_gfdl.create_catalog_cli)

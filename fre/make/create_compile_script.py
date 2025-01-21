@@ -1,15 +1,16 @@
-#!/usr/bin/python3
-
+'''
+TODO: make docstring
+'''
 import os
 import sys
 import logging
 from pathlib import Path
 from multiprocessing.dummy import Pool
-import click
+
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls as cy
 
-def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
+def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -56,7 +57,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
          if modelYaml.platforms.hasPlatform(platformName):
               pass
          else:
-              raise ValueError (platformName + " does not exist in " + modelYaml.combined.get("compile").get("platformYaml"))
+              raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
          platform=modelYaml.platforms.getPlatformFromName(platformName)
          ## Make the bldDir based on the modelRoot, the platform, and the target
@@ -79,21 +80,13 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
                    fremakeBuild.writeBuildComponents(c)
               fremakeBuild.writeScript()
               fremakeBuildList.append(fremakeBuild)
-              click.echo("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
+              print("\nCompile script created at " + bldDir + "/compile.sh" + "\n") #was click.echo
     if run:
         if baremetalRun:
             pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
     else:
-        sys.exit()
-
-@click.command()
-def _compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose):
-    '''
-    Decorator for calling compile_create - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose)
+        return #0 #sys.exit()
 
 if __name__ == "__main__":
     compile_create()

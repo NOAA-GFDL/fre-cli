@@ -83,7 +83,7 @@ def test_combined_compileyaml_validation():
     """
     combined_yamlfile =f"{COMP_OUT_DIR}/combined-{COMP_EXPERIMENT}.yaml"
     schema_file = os.path.join(SCHEMA_DIR, "fre_make.json")
-    
+
     with open(combined_yamlfile,'r') as cf:
         yml = yaml.safe_load(cf)
 

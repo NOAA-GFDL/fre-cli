@@ -14,7 +14,6 @@ import subprocess
 import logging
 
 # third party
-import click
 import metomi.rose.config
 import metomi.isodatetime.parsers
 
@@ -683,13 +682,6 @@ def _convert(xml, platform, target, experiment, do_analysis=False, historydir=No
             logging.info("Validation step complete!")
 
 ##############################################
-
-@click.command()
-def _convert():
-    '''
-    Wrapper for convert call - allows users to call without command-line args
-    '''
-    convert()
 
 if __name__ == '__main__':
     convert()

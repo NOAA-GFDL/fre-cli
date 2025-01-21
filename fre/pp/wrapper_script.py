@@ -11,8 +11,6 @@ Author: Carolyn.Whitlock
 # error handling
 
 import os
-#import time
-import click
 
 # Import from the local packages
 from fre.pp.checkout_script import checkout_template
@@ -22,7 +20,7 @@ from fre.pp.run_script import pp_run_subtool
 from fre.pp.trigger_script import trigger
 from fre.pp.status_script import status_subtool
 
-def run_all_fre_pp_steps(experiment, platform, target, config_file, branch=None, time=None):
+def run_all_fre_pp_steps(experiment = None, platform = None, target = None, config_file = None, branch = None, time = None):
     '''
     Wrapper script for calling a FRE2 pp experiment with the canopy-style
     infrastructure and fre-cli
@@ -52,13 +50,6 @@ def run_all_fre_pp_steps(experiment, platform, target, config_file, branch=None,
 
     print('(run_all_fre_pp_steps) done.')
 
-
-@click.command()
-def _run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time):
-    '''
-    click entry point for run_all_fre_pp_steps.
-    '''
-    return run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
 
 if __name__ == '__main__':
     run_all_fre_pp_steps()
