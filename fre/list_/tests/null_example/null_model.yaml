@@ -1,0 +1,57 @@
+# reusable variables
+fre_properties:
+  - &VERSION        "null"
+  - &FRE_STEM       !join [null_model/, *VERSION]
+
+  # amip
+  - &EXP_AMIP_START     "19790101T0000Z"
+  - &EXP_AMIP_END       "20200101T0000Z"
+  - &ANA_AMIP_START     "19800101T0000Z"
+  - &ANA_AMIP_END       "20200101T0000Z"
+
+  - &PP_AMIP_CHUNK96    "P1Y"
+  - &PP_AMIP_CHUNK384   "P1Y"
+  - &PP_XYINTERP96      "180,288"
+  - &PP_XYINTERP384     "720,1152"
+
+  # compile information
+  - &release             "f1a1r1"
+  - &INTEL               "intel-classic"
+  - &FMSincludes         "-IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include"
+  - &momIncludes         "-Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include"
+
+# compile information
+build:
+  compileYaml: "compile.yaml"
+  platformYaml: "platforms.yaml"
+
+shared:
+  # directories shared across tools
+  directories: &shared_directories
+    history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
+    pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
+    analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
+    ptmp_dir:     "/xtmp/$USER/ptmp"
+
+  # shared pp settings
+  postprocess: 
+    settings: &shared_settings
+      site:               "ppan"
+    switches: &shared_switches
+      do_statics:         True
+      do_timeavgs:        True
+      clean_work:         True
+      do_refinediag:      False
+      do_atmos_plevel_masking: True
+      do_preanalysis:     False
+      do_analysis:        True
+
+experiments:
+  - name: "null_model_0"
+    pp:
+  - name: "null_model_1"
+    pp:
+  - name: "null_model_2"
+    pp:
+  - name: "null_model_3"
+    pp:
