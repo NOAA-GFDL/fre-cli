@@ -169,6 +169,9 @@ class container():
                                  "export BACKUP_LD_LIBRARY_PATH=$LD_LIBRARY_PATH\n",
                                  "# Set up spack loads\n",
                                  RUNenv[0]+"\n"]
+            #create directory if not present
+            os.makedirs(os.path.dirname(runOnDisk), exist_ok=True)
+            # write file
             with open(runOnDisk,"w") as f:
                 f.writelines(self.createscript)
                 f.write("# Load spack packages\n")
