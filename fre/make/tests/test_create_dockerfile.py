@@ -26,9 +26,6 @@ VERBOSE = False
 # container root (as set in platform yaml)
 MODEL_ROOT = "/apps"
 
-# possible targets
-targets = ["debug", "prod", "repro", "debug-openmp", "prod-openmp", "repro-openmp"]
-
 #def dockerfile_create(yamlfile,platform,target,execute):
 
 # yaml file checks
@@ -56,6 +53,13 @@ def test_bad_target_option():
 def test_bad_yamlpath_option():
     ''' test create-dockerfile with a invalid target option'''
     create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET, False)
+
+
+def test_no_op_platform():
+    '''test create-dockerfile will do nothing if non-container platform is given'''
+    rmtree("./tmp") # clear out any past runs
+    create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET, False)
+    assert not Path(f"./tmp").exists()
 
 # tests container build script/makefile/dockerfile creation
 def test_create_dockerfile():
