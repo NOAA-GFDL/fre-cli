@@ -50,12 +50,14 @@ def list_platforms_subtool(yamlfile):
     p = "p_placeholder"
     t = "t_placeholder"
 
-    combined=f"combined-am5.yaml"
+    combined=f"combined-{e}.yaml"
+    yamlpath = os.path.dirname(yamlfile)
+
     # Combine model / experiment
     quick_combine(yamlfile,e,p,t,combined)
 
     # Print experiment names
-    c = yaml_load(combined)
+    c = yaml_load(os.path.join(yamlpath,combined))
 
     print("\nPlatforms available:")
     for i in c.get("platforms"):
