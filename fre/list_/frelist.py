@@ -1,8 +1,8 @@
-''' fre list '''
+''' fre lister '''
 
 import click
-from fre.list import list_experiments_script
-from fre.list import list_platforms_script
+from fre.list_ import list_experiments_script
+from fre.list_ import list_platforms_script
 
 @click.group(help=click.style(" - access fre list subcommands", fg=(232,204,91)))
 def list_cli():
@@ -14,7 +14,7 @@ def list_cli():
               type=str,
               help="YAML file to be used for parsing",
               required=True)
-def list_exps(yamlfile):
+def exps(yamlfile):
     """ - List experiments  available"""
     list_experiments_script.list_experiments_subtool(yamlfile)
 
@@ -24,7 +24,7 @@ def list_exps(yamlfile):
               type=str,
               help="YAML file to be used for parsing",
               required=True)
-def list_platforms(yamlfile):
+def platforms(yamlfile):
     """ - List platforms available """
     list_platforms_script.list_platforms_subtool(yamlfile)
 

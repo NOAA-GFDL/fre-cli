@@ -15,9 +15,9 @@ def join_constructor(loader, node):
     seq = loader.construct_sequence(node)
     return ''.join([str(i) for i in seq])
 
-class NoAliasDumper(yaml.SafeDumper):
-    def ignore_aliases(self, data):
-        return True
+#class NoAliasDumper(yaml.SafeDumper):
+#    def ignore_aliases(self, data):
+#        return True
 
 def yaml_load(yamlfile):
     """
