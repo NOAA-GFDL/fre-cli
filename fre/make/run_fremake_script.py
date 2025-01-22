@@ -58,7 +58,8 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
     fremakeBuild.writeScript()
     print("    Compile script created here: " + bld_dir + "/compile.sh" + "\n")
 
-    return fremakeBuild
+    compile_script = f"{bld_dir}/compile.sh" 
+    return compile_script
 
 def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,td,cr,cb,cd):
     """
@@ -228,9 +229,6 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                                modulesInit = platform["modulesInit"],
                                                jobs = jobs)
                     fremakeBuildList.append(fremakeBuild)
-                    ## Run the build if --execute option given, otherwise print out compile script path
-                    if execute:
-                        fremakeBuild.run()
                 else:
                     if force_compile or force_checkout:
                         # Remove compile script
@@ -246,13 +244,9 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                                    modulesInit = platform["modulesInit"],
                                                    jobs = jobs)
                         fremakeBuildList.append(fremakeBuild)
-                        if execute:
-                            fremakeBuild.run()
                     else:
                         print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
-                        if execute:
-                            subprocess.run(args=[bld_dir+"/compile.sh"], check=True)
-                        ##TO-DO: log file here
+                        fremakeBuildList.append(f"{bld_dir}/compile.sh")
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
@@ -340,12 +334,11 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 #buildDockerfile(fremakeYaml, image)
 
     if baremetalRun:
-        if __name__ == '__main__':
-            if execute:
-                # Create a multiprocessing Pool
-                pool = Pool(processes=nparallel)
-                # process data_inputs iterable with pool
-                pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)
+        if execute:
+            # Create a multiprocessing Pool
+            pool = Pool(processes=nparallel)
+            # process data_inputs iterable with pool
+            pool.map(buildBaremetal.run, fremakeBuildList)
 
 if __name__ == "__main__":
     fremake_run()

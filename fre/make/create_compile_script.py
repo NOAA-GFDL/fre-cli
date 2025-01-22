@@ -1,5 +1,5 @@
 '''
-TODO: make docstring
+Create the compile script to compile model
 '''
 import os
 import sys
@@ -28,8 +28,10 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
         fremakeBuild.writeBuildComponents(c)
     fremakeBuild.writeScript()
 
-    print("    Compile script created in " + bld_dir + "/compile.sh" + "\n")
-    return fremakeBuild
+    print("    Compile script created here: " + bld_dir + "/compile.sh" + "\n")
+    compile_script = f"{bld_dir}/compile.sh"
+
+    return compile_script
 
 def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
     """
@@ -100,6 +102,7 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
                                                             modules = platform["modules"],
                                                             modulesInit = platform["modulesInit"],
                                                             jobs = jobs)
+                  # Append the compile script created
                   fremakeBuildList.append(fremakeBuild)
               else:
                   if force_compile:
@@ -115,14 +118,17 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
                                                                 modules = platform["modules"],
                                                                 modulesInit = platform["modulesInit"],
                                                                 jobs = jobs)
+                      # Append the returned compile script created
                       fremakeBuildList.append(fremakeBuild)
                   else:
-                        print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
+                      print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
+                      # Append the compile script
+                      fremakeBuildList.append(f"{bld_dir}/compile.sh")
 
     if execute:
         if baremetalRun:
             pool = Pool(processes=nparallel)                            # Create a multiprocessing Pool
-            pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
+            pool.map(buildBaremetal.run,fremakeBuildList)  # process data_inputs iterable with pool
     else:
         return
 
