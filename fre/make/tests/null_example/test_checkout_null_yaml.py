@@ -37,5 +37,5 @@ def test_checkout_execute():
     """
     check if --execute option works
     """
-    #subprocess.run(["rm","-rf",f"{OUT}/fremake_canopy/test"])
+    subprocess.run(["rm","-rf",f"{OUT}/fremake_canopy/test"])
     create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,False, True,False)
