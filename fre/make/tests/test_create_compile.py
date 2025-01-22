@@ -73,7 +73,36 @@ def test_compile_creation():
     # Check for creation of compile script
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
 
-def test_compile_executable_failure():
+def test_compile_creation_force_compile(capfd):
+    """
+    Check for the re-creation of the compile script
+    if --force-compile is defined
+    """
+    # Set environment variable for use in ci.gnu platform
+    os.environ["TEST_BUILD_DIR"] = OUT
+
+    plat = PLATFORM[0]
+    targ = TARGET[0]
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+
+    # Create the compile script
+    create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                         platform = PLATFORM,
+                                         target = TARGET,
+                                         jobs = 4,
+                                         parallel = 1,
+                                         execute = False,
+                                         verbose = False,
+                                         force_compile=True)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    if "Re-creating the compile script" in out:
+        assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
+    else:
+       assert False
+
+def test_compile_executablefail_compilelog():
     """
     Check for the failure in execution of the compile script.
     Fails because it would need the makefile and checked out
@@ -96,11 +125,11 @@ def test_compile_executable_failure():
                                          verbose = False,
                                          force_compile=False)
 
-    # Check for creation of compile script, FMS directory,
+    # Check for creation of compile script,
     # log.compile file, the executable
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
-    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile").exists()
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/null_model_full.x").exists() == False
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile").exists()
 
 @pytest.mark.xfail(raises=ValueError)
 def test_bad_platform():
