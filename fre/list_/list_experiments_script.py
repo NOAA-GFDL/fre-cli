@@ -3,7 +3,6 @@ Script combines the model yaml with exp, platform, and target to list experiment
 """
 import os
 from pathlib import Path
-import click
 import yaml
 import fre.yamltools.combine_yamls as cy
 
@@ -31,6 +30,7 @@ def yaml_load(yamlfile):
 def quick_combine(yml, exp, platform, target):
     """
     Create intermediate combined model and exp. yaml
+    This is done to avoid an "undefined alias" error
     """
     # Combine model / experiment
     comb = cy.init_pp_yaml(yml,exp,platform,target)

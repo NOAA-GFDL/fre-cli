@@ -3,10 +3,9 @@ Script combines the model yaml with exp, platform, and target to list experiment
 """
 
 import os
-import click
+from pathlib import Path
 import yaml
 import fre.yamltools.combine_yamls as cy
-from pathlib import Path
 
 def join_constructor(loader, node):
     """
@@ -29,8 +28,10 @@ def yaml_load(yamlfile):
 
     return y
 
-def quick_combine(yml, exp, platform, target,combined):
+def quick_combine(yml, platform, target):
     """
+    Combine the intermediate model and platforms yaml.
+    This is done to avoid an "undefined alias" error
     """
     # Combine model / experiment
     comb = cy.init_compile_yaml(yml,platform,target)
@@ -38,11 +39,17 @@ def quick_combine(yml, exp, platform, target,combined):
     comb.combine_platforms()
 
 def clean(combined):
+    """
+    Remove intermediate combined yaml.
+    """
     if Path(combined).exists():
         os.remove(combined)
         print(f"{combined} removed.")
 
 def list_platforms_subtool(yamlfile):
+    """
+    List the platforms available
+    """
     # Regsiter tag handler
     yaml.add_constructor('!join', join_constructor)
 
@@ -54,7 +61,7 @@ def list_platforms_subtool(yamlfile):
     yamlpath = os.path.dirname(yamlfile)
 
     # Combine model / experiment
-    quick_combine(yamlfile,e,p,t,combined)
+    quick_combine(yamlfile,p,t)
 
     # Print experiment names
     c = yaml_load(os.path.join(yamlpath,combined))
