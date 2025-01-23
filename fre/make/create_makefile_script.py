@@ -1,14 +1,14 @@
-#!/usr/bin/python3
+'''
+TODO doc-string
+'''
 
 import os
 from pathlib import Path
 
-import click
-
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 import fre.yamltools.combine_yamls as cy
 
-def makefile_create(yamlfile,platform,target):
+def makefile_create(yamlfile, platform, target):
     """
     Create the makefile
     """
@@ -25,13 +25,13 @@ def makefile_create(yamlfile,platform,target):
 
     ## If combined yaml exists, note message of its existence
     ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
+    full_combined = cy.combined_compile_existcheck(combined, yml, platform, target)
 
     ## Get the variables in the model yaml
     freVars = varsfre.frevars(full_combined)
 
     ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined,freVars)
+    modelYaml = yamlfre.freyaml(full_combined, freVars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
@@ -60,9 +60,9 @@ def makefile_create(yamlfile,platform,target):
                                              mkTemplatePath = platform["mkTemplate"])
                 # Loop through components and send the component name, requires, and overrides for the Makefile
                 for c in fremakeYaml['src']:
-                    freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
+                    freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
-                click.echo("\nMakefile created at " + bldDir + "/Makefile" + "\n")
+                print("\nMakefile created at " + bldDir + "/Makefile" + "\n") # was click.echo
             else:
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "./tmp/"+platformName
@@ -75,17 +75,9 @@ def makefile_create(yamlfile,platform,target):
 
                 # Loop through compenents and send the component name and requires for the Makefile
                 for c in fremakeYaml['src']:
-                    freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
+                    freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
-                click.echo("\nMakefile created at " + tmpDir + "/Makefile" + "\n")
-
-@click.command()
-def _makefile_create(yamlfile,platform,target):
-    '''
-    Decorator for calling makefile_create - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return makefile_create(yamlfile,platform,target)
+                print("\nMakefile created at " + tmpDir + "/Makefile" + "\n") # was click.echo
 
 if __name__ == "__main__":
     makefile_create()

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 '''
 This script contains the refineDiags that produce data at the same
 frequency as the input data (no reduction) such as surface albedo,
@@ -10,9 +9,8 @@ are present.
 import os
 import netCDF4 as nc
 import xarray as xr
-import click
 
-@click.command()
+
 def mask_atmos_plevel_subtool(infile, outfile, psfile):
     ''' click entry point to fre cmor mask-atmos-plevel'''
 

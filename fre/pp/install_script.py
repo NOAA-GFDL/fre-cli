@@ -3,7 +3,6 @@
 from pathlib import Path
 import os
 import subprocess
-import click
 
 def install_subtool(experiment, platform, target):
     """
@@ -28,15 +27,10 @@ def install_subtool(experiment, platform, target):
         if installed_def == source_def:
             print(f"NOTE: Workflow '{install_dir}' already installed, and the definition is unchanged")
         else:
-            print(f"ERROR: Workflow '{install_dir}' already installed, and the definition has changed!")
-            print(f"ERROR: Please remove installed workflow with 'cylc clean {name}' or move the workflow run directory '{install_dir}'")
-            exit(1)
+            print(f"ERROR: Please remove installed workflow with 'cylc clean {name}'"
+                  " or move the workflow run directory '{install_dir}'")
+            raise Exception(f"ERROR: Workflow '{install_dir}' already installed, and the definition has changed!")
     else:
         print(f"NOTE: About to install workflow into ~/cylc-run/{name}")
         cmd = f"cylc install --no-run-name {name}"
         subprocess.run(cmd, shell=True, check=True)
-
-@click.command()
-def _install_subtool(experiment, platform, target):
-    ''' entry point to install for click '''
-    return install_subtool(experiment, platform, target)
