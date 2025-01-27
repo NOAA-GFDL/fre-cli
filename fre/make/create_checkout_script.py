@@ -19,7 +19,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     jobs = str(jobs)
     pcheck = no_parallel_checkout
     
-    if not jobs and execute:
+    if jobs == 'False' and execute:
         raise ValueError ('jobs must be defined as number if --execute flag is True')
     if pcheck:
         pc = ""
