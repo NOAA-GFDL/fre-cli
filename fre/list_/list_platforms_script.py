@@ -15,6 +15,8 @@ def join_constructor(loader, node):
     seq = loader.construct_sequence(node)
     return ''.join([str(i) for i in seq])
 
+# To look into: ignore undefined alias error msg for listing?
+# Found this somewhere but don't fully understand yet
 #class NoAliasDumper(yaml.SafeDumper):
 #    def ignore_aliases(self, data):
 #        return True
