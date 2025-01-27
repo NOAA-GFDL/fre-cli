@@ -15,7 +15,7 @@ TARGET = ["debug"]
 #set output directory
 # Set home for ~/cylc-src location in script
 #run checkout command
-OUT = f"{TEST_DIR}/configure_yaml_out"
+OUT = f"{TEST_DIR}/test_run_fremake_multitarget"
 os.environ["TEST_BUILD_DIR"] = OUT
 
 def test_checkout_script_exists():
