@@ -39,3 +39,10 @@ def test_checkout_execute():
     """
     subprocess.run(["rm","-rf",f"{OUT}/fremake_canopy/test"])
     create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,False,2, True,False)
+    
+def test_checkout_no_parallel_checkout():
+    """
+    check if --no_parallel_checkout option works
+    """
+    create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,True,False, False,True)
+
