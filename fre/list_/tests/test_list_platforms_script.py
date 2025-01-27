@@ -1,8 +1,6 @@
 """
 Test fre list exps
 """
-#import os
-#import shutil
 import pytest
 from pathlib import Path
 from fre.list_ import list_platforms_script
