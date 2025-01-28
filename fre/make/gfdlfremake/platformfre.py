@@ -150,13 +150,6 @@ class platforms ():
         for p in self.yaml:
             if p["name"] == name:
                 return p["containerBase"]
-    def is2stepContainer(self,name):
-        """
-        Brief: Returns True if this is a 2 step container
-        """
-        for p in self.yaml:
-            if p["name"] == name:
-                return p["container2step"]
     def getContainer2base(self,name):
         """
         Brief: returns the image to be used in the second step of the Dockerfile
