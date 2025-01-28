@@ -16,6 +16,7 @@ YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
 PLATFORM = ["ci.gnu"]
 CONTAINER_PLATFORM = ["hpcme.2023"]
+CONTAINER_PLAT2 = ["con.twostep"]
 TARGET = ["debug"]
 BADOPT = ["foo"]
 EXPERIMENT = "null_model_full"
@@ -145,6 +146,33 @@ def test_run_fremake_makefile_creation_container():
 def test_run_fremake_run_script_creation_container():
     ''' checks (internal) container run script creation from previous test '''
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
+
+# tests container 2 stage build script/makefile/dockerfile creation
+def test_run_fremake_2stage_container():
+    '''run run-fremake with options for containerized build'''
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET, False, 1, True, False, VERBOSE)
+
+def test_run_fremake_2stage_build_script_creation_container():
+    ''' checks container build script creation from previous test '''
+    assert Path("createContainer.sh").exists()
+
+def test_run_fremake_2stage_dockerfile_creation_container():
+    ''' checks dockerfile creation from previous test '''
+    assert Path("Dockerfile").exists()
+
+def test_run_fremake_2stage_checkout_script_creation_container():
+    ''' checks checkout script creation from previous test '''
+    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
+
+def test_run_fremake_2stage_makefile_creation_container():
+    ''' checks makefile creation from previous test '''
+    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
+
+def test_run_fremake_2stage_run_script_creation_container():
+    ''' checks (internal) container run script creation from previous test '''
+    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
+
+# tests for builds with multiple targets
 
 def test_run_fremake_container_force_checkout(capfd):
     '''run run-fremake with options for containerized build with force-checkout option'''

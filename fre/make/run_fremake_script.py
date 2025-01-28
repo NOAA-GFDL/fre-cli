@@ -61,7 +61,7 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
     compile_script = f"{bld_dir}/compile.sh" 
     return compile_script
 
-def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,td,cr,cb,cd):
+def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,cd):
     """
     Go through steps to create Dockerfile and container build script.
     """
@@ -70,7 +70,8 @@ def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,t
                                         libs = yaml_obj["container_addlibs"],
                                         RUNenv = run_env,
                                         target = target,
-                                        mkTemplate = mkTemplate)
+                                        mkTemplate = mkTemplate,
+                                        stage2base = s2i)
 
     dockerBuild.writeDockerfileCheckout("checkout.sh", td+"/checkout.sh")
     dockerBuild.writeDockerfileMakefile(makefile_obj.getTmpDir() + "/Makefile",
@@ -252,6 +253,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 ## Run the checkout script
                 #          image="hpc-me-intel:2021.1.1"
                 image=modelYaml.platforms.getContainerImage(platformName)
+                stage2image = modelYaml.platforms.getContainer2base(platformName)
                 src_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
                 bld_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmp_dir = "tmp/"+platformName
@@ -289,7 +291,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 print("Makefile created here: " + tmp_dir + "/Makefile")# + "\n")
 
                 ## Build the dockerfile
-                #if is doesn't exist, write
+                # If is doesn't exist, write
                 curr_dir = os.getcwd()
                 if not os.path.exists(f"{curr_dir}/Dockerfile"):
                     print("Creating Dockerfile and build script...")
@@ -299,6 +301,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                            run_env = platform["RUNenv"],
                                            target = target,
                                            mkTemplate = platform["mkTemplate"],
+                                           s2i = stage2image,
                                            td = tmp_dir,
                                            cr = platform["containerRun"],
                                            cb = platform["containerBuild"],
@@ -318,6 +321,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                                target = target,
                                                td = tmp_dir,
                                                mkTemplate = platform["mkTemplate"],
+                                               s2i = stage2image,
                                                cr = platform["containerRun"],
                                                cb = platform["containerBuild"],
                                                cd = curr_dir)

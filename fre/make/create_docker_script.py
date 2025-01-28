@@ -9,7 +9,7 @@ from pathlib import Path
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls as cy
 
-def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,td,cr,cb,cd):
+def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,cd):
     """
     Go through steps to write the Dockerfile
     """
@@ -18,7 +18,8 @@ def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,td,cr,cb,cd):
                                         libs = yaml_obj["container_addlibs"],
                                         RUNenv = run_env,
                                         target = target,
-                                        mkTemplate = mkTemplate)
+                                        mkTemplate = mkTemplate
+                                        stage2base = s2i)
 
     dockerBuild.writeDockerfileCheckout("checkout.sh", td+"/checkout.sh")
     dockerBuild.writeDockerfileMakefile(td+"/Makefile", td+"/linkline.sh")
@@ -77,6 +78,7 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
             ## Check for type of build
             if platform["container"] is True:
                 image=modelYaml.platforms.getContainerImage(platformName)
+                stage2image = modelYaml.platforms.getContainer2base(platformName)
                 bld_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmp_dir = "tmp/"+platformName
                 curr_dir = os.getcwd()
@@ -86,6 +88,7 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
                                            run_env = platform["RUNenv"],
                                            target = targetObject,
                                            mkTemplate = platform["mkTemplate"],
+                                           s2i = stage2image,
                                            td = tmp_dir,
                                            cr = platform["containerRun"],
                                            cb = platform["containerBuild"],
