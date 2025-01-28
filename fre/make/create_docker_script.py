@@ -18,7 +18,7 @@ def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,c
                                         libs = yaml_obj["container_addlibs"],
                                         RUNenv = run_env,
                                         target = target,
-                                        mkTemplate = mkTemplate
+                                        mkTemplate = mkTemplate,
                                         stage2base = s2i)
 
     dockerBuild.writeDockerfileCheckout("checkout.sh", td+"/checkout.sh")
