@@ -64,10 +64,10 @@ class container():
         if self.stage2base == "":
             self.secondstage = ["\n"]
         else:
-            self.secondstage = ["FROM "+self.stage2base+" as final\n",
-                                "COPY --from=builder "+self.src+" "+self.src+"\n",
-                                "COPY --from=builder "+self.bld+" "+self.bld+"\n",
-                                "ENV PATH=$PATH:"+self.bld+"\n"]
+            self.secondstage = [f"FROM {self.stage2base} as final\n",
+                                f"COPY --from=builder  {self.src} {self.src}\n",
+                                f"COPY --from=builder {self.bld} {self.bld}\n",
+                                f"ENV PATH=$PATH:{self.bld}\n"]
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """
         Brief: writes to the checkout part of the Dockerfile and sets up the compile
