@@ -81,6 +81,7 @@ def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,s
         dockerBuild.writeDockerfileMkmf(c)
 
     dockerBuild.writeRunscript(run_env,cr,td+"/execrunscript.sh")
+    print(f"    Runscript created here: {td}/execrunscript.sh")
     print(f"    Dockerfile created here: {cd}")
 
     # Create build script for container
@@ -173,14 +174,6 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                     freCheckout.run()
                 else:
                     print("\nCheckout script PREVIOUSLY created and run here: "+ src_dir + "/checkout.sh")
-#            try:
-#                subprocess.run(args=[src_dir+"/checkout.sh"], check=True)
-#            except:
-#                print("\nThere was an error with the checkout script "+src_dir+"/checkout.sh.",
-#                      "\nTry:\n",
-#                      "  - removing test folder: " + modelRoot + "\n",
-#                      "  - add --force-checkout option\n")
-#                raise
 
     fremakeBuildList = []
     ## Loop through platforms and targets
@@ -251,7 +244,6 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
-                #          image="hpc-me-intel:2021.1.1"
                 image=modelYaml.platforms.getContainerImage(platformName)
                 stage2image = modelYaml.platforms.getContainer2base(platformName)
                 src_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
@@ -328,7 +320,6 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                     else:
                         print(f"Dockerfile PREVIOUSLY created here: {curr_dir}/Dockerfile")
                         print(f"Container build script created here: {curr_dir}/createContainer.sh\n")
-
 
                 # Execute if flag is given
                 if execute:
