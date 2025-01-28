@@ -150,7 +150,7 @@ def test_run_fremake_run_script_creation_container():
 # tests container 2 stage build script/makefile/dockerfile creation
 def test_run_fremake_2stage_container():
     '''run run-fremake with options for containerized build'''
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET, False, 1, True, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET, False, 1, True, False, VERBOSE, False, False, False)
 
 def test_run_fremake_2stage_build_script_creation_container():
     ''' checks container build script creation from previous test '''
