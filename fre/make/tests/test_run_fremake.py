@@ -102,7 +102,7 @@ def test_run_fremake_serial_force_compile(capfd):
     if "Re-creating the compile script" in out:
         assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/compile.sh").exists()
     else:
-       assert False
+        assert False
 
 # same tests with multijob compile and non-parallel-checkout options enabled
 def test_run_fremake_multijob():
@@ -150,6 +150,12 @@ def test_run_fremake_run_script_creation_container():
 # tests container 2 stage build script/makefile/dockerfile creation
 def test_run_fremake_2stage_container():
     '''run run-fremake with options for containerized build'''
+    # Without force-dockerfile or force-checkout option, clean files first
+    # or else it'll read that they exist already and not make the execrunscript.sh
+    if Path("Dockerfile").exists() or Path("createContainer.sh").exists():
+        os.remove(Path("Dockerfile"))
+        os.remove(Path("createContainer.sh"))
+
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET, False, 1, True, False, VERBOSE, False, False, False)
 
 def test_run_fremake_2stage_build_script_creation_container():
