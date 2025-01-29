@@ -18,6 +18,18 @@ TARGET = ["debug"]
 OUT = f"{TEST_DIR}/test_run_fremake_multitarget"
 os.environ["TEST_BUILD_DIR"] = OUT
 
+def test_nullyaml_exists():
+    """
+    Make sure combined yaml file exists
+    """
+    assert Path(f"{YAMLFILE}").exists()
+
+def test_nullyaml_filled():
+    """
+    Make sure null.yaml is not an empty file
+    """
+    sum(1 for _ in open(f'{YAMLFILE}')) > 1
+    
 def test_checkout_script_exists():
     """
     Make sure checkout file exists
@@ -61,5 +73,11 @@ def test_checkout_no_parallel_checkout():
     """
     check if --no_parallel_checkout option works
     """
-    create_checkout_script.checkout_create(YAMLFILE,PLATFORM,TARGET,True,False, False,True)
+    create_checkout_script.checkout_create(YAMLFILE,
+                                           PLATFORM,
+                                           TARGET,
+                                           no_parallel_checkout = True,
+                                           jobs = False,
+                                           execute = False,
+                                           verbose = False)
 
