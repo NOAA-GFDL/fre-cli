@@ -53,9 +53,9 @@ def list_experiments_subtool(yamlfile):
     # Regsiter tag handler
     yaml.add_constructor('!join', join_constructor)
 
-    e = "exp_placeholder"
-    p = "p_placeholder"
-    t = "t_placeholder"
+    e = None
+    p = None
+    t = None
 
     combined=f"combined-{e}.yaml"
     # Combine model / experiment

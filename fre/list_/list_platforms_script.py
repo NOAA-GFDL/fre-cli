@@ -55,9 +55,9 @@ def list_platforms_subtool(yamlfile):
     # Regsiter tag handler
     yaml.add_constructor('!join', join_constructor)
 
-    e = yamlfile.split("/")[-1].split(".")[0] #"exp_placeholder"
-    p = "p_placeholder"
-    t = "t_placeholder"
+    e = yamlfile.split("/")[-1].split(".")[0] 
+    p = None
+    t = None
 
     combined=f"combined-{e}.yaml"
     yamlpath = os.path.dirname(yamlfile)
