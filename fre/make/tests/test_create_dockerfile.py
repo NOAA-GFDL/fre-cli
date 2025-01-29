@@ -57,9 +57,10 @@ def test_bad_yamlpath_option():
 
 def test_no_op_platform():
     '''test create-dockerfile will do nothing if non-container platform is given'''
-    rmtree("./tmp") # clear out any past runs
+    if Path(os.getcwd()+"/tmp").exists():
+        rmtree(os.getcwd()+"/tmp") # clear out any past runs
     create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET, False)
-    assert not Path(f"./tmp").exists()
+    assert not Path(os.getcwd()+"/tmp").exists()
 
 # tests container build script/makefile/dockerfile creation
 def test_create_dockerfile():
