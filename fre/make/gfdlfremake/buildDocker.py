@@ -1,8 +1,9 @@
-#!/usr/bin/python3
-## \date 2023
-## \author Tom Robinson
-## \email thomas.robinson@noaa.gov
-## \description
+'''
+    \date 2023
+    \author Tom Robinson
+    \email thomas.robinson@noaa.gov
+    \description
+'''
 
 import os
 
@@ -17,8 +18,12 @@ class container():
         - RUNenv : The commands that have to be run at
                    the beginning of a RUN in the dockerfile
                    to set up the environment
+        - target : The FRE target
+        - mkTemplate: The mkmf template to use
+        - stage2base: The base for the second stage. Empty
+                      string if there is no second stage
     """
-    def __init__(self,base,exp,libs,RUNenv,target,mkTemplate):
+    def __init__(self,base,exp,libs,RUNenv,target,mkTemplate,stage2base):
         """
         Initialize variables and write to the dockerfile
         """
@@ -30,6 +35,7 @@ class container():
         self.mkmf = True
         self.target = target
         self.template = mkTemplate
+        self.stage2base = stage2base
 
         # Set up spack loads in RUN commands in dockerfile
         if RUNenv == "":
@@ -53,15 +59,15 @@ class container():
                        " && src_dir="+self.src+" \\ \n",
                        " && mkmf_template="+self.template+ " \\ \n"]
         self.d=open("Dockerfile","w")
-        self.d.writelines("FROM "+self.base+" \n")
-        if self.base == "ecpe4s/noaa-intel-prototype:2023.09.25":
-            self.prebuild = '''RUN 
-            '''
-            self.postbuild = '''
-            '''
-            self.secondstage = '''
-            '''
-
+        self.d.writelines("FROM "+self.base+" as builder\n")
+        ## Set up the second stage build list of lines to add
+        if self.stage2base == "":
+            self.secondstage = ["\n"]
+        else:
+            self.secondstage = [f"FROM {self.stage2base} as final\n",
+                                f"COPY --from=builder  {self.src} {self.src}\n",
+                                f"COPY --from=builder {self.bld} {self.bld}\n",
+                                f"ENV PATH=$PATH:{self.bld}\n"]
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """
         Brief: writes to the checkout part of the Dockerfile and sets up the compile
@@ -203,6 +209,9 @@ class container():
             self.d.write(" cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
         else:
             self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
+        ## Write any second stage lines here 
+        for l in self.secondstage:
+            self.d.write(l)
         self.d.write('ENTRYPOINT ["/bin/bash"]')
         self.d.close()
 

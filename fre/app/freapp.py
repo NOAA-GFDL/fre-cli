@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 ''' fre app calls '''
 
 import time
@@ -7,7 +6,7 @@ import click
 
 from .mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
-from .regrid_xy.regrid_xy import _regrid_xy
+from .regrid_xy.regrid_xy import regrid_xy
 
 @click.group(help=click.style(" - access fre app subcommands", fg=(250,154,90)))
 def app_cli():
@@ -54,13 +53,11 @@ def app_cli():
               help = "`defaultxyInterp` / `def_xy_interp` (env var) default lat/lon resolution " + \
                      "for output regridding. (change me? TODO)",
               required = True)
-@click.pass_context
-def regrid(context,
-              input_dir, output_dir, begin, tmp_dir,
-              remap_dir, source, grid_spec, def_xy_interp ):
-    # pylint: disable=unused-argument
+def regrid( input_dir, output_dir, begin, tmp_dir,
+            remap_dir, source, grid_spec, def_xy_interp ):
     ''' regrid target netcdf file '''
-    context.forward(_regrid_xy)
+    regrid_xy( input_dir, output_dir, begin, tmp_dir,
+               remap_dir, source, grid_spec, def_xy_interp )
 
 @app_cli.command()
 @click.option("-i", "--infile",
@@ -74,11 +71,9 @@ def regrid(context,
 @click.option("-p", "--psfile", # surface pressure... ps? TODO
               help = "Input NetCDF file containing surface pressure (ps)",
               required = True)
-@click.pass_context
-def mask_atmos_plevel(context, infile, outfile, psfile):
-    # pylint: disable = unused-argument
+def mask_atmos_plevel(infile, outfile, psfile):
     """Mask out pressure level diagnostic output below land surface"""
-    context.forward(mask_atmos_plevel_subtool)
+    mask_atmos_plevel_subtool(infile, outfile, psfile)
 
 
 @app_cli.command()
@@ -112,17 +107,14 @@ def mask_atmos_plevel(context, infile, outfile, psfile):
               type = click.Choice(["samp","pop","samp_mean","pop_mean"]),
               default = "samp",
               help = "Compute standard deviations for time-averages as well")
-@click.pass_context
-def gen_time_averages(context, inf, outf, pkg, var, unwgt, avg_type, stddev_type):
-    # pylint: disable = unused-argument
+def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type, stddev_type):
     """
     generate time averages for specified set of netCDF files. 
     Example: generate-time-averages.py /path/to/your/files/
     """
     start_time = time.perf_counter()
-    context.forward(generate)
-    # need to change to a click.echo, not sure if echo supports f strings
-    print(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
+    generate(inf, outf, pkg, var, unwgt, avg_type, stddev_type)
+    click.echo(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
 
 if __name__ == "__main__":
     app_cli()

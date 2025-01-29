@@ -7,9 +7,14 @@ principal click group for main/fre allows for subgroup functions to
 be called via this script. I.e. 'fre' is the entry point
 """
 
-#versioning... always fun...
-# turn xxxx.y into xxxx.0y
 import importlib.metadata
+
+import click
+from .lazy_group import LazyGroup
+
+
+
+# versioning, turn xxxx.y into xxxx.0y
 version_unexpanded = importlib.metadata.version('fre-cli')
 version_unexpanded_split = version_unexpanded.split('.')
 if len(version_unexpanded_split[1]) == 1:
@@ -18,13 +23,7 @@ else:
     version_minor = version_unexpanded_split[1]
 version = version_unexpanded_split[0] + '.' + version_minor
 
-
-
-
-
-import click
-from .lazy_group import LazyGroup
-
+# click and lazy group loading
 @click.group(
     cls = LazyGroup,
     lazy_subcommands = {"pp": ".pp.frepp.pp_cli",
@@ -32,7 +31,6 @@ from .lazy_group import LazyGroup
                        "list": ".list.frelist.list_cli",
                        "check": ".check.frecheck.check_cli",
                        "run": ".run.frerun.run_cli",
-                       "test": ".test.fretest.test_cli",
                        "yamltools": ".yamltools.freyamltools.yamltools_cli",
                        "make": ".make.fremake.make_cli",
                        "app": ".app.freapp.app_cli",

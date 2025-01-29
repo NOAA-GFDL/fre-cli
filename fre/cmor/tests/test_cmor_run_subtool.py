@@ -4,9 +4,9 @@ import shutil
 from pathlib import Path
 from datetime import date
 
-import git
-
-import fre
+#import fre
+#from fre import cmor
+from fre.cmor import cmor_run_subtool
 
 import subprocess
 
@@ -14,22 +14,16 @@ import subprocess
 ROOTDIR = 'fre/tests/test_files'
 
 # setup- cmip/cmor variable table(s)
-CLONE_CMIP_TABLE_URL = \
-    'https://github.com/PCMDI/cmip6-cmor-tables.git'
-CLONE_REPO_PATH = \
+CMIP6_TABLE_REPO_PATH = \
     f'{ROOTDIR}/cmip6-cmor-tables'
 TABLE_CONFIG = \
-    f'{CLONE_REPO_PATH}/Tables/CMIP6_Omon.json'
+    f'{CMIP6_TABLE_REPO_PATH}/Tables/CMIP6_Omon.json'
 
 def test_setup_cmor_cmip_table_repo():
-    ''' setup routine, if it doesnt exist, clone the repo holding CMOR/CMIP6 tables '''
-    if Path(TABLE_CONFIG).exists():
-        pass
-    else:
-        git.Repo.clone_from(
-            CLONE_CMIP_TABLE_URL,
-            CLONE_REPO_PATH )
-    assert Path(TABLE_CONFIG).exists()
+    ''' setup routine, make sure the recursively cloned tables exist '''
+    assert all( [ Path(CMIP6_TABLE_REPO_PATH).exists(),
+                  Path(TABLE_CONFIG).exists()
+                  ] )
 
 # explicit inputs to tool
 INDIR = f'{ROOTDIR}/ocean_sos_var_file'
@@ -52,15 +46,16 @@ FILENAME = 'reduced_ocean_monthly_1x1deg.199307-199308.sos' # unneeded, this is 
 FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
 
 def test_setup_fre_cmor_run_subtool(capfd):
-    ''' The routine generates a netCDF file from an ascii (cdl) file. It also checks for a ncgen output file from prev pytest runs,removes it if it's present, and ensures the new file is created without error. '''
-
-    ''' set-up test: create binary test files from reduced ascii files in root dir '''
+    ''' The routine generates a netCDF file from an ascii (cdl) file. It also checks for a ncgen
+    output file from prev pytest runs, removes it if it's present, and ensures the new file is
+    created without error.
+    '''
 
     ncgen_input = f"{ROOTDIR}/reduced_ascii_files/{FILENAME}.cdl"
     ncgen_output = f"{ROOTDIR}/ocean_sos_var_file/{FILENAME}.nc"
 
     if Path(ncgen_output).exists():
-        Path(ncgen_output).unlink() 
+        Path(ncgen_output).unlink()
     assert Path(ncgen_input).exists()
 
     ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
@@ -81,9 +76,13 @@ def test_setup_fre_cmor_run_subtool(capfd):
 def test_fre_cmor_run_subtool_case1(capfd):
     ''' fre cmor run, test-use case '''
 
+    #import sys
+    #assert False, f'{sys.path}'
+
+
     #debug
     #print(
-    #    f"fre.cmor.cmor_run_subtool("
+    #    f"cmor_run_subtool("
     #    f"\'{INDIR}\',"
     #    f"\'{VARLIST}\',"
     #    f"\'{TABLE_CONFIG}\',"
@@ -93,7 +92,7 @@ def test_fre_cmor_run_subtool_case1(capfd):
     #)
 
     # test call, where meat of the workload gets done
-    fre.cmor.cmor_run_subtool(
+    cmor_run_subtool(
         indir = INDIR,
         json_var_list = VARLIST,
         json_table_config = TABLE_CONFIG,
@@ -119,7 +118,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
                              check=False,
                              capture_output=True
     )
-    
+
     # err_list has length two if end in newline
     err_list = result.stderr.decode().split('\n')
     expected_err = \
@@ -203,7 +202,7 @@ def test_fre_cmor_run_subtool_case2(capfd):
 
     #debug
     #print(
-    #    f"fre.cmor.cmor_run_subtool("
+    #    f"cmor_run_subtool("
     #    f"\'{INDIR}\',"
     #    f"\'{VARLIST_DIFF}\',"
     #    f"\'{TABLE_CONFIG}\',"
@@ -213,7 +212,7 @@ def test_fre_cmor_run_subtool_case2(capfd):
     #)
 
     # test call, where meat of the workload gets done
-    fre.cmor.cmor_run_subtool(
+    cmor_run_subtool(
         indir = INDIR,
         json_var_list = VARLIST_DIFF,
         json_table_config = TABLE_CONFIG,

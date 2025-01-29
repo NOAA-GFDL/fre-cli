@@ -12,6 +12,7 @@ NM_EXAMPLE = Path("null_example")
 YAMLFILE = "null_model.yaml"
 BM_PLATFORM = ["ncrc5.intel23"]
 CONTAINER_PLATFORM = ["hpcme.2023"]
+CONTAINER_PLAT2 = ["con.twostep"]
 TARGET = ["debug"]
 EXPERIMENT = "null_model_full"
 
@@ -71,5 +72,15 @@ def test_container_makefile_creation():
     container_plat = CONTAINER_PLATFORM[0]
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
     create_makefile_script.makefile_create(yamlfile_path,CONTAINER_PLATFORM,TARGET)
+
+    assert Path(f"tmp/{container_plat}/Makefile").exists()
+
+def test_container2step_makefile_creation():
+    """
+    Check the makefile is created when the two stage container is used
+    """
+    container_plat = CONTAINER_PLAT2[0]
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+    create_makefile_script.makefile_create(yamlfile_path,CONTAINER_PLAT2,TARGET)
 
     assert Path(f"tmp/{container_plat}/Makefile").exists()

@@ -1,15 +1,15 @@
-# https://pytest-cov.readthedocs.io/en/latest/config.html
 [run]
 omit =
+    fre/check/*
+    fre/list/*
+    fre/run/*
+    fre/test/*
     fre/tests/*
+    fre/analysis/tests/*
     fre/app/generate_time_averages/tests/*
     fre/app/regrid_xy/tests/*
     fre/catalog/tests/*
-    fre/check
     fre/cmor/tests/*
-    fre/list
     fre/make/tests/*
     fre/pp/tests/*
-    fre/run
-    fre/test
     fre/yamltools/tests/*
