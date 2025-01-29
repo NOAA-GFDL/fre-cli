@@ -86,5 +86,4 @@ To be developed:
 - [x]  **fre make**
 - [x]  **fre pp**
 - [ ]  **fre run**
-- [ ]  **fre test**
 - [x]  **fre yamltools**
