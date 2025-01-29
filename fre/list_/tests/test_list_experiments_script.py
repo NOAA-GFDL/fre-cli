@@ -6,7 +6,7 @@ from pathlib import Path
 from fre.list_ import list_experiments_script
 
 # SET-UP
-TEST_DIR = Path("fre/list_/tests")
+TEST_DIR = Path("fre/make/tests")
 NM_EXAMPLE = Path("null_example")
 YAMLFILE = "null_model.yaml"
 BADYAMLFILE = "null_model_bad.yaml"
