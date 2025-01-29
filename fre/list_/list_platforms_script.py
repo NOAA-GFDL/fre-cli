@@ -2,33 +2,15 @@
 Script combines the model yaml with exp, platform, and target to list experiment information.
 """
 
-import os
 from pathlib import Path
 import yaml
 import fre.yamltools.combine_yamls as cy
-
-def join_constructor(loader, node):
-    """
-    Allows FRE properties defined
-    in main yaml to be concatenated.
-    """
-    seq = loader.construct_sequence(node)
-    return ''.join([str(i) for i in seq])
 
 # To look into: ignore undefined alias error msg for listing?
 # Found this somewhere but don't fully understand yet
 #class NoAliasDumper(yaml.SafeDumper):
 #    def ignore_aliases(self, data):
 #        return True
-
-def yaml_load(yamlfile):
-    """
-    Load the yamlfile
-    """
-    with open(yamlfile, 'r') as yf:
-        y = yaml.load(yf,Loader=yaml.Loader)
-
-    return y
 
 def quick_combine(yml, platform, target):
     """
@@ -40,12 +22,12 @@ def quick_combine(yml, platform, target):
     comb.combine_model()
     comb.combine_platforms()
 
-def clean(combined):
+def remove(combined):
     """
     Remove intermediate combined yaml.
     """
     if Path(combined).exists():
-        os.remove(combined)
+        Path(combined).unlink()
         print(f"{combined} removed.")
 
 def list_platforms_subtool(yamlfile):
@@ -53,23 +35,25 @@ def list_platforms_subtool(yamlfile):
     List the platforms available
     """
     # Regsiter tag handler
-    yaml.add_constructor('!join', join_constructor)
+    yaml.add_constructor('!join', cy.join_constructor)
 
-    e = yamlfile.split("/")[-1].split(".")[0] 
+    e = yamlfile.split("/")[-1].split(".")[0]
     p = None
     t = None
 
     combined=f"combined-{e}.yaml"
-    yamlpath = os.path.dirname(yamlfile)
+    yamlpath = Path(yamlfile).parent
 
     # Combine model / experiment
     quick_combine(yamlfile,p,t)
 
     # Print experiment names
-    c = yaml_load(os.path.join(yamlpath,combined))
+    c = cy.yaml_load(f"{yamlpath}/{combined}")
 
     print("\nPlatforms available:")
     for i in c.get("platforms"):
         print(f'    - {i.get("name")}')
     print("\n")
-    clean(combined)
+
+    # Clean the intermediate combined yaml
+    remove(combined)
