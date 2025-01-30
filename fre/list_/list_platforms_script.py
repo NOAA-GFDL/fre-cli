@@ -41,8 +41,8 @@ def list_platforms_subtool(yamlfile):
     yaml.add_constructor('!join', cy.join_constructor)
 
     e = yamlfile.split("/")[-1].split(".")[0]
-    p = None
-    t = None
+    p = "None"
+    t = "None"
 
     combined = f"combined-{e}.yaml"
     yamlpath = Path(yamlfile).parent
