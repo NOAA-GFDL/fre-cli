@@ -16,7 +16,6 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     name = yamlfile.split(".")[0]
     nparallel = parallel
     jobs = str(jobs)
-    run = execute
 
     if verbose:
       logging.basicCOnfig(level=logging.INFO)
@@ -80,13 +79,14 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                    fremakeBuild.writeBuildComponents(c)
               fremakeBuild.writeScript()
               fremakeBuildList.append(fremakeBuild)
-              print("\nCompile script created at " + bldDir + "/compile.sh" + "\n") #was click.echo
-    if run:
+              print("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
+
+    if execute:
         if baremetalRun:
             pool = Pool(processes=nparallel)                         # Create a multiprocessing Pool
             pool.map(buildBaremetal.fremake_parallel,fremakeBuildList)  # process data_inputs iterable with pool
     else:
-        return #0 #sys.exit()
+        return
 
 if __name__ == "__main__":
     compile_create()

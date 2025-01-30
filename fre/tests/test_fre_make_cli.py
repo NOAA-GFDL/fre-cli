@@ -32,7 +32,7 @@ def test_cli_fre_make_create_checkout_baremetal():
     #    Path(f"{OUT_PATH}/fremake_canopy/test/am5/src/checkout.sh").unlink()
 
     # Set paths and click options
-    yamlfile = Path("fre/make/tests/AM5_example/")
+    yamlfile = Path("fre/make/tests/null_example/")
     platform = "ncrc5.intel23"
     target = "debug"
 
@@ -44,20 +44,20 @@ def test_cli_fre_make_create_checkout_baremetal():
     os.environ["HOME"]=str(Path(OUT_PATH))
 
     # run create-checkout
-    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/am5.yaml", "-p", platform, "-t", target])
+    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target])
 
     os.environ["HOME"] = old_home
 
     # Check for successful command, creation of checkout script, and that script is executable
     # os.access - checks is file has specific access mode, os.X_OK - checks executable permission
     assert all ([result.exit_code == 0,
-                 Path(f"{OUT_PATH}/fremake_canopy/test/am5/src/checkout.sh").exists(),
-                 os.access(Path(f"{OUT_PATH}/fremake_canopy/test/am5/src/checkout.sh"), os.X_OK)])
+                 Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh").exists(),
+                 os.access(Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh"), os.X_OK)])
 
 def test_cli_fre_make_create_checkout_container():
-    ''' fre make create-checkout -y am5.yaml -p hpcme.2023 -t debug'''
+    ''' fre make create-checkout -y null_model.yaml -p hpcme.2023 -t debug'''
     # Set paths and click options
-    yamlfile = Path("fre/make/tests/AM5_example/")
+    yamlfile = Path("fre/make/tests/null_example/")
     platform = "hpcme.2023"
     target = "debug"
 
@@ -66,7 +66,7 @@ def test_cli_fre_make_create_checkout_container():
     os.environ["HOME"]=str(Path(OUT_PATH))
 
     # run create-checkout
-    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/am5.yaml", "-p", platform, "-t", target])
+    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target])
 
     os.environ["HOME"] = old_home
 

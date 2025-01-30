@@ -147,6 +147,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 ###################### container stuff below #######################################
                 ## Run the checkout script
                 image=modelYaml.platforms.getContainerImage(platformName)
+                stage2image = modelYaml.platforms.getContainer2base(platformName)
                 srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
@@ -174,7 +175,8 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                                                     libs = fremakeYaml["container_addlibs"],
                                                     RUNenv = platform["RUNenv"],
                                                     target = target,
-                                                    mkTemplate = platform["mkTemplate"])
+                                                    mkTemplate = platform["mkTemplate"],
+                                                    stage2base = stage2image)
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
                 dockerBuild.writeDockerfileMakefile(freMakefile.getTmpDir() + "/Makefile",
                                                     freMakefile.getTmpDir() + "/linkline.sh")

@@ -171,7 +171,6 @@ class freyaml():
 
         #get platform info
         self.platformsdict = self.freyaml.get("platforms")
-        print(self.platformsdict)
         self.platforms = platformfre.platforms(self.platformsdict)
         self.platformsyaml = self.platforms.getPlatformsYaml()
 
