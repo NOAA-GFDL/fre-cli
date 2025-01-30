@@ -59,4 +59,4 @@ def list_platforms_subtool(yamlfile):
     print("\n")
 
     # Clean the intermediate combined yaml
-    #remove(f"{yamlpath}/{combined}")
+    remove(f"{yamlpath}/{combined}")
