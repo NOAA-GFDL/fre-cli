@@ -26,7 +26,10 @@ def remove(combined):
     """
     if Path(combined).exists():
         Path(combined).unlink()
-        print(f"{combined} removed.")
+        print("Remove intermediate combined yaml:\n",
+              f"   {combined} removed.")
+    else:
+        raise ValueError(f"{combined} could not be found to remove.")
 
 def list_experiments_subtool(yamlfile):
     """
@@ -35,11 +38,12 @@ def list_experiments_subtool(yamlfile):
     # Regsiter tag handler
     yaml.add_constructor('!join', cy.join_constructor)
 
-    e = None
-    p = None
-    t = None
+    e = "None"
+    p = "None"
+    t = "None"
 
-    combined=f"combined-{e}.yaml"
+    combined = f"combined-{e}.yaml"
+
     # Combine model / experiment
     quick_combine(yamlfile,e,p,t)
 

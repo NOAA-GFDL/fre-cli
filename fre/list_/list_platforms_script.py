@@ -28,7 +28,10 @@ def remove(combined):
     """
     if Path(combined).exists():
         Path(combined).unlink()
-        print(f"{combined} removed.")
+        print("Remove intermediate combined yaml:\n",
+              f"   {combined} removed.")
+    else:
+        raise ValueError(f"{combined} could not be found to remove.")
 
 def list_platforms_subtool(yamlfile):
     """
@@ -41,7 +44,7 @@ def list_platforms_subtool(yamlfile):
     p = None
     t = None
 
-    combined=f"combined-{e}.yaml"
+    combined = f"combined-{e}.yaml"
     yamlpath = Path(yamlfile).parent
 
     # Combine model / experiment
@@ -56,4 +59,4 @@ def list_platforms_subtool(yamlfile):
     print("\n")
 
     # Clean the intermediate combined yaml
-    remove(combined)
+    #remove(f"{yamlpath}/{combined}")
