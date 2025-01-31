@@ -7,7 +7,7 @@ cmor:
   json_var_list: 'fre/tests/test_files/varlist' 
   json_table_config: 'fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json' 
   json_exp_config: 'fre/tests/test_files/CMOR_input_example.json'
-  outdir: 'fre/tests/test_files/ourdir'
+  outdir: 'fre/tests/test_files/outdir'
 #  opt_var_name: 
 
 
