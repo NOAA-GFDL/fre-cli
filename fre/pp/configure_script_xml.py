@@ -12,6 +12,7 @@ import re
 import os
 import subprocess
 import logging
+fre_logger = logging.getLogger(__name__)
 
 # third party
 import metomi.rose.config
@@ -68,13 +69,13 @@ def chunk_from_legacy(legacy_chunk):
     regex = re.compile( r'(\d+)(\w+)' )
     match = regex.match( legacy_chunk )
     if not match:
-        logging.error( "Could not convert Bronx chunk to ISO8601 duration: %s",
+        fre_logger.error( "Could not convert Bronx chunk to ISO8601 duration: %s",
                        legacy_chunk )
         raise ValueError
 
     time_unit = match.group(2)
     if time_unit not in ['yr','mo']:
-        logging.error("Unknown time units %s", match.group(2) )
+        fre_logger.error("Unknown time units %s", match.group(2) )
         raise ValueError
 
     time_quant = match.group(1)
@@ -98,17 +99,17 @@ def frelist_xpath(xml, platform, target, experiment,
     """
 
     cmd = f"frelist -x {xml} -p {platform} -t {target} {experiment} --evaluate '{xpath}'"
-    logging.info("running cmd:\n %s",cmd)   #logging.info(f"running cmd:\n {cmd}")
-    logging.info(">> %s",xpath)
+    fre_logger.info("running cmd:\n %s",cmd)   #fre_logger.info(f"running cmd:\n {cmd}")
+    fre_logger.info(">> %s",xpath)
     process = subprocess.run(cmd,
                              shell=True,
                              check=False, #if True, retrieving std err difficult...
                              capture_output=True,
                              universal_newlines=True)
 
-    logging.info("stdout: \n%s",process.stdout.strip())
-    logging.info("stderr: \n%s",process.stderr.strip())
-    logging.info("returncode: \n%s",process.returncode)
+    fre_logger.info("stdout: \n%s",process.stdout.strip())
+    fre_logger.info("stderr: \n%s",process.stderr.strip())
+    fre_logger.info("returncode: \n%s",process.returncode)
 
 
     result = process.stdout.strip()
@@ -192,11 +193,11 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     # the XML's default paths will be inserted into rose-suite.conf.
     ##########################################################################
     if historydir is None:
-        logging.info("Running frelist for historydir assignment, this may fail")
-        logging.info("If so, try the frelist call manually and use the historydir argument")
+        fre_logger.info("Running frelist for historydir assignment, this may fail")
+        fre_logger.info("If so, try the frelist call manually and use the historydir argument")
 
         fetch_history_cmd = f"frelist -x {xml} -p {platform} -t {target} {experiment} -d archive"
-        logging.info(">> %s", fetch_history_cmd)
+        fre_logger.info(">> %s", fetch_history_cmd)
 
         fetch_history_process = subprocess.run(fetch_history_cmd,
                                                shell=True,
@@ -204,7 +205,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
                                                capture_output=True,
                                                universal_newlines=True)
         historydir = fetch_history_process.stdout.strip() + '/history'
-        logging.info(historydir)
+        fre_logger.info(historydir)
 
 
 
@@ -212,10 +213,10 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     historydir_refined = historydir + '_refineDiag'
 
     if ppdir is None:
-        logging.info("Running frelist for ppdir assignment...")
-        logging.info("If this fails, try the frelist call manually and use the ppdir argument")
+        fre_logger.info("Running frelist for ppdir assignment...")
+        fre_logger.info("If this fails, try the frelist call manually and use the ppdir argument")
         fetch_pp_cmd = f"frelist -x {xml} -p {platform} -t {target} {experiment} -d postProcess"
-        logging.info(">> %s", fetch_pp_cmd)
+        fre_logger.info(">> %s", fetch_pp_cmd)
 
         fetch_pp_process = subprocess.run(fetch_pp_cmd,
                                           shell=True,
@@ -223,15 +224,15 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
                                           capture_output=True,
                                           universal_newlines=True)
         ppdir = fetch_pp_process.stdout.strip()
-        logging.info(ppdir)
+        fre_logger.info(ppdir)
 
 
     # Q: shouldn't there be a CLI analysis dir arg while we're here?
     # basically, this is borderline on the same level as the ppDir and historydir fields.
     #if do_analysis:
-    logging.info("Running frelist for analysis_dir assignment...")
+    fre_logger.info("Running frelist for analysis_dir assignment...")
     fetch_analysis_dir_cmd = f"frelist -x {xml} -p {platform} -t {target} {experiment} -d analysis"
-    logging.info(">> %s", fetch_analysis_dir_cmd)
+    fre_logger.info(">> %s", fetch_analysis_dir_cmd)
 
     fetch_analysis_dir_process = subprocess.run(fetch_analysis_dir_cmd,
                                                 shell=True,
@@ -239,9 +240,9 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
                                             capture_output=True,
                                                 universal_newlines=True)
     analysis_dir = fetch_analysis_dir_process.stdout.strip()
-    logging.info(analysis_dir)
+    fre_logger.info(analysis_dir)
     #else:
-    #    logging.info('not doing analysis.')
+    #    fre_logger.info('not doing analysis.')
 
 
     grid_spec = frelist_xpath(xml, platform, target, experiment,
@@ -329,20 +330,20 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
         rose_suite.set(keys=['template variables', '#REFINEDIAG_SCRIPTS'],
                        value=f"'{' '.join(list_refinediags)}'")
 
-        logging.info( "refineDiag scripts: %s", ' '.join(list_refinediags) )
-        logging.info( "NOTE: Now turned off by default; please re-enable in config file if needed" )
+        fre_logger.info( "refineDiag scripts: %s", ' '.join(list_refinediags) )
+        fre_logger.info( "NOTE: Now turned off by default; please re-enable in config file if needed" )
     else:
         rose_suite.set(keys=['template variables', 'DO_REFINEDIAG'], value='False')
-        logging.info("No refineDiag scripts written. ")
+        fre_logger.info("No refineDiag scripts written. ")
 
     if str_preanalysis is not None:
         rose_suite.set(keys=['template variables', 'DO_PREANALYSIS'], value='True')
         rose_suite.set(keys=['template variables', 'PREANALYSIS_SCRIPT'],
                        value=f"'{str_preanalysis}'" )
-        logging.info( "Preanalysis script: %s", str_preanalysis )
+        fre_logger.info( "Preanalysis script: %s", str_preanalysis )
     else:
         rose_suite.set(keys=['template variables', 'DO_PREANALYSIS'], value='False')
-        logging.info( "No preAnalysis scripts written." )
+        fre_logger.info( "No preAnalysis scripts written." )
 
     # Grab all of the necessary PP component items/elements from the XML
     comps = frelist_xpath(xml, platform, target, experiment,
@@ -372,7 +373,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     elif segment_units == 'months':
         segment = f'P{segment_time}M'
     else:
-        logging.error("Unknown segment units: %s", segment_units)
+        fre_logger.error("Unknown segment units: %s", segment_units)
         raise ValueError
 
     # P12M is identical to P1Y but the latter looks nicer
@@ -394,12 +395,12 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
             current_date = metomi.isodatetime.data.TimePoint(
                 year=match.group(1), month_of_year=match.group(2), day_of_month=match.group(3) )
         except:
-            logging.warning("Could not parse date from namelist current_date")
+            fre_logger.warning("Could not parse date from namelist current_date")
             current_date = None
     else:
         current_date = None
-        logging.warning("Could not find current_date in namelists")
-    logging.info("current_date (from namelists): %s", current_date)
+        fre_logger.warning("Could not find current_date in namelists")
+    fre_logger.info("current_date (from namelists): %s", current_date)
 
     # Take a good guess for the PP_START and PP_STOP
     # PP_START could be the coupler_nml/current_date
@@ -423,7 +424,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     for comp in comps:
         comp_count += 1
         pp_comp_xpath_header = f'postProcess/component[@type="{comp}"]'
-        logging.info( "Component loop: %s out of %s", comp_count, len(comps))
+        fre_logger.info( "Component loop: %s out of %s", comp_count, len(comps))
 
         # get the comp attributes
         comp_source = frelist_xpath(xml, platform, target, experiment,
@@ -480,7 +481,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
 
         sources = set()
         if comp_source.endswith('_refined'):
-            logging.info(
+            fre_logger.info(
                 "NOTE: Skipping history file %s, refineDiag is turned off by default.", comp_source)
         else:
             sources.add(comp_source)
@@ -507,7 +508,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
                                    #verbose, quiet, dual,
                                    f'{pp_comp_xpath_header}/timeSeries[{i}]/@source' )
             if source.endswith('_refined'):
-                logging.info(
+                fre_logger.info(
                     "NOTE: Skipping history file %s, refineDiag is turned off by default.", source)
             else:
                 sources.add(source)
@@ -543,9 +544,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
             rose_regrid_xy.set(keys=[comp, 'outputGridLat'], value=output_grid_lat)
 
     # Process all of the found PP chunks into the rose-suite configuration
-    if verbose:
-        print("")
-    logging.info("Setting PP chunks...")
+    fre_logger.info("Setting PP chunks...")
 
     sorted_chunks = list(chunks)
     sorted_chunks.sort(key=duration_to_seconds, reverse=False)
@@ -553,7 +552,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     if len(chunks) == 0:
         raise ValueError('no chunks found! exit.')
 
-    logging.info("  Chunks found: %s", ', '.join(sorted_chunks))
+    fre_logger.info("  Chunks found: %s", ', '.join(sorted_chunks))
     if len(chunks) == 1:
         rose_suite.set(['template variables', 'PP_CHUNK_A'],
                        f"'{sorted_chunks[0]}'")
@@ -562,27 +561,25 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
                        f"'{sorted_chunks[0]}'")
         rose_suite.set(['template variables', 'PP_CHUNK_B'],
                        f"'{sorted_chunks[1]}'")
-    logging.info("  Chunks used: %s", ', '.join(sorted_chunks[0:2]) )
+    fre_logger.info("  Chunks used: %s", ', '.join(sorted_chunks[0:2]) )
 
     # Write out the final configurations.
-    if verbose:
-        print("")
-    logging.info("Writing output files...")
+    fre_logger.info("Writing output files...")
 
     dumper = metomi.rose.config.ConfigDumper()
     rose_outfiles=[ ( rose_suite,     'rose-suite.conf'                       ),
                     ( rose_remap,     'app/remap-pp-components/rose-app.conf' ),
                     ( rose_regrid_xy, 'app/regrid-xy/rose-app.conf'           ) ]
     for outfile in rose_outfiles:
-        logging.info("  %s", outfile[1])
+        fre_logger.info("  %s", outfile[1])
         dumper(outfile[0], outfile[1])
 
     #outfile = "app/remap-pp-components/rose-app.conf"
-    #logging.info("  %s", outfile)
+    #fre_logger.info("  %s", outfile)
     #dumper(rose_remap, outfile)
     #
     #outfile = "app/regrid-xy/rose-app.conf"
-    #logging.info("  %s", outfile)
+    #fre_logger.info("  %s", outfile)
     #dumper(rose_regrid_xy, outfile)
 
 def _convert(xml, platform, target, experiment, do_analysis=False, historydir=None,
@@ -594,11 +591,11 @@ def _convert(xml, platform, target, experiment, do_analysis=False, historydir=No
 
     # Logging settings. The default is throwing only warning messages
     if verbose:
-        logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
+        fre_logger.setLevel( level = logging.INFO )
     elif quiet:
-        logging.basicConfig(level=logging.ERROR, format=LOGGING_FORMAT)
+        fre_logger.setLevel( level = logging.ERROR )
     else:
-        logging.basicConfig(level=logging.WARNING, format=LOGGING_FORMAT)
+        fre_logger.setLevel( level = logging.WARNING )
 
     # Set the name of the directory
     name = f"{experiment}__{platform}__{target}"
@@ -630,10 +627,10 @@ def _convert(xml, platform, target, experiment, do_analysis=False, historydir=No
     # rose-suite configuration
     if any( [ pp_stop is None, pp_start is None ] ):
         if pp_start is None:
-            logging.warning("PP start year was not specified.")
+            fre_logger.warning("PP start year was not specified.")
         if pp_stop is None:
-            logging.warning("PP stop year was not specified.")
-        logging.warning("After the converter has run, please edit the "                \
+            fre_logger.warning("PP stop year was not specified.")
+        fre_logger.warning("After the converter has run, please edit the "                \
                         "default '0000' values within your rose-suite.conf.")
 
     # These series of conditionals takes into account input from the user
@@ -649,37 +646,33 @@ def _convert(xml, platform, target, experiment, do_analysis=False, historydir=No
         pp_stop = format_req_pp_year(pp_stop)
 
         if int(pp_start) >= int(pp_stop):
-            logging.warning("Your PP_START date is equal to or later than "            \
+            fre_logger.warning("Your PP_START date is equal to or later than "            \
                             "your PP_STOP date. Please revise these values in "        \
                             "your configuration after the converter has run.")
         if any( [ len(pp_start) >  4, len(pp_stop) >  4,
                   int(pp_start) <= 0, int(pp_stop) <= 0 ] ):
-            logging.warning("At least one of your PP_start or PP_stop years "          \
+            fre_logger.warning("At least one of your PP_start or PP_stop years "          \
                             "does not make sense. Please revise this value in "        \
                             "your configuration after the converter has run.")
 
     main( xml, platform, target, experiment, do_analysis, historydir, refinedir, ppdir,
           do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual )
 
-    if verbose:
-        print("")
-    logging.info("XML conversion complete!")
+    fre_logger.info("XML conversion complete!")
 
     # Run the Cylc validator tool on the current directory if conditions are met.
     # Note: the user must be running the converter in the parent Cylc Workflow
     # Directory if the validator is run.
     if cylc_loaded:
-        if verbose:
-            print("")
-        logging.info("Running the Cylc validator tool...")
+        fre_logger.info("Running the Cylc validator tool...")
         try:
             subprocess.run("cylc validate .", shell=True, check=True)
         except subprocess.CalledProcessError:
-            logging.error("Errant values in rose-suite.conf or other Cylc errors. "    \
+            fre_logger.error("Errant values in rose-suite.conf or other Cylc errors. "    \
                             "Please check your configuration and run the validator "     \
                             "again separately.")
         finally:
-            logging.info("Validation step complete!")
+            fre_logger.info("Validation step complete!")
 
 ##############################################
 

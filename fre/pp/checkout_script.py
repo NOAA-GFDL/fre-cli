@@ -9,7 +9,7 @@ import os
 import sys
 import subprocess
 
-from fre.fre import version as fre_ver
+from ..fre import version as fre_ver
 
 FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 
