@@ -7,6 +7,7 @@ from .cmor_mixer import cmor_run_subtool
 
 def read_yaml_data(yamlfile = None):
     '''
+    from string, open a file object and load/return yaml data under key 'cmor'
     '''
     if yamlfile is None:
         raise ValueError('(read_yaml_data) I need a yaml file.')

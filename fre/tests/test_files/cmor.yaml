@@ -3,11 +3,17 @@
 
 # where we are
 cmor:
-  indir: 'fre/tests/test_files/ocean_sos_var_file' 
-  json_var_list: 'fre/tests/test_files/varlist' 
-  json_table_config: 'fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json' 
-  json_exp_config: 'fre/tests/test_files/CMOR_input_example.json'
-  outdir: 'fre/tests/test_files/outdir'
+  global:
+    table_dir: "fre/tests/test_files/cmip6-cmor-tables/Tables"
+
+  Omon-ts-gr1:
+    table: 'Omon'
+    grid: 'gr1'
+    indir: 'fre/tests/test_files/ocean_sos_var_file' 
+    json_var_list: 'fre/tests/test_files/varlist' 
+    json_table_config: !join[ *table_dir ,'/', 'CMIP6_', *table, '.json'  ]
+    json_exp_config: 'fre/tests/test_files/CMOR_input_example.json'
+    outdir: 'fre/tests/test_files/outdir'
 #  opt_var_name: 
 
 

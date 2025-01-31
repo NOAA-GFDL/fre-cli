@@ -669,12 +669,12 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
 
 
 
-def cmor_run_subtool( indir = None,             
-                      json_var_list = None,     
-                      json_table_config = None, 
-                      json_exp_config = None ,  
-                      outdir = None,            
-                      opt_var_name = None       
+def cmor_run_subtool( indir = None,
+                      json_var_list = None,
+                      json_table_config = None,
+                      json_exp_config = None ,
+                      outdir = None,
+                      opt_var_name = None
                       ):
     '''
     primary steering function for the cmor_mixer tool, i.e essentially main. Accepts six args:
