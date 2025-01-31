@@ -12,10 +12,7 @@ PLATFORM_OPT_HELP = """Hardware and software FRE platform space separated list o
 This sets platform-specific data and instructions
 """
 TARGET_OPT_HELP   = """a space separated list of STRING(s) that defines compilation settings and
-linkage directives for experiments. Predefined targets refer to groups of directives that exist in
-the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod',
-'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive
-(cannot not use more than one of these in the target list). Any number of targets can be used.
+linkage directives for experiments.
 """
 PARALLEL_OPT_HELP = """Number of concurrent model compiles (default 1)
 """
@@ -27,8 +24,12 @@ The default is to have parallel checkouts.
 """
 VERBOSE_OPT_HELP = """Get verbose messages (repeat the option to increase verbosity level)
 """
-
-
+FORCE_CHECKOUT_OPT_HELP = """Force checkout in case the source directory exists.
+"""
+FORCE_COMPILE_OPT_HELP = """Force compile in case the executable directory exists.
+"""
+FORCE_DOCKERFILE_OPT_HELP = """Force dockerfile creation in case dockerfile exists.
+"""
 
 @click.group(help=click.style(" - access fre make subcommands", fg=(210,73,57)))
 def make_cli():
@@ -75,10 +76,38 @@ def make_cli():
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def run_fremake(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose):
-    """ - Perform all fremake functions to run checkout and compile model"""
-    run_fremake_script.fremake_run(
-        yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose)
+@click.option("-f",
+              "--force-checkout",
+              is_flag = True,
+              help = FORCE_CHECKOUT_OPT_HELP)
+@click.option("-F",
+              "--force-compile",
+              is_flag=True,
+              help = FORCE_COMPILE_OPT_HELP)
+@click.option("-FD",
+              "--force-dockerfile",
+              is_flag=True,
+              help = FORCE_DOCKERFILE_OPT_HELP)
+def run_fremake(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile, force_dockerfile):
+    """
+    - Perform all fremake functions to run checkout and compile model\n
+    - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
+          Possible predefined targets include 'prod','openmp', 'repro', 'debug, 'hdf5';
+however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one
+of these in the target list). Any number of targets can be used.\n
+    - The -npc option is REQUIRED for container builds\n
+    - Use --force-checkout to get a fresh checkout to the source directory.\n
+          An existing source directory is normally reused if possible.
+However it might be an issue if current checkout instructions do not follow changes in the
+experiment suite configuration file. The option --force-checkout allows to get a fresh checkout
+according to the current configuration file.\n
+    - Use `--force-compile` to compile a fresh executable.\n
+          An existing executable directory is normally reused if possible. It's an error if
+current compile instructions don't match the experiment suite configuration file UNLESS the
+option --force-compile is used. This option allows the user to recreate the compile script
+according to the current configuration file.
+    """
+    run_fremake_script.fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile, force_dockerfile)
 
 @make_cli.command()
 @click.option("-y",
@@ -115,10 +144,25 @@ def run_fremake(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def create_checkout(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
-    """ - Write the checkout script """
-    create_checkout_script.checkout_create(
-        yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose)
+@click.option("-f",
+              "--force-checkout",
+              is_flag = True,
+              help = FORCE_CHECKOUT_OPT_HELP)
+def create_checkout(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout):
+    """ 
+    - Write the checkout script\n
+    - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
+          Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; 
+however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one
+ of these in the target list). Any number of targets can be used.\n
+    - The -npc option is REQUIRED for container builds\n
+    - Use --force-checkout to get a fresh checkout to the source directory.\n
+          An existing source directory is normally reused if possible.
+However it might be an issue if current checkout instructions do not follow changes in the
+experiment suite configuration file. The option --force-checkout allows to get a fresh checkout
+according to the current configuration file.\n
+    """
+    create_checkout_script.checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout)
 
 @make_cli.command
 @click.option("-y",
@@ -175,10 +219,24 @@ def create_makefile(yamlfile, platform, target):
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def create_compile(yamlfile, platform, target, jobs, parallel, execute, verbose):
-    """ - Write the compile script """
-    create_compile_script.compile_create(
-        yamlfile, platform, target, jobs, parallel, execute, verbose)
+@click.option("-F",
+              "--force-compile",
+              is_flag=True,
+              help = FORCE_COMPILE_OPT_HELP)
+def create_compile(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile):
+    """ 
+    - Write the compile script\n
+    - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
+          Possible predefined targets include 'prod','openmp', 'repro', 'debug, 'hdf5';
+however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one 
+of these in the target list). Any number of targets can be used.\n
+    - Use `--force-compile` to compile a fresh executable.\n
+          An existing executable directory is normally reused if possible. It's an error if 
+current compile instructions don't match the experiment suite configuration file UNLESS the 
+option --force-compile is used. This option allows the user to recreate the compile script 
+according to the current configuration file.
+    """
+    create_compile_script.compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile)
 
 @make_cli.command
 @click.option("-y",
@@ -199,9 +257,13 @@ def create_compile(yamlfile, platform, target, jobs, parallel, execute, verbose)
 @click.option("--execute",
               is_flag = True,
               help = "Build Dockerfile that has been generated by create-docker.")
-def create_dockerfile(yamlfile, platform, target, execute):
+@click.option("-FD",
+              "--force-dockerfile",
+              is_flag=True,
+              help = FORCE_DOCKERFILE_OPT_HELP)
+def create_dockerfile(yamlfile,platform,target,execute,force_dockerfile):
     """ - Write the dockerfile """
-    create_docker_script.dockerfile_create(yamlfile, platform, target, execute)
+    create_docker_script.dockerfile_create(yamlfile,platform,target,execute,force_dockerfile)
 
 if __name__ == "__main__":
     make_cli()

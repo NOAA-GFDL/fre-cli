@@ -1,21 +1,49 @@
 '''
-checks out a makefile for a given model from the yamls
-i think!
+Checks out source code
 '''
 
 import os
 import subprocess
 import logging
 import sys
+import shutil
+from pathlib import Path
 
 import fre.yamltools.combine_yamls as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
-def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
+def baremetal_checkout_write_steps(model_yaml,src_dir,jobs,pc):
+    """
+    Go through steps to write the checkout script for bare-metal build
+    """
+    fre_checkout = checkout.checkout("checkout.sh",src_dir)
+    fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
+    fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
+
+    # Make checkout script executable
+    os.chmod(src_dir+"/checkout.sh", 0o744)
+    print("    Checkout script created in "+ src_dir + "/checkout.sh \n")
+
+    return fre_checkout
+
+def container_checkout_write_steps(model_yaml,src_dir,tmp_dir,jobs,pc):
+    """
+    Go through steps to write the checkout script for container
+    """
+    fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
+    fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
+    fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
+    print("    Checkout script created at " + tmp_dir + "/checkout.sh" + "\n")
+
+    return fre_checkout
+
+def checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout):
+    """
+    Call gfdlfremake/checkout.py to create the checkout script
+    """
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
-    run = execute
     jobs = str(jobs)
     pcheck = no_parallel_checkout
 
@@ -37,10 +65,16 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     plist = platform
     tlist = target
 
-    # Combine model, compile, and platform yamls
-    # Default behavior - combine yamls / rewrite combined yaml
-    comb = cy.init_compile_yaml(yml,platform,target)
-    full_combined = cy.get_combined_compileyaml(comb)
+    # If force-checkout defined: re-combine model, compile, and platform yamls
+    if force_checkout:
+        print("Re-combine yaml files")
+        comb = cy.init_compile_yaml(yml,platform,target)
+        full_combined = cy.get_combined_compileyaml(comb)
+    else:
+        ## If combined yaml exists, note message of its existence
+        ## If combined yaml does not exist, combine model, compile, and platform yamls
+        combined = Path(f"combined-{name}.yaml")
+        full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
@@ -65,7 +99,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
 
         platform = model_yaml.platforms.getPlatformFromName(platform_name)
 
-        # ceate the source directory for the platform
+        # Create the source directory for the platform
         if not platform["container"]:
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
             # if the source directory does not exist, it is created
@@ -73,21 +107,27 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                 os.system("mkdir -p " + src_dir)
             # if the checkout script does not exist, it is created
             if not os.path.exists(src_dir+"/checkout.sh"):
-                fre_checkout = checkout.checkout("checkout.sh",src_dir)
-                fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
-                fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
-                # Make checkout script executable
-                os.chmod(src_dir+"/checkout.sh", 0o744)
-                print("\nCheckout script created in "+ src_dir + "/checkout.sh \n")
+                print("\nCreating checkout script...")
+                fre_checkout = baremetal_checkout_write_steps(model_yaml,src_dir,jobs,pc)
 
                 # Run the checkout script
-                if run:
+                if execute:
                     fre_checkout.run()
                 else:
                     return
             else:
-                print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
-                if run:
+                if force_checkout:
+                    # Remove previous checkout
+                    print("\nRemoving previously checkout script and checked out source code")
+                    shutil.rmtree(src_dir)
+
+                    # Create checkout script
+                    print("Re-creating the checkout script...")
+                    fre_checkout = baremetal_checkout_write_steps(model_yaml,src_dir,jobs,pc)
+                else:
+                    print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
+
+                if execute:
                     try:
                         subprocess.run(args=[src_dir+"/checkout.sh"], check=True)
                     except:
@@ -101,10 +141,21 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
             bld_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/exec"
             tmp_dir = "tmp/"+platform_name
-            fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
-            fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
-            fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
-            print("\nCheckout script created at " + tmp_dir + "/checkout.sh" + "\n")
+            if not os.path.exists(tmp_dir+"/checkout.sh"):
+                # Create the checkout script
+                print("Creating checkout script...")
+                container_checkout_write_steps(model_yaml,src_dir,tmp_dir,jobs,pc)
+            else:
+                if force_checkout:
+                    # Remove the checkout script
+                    print("\nRemoving previously made checkout script")
+                    os.remove(tmp_dir+"/checkout.sh")
+
+                    # Create the checkout script
+                    print("Re-creating the checkout script...")
+                    container_checkout_write_steps(model_yaml,src_dir,tmp_dir,jobs,pc)
+                else:
+                    print("\nCheckout script PREVIOUSLY created in "+ tmp_dir + "/checkout.sh" + "\n")
 
 if __name__ == "__main__":
     checkout_create()

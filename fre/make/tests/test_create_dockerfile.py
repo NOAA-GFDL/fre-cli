@@ -42,30 +42,30 @@ def test_platformyaml_exists():
 @pytest.mark.xfail()
 def test_bad_platform_option():
     ''' test -fremake with a invalid platform option'''
-    create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET, False)
+    create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET, False, False)
 
 @pytest.mark.xfail()
 def test_bad_target_option():
     ''' test create-dockerfile with a invalid target option'''
-    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, BADOPT, False)
+    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, BADOPT, False, False)
 
 @pytest.mark.xfail()
 def test_bad_yamlpath_option():
-    ''' test create-dockerfile with a invalid target option'''
-    create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET, False)
+    ''' test create-dockerfile with a invalid yaml option'''
+    create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET, False, False)
 
 
 def test_no_op_platform():
     '''test create-dockerfile will do nothing if non-container platform is given'''
     if Path(os.getcwd()+"/tmp").exists():
         rmtree(os.getcwd()+"/tmp") # clear out any past runs
-    create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET, False)
+    create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET, False, False)
     assert not Path(os.getcwd()+"/tmp").exists()
 
 # tests container build script/makefile/dockerfile creation
 def test_create_dockerfile():
     '''run create-dockerfile with options for containerized build'''
-    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET, False)
+    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET, False, False)
 
 def test_container_dir_creation():
     '''check directories are created'''
