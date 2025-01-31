@@ -2,9 +2,9 @@
 
 import click
 
-from .cmor_finder import cmor_find_subtool
-from .cmor_mixer import cmor_run_subtool
-from .cmor_yamler import cmor_yaml_subtool
+from . import cmor_find_subtool
+from . import cmor_run_subtool 
+from . import cmor_yaml_subtool
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
                   "matching that variable name. I.e., this string help target local_vars, not " + \
