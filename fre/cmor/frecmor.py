@@ -37,7 +37,7 @@ def yaml(yamlfile):
     if yamlfile is None:
         raise ValueError('I need a yamlfile!!!')
 
-    cmor_yamler_subtool(
+    cmor_yaml_subtool(
         yamlfile = yamlfile
     )
 
