@@ -32,6 +32,27 @@ def test_cli_fre_cmor_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "optionDNE"])
     assert result.exit_code == 2
 
+# fre cmor yaml
+def test_cli_fre_cmor_yaml():
+    ''' fre cmor yaml '''
+    result = runner.invoke(fre.fre, args=["cmor", "yaml"])
+    assert result.exit_code == 2
+
+def test_cli_fre_cmor_yaml_help():
+    ''' fre cmor yaml --help '''
+    result = runner.invoke(fre.fre, args=["cmor", "yaml", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_cmor_yaml_opt_dne():
+    ''' fre cmor yaml optionDNE '''
+    result = runner.invoke(fre.fre, args=["cmor", "yaml", "optionDNE"])
+    assert result.exit_code == 2
+
+def test_cli_fre_cmor_yaml_case1():
+    ''' fre cmor yaml -y '''
+    result = runner.invoke(fre.fre, args=["cmor", "yaml", "-y", f"{rootdir}/cmor.yaml"])
+    assert result.exit_code == 0
+
 # fre cmor run
 def test_cli_fre_cmor_run():
     ''' fre cmor run '''
