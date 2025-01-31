@@ -28,7 +28,7 @@ version = version_unexpanded_split[0] + '.' + version_minor
     cls = LazyGroup,
     lazy_subcommands = {"pp": ".pp.frepp.pp_cli",
                        "catalog": ".catalog.frecatalog.catalog_cli",
-                       "list": ".list.frelist.list_cli",
+                       "list": ".list_.frelist.list_cli",
                        "check": ".check.frecheck.check_cli",
                        "run": ".run.frerun.run_cli",
                        "yamltools": ".yamltools.freyamltools.yamltools_cli",
