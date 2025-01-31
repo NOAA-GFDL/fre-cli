@@ -21,7 +21,7 @@ def baremetal_checkout_write_steps(model_yaml,src_dir,jobs,pc):
     """
     fre_checkout = checkout.checkout("checkout.sh",src_dir)
     fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
-    fre_checkout.finish(modelYaml.compile.getCompileYaml(),pc)
+    fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
 
     # Make checkout script executable
     os.chmod(src_dir+"/checkout.sh", 0o744)
@@ -35,7 +35,7 @@ def container_checkout_write_steps(model_yaml,src_dir,tmp_dir,jobs,pc):
     """
     fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
     fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
-    fre_checkout.finish(modelYaml.compile.getCompileYaml(),pc)
+    fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
     print("    Checkout script created here: " + tmp_dir + "/checkout.sh")
 
     return fre_checkout
