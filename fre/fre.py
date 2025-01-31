@@ -41,7 +41,6 @@ version = version_unexpanded_split[0] + '.' + version_minor
                        "list": ".list.frelist.list_cli",
                        "check": ".check.frecheck.check_cli",
                        "run": ".run.frerun.run_cli",
-                       "test": ".test.fretest.test_cli",
                        "yamltools": ".yamltools.freyamltools.yamltools_cli",
                        "make": ".make.fremake.make_cli",
                        "app": ".app.freapp.app_cli",

@@ -75,7 +75,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             if not os.path.exists(src_dir+"/checkout.sh"):
                 fre_checkout = checkout.checkout("checkout.sh",src_dir)
                 fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
-                fre_checkout.finish(pc)
+                fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
                 # Make checkout script executable
                 os.chmod(src_dir+"/checkout.sh", 0o744)
                 print("\nCheckout script created in "+ src_dir + "/checkout.sh \n")
@@ -103,7 +103,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             tmp_dir = "tmp/"+platform_name
             fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
             fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
-            fre_checkout.finish(pc)
+            fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
             print("\nCheckout script created at " + tmp_dir + "/checkout.sh" + "\n")
 
 if __name__ == "__main__":

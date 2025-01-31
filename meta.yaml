@@ -62,7 +62,6 @@ test:
     - fre.make
     - fre.pp
     - fre.run
-    - fre.test
     - fre.yamltools
   commands:
     - pylint --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
@@ -77,7 +76,6 @@ test:
     - fre make --help
     - fre pp --help
     - fre run --help
-    - fre test --help
     - fre yamltools --help
 
 
