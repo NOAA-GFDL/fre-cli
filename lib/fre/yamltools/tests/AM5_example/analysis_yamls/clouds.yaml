@@ -1,0 +1,11 @@
+analysis:
+  clouds-test:
+    required:
+      data_frequency: 'mon'
+      date_range: [*ANA_AMIP_START, *ANA_AMIP_END]
+    workflow:
+      components: ["atmos-test"]
+      cumulative: False
+      product: 't-test'
+      script_frequency: *PP_AMIP_CHUNK96
+      switch: True

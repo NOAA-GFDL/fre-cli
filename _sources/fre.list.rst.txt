@@ -1,0 +1,19 @@
+fre.list package
+================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.list.frelist
+   fre.list.frelistexample
+
+Module contents
+---------------
+
+.. automodule:: fre.list
+   :members:
+   :undoc-members:
+   :show-inheritance:
