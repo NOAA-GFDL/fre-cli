@@ -2,7 +2,10 @@ import yaml
 
 from .cmor_mixer import cmor_run_subtool
 
-def cmor_yamler_subtool(yamlfile):
+def cmor_yaml_subtool(yamlfile):
+    '''
+    the thing that carries out the cmorization yamlerization
+    '''
 
     yaml_data = yaml.load(yamlfile, 'r') # check that
 
