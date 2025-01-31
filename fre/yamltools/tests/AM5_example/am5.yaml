@@ -74,3 +74,5 @@ experiments:
     analysis:
       - "analysis_yamls/clouds.yaml"
       - "analysis_yamls/land.yaml"
+    cmor: # cmor-tool development, not part of official am5.yaml (yet)
+      - "cmor_yamls/cmor.am5.yaml"

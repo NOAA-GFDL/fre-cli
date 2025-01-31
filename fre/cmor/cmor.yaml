@@ -1,0 +1,38 @@
+
+
+
+# where we are
+cmor:
+  indir: ''
+  json_var_list: ''
+  json_table_config: ''
+  json_exp_config: ''
+  outdir: ''
+  opt_var_name: '' #[OPTIONAL SPECIAL-CASE ORIENTED USAGE]
+
+
+
+
+
+
+## from the test cases. 
+## Chris's desired end-state (best guess)
+#cmor:
+#  global:
+#    parent_experiment_name:
+#    xxxx
+#  Amon-tas-gr1:
+#    table: Amon
+#    variable: tas
+#    grid: gr1
+#    gfdl_comp: atmos
+#    gfdl_variable: t_ref
+#        '/archive/Eric.Stofferahn/ ' + \ #user
+#         'CMIP7/ESM4/DEV/' + \ #FRE stem
+#          'ESM4.5v01_om5b04_piC/' + \ #exp name
+#          'gfdl.ncrc5-intel23-prod-openmp/' + \ #platform
+#        'pp/' + \ #postprocess
+#        'land/' + \ # GFDL-component name
+#        'ts/' + \ # time-series
+#        'monthly/' + \ #frequency 
+#        '5yr/' # span of itme?
