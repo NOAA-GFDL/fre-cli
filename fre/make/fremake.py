@@ -27,8 +27,12 @@ The default is to have parallel checkouts.
 """
 VERBOSE_OPT_HELP = """Get verbose messages (repeat the option to increase verbosity level)
 """
-
-
+FORCE_CHECKOUT_OPT_HELP = """Force checkout in case the source directory exists.
+"""
+FORCE_COMPILE_OPT_HELP = """Force compile in case the executable directory exists.
+"""
+FORCE_DOCKERFILE_OPT_HELP = """Force dockerfile creation in case dockerfile exists.
+"""
 
 @click.group(help=click.style(" - access fre make subcommands", fg=(210,73,57)))
 def make_cli():
@@ -75,10 +79,38 @@ def make_cli():
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def run_fremake(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose):
-    """ - Perform all fremake functions to run checkout and compile model"""
-    run_fremake_script.fremake_run(
-        yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose)
+@click.option("-f",
+              "--force-checkout",
+              is_flag = True,
+              help = FORCE_CHECKOUT_OPT_HELP)
+@click.option("-F",
+              "--force-compile",
+              is_flag=True,
+              help = FORCE_COMPILE_OPT_HELP)
+@click.option("-FD",
+              "--force-dockerfile",
+              is_flag=True,
+              help = FORCE_DOCKERFILE_OPT_HELP)
+def run_fremake(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile, force_dockerfile):
+    """
+    - Perform all fremake functions to run checkout and compile model\n
+    - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
+          Possible predefined targets include 'prod','openmp', 'repro', 'debug, 'hdf5';
+however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one
+of these in the target list). Any number of targets can be used.\n
+    - The -npc option is REQUIRED for container builds\n
+    - Use --force-checkout to get a fresh checkout to the source directory.\n
+          An existing source directory is normally reused if possible.
+However it might be an issue if current checkout instructions do not follow changes in the
+experiment suite configuration file. The option --force-checkout allows to get a fresh checkout
+according to the current configuration file.\n
+    - Use `--force-compile` to compile a fresh executable.\n
+          An existing executable directory is normally reused if possible. It's an error if
+current compile instructions don't match the experiment suite configuration file UNLESS the
+option --force-compile is used. This option allows the user to recreate the compile script
+according to the current configuration file.
+    """
+    run_fremake_script.fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile, force_dockerfile)
 
 @make_cli.command()
 @click.option("-y",
