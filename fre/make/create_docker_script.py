@@ -107,6 +107,7 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
                                                run_env = platform["RUNenv"],
                                                target = targetObject,
                                                mkTemplate = platform["mkTemplate"],
+                                               s2i = stage2image,
                                                td = tmp_dir,
                                                cr = platform["containerRun"],
                                                cb = platform["containerBuild"],

@@ -100,3 +100,16 @@ def test_dockerfile_contents():
 
     line = copy_lines[2].strip().split()
     assert line == ["COPY", f"tmp/{PLATFORM[0]}/execrunscript.sh", f"{MODEL_ROOT}/{EXPERIMENT}/exec/execrunscript.sh"]
+
+def test_create_dockerfile_force_dockerfile(capfd):
+    '''run create-dockerfile with force-dockerfile option'''
+    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET, False, True)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    if "Re-creating Dockerfile" in out:
+        assert Path("Dockerfile").exists()
+        assert Path("createContainer.sh").exists()
+        assert Path(f"tmp/{PLATFORM[0]}/execrunscript.sh").exists()
+    else:
+       assert False
