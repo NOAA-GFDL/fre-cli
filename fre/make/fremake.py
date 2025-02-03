@@ -27,8 +27,12 @@ The default is to have parallel checkouts.
 """
 VERBOSE_OPT_HELP = """Get verbose messages (repeat the option to increase verbosity level)
 """
-
-
+FORCE_CHECKOUT_OPT_HELP = """Force checkout in case the source directory exists.
+"""
+FORCE_COMPILE_OPT_HELP = """Force compile in case the executable directory exists.
+"""
+FORCE_DOCKERFILE_OPT_HELP = """Force dockerfile creation in case dockerfile exists.
+"""
 
 @click.group(help=click.style(" - access fre make subcommands", fg=(210,73,57)))
 def make_cli():
