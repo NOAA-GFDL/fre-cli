@@ -36,7 +36,7 @@ def container_checkout_write_steps(model_yaml,src_dir,tmp_dir,jobs,pc):
     fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
     fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
     fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
-    print("    Checkout script created here: " + tmp_dir + "/checkout.sh")
+    print("    Checkout script created here: ./" + tmp_dir + "/checkout.sh")
 
     return fre_checkout
 
@@ -81,8 +81,8 @@ def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,s
         dockerBuild.writeDockerfileMkmf(c)
 
     dockerBuild.writeRunscript(run_env,cr,td+"/execrunscript.sh")
-    print(f"    Runscript created here: {td}/execrunscript.sh")
-    print(f"    Dockerfile created here: {cd}")
+    print(f"    Container runscript created here: ./{td}/execrunscript.sh")
+    print(f"    Dockerfile created here: {cd}/Dockerfile")
 
     # Create build script for container
     dockerBuild.createBuildScript(cb, cr)
@@ -265,7 +265,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                         print("Re-creating the checkout script...")
                         container_checkout_write_steps(modelYaml,src_dir,tmp_dir,jobs,pc)
                     else:
-                        print("\nCheckout script PREVIOUSLY created and run here: "+ tmp_dir + "/checkout.sh")
+                        print("\nCheckout script PREVIOUSLY created and run here: ./"+ tmp_dir + "/checkout.sh")
 
                 ## Create the makefile
                 ### Should this even be a separate class from "makefile" in makefilefre? ~ ejs
@@ -280,7 +280,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
                 freMakefile.writeMakefile()
-                print("Makefile created here: " + tmp_dir + "/Makefile")# + "\n")
+                print("\nMakefile created here: ./" + tmp_dir + "/Makefile")# + "\n")
 
                 ## Build the dockerfile
                 # If is doesn't exist, write

@@ -28,7 +28,8 @@ def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,c
         dockerBuild.writeDockerfileMkmf(c)
 
     dockerBuild.writeRunscript(run_env,cr,td+"/execrunscript.sh")
-    print(f"    Dockerfile created here: {cd}")
+    print(f"    Container runscript created here: ./{td}/execrunscript.sh")
+    print(f"    Dockerfile created here: {cd}/Dockerfile")
 
     # Create build script for container
     dockerBuild.createBuildScript(cb, cr)
