@@ -27,8 +27,12 @@ The default is to have parallel checkouts.
 """
 VERBOSE_OPT_HELP = """Get verbose messages (repeat the option to increase verbosity level)
 """
-
-
+FORCE_CHECKOUT_OPT_HELP = """Force checkout in case the source directory exists.
+"""
+FORCE_COMPILE_OPT_HELP = """Force compile in case the executable directory exists.
+"""
+FORCE_DOCKERFILE_OPT_HELP = """Force dockerfile creation in case dockerfile exists.
+"""
 
 @click.group(help=click.style(" - access fre make subcommands", fg=(210,73,57)))
 def make_cli():
@@ -175,10 +179,24 @@ def create_makefile(yamlfile, platform, target):
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def create_compile(yamlfile, platform, target, jobs, parallel, execute, verbose):
-    """ - Write the compile script """
-    create_compile_script.compile_create(
-        yamlfile, platform, target, jobs, parallel, execute, verbose)
+@click.option("-F",
+              "--force-compile",
+              is_flag=True,
+              help = FORCE_COMPILE_OPT_HELP)
+def create_compile(yamlfile, platform, target, jobs, parallel, execute, verbose, force_compile):
+    """ 
+    - Write the compile script\n
+    - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
+          Possible predefined targets include 'prod','openmp', 'repro', 'debug, 'hdf5';
+however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one 
+of these in the target list). Any number of targets can be used.\n
+    - Use `--force-compile` to compile a fresh executable.\n
+          An existing executable directory is normally reused if possible. It's an error if 
+current compile instructions don't match the experiment suite configuration file UNLESS the 
+option --force-compile is used. This option allows the user to recreate the compile script 
+according to the current configuration file.
+    """
+    create_compile_script.compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_compile)
 
 @make_cli.command
 @click.option("-y",
