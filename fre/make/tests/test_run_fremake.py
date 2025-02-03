@@ -125,6 +125,10 @@ def test_run_fremake_makefile_creation_multijob():
 # tests container build script/makefile/dockerfile creation
 def test_run_fremake_container():
     '''run run-fremake with options for containerized build'''
+    if Path("Dockerfile").exists() or Path("createContainer.sh").exists():
+        Path(f"{os.getcwd()}/Dockerfile").unlink()
+        Path(f"{os.getcwd()}/createContainer.sh").unlink()
+
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, False, VERBOSE, False, False, False)
 
 def test_run_fremake_build_script_creation_container():
@@ -153,8 +157,8 @@ def test_run_fremake_2stage_container():
     # Without force-dockerfile or force-checkout option, clean files first
     # or else it'll read that they exist already and not make the execrunscript.sh
     if Path("Dockerfile").exists() or Path("createContainer.sh").exists():
-        os.remove(Path("Dockerfile"))
-        os.remove(Path("createContainer.sh"))
+        Path("Dockerfile").unlink()
+        Path("createContainer.sh").unlink()
 
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET, False, 1, True, False, VERBOSE, False, False, False)
 

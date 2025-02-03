@@ -26,8 +26,6 @@ VERBOSE = False
 # container root (as set in platform yaml)
 MODEL_ROOT = "/apps"
 
-#def dockerfile_create(yamlfile,platform,target,execute):
-
 # yaml file checks
 def test_modelyaml_exists():
     assert Path(f"{YAMLDIR}/{YAMLFILE}").exists()
@@ -54,7 +52,6 @@ def test_bad_yamlpath_option():
     ''' test create-dockerfile with a invalid yaml option'''
     create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET, False, False)
 
-
 def test_no_op_platform():
     '''test create-dockerfile will do nothing if non-container platform is given'''
     if Path(os.getcwd()+"/tmp").exists():
@@ -65,6 +62,9 @@ def test_no_op_platform():
 # tests container build script/makefile/dockerfile creation
 def test_create_dockerfile():
     '''run create-dockerfile with options for containerized build'''
+    if Path(f"{os.getcwd()}/Dockerfile").exists():
+        Path(f"{os.getcwd()}/Dockerfile").unlink() 
+        Path(f"{os.getcwd()}/createContainer.sh").unlink()
     create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET, False, False)
 
 def test_container_dir_creation():
@@ -100,4 +100,3 @@ def test_dockerfile_contents():
 
     line = copy_lines[2].strip().split()
     assert line == ["COPY", f"tmp/{PLATFORM[0]}/execrunscript.sh", f"{MODEL_ROOT}/{EXPERIMENT}/exec/execrunscript.sh"]
-     
