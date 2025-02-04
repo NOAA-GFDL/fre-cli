@@ -156,15 +156,15 @@ def test_run_fremake_dockerfile_creation_container():
 
 def test_run_fremake_checkout_script_creation_container():
     ''' checks checkout script creation from previous test '''
-    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
+    assert Path(os.getcwd() + f"/tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
 
 def test_run_fremake_makefile_creation_container():
     ''' checks makefile creation from previous test '''
-    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
+    assert Path(os.getcwd() + f"tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
 
 def test_run_fremake_run_script_creation_container():
     ''' checks (internal) container run script creation from previous test '''
-    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
+    assert Path(os.getcwd() + f"/tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
 
 # tests for builds with multiple targets
 
