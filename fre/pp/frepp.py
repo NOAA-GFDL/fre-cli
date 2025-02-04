@@ -12,6 +12,8 @@ from fre.pp import trigger_script
 from fre.pp import status_script
 from fre.pp import wrapper_script
 
+
+# fre pp
 @click.group(help=click.style(" - access fre pp subcommands", fg=(57,139,210)))
 def pp_cli():
     ''' entry point to fre pp click commands '''
@@ -28,11 +30,9 @@ def pp_cli():
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-@click.pass_context
-def status(context, experiment, platform, target):
-    # pylint: disable=unused-argument
+def status(experiment, platform, target):
     """ - Report status of PP configuration"""
-    context.forward(status_script._status_subtool)
+    status_script.status_subtool(experiment, platform, target)
 
 # fre pp run
 @pp_cli.command()
@@ -45,11 +45,9 @@ def status(context, experiment, platform, target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-@click.pass_context
-def run(context, experiment, platform, target):
-    # pylint: disable=unused-argument
+def run(experiment, platform, target):
     """ - Run PP configuration"""
-    context.forward(run_script._pp_run_subtool)
+    run_script.pp_run_subtool(experiment, platform, target)
 
 # fre pp validate
 @pp_cli.command()
@@ -62,11 +60,9 @@ def run(context, experiment, platform, target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-@click.pass_context
-def validate(context, experiment, platform, target):
-    # pylint: disable=unused-argument
+def validate(experiment, platform, target):
     """ - Validate PP configuration"""
-    context.forward(validate_script._validate_subtool)
+    validate_script.validate_subtool(experiment, platform, target)
 
 # fre pp install
 @pp_cli.command()
@@ -79,11 +75,9 @@ def validate(context, experiment, platform, target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-@click.pass_context
-def install(context, experiment, platform, target):
-    # pylint: disable=unused-argument
+def install(experiment, platform, target):
     """ - Install PP configuration"""
-    context.forward(install_script._install_subtool)
+    install_script.install_subtool(experiment, platform, target)
 
 @pp_cli.command()
 @click.option("-y", "--yamlfile", type=str,
@@ -98,11 +92,9 @@ def install(context, experiment, platform, target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-@click.pass_context
-def configure_yaml(context,yamlfile,experiment,platform,target):
-    # pylint: disable=unused-argument
+def configure_yaml(yamlfile,experiment,platform,target):
     """ - Execute fre pp configure """
-    context.forward(configure_script_yaml._yaml_info)
+    configure_script_yaml.yaml_info(yamlfile,experiment,platform,target)
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
@@ -117,11 +109,9 @@ def configure_yaml(context,yamlfile,experiment,platform,target):
 @click.option("-b", "--branch", type =str,
               required=False, default = None,
               help="fre-workflows branch/tag to clone; default is $(fre --version)")
-@click.pass_context
-def checkout(context, experiment, platform, target, branch=None):
-    # pylint: disable=unused-argument
+def checkout(experiment, platform, target, branch=None):
     """ - Execute fre pp checkout """
-    context.forward(checkout_script._checkout_template)
+    checkout_script.checkout_template(experiment, platform, target, branch)
 
 @pp_cli.command()
 @click.option('-x', '--xml',
@@ -174,12 +164,11 @@ def checkout(context, experiment, platform, target, branch=None):
 @click.option('--dual',
               is_flag=True,
               help="Optional. Append '_canopy' to pp, analysis, and refinediag dirs")
-@click.pass_context
-def configure_xml(context, xml, platform, target, experiment, do_analysis, historydir, refinedir,
+def configure_xml(xml, platform, target, experiment, do_analysis, historydir, refinedir,
                   ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
-    # pylint: disable=unused-argument
     """ - Converts a Bronx XML to a Canopy rose-suite.conf """
-    context.forward(configure_script_xml._convert)
+    configure_script_xml.convert(xml, platform, target, experiment, do_analysis, historydir, refinedir,
+                                 ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual)
 
 #fre pp wrapper
 @pp_cli.command()
@@ -201,13 +190,11 @@ def configure_xml(context, xml, platform, target, experiment, do_analysis, histo
 @click.option("-t", "--time",
               required=False, default=None,
               help="Time whose history files are ready")
-@click.pass_context
-def wrapper(context, experiment, platform, target, config_file, branch, time):
-    # pylint: disable=unused-argument
+def wrapper(experiment, platform, target, config_file, branch, time):
     """ - Execute fre pp steps in order """
-    print(f'(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
-    context.forward(wrapper_script._run_all_fre_pp_steps)
-    print(f'(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
+    print('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
+    wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
+    print('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
@@ -222,11 +209,9 @@ def wrapper(context, experiment, platform, target, config_file, branch, time):
 @click.option("-t", "--time",
               required=True,
               help="Time whose history files are ready")
-@click.pass_context
-def trigger(context, experiment, platform, target, time):
-    # pylint: disable=unused-argument
+def trigger(experiment, platform, target, time):
     """ - Start postprocessing for a particular time """
-    context.forward(trigger_script._trigger)
+    trigger_script.trigger(experiment, platform, target, time)
 
 if __name__ == "__main__":
     ''' entry point for click to fre pp commands '''

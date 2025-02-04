@@ -1,5 +1,4 @@
 ''' tools for generating time averages from various packages '''
-import click
 
 def generate_time_average(infile=None, outfile=None,
                           pkg=None, var=None,
@@ -42,7 +41,6 @@ def generate_time_average(infile=None, outfile=None,
 
     return exitstatus
 
-@click.command()
 def generate(inf, outf, pkg, var, unwgt, avg_type, stddev_type):
     ''' click entrypoint to time averaging routine '''
     exitstatus=generate_time_average( inf, outf,

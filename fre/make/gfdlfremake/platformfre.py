@@ -41,36 +41,49 @@ class platforms ():
             ## Check if we are working with a container and get the info for that
             try:
                 p["container"]
+            ## When not doing a container build, this should all be set to empty strings and Falses
             except:
                 p["container"] = False
                 p["RUNenv"] = [""]
                 p["containerBuild"] = ""
                 p["containerRun"] = ""
-                p["containerViews"] = False
                 p["containerBase"] = ""
-                p["container2step"] = ""
+                p["container2step"] = False
+                p["container2base"] = ""
             if p["container"]:
                 ## Check the container builder
                 try:
                     p["containerBuild"]
                 except:
-                    raise Exception("You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
+                    raise Exception("Platform "+p["name"]+": You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerBuild"] != "podman" and p["containerBuild"] != "docker":
-                    raise ValueError("Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
-                print (p["containerBuild"])
-## Check for container environment set up for RUN commands
+                    raise ValueError("Platform "+p["name"]+": Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
+                ## Get the name of the base container
                 try:
                     p["containerBase"]
-                except NameError:
-                    print("You must specify the base container you wish to use to build your application")
-                try:
-                    p["containerViews"]
                 except:
-                    p["containerViews"] = False
+                    raise NameError("Platform "+p["name"]+": You must specify the base container you wish to use to build your application")
+                ## Check if this is a 2 step (multi stage) build
                 try:
                     p["container2step"]
                 except:
-                    p["container2step"] = ""
+                    p["container2step"] = False
+                ## Get the base for the second stage of the build
+                if p["container2step"]:
+                    try:
+                        p["container2base"]
+                    except:
+                        raise NameError ("Platform "+p["name"]+": container2step is True, so you must define a container2base\n")
+                    ## Check if there is anything special to copy over
+                else:
+                    ## There should not be a second base if this is not a 2 step build
+                    try:
+                        p["container2base"]
+                    except:
+                        p["container2base"] = ""
+                    else:
+                        raise ValueError ("Platform "+p["name"]+": You defined container2base "+p["container2base"]+" but container2step is False\n")
+                ## Get any commands to execute in the dockerfile RUN command
                 try:
                     p["RUNenv"]
                 except:
@@ -83,6 +96,7 @@ class platforms ():
                 if p["containerRun"] != "apptainer" and p["containerRun"] != "singularity":
                     raise ValueError("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n")
             else:
+                ## Find the location of the mkmf template
                 try:
                     p["mkTemplate"]
                 except:
@@ -120,7 +134,6 @@ class platforms ():
                 p["RUNenv"], \
                 p["containerBuild"], \
                 p["containerRun"], \
-                p["containerViews"], \
                 p["containerBase"], \
                 p["container2step"])
     def isContainer(self, name):
@@ -137,3 +150,10 @@ class platforms ():
         for p in self.yaml:
             if p["name"] == name:
                 return p["containerBase"]
+    def getContainer2base(self,name):
+        """
+        Brief: returns the image to be used in the second step of the Dockerfile
+        """
+        for p in self.yaml:
+            if p["name"] == name:
+                return p["container2base"]
