@@ -349,7 +349,10 @@ class init_pp_yaml():
                     if key in yf:
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
                             if key == "postprocess":
-                                result[key]["components"] = yf[key]["components"] + result[key]["components"]
+                                if 'components' in result['postprocess']:
+                                    result['postprocess']["components"] += yf['postprocess']["components"]
+                                else:
+                                    result['postprocess']["components"] = yf['postprocess']["components"]
         # If only one post-processing yaml listed, do nothing
         # (already combined in 'combine_experiments' function)
         elif pp_list is not None and len(pp_list) == 1:
