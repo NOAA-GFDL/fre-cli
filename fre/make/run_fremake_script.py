@@ -16,7 +16,7 @@ from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose):
+def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -187,7 +187,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 dockerBuild.writeRunscript(platform["RUNenv"], platform["containerRun"], tmpDir+"/execrunscript.sh")
 
                 # Create build script for container
-                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], skip_format_transfer=no_format_transfer)
                 print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 # Execute if flag is given
