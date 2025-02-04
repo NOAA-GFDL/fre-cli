@@ -4,6 +4,8 @@ Script combines the model yaml with exp, platform, and target to list experiment
 
 from pathlib import Path
 import yaml
+import json
+from jsonschema import validate, ValidationError, SchemaError
 import fre.yamltools.combine_yamls as cy
 
 # To look into: ignore undefined alias error msg for listing?
@@ -21,6 +23,7 @@ def quick_combine(yml, platform, target):
     comb = cy.init_compile_yaml(yml,platform,target)
     comb.combine_model()
     comb.combine_platforms()
+    comb.clean_yaml()
 
 def remove(combined):
     """
@@ -32,6 +35,23 @@ def remove(combined):
               f"   {combined} removed.")
     else:
         raise ValueError(f"{combined} could not be found to remove.")
+
+def validate_yaml(loaded_yaml):
+    """
+    Validate the intermediate combined yaml
+    """
+    # Validate combined yaml
+    frelist_dir = Path(__file__).resolve().parents[2]
+    schema_path = f"{frelist_dir}/fre/gfdl_msd_schemas/FRE/fre_make.json"
+    with open(schema_path, 'r') as s:
+        schema = json.load(s)
+
+    print("\nValidating intermediate yaml:")
+    try:
+        validate(instance=loaded_yaml, schema=schema)
+        print("    Intermediate combined yaml VALID.")
+    except:
+        raise ValueError("\n\nIntermediate combined yaml NOT VALID.")
 
 def list_platforms_subtool(yamlfile):
     """
@@ -51,10 +71,13 @@ def list_platforms_subtool(yamlfile):
     quick_combine(yamlfile,p,t)
 
     # Print experiment names
-    c = cy.yaml_load(f"{yamlpath}/{combined}")
+    yml = cy.yaml_load(f"{yamlpath}/{combined}")
+
+    # Validate the yaml
+    validate_yaml(yml)
 
     print("\nPlatforms available:")
-    for i in c.get("platforms"):
+    for i in yml.get("platforms"):
         print(f'    - {i.get("name")}')
     print("\n")
 
