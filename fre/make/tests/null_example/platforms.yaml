@@ -18,14 +18,14 @@ platforms:
      compiler: gnu
      mkTemplate: /__w/fre-cli/fre-cli/mkmf/templates/linux-ubuntu-xenial-gnu.mk
      modelRoot: ${TEST_BUILD_DIR}/fremake_canopy/test
-   - name: hpcme.ci
+   - name: hpcmini.2025
      compiler: gnu 
      modelRoot: /apps
      RUNenv: [""]
      container: True
      containerBuild: "podman"
      containerRun: "apptainer" 
-     containerBase: "ghcr.io/noaa-gfdl/fms/fms-ci-rocky-gnu:13.2.0"
+     containerBase: "ghcr.io/rem1776/hpc-mini:alpine3gcc14.2"
      mkTemplate: "/apps/mkmf/templates/linux-ubuntu-xenial-gnu.mk"
    - name: con.twostep
      compiler: intel
