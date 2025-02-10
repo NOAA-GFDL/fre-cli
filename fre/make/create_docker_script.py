@@ -52,6 +52,7 @@ def dockerfile_create(yamlfile, platform, target, execute):
             ## Check for type of build
             if platform["container"] is True:
                 image=modelYaml.platforms.getContainerImage(platformName)
+                stage2image = modelYaml.platforms.getContainer2base(platformName)
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
                 dockerBuild = buildDocker.container(base = image,
@@ -59,7 +60,8 @@ def dockerfile_create(yamlfile, platform, target, execute):
                                               libs = fremakeYaml["container_addlibs"],
                                               RUNenv = platform["RUNenv"],
                                               target = targetObject,
-                                              mkTemplate = platform["mkTemplate"])
+                                              mkTemplate = platform["mkTemplate"],
+                                              stage2base = stage2image)
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
                 dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
 
