@@ -141,30 +141,33 @@ def test_run_fremake_run_script_creation_container():
 # tests container 2 stage build script/makefile/dockerfile creation
 def test_run_fremake_container_2stage():
     '''run run-fremake with options for containerized build'''
-    rmtree(Path(os.getcwd()+"/tmp"))
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
 	no_format_transfer=False, execute=False, verbose=VERBOSE)
 
-def test_run_fremake_build_script_creation_container():
+def test_run_fremake_build_script_creation_container_2stage():
     ''' checks container build script creation from previous test '''
     assert Path("createContainer.sh").exists()
 
-def test_run_fremake_dockerfile_creation_container():
+def test_run_fremake_dockerfile_creation_container_2stage():
     ''' checks dockerfile creation from previous test '''
     assert Path("Dockerfile").exists()
 
-def test_run_fremake_checkout_script_creation_container():
+def test_run_fremake_checkout_script_creation_container_2stage():
     ''' checks checkout script creation from previous test '''
-    assert Path(os.getcwd() + f"/tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
+    cwd = os.getcwd()
+    print(f"checking path: {cwd}/tmp/{CONTAINER_PLAT2[0]}/checkout.sh")
+    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
 
-def test_run_fremake_makefile_creation_container():
+def test_run_fremake_makefile_creation_container_2stage():
     ''' checks makefile creation from previous test '''
-    assert Path(os.getcwd() + f"tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
+    cwd = os.getcwd()
+    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
 
-def test_run_fremake_run_script_creation_container():
+def test_run_fremake_run_script_creation_container_2stage():
     ''' checks (internal) container run script creation from previous test '''
-    assert Path(os.getcwd() + f"/tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
+    cwd = os.getcwd()
+    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
 
 # tests for builds with multiple targets
 
