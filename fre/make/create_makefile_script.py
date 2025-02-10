@@ -62,7 +62,7 @@ def makefile_create(yamlfile, platform, target):
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
-                print("\nMakefile created at " + bldDir + "/Makefile" + "\n") # was click.echo
+                print("\nMakefile created here: " + bldDir + "/Makefile" + "\n")
             else:
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "./tmp/"+platformName
@@ -77,7 +77,7 @@ def makefile_create(yamlfile, platform, target):
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
-                print("\nMakefile created at " + tmpDir + "/Makefile" + "\n") # was click.echo
+                print("\nMakefile created here: " + tmpDir + "/Makefile" + "\n")
 
 if __name__ == "__main__":
     makefile_create()

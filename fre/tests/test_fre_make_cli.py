@@ -26,11 +26,7 @@ def test_cli_fre_make_opt_dne():
 TEST_DIR = Path("fre/tests")
 OUT_PATH=f"{TEST_DIR}/test_files/fremake_out"
 def test_cli_fre_make_create_checkout_baremetal():
-    ''' fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t debug'''
-    # remove the created script to re-create it, if it exists
-    #if Path(f"{OUT_PATH}/fremake_canopy/test/am5/src/checkout.sh").exists():
-    #    Path(f"{OUT_PATH}/fremake_canopy/test/am5/src/checkout.sh").unlink()
-
+    ''' fre make create-checkout -y null_model.yaml -p ncrc5.intel23 -t debug'''
     # Set paths and click options
     yamlfile = Path("fre/make/tests/null_example/")
     platform = "ncrc5.intel23"
@@ -45,7 +41,8 @@ def test_cli_fre_make_create_checkout_baremetal():
 
     # run create-checkout
     result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target])
-
+    
+    # Reset HOME
     os.environ["HOME"] = old_home
 
     # Check for successful command, creation of checkout script, and that script is executable

@@ -27,8 +27,12 @@ The default is to have parallel checkouts.
 """
 VERBOSE_OPT_HELP = """Get verbose messages (repeat the option to increase verbosity level)
 """
-
-
+FORCE_CHECKOUT_OPT_HELP = """Force checkout in case the source directory exists.
+"""
+FORCE_COMPILE_OPT_HELP = """Force compile in case the executable directory exists.
+"""
+FORCE_DOCKERFILE_OPT_HELP = """Force dockerfile creation in case dockerfile exists.
+"""
 
 @click.group(help=click.style(" - access fre make subcommands", fg=(210,73,57)))
 def make_cli():
@@ -115,10 +119,25 @@ def run_fremake(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def create_checkout(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
-    """ - Write the checkout script """
-    create_checkout_script.checkout_create(
-        yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose)
+@click.option("-f",
+              "--force-checkout",
+              is_flag = True,
+              help = FORCE_CHECKOUT_OPT_HELP)
+def create_checkout(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout):
+    """ 
+    - Write the checkout script\n
+    - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
+          Possible predefined targets include 'prod', 'openmp', 'repro', 'debug, 'hdf5'; 
+however 'prod', 'repro', and 'debug' are mutually exclusive (cannot not use more than one
+ of these in the target list). Any number of targets can be used.\n
+    - The -npc option is REQUIRED for container builds\n
+    - Use --force-checkout to get a fresh checkout to the source directory.\n
+          An existing source directory is normally reused if possible.
+However it might be an issue if current checkout instructions do not follow changes in the
+experiment suite configuration file. The option --force-checkout allows to get a fresh checkout
+according to the current configuration file.\n
+    """
+    create_checkout_script.checkout_create(yamlfile,platform,target,no_parallel_checkout,jobs,execute,verbose,force_checkout)
 
 @make_cli.command
 @click.option("-y",
