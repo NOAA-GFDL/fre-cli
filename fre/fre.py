@@ -22,13 +22,14 @@ if len(version_unexpanded_split[1]) == 1:
 else:
     version_minor = version_unexpanded_split[1]
 # if the patch version is present, then use it. otherwise, omit
-if '2' in range(len(version_unexpanded_split)):
+try:
+    len(version_unexpanded_split[2])
     if len(version_unexpanded_split[2]) == 1:
         version_patch = "0" + version_unexpanded_split[2]
     else:
         version_patch = version_unexpanded_split[2]
     version = version_unexpanded_split[0] + '.' + version_minor + '.' + version_patch
-else:
+except IndexError:
     version = version_unexpanded_split[0] + '.' + version_minor
 
 # click and lazy group loading
