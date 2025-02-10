@@ -21,7 +21,15 @@ if len(version_unexpanded_split[1]) == 1:
     version_minor = "0" + version_unexpanded_split[1]
 else:
     version_minor = version_unexpanded_split[1]
-version = version_unexpanded_split[0] + '.' + version_minor
+# if the patch version is present, then use it. otherwise, omit
+if '2' in range(len(version_unexpanded_split)):
+    if len(version_unexpanded_split[2]) == 1:
+        version_patch = "0" + version_unexpanded_split[2]
+    else:
+        version_patch = version_unexpanded_split[2]
+    version = version_unexpanded_split[0] + '.' + version_minor + '.' + version_patch
+else:
+    version = version_unexpanded_split[0] + '.' + version_minor
 
 # click and lazy group loading
 @click.group(
