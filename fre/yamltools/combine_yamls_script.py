@@ -6,6 +6,7 @@ import click
 import yaml
 import fre.yamltools.combine_compile as cc
 import fre.yamltools.combine_pp as cp
+import pprint
 
 def join_constructor(loader, node):
     """
@@ -22,7 +23,6 @@ def get_combined_compileyaml(comb):
     Arguments:
     comb : combined yaml object
     """
-    print("Combining yaml files into one dictionary: ")
     try:
         (yaml_content, loaded_yaml)=comb.combine_model()
     except:
@@ -40,10 +40,8 @@ def get_combined_compileyaml(comb):
     except: 
         raise ValueError("uh oh one more time")
 
-    print(yaml_content)
-
     # Clean the yaml
-    cleaned_yaml = comb.clean_yaml(yaml_content, loaded_yaml)
+    cleaned_yaml = comb.clean_yaml(yaml_content)
     return cleaned_yaml
 
 def get_combined_ppyaml(comb):
@@ -52,23 +50,36 @@ def get_combined_ppyaml(comb):
     Arguments:
     comb : combined yaml object
     """
-    # Merge model into combined file
-    (new_dict,new_comb) = comb.combine_model()
-    # Merge pp experiment yamls into combined file
-    comb_pp_updated_list = comb.combine_experiment(new_dict,new_comb)
-    # Merge analysis yamls, if defined, into combined file
-    comb_analysis_updated_list = comb.combine_analysis(new_dict,new_comb)
-    # Merge model/pp and model/analysis yamls if more than 1 is defined
-    # (without overwriting the yaml)
-    comb.merge_multiple_yamls(comb_pp_updated_list, comb_analysis_updated_list)
-#    # Remove separate combined pp yaml files
-#    comb.remove_tmp_yamlfiles(comb_pp, comb_analysis)
-#    # Clean the yaml
-#    full_combined = comb.clean_yaml()
-#
-#    return full_combined
+    try:
+        # Merge model into combined file
+        (yaml_content, loaded_yaml) = comb.combine_model()
+    except:
+        print("pp uh oh 1")
 
-def consolidate_yamls(yamlfile,experiment,platform,target,use):
+    try:
+        # Merge pp experiment yamls into combined file
+        comb_pp_updated_list = comb.combine_experiment(yaml_content, loaded_yaml)
+    except:
+        raise ValueError("pp uh oh 2")
+
+    try:
+        # Merge analysis yamls, if defined, into combined file
+        comb_analysis_updated_list = comb.combine_analysis(yaml_content, loaded_yaml)
+    except:
+        raise ValueError("uh oh 3")
+
+    try:
+        # Merge model/pp and model/analysis yamls if more than 1 is defined
+        # (without overwriting the yaml)
+        full_combined = comb.merge_multiple_yamls(comb_pp_updated_list, comb_analysis_updated_list)
+    except: 
+        raise ValueError("uh oh 4")
+
+    # Clean the yaml
+    cleaned_yaml = comb.clean_yaml(full_combined)
+    return cleaned_yaml
+
+def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
     """
     Depending on `use` argument passed, either create the final
     combined yaml for compilation or post-processing
@@ -76,21 +87,28 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use):
     if use == "compile":
         combined = cc.init_compile_yaml(yamlfile, platform, target, join_constructor)
         # Create combined compile yaml
-        get_combined_compileyaml(combined)
+        print("Combining yaml files into one dictionary: ")
+
+        if output is None:
+            get_combined_compileyaml(combined)
+        else:
+            with open(output,'w') as out:
+                out.write(get_combined_compileyaml(combined))
+            print(f"COMBINE OUT HERE: {os.path.abspath(output)}")
+
     elif use =="pp":
         combined = cp.init_pp_yaml(yamlfile, experiment, platform, target, join_constructor)
         # Create combined pp yaml
-        get_combined_ppyaml(combined)
+        print("Combining yaml files into one dictionary: ")
+
+        if output is None:
+            get_combined_ppyaml(combined)
+        else:
+            with open(output,'w') as out:
+                out.write(get_combined_ppyaml(combined))
+            print(f"COMBINE OUT HERE: {os.path.abspath(output)}")
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'") 
-
-@click.command()
-def _consolidate_yamls(yamlfile,experiment,platform,target,use):
-    '''
-    Wrapper script for calling yaml_combine - allows the decorated version
-    of the function to be separate from the undecorated version
-    '''
-    return consolidate_yamls(yamlfile,experiment,platform,target,use)
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
