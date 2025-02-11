@@ -20,7 +20,7 @@ import cmor
 from .cmor_helpers import *
 
 # ----- \start consts # TODO make this an input argument flag or smth.
-DEBUG_MODE_RUN_ONE = True
+DEBUG_MODE_RUN_ONE = False
 # ----- \end consts
 
 

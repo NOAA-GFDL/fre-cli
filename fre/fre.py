@@ -24,7 +24,16 @@ if len(version_unexpanded_split[1]) == 1:
     version_minor = "0" + version_unexpanded_split[1]
 else:
     version_minor = version_unexpanded_split[1]
-version = version_unexpanded_split[0] + '.' + version_minor
+# if the patch version is present, then use it. otherwise, omit
+try:
+    len(version_unexpanded_split[2])
+    if len(version_unexpanded_split[2]) == 1:
+        version_patch = "0" + version_unexpanded_split[2]
+    else:
+        version_patch = version_unexpanded_split[2]
+    version = version_unexpanded_split[0] + '.' + version_minor + '.' + version_patch
+except IndexError:
+    version = version_unexpanded_split[0] + '.' + version_minor
 
 
 @click.version_option(
@@ -38,7 +47,7 @@ version = version_unexpanded_split[0] + '.' + version_minor
     cls = LazyGroup,
     lazy_subcommands = {"pp": ".pp.frepp.pp_cli",
                        "catalog": ".catalog.frecatalog.catalog_cli",
-                       "list": ".list.frelist.list_cli",
+                       "list": ".list_.frelist.list_cli",
                        "check": ".check.frecheck.check_cli",
                        "run": ".run.frerun.run_cli",
                        "yamltools": ".yamltools.freyamltools.yamltools_cli",
