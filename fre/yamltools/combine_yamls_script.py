@@ -4,8 +4,8 @@ import shutil
 from pathlib import Path
 import click
 import yaml
-import fre.yamltools.combine_compile as cc
-import fre.yamltools.combine_pp as cp
+import fre.yamltools.compile_info_parser as cip
+import fre.yamltools.pp_info_parser as ppip
 import pprint
 
 def join_constructor(loader, node):
@@ -54,7 +54,7 @@ def get_combined_ppyaml(comb):
         # Merge model into combined file
         (yaml_content, loaded_yaml) = comb.combine_model()
     except:
-        print("pp uh oh 1")
+        raise ValueError("pp uh oh 1")
 
     try:
         # Merge pp experiment yamls into combined file
@@ -85,7 +85,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
     combined yaml for compilation or post-processing
     """
     if use == "compile":
-        combined = cc.init_compile_yaml(yamlfile, platform, target, join_constructor)
+        combined = cip.init_compile_yaml(yamlfile, platform, target, join_constructor)
         # Create combined compile yaml
         print("Combining yaml files into one dictionary: ")
 
@@ -97,7 +97,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
             print(f"COMBINE OUT HERE: {os.path.abspath(output)}")
 
     elif use =="pp":
-        combined = cp.init_pp_yaml(yamlfile, experiment, platform, target, join_constructor)
+        combined = ppip.init_pp_yaml(yamlfile, experiment, platform, target, join_constructor)
         # Create combined pp yaml
         print("Combining yaml files into one dictionary: ")
 
