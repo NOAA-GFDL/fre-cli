@@ -10,4 +10,7 @@ file_obj=open("fre/tests/test_files/cmor.yaml",
 #yaml_data=yaml.safe_load(file_obj) #Loader=yaml.Loader)
 yaml_data=yaml.load(file_obj, Loader=yaml.Loader)
 
-print(yaml_data)
+import pprint
+pp = pprint.PrettyPrinter(indent=2)
+
+pp.pprint(yaml_data['cmor'])

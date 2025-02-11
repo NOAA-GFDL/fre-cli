@@ -1,27 +1,131 @@
-
-
-
-# where we are
 cmor:
-  global:
-    table_dir: "fre/tests/test_files/cmip6-cmor-tables/Tables"
 
-  Omon-ts-gr1:
-    table: 'Omon'
-    grid: 'gr1'
-    indir: 'fre/tests/test_files/ocean_sos_var_file' 
-    json_var_list: 'fre/tests/test_files/varlist' 
-    json_table_config: !join[ *table_dir ,'/', 'CMIP6_', *table, '.json'  ]
-    json_exp_config: 'fre/tests/test_files/CMOR_input_example.json'
-    outdir: 'fre/tests/test_files/outdir'
+  globals:
+    table_dir:
+      &table_dir "fre/tests/test_files/cmip6-cmor-tables/Tables"
+    exp_config_dir:
+      &exp_config_dir "fre/tests/test_files"
+
+  targets:
+    Omon-ts-gr1:
+      json_table_config:
+        !join [ *table_dir, "/", "CMIP6_Omon.json" ]
+      json_exp_config:
+        !join [ *exp_config_dir, "/", "CMOR_input_example.json" ]
+      indir:
+        "fre/tests/test_files/ocean_sos_var_file"
+      json_var_list:
+        "fre/tests/test_files/varlist"
+      outdir:
+        "fre/tests/test_files/outdir"
+      opt_var_name:
+
+
+
+
+
+
+
+
+
+#cmor:
+#  globals: &globals
+#    table_dir: "fre/tests/test_files/cmip6-cmor-tables/Tables"
+#  targets:
+#    Omon-ts-gr1:
+#      <<: *globals
+#      json_table_config: !join [ <table_dir>, "/", "CMIP6_Omon.json" ]
+#
+#
+
+
+
+
+
+
+
+
+
+
+
+#cmor:
+#  globals: &globals
+#    table_dir: "fre/tests/test_files/cmip6-cmor-tables/Tables"
+#
+#  targets:
+#    <<: *globals
+#    Omon-ts-gr1:
+#      json_table_config: !join [<table_dir>, "/", "CMIP6_Omon.json"]
+#      table: "Omon"
+#      grid: "gr1"
+#      indir: "fre/tests/test_files/ocean_sos_var_file"
+#      json_var_list: "fre/tests/test_files/varlist"
+#      json_exp_config: "fre/tests/test_files/CMOR_input_example.json"
+#      outdir: "fre/tests/test_files/outdir"
+#
+#
+#
+#
+#
+#
+#
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+#  - "Omon"      
+#    grid : "gr1"
+#    indir : "fre/tests/test_files/ocean_sos_var_file" 
+#    json_var_list : "fre/tests/test_files/varlist" 
+#    json_exp_config : "fre/tests/test_files/CMOR_input_example.json"
+#    outdir : "fre/tests/test_files/outdir"
+
+
+
+
+
+
+
+
+
+
+
+#    BAZ:
+#      smth: <table_dir>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+#
+#
+#    - &table "Omon"
 #  opt_var_name: 
-
-
-
-
-
 ## from the test cases. 
-## Chris's desired end-state (best guess)
+## Chris"s desired end-state (best guess)
 #cmor:
 #  global:
 #    parent_experiment_name:
@@ -32,12 +136,12 @@ cmor:
 #    grid: gr1
 #    gfdl_comp: atmos
 #    gfdl_variable: t_ref
-#        '/archive/Eric.Stofferahn/ ' + \ #user
-#         'CMIP7/ESM4/DEV/' + \ #FRE stem
-#          'ESM4.5v01_om5b04_piC/' + \ #exp name
-#          'gfdl.ncrc5-intel23-prod-openmp/' + \ #platform
-#        'pp/' + \ #postprocess
-#        'land/' + \ # GFDL-component name
-#        'ts/' + \ # time-series
-#        'monthly/' + \ #frequency 
-#        '5yr/' # span of itme?
+#        "/archive/Eric.Stofferahn/ " + \ #user
+#         "CMIP7/ESM4/DEV/" + \ #FRE stem
+#          "ESM4.5v01_om5b04_piC/" + \ #exp name
+#          "gfdl.ncrc5-intel23-prod-openmp/" + \ #platform
+#        "pp/" + \ #postprocess
+#        "land/" + \ # GFDL-component name
+#        "ts/" + \ # time-series
+#        "monthly/" + \ #frequency 
+#        "5yr/" # span of itme?
