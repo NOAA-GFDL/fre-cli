@@ -51,7 +51,7 @@ class init_compile_yaml():
 
         # Return the combined string and loaded yaml
         print(f"   model yaml: {self.yml}")
-        return (yaml_content,yml)
+        return (yaml_content, yml)
 
     def combine_compile(self,yaml_content,loaded_yaml):
         """
@@ -101,16 +101,21 @@ class init_compile_yaml():
         print(f"   platforms yaml: {py_path}")
         return (yaml_content, yml)
 
-    def clean_yaml(self, yaml_content, loaded_yaml):
+    def clean_yaml(self, yaml_content):
         """
         Clean the yaml; remove unnecessary sections in
         final combined yaml.
         """
+        # Load the yaml
+        yml=yaml.load(yaml_content, Loader=yaml.Loader)
+
         # Clean the yaml
         # If keys exists, delete:
         keys_clean=["fre_properties", "shared", "experiments"]
         for kc in keys_clean:
-            if kc in loaded_yaml.keys():
-                del loaded_yaml[kc]
+            if kc in yml.keys():
+                del yml[kc]
 
-        return loaded_yaml
+        cleaned_yml = yaml.safe_dump(yml,default_flow_style=False,sort_keys=False)
+
+        return cleaned_yml
