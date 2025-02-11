@@ -1,6 +1,7 @@
 import os
 import yaml
 from pathlib import Path
+import pprint
 
 def experiment_check(mainyaml_dir,experiment,loaded_yaml):
     """
@@ -71,114 +72,109 @@ class init_pp_yaml():
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)
 
-#        # Name of the combined yaml
-#        self.combined=f"combined-{self.name}.yaml"
-#
-#        print("Combining yaml files: ")
-
     def combine_model(self):
         """
         Create the combined.yaml and merge it with the model yaml
         """
-        full = []
-        full.append(f'name: &name "{self.name}"\n')
-        full.append(f'platform: &platform "{self.platform}"\n')
-        full.append(f'target: &target "{self.target}"\n')
+        # Define click options in string
+        yaml_content = (f'name: &name "{self.name}"\n'
+                        f'platform: &platform "{self.platform}"\n'
+                        f'target: &target "{self.target}"\n')
+
+        # Read model yaml as string
         with open(self.yml,'r') as f:
-            content = f.readlines()
+            model_content = f.read()
 
-        f1 = full + content
-        f2="".join(f1)
-#        print(f2)
+        # Combine information as strings
+        yaml_content += model_content
 
-        yml=yaml.load(f2,Loader=yaml.Loader)
-        return (f1,yml)
+        # Load string as yaml
+        yml=yaml.load(yaml_content,Loader=yaml.Loader)
 
- #       print(f"   model yaml: {self.yml}")
+        # Return the combined string and loaded yaml
+        print(f"   model yaml: {self.yml}")
+        return (yaml_content, yml)
 
-    def combine_experiment(self,list1,yam):
+    def combine_experiment(self, yaml_content, loaded_yaml):
         """
         Combine experiment yamls with the defined combined.yaml.
         If more than 1 pp yaml defined, return a list of paths.
         """
         # Experiment Check
-        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yam)
+        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,loaded_yaml)
 
-        print(ey_path)
+        pp_yamls = []
         ## COMBINE EXPERIMENT YAML INFO
         # If only 1 pp yaml defined, combine with model yaml
         if ey_path is not None and len(ey_path) == 1:
             #expyaml_path = os.path.join(mainyaml_dir, i)
             with open(ey_path,'r') as eyp:
-                content = eyp.readlines()
+                exp_content = eyp.read()
 
-            new_list = list1 + content
-            f2="".join(new_list)
+            exp_info = yaml_content + exp_content
+            pp_yamls.append(exp_info)
+            print(f"   experiment yaml: {ey_path}")
 
         # If more than 1 pp yaml listed
         # (Must be done for aliases defined)
         elif ey_path is not None and len(ey_path) > 1:
-            pp_yamls = []
             with open(ey_path[0],'r') as eyp0:
-                content = eyp0.readlines()
-            new_list1 = list1 + content
-            f2="".join(new_list1)
-            pp_yamls.append(new_list1)
+                exp_content = eyp0.read() #string
+
+            exp_info = yaml_content + exp_content
+            pp_yamls.append([exp_info])
 
             for i in ey_path[1:]:
-#                pp_exp = str(i).rsplit('/', maxsplit=1)[-1]
                 with open(i,'r') as eyp:
-                    content = eyp.readlines()
+                    exp_content = eyp.read()
 
-                new_list_i = list1 + content
-                f3="".join(new_list_i)
-                pp_yamls.append(new_list_i)
-#            print(pp_yamls)
-#            quit()
+                exp_info_i = yaml_content + exp_content
+                pp_yamls.append([exp_info_i])
+
             return pp_yamls
 
-    def combine_analysis(self,list2,yam):
+    def combine_analysis(self,yaml_content,loaded_yaml):
         """
         Combine analysis yamls with the defined combined.yaml
         If more than 1 analysis yaml defined, return a list of paths.
         """
         # Experiment Check
-        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yam)
+        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,loaded_yaml)
 
+        analysis_yamls = []
         ## COMBINE EXPERIMENT YAML INFO
         # If only 1 pp yaml defined, combine with model yaml
         if ay_path is not None and len(ay_path) == 1:
             #expyaml_path = os.path.join(mainyaml_dir, i)
             with open(ay_path,'r') as ayp:
-                content = ayp.readlines()
+                analysis_content = ayp.read()
 
-            new_list = list2 + content
-            f2="".join(new_list)
-#            #print(f2)
-#
+            analysis_info = yaml_content + analysis_content
+            analysis_yamls.append(analysis_info)
+            print(f"   analysis yaml: {ay_path}")
+
         # If more than 1 pp yaml listed
         # (Must be done for aliases defined)
         elif ay_path is not None and len(ay_path) > 1:
-            analysis_yamls = []
             with open(ay_path[0],'r') as ayp0:
-                content = ayp0.readlines()
-            new_list2 = list2 + content
-            #f2="".join(new_list2)
-            analysis_yamls.append(new_list2)
+                analysis_content = ayp0.read()
+
+            analysis_info = yaml_content + analysis_content
+            analysis_yamls.append([analysis_info])
 
             for i in ay_path[1:]:
                 with open(i,'r') as ayp:
-                    content = ayp.readlines()
+                    analysis_content = ayp.read()
 
-                new_list_i = list2 + content
-                f3="".join(new_list_i)
-                analysis_yamls.append(new_list_i)
+                analysis_info_i = yaml_content + analysis_content
+                analysis_yamls.append([analysis_info_i])
+
             return analysis_yamls
 
     def merge_multiple_yamls(self, pp_list, analysis_list):
         """
         Merge separately combined post-processing and analysis
-        yamls into fully combined yaml (without overwriting).
+        yamls into fully combined yaml (without overwriting like sections).
         """
         result = {}
 
@@ -189,11 +185,14 @@ class init_pp_yaml():
         # yamlfile, update the key in result to
         # include the loaded yaml file's value.
         if pp_list is not None and len(pp_list) > 1:
-            newnewnew = "".join(pp_list[0])
-            result.update(yaml.load(newnewnew,Loader=yaml.Loader))
+            yml_pp = "".join(pp_list[0])
+            result.update(yaml.load(yml_pp,Loader=yaml.Loader))
+            #print(f"   experiment yaml: {exp}")
+#           print(pp_list[0])
+
             for i in pp_list[1:]:
-                morenew = "".join(i)
-                yf = yaml.load(morenew,Loader=yaml.Loader)
+                uhm = "".join(i)
+                yf = yaml.load(uhm,Loader=yaml.Loader)
                 for key in result:
                     if key in yf:
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
@@ -209,11 +208,13 @@ class init_pp_yaml():
         # If instance of key is a dictionary in both result and loaded yamlfile, update the key
         # in result to include the loaded yaml file's value.
         if analysis_list is not None and len(analysis_list) > 1:
-            new4 = "".join(analysis_list[0])
-            result.update(yaml.load(new4,Loader=yaml.Loader))
+            yml_analysis = "".join(analysis_list[0])
+            result.update(yaml.load(yml_analysis,Loader=yaml.Loader))
+
             for i in analysis_list[1:]:
-               more_new4 = "".join(i)
-               yf = yaml.load(more_new4,Loader=yaml.Loader)
+               #more_new4 = "".join(i)
+               uhm_again = "".join(i)
+               yf = yaml.load(uhm_again,Loader=yaml.Loader)
                for key in result:
                    if key in yf:
                        if isinstance(result[key],dict) and isinstance(yf[key],dict):
@@ -224,26 +225,29 @@ class init_pp_yaml():
         elif analysis_list is not None and len(analysis_list) == 1:
             pass
 
-        print(result)
+#        if pp_list is not None:
+#            for i in pp_list:
+#                exp = str(i).rsplit('/', maxsplit=1)[-1]
+#                print(f"   experiment yaml: {exp}")
+#        if analysis_list is not None:
+#            for i in analysis_list:
+#                analysis = str(i).rsplit('/', maxsplit=1)[-1]
+#                print(f"   analysis yaml: {analysis}")
 
-#    def clean_yaml(self):
-#        """
-#        Clean the yaml; remove unnecessary sections in
-#        final combined yaml.
-#        """
-#        # Load the fully combined yaml
-#        full_yaml = yaml_load(self.combined)
-#
-#        # Clean the yaml
-#        # If keys exists, delete:
-#        keys_clean=["fre_properties", "shared", "experiments"]
-#        for kc in keys_clean:
-#            if kc in full_yaml.keys():
-#                del full_yaml[kc]
-#
-#        # Dump cleaned dictionary back into combined yaml file
-#        with open(self.combined,'w') as f:
-#            yaml.safe_dump(full_yaml,f,default_flow_style=False,sort_keys=False)
-#
-#        print(f"Combined yaml located here: {os.path.abspath(self.combined)}")
-#        return self.combined
+        return result
+
+    def clean_yaml(self,yml_dict):
+        """
+        Clean the yaml; remove unnecessary sections in
+        final combined yaml.
+        """
+        # Clean the yaml
+        # If keys exists, delete:
+        keys_clean=["fre_properties", "shared", "experiments"]
+        for kc in keys_clean:
+            if kc in yml_dict.keys():
+                del yml_dict[kc]
+
+        # Dump cleaned dictionary back into combined yaml file
+        cleaned_yaml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
+        return cleaned_yaml
