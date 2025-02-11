@@ -72,6 +72,7 @@ def test_cli_fre_cmor_yaml_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "yaml", "optionDNE"])
     assert result.exit_code == 2
 
+TEST_YAML_PATH=f"{ROOTDIR}/cmor.yaml"
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml -y '''
     
@@ -90,10 +91,11 @@ def test_cli_fre_cmor_yaml_case1():
         f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199308.nc"
 
 
-    result = runner.invoke(fre.fre, args=["cmor", "yaml", "-y", f"{ROOTDIR}/cmor.yaml"])
+    result = runner.invoke(fre.fre, args=["cmor", "yaml", "-y", TEST_YAML_PATH])
 
 
     assert all ( [ result.exit_code == 0,
+                   Path(TEST_YAML_PATH).exists(), 
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
 
