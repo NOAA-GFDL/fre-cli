@@ -158,7 +158,7 @@ cython_debug/
 
 # other
 *~
-*\#
+*\#*
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
@@ -173,29 +173,27 @@ cython_debug/
 
 
 ##### GOTTA CLEAN THIS UP
-# files pulled/created via testing
-fre/tests/test_files/outdirfre/
-fre/pp/tests/configure_yaml_out/
-fre/yamltools/tests/combine_yamls_out/
-fre/app/generate_time_averages/tests/time_avg_test_files/
 
-# fremake generated files that should be ignored
-combined-null_model.yaml
-combined-am5.yaml
-tmp
-makefile_out
+# files pulled/created via testing
+tmp/
+
+fre/tests/fremake_out
 fre/tests/test_files/ocean_sos_var_file/*.nc
+fre/tests/test_files/outdirfre/
 fre/tests/test_files/outdir/
 
-
-
-# files pulled/created via testing
-#fre/tests/test_files/cmip6-cmor-tables/
-fre/tests/test_files/outdirfre/
-fre/pp/tests/configure_yaml_out/
-fre/yamltools/tests/combine_yamls_out/
 fre/app/generate_time_averages/tests/time_avg_test_files/
-fre/make/tests/null_example/combined-null_model.yaml
-fre/make/tests/makefile_out
-fre/make/tests/compile_out
-fre/tests/fremake_out
+fre/app/regrid_xy/tests/*/
+
+#fre/make/tests/null_example/combined-null_model.yaml
+fre/make/tests/*/
+
+fre/pp/tests/configure_yaml_out/
+
+fre/yamltools/tests/combine_yamls_out/
+
+
+# fremake generated files that should be ignored
+#combined-null_model.yaml
+#combined-am5.yaml
+#makefile_out
