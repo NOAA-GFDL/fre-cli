@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 import subprocess
 from fre.make import create_checkout_script
+import shutil
 
 # Set example yaml paths, input directory
 TEST_DIR = str(Path("fre/make/tests"))
@@ -60,7 +61,7 @@ def test_checkout_execute():
     """
     check if --execute option works
     """
-    subprocess.run(["rm","-rf",f"{OUT}/fremake_canopy/test"])
+    shutil.rmtree(f"{OUT}/fremake_canopy/test")
     create_checkout_script.checkout_create(YAMLFILE,
                                            PLATFORM,
                                            TARGET,
