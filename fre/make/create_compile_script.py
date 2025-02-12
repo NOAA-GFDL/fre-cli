@@ -69,11 +69,8 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
               # check if mkTemplate has a / indicating it is a path
               # if its not, prepend the template name with the mkmf submodule directory
               if "/" not in platform["mkTemplate"]:
-                  fdir = os.path.abspath(__file__) # repo/fre/make/create_compile_script.py
-                  topdir = os.path.dirname(fdir)   # repo/fre/make/
-                  topdir = os.path.dirname(topdir) # repo/fre
-                  topdir = os.path.dirname(topdir) # repo
-                  templatePath = str(topdir)+"/mkmf/templates/"+ platform["mkTemplate"]
+                  topdir = Path(__file__).resolve().parents[2]
+                  templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
                   if not Path(templatePath).exists():
                       raise ValueError (f"Error with mkmf template. Created path from given file name: {templatePath} does not exist.")
               else:
