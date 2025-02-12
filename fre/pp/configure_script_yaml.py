@@ -10,7 +10,7 @@
 import os
 import json
 import shutil
-
+from pathlib import Path
 from jsonschema import validate
 import yaml
 import metomi.rose.config
@@ -20,9 +20,9 @@ import fre.yamltools.combine_yamls as cy
 ####################
 def yaml_load(yamlfile):
     """
-    Load the given yaml and validate.
+    Load the given yaml.
     """
-    # Load the main yaml and validate
+    # Load the main yaml
     with open(yamlfile,'r') as f:
         y=yaml.safe_load(f)
 
@@ -36,16 +36,19 @@ def validate_yaml(yamlfile):
     # Load the yaml
     yml = yaml_load(yamlfile)
 
-    package_dir = os.path.dirname(os.path.abspath(__file__))
-    schema_path = os.path.join(package_dir, 'schema.json')
-    # Load the json schema: .load() (vs .loads()) reads and parses the json in one
+    schema_dir = Path(__file__).resolve().parents[1]
+    schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
+    # Load the json schema: .load() (vs .loads()) reads and parses the json in one)
     with open(schema_path,'r') as s:
         schema = json.load(s)
 
     # Validate yaml
     # If the yaml is not valid, the schema validation will raise errors and exit
-    if validate(instance=yml,schema=schema) is None:
-        print("COMBINED YAML VALID \n")
+    try:
+        validate(instance=yml,schema=schema)
+        print("\nCombined yaml VALID \n")
+    except:
+        raise ValueError("\nCombined yaml NOT VALID.\n")
 
 ####################
 def rose_init(experiment,platform,target):
@@ -167,7 +170,6 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
 
     # Validate yaml
     validate_yaml(full_combined)
-
     # Load the combined yaml
     comb_pp_yaml = yaml_load(full_combined)
 
