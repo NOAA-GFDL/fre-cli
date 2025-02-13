@@ -5,6 +5,7 @@ compile:
      src:
           - component: "FMS"
             repo: "https://github.com/NOAA-GFDL/FMS.git"
+            additionalInstructions: "echo \"Testing additionalInstructions\""
             cppdefs: "-Duse_netCDF -Duse_libMPI -DMAXFIELDS_=200 -DMAXFIELDMETHODS_=200 -DINTERNAL_FILE_NML -DHAVE_GETTID"
             otherFlags: "-fallow-argument-mismatch" # only needed for gcc
             branch: *branch
