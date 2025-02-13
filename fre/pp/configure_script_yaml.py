@@ -15,7 +15,8 @@ from jsonschema import validate
 import yaml
 import metomi.rose.config
 
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
+import fre.yamltools.pp_info_parser as ppip
 
 ####################
 def yaml_load(yamlfile):
@@ -33,8 +34,8 @@ def validate_yaml(yamlfile):
     """
      Using the schema.json file, the yaml format is validated.
     """
-    # Load the yaml
-    yml = yaml_load(yamlfile)
+#    # Load the yaml
+#    yml = yaml_load(yamlfile)
 
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
@@ -45,7 +46,7 @@ def validate_yaml(yamlfile):
     # Validate yaml
     # If the yaml is not valid, the schema validation will raise errors and exit
     try:
-        validate(instance=yml,schema=schema)
+        validate(instance=yamlfile,schema=schema)
         print("\nCombined yaml VALID \n")
     except:
         raise ValueError("\nCombined yaml NOT VALID.\n")
@@ -165,27 +166,32 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
 
     # Combine model, experiment, and analysis yamls
-    comb = cy.init_pp_yaml(yml,e,p,t)
+    join_func = cy.join_constructor
+    comb = ppip.InitPPYaml(yml,e,p,t,join_func)
     full_combined = cy.get_combined_ppyaml(comb)
+
+#    print(full_combined)
+#    quit()
 
     # Validate yaml
     validate_yaml(full_combined)
-    # Load the combined yaml
-    comb_pp_yaml = yaml_load(full_combined)
+
+#    # Load the combined yaml
+#    comb_pp_yaml = yaml_load(full_combined)
 
     ## PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items
-    set_rose_suite(comb_pp_yaml,rose_suite)
+    set_rose_suite(full_combined,rose_suite) ####comb_pp_yaml,rose_suite)
 
     # Set regrid and remap rose app items
-    set_rose_apps(comb_pp_yaml,rose_regrid,rose_remap)
+    set_rose_apps(full_combined,rose_regrid,rose_remap) ####comb_pp_yaml,rose_regrid,rose_remap)
 
-    # write output files
+    # Write output files
     print("Writing output files...")
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
-    outfile = os.path.join(cylc_dir, f"{e}.yaml")
-    shutil.copyfile(full_combined, outfile)
-    print("  " + outfile)
+#    outfile = os.path.join(cylc_dir, f"{e}.yaml")
+#    shutil.copyfile(full_combined, outfile)
+#    print("  " + outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
     outfile = os.path.join(cylc_dir, "rose-suite.conf")
