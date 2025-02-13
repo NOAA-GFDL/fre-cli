@@ -18,6 +18,7 @@ Welcome to ``fre-cli``'s documentation!
    setup
    usage
    tools
+   container
    api
    for-developers
    badges
