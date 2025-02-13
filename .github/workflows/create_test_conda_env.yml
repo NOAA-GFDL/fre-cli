@@ -12,11 +12,15 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
+      image: ghcr.io/rem1776/fre-cli:withfuse
+      options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+      - name: test podman can run an image
+        run: |
+          podman run --cgroups=disabled alpine cat /etc/os-release
       - name: Create fre-cli environment
         run: |
           # create env holding all deps, the env cant be explicitly activated in CI/CD        
