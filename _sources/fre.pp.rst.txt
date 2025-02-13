@@ -1,0 +1,35 @@
+fre.pp package
+==============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.pp.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.pp.checkout_script
+   fre.pp.configure_script_xml
+   fre.pp.configure_script_yaml
+   fre.pp.frepp
+   fre.pp.install_script
+   fre.pp.run_script
+   fre.pp.status_script
+   fre.pp.trigger_script
+   fre.pp.validate_script
+   fre.pp.wrapper_script
+
+Module contents
+---------------
+
+.. automodule:: fre.pp
+   :members:
+   :undoc-members:
+   :show-inheritance:
