@@ -75,8 +75,10 @@ def get_combined_ppyaml(comb):
     except: 
         raise ValueError("uh oh 4")
 
+#    print(full_combined)
     # Clean the yaml
     cleaned_yaml = comb.clean_yaml(full_combined)
+#    print(cleaned_yaml)
     return cleaned_yaml
 
 def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
@@ -85,9 +87,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
     combined yaml for compilation or post-processing
     """
     if use == "compile":
-        combined = cip.init_compile_yaml(yamlfile, platform, target, join_constructor)
-        # Create combined compile yaml
-        print("Combining yaml files into one dictionary: ")
+        combined = cip.InitCompileYaml(yamlfile, platform, target, join_constructor)
 
         if output is None:
             get_combined_compileyaml(combined)
@@ -97,9 +97,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
             print(f"COMBINE OUT HERE: {os.path.abspath(output)}")
 
     elif use =="pp":
-        combined = ppip.init_pp_yaml(yamlfile, experiment, platform, target, join_constructor)
-        # Create combined pp yaml
-        print("Combining yaml files into one dictionary: ")
+        combined = ppip.InitPPYaml(yamlfile, experiment, platform, target, join_constructor)
 
         if output is None:
             get_combined_ppyaml(combined)

@@ -55,7 +55,7 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
             return (ey_path,ay_path)
 
 ## PP CLASS ##
-class init_pp_yaml():
+class InitPPYaml():
     """ class holding routines for initalizing post-processing yamls """
     def __init__(self,yamlfile,experiment,platform,target,join_constructor):
         """
@@ -71,6 +71,9 @@ class init_pp_yaml():
 
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)
+
+        # Create combined pp yaml
+        print("Combining yaml files into one dictionary: ")
 
     def combine_model(self):
         """
@@ -249,5 +252,5 @@ class init_pp_yaml():
                 del yml_dict[kc]
 
         # Dump cleaned dictionary back into combined yaml file
-        cleaned_yaml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
-        return cleaned_yaml
+#        cleaned_yaml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
+        return yml_dict
