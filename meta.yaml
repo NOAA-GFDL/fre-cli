@@ -11,6 +11,7 @@ source:
 
 build:
   script:
+    - cp -R mkmf/templates $PREFIX
     - {{ PYTHON }} -m pip install . -vv
   number: 1
   noarch: python
