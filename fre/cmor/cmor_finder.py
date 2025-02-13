@@ -12,6 +12,9 @@ done;
 
 import glob
 import json
+import logging
+fre_logger = logging.getLogger(__name__)
+
 from pathlib import Path
 
 DO_NOT_PRINT_LIST=[ 'comment',
@@ -29,35 +32,35 @@ def print_var_content( table_config_file = None, var_name = None):
     try:
         var_content = proj_table_vars["variable_entry"].get(var_name)
     except:
-        #print(f'(cmor_find_subtool) WARNING no "variable_entry" key. for {json_table_config}.'
-        #       '                    not the right json file probably. moving on!')
+        fre_logger.warning(f'no "variable_entry" key. for {json_table_config}.'
+                         '     not the right json file probably. moving on!')
         return
 
     if var_content is None:
-        #print(f'(cmor_find_subtool) variable {var_name} not found in {Path(json_table_config).name}, moving on!')
+        fre_logger.warning(f'variable {var_name} not found in {Path(json_table_config).name}, moving on!')
         return
 
     table_name = None
     try:
-        #print(f'(print_var_content) trying to get table_name from proj_table_vars...')
-        #print(f'                    table header is {proj_table_vars["Header"]}')
+        #fre_logger.info(f'trying to get table_name from proj_table_vars...')
+        #fre_logger.info(f'    table header is {proj_table_vars["Header"]}')
         table_name = proj_table_vars["Header"].get('table_id').split(' ')[1]
-        #print(f'                    table_name = {table_name}')
+        #fre_logger.info(f'    table_name = {table_name}')
     except:
-        print('print_var_content) WARNING couldnt get header and table_name field')
+        fre_logger.warning('couldnt get header and table_name field')
         pass
 
     if table_name is not None:
-        print(f'(print_var_content) found {var_name} data in table {table_name}!')
+        fre_logger.info(f'found {var_name} data in table {table_name}!')
     else:
-        print(f'(print_var_content) found {var_name} data in table, but not its table_name!')
+        fre_logger.info(f'found {var_name} data in table, but not its table_name!')
 
-    print(f'              variable key: {var_name}')
+    fre_logger.info(f'    variable key: {var_name}')
     for content in var_content:
         if content in DO_NOT_PRINT_LIST:
             continue
-        print(f'              {content}: {var_content[content]}')
-    print('\n')
+        fre_logger.info(f'    {content}: {var_content[content]}')
+    fre_logger.info('\n')
 
     return
 
@@ -67,14 +70,14 @@ def cmor_find_subtool( json_var_list = None, json_table_config_dir = None, opt_v
     out to screen, intended largely as a helper tool for cli users.
     '''
     if not Path(json_table_config_dir).exists():
-        raise OSError(f'(cmor_find_subtool) ERROR directory {json_table_config_dir} does not exist! exit.')
+        raise OSError(f'ERROR directory {json_table_config_dir} does not exist! exit.')
 
-    print(f'(cmor_find_subtool) attempting to find and open files in dir: \n {json_table_config_dir} ')
+    fre_logger.info(f'attempting to find and open files in dir: \n {json_table_config_dir} ')
     json_table_configs=glob.glob(f'{json_table_config_dir}/CMIP6_*.json')
     if json_table_configs is None:
         raise OSError(f'ERROR directory {json_table_config_dir} contains no JSON files, exit.')
     else:
-        print('(cmor_find_subtool) found content in json_table_config_dir')
+        fre_logger.info('found content in json_table_config_dir')
 
     var_list = None
     if json_var_list is not None:
@@ -82,25 +85,25 @@ def cmor_find_subtool( json_var_list = None, json_table_config_dir = None, opt_v
             var_list=json.load(var_list_file)
 
     if opt_var_name is None and var_list is None:
-        raise ValueError('(cmor_find_subtool) ERROR: no opt_var_name given but also no content in variable list!!! exit!')
+        raise ValueError('ERROR: no opt_var_name given but also no content in variable list!!! exit!')
 
     if opt_var_name is not None:
-        print('(cmor_find_subtool) opt_var_name is not None: looking for only ONE variables worth of info!')
+        fre_logger.info('opt_var_name is not None: looking for only ONE variables worth of info!')
         for json_table_config in json_table_configs:
-            #print(f'(cmor_find_subtool) attempting to open {json_table_config}')
+            #fre_logger.info(f'attempting to open {json_table_config}')
             with open( json_table_config, "r", encoding = "utf-8") as table_config_file:
                 print_var_content(table_config_file, opt_var_name)
 
     elif var_list is not None:
-        print('(cmor_find_subtool) opt_var_name is None, and var_list is not None, looking for many variables worth of info!')
+        fre_logger.info('opt_var_name is None, and var_list is not None, looking for many variables worth of info!')
         for var in var_list:
             for json_table_config in json_table_configs:
-                #print(f'(cmor_find_subtool) attempting to open {json_table_config}')
+                #fre_logger.info(f'attempting to open {json_table_config}')
                 with open( json_table_config, "r", encoding = "utf-8") as table_config_file:
-                    #print(f'    var = {var}, var_list[{var}]={var_list[var]}')
+                    #fre_logger.info(f'    var = {var}, var_list[{var}]={var_list[var]}')
                     print_var_content(table_config_file, str(var_list[var]))
     else:
-        print('(FATAL) this line should be unreachable!!!')
+        fre_logger.error('this line should be unreachable!!!')
         assert False
 
     return

@@ -12,7 +12,10 @@ import importlib.metadata
 import click
 from .lazy_group import LazyGroup
 
-
+import logging
+fre_logger = logging.getLogger(__name__)
+FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
+MODE = 'x'
 
 # versioning, turn xxxx.y into xxxx.0y
 version_unexpanded = importlib.metadata.version('fre-cli')
@@ -32,6 +35,13 @@ try:
 except IndexError:
     version = version_unexpanded_split[0] + '.' + version_minor
 
+
+@click.version_option(
+    package_name = "fre-cli",
+    version=version
+)
+
+
 # click and lazy group loading
 @click.group(
     cls = LazyGroup,
@@ -46,18 +56,24 @@ except IndexError:
                        "cmor": ".cmor.frecmor.cmor_cli",
                        "analysis": ".analysis.freanalysis.analysis_cli"},
     help = click.style(
-        "'fre' is the main CLI click group that houses the other tool groups as lazy subcommands.",
+        "'fre' is the main CLI click group. It houses the other tool groups as lazy subcommands.",
         fg='cyan')
 )
-
-
-@click.version_option(
-    package_name = "fre-cli",
-    version=version
-)
-
-def fre():
+@click.option('-v', '--verbose', is_flag=True,
+              default=False, help="set logging verbosity higher",
+              required=False)
+@click.option('-l', '--log_file', default=None, required=False, type=str,
+              help='path to log file for all fre calls. leave as None to print to screen')
+def fre(verbose, log_file):
     ''' entry point function to subgroup functions '''
+    log_level=None
+    file_mode = None if log_file is None else MODE
+    if verbose:
+        log_level=logging.INFO
+    else:
+        log_level=logging.WARN
+    logging.basicConfig(level=log_level, format=FORMAT,
+                        filename=log_file, encoding='utf-8')
 
 if __name__ == '__main__':
     fre()
