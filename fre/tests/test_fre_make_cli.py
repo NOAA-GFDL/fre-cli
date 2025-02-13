@@ -33,6 +33,10 @@ def test_cli_fre_make_create_checkout_baremetal():
     platform = "ncrc5.intel23"
     target = "debug"
 
+    # Delete existing checkout.sh if it exists
+    if Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh").exists():
+        Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh").unlink()
+
     # Create output path to test that files exist
     Path(OUT_PATH).mkdir(parents=True,exist_ok=True)
 
@@ -61,6 +65,10 @@ def test_cli_fre_make_create_checkout_baremetal_npc():
     platform = "ncrc5.intel23"
     target = "debug"
 
+    # Delete existing checkout.sh if it exists
+    if Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh").exists():
+        Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh").unlink()
+
     # Create output path to test that files exist
     Path(OUT_PATH).mkdir(parents=True,exist_ok=True)
 
@@ -83,10 +91,15 @@ def test_cli_fre_make_create_checkout_container():
     ''' fre make create-checkout -y null_model.yaml -p hpcme.2023 -t debug'''
     TEST_DIR = Path("fre/tests")
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_container"
+
     # Set paths and click options
     yamlfile = Path("fre/make/tests/null_example/")
     platform = "hpcme.2023"
     target = "debug"
+
+    # Delete existing checkout.sh if it exists
+    if Path(f"tmp/{platform}/checkout.sh").exists():
+        Path(f"tmp/{platform}/checkout.sh").unlink()
 
     # Create output path to test that files exist
     Path(OUT_PATH).mkdir(parents=True,exist_ok=True)
