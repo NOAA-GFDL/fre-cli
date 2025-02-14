@@ -166,32 +166,29 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
 
     # Combine model, experiment, and analysis yamls
-    join_func = cy.join_constructor
-    comb = ppip.InitPPYaml(yml,e,p,t,join_func)
-    full_combined = cy.get_combined_ppyaml(comb)
+    cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
+    outfile = os.path.join(cylc_dir, f"{e}.yaml")
 
-#    print(full_combined)
-#    quit()
+    full_yamldict = cy.consolidate_yamls(yamlfile = yml,
+                                         experiment = e,
+                                         platform = p,
+                                         target = t,
+                                         use = "pp",
+                                         output = outfile)
 
     # Validate yaml
-    validate_yaml(full_combined)
-
-#    # Load the combined yaml
-#    comb_pp_yaml = yaml_load(full_combined)
+    validate_yaml(full_yamldict)
 
     ## PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items
-    set_rose_suite(full_combined,rose_suite) ####comb_pp_yaml,rose_suite)
+    set_rose_suite(full_yamldict,rose_suite) ####comb_pp_yaml,rose_suite)
 
     # Set regrid and remap rose app items
-    set_rose_apps(full_combined,rose_regrid,rose_remap) ####comb_pp_yaml,rose_regrid,rose_remap)
+    set_rose_apps(full_yamldict,rose_regrid,rose_remap) ####comb_pp_yaml,rose_regrid,rose_remap)
 
     # Write output files
     print("Writing output files...")
-    cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
-#    outfile = os.path.join(cylc_dir, f"{e}.yaml")
-#    shutil.copyfile(full_combined, outfile)
-#    print("  " + outfile)
+    print("  " + outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
     outfile = os.path.join(cylc_dir, "rose-suite.conf")

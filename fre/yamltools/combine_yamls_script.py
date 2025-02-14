@@ -16,6 +16,13 @@ def join_constructor(loader, node):
     seq = loader.construct_sequence(node)
     return ''.join([str(i) for i in seq])
 
+def output_yaml(cleaned_yaml,experiment,output):
+    """
+    """
+    filename = output
+    with open(filename,'w') as out:
+        out.write(yaml.dump(cleaned_yaml,default_flow_style=False,sort_keys=False))
+
 ## Functions to combine the yaml files ##
 def get_combined_compileyaml(comb):
     """
@@ -44,7 +51,7 @@ def get_combined_compileyaml(comb):
     cleaned_yaml = comb.clean_yaml(yaml_content)
     return cleaned_yaml
 
-def get_combined_ppyaml(comb):
+def get_combined_ppyaml(comb,experiment,output=None):
     """
     Combine the model, experiment, and analysis yamls
     Arguments:
@@ -71,14 +78,19 @@ def get_combined_ppyaml(comb):
     try:
         # Merge model/pp and model/analysis yamls if more than 1 is defined
         # (without overwriting the yaml)
-        full_combined = comb.merge_multiple_yamls(comb_pp_updated_list, comb_analysis_updated_list)
+        full_combined = comb.merge_multiple_yamls(comb_pp_updated_list, comb_analysis_updated_list,loaded_yaml)
     except: 
         raise ValueError("uh oh 4")
 
-#    print(full_combined)
     # Clean the yaml
     cleaned_yaml = comb.clean_yaml(full_combined)
-#    print(cleaned_yaml)
+
+    # OUTPUT IF NEEDED
+    if output is not None:
+        output_yaml(cleaned_yaml,experiment,output)
+    else:
+        print("Combined yaml information saved as dictionary")
+
     return cleaned_yaml
 
 def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
@@ -89,25 +101,23 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
     if use == "compile":
         combined = cip.InitCompileYaml(yamlfile, platform, target, join_constructor)
 
-        if output is None:
+        if output is False:
             get_combined_compileyaml(combined)
         else:
-            with open(output,'w') as out:
-                out.write(get_combined_compileyaml(combined))
-            print(f"COMBINE OUT HERE: {os.path.abspath(output)}")
+            get_combined_compileyaml(combined,experiment,output)
 
     elif use =="pp":
         combined = ppip.InitPPYaml(yamlfile, experiment, platform, target, join_constructor)
 
-        if output is None:
-            get_combined_ppyaml(combined)
+        if output is False:
+            yml_dict = get_combined_ppyaml(combined)
         else:
-            with open(output,'w') as out:
-                out.write(get_combined_ppyaml(combined))
-            print(f"COMBINE OUT HERE: {os.path.abspath(output)}")
+            yml_dict = get_combined_ppyaml(combined,experiment,output)
+
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'") 
 
+    return yml_dict
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':
     consolidate_yamls()

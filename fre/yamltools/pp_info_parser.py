@@ -174,11 +174,13 @@ class InitPPYaml():
 
             return analysis_yamls
 
-    def merge_multiple_yamls(self, pp_list, analysis_list):
+    def merge_multiple_yamls(self, pp_list, analysis_list, loaded_yaml):
         """
         Merge separately combined post-processing and analysis
         yamls into fully combined yaml (without overwriting like sections).
         """
+        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,loaded_yaml)
+
         result = {}
 
         # If more than one post-processing yaml is listed, update
@@ -191,7 +193,6 @@ class InitPPYaml():
             yml_pp = "".join(pp_list[0])
             result.update(yaml.load(yml_pp,Loader=yaml.Loader))
             #print(f"   experiment yaml: {exp}")
-#           print(pp_list[0])
 
             for i in pp_list[1:]:
                 uhm = "".join(i)
@@ -228,14 +229,14 @@ class InitPPYaml():
         elif analysis_list is not None and len(analysis_list) == 1:
             pass
 
-#        if pp_list is not None:
-#            for i in pp_list:
-#                exp = str(i).rsplit('/', maxsplit=1)[-1]
-#                print(f"   experiment yaml: {exp}")
-#        if analysis_list is not None:
-#            for i in analysis_list:
-#                analysis = str(i).rsplit('/', maxsplit=1)[-1]
-#                print(f"   analysis yaml: {analysis}")
+        if ey_path is not None:
+            for i in ey_path:
+                exp = str(i).rsplit('/', maxsplit=1)[-1]
+                print(f"   experiment yaml: {exp}")
+        if ay_path is not None:
+            for i in ay_path:
+                analysis = str(i).rsplit('/', maxsplit=1)[-1]
+                print(f"   analysis yaml: {analysis}")
 
         return result
 
