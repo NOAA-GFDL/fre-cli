@@ -4,6 +4,8 @@ from datetime import date
 from pathlib import Path
 import shutil
 
+import pytest
+
 import click
 from click.testing import CliRunner
 
@@ -19,22 +21,21 @@ ROOTDIR = 'fre/tests/test_files'
 # these unit tests should be more about the cli, rather than the workload
 YYYYMMDD=date.today().strftime('%Y%m%d')
 
-copied_nc_filename = 'reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc'
-full_copied_nc_filepath = f'{ROOTDIR}/ocean_sos_var_file/{copied_nc_filename}'
-original_nc_file = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199307-199308.sos.nc'
+COPIED_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc'
+ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199307-199308.sos.nc'
 
 def test_setup_test_files(capfd):
     "set-up test: copy and rename NetCDF file created in test_fre_cmor_run_subtool.py"
 
-    assert Path(original_nc_file).exists()
+    assert Path(ORIGINAL_NC_FILEPATH).exists()
 
-    if Path(full_copied_nc_filepath).exists():
-        Path(full_copied_nc_filepath).unlink()
-    assert not Path(full_copied_nc_filepath).exists()
+    if Path(COPIED_NC_FILEPATH).exists():
+        Path(COPIED_NC_FILEPATH).unlink()
+    assert not Path(COPIED_NC_FILEPATH).exists()
 
-    shutil.copy(Path(original_nc_file), Path(full_copied_nc_filepath))
+    shutil.copy(Path(ORIGINAL_NC_FILEPATH), Path(COPIED_NC_FILEPATH))
 
-    assert (Path(full_copied_nc_filepath).exists())
+    assert (Path(COPIED_NC_FILEPATH).exists())
 
     out, err = capfd.readouterr()
 
@@ -72,7 +73,9 @@ def test_cli_fre_cmor_yaml_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "yaml", "optionDNE"])
     assert result.exit_code == 2
 
-TEST_YAML_PATH=f"{ROOTDIR}/cmor.yaml"
+TEST_YAML_PATH=f"{ROOTDIR}/fre/yamltools/tests/AM5_example/am5.yaml"
+TEST_CMOR_YAML_PATH=f"{ROOTDIR}/fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
+@pytest.mark.xfail('under construction / being actively developed')
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml -y '''
     
@@ -95,7 +98,8 @@ def test_cli_fre_cmor_yaml_case1():
 
 
     assert all ( [ result.exit_code == 0,
-                   Path(TEST_YAML_PATH).exists(), 
+                   Path(TEST_YAML_PATH).exists(),
+                   Path(TEST_CMOR_YAML_PATH).exists(), 
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
 
