@@ -11,3 +11,4 @@
 - [ ] I wrote new instructions/documentation, if applicable
 - [ ] I ran pytest and inspected it's output
 - [ ] I ran pylint and attempted to implement some of it's feedback
+- [ ] No print statements; all user-facing info uses logging module
