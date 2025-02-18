@@ -1,0 +1,18 @@
+fre.app.regrid\_xy.tests package
+================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.app.regrid_xy.tests.test_regrid_xy
+
+Module contents
+---------------
+
+.. automodule:: fre.app.regrid_xy.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,48 @@
+{
+  "title": "Field table for field_manager",
+  "type": "object",
+  "properties": {
+    "field_table": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field_type": {
+            "type": "string"
+          },
+          "modlist": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "model_type": {
+                  "type": "string",
+                  "enum": ["coupler_mod", "atmos_mod", "ocean_mod", "land_mod", "ice_mod"]
+                },
+                "varlist": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "variable": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["variable"],
+                    "additionalProperties": true
+              	  }
+                }
+              },
+              "required": ["model_type"],
+              "additionalProperties": false
+            }
+      	  }
+        },
+        "required": ["field_type"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["field_table"],
+  "additionalProperties": false
+}

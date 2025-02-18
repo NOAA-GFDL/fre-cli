@@ -1,0 +1,19 @@
+fre.pp.tests package
+====================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.pp.tests.test_configure_script_yaml
+   fre.pp.tests.test_rose_quoting
+
+Module contents
+---------------
+
+.. automodule:: fre.pp.tests
+   :members:
+   :undoc-members:
+   :show-inheritance:
