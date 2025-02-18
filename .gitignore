@@ -185,15 +185,8 @@ fre/tests/test_files/outdir/
 fre/app/generate_time_averages/tests/time_avg_test_files/
 fre/app/regrid_xy/tests/*/
 
-#fre/make/tests/null_example/combined-null_model.yaml
 fre/make/tests/*/
 
 fre/pp/tests/configure_yaml_out/
 
 fre/yamltools/tests/combine_yamls_out/
-
-
-# fremake generated files that should be ignored
-#combined-null_model.yaml
-#combined-am5.yaml
-#makefile_out
