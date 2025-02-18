@@ -21,7 +21,9 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     run = execute
     jobs = str(jobs)
     pcheck = no_parallel_checkout
-
+    
+    if type(jobs) == bool and execute:
+        raise ValueError ('jobs must be defined as number if --execute flag is True')
     if pcheck:
         pc = ""
     else:
@@ -87,7 +89,9 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                 if run:
                     fre_checkout.run()
                 else:
+
                     return
+
             else:
                 logging.info("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
                 if run:
