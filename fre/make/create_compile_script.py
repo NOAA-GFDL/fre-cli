@@ -81,7 +81,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                    fremakeBuild.writeBuildComponents(c)
               fremakeBuild.writeScript()
               fremakeBuildList.append(fremakeBuild)
-              logging.info("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
+              fre_logger.info("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
 
     if execute:
         if baremetalRun:

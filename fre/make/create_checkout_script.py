@@ -83,7 +83,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                 fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
                 # Make checkout script executable
                 os.chmod(src_dir+"/checkout.sh", 0o744)
-                logging.info("\nCheckout script created in "+ src_dir + "/checkout.sh \n")
+                fre_logger.info("\nCheckout script created in "+ src_dir + "/checkout.sh \n")
 
                 # Run the checkout script
                 if run:
@@ -93,7 +93,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                     return
 
             else:
-                logging.info("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
+                fre_logger.info("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
                 if run:
                     try:
                         subprocess.run(args=[src_dir+"/checkout.sh"], check=True)
@@ -111,7 +111,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
             fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
             fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
-            logging.info("\nCheckout script created at " + tmp_dir + "/checkout.sh" + "\n")
+            fre_logger.info("\nCheckout script created at " + tmp_dir + "/checkout.sh" + "\n")
 
 if __name__ == "__main__":
     checkout_create()
