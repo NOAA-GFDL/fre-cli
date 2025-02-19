@@ -54,6 +54,10 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
     - _Can install local changes on top via `pip`_
     - Steps:
         ```
+        # make sure conda is in your PATH
+        # at gfdl, this can be done like
+        module load miniforge
+        
         # Append necessary channels.
         conda config --append channels noaa-gfdl
         conda config --append channels conda-forge
@@ -64,7 +68,7 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
         # edit the name of the environment in this yaml file if desired
         # to avoid being prompted for confirmation, add '-y' to the call
-        conda env create -f environment.yaml
+        conda env create -f environment.yml
 
         # activate the environment you just created.
         # fre-cli isn't installed yet though, just the dependences
