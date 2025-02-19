@@ -307,4 +307,3 @@ def test_combine_pp_yamls(tmp_path):
 
 ## TO-DO:
 # - add tests for if output option is defined
-# - fix fre make code for combined yaml
