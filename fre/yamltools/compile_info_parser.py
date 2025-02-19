@@ -3,6 +3,8 @@ import yaml
 
 def get_compile_paths(full_path,loaded_yml):
     """
+    Find and return the paths for the compile
+    and platform yamls
     """
     for key,value in loaded_yml.items():
         if key == "build":
@@ -12,7 +14,7 @@ def get_compile_paths(full_path,loaded_yml):
     return (py_path, cy_path)
 
 ## COMPILE CLASS ##
-class init_compile_yaml():
+class InitCompileYaml():
     """ class holding routines for initalizing compilation yamls """
     def __init__(self,yamlfile,platform,target,join_constructor):
         """
@@ -29,6 +31,9 @@ class init_compile_yaml():
 
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)
+
+        # Create combined compile yaml
+        print("Combining yaml files into one dictionary: ")
 
     def combine_model(self):
         """
@@ -107,15 +112,15 @@ class init_compile_yaml():
         final combined yaml.
         """
         # Load the yaml
-        yml=yaml.load(yaml_content, Loader=yaml.Loader)
+        yml_dict=yaml.load(yaml_content, Loader=yaml.Loader)
 
         # Clean the yaml
         # If keys exists, delete:
         keys_clean=["fre_properties", "shared", "experiments"]
         for kc in keys_clean:
-            if kc in yml.keys():
-                del yml[kc]
+            if kc in yml_dict.keys():
+                del yml_dict[kc]
 
-        cleaned_yml = yaml.safe_dump(yml,default_flow_style=False,sort_keys=False)
+        cleaned_yml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
 
-        return cleaned_yml
+        return cleaned_yml #yml_dict  #either return dictionary OR string - string works for fremake but dictionary works for pp and list

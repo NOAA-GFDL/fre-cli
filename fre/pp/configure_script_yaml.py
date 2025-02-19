@@ -34,9 +34,6 @@ def validate_yaml(yamlfile):
     """
      Using the schema.json file, the yaml format is validated.
     """
-#    # Load the yaml
-#    yml = yaml_load(yamlfile)
-
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
     # Load the json schema: .load() (vs .loads()) reads and parses the json in one)

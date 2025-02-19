@@ -18,6 +18,8 @@ def join_constructor(loader, node):
 
 def output_yaml(cleaned_yaml,experiment,output):
     """
+    Write out the combined yaml dictionary info
+    to a file if --output is specified
     """
     filename = output
     with open(filename,'w') as out:

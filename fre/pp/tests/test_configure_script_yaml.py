@@ -44,7 +44,7 @@ def test_configure_script():
     os.environ["HOME"] = old_home
 
     # Check for configuration creation and final combined yaml
-    assert all([ Path(f"{OUT_DIR}/{EXPERIMENT}.yaml"),
+    assert all([ Path(f"{OUT_DIR}/{EXPERIMENT}.yaml").exists(),
                  Path(f"{OUT_DIR}/rose-suite.conf").exists(),
                  Path(f"{OUT_DIR}/app/regrid-xy/rose-app.conf").exists(),
                  Path(f"{OUT_DIR}/app/remap-pp-components/rose-app.conf").exists() ])

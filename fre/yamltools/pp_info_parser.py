@@ -12,8 +12,6 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
     comb            :  combined yaml file name
     experiment      :  experiment name
     """
-#    comb_model=yaml_load(comb)
-#
     # Check if exp name given is actually valid experiment listed in combined yaml
     exp_list = []
     for i in loaded_yaml.get("experiments"):
@@ -195,8 +193,8 @@ class InitPPYaml():
             #print(f"   experiment yaml: {exp}")
 
             for i in pp_list[1:]:
-                uhm = "".join(i)
-                yf = yaml.load(uhm,Loader=yaml.Loader)
+                pp_list_to_string_concat = "".join(i)
+                yf = yaml.load(pp_list_to_string_concat,Loader=yaml.Loader)
                 for key in result:
                     if key in yf:
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
@@ -216,9 +214,8 @@ class InitPPYaml():
             result.update(yaml.load(yml_analysis,Loader=yaml.Loader))
 
             for i in analysis_list[1:]:
-               #more_new4 = "".join(i)
-               uhm_again = "".join(i)
-               yf = yaml.load(uhm_again,Loader=yaml.Loader)
+               analysis_list_to_string_concat = "".join(i)
+               yf = yaml.load(analysis_list_to_string_concat,Loader=yaml.Loader)
                for key in result:
                    if key in yf:
                        if isinstance(result[key],dict) and isinstance(yf[key],dict):
@@ -253,5 +250,5 @@ class InitPPYaml():
                 del yml_dict[kc]
 
         # Dump cleaned dictionary back into combined yaml file
-#        cleaned_yaml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
+        #cleaned_yaml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
         return yml_dict
