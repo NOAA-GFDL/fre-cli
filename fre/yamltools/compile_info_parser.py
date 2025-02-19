@@ -123,4 +123,4 @@ class InitCompileYaml():
 
         cleaned_yml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
 
-        return cleaned_yml #yml_dict  #either return dictionary OR string - string works for fremake but dictionary works for pp and list
+        return yml_dict  #either return dictionary OR string (cleaned_yml) - string works for fremake but dictionary works for pp and list

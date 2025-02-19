@@ -26,7 +26,7 @@ def output_yaml(cleaned_yaml,experiment,output):
         out.write(yaml.dump(cleaned_yaml,default_flow_style=False,sort_keys=False))
 
 ## Functions to combine the yaml files ##
-def get_combined_compileyaml(comb):
+def get_combined_compileyaml(comb,output=None):
     """
     Combine the model, compile, and platform yamls
     Arguments:
@@ -51,6 +51,13 @@ def get_combined_compileyaml(comb):
 
     # Clean the yaml
     cleaned_yaml = comb.clean_yaml(yaml_content)
+
+    # OUTPUT IF NEEDED
+    if output is not None:
+        output_yaml(cleaned_yaml,experiment=None,output=output)
+    else:
+        print("Combined yaml information saved as dictionary")
+
     return cleaned_yaml
 
 def get_combined_ppyaml(comb,experiment,output=None):
@@ -104,9 +111,10 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
         combined = cip.InitCompileYaml(yamlfile, platform, target, join_constructor)
 
         if output is False:
-            get_combined_compileyaml(combined)
+            yml_dict = get_combined_compileyaml(combined)
         else:
-            get_combined_compileyaml(combined,experiment,output)
+            yml_dict = get_combined_compileyaml(combined,output)
+            print(f"Combined yaml file located here: {os.getcwd()}/{output}")
 
     elif use =="pp":
         combined = ppip.InitPPYaml(yamlfile, experiment, platform, target, join_constructor)
@@ -115,6 +123,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
             yml_dict = get_combined_ppyaml(combined)
         else:
             yml_dict = get_combined_ppyaml(combined,experiment,output)
+            print(f"Combined yaml file located here: {os.getcwd()}/{output}")
 
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'") 
