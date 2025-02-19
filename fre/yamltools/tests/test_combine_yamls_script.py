@@ -9,7 +9,6 @@ import json
 import yaml
 import pprint
 from jsonschema import validate
-from fre.yamltools import combine_yamls as cy_original
 from fre.yamltools import combine_yamls_script as cy
 
 
@@ -71,24 +70,26 @@ def test_merged_compile_yamls():
     use = "compile"
 
     # Merge the yamls
-    cy_original.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
-
-    # Move combined yaml to output location
-    shutil.move(f"{IN_DIR}/combined-am5.yaml", COMP_OUT_DIR)
-
-    # Check that the combined yaml exists
-    assert Path(f"{COMP_OUT_DIR}/combined-{COMP_EXPERIMENT}.yaml").exists()
+    try:
+        cy.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use, output = None)
+    except:
+        assert False
 
 def test_combined_compileyaml_validation():
     """
     Validate the combined compile yaml
     """
-    combined_yamlfile =f"{COMP_OUT_DIR}/combined-{COMP_EXPERIMENT}.yaml"
+    # Model yaml path
+    modelyaml = str(Path(f"{IN_DIR}/am5.yaml"))
+    use = "compile"
+
+    # Merge the yamls
+    try:
+        out = cy.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use, output = None)
+    except:
+        assert False
+
     schema_file = os.path.join(SCHEMA_DIR, "fre_make.json")
-
-    with open(combined_yamlfile,'r') as cf:
-        yml = yaml.safe_load(cf)
-
     with open(schema_file,'r') as f:
         s = f.read()
     schema = json.loads(s)
@@ -96,7 +97,7 @@ def test_combined_compileyaml_validation():
     # If the yaml is valid, no issues
     # If the yaml is not valid, error
     try:
-        validate(instance=yml,schema=schema)
+        validate(instance=out,schema=schema)
     except:
         assert False
 
@@ -111,13 +112,9 @@ def test_combined_compileyaml_combinefail():
 
     # Merge the yamls - should fail since there is no compile yaml specified in the model yaml
     try:
-        cy_original.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
-        # Move combined yaml to output location
-        shutil.move(f"{IN_DIR}/compile_yamls/compile_fail/combined-am5-wrong_compilefile.yaml", COMP_OUT_DIR)
+        out = cy.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use, output = None)
     except:
         print("EXPECTED FAILURE")
-        # Move combined yaml to output location
-        shutil.move(f"{IN_DIR}/compile_yamls/compile_fail/combined-am5-wrong_compilefile.yaml", COMP_OUT_DIR)
         assert True
 
 def test_combined_compileyaml_validatefail():
@@ -130,18 +127,13 @@ def test_combined_compileyaml_validatefail():
     use = "compile"
 
     # Merge the yamls
-    cy_original.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use)
-
-    # Move combined yaml to output location
-    shutil.move(f"{IN_DIR}/compile_yamls/compile_fail/combined-am5-wrong_datatype.yaml", COMP_OUT_DIR)
+    try:
+        out = cy.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use, output = None)
+    except:
+        assert False
 
     # Validate against schema; should fail
-    wrong_combined = Path(f"{COMP_OUT_DIR}/combined-am5-wrong_datatype.yaml")
     schema_file = os.path.join(SCHEMA_DIR, "fre_make.json")
-
-    # Open/load combined yaml file
-    with open(wrong_combined,'r') as cf:
-        yml = yaml.safe_load(cf)
 
     # Open/load schema.jaon
     with open(schema_file,'r') as f:
@@ -150,7 +142,7 @@ def test_combined_compileyaml_validatefail():
 
     # Validation should fail
     try:
-        validate(instance=yml,schema=schema)
+        validate(instance=out,schema=schema)
     except:
         assert True
 
@@ -196,9 +188,8 @@ def test_combined_ppyaml_validation():
     except:
         assert False
 
-    schema_dir = Path(__file__).resolve().parents[2]
-    schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
-    with open(schema_path,'r') as f:
+    schema_file = os.path.join(SCHEMA_DIR, "fre_pp.json")
+    with open(schema_file,'r') as f:
         s = f.read()
     schema = json.loads(s)
 
