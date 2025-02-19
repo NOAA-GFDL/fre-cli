@@ -35,7 +35,7 @@ def test_checkout_script_exists():
     """
     Make sure checkout file exists
     """
-    Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").unlink
+    shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
     create_checkout_script.checkout_create(YAMLFILE,
                                            PLATFORM,
                                            TARGET,
@@ -61,7 +61,7 @@ def test_checkout_execute():
     """
     check if --execute option works
     """
-    shutil.rmtree(f"{OUT}/fremake_canopy/test")
+    shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
     create_checkout_script.checkout_create(YAMLFILE,
                                            PLATFORM,
                                            TARGET,

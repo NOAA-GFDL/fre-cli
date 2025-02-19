@@ -18,9 +18,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: test podman can run an image
-        run: |
-          podman run --cgroups=disabled alpine cat /etc/os-release
       - name: Create fre-cli environment
         run: |
           # create env holding all deps, the env cant be explicitly activated in CI/CD        
