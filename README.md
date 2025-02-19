@@ -28,18 +28,18 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
 ### Instructions for new releases
 
 1. Update the package release number (i.e. reported by fre --version) and merge to `main`
-[ ] - edit `version` in setup.py
-[ ] - edit two version mentions in fre/tests/test_fre_cli.py
+- [ ] edit `version` in setup.py
+- [ ] edit two version mentions in fre/tests/test_fre_cli.py
 
 2. Create tag in fre-cli (this repository) and associated github release
-[ ] - `git tag -a <release>` and `git push --tags`
-[ ] - https://github.com/NOAA-GFDL/fre-cli/releases
+- [ ] `git tag -a <release>` and `git push --tags`
+- [ ] https://github.com/NOAA-GFDL/fre-cli/releases
 
 3. Create corresponding tag in fre-workflows
-[ ] - https://github.com/NOAA-GFDL/fre-workflows/tags
+- [ ] https://github.com/NOAA-GFDL/fre-workflows/tags
 
 4. Observe new conda package deployed to noaa-gfdl channel
-[ ] - https://anaconda.org/NOAA-GFDL/fre-cli
+- [ ] https://anaconda.org/NOAA-GFDL/fre-cli
 
 ### GFDL deployment notes
 
@@ -79,6 +79,7 @@ on gaea: /ncrc/home/fms/conda/envs/fre-2025.NN
 at GFDL: /nbhome/fms/conda/envs/fre-2025.NN
 
 The fre/2025.NN modulefiles bring the `fre` executable into the PATH.
+Use `fre --version` to report the patch number.
 
 ```
 fre --version
