@@ -6,6 +6,9 @@ i think!
 import os
 import subprocess
 import logging
+fre_logger = logging.getLogger(__name__)
+
+
 import sys
 
 import fre.yamltools.combine_yamls as cy
@@ -18,16 +21,18 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     run = execute
     jobs = str(jobs)
     pcheck = no_parallel_checkout
-
+    
+    if type(jobs) == bool and execute:
+        raise ValueError ('jobs must be defined as number if --execute flag is True')
     if pcheck:
         pc = ""
     else:
         pc = " &"
 
     if verbose:
-        logging.basicConfig(level=logging.INFO)
+        fre_logger.setLevel(level = logging.INFO)
     else:
-        logging.basicConfig(level=logging.ERROR)
+        fre_logger.setLevel(level = logging.ERROR)
 
     src_dir="src"
     checkout_script_name = "checkout.sh"
@@ -78,15 +83,17 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                 fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
                 # Make checkout script executable
                 os.chmod(src_dir+"/checkout.sh", 0o744)
-                print("\nCheckout script created in "+ src_dir + "/checkout.sh \n")
+                fre_logger.info("\nCheckout script created in "+ src_dir + "/checkout.sh \n")
 
                 # Run the checkout script
                 if run:
                     fre_checkout.run()
                 else:
+
                     return
+
             else:
-                print("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
+                fre_logger.info("\nCheckout script PREVIOUSLY created in "+ src_dir + "/checkout.sh \n")
                 if run:
                     try:
                         subprocess.run(args=[src_dir+"/checkout.sh"], check=True)
@@ -104,7 +111,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
             fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
             fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
-            print("\nCheckout script created at " + tmp_dir + "/checkout.sh" + "\n")
+            fre_logger.info("\nCheckout script created at " + tmp_dir + "/checkout.sh" + "\n")
 
 if __name__ == "__main__":
     checkout_create()
