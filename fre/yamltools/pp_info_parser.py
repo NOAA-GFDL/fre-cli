@@ -197,13 +197,16 @@ class InitPPYaml():
                 pp_list_to_string_concat = "".join(i)
                 yf = yaml.load(pp_list_to_string_concat,Loader=yaml.Loader)
                 for key in result:
+                    # Only concerned with merging component information in "postprocess" sections across yamls
+                    if key != "postprocess":
+                        continue
                     if key in yf:
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                            if key == "postprocess":
-                                if 'components' in result['postprocess']:
-                                    result['postprocess']["components"] += yf['postprocess']["components"] + result[key]["components"]
-                                else:
-                                    result['postprocess']["components"] = yf['postprocess']["components"]
+                            if 'components' in result['postprocess']:
+                                result['postprocess']["components"] += yf['postprocess']["components"] + result[key]["components"]
+                            else:
+                                result['postprocess']["components"] = yf['postprocess']["components"]
+
         # If only one post-processing yaml listed, do nothing
         # (already combined in 'combine_experiments' function)
         elif pp_list is not None and len(pp_list) == 1:
