@@ -8,10 +8,10 @@ from fre.pp import configure_script_xml
 from fre.pp import validate_script
 from fre.pp import install_script
 from fre.pp import run_script
+from fre.pp import nccheck_script
 from fre.pp import trigger_script
 from fre.pp import status_script
 from fre.pp import wrapper_script
-
 
 # fre pp
 @click.group(help=click.style(" - access fre pp subcommands", fg=(57,139,210)))
@@ -175,6 +175,17 @@ def configure_xml(xml, platform, target, experiment, do_analysis, historydir, re
     """ - Converts a Bronx XML to a Canopy rose-suite.conf """
     configure_script_xml.convert(xml, platform, target, experiment, do_analysis, historydir, refinedir,
                                  ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual)
+
+#fre pp nccheck
+@pp_cli.command()
+@click.option("--file_path", "-f", type=str, required=True, help="Path to netCDF (.nc) file")
+@click.option("--num_steps", "-n", type=str, required=True, help="Number of expected timesteps")
+def nccheck(file_path, num_steps):
+    """ - Check that a netCDF (.nc) file contains expected number of timesteps - """
+    #print(file_path)
+    #print(num_steps)
+    #nccheck_script.check()
+    nccheck_script.check(file_path,num_steps)
 
 #fre pp wrapper
 @pp_cli.command()
