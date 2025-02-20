@@ -1,5 +1,5 @@
 """
-Script combines the model yaml with the compile, platform, and experiment yamls.
+OLDER script that combines the model yaml with the compile, platform, and experiment yamls.
 """
 
 ## TO-DO:
