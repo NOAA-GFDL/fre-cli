@@ -150,16 +150,10 @@ def get_combined_cmoryaml(CmorYaml, experiment, output = None):
     except: 
         raise ValueError("CmorYaml.merge_cmor_yaml failed")
 
-    pp.pprint(full_cmor_yaml)
-    assert False
     
     # Clean the yaml
-    cleaned_yaml = CmorYaml.clean_yaml(comb_cmor_updated_list)
-
-
-
-    # Clean the yaml
-    #cleaned_yaml = CmorYaml.clean_yaml(full_cmor_yaml)
+    cleaned_yaml = CmorYaml.clean_yaml(full_cmor_yaml)
+    pp.pprint(cleaned_yaml)
 
     # OUTPUT IF NEEDED
     if output is not None:
@@ -215,8 +209,8 @@ def consolidate_yamls(yamlfile,
             yml_dict = get_combined_cmoryaml(CmorYaml,experiment,output)
 
             
-        pprint(yaml_dict)
-        assert False
+        #pprint(yaml_dict)
+        #assert False
 
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'") 

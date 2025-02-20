@@ -129,13 +129,15 @@ class InitCMORYaml():
         #assert False
         return cmor_yamls
 
-    def merge_multiple_yamls(self, pp_list, analysis_list, loaded_yaml):
+    def merge_cmor_yaml(self, cmor_list, loaded_yaml):
         """
-        Merge separately combined post-processing and analysis
-        yamls into fully combined yaml (without overwriting like sections).
-        """
-        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,loaded_yaml)
 
+        """
+        if cmor_list is None:
+            raise ValueError('cmor_list is none and should not be!!!')
+        
+        ey_path = experiment_check( self.mainyaml_dir, self.name,
+                                    loaded_yaml )
         result = {}
 
         # If more than one post-processing yaml is listed, update
@@ -144,14 +146,14 @@ class InitCMORYaml():
         # If instance of key is a dictionary in both result and loaded
         # yamlfile, update the key in result to
         # include the loaded yaml file's value.
-        if pp_list is not None and len(pp_list) > 1:
-            yml_pp = "".join(pp_list[0])
+        if cmor_list is not None:
+            yml_pp = "".join(cmor_list)
             result.update(yaml.load(yml_pp,Loader=yaml.Loader))
             #fre_logger.info(f"   experiment yaml: {exp}")
 
-            for i in pp_list[1:]:
-                pp_list_to_string_concat = "".join(i)
-                yf = yaml.load(pp_list_to_string_concat,Loader=yaml.Loader)
+            for i in cmor_list[1:]:
+                cmor_list_to_string_concat = "".join(i)
+                yf = yaml.load(cmor_list_to_string_concat,Loader=yaml.Loader)
                 for key in result:
                     if key in yf:
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
@@ -160,40 +162,11 @@ class InitCMORYaml():
                                     result['postprocess']["components"] += yf['postprocess']["components"] + result[key]["components"]
                                 else:
                                     result['postprocess']["components"] = yf['postprocess']["components"]
-        # If only one post-processing yaml listed, do nothing
-        # (already combined in 'combine_experiments' function)
-        elif pp_list is not None and len(pp_list) == 1:
-            pass
 
-        # If more than one analysis yaml is listed, update dictionary with content from 1st yaml
-        # Looping through rest of yamls listed, compare key value pairs.
-        # If instance of key is a dictionary in both result and loaded yamlfile, update the key
-        # in result to include the loaded yaml file's value.
-        if analysis_list is not None and len(analysis_list) > 1:
-            yml_analysis = "".join(analysis_list[0])
-            result.update(yaml.load(yml_analysis,Loader=yaml.Loader))
 
-            for i in analysis_list[1:]:
-               analysis_list_to_string_concat = "".join(i)
-               yf = yaml.load(analysis_list_to_string_concat,Loader=yaml.Loader)
-               for key in result:
-                   if key in yf:
-                       if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                           if key == "analysis":
-                               result[key] = yf[key] | result[key]
-        # If only one analysis yaml listed, do nothing
-        # (already combined in 'combine_analysis' function)
-        elif analysis_list is not None and len(analysis_list) == 1:
-            pass
-
-        if ey_path is not None:
-            for i in ey_path:
-                exp = str(i).rsplit('/', maxsplit=1)[-1]
-                fre_logger.info(f"   experiment yaml: {exp}")
-        if ay_path is not None:
-            for i in ay_path:
-                analysis = str(i).rsplit('/', maxsplit=1)[-1]
-                fre_logger.info(f"   analysis yaml: {analysis}")
+        if ey_path is not None:            
+            exp = str(ey_path).rsplit('/', maxsplit=1)[-1]
+            fre_logger.info(f"   experiment yaml: {exp}")
 
         return result
 
@@ -206,7 +179,7 @@ class InitCMORYaml():
         # If keys exists, delete:
         keys_clean=["fre_properties", "shared", "experiments"]
         pprint.PrettyPrinter(indent=1).pprint(yml_dict)
-        assert False
+
         for kc in keys_clean:
             if kc in yml_dict.keys():
                 del yml_dict[kc]
