@@ -3,7 +3,7 @@ import pprint
 
 import yaml
 
-from .combine_yamls import join_constructor as jc
+from .combine_yamls_script import join_constructor as jc
 yaml.add_constructor("!join", jc)
 
 
