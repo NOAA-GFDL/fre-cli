@@ -35,19 +35,19 @@ def get_combined_compileyaml(comb,output=None):
     try:
         (yaml_content, loaded_yaml)=comb.combine_model()
     except:
-        raise ValueError("uh oh")
+        raise ValueError("ERR: Could not merge model information.")
 
     # Merge compile into combined file to create updated yaml_content/yaml
     try:
         (yaml_content, loaded_yaml) = comb.combine_compile(yaml_content, loaded_yaml)
     except: 
-        raise ValueError("uh oh again")
+        raise ValueError("ERR: Could not merge compile yaml information.")
 
     # Merge platforms.yaml into combined file
     try:
         (yaml_content,loaded_yaml) = comb.combine_platforms(yaml_content, loaded_yaml)
     except: 
-        raise ValueError("uh oh one more time")
+        raise ValueError("ERR: Could not merge platform yaml information.")
 
     # Clean the yaml
     cleaned_yaml = comb.clean_yaml(yaml_content)
@@ -70,26 +70,26 @@ def get_combined_ppyaml(comb,experiment,output=None):
         # Merge model into combined file
         (yaml_content, loaded_yaml) = comb.combine_model()
     except:
-        raise ValueError("pp uh oh 1")
+        raise ValueError("ERR: Could not merge model information.")
 
     try:
         # Merge pp experiment yamls into combined file
         comb_pp_updated_list = comb.combine_experiment(yaml_content, loaded_yaml)
     except:
-        raise ValueError("pp uh oh 2")
+        raise ValueError("ERR: Could not merge pp experiment yaml information")
 
     try:
         # Merge analysis yamls, if defined, into combined file
         comb_analysis_updated_list = comb.combine_analysis(yaml_content, loaded_yaml)
     except:
-        raise ValueError("uh oh 3")
+        raise ValueError("ERR: Could not merge analysis yaml information")
 
     try:
         # Merge model/pp and model/analysis yamls if more than 1 is defined
         # (without overwriting the yaml)
         full_combined = comb.merge_multiple_yamls(comb_pp_updated_list, comb_analysis_updated_list,loaded_yaml)
     except: 
-        raise ValueError("uh oh 4")
+        raise ValueError("ERR: Could not merge multiple pp and analysis information together.")
 
     # Clean the yaml
     cleaned_yaml = comb.clean_yaml(full_combined)
