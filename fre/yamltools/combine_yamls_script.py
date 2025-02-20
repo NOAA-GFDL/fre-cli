@@ -110,7 +110,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
     if use == "compile":
         combined = cip.InitCompileYaml(yamlfile, platform, target, join_constructor)
 
-        if output is False:
+        if output is None :
             yml_dict = get_combined_compileyaml(combined)
         else:
             yml_dict = get_combined_compileyaml(combined,output)
@@ -119,8 +119,8 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
     elif use =="pp":
         combined = ppip.InitPPYaml(yamlfile, experiment, platform, target, join_constructor)
 
-        if output is False:
-            yml_dict = get_combined_ppyaml(combined)
+        if output is None:
+            yml_dict = get_combined_ppyaml(combined,experiment)
         else:
             yml_dict = get_combined_ppyaml(combined,experiment,output)
             print(f"Combined yaml file located here: {os.getcwd()}/{output}")

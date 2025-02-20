@@ -27,17 +27,18 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
             expyaml=i.get("pp")
             analysisyaml=i.get("analysis")
 
-            if expyaml is not None:
-                ey_path=[]
-                for e in expyaml:
-                    if Path(os.path.join(mainyaml_dir,e)).exists():
-                        ey=Path(os.path.join(mainyaml_dir,e))
-                        ey_path.append(ey)
-                    else:
-                        raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
-            else:
+            if expyaml is None:
                 raise ValueError("No experiment yaml path given!")
 
+            ey_path=[]
+            for e in expyaml:
+                if not Path(os.path.join(mainyaml_dir,e)).exists():
+                    raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
+
+                ey=Path(os.path.join(mainyaml_dir,e))
+                ey_path.append(ey)
+
+            # Currently, if there are no analysis scripts defined, set None
             if analysisyaml is not None:
                 ay_path=[]
                 for a in analysisyaml:
@@ -222,8 +223,8 @@ class InitPPYaml():
                for key in result:
                    if key in yf:
                        if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                           if key == "analysis":
-                               result[key] = yf[key] | result[key]
+#                           if key == "analysis":
+                           result['analysis'] = yf['analysis'] | result['analysis']
         # If only one analysis yaml listed, do nothing
         # (already combined in 'combine_analysis' function)
         elif analysis_list is not None and len(analysis_list) == 1:
