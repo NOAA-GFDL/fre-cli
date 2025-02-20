@@ -46,19 +46,19 @@ def get_combined_compileyaml(CompileYaml,output=None):
     try:
         yaml_content, loaded_yaml = CompileYaml.combine_model()
     except:
-        raise ValueError("uh oh: CompileYaml.combine_model failed")
+        raise ValueError("ERR: Could not merge model information.")
 
     # Merge compile into combined file to create updated yaml_content/yaml
     try:
         yaml_content, loaded_yaml = CompileYaml.combine_compile(yaml_content, loaded_yaml)
     except: 
-        raise ValueError("uh oh: CompileYaml.combine_compile failed")
+        raise ValueError("ERR: Could not merge compile yaml information.")
 
     # Merge platforms.yaml into combined file
     try:
         yaml_content, loaded_yaml = CompileYaml.combine_platforms(yaml_content, loaded_yaml)
     except: 
-        raise ValueError("uh oh: CompileYaml.combine_platforms failed")
+        raise ValueError("ERR: Could not merge platform yaml information.")
 
     # Clean the yaml
     cleaned_yaml = CompileYaml.clean_yaml(yaml_content)
@@ -84,26 +84,26 @@ def get_combined_ppyaml(PPYaml, experiment, output = None):
     try:
         yaml_content, loaded_yaml = PPYaml.combine_model()
     except:
-        raise ValueError("pp uh oh 1")
+        raise ValueError("ERR: Could not merge model information.")
 
     # Merge pp experiment yamls into combined file
     try:
         comb_pp_updated_list = PPYaml.combine_experiment(yaml_content, loaded_yaml)
     except:
-        raise ValueError("pp uh oh 2")
+        raise ValueError("ERR: Could not merge pp experiment yaml information")
 
     # Merge analysis yamls, if defined, into combined file
     try:
         comb_analysis_updated_list = PPYaml.combine_analysis(yaml_content, loaded_yaml)
     except:
-        raise ValueError("uh oh 3")
+        raise ValueError("ERR: Could not merge analysis yaml information")
 
     # Merge model/pp and model/analysis yamls if more than 1 is defined
     # (without overwriting the yaml)
     try:
         full_combined = PPYaml.merge_multiple_yamls(comb_pp_updated_list, comb_analysis_updated_list,loaded_yaml)
     except: 
-        raise ValueError("uh oh 4")
+        raise ValueError("ERR: Could not merge multiple pp and analysis information together.")
 
     # Clean the yaml
     cleaned_yaml = PPYaml.clean_yaml(full_combined)
@@ -183,7 +183,7 @@ def consolidate_yamls(yamlfile,
         CompileYaml = cip.InitCompileYaml(yamlfile,
                                           platform, target,
                                           join_constructor)
-        if not output:
+        if output is None:
             yml_dict = get_combined_compileyaml(CompileYaml)
         else:
             yml_dict = get_combined_compileyaml(CompileYaml,output)
@@ -194,8 +194,8 @@ def consolidate_yamls(yamlfile,
                                  experiment, platform, target,
                                  join_constructor)
 
-        if not output:
-            yml_dict = get_combined_ppyaml( PPYaml )
+        if output is None:
+            yml_dict = get_combined_ppyaml( PPYaml, experiment)
         else:
             yml_dict = get_combined_ppyaml( PPYaml, experiment, output )
             fre_logger.info( f"Combined PPYaml file located here: {os.getcwd()}/{output}" )
@@ -208,7 +208,7 @@ def consolidate_yamls(yamlfile,
         fre_logger.info(f'\n    DONE initializing CmorYaml = \n    {CmorYaml}\n')
 
 
-        if not output:
+        if output is None:
             yml_dict = get_combined_cmoryaml(CmorYaml)
         else:
             fre_logger.info(f'will be writing out the combined yaml dictionary!')

@@ -30,17 +30,18 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
             expyaml=i.get("pp")
             analysisyaml=i.get("analysis")
 
-            if expyaml is not None:
-                ey_path=[]
-                for e in expyaml:
-                    if Path(os.path.join(mainyaml_dir,e)).exists():
-                        ey=Path(os.path.join(mainyaml_dir,e))
-                        ey_path.append(ey)
-                    else:
-                        raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
-            else:
+            if expyaml is None:
                 raise ValueError("No experiment yaml path given!")
 
+            ey_path=[]
+            for e in expyaml:
+                if not Path(os.path.join(mainyaml_dir,e)).exists():
+                    raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
+
+                ey=Path(os.path.join(mainyaml_dir,e))
+                ey_path.append(ey)
+
+            # Currently, if there are no analysis scripts defined, set None
             if analysisyaml is not None:
                 ay_path=[]
                 for a in analysisyaml:
@@ -199,13 +200,16 @@ class InitPPYaml():
                 pp_list_to_string_concat = "".join(i)
                 yf = yaml.load(pp_list_to_string_concat,Loader=yaml.Loader)
                 for key in result:
+                    # Only concerned with merging component information in "postprocess" sections across yamls
+                    if key != "postprocess":
+                        continue
                     if key in yf:
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                            if key == "postprocess":
-                                if 'components' in result['postprocess']:
-                                    result['postprocess']["components"] += yf['postprocess']["components"] + result[key]["components"]
-                                else:
-                                    result['postprocess']["components"] = yf['postprocess']["components"]
+                            if 'components' in result['postprocess']:
+                                result['postprocess']["components"] += yf['postprocess']["components"] + result[key]["components"]
+                            else:
+                                result['postprocess']["components"] = yf['postprocess']["components"]
+
         # If only one post-processing yaml listed, do nothing
         # (already combined in 'combine_experiments' function)
         elif pp_list is not None and len(pp_list) == 1:
@@ -225,8 +229,8 @@ class InitPPYaml():
                for key in result:
                    if key in yf:
                        if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                           if key == "analysis":
-                               result[key] = yf[key] | result[key]
+#                           if key == "analysis":
+                           result['analysis'] = yf['analysis'] | result['analysis']
         # If only one analysis yaml listed, do nothing
         # (already combined in 'combine_analysis' function)
         elif analysis_list is not None and len(analysis_list) == 1:
