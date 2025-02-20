@@ -1,10 +1,15 @@
+''' defines how a cmor yaml will be parsed '''
+
 import os
+import yaml
+from pathlib import Path
+
 import logging
 fre_logger = logging.getLogger(__name__)
 
-import yaml
-from pathlib import Path
 import pprint
+#from .pp_info_parser import experiment_check as experiment_check
+
 
 def experiment_check(mainyaml_dir,experiment,loaded_yaml):
     """
@@ -26,42 +31,47 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
     # Extract yaml path for exp. provided
     # if experiment matches name in list of experiments in yaml, extract file path
     for i in loaded_yaml.get("experiments"):
-        if experiment == i.get("name"):
-            expyaml=i.get("pp")
-            analysisyaml=i.get("analysis")
 
-            if expyaml is not None:
-                ey_path=[]
-                for e in expyaml:
-                    if Path(os.path.join(mainyaml_dir,e)).exists():
-                        ey=Path(os.path.join(mainyaml_dir,e))
-                        ey_path.append(ey)
-                    else:
-                        raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
-            else:
+        if experiment == i.get("name"):
+
+            expyaml=i.get("cmor")
+            if expyaml is None:
                 raise ValueError("No experiment yaml path given!")
 
+            ey_path=[]
+            for e in expyaml:
+                if not Path(os.path.join(mainyaml_dir,e)).exists():
+                    raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
+
+                ey=Path(os.path.join(mainyaml_dir,e))
+                ey_path.append(ey)
+
+
+
+            ay_path = None
+
+            analysisyaml=i.get("analysis")
             if analysisyaml is not None:
-                ay_path=[]
+                ay_path = []
                 for a in analysisyaml:
                     # prepend the directory containing the yaml
-                    if Path(os.path.join(mainyaml_dir, a)).exists():
-                        ay=Path(os.path.join(mainyaml_dir,a))
-                        ay_path.append(ay)
-                    else:
+                    if not Path(os.path.join(mainyaml_dir, a)).exists():
                         raise ValueError("Incorrect analysis yaml path given; does not exist.")
-            else:
-                ay_path=None
+                    ay=Path(os.path.join(mainyaml_dir,a))
+                    ay_path.append(ay)
+
 
             return (ey_path,ay_path)
 
-## PP CLASS ##
-class InitPPYaml():
-    """ class holding routines for initalizing post-processing yamls """
+## CMOR CLASS ##
+class InitCMORYaml():
+    """ class holding routines for initalizing cmor yamls """
+
     def __init__(self,yamlfile,experiment,platform,target,join_constructor):
         """
         Process to combine the applicable yamls for post-processing
         """
+        fre_logger.info('initializing a cmor yaml object')
         self.yml = yamlfile
         self.name = experiment
         self.platform = platform
@@ -74,7 +84,16 @@ class InitPPYaml():
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Create combined pp yaml
-        fre_logger.info("Combining yaml files into one dictionary: ")
+        #fre_logger.info("Combining yaml files into one dictionary: ")
+
+    def __repr__(self):
+        ''' return text representation of object '''
+        return f'{type(self).__name__}( \n\
+                               yml = {self.yml} \n\
+                               name = {self.name} \n\
+                               platform = {self.platform} \n\
+                               target = {self.target} \n\
+                               mainyaml_dir = {self.mainyaml_dir}'
 
     def combine_model(self):
         """
