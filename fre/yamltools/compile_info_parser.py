@@ -19,7 +19,7 @@ def get_compile_paths(full_path,loaded_yml):
     return (py_path, cy_path)
 
 ## COMPILE CLASS ##
-class InitCompileYaml():
+class CompileYaml():
     """ class holding routines for initalizing compilation yamls """
     def __init__(self,yamlfile,platform,target):#,join_constructor):
         """

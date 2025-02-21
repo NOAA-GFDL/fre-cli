@@ -93,11 +93,8 @@ def get_combined_ppyaml(PPYaml, experiment, output = None):
         raise ValueError("ERR: Could not merge model information.")
 
     # Merge pp experiment yamls into combined file
-    try:
-        comb_pp_updated_list = PPYaml.combine_experiment(yaml_content, loaded_yaml)
-    except:
-        raise ValueError("ERR: Could not merge pp experiment yaml information")
-
+    comb_pp_updated_list = PPYaml.combine_experiment(yaml_content, loaded_yaml)
+    
     # Merge analysis yamls, if defined, into combined file
     try:
         comb_analysis_updated_list = PPYaml.combine_analysis(yaml_content, loaded_yaml)

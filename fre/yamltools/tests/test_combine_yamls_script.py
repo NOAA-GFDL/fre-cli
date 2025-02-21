@@ -254,33 +254,37 @@ def test_combine_pp_yamls(tmp_path):
     }
 
     combined = {
-        'name' : 'expname',
-        'platform' : 'platform',
-        'target' : 'target',
         'directories' : {
             'history_dir': 'one',
             'pp_dir'     : 'two'
         },
+        'name' : 'expname',
+        'platform' : 'platform',
         'postprocess' : {
+            'components' : [
+                {
+                    'sources' : "foo bar",
+                    'type'    : 'atmos_cmip',
+                },
+                {
+                    'sources' : "land_month",
+                    'type'    : 'land',
+                },
+                {
+                    'sources' : "a b c",
+                    'type'    : 'ocean',
+                },
+                {
+                    'sources' : "ice_month",
+                    'type'    : 'ice',
+                }
+            ],
             'settings' : {
                 'history_segment' : 'three',
                 'pp_start'        : 'four'
-            },
-            'components' : [
-                {
-                    'type'    : 'atmos_cmip',
-                    'sources' : "foo bar" },
-                {
-                    'type'    : 'land',
-                    'sources' : "land_month"},
-                {
-                    'type'    : 'ocean',
-                    'sources' : "a b c" },
-                {
-                    'type'    : 'ice',
-                    'sources' : "ice_month"}
-            ]
-        }
+            },            
+        },
+        'target' : 'target',
     }
 
     # create temp directory
@@ -299,7 +303,7 @@ def test_combine_pp_yamls(tmp_path):
 
     # combine the yamls
     # output is a combined dictionary of necessary yaml info
-    output = cy.consolidate_yamls(tmp_path / 'model.yaml', 'expname', 'platform', 'target', 'pp', output=None)
+    output = cy.consolidate_yamls(tmp_path / 'model.yaml', 'expname', 'platform', 'target', 'pp')
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(output)
 
