@@ -1,3 +1,4 @@
+""" holds 'fre yamltools combine-yamls' functionality """
 import os
 import shutil
 
@@ -21,27 +22,27 @@ def join_constructor(loader, node):
     seq = loader.construct_sequence(node)
     return ''.join([str(i) for i in seq])
 
-
-
-
-def output_yaml(cleaned_yaml,experiment,output):
+def output_yaml(cleaned_yaml, experiment, output):
     """
     Write out the combined yaml dictionary info
     to a file if --output is specified
     """
     filename = output
     with open(filename,'w') as out:
-        out.write(yaml.dump(cleaned_yaml,default_flow_style=False,sort_keys=False))
-
+        out.write(
+            yaml.dump( cleaned_yaml,
+                       default_flow_style = False,
+                       sort_keys = False ) )
 
 
         
 ## Functions to combine the yaml files ##
-def get_combined_compileyaml(CompileYaml,output=None):
+def get_combined_compileyaml(CompileYaml, output = None):
     """
     Combine the model, compile, and platform yamls
     Arguments:
-    CompileYaml : combined yaml object
+        CompileYaml (required): combined compile-yaml object
+        output      (optional): string/Path representing target output file to write yamlfile to
     """
     try:
         yaml_content, loaded_yaml = CompileYaml.combine_model()
@@ -62,12 +63,12 @@ def get_combined_compileyaml(CompileYaml,output=None):
 
     # Clean the yaml
     cleaned_yaml = CompileYaml.clean_yaml(yaml_content)
+    fre_logger.info("Combined yaml information saved as dictionary")
 
     # OUTPUT IF NEEDED
     if output is not None:
-        output_yaml(cleaned_yaml,experiment=None,output=output)
-    else:
-        fre_logger.info("Combined yaml information saved as dictionary")
+        output_yaml(cleaned_yaml, experiment = None, output = output)
+        fre_logger.info(f"Combined compile yaml information saved out to {output}")
 
     return cleaned_yaml
 
@@ -78,7 +79,8 @@ def get_combined_ppyaml(PPYaml, experiment, output = None):
     """
     Combine the model, experiment, and analysis yamls
     Arguments:
-    PPYaml : combined yaml object
+        PPYaml (required): combined pp-yaml object
+        output (optional): string/Path representing target output file to write yamlfile to
     """
     # Merge model into combined file
     try:
@@ -101,7 +103,7 @@ def get_combined_ppyaml(PPYaml, experiment, output = None):
     # Merge model/pp and model/analysis yamls if more than 1 is defined
     # (without overwriting the yaml)
     try:
-        full_combined = PPYaml.merge_multiple_yamls(comb_pp_updated_list, comb_analysis_updated_list,loaded_yaml)
+        full_combined = PPYaml.merge_multiple_yamls(comb_pp_updated_list, comb_analysis_updated_list, loaded_yaml)
     except: 
         raise ValueError("ERR: Could not merge multiple pp and analysis information together.")
 
@@ -120,12 +122,15 @@ def get_combined_ppyaml(PPYaml, experiment, output = None):
 
 
 def get_combined_cmoryaml(CmorYaml, experiment, output = None):
-    '''
-    combine model and cmor yaml
-    '''
+    """
+    Combine the model, experiment, and cmor yamls
+    Arguments:
+        CmorYaml (required): combined cmor-yaml object
+        output   (optional): string/Path representing target output file to write yamlfile to
+    """
 
-    # temp DELETEME
-    pp = pprint.PrettyPrinter( indent = 2 )
+    ## temp DELETEME
+    #pp = pprint.PrettyPrinter( indent = 2 )
 
     # Merge model into combined file
     try:
@@ -149,17 +154,16 @@ def get_combined_cmoryaml(CmorYaml, experiment, output = None):
                                                         loaded_yaml                 )
     except: 
         raise ValueError("CmorYaml.merge_cmor_yaml failed")
-
     
     # Clean the yaml
     cleaned_yaml = CmorYaml.clean_yaml(full_cmor_yaml)
-    pp.pprint(cleaned_yaml)
+    fre_logger.info("Combined cmor-yaml information cleaned+saved as dictionary")
+    #pp.pprint(cleaned_yaml)
 
     # OUTPUT IF NEEDED
     if output is not None:
         output_yaml(cleaned_yaml,experiment,output)
-    else:
-        fre_logger.info("Combined yaml information saved as dictionary")
+        fre_logger.info(f"Combined cmor-yaml information saved to {output}")
 
     return cleaned_yaml
 
@@ -180,7 +184,7 @@ def consolidate_yamls(yamlfile,
         if output is None:
             yml_dict = get_combined_compileyaml(CompileYaml)
         else:
-            yml_dict = get_combined_compileyaml(CompileYaml,output)
+            yml_dict = get_combined_compileyaml(CompileYaml, output)
             fre_logger.info(f"Combined CompileYaml file located here: {os.getcwd()}/{output}")
 
     elif use == "pp":
@@ -196,17 +200,17 @@ def consolidate_yamls(yamlfile,
 
     elif use == "cmor":
         fre_logger.info(f'about to initialize the CmorYaml')
-        CmorYaml = cmorip.InitCMORYaml(yamlfile,
+        CmorYaml = cmorip.CMORYaml(yamlfile,
                                        experiment, platform, target,
                                        join_constructor)
         fre_logger.info(f'\n    DONE initializing CmorYaml = \n    {CmorYaml}\n')
 
 
         if output is None:
-            yml_dict = get_combined_cmoryaml(CmorYaml)
+            yml_dict = get_combined_cmoryaml(CmorYaml, experiment)
         else:
             fre_logger.info(f'will be writing out the combined yaml dictionary!')
-            yml_dict = get_combined_cmoryaml(CmorYaml,experiment,output)
+            yml_dict = get_combined_cmoryaml(CmorYaml, experiment, output)
 
             
         #pprint(yaml_dict)

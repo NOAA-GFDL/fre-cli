@@ -7,18 +7,16 @@ from pathlib import Path
 import logging
 fre_logger = logging.getLogger(__name__)
 
-import pprint
-#from .pp_info_parser import experiment_check as experiment_check
-
+#import pprint
 
 def experiment_check(mainyaml_dir, experiment, loaded_yaml):
     """
     Check that the experiment given is an experiment listed in the model yaml.
     Extract experiment specific information and file paths.
     Arguments:
-    mainyaml_dir    :  model yaml file
-    comb            :  combined yaml file name
-    experiment      :  experiment name
+    mainyaml_dir (required) : model yaml file directory
+    experiment   (required) : string representing an experiment name
+    loaded_yaml  (required) : yaml data object
     """
     # Check if exp name given is actually valid experiment listed in combined yaml
     exp_list = []
@@ -38,19 +36,22 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
             if expyaml is None:
                 raise ValueError("No experiment yaml path given!")
 
-            ey_path=[]
+            ey = None
             for e in expyaml:
-                if not Path(os.path.join(mainyaml_dir,e)).exists():
+                ey_check = Path(
+                    os.path.join(
+                        mainyaml_dir, e ) )                
+
+                if not ey_check.exists():
                     raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
 
-                ey=Path(os.path.join(mainyaml_dir,e))
-                ey_path.append(ey)
+                ey = ey_check
+                break
 
-
-            return ey_path[0]
+            return ey
 
 ## CMOR CLASS ##
-class InitCMORYaml():
+class CMORYaml():
     """ class holding routines for initalizing cmor yamls """
 
     def __init__(self,yamlfile,experiment,platform,target,join_constructor):
@@ -98,7 +99,8 @@ class InitCMORYaml():
         yaml_content += model_content
 
         # Load string as yaml
-        yml=yaml.load(yaml_content,Loader=yaml.Loader)
+        yml = yaml.load(yaml_content,
+                        Loader = yaml.Loader)
 
         # Return the combined string and loaded yaml
         fre_logger.info(f"   model yaml: {self.yml}")
@@ -126,7 +128,7 @@ class InitCMORYaml():
 
         #fre_logger.info(f'cmor_yamls = \n {cmor_yamls}')
         #pprint.PrettyPrinter(indent=1).pprint(cmor_yamls)
-        #assert False
+
         return cmor_yamls
 
     def merge_cmor_yaml(self, cmor_list, loaded_yaml):
@@ -140,30 +142,33 @@ class InitCMORYaml():
                                     loaded_yaml )
         result = {}
 
-        # If more than one post-processing yaml is listed, update
-        # dictionary with content from 1st yaml in list
-        # Looping through rest of yamls listed, compare key value pairs.
-        # If instance of key is a dictionary in both result and loaded
-        # yamlfile, update the key in result to
-        # include the loaded yaml file's value.
-        if cmor_list is not None:
-            yml_pp = "".join(cmor_list)
-            result.update(yaml.load(yml_pp,Loader=yaml.Loader))
-            #fre_logger.info(f"   experiment yaml: {exp}")
+        yml_cmor = "".join(cmor_list)
+        result.update(
+            yaml.load(
+                yml_cmor, Loader = yaml.Loader ))
+        #fre_logger.info(f"   experiment yaml: {exp}")
 
-            for i in cmor_list[1:]:
-                cmor_list_to_string_concat = "".join(i)
-                yf = yaml.load(cmor_list_to_string_concat,Loader=yaml.Loader)
-                for key in result:
-                    if key in yf:
-                        if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                            if key == "postprocess":
-                                if 'components' in result['postprocess']:
-                                    result['postprocess']["components"] += yf['postprocess']["components"] + result[key]["components"]
-                                else:
-                                    result['postprocess']["components"] = yf['postprocess']["components"]
-
-
+        for i in cmor_list[1:]:
+            cmor_list_to_string_concat = "".join(i)
+            yf = yaml.load(cmor_list_to_string_concat,
+                           Loader = yaml.Loader)
+            
+            for key in result:
+                
+                if key not in yf:
+                    continue
+                
+                if all( [ isinstance(result[key], dict),
+                          isinstance(yf[key], dict),
+                          key == "postprocess" ] ) :
+                        
+                    result['postprocess']["components"] += \
+                        yf['postprocess']["components"] 
+                        
+                    if 'components' in result['postprocess']:
+                        result['postprocess']["components"] += \
+                            result[key]["components"]
+                                                                                    
         if ey_path is not None:            
             exp = str(ey_path).rsplit('/', maxsplit=1)[-1]
             fre_logger.info(f"   experiment yaml: {exp}")
@@ -178,12 +183,14 @@ class InitCMORYaml():
         # Clean the yaml
         # If keys exists, delete:
         keys_clean=["fre_properties", "shared", "experiments"]
-        pprint.PrettyPrinter(indent=1).pprint(yml_dict)
 
         for kc in keys_clean:
             if kc in yml_dict.keys():
                 del yml_dict[kc]
 
-        # Dump cleaned dictionary back into combined yaml file
-        #cleaned_yaml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
+        ## Dump cleaned dictionary back into combined yaml file
+        #cleaned_yaml = yaml.safe_dump(yml_dict,
+        #                              default_flow_style = False,
+        #                              sort_keys = False)
+        
         return yml_dict
