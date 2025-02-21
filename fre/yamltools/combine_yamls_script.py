@@ -5,22 +5,26 @@ import shutil
 import logging
 fre_logger = logging.getLogger(__name__)
 
-
 from pathlib import Path
 import click
+
 import yaml
+from .yaml_constructors import join_constructor
+yaml.add_constructor('!join', join_constructor)
+
 import fre.yamltools.compile_info_parser as cip
 import fre.yamltools.pp_info_parser as ppip
 import fre.yamltools.cmor_info_parser as cmorip
 import pprint
 
-def join_constructor(loader, node):
+def yaml_load(yamlfile):
     """
-    Allows FRE properties defined
-    in main yaml to be concatenated.
+    Load the yamlfile
     """
-    seq = loader.construct_sequence(node)
-    return ''.join([str(i) for i in seq])
+    with open(yamlfile, 'r') as yf:
+        y = yaml.load(yf,Loader=yaml.Loader)
+    return y
+
 
 def output_yaml(cleaned_yaml, experiment, output):
     """
@@ -121,39 +125,39 @@ def get_combined_ppyaml(PPYaml, experiment, output = None):
 
 
 
-def get_combined_cmoryaml(CmorYaml, experiment, output = None):
+def get_combined_cmoryaml(CMORYaml, experiment, output = None):
     """
     Combine the model, experiment, and cmor yamls
     Arguments:
-        CmorYaml (required): combined cmor-yaml object
+        CMORYaml (required): combined cmor-yaml object
         output   (optional): string/Path representing target output file to write yamlfile to
     """
 
     # Merge model into combined file
     try:
-        fre_logger.info('calling CmorYaml.combine_model() for yaml_content and loaded_yaml')
-        yaml_content, loaded_yaml = CmorYaml.combine_model()
+        fre_logger.info('calling CMORYaml.combine_model() for yaml_content and loaded_yaml')
+        yaml_content, loaded_yaml = CMORYaml.combine_model()
     except:
-        raise ValueError("CmorYaml.combine_model failed")
+        raise ValueError("CMORYaml.combine_model failed")
 
     # Merge cmor experiment yamls into combined file
     try:
-        comb_cmor_updated_list = CmorYaml.combine_experiment( yaml_content,
+        comb_cmor_updated_list = CMORYaml.combine_experiment( yaml_content,
                                                               loaded_yaml   )
     except:
-        raise ValueError("CmorYaml.combine_experiment failed")
+        raise ValueError("CMORYaml.combine_experiment failed")
 
 
     # Merge model/cmor yamls if more than 1 is defined
     # (without overwriting the yaml)
     try:
-        full_cmor_yaml = CmorYaml.merge_cmor_yaml( comb_cmor_updated_list,
+        full_cmor_yaml = CMORYaml.merge_cmor_yaml( comb_cmor_updated_list,
                                                    loaded_yaml                 )
     except: 
-        raise ValueError("CmorYaml.merge_cmor_yaml failed")
+        raise ValueError("CMORYaml.merge_cmor_yaml failed")
     
     # Clean the yaml
-    cleaned_yaml = CmorYaml.clean_yaml( full_cmor_yaml )
+    cleaned_yaml = CMORYaml.clean_yaml( full_cmor_yaml )
     fre_logger.info("Combined cmor-yaml information cleaned+saved as dictionary")
 
     # OUTPUT IF NEEDED
@@ -174,24 +178,22 @@ def consolidate_yamls(yamlfile,
     fre_logger.info(f'combining+parsing yaml files, for {use} usage')
     fre_logger.info(f'about to initialize the {use}-yaml')
     if use == "compile":
-        CompileYaml = cip.InitCompileYaml( yamlfile,
-                                           platform, target,
-                                           join_constructor )
+        CompileYaml = cip.CompileYaml( yamlfile,
+                                           platform, target )
+
         yml_dict = get_combined_compileyaml( CompileYaml, output )
 
     elif use == "pp":
-        PPYaml = ppip.InitPPYaml( yamlfile,
-                                  experiment, platform, target,
-                                  join_constructor )
+        PPYaml = ppip.PPYaml( yamlfile,
+                                  experiment, platform, target )
         yml_dict = get_combined_ppyaml( PPYaml, experiment, output )
 
     elif use == "cmor":
-        CmorYaml = cmorip.CMORYaml( yamlfile,
-                                    experiment, platform, target,
-                                    join_constructor )
-        fre_logger.info(f'\n    DONE initializing CmorYaml = \n    {CmorYaml}\n')
+        CMORYaml = cmorip.CMORYaml( yamlfile,
+                                    experiment, platform, target )
+        fre_logger.info(f'\n    DONE initializing CMORYaml = \n    {CMORYaml}\n')
 
-        yml_dict = get_combined_cmoryaml( CmorYaml, experiment, output )
+        yml_dict = get_combined_cmoryaml( CMORYaml, experiment, output )
 
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'") 

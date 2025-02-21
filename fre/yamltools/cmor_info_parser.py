@@ -9,6 +9,10 @@ fre_logger = logging.getLogger(__name__)
 
 #import pprint
 
+from .yaml_constructors import join_constructor
+yaml.add_constructor('!join', join_constructor)
+
+
 def experiment_check(mainyaml_dir, experiment, loaded_yaml):
     """
     Check that the experiment given is an experiment listed in the model yaml.
@@ -54,7 +58,7 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
 class CMORYaml():
     """ class holding routines for initalizing cmor yamls """
 
-    def __init__(self,yamlfile,experiment,platform,target,join_constructor):
+    def __init__(self,yamlfile,experiment,platform,target):#,join_constructor):
         """
         Process to combine the applicable yamls for post-processing
         """
@@ -63,9 +67,6 @@ class CMORYaml():
         self.name = experiment
         self.platform = platform
         self.target = target
-
-        # Regsiter tag handler
-        yaml.add_constructor('!join', join_constructor)
 
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)

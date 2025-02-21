@@ -4,11 +4,9 @@ import shutil
 from pathlib import Path
 from datetime import date
 
-#import fre
-#from fre import cmor
+from fre.cmor import cmor_mixer
+cmor_mixer.DEBUG_MODE_RUN_ONE = True
 from fre.cmor import cmor_run_subtool
-
-import subprocess
 
 # where are we? we're running pytest from the base directory of this repo
 ROOTDIR = 'fre/tests/test_files'
