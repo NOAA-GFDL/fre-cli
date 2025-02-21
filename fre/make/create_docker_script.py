@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 def dockerfile_create(yamlfile, platform, target, execute):
     srcDir="src"

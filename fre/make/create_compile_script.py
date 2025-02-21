@@ -10,7 +10,7 @@ from pathlib import Path
 from multiprocessing.dummy import Pool
 
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
     # Define variables

@@ -8,7 +8,7 @@ import shutil
 import json
 import yaml
 from jsonschema import validate
-from fre.yamltools import combine_yamls as cy
+from fre.yamltools import combine_yamls_script as cy
 
 
 ## SET-UP

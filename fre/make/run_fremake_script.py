@@ -14,7 +14,7 @@ from multiprocessing.dummy import Pool
 from pathlib import Path
 
 import subprocess
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )

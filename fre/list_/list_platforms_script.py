@@ -6,7 +6,7 @@ from pathlib import Path
 import yaml
 import json
 from jsonschema import validate, ValidationError, SchemaError
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 # To look into: ignore undefined alias error msg for listing?
 # Found this somewhere but don't fully understand yet

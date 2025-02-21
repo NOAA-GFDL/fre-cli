@@ -3,7 +3,7 @@ Script combines the model yaml with exp, platform, and target to list experiment
 """
 from pathlib import Path
 import yaml
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 # To look into: ignore undefined alias error msg for listing?
 # Found this somewhere but don't fully understand yet

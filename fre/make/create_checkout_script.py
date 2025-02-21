@@ -11,7 +11,7 @@ fre_logger = logging.getLogger(__name__)
 
 import sys
 
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
 def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):

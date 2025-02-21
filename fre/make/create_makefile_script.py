@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 def makefile_create(yamlfile, platform, target):
     """
