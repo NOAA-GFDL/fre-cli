@@ -62,7 +62,7 @@ def get_combined_compileyaml(CompileYaml, output = None):
         raise ValueError("ERR: Could not merge platform yaml information.")
 
     # Clean the yaml
-    cleaned_yaml = CompileYaml.clean_yaml(yaml_content)
+    cleaned_yaml = CompileYaml.clean_yaml( yaml_content )
     fre_logger.info("Combined yaml information saved as dictionary")
 
     # OUTPUT IF NEEDED
@@ -108,13 +108,13 @@ def get_combined_ppyaml(PPYaml, experiment, output = None):
         raise ValueError("ERR: Could not merge multiple pp and analysis information together.")
 
     # Clean the yaml
-    cleaned_yaml = PPYaml.clean_yaml(full_combined)
-
+    cleaned_yaml = PPYaml.clean_yaml( full_combined )
+    fre_logger.info("Combined pp-yaml information cleaned+saved as dictionary")
+    
     # OUTPUT IF NEEDED
     if output is not None:
-        output_yaml(cleaned_yaml,experiment,output)
-    else:
-        fre_logger.info("Combined yaml information saved as dictionary")
+        output_yaml( cleaned_yaml, experiment, output )
+        fre_logger.info(f"Combined pp-yaml information saved to {output}")
 
     return cleaned_yaml
 
@@ -128,9 +128,6 @@ def get_combined_cmoryaml(CmorYaml, experiment, output = None):
         CmorYaml (required): combined cmor-yaml object
         output   (optional): string/Path representing target output file to write yamlfile to
     """
-
-    ## temp DELETEME
-    #pp = pprint.PrettyPrinter( indent = 2 )
 
     # Merge model into combined file
     try:
@@ -147,22 +144,21 @@ def get_combined_cmoryaml(CmorYaml, experiment, output = None):
         raise ValueError("CmorYaml.combine_experiment failed")
 
 
-    # Merge model/cmor yamls if more than 1 is defined ???
+    # Merge model/cmor yamls if more than 1 is defined
     # (without overwriting the yaml)
     try:
         full_cmor_yaml = CmorYaml.merge_cmor_yaml( comb_cmor_updated_list,
-                                                        loaded_yaml                 )
+                                                   loaded_yaml                 )
     except: 
         raise ValueError("CmorYaml.merge_cmor_yaml failed")
     
     # Clean the yaml
-    cleaned_yaml = CmorYaml.clean_yaml(full_cmor_yaml)
+    cleaned_yaml = CmorYaml.clean_yaml( full_cmor_yaml )
     fre_logger.info("Combined cmor-yaml information cleaned+saved as dictionary")
-    #pp.pprint(cleaned_yaml)
 
     # OUTPUT IF NEEDED
     if output is not None:
-        output_yaml(cleaned_yaml,experiment,output)
+        output_yaml( cleaned_yaml, experiment, output )
         fre_logger.info(f"Combined cmor-yaml information saved to {output}")
 
     return cleaned_yaml
@@ -170,54 +166,38 @@ def get_combined_cmoryaml(CmorYaml, experiment, output = None):
 
 def consolidate_yamls(yamlfile,
                       experiment, platform, target,
-                      use, output):
+                      use, output = None):
     """
     Depending on `use` argument passed, either create the final
     combined yaml for compilation or post-processing
     """
     fre_logger.info(f'combining+parsing yaml files, for {use} usage')
-
+    fre_logger.info(f'about to initialize the {use}-yaml')
     if use == "compile":
-        CompileYaml = cip.InitCompileYaml(yamlfile,
-                                          platform, target,
-                                          join_constructor)
-        if output is None:
-            yml_dict = get_combined_compileyaml(CompileYaml)
-        else:
-            yml_dict = get_combined_compileyaml(CompileYaml, output)
-            fre_logger.info(f"Combined CompileYaml file located here: {os.getcwd()}/{output}")
+        CompileYaml = cip.InitCompileYaml( yamlfile,
+                                           platform, target,
+                                           join_constructor )
+        yml_dict = get_combined_compileyaml( CompileYaml, output )
 
     elif use == "pp":
-        PPYaml = ppip.InitPPYaml(yamlfile,
-                                 experiment, platform, target,
-                                 join_constructor)
-
-        if output is None:
-            yml_dict = get_combined_ppyaml( PPYaml, experiment)
-        else:
-            yml_dict = get_combined_ppyaml( PPYaml, experiment, output )
-            fre_logger.info( f"Combined PPYaml file located here: {os.getcwd()}/{output}" )
+        PPYaml = ppip.InitPPYaml( yamlfile,
+                                  experiment, platform, target,
+                                  join_constructor )
+        yml_dict = get_combined_ppyaml( PPYaml, experiment, output )
 
     elif use == "cmor":
-        fre_logger.info(f'about to initialize the CmorYaml')
-        CmorYaml = cmorip.CMORYaml(yamlfile,
-                                       experiment, platform, target,
-                                       join_constructor)
+        CmorYaml = cmorip.CMORYaml( yamlfile,
+                                    experiment, platform, target,
+                                    join_constructor )
         fre_logger.info(f'\n    DONE initializing CmorYaml = \n    {CmorYaml}\n')
 
-
-        if output is None:
-            yml_dict = get_combined_cmoryaml(CmorYaml, experiment)
-        else:
-            fre_logger.info(f'will be writing out the combined yaml dictionary!')
-            yml_dict = get_combined_cmoryaml(CmorYaml, experiment, output)
-
-            
-        #pprint(yaml_dict)
-        #assert False
+        yml_dict = get_combined_cmoryaml( CmorYaml, experiment, output )
 
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'") 
+
+    #pprint(yaml_dict)
+    #assert False
 
     return yml_dict
 
