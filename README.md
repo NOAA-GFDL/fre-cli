@@ -28,12 +28,12 @@ Pick your entry-point to using `fre-cli` based on your requirements and needs. `
 ### Method 1 - user-approach, Personal Conda Environment Building from uploaded Conda Package
 If you're a user not at GFDL, already have `conda`, and want a `fre-cli` ready to explore out-of-the-box, one simply needs:
 ```
-	conda create --name fre --channel noaa-gfdl --channel conda-forge fre-cli
+conda create --name fre --channel noaa-gfdl --channel conda-forge fre-cli
 ```
 
 If you wish to specify a specific version:
 ```
-    conda create --name fre-202501 --channel noaa-gfdl --channel conda-forge fre-cli::2025.01
+conda create --name fre-202501 --channel noaa-gfdl --channel conda-forge fre-cli::2025.01
 ```
 
 ### Method 2 - contributor/developer-approach, Personal Conda Environment Building from cloned `fre-cli` repository
@@ -43,34 +43,34 @@ to reliably `pip` install a local copy of the code.
 
 This approach can be used both in and outside of GFDL. The only difference is how one accesses `conda` commands
 ```
-    # make sure conda is available / in your PATH variable
-    # if you are at gfdl, access conda via Lmod / miniforge module
-    module load miniforge
-    
-    # Append necessary channels- fre-cli needs only these two channels and no others to build.
-	# it's possible depending on your conda installation that additional configuration steps are needed
-    conda config --append channels noaa-gfdl
-    conda config --append channels conda-forge
+# make sure conda is available / in your PATH variable
+# if you are at gfdl, access conda via Lmod / miniforge module
+module load miniforge
 
-    # grab a copy of the code from github and cd into the repository directory
-    git clone --recursive https://github.com/noaa-gfdl/fre-cli.git
-    cd fre-cli
+# Append necessary channels- fre-cli needs only these two channels and no others to build.
+# it's possible depending on your conda installation that additional configuration steps are needed
+conda config --append channels noaa-gfdl
+conda config --append channels conda-forge
 
-    # to avoid being prompted for confirmation, add '-y' to the call
-	# this downloads/builds fre-cli's dependecies ONLY
-    conda env create -f environment.yml
+# grab a copy of the code from github and cd into the repository directory
+git clone --recursive https://github.com/noaa-gfdl/fre-cli.git
+cd fre-cli
 
-    # activate the environment you just created.
-    # fre-cli isn't installed yet though, ONLY dependencies
-    # if you changed the name of the build environment, activate that name instead of fre-cli
-    conda activate fre-cli
+# to avoid being prompted for confirmation, add '-y' to the call
+# this downloads/builds fre-cli's dependecies ONLY
+conda env create -f environment.yml
 
-    # add mkmf to your PATH
-    export PATH=$PATH:${PWD}/mkmf/bin
+# activate the environment you just created.
+# fre-cli isn't installed yet though, ONLY dependencies
+# if you changed the name of the build environment, activate that name instead of fre-cli
+conda activate fre-cli
 
-    # now we pip install the local code under the `fre/` directory
-	# the -e flag makes re-installing the code after editing not necessary
-    pip install -e .
+# add mkmf to your PATH
+export PATH=$PATH:${PWD}/mkmf/bin
+
+# now we pip install the local code under the `fre/` directory
+# the -e flag makes re-installing the code after editing not necessary
+pip install -e .
 ```
 
 * All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
@@ -79,7 +79,7 @@ This approach can be used both in and outside of GFDL. The only difference is ho
 * This way, that local copy is the ONLY `fre-cli` in the environment. You will always know which version of the code `python` is using
     - For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/main/CONTRIBUTING.md)
 
-### Method 1 - a User at GFDL, via `Lmod`
+### Method 3 - a User at GFDL, via `Lmod`
 * If you want to hit the ground running:
     - GFDL Workstation: `module load fre/canopy`
     - Gaea: `module load fre/canopy`
@@ -87,24 +87,24 @@ This approach can be used both in and outside of GFDL. The only difference is ho
     - Con: _Cannot install local changes on top via `pip`
 
 
-### Method 2 - a User at GFDL, via Conda Environment Activation
+### Method 4 - a User at GFDL, via Conda Environment Activation
 * If you want to hit the ground running, but have some flexibility in including other things without full development options available to you:
 
-    - _Can install local changes on top via `pip`_
-	  - the locally installed `fre-cli` can sometimes bump into the copy living in the activated `conda` environment.
-	  - this approach shouldn't generally be used for concerted development efforts, but is good enough for simple and quick proto-typing.
-	  - for developers serious about making contributions, Method 3 below is strongly advised.
-    - GFDL Workstation:
-        ```
-        module load miniforge
-        conda activate /nbhome/fms/conda/envs/fre-cli
-        ```
-    - Gaea:
-        ```
-        module use /usw/conda/modulefiles
-        module load miniforge
-        conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli
-        ```
+- _Can install local changes on top via `pip`_
+  - the locally installed `fre-cli` can sometimes bump into the copy living in the activated `conda` environment.
+  - this approach shouldn't generally be used for concerted development efforts, but is good enough for simple and quick proto-typing.
+  - for developers serious about making contributions, Method 3 below is strongly advised.
+- GFDL Workstation:
+```
+    module load miniforge
+    conda activate /nbhome/fms/conda/envs/fre-cli
+```
+- Gaea:
+```
+    module use /usw/conda/modulefiles
+    module load miniforge
+    conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli
+```
 
 
 
