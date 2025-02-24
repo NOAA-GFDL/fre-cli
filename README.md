@@ -11,7 +11,7 @@
 FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
 * [Sphinx Documentation](https://noaa-gfdl.github.io/fre-cli/index.html)
-<!--* ... internal doc, should remove, if anything...
+
 [Project Outline](https://docs.google.com/document/d/19Uc01IPuuIuMtOyAvxXj9Mn6Ivc5Ql6NZ-Q6I8YowRI/edit?usp=sharing) -->
 
 ![IMG_1076](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/817cabe1-6e3b-4210-9874-b13f601265d6)
@@ -23,15 +23,18 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
 
 ![clidiagram](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/04cd8ce1-dec8-457f-b8b7-544275e04f46)
 
-## **Usage (Users)**
+## **Usage Notes**
+
 
 ### (Method 1) User - with Lmod
-
 * If you want to hit the ground running:
     - _Cannot install local changes on top via `pip`_
     - GFDL Workstation: `module load fre/canopy`
     - Gaea: `module load fre/canopy`
-    
+	- Pro: simplest way to access `fre-cli` at GFDL
+	- Con: not much flexibility, what you load is what you get
+
+
 ### (Method 2) User - Conda Environment Activation
 * If you want to hit the ground running, but have some flexibility in including other things without full development options available to you:
 
@@ -47,6 +50,7 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
         module load miniforge
         conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli
         ```
+
 
 ### (Method 3) Developer - Conda Environment Building
 * If you have Conda loaded and want to create your OWN environment for development, testing, etc.:
@@ -78,28 +82,73 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
         # add mkmf to your PATH
         export PATH=$PATH:${PWD}/mkmf/bin
 
-        # to pip install on top
+        # the -e flag pip installs the locally-editable code
+		# this makes re-installing after editing code is not necessary
         pip install -e .
         ```
     - All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
     - setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
     - For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/main/CONTRIBUTING.md)
 
-After one of the above, one can enter commands and follow `--help` messages for guidance. A brief rundown of commands to be provided are within each tool's folder as a `README.md`
 
-### Further Notes on Use
-Following the instructions above, the user will be able to run `fre` from any directory, listing all command groups. These include e.g. `run`, `make`, and `pp`. The list of available subcommands for each group will be shown upon inclusion of the `--help` flag. The user will be alerted to any missing arguments required subcomands. Optional arguments will only shown with `--help` added to the subcommand. Note that argument flags are not positional, and can be specified in any order. 
+### Instructions for minting new releases
 
-## **Checklist: Currently Implemented Tools**
+1. Update the package release number (i.e. reported by fre --version) and merge to `main`
+- [ ] edit `version` in setup.py
+- [ ] edit two version mentions in fre/tests/test_fre_cli.py
 
-To be developed:
+2. Create tag in fre-cli (this repository) and associated github release
+- [ ] `git tag -a <release>` and `git push --tags`
+- [ ] https://github.com/NOAA-GFDL/fre-cli/releases
 
-- [x]  **fre app**
-- [x]  **fre catalog**
-- [ ]  **fre check**
-- [x]  **fre cmor**
-- [ ]  **fre list**
-- [x]  **fre make**
-- [x]  **fre pp**
-- [ ]  **fre run**
-- [x]  **fre yamltools**
+3. Create corresponding tag in fre-workflows
+- [ ] https://github.com/NOAA-GFDL/fre-workflows/tags
+
+4. Observe new conda package deployed to noaa-gfdl channel
+- [ ] https://anaconda.org/NOAA-GFDL/fre-cli
+
+### GFDL deployment notes
+
+Presently, all pushes to `main` trigger a conda deployment to the `noaa-gfdl` channel (https://anaconda.org/NOAA-GFDL/fre-cli),
+with the latest package version.
+
+
+* Latest available (`fre/test`)
+
+An updated fre-cli installation on GFDL and gaea is reinstalled every night at midnight
+into the fms user spaces:
+
+on gaea: `/ncrc/home/fms/conda/envs/fre-test`
+at GFDL: `/nbhome/fms/conda/envs/fre-test`
+
+The `fre/test` module brings the `fre` executable into the `PATH`.
+
+* Major release (`fre/2025.NN`)
+
+These deployments are hand-installed in the fms user directories:
+
+on gaea: `/ncrc/home/fms/conda/envs/fre-2025.NN`
+at GFDL: `/nbhome/fms/conda/envs/fre-2025.NN`
+
+The `fre/2025.NN` modulefiles bring the `fre` executable into the `PATH`.
+
+```
+fre --version
+fre, version 2025.<NN>
+```
+
+* Patch release (`fre/2025.NN.PP`)
+
+These deployments are hand-installed to the same major-release location,
+overwriting them.
+
+on gaea: `/ncrc/home/fms/conda/envs/fre-2025.NN`
+at GFDL: `/nbhome/fms/conda/envs/fre-2025.NN`
+
+The `fre/2025.NN` modulefiles bring the `fre` executable into the `PATH`.
+Use `fre --version` to report the patch number.
+
+```
+fre --version
+fre, version 2025.NN.PP
+```
