@@ -1,6 +1,6 @@
 ''' Checks that a netCDF (.nc) file contains expected number of timesteps '''
-import netCDF4
 import logging
+import netCDF4
 
 fre_logger = logging.getLogger(__name__)
 
@@ -12,12 +12,12 @@ def check(file_path, num_steps):
 
     #Let's grab the data we need from the netCDF file + close if after we're done
     dataset = netCDF4.Dataset(file_path, 'r')
-    fre_logger.info(f" Grabbed data from file")
+    fre_logger.info("Grabbed data from file")
 
     timesteps = dataset.variables['time'][:]
     dataset.close()
 
-    fre_logger.info(f" Closed file")
+    fre_logger.info("Closed file")
 
     #Compare
     if len(timesteps) == int(num_steps):
