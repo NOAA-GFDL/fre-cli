@@ -6,39 +6,96 @@
 ![Coverage Badge](https://noaa-gfdl.github.io/fre-cli/_images/cov_badge.svg)
 ![Pytest Badge](https://noaa-gfdl.github.io/fre-cli/_images/pytest_badge.svg)
 
-# **FRE-CLI**
+# **`fre-cli`**
 
-FMS Runtime Environment (FRE) CLI developed using Python's Click package
+`fre-cli` is the Flexible Runtime Environment (`FRE`) command-line interface (`CLI`). 
 
 * [Sphinx Documentation](https://noaa-gfdl.github.io/fre-cli/index.html)
-
-[Project Outline](https://docs.google.com/document/d/19Uc01IPuuIuMtOyAvxXj9Mn6Ivc5Ql6NZ-Q6I8YowRI/edit?usp=sharing) -->
 
 ![IMG_1076](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/817cabe1-6e3b-4210-9874-b13f601265d6)
 
 ## **Background**
-`fre-cli` is a modern, user-friendly CLI that will allow users to call FRE commands using a **_fre_** **tool** _subtool_ syntax. Leveraging Click, an easily installable Python package available via PyPI and/or Conda, `fre-cli` gives users intuitive and easy-to-understand access to many FRE tools and workflows from one packaged, centralized CLI.
+`fre-cli` is a modern, user-friendly `conda` package that allows users to call `FRE` commands via a pythonic `Click`-based interface in a **_fre_** **tool** **_subtool_** style syntax.
+`fre-cli` aims to gives users intuitive and easy-to-understand access to both newly developed tools, and legacy `FRE` tools and workflows by delivering one simple, centralized CLI as
+a conda package.
 
 ![Screenshot from 2024-04-18 13-42-04](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/43c028a6-4e6a-42fe-8bec-008b6758ea9b)
 
 ![clidiagram](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/04cd8ce1-dec8-457f-b8b7-544275e04f46)
 
-## **Usage Notes**
+## **How to get Started**
+Pick your entry-point to using `fre-cli` based on your requirements and needs. `fre-cli` is a `conda` package, and so requires
+`conda` or `miniforge` (alias'd to `conda`) nearby.
 
+### Method 1 - user-approach, Personal Conda Environment Building from uploaded Conda Package
+If you're a user not at GFDL, already have `conda`, and want a `fre-cli` ready to explore out-of-the-box, one simply needs:
+```
+	conda create --name fre --channel noaa-gfdl --channel conda-forge fre-cli
+```
 
-### (Method 1) User - with Lmod
+If you wish to specify a specific version:
+```
+    conda create --name fre-202501 --channel noaa-gfdl --channel conda-forge fre-cli::2025.01
+```
+
+### Method 2 - contributor/developer-approach, Personal Conda Environment Building from cloned `fre-cli` repository
+Developers should have a full personal environment (without `fre-cli`) and use a locally `pip`-installed copy of the code.
+This enables full-featured usage of the software, equivalent to that of Method 1, but with the flexibility of being able
+to reliably `pip` install a local copy of the code.
+
+This approach can be used both in and outside of GFDL. The only difference is how one accesses `conda` commands
+```
+    # make sure conda is available / in your PATH variable
+    # if you are at gfdl, access conda via Lmod / miniforge module
+    module load miniforge
+    
+    # Append necessary channels- fre-cli needs only these two channels and no others to build.
+	# it's possible depending on your conda installation that additional configuration steps are needed
+    conda config --append channels noaa-gfdl
+    conda config --append channels conda-forge
+
+    # grab a copy of the code from github and cd into the repository directory
+    git clone --recursive https://github.com/noaa-gfdl/fre-cli.git
+    cd fre-cli
+
+    # to avoid being prompted for confirmation, add '-y' to the call
+	# this downloads/builds fre-cli's dependecies ONLY
+    conda env create -f environment.yml
+
+    # activate the environment you just created.
+    # fre-cli isn't installed yet though, ONLY dependencies
+    # if you changed the name of the build environment, activate that name instead of fre-cli
+    conda activate fre-cli
+
+    # add mkmf to your PATH
+    export PATH=$PATH:${PWD}/mkmf/bin
+
+    # now we pip install the local code under the `fre/` directory
+	# the -e flag makes re-installing the code after editing not necessary
+    pip install -e .
+```
+
+* All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
+* setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
+* If you want to create your OWN environment for development, testing, etc., and try out anything you want!
+* This way, that local copy is the ONLY `fre-cli` in the environment. You will always know which version of the code `python` is using
+    - For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/main/CONTRIBUTING.md)
+
+### Method 1 - a User at GFDL, via `Lmod`
 * If you want to hit the ground running:
-    - _Cannot install local changes on top via `pip`_
     - GFDL Workstation: `module load fre/canopy`
     - Gaea: `module load fre/canopy`
 	- Pro: simplest way to access `fre-cli` at GFDL
-	- Con: not much flexibility, what you load is what you get
+    - Con: _Cannot install local changes on top via `pip`
 
 
-### (Method 2) User - Conda Environment Activation
+### Method 2 - a User at GFDL, via Conda Environment Activation
 * If you want to hit the ground running, but have some flexibility in including other things without full development options available to you:
 
     - _Can install local changes on top via `pip`_
+	  - the locally installed `fre-cli` can sometimes bump into the copy living in the activated `conda` environment.
+	  - this approach shouldn't generally be used for concerted development efforts, but is good enough for simple and quick proto-typing.
+	  - for developers serious about making contributions, Method 3 below is strongly advised.
     - GFDL Workstation:
         ```
         module load miniforge
@@ -52,43 +109,6 @@ FMS Runtime Environment (FRE) CLI developed using Python's Click package
         ```
 
 
-### (Method 3) Developer - Conda Environment Building
-* If you have Conda loaded and want to create your OWN environment for development, testing, etc.:
-
-    - _Can install local changes on top via `pip`_
-    - Steps:
-        ```
-        # make sure conda is in your PATH
-        # at gfdl, this can be done like
-        module load miniforge
-        
-        # Append necessary channels.
-        conda config --append channels noaa-gfdl
-        conda config --append channels conda-forge
-
-        # grab a copy of the code
-        git clone --recursive https://github.com/noaa-gfdl/fre-cli.git
-        cd fre-cli
-
-        # edit the name of the environment in this yaml file if desired
-        # to avoid being prompted for confirmation, add '-y' to the call
-        conda env create -f environment.yml
-
-        # activate the environment you just created.
-        # fre-cli isn't installed yet though, just the dependences
-        # if you edited the name above, activate that name instead
-        conda activate fre-cli
-
-        # add mkmf to your PATH
-        export PATH=$PATH:${PWD}/mkmf/bin
-
-        # the -e flag pip installs the locally-editable code
-		# this makes re-installing after editing code is not necessary
-        pip install -e .
-        ```
-    - All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
-    - setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
-    - For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/main/CONTRIBUTING.md)
 
 
 ### Instructions for minting new releases
