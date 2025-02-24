@@ -1,9 +1,5 @@
 # **`fre-cli`**
 
-`fre-cli` is the Flexible Runtime Environment (`FRE`) command-line interface (`CLI`). `fre-cli` aims to gives users intuitive and easy-to-understand access to both newly developed, and legacy `FRE` tools via a `click`-driven CLI, delivered as a `conda` package.
-
-* [Documentation](https://noaa-gfdl.github.io/fre-cli/index.html)
-
 <!-- from https://anaconda.org/NOAA-GFDL/fre-cli/badges -->
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/version.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
@@ -12,14 +8,18 @@
 ![Coverage Badge](https://noaa-gfdl.github.io/fre-cli/_images/cov_badge.svg)
 ![Pytest Badge](https://noaa-gfdl.github.io/fre-cli/_images/pytest_badge.svg)
 
-![IMG_1076](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/817cabe1-6e3b-4210-9874-b13f601265d6)
+* [Documentation](https://noaa-gfdl.github.io/fre-cli/index.html)
+
+`fre-cli` is the Flexible Runtime Environment (`FRE`) command-line interface (`CLI`). `fre-cli` aims to gives users intuitive and easy-to-understand access to both newly developed, and legacy `FRE` tools via a `click`-driven CLI, delivered as a `conda` package.
 
 ## **Intro**
-`fre-cli` is a modern, user-friendly `conda` package that allows users to call `FRE` commands via a pythonic `Click`-based interface in a **_fre_** **tool** **_subtool_** style syntax.
+`fre-cli` is a modern, user-friendly `conda` package that allows users to call `FRE` commands via a pythonic `Click`-based interface in a **_fre_** **tool** **_subtool_** style syntax. To learn more about what that means, read the graphic below or watch the following sample video in this section
 
 ![Screenshot from 2024-04-18 13-42-04](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/43c028a6-4e6a-42fe-8bec-008b6758ea9b)
 
 <!-- ![clidiagram](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/04cd8ce1-dec8-457f-b8b7-544275e04f46) -->
+
+![IMG_1076](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/817cabe1-6e3b-4210-9874-b13f601265d6)
 
 ## **How to get Started**
 Pick your entry-point to using `fre-cli` based on your requirements and needs. `fre-cli` is a `conda` package, and so requires
