@@ -25,18 +25,18 @@
 Pick your entry-point to using `fre-cli` based on your requirements and needs. `fre-cli` is a `conda` package, and so requires
 `conda` or `miniforge` (alias'd to `conda`) nearby.
 
-### Method 1 - user-approach, Personal Conda Environment Building from uploaded Conda Package
-If you're a user not at GFDL, already have `conda`, and want a `fre-cli` ready to explore out-of-the-box, one simply needs:
+### Method 1 - user-approach, Personal Conda Environment via conda channel/package
+If you're a user not at GFDL, already have `conda`, and want a `fre-cli` that's ready-to-go out-of-the-box, simply do:
 ```
 conda create --name fre --channel noaa-gfdl --channel conda-forge fre-cli
 ```
 
-If you wish to specify a specific version:
+If you wish to specify aversion:
 ```
 conda create --name fre-202501 --channel noaa-gfdl --channel conda-forge fre-cli::2025.01
 ```
 
-### Method 2 - contributor/developer-approach, Personal Conda Environment Building from cloned `fre-cli` repository
+### Method 2 - developer-approach, Personal Conda Environment via repo clone
 Developers should have a full personal environment (without `fre-cli`) and use a locally `pip`-installed copy of the code.
 This enables full-featured usage of the software, equivalent to that of Method 1, but with the flexibility of being able
 to reliably `pip` install a local copy of the code.
@@ -73,25 +73,30 @@ export PATH=$PATH:${PWD}/mkmf/bin
 pip install -e .
 ```
 
+<!--
 * All other dependencies used by the tools are installed along with this install (configured inside the meta.yaml), with the exception of local modules
 * setup.py file allows [`fre.py`](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/fre.py) to be ran with `fre` as the entry point on the command line instead of `python fre.py`
 * If you want to create your OWN environment for development, testing, etc., and try out anything you want!
 * This way, that local copy is the ONLY `fre-cli` in the environment. You will always know which version of the code `python` is using
-    - For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/main/CONTRIBUTING.md)
+- For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/main/CONTRIBUTING.md)
+-->
 
 ### Method 3 - a User on GFDL systems (e.g. PPAN, Gaea), with `Lmod`
-    - `module load fre/2025.01`
-	- Pro: simplest way to access `fre-cli` at GFDL
-    - Con: _Cannot install local changes on top via `pip`
+If you do not wish to interface with `conda` at all, but desire access to `fre` commands, simply execute `module load fre/2025.01`, and you're ready to go.
+This is the simplest way to access `fre-cli` at GFDL, but does not easily facillitate contributions/development/experimenting with `fre-cli`.  
 
 
 ### Method 4 - a User at GFDL, via Conda Environment Activation
-* If you want to hit the ground running, but have some flexibility in including other things without full development options available to you:
+If you want to hit the ground running, but have some flexibility being able to utilize local python code with `fre-cli` environment, this option can work
+for you. Developers can also utilize this approach for rapid-prototyping, but it's reccomended to switch to Method 1 for finalizing contributions.
 
+<!--
 - _Can install local changes on top via `pip`_
-  - the locally installed `fre-cli` can sometimes bump into the copy living in the activated `conda` environment.
-  - this approach shouldn't generally be used for concerted development efforts, but is good enough for simple and quick proto-typing.
-  - for developers serious about making contributions, Method 3 below is strongly advised.
+- the locally installed `fre-cli` can sometimes bump into the copy living in the activated `conda` environment.
+- this approach shouldn't generally be used for concerted development efforts, but is good enough for simple and quick proto-typing.
+- for developers serious about making contributions, Method 3 below is strongly advised.
+-->
+
 - GFDL Workstation:
 ```
     module load miniforge
