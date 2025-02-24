@@ -79,10 +79,8 @@ pip install -e .
 * This way, that local copy is the ONLY `fre-cli` in the environment. You will always know which version of the code `python` is using
     - For further notes on development and contributing to `fre-cli` see [`CONTRIBUTING.md`](https://github.com/NOAA-GFDL/fre-cli/blob/main/CONTRIBUTING.md)
 
-### Method 3 - a User at GFDL, via `Lmod`
-* If you want to hit the ground running:
-    - GFDL Workstation: `module load fre/canopy`
-    - Gaea: `module load fre/canopy`
+### Method 3 - a User on GFDL systems (e.g. PPAN, Gaea), with `Lmod`
+    - `module load fre/2025.01`
 	- Pro: simplest way to access `fre-cli` at GFDL
     - Con: _Cannot install local changes on top via `pip`
 
