@@ -215,7 +215,7 @@ class container():
         self.d.write('ENTRYPOINT ["/bin/bash"]')
         self.d.close()
 
-    def createBuildScript(self,containerBuild,containerRun):
+    def createBuildScript(self,containerBuild,containerRun,containerOutputLocation):
         """
         Brief: Writes out the build commands for the created dockerfile in a script,
                which builds the dockerfile and then converts the format to a singularity image file.
@@ -226,11 +226,15 @@ class container():
             - containerRun : The container platform used with `exec` to
                              run the container; apptainer or singularity used
         """
+        containerName = self.e+"-"+self.target.gettargetName()
         self.userScript = ["#!/bin/bash\n"]
         self.userScript.append(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName()+"\n")
         self.userScript.append("rm -f "+self.e+".tar "+self.e+".sif\n")
-        self.userScript.append(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
-        self.userScript.append(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar\n")
+        self.userScript.append(containerBuild+" save -o "+containerName+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
+        self.userScript.append(containerRun+" build --disable-cache "+containerName+".sif docker-archive://"+containerName+".tar\n")
+        if containerOutputLocation != "":
+            self.userScript.append("cp " + containerName + ".sif " +  containerOutputLocation + "/" + containerName + ".sif"+"\n")
+            self.userScript.append("cp " + containerName + ".tar " +  containerOutputLocation + "/" + containerName + ".tar"+"\n")
         self.userScriptFile = open("createContainer.sh","w")
         self.userScriptFile.writelines(self.userScript)
         self.userScriptFile.close()
