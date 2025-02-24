@@ -180,10 +180,9 @@ def configure_xml(xml, platform, target, experiment, do_analysis, historydir, re
 @pp_cli.command()
 @click.option("--file_path", "-f", type=str, required=True, help="Path to netCDF (.nc) file")
 @click.option("--num_steps", "-n", type=str, required=True, help="Number of expected timesteps")
-@click.option("--verbose", "-v", is_flag=True, default=False,required=False, help="Increase logging verbosity")
-def nccheck(file_path, num_steps,verbose):
+def nccheck(file_path, num_steps):
     """ - Check that a netCDF (.nc) file contains expected number of timesteps - """
-    nccheck_script.check(file_path,num_steps,verbose)
+    nccheck_script.check(file_path,num_steps)
 
 #fre pp wrapper
 @pp_cli.command()

@@ -4,14 +4,9 @@ import logging
 
 fre_logger = logging.getLogger(__name__)
 
-def check(file_path, num_steps,verbose):
-    """ Compares the number of timesteps in a given netCDF (.nc) file to the number of expected timesteps """
 
-    #Logger setup
-    if verbose:
-        log_level = logging.INFO
-    else:
-        log_level = logging.WARN
+def check(file_path, num_steps):
+    """ Compares the number of timesteps in a given netCDF (.nc) file to the number of expected timesteps """
 
     fre_logger.info(f" netCDF file = {file_path}")
 
@@ -27,11 +22,11 @@ def check(file_path, num_steps,verbose):
     #Compare
     if len(timesteps) == int(num_steps):
         fre_logger.info(f" Expected number of timesteps found in {file_path}")
-        return(0)
+        return 0
 
     else:
         fre_logger.info(f" Unexpected number of timesteps found in {file_path}")
-        return(1)
+        return 1
 
 if __name__  == "__main__":
     check()
