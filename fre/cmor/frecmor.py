@@ -48,7 +48,6 @@ def yaml(yamlfile, experiment, target, platform, output):
         raise ValueError('I need a yamlfile!!!')
     
     cmor_yaml_subtool(
-        yamlfile = yamlfile
         yamlfile = yamlfile,
         exp_name = experiment,
         target = target,
