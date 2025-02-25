@@ -72,7 +72,7 @@ def dockerfile_create(yamlfile, platform, target, execute):
                 currDir = os.getcwd()
 
                 # create build script for container
-                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], platform["containerOutputLocation"])
                 print("\ntmpDir created in " + currDir + "/tmp") #was click.echo and a few lines above
                 print("Dockerfile created in " + currDir +"\n") #was click.echo and a few lines above
                 print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")

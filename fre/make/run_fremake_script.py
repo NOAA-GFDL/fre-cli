@@ -190,7 +190,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 dockerBuild.writeRunscript(platform["RUNenv"], platform["containerRun"], tmpDir+"/execrunscript.sh")
 
                 # Create build script for container
-                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], platform["containerOutputLocation"])
                 logging.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 # Execute if flag is given
