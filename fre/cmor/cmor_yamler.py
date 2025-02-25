@@ -5,6 +5,8 @@ import yaml
 
 from .cmor_mixer import cmor_run_subtool
 
+from ..yamltools.combine_yamls_script import consolidate_yamls
+
 def read_yaml_data(yamlfile = None):
     '''
     from string, open a file object and load/return yaml data under key 'cmor'
