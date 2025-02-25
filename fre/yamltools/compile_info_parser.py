@@ -1,11 +1,6 @@
 import os
 import yaml
 
-
-from .yaml_constructors import join_constructor
-yaml.add_constructor('!join', join_constructor)
-
-
 def get_compile_paths(full_path,loaded_yml):
     """
     Find and return the paths for the compile
@@ -19,9 +14,9 @@ def get_compile_paths(full_path,loaded_yml):
     return (py_path, cy_path)
 
 ## COMPILE CLASS ##
-class CompileYaml():
+class InitCompileYaml():
     """ class holding routines for initalizing compilation yamls """
-    def __init__(self,yamlfile,platform,target):#,join_constructor):
+    def __init__(self,yamlfile,platform,target,join_constructor):
         """
         Process to combine yamls applicable to compilation
         """
@@ -30,6 +25,9 @@ class CompileYaml():
         self.namenopath = self.yml.split("/")[-1].split(".")[0]
         self.platform = platform
         self.target = target
+
+        # Register tag handler
+        yaml.add_constructor('!join', join_constructor)
 
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)

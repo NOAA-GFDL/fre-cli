@@ -7,20 +7,18 @@ from pathlib import Path
 import logging
 fre_logger = logging.getLogger(__name__)
 
-#import pprint
-
-from .yaml_constructors import join_constructor
-yaml.add_constructor('!join', join_constructor)
+import pprint
+#from .pp_info_parser import experiment_check as experiment_check
 
 
-def experiment_check(mainyaml_dir, experiment, loaded_yaml):
+def experiment_check(mainyaml_dir,experiment,loaded_yaml):
     """
     Check that the experiment given is an experiment listed in the model yaml.
     Extract experiment specific information and file paths.
     Arguments:
-    mainyaml_dir (required) : model yaml file directory
-    experiment   (required) : string representing an experiment name
-    loaded_yaml  (required) : yaml data object
+    mainyaml_dir    :  model yaml file
+    comb            :  combined yaml file name
+    experiment      :  experiment name
     """
     # Check if exp name given is actually valid experiment listed in combined yaml
     exp_list = []
@@ -40,39 +38,53 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
             if expyaml is None:
                 raise ValueError("No experiment yaml path given!")
 
-            ey = None
+            ey_path=[]
             for e in expyaml:
-                ey_check = Path(
-                    os.path.join(
-                        mainyaml_dir, e ) )                
-
-                if not ey_check.exists():
+                if not Path(os.path.join(mainyaml_dir,e)).exists():
                     raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
 
-                ey = ey_check
-                break
+                ey=Path(os.path.join(mainyaml_dir,e))
+                ey_path.append(ey)
 
-            return ey
+
+
+            ay_path = None
+
+            analysisyaml=i.get("analysis")
+            if analysisyaml is not None:
+                ay_path = []
+                for a in analysisyaml:
+                    # prepend the directory containing the yaml
+                    if not Path(os.path.join(mainyaml_dir, a)).exists():
+                        raise ValueError("Incorrect analysis yaml path given; does not exist.")
+                    ay=Path(os.path.join(mainyaml_dir,a))
+                    ay_path.append(ay)
+
+
+            return (ey_path,ay_path)
 
 ## CMOR CLASS ##
-class CMORYaml():
+class InitCMORYaml():
     """ class holding routines for initalizing cmor yamls """
 
-    def __init__(self,yamlfile,experiment,platform,target):#,join_constructor):
+    def __init__(self,yamlfile,experiment,platform,target,join_constructor):
         """
         Process to combine the applicable yamls for post-processing
         """
-        fre_logger.info('initializing a CMORYaml object')
+        fre_logger.info('initializing a cmor yaml object')
         self.yml = yamlfile
         self.name = experiment
         self.platform = platform
         self.target = target
 
+        # Regsiter tag handler
+        yaml.add_constructor('!join', join_constructor)
+
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Create combined pp yaml
-        fre_logger.info("CMORYaml initialized!")
+        #fre_logger.info("Combining yaml files into one dictionary: ")
 
     def __repr__(self):
         ''' return text representation of object '''
@@ -100,8 +112,7 @@ class CMORYaml():
         yaml_content += model_content
 
         # Load string as yaml
-        yml = yaml.load(yaml_content,
-                        Loader = yaml.Loader)
+        yml=yaml.load(yaml_content,Loader=yaml.Loader)
 
         # Return the combined string and loaded yaml
         fre_logger.info(f"   model yaml: {self.yml}")
@@ -113,66 +124,138 @@ class CMORYaml():
         If more than 1 pp yaml defined, return a list of paths.
         """
         # Experiment Check
-        ey_path = experiment_check( self.mainyaml_dir, self.name,
-                                    loaded_yaml )
-        fre_logger.info(f'ey_path = {ey_path}')
-        if ey_path is None:
-            raise ValueError('ey_path is none!')
+        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,loaded_yaml)
 
-        cmor_yamls = []
-        with open(ey_path,'r') as eyp:
-            exp_content = eyp.read()
+        pp_yamls = []
+        ## COMBINE EXPERIMENT YAML INFO
+        # If only 1 pp yaml defined, combine with model yaml
+        if ey_path is not None and len(ey_path) == 1:
+            #expyaml_path = os.path.join(mainyaml_dir, i)
+            with open(ey_path,'r') as eyp:
+                exp_content = eyp.read()
+
             exp_info = yaml_content + exp_content
-            #fre_logger.info(f'exp_content = \n {exp_content}')
-            #fre_logger.info(f'exp_info = \n {exp_info}')
-            cmor_yamls.append(exp_info)
+            pp_yamls.append(exp_info)
+            fre_logger.info(f"   experiment yaml: {ey_path}")
 
-        #fre_logger.info(f'cmor_yamls = \n {cmor_yamls}')
-        #pprint.PrettyPrinter(indent=1).pprint(cmor_yamls)
+        # If more than 1 pp yaml listed
+        # (Must be done for aliases defined)
+        elif ey_path is not None and len(ey_path) > 1:
+            with open(ey_path[0],'r') as eyp0:
+                exp_content = eyp0.read() #string
 
-        return cmor_yamls
+            exp_info = yaml_content + exp_content
+            pp_yamls.append([exp_info])
 
-    def merge_cmor_yaml(self, cmor_list, loaded_yaml):
+            for i in ey_path[1:]:
+                with open(i,'r') as eyp:
+                    exp_content = eyp.read()
+
+                exp_info_i = yaml_content + exp_content
+                pp_yamls.append([exp_info_i])
+
+            return pp_yamls
+
+    def combine_analysis(self,yaml_content,loaded_yaml):
         """
-
+        Combine analysis yamls with the defined combined.yaml
+        If more than 1 analysis yaml defined, return a list of paths.
         """
-        if cmor_list is None:
-            raise ValueError('cmor_list is none and should not be!!!')
-        
-        ey_path = experiment_check( self.mainyaml_dir, self.name,
-                                    loaded_yaml )
+        # Experiment Check
+        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,loaded_yaml)
+
+        analysis_yamls = []
+        ## COMBINE EXPERIMENT YAML INFO
+        # If only 1 pp yaml defined, combine with model yaml
+        if ay_path is not None and len(ay_path) == 1:
+            #expyaml_path = os.path.join(mainyaml_dir, i)
+            with open(ay_path,'r') as ayp:
+                analysis_content = ayp.read()
+
+            analysis_info = yaml_content + analysis_content
+            analysis_yamls.append(analysis_info)
+            fre_logger.info(f"   analysis yaml: {ay_path}")
+
+        # If more than 1 pp yaml listed
+        # (Must be done for aliases defined)
+        elif ay_path is not None and len(ay_path) > 1:
+            with open(ay_path[0],'r') as ayp0:
+                analysis_content = ayp0.read()
+
+            analysis_info = yaml_content + analysis_content
+            analysis_yamls.append([analysis_info])
+
+            for i in ay_path[1:]:
+                with open(i,'r') as ayp:
+                    analysis_content = ayp.read()
+
+                analysis_info_i = yaml_content + analysis_content
+                analysis_yamls.append([analysis_info_i])
+
+            return analysis_yamls
+
+    def merge_multiple_yamls(self, pp_list, analysis_list, loaded_yaml):
+        """
+        Merge separately combined post-processing and analysis
+        yamls into fully combined yaml (without overwriting like sections).
+        """
+        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,loaded_yaml)
+
         result = {}
 
-        yml_cmor = "".join(cmor_list)
-        result.update(
-            yaml.load(
-                yml_cmor, Loader = yaml.Loader ))
-        #fre_logger.info(f"   experiment yaml: {exp}")
+        # If more than one post-processing yaml is listed, update
+        # dictionary with content from 1st yaml in list
+        # Looping through rest of yamls listed, compare key value pairs.
+        # If instance of key is a dictionary in both result and loaded
+        # yamlfile, update the key in result to
+        # include the loaded yaml file's value.
+        if pp_list is not None and len(pp_list) > 1:
+            yml_pp = "".join(pp_list[0])
+            result.update(yaml.load(yml_pp,Loader=yaml.Loader))
+            #fre_logger.info(f"   experiment yaml: {exp}")
 
-        for i in cmor_list[1:]:
-            cmor_list_to_string_concat = "".join(i)
-            yf = yaml.load(cmor_list_to_string_concat,
-                           Loader = yaml.Loader)
-            
-            for key in result:
-                
-                if key not in yf:
-                    continue
-                
-                if all( [ isinstance(result[key], dict),
-                          isinstance(yf[key], dict),
-                          key == "postprocess" ] ) :
-                        
-                    result['postprocess']["components"] += \
-                        yf['postprocess']["components"] 
-                        
-                    if 'components' in result['postprocess']:
-                        result['postprocess']["components"] += \
-                            result[key]["components"]
-                                                                                    
-        if ey_path is not None:            
-            exp = str(ey_path).rsplit('/', maxsplit=1)[-1]
-            fre_logger.info(f"   experiment yaml: {exp}")
+            for i in pp_list[1:]:
+                pp_list_to_string_concat = "".join(i)
+                yf = yaml.load(pp_list_to_string_concat,Loader=yaml.Loader)
+                for key in result:
+                    if key in yf:
+                        if isinstance(result[key],dict) and isinstance(yf[key],dict):
+                            if key == "postprocess":
+                                result[key]["components"] = yf[key]["components"] + result[key]["components"]
+        # If only one post-processing yaml listed, do nothing
+        # (already combined in 'combine_experiments' function)
+        elif pp_list is not None and len(pp_list) == 1:
+            pass
+
+        # If more than one analysis yaml is listed, update dictionary with content from 1st yaml
+        # Looping through rest of yamls listed, compare key value pairs.
+        # If instance of key is a dictionary in both result and loaded yamlfile, update the key
+        # in result to include the loaded yaml file's value.
+        if analysis_list is not None and len(analysis_list) > 1:
+            yml_analysis = "".join(analysis_list[0])
+            result.update(yaml.load(yml_analysis,Loader=yaml.Loader))
+
+            for i in analysis_list[1:]:
+               analysis_list_to_string_concat = "".join(i)
+               yf = yaml.load(analysis_list_to_string_concat,Loader=yaml.Loader)
+               for key in result:
+                   if key in yf:
+                       if isinstance(result[key],dict) and isinstance(yf[key],dict):
+                           if key == "analysis":
+                               result[key] = yf[key] | result[key]
+        # If only one analysis yaml listed, do nothing
+        # (already combined in 'combine_analysis' function)
+        elif analysis_list is not None and len(analysis_list) == 1:
+            pass
+
+        if ey_path is not None:
+            for i in ey_path:
+                exp = str(i).rsplit('/', maxsplit=1)[-1]
+                fre_logger.info(f"   experiment yaml: {exp}")
+        if ay_path is not None:
+            for i in ay_path:
+                analysis = str(i).rsplit('/', maxsplit=1)[-1]
+                fre_logger.info(f"   analysis yaml: {analysis}")
 
         return result
 
@@ -184,14 +267,10 @@ class CMORYaml():
         # Clean the yaml
         # If keys exists, delete:
         keys_clean=["fre_properties", "shared", "experiments"]
-
         for kc in keys_clean:
             if kc in yml_dict.keys():
                 del yml_dict[kc]
 
-        ## Dump cleaned dictionary back into combined yaml file
-        #cleaned_yaml = yaml.safe_dump(yml_dict,
-        #                              default_flow_style = False,
-        #                              sort_keys = False)
-        
+        # Dump cleaned dictionary back into combined yaml file
+        #cleaned_yaml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
         return yml_dict

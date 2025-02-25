@@ -34,9 +34,11 @@ def test_setup_test_files(capfd):
     assert not Path(COPIED_NC_FILEPATH).exists()
 
     shutil.copy(Path(ORIGINAL_NC_FILEPATH), Path(COPIED_NC_FILEPATH))
+
     assert (Path(COPIED_NC_FILEPATH).exists())
 
     out, err = capfd.readouterr()
+
 
 
 # fre cmor

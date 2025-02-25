@@ -13,8 +13,6 @@ import glob
 
 import pytest
 
-from fre.cmor import cmor_mixer
-cmor_mixer.DEBUG_MODE_RUN_ONE = True
 from fre.cmor import cmor_run_subtool
 
 # global consts for these tests, with no/trivial impact on the results

@@ -3,12 +3,8 @@ import logging
 fre_logger = logging.getLogger(__name__)
 
 import yaml
-
 from pathlib import Path
 import pprint
-
-from .yaml_constructors import join_constructor
-yaml.add_constructor('!join', join_constructor)
 
 def experiment_check(mainyaml_dir,experiment,loaded_yaml):
     """
@@ -61,9 +57,9 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
             return (ey_path,ay_path)
 
 ## PP CLASS ##
-class PPYaml():
+class InitPPYaml():
     """ class holding routines for initalizing post-processing yamls """
-    def __init__(self,yamlfile,experiment,platform,target):#, j_constructor = join_constructor):
+    def __init__(self,yamlfile,experiment,platform,target,join_constructor):
         """
         Process to combine the applicable yamls for post-processing
         """
@@ -72,8 +68,8 @@ class PPYaml():
         self.platform = platform
         self.target = target
 
-        ## Regsiter tag handler
-        #yaml.add_constructor('!join', join_constructor)
+        # Regsiter tag handler
+        yaml.add_constructor('!join', join_constructor)
 
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)
