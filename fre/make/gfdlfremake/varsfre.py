@@ -27,8 +27,8 @@ class frevars():
 ## \param self The frevars object
 ## \param y The model yaml file name
   def __init__(self,y):
-    with open(y, 'r') as file:
-      self.modelyaml = yaml.safe_load(file)
+    self.modelyaml = y # no need to load - already in dictionary format
+
 ## Substitutes fre variables with the format $(variable) into the input string
 ## \string The string that contains the variables
 ## \returns String with the fre variables filled in

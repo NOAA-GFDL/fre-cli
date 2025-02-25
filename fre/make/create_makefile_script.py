@@ -23,16 +23,20 @@ def makefile_create(yamlfile, platform, target):
 
     combined = Path(f"combined-{name}.yaml")
 
-    ## If combined yaml exists, note message of its existence
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined, yml, platform, target)
+    # Combine model, compile, and platform yamls
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined)
+    fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined, freVars)
-    fremakeYaml = modelYaml.getCompileYaml()
+    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    model_yaml = yamlfre.freyaml(full_combined,fre_vars)
+    fremake_yaml = model_yaml.getCompileYaml()
 
     fremakeBuildList = []
     ## Loop through platforms and targets
