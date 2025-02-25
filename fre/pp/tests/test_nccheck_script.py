@@ -29,7 +29,7 @@ def test_nccheck(capfd):
     Test the functionality of the nccheck tool
     """
 
-    result = ncc.check(ncgen_output,2,False)
+    result = ncc.check(ncgen_output,2)
 
     Path(ncgen_output).unlink()
 
