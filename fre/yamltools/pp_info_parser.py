@@ -127,13 +127,7 @@ class PPYaml():
         # If more than 1 pp yaml listed
         # (Must be done for aliases defined)
         elif ey_path is not None and len(ey_path) > 1:
-            with open(ey_path[0],'r') as eyp0:
-                exp_content = eyp0.read() #string
-
-            exp_info = yaml_content + exp_content
-            pp_yamls.append([exp_info])
-
-            for i in ey_path[1:]:
+            for i in ey_path:
                 with open(i,'r') as eyp:
                     exp_content = eyp.read()
 
@@ -165,13 +159,7 @@ class PPYaml():
         # If more than 1 pp yaml listed
         # (Must be done for aliases defined)
         elif ay_path is not None and len(ay_path) > 1:
-            with open(ay_path[0],'r') as ayp0:
-                analysis_content = ayp0.read()
-
-            analysis_info = yaml_content + analysis_content
-            analysis_yamls.append([analysis_info])
-
-            for i in ay_path[1:]:
+            for i in ay_path:
                 with open(i,'r') as ayp:
                     analysis_content = ayp.read()
 
@@ -210,7 +198,7 @@ class PPYaml():
                     if key in yf:
                         if isinstance(result[key],dict) and isinstance(yf[key],dict):
                             if 'components' in result['postprocess']:
-                                result['postprocess']["components"] += yf['postprocess']["components"] + result[key]["components"]
+                                result['postprocess']["components"] += yf['postprocess']["components"]
                             else:
                                 result['postprocess']["components"] = yf['postprocess']["components"]
 

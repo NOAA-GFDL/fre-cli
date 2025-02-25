@@ -290,16 +290,17 @@ def test_combine_pp_yamls(tmp_path):
     # create temp directory
     tmp_path.mkdir(exist_ok=True)
 
-    # write model and pp yamls
+    # create model and pp yamls
     file_model = open(tmp_path / 'model.yaml', 'w')
     file_pp1 = open(tmp_path / 'pp1.yaml', 'w')
     file_pp2 = open(tmp_path / 'pp2.yaml', 'w')
     file_pp3 = open(tmp_path / 'pp3.yaml', 'w')
 
-    yaml.dump(model, file_model)
-    yaml.dump(pp1, file_pp1)
-    yaml.dump(pp2, file_pp2)
-    yaml.dump(pp3, file_pp3)
+    # write to/ dump info into created model and pp yamls
+    yaml.dump(model, file_model, default_flow_style=False, sort_keys=False)
+    yaml.dump(pp1, file_pp1, default_flow_style=False, sort_keys=False)
+    yaml.dump(pp2, file_pp2, default_flow_style=False, sort_keys=False)
+    yaml.dump(pp3, file_pp3, default_flow_style=False, sort_keys=False)
 
     # combine the yamls
     # output is a combined dictionary of necessary yaml info
@@ -307,6 +308,7 @@ def test_combine_pp_yamls(tmp_path):
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(output)
 
+    # compare dictionaries
     assert output == combined
 
 ## TO-DO:
