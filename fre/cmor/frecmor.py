@@ -20,11 +20,21 @@ def cmor_cli():
 
 
 @cmor_cli.command()
-@click.option("-y", "--yamlfile",
-              type=str, default = None,
-              help='YAML file to be used for parsing',
-              required=True)
-def yaml(yamlfile):
+@click.option("-y", "--yamlfile", type = str, 
+              help = 'YAML file to be used for parsing',
+              required = True )
+@click.option("-e", "--experiment", type = str,
+              help = "Experiment name",
+              required = True )
+@click.option("-p", "--platform", type = str,
+              help = "Platform name",
+              required = True )
+@click.option("-t", "--target", type = str,
+              help = "Target name",
+              required = True )
+@click.option("-o", "--output", type = str, default = None,
+              help = "Output file if desired", required = False)
+def yaml(yamlfile, experiment, target, platform, output):
     '''
     fre cmor yamler gonna yaml. 
     where your cmorization yaml gets yamled by the cmor yamler. 
@@ -36,11 +46,15 @@ def yaml(yamlfile):
     # if opt_var_name specified, forget the list.
     if yamlfile is None:
         raise ValueError('I need a yamlfile!!!')
-
+    
     cmor_yaml_subtool(
         yamlfile = yamlfile
+        yamlfile = yamlfile,
+        exp_name = experiment,
+        target = target,
+        platform = platform,
+        output = output
     )
-
 
 @cmor_cli.command()
 @click.option("-l", "--varlist",
