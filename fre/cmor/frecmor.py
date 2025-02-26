@@ -130,8 +130,8 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name)
         json_table_config = table_config,
         json_exp_config = exp_config,
         outdir = outdir,
-        opt_var_name = opt_var_name
-        run_one_mode = run_one,
+        opt_var_name = opt_var_name,
+        run_one_mode = run_one
     )
 
 
