@@ -12,11 +12,10 @@ import shutil
 from pathlib import Path
 import click
 
-import yaml
 
-from .constructors import join_constructor
-yaml.add_constructor('!join', join_constructor)
-
+# this brings in the yaml module with the join_constructor
+# this is defined in the __init__
+from . import *
 from .helpers import yaml_load
 
 

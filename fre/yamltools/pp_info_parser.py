@@ -1,7 +1,10 @@
 import os
-import yaml
 from pathlib import Path
 import pprint
+# this brings in the yaml module with the join_constructor
+# this is defined in the __init__
+from . import *
+
 
 def experiment_check(mainyaml_dir,experiment,loaded_yaml):
     """
@@ -56,7 +59,7 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
 ## PP CLASS ##
 class InitPPYaml():
     """ class holding routines for initalizing post-processing yamls """
-    def __init__(self,yamlfile,experiment,platform,target,join_constructor):
+    def __init__(self,yamlfile,experiment,platform,target):
         """
         Process to combine the applicable yamls for post-processing
         """
@@ -64,9 +67,6 @@ class InitPPYaml():
         self.name = experiment
         self.platform = platform
         self.target = target
-
-        # Regsiter tag handler
-        yaml.add_constructor('!join', join_constructor)
 
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)

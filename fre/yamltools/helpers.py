@@ -1,5 +1,8 @@
 ''' this holds functions widely used across various parts of fre/yamltools '''
-import yaml
+
+# this brings in the yaml module with the join_constructor
+# this is defined in the __init__
+from . import *
 
 def yaml_load(yamlfile):
     """

@@ -3,10 +3,10 @@ import shutil
 
 from pathlib import Path
 import click
-import yaml
-from .constructors import join_constructor
-yaml.add_constructor('!join', join_constructor)
 
+# this brings in the yaml module with the join_constructor
+# this is defined in the __init__
+from . import *
 from .helpers import output_yaml
 
 import fre.yamltools.compile_info_parser as cip
@@ -97,7 +97,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
     combined yaml for compilation or post-processing
     """
     if use == "compile":
-        combined = cip.InitCompileYaml(yamlfile, platform, target, join_constructor)
+        combined = cip.InitCompileYaml(yamlfile, platform, target)
 
         if output is None :
             yml_dict = get_combined_compileyaml(combined)
@@ -106,7 +106,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
             print(f"Combined yaml file located here: {os.getcwd()}/{output}")
 
     elif use =="pp":
-        combined = ppip.InitPPYaml(yamlfile, experiment, platform, target, join_constructor)
+        combined = ppip.InitPPYaml(yamlfile, experiment, platform, target)
 
         if output is None:
             yml_dict = get_combined_ppyaml(combined,experiment)
