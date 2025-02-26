@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 def makefile_create(yamlfile, platform, target):
     """
@@ -21,7 +21,7 @@ def makefile_create(yamlfile, platform, target):
     yml = yamlfile
     name = yamlfile.split(".")[0]
 
-    combined = Path(f"combined-{name}.yaml")
+#    combined = Path(f"combined-{name}.yaml")
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yml,
@@ -35,8 +35,8 @@ def makefile_create(yamlfile, platform, target):
     fre_vars = varsfre.frevars(full_combined)
 
     ## Open the yaml file, validate the yaml, and parse as fremake_yaml
-    model_yaml = yamlfre.freyaml(full_combined,fre_vars)
-    fremake_yaml = model_yaml.getCompileYaml()
+    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
+    fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
     ## Loop through platforms and targets

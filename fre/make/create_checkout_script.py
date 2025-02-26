@@ -8,9 +8,6 @@ import subprocess
 import logging
 fre_logger = logging.getLogger(__name__)
 
-
-import sys
-
 import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
@@ -30,9 +27,9 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
         pc = " &"
 
     if verbose:
-        fre_logger.setLevel(level = logging.INFO)
+        fre_logger.setLevel(level = logging.DEBUG)
     else:
-        fre_logger.setLevel(level = logging.ERROR)
+        fre_logger.setLevel(level = logging.INFO)
 
     src_dir="src"
     checkout_script_name = "checkout.sh"
@@ -95,7 +92,6 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                 if run:
                     fre_checkout.run()
                 else:
-
                     return
 
             else:
@@ -108,7 +104,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                                       "\nTry removing test folder: " + platform["modelRoot"] +"\n")
 
                 else:
-                    return #0 #sys.exit()
+                    return
 
         else:
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
