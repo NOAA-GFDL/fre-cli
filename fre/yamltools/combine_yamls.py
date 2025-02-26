@@ -11,24 +11,16 @@ import shutil
 
 from pathlib import Path
 import click
+
 import yaml
 
-def join_constructor(loader, node):
-    """
-    Allows FRE properties defined
-    in main yaml to be concatenated.
-    """
-    seq = loader.construct_sequence(node)
-    return ''.join([str(i) for i in seq])
+from .constructors import join_constructor
+yaml.add_constructor('!join', join_constructor)
 
-def yaml_load(yamlfile):
-    """
-    Load the yamlfile
-    """
-    with open(yamlfile, 'r') as yf:
-        y = yaml.load(yf,Loader=yaml.Loader)
+from .helpers import yaml_load
 
-    return y
+
+
 
 def get_compile_paths(mainyaml_dir,comb):
     """
@@ -125,9 +117,6 @@ class init_compile_yaml():
         self.platform = platform
         self.target = target
 
-        # Register tag handler
-        yaml.add_constructor('!join', join_constructor)
-
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)
 
@@ -220,9 +209,6 @@ class init_pp_yaml():
         self.name = experiment
         self.platform = platform
         self.target = target
-
-        # Regsiter tag handler
-        yaml.add_constructor('!join', join_constructor)
 
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)
@@ -490,8 +476,6 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use):
     Depending on `use` argument passed, either create the final
     combined yaml for compilation or post-processing
     """
-    # Regsiter tag handler
-    yaml.add_constructor('!join', join_constructor)
 
     # Path to the main model yaml
     mainyaml_dir = os.path.dirname(yamlfile)

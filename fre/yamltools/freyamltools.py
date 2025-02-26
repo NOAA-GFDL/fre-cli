@@ -1,4 +1,4 @@
-''' fre yamltools '''
+''' click entry-point to 'fre yamltools' calls'''
 
 import click
 from fre.yamltools import combine_yamls_script

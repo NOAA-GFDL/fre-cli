@@ -4,26 +4,15 @@ import shutil
 from pathlib import Path
 import click
 import yaml
+from .constructors import join_constructor
+yaml.add_constructor('!join', join_constructor)
+
+from .helpers import output_yaml
+
 import fre.yamltools.compile_info_parser as cip
 import fre.yamltools.pp_info_parser as ppip
 import pprint
 
-def join_constructor(loader, node):
-    """
-    Allows FRE properties defined
-    in main yaml to be concatenated.
-    """
-    seq = loader.construct_sequence(node)
-    return ''.join([str(i) for i in seq])
-
-def output_yaml(cleaned_yaml,experiment,output):
-    """
-    Write out the combined yaml dictionary info
-    to a file if --output is specified
-    """
-    filename = output
-    with open(filename,'w') as out:
-        out.write(yaml.dump(cleaned_yaml,default_flow_style=False,sort_keys=False))
 
 ## Functions to combine the yaml files ##
 def get_combined_compileyaml(comb,output=None):
