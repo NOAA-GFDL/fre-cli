@@ -78,7 +78,7 @@ TEST_CMOR_YAML_PATH=f"{ROOTDIR}/fre/yamltools/tests/AM5_example/cmor_yamls/cmor.
 
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml -y '''
-    pytest.xfail('under construction / being actively developed')
+    pytest.xfail('under construction / being actively developed') #TODO
     
     # FYI
     indir = f'{ROOTDIR}/ocean_sos_var_file'
@@ -95,7 +95,7 @@ def test_cli_fre_cmor_yaml_case1():
         f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199308.nc"
 
 
-    result = runner.invoke(fre.fre, args=["cmor", "yaml", "-y", TEST_YAML_PATH])
+    result = runner.invoke(fre.fre, args=["cmor", "yaml", "--run_one", "-y", TEST_YAML_PATH])
 
 
     assert all ( [ result.exit_code == 0,
@@ -148,7 +148,7 @@ def test_cli_fre_cmor_run_case1(capfd):
         Path(full_outputfile).unlink()
 
     #click.echo('')
-    result = runner.invoke(fre.fre, args = ["cmor", "run",
+    result = runner.invoke(fre.fre, args = ["cmor", "run", "--run_one",
                                             "--indir", indir,
                                             "--varlist", varlist,
                                             "--table_config", table_config,
@@ -188,7 +188,7 @@ def test_cli_fre_cmor_run_case2(capfd):
         Path(full_outputfile).unlink()
 
     #click.echo('')
-    result = runner.invoke(fre.fre, args = ["cmor", "run",
+    result = runner.invoke(fre.fre, args = ["cmor", "run", "--run_one",
                                             "--indir", indir,
                                             "--varlist", varlist,
                                             "--table_config", table_config,

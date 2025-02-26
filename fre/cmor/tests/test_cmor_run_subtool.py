@@ -4,8 +4,8 @@ import shutil
 from pathlib import Path
 from datetime import date
 
-from fre.cmor import cmor_mixer
-cmor_mixer.DEBUG_MODE_RUN_ONE = True
+#from fre.cmor import cmor_mixer
+#cmor_mixer.DEBUG_MODE_RUN_ONE = True
 from fre.cmor import cmor_run_subtool
 
 
@@ -98,7 +98,8 @@ def test_fre_cmor_run_subtool_case1(capfd):
         json_var_list = VARLIST,
         json_table_config = TABLE_CONFIG,
         json_exp_config = EXP_CONFIG,
-        outdir = OUTDIR
+        outdir = OUTDIR,
+        run_one_mode = True
     )
 
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
@@ -218,7 +219,8 @@ def test_fre_cmor_run_subtool_case2(capfd):
         json_var_list = VARLIST_DIFF,
         json_table_config = TABLE_CONFIG,
         json_exp_config = EXP_CONFIG,
-        outdir = OUTDIR
+        outdir = OUTDIR,
+        run_one_mode = True
     )
 
     # check we ran on the right input file.
