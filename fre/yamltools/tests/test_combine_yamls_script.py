@@ -309,3 +309,25 @@ def test_combine_pp_yamls(tmp_path):
 
 ## TO-DO:
 # - add tests for if output option is defined
+def test_combine_cmor_yaml():
+    output_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/FOO_cmor.yaml"
+    if Path(output_combined_cmor_yaml).exists():
+        Path(output_combined_cmor_yaml).unlink()
+    cy.consolidate_yamls( yamlfile = 'fre/yamltools/tests/AM5_example/am5.yaml',        
+                          experiment = 'c96L65_am5f7b12r1_amip',      
+                          platform = 'ncrc5.intel',        
+                          target = 'prod-openmp',          
+                          use = 'cmor',         
+                          output = output_combined_cmor_yaml )
+    assert Path(output_combined_cmor_yaml).exists()
+
+    compare_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/COMPARE_TEST_OUTPUT_cmor.yaml"
+    assert Path(compare_combined_cmor_yaml).exists()
+    comp_file_output = open(compare_combined_cmor_yaml, 'r')
+    comp_file_output_data = yaml.load(comp_file_output, Loader=yaml.SafeLoader)
+
+
+    file_output = open(output_combined_cmor_yaml, 'r')
+    file_output_data = yaml.load(file_output, Loader=yaml.SafeLoader)
+
+    assert file_output_data == comp_file_output_data

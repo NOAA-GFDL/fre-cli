@@ -42,9 +42,11 @@ def test_cli_fre_yamltools_combine_opt_dne():
 
 def test_cli_fre_yamltools_combine_cmoryaml():
     ''' fre yamltools combine-yamls for cmorization'''
-    if Path('FOO_cmor.yaml').exists():
-        Path('FOO_cmor.yaml').unlink()
+    FAKE_AM5_EX_DIR = "fre/yamltools/tests/AM5_example"
     output_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/FOO_cmor.yaml"
+    if Path(output_combined_cmor_yaml).exists():
+        Path(output_combined_cmor_yaml).unlink()
+
     result = runner.invoke(fre.fre, args=[ "yamltools", "combine-yamls",
                                            "-y", "fre/yamltools/tests/AM5_example/am5.yaml",
                                            "-e", "c96L65_am5f7b12r1_amip",
