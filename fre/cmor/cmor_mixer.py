@@ -42,7 +42,6 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         json_table_config: string, representing path to json configuration file holding variable names for a given table.
                            proj_table_vars is read from this file, but both are passed anyways.
     '''
-    fre_logger.info('\n\n-------------------------- START rewrite_netcdf_file_var call -----')
     fre_logger.info( "input data: " )
     fre_logger.info(f"    local_var   =  {local_var}" )
     fre_logger.info(f"    target_var = {target_var}")
@@ -545,7 +544,6 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         json_table_config: see cmor_run_subtool arg desc
 
     '''
-    fre_logger.info('\n\n-------------------------- START cmorize_target_var_files call -----')
     fre_logger.info(f"local_var = {local_var} to be used for file-targeting.\n"
           f"    target_var = {target_var} to be used for reading the data \n"
            "    from the file\n"
