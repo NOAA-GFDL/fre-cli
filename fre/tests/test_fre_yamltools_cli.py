@@ -8,6 +8,8 @@ from fre import fre
 
 runner = CliRunner()
 
+import yaml
+
 def test_cli_fre_yamltools():
     ''' fre yamltools '''
     result = runner.invoke(fre.fre, args=["yamltools"])
@@ -42,12 +44,27 @@ def test_cli_fre_yamltools_combine_cmoryaml():
     ''' fre yamltools combine-yamls for cmorization'''
     if Path('FOO_cmor.yaml').exists():
         Path('FOO_cmor.yaml').unlink()
-    result = runner.invoke(fre.fre, args=["yamltools", "combine-yamls",
-                                          "-y", "fre/yamltools/tests/AM5_example/am5.yaml",
-                                          "-e", "c96L65_am5f7b12r1_amip",
-                                          "-p", "ncrc5.intel",
-                                          "-t", "prod-openmp",
-                                          "--use", "cmor", "--output", "FOO_cmor.yaml"    ])
+    output_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/FOO_cmor.yaml"
+    result = runner.invoke(fre.fre, args=[ "yamltools", "combine-yamls",
+                                           "-y", "fre/yamltools/tests/AM5_example/am5.yaml",
+                                           "-e", "c96L65_am5f7b12r1_amip",
+                                           "-p", "ncrc5.intel",
+                                           "-t", "prod-openmp",
+                                           "--use", "cmor", "--output", output_combined_cmor_yaml ])
     assert all ( [ result.exit_code == 0,
-                   Path('FOO_cmor.yaml').exists()
+                   Path(output_combined_cmor_yaml).exists()
     ] )
+
+    compare_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/COMPARE_TEST_OUTPUT_cmor.yaml"
+    assert Path(compare_combined_cmor_yaml).exists()
+    comp_file_output = open(compare_combined_cmor_yaml, 'r')
+    comp_file_output_data = yaml.load(comp_file_output, Loader=yaml.SafeLoader)
+
+
+    file_output = open(output_combined_cmor_yaml, 'r')
+    file_output_data = yaml.load(file_output, Loader=yaml.SafeLoader)
+
+    assert file_output_data == comp_file_output_data
+
+
+
