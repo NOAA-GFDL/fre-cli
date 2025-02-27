@@ -68,6 +68,7 @@ def _case_function(testfile_dir, table, opt_var_name, grid):
             json_table_config = table_file,
             json_exp_config = EXP_CONFIG_DEFAULT,
             outdir = OUTDIR,
+            run_one_mode = True,
             opt_var_name = opt_var_name
         )
         some_return = 0
