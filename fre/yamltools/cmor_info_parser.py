@@ -9,8 +9,12 @@ fre_logger = logging.getLogger(__name__)
 
 #import pprint
 
-from .yaml_constructors import join_constructor
-yaml.add_constructor('!join', join_constructor)
+#from .yaml_constructors import join_constructor
+#yaml.add_constructor('!join', join_constructor)
+
+# this brings in the yaml module with the join_constructor
+# this is defined in the __init__
+from . import *
 
 
 def experiment_check(mainyaml_dir, experiment, loaded_yaml):

@@ -4,17 +4,63 @@ import shutil
 from pathlib import Path
 import click
 
+import logging
+fre_logger = logging.getLogger(__name__)
+
 # this brings in the yaml module with the join_constructor
 # this is defined in the __init__
 from . import *
 from .helpers import output_yaml
 
-import fre.yamltools.compile_info_parser as cip
-import fre.yamltools.pp_info_parser as ppip
+from . import cmor_info_parser as cmip
+from . import compile_info_parser as cip
+from . import pp_info_parser as ppip
 import pprint
 
 
 ## Functions to combine the yaml files ##
+def get_combined_cmoryaml(CMORYaml, experiment, output = None):
+    """
+    Combine the model, experiment, and cmor yamls
+    Arguments:
+        CMORYaml (required): combined cmor-yaml object
+        output   (optional): string/Path representing target output file to write yamlfile to
+    """
+
+    # Merge model into combined file
+    try:
+        fre_logger.info('calling CMORYaml.combine_model() for yaml_content and loaded_yaml')
+        yaml_content, loaded_yaml = CMORYaml.combine_model()
+    except:
+        raise ValueError("CMORYaml.combine_model failed")
+
+    # Merge cmor experiment yamls into combined file
+    try:
+        comb_cmor_updated_list = CMORYaml.combine_experiment( yaml_content,
+                                                              loaded_yaml   )
+    except:
+        raise ValueError("CMORYaml.combine_experiment failed")
+
+
+    # Merge model/cmor yamls if more than 1 is defined
+    # (without overwriting the yaml)
+    try:
+        full_cmor_yaml = CMORYaml.merge_cmor_yaml( comb_cmor_updated_list,
+                                                   loaded_yaml                 )
+    except: 
+        raise ValueError("CMORYaml.merge_cmor_yaml failed")
+
+    # Clean the yaml
+    cleaned_yaml = CMORYaml.clean_yaml( full_cmor_yaml )
+    fre_logger.info("Combined cmor-yaml information cleaned+saved as dictionary")
+
+    # OUTPUT IF NEEDED
+    if output is not None:
+        output_yaml( cleaned_yaml, experiment, output )
+        fre_logger.info(f"Combined cmor-yaml information saved to {output}")
+
+    return cleaned_yaml
+
 def get_combined_compileyaml(comb,output=None):
     """
     Combine the model, compile, and platform yamls
@@ -45,7 +91,7 @@ def get_combined_compileyaml(comb,output=None):
     if output is not None:
         output_yaml(cleaned_yaml,experiment=None,output=output)
     else:
-        print("Combined yaml information saved as dictionary")
+        fre_logger.info("Combined yaml information saved as dictionary")
 
     return cleaned_yaml
 
@@ -87,7 +133,7 @@ def get_combined_ppyaml(comb,experiment,output=None):
     if output is not None:
         output_yaml(cleaned_yaml,experiment,output)
     else:
-        print("Combined yaml information saved as dictionary")
+        fre_logger.info("Combined yaml information saved as dictionary")
 
     return cleaned_yaml
 
@@ -103,7 +149,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
             yml_dict = get_combined_compileyaml(combined)
         else:
             yml_dict = get_combined_compileyaml(combined,output)
-            print(f"Combined yaml file located here: {os.getcwd()}/{output}")
+            fre_logger.info(f"Combined yaml file located here: {os.getcwd()}/{output}")
 
     elif use =="pp":
         combined = ppip.InitPPYaml(yamlfile, experiment, platform, target)
@@ -112,7 +158,11 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
             yml_dict = get_combined_ppyaml(combined,experiment)
         else:
             yml_dict = get_combined_ppyaml(combined,experiment,output)
-            print(f"Combined yaml file located here: {os.getcwd()}/{output}")
+            fre_logger.info(f"Combined yaml file located here: {os.getcwd()}/{output}")
+
+    elif use == "cmor":
+        CmorYaml = cmip.CMORYaml( yamlfile, experiment, platform, target )
+        yml_dict = get_combined_cmoryaml( CmorYaml, experiment, output )
 
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'") 
