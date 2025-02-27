@@ -60,8 +60,8 @@ def list_experiments_subtool(yamlfile):
     # Print experiment names
     c = yaml_load(combined)
 
-    
-    ## is this, perhaps, the one spot where print is preferred? 
+
+    ## is this, perhaps, the one spot where print is preferred?
     #fre_logger.info("\nPost-processing experiments available:")
     #for i in c.get("experiments"):
     #    fre_logger.info(f'   - {i.get("name")}')

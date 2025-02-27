@@ -67,6 +67,3 @@ def test_cli_fre_yamltools_combine_cmoryaml():
     file_output_data = yaml.load(file_output, Loader=yaml.SafeLoader)
 
     assert file_output_data == comp_file_output_data
-
-
-

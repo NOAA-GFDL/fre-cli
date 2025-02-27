@@ -6,14 +6,14 @@ from .cmor_mixer import cmor_run_subtool
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 
 def cmor_yaml_subtool(yamlfile = None,
-                      exp_name = None, platform = None, target = None, 
+                      exp_name = None, platform = None, target = None,
                       output = None, run_one_mode = False):
     '''
-    A routine that cmorizes targets based on configuration stored in the model yaml. The model yaml 
+    A routine that cmorizes targets based on configuration stored in the model yaml. The model yaml
     points to various cmor-yaml configurations. The two levels of information are combined, their fields
     are parsed to de-reference anchors and call fre's internal yaml constructor functions.
         yamlfile (required): string or Path to a model-yaml
-        exp_name (required): string representing an experiment name. it must be present in the list of 
+        exp_name (required): string representing an experiment name. it must be present in the list of
                              experiments within the targeted yamlfile
         platform (required): string representing platform target (e.g. ncrc4.intel)
         target   (required): string representing compilation target (e.g. prod-openmp)
@@ -38,11 +38,11 @@ def cmor_yaml_subtool(yamlfile = None,
     # inbetween-logic to form args ----------------------
     # ---------------------------------------------------
     # give reading a shot
-    indir = None              
-    json_var_list = None      
-    json_table_config = None  
-    json_exp_config = None    
-    outdir = None             
+    indir = None
+    json_var_list = None
+    json_table_config = None
+    json_exp_config = None
+    outdir = None
 
     try:
         fre_logger.info('reading key/values from yamlfile...')
@@ -56,7 +56,7 @@ def cmor_yaml_subtool(yamlfile = None,
                          f'(cmor_yaml_subtool) yaml_data=\n{yaml_data}'      )
 
     # its ok if this one doesn't work out, not reqd anyway
-    opt_var_name = None                
+    opt_var_name = None
 
     try:
         opt_var_name = yaml_data['opt_var_name']

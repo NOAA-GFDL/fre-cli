@@ -3,7 +3,7 @@
 import click
 
 from . import cmor_find_subtool
-from . import cmor_run_subtool 
+from . import cmor_run_subtool
 from . import cmor_yaml_subtool
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
@@ -22,7 +22,7 @@ def cmor_cli():
 
 
 @cmor_cli.command()
-@click.option("-y", "--yamlfile", type = str, 
+@click.option("-y", "--yamlfile", type = str,
               help = 'YAML file to be used for parsing',
               required = True )
 @click.option("-e", "--experiment", type = str,
@@ -38,17 +38,17 @@ def cmor_cli():
               help = "Output file if desired", required = False)
 def yaml(yamlfile, experiment, target, platform, output):
     '''
-    fre cmor yamler gonna yaml. 
-    where your cmorization yaml gets yamled by the cmor yamler. 
+    fre cmor yamler gonna yaml.
+    where your cmorization yaml gets yamled by the cmor yamler.
     i yaml what i yaml and that's all that i aml
-    i could do this all day. 
+    i could do this all day.
     shoutout to my federal home PEOPLE.
     '''
 
     # if opt_var_name specified, forget the list.
     if yamlfile is None:
         raise ValueError('I need a yamlfile!!!')
-    
+
     cmor_yaml_subtool(
         yamlfile = yamlfile,
         exp_name = experiment,

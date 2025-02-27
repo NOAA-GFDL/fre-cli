@@ -67,5 +67,3 @@ echo "}" >> $OUTPUT_VARIABLE_LIST
 
 
 return
-
-

@@ -48,7 +48,7 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
             for e in expyaml:
                 ey_check = Path(
                     os.path.join(
-                        mainyaml_dir, e ) )                
+                        mainyaml_dir, e ) )
 
                 if not ey_check.exists():
                     raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
@@ -167,13 +167,13 @@ class CMORYaml():
                           key == "postprocess" ] ) :
 
                     result['postprocess']["components"] += \
-                        yf['postprocess']["components"] 
+                        yf['postprocess']["components"]
 
                     if 'components' in result['postprocess']:
                         result['postprocess']["components"] += \
                             result[key]["components"]
 
-        if ey_path is not None:            
+        if ey_path is not None:
             exp = str(ey_path).rsplit('/', maxsplit=1)[-1]
             fre_logger.info(f"   experiment yaml: {exp}")
 

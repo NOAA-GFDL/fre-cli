@@ -78,12 +78,12 @@ TEST_CMOR_YAML_PATH=f"{ROOTDIR}/fre/yamltools/tests/AM5_example/cmor_yamls/cmor.
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml -y '''
     pytest.xfail('under construction / being actively developed') #TODO
-    
+
     # FYI
     indir = f'{ROOTDIR}/ocean_sos_var_file'
     filename = 'reduced_ocean_monthly_1x1deg.199307-199308.sos.nc' # unneeded, this is mostly for reference
     full_inputfile=f"{indir}/{filename}"
-    
+
     # determined by cmor_run_subtool
     outdir = f'{ROOTDIR}/outdir'
     cmor_creates_dir = \
@@ -170,7 +170,7 @@ def test_cli_fre_cmor_run_case1(capfd):
 
 def test_cli_fre_cmor_run_case2(capfd):
     ''' fre cmor run, test-use case '''
-    
+
     # explicit inputs to tool
     indir = f'{ROOTDIR}/ocean_sos_var_file'
     varlist = f'{ROOTDIR}/varlist_local_target_vars_differ'

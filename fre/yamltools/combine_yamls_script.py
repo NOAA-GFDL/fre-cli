@@ -47,7 +47,7 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
     try:
         full_cmor_yaml = CMORYaml.merge_cmor_yaml( comb_cmor_updated_list,
                                                    loaded_yaml                 )
-    except: 
+    except:
         raise ValueError("CMORYaml.merge_cmor_yaml failed")
 
     # Clean the yaml
@@ -75,13 +75,13 @@ def get_combined_compileyaml(comb,output=None):
     # Merge compile into combined file to create updated yaml_content/yaml
     try:
         (yaml_content, loaded_yaml) = comb.combine_compile(yaml_content, loaded_yaml)
-    except: 
+    except:
         raise ValueError("ERR: Could not merge compile yaml information.")
 
     # Merge platforms.yaml into combined file
     try:
         (yaml_content,loaded_yaml) = comb.combine_platforms(yaml_content, loaded_yaml)
-    except: 
+    except:
         raise ValueError("ERR: Could not merge platform yaml information.")
 
     # Clean the yaml
@@ -123,7 +123,7 @@ def get_combined_ppyaml(comb,experiment,output=None):
         # Merge model/pp and model/analysis yamls if more than 1 is defined
         # (without overwriting the yaml)
         full_combined = comb.merge_multiple_yamls(comb_pp_updated_list, comb_analysis_updated_list,loaded_yaml)
-    except: 
+    except:
         raise ValueError("ERR: Could not merge multiple pp and analysis information together.")
 
     # Clean the yaml
@@ -137,7 +137,7 @@ def get_combined_ppyaml(comb,experiment,output=None):
 
     return cleaned_yaml
 
-def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
+def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
     """
     Depending on `use` argument passed, either create the final
     combined yaml for compilation or post-processing
@@ -165,7 +165,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
         yml_dict = get_combined_cmoryaml( CmorYaml, experiment, output )
 
     else:
-        raise ValueError("'use' value is not valid; must be 'compile' or 'pp'") 
+        raise ValueError("'use' value is not valid; must be 'compile' or 'pp'")
 
     return yml_dict
 # Use parseyaml function to parse created edits.yaml

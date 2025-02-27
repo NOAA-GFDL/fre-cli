@@ -315,7 +315,7 @@ class init_pp_yaml():
 
     def merge_multiple_yamls(self, pp_list, analysis_list):
         """
-        Merge separately combined post-processing and analysis 
+        Merge separately combined post-processing and analysis
         yamls into fully combined yaml (without overwriting).
         """
         result = {}
@@ -375,8 +375,8 @@ class init_pp_yaml():
 
     def remove_tmp_yamlfiles(self, exp_yamls, analysis_yamls):
         """
-        Clean up separately created model/pp experiment and 
-        model/analysis yamls. They are used for final combined 
+        Clean up separately created model/pp experiment and
+        model/analysis yamls. They are used for final combined
         yaml but not needed separately.
         """
         # Remove intermediate model_x_exp_yamls folder if it is not empty

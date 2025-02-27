@@ -785,7 +785,7 @@ def cmor_run_subtool( indir = None,
             run_one_mode
         )
 
-        if run_one_mode: 
+        if run_one_mode:
             fre_logger.warning('run_one_mode is True. breaking var_list loop')
             break
     return 0

@@ -313,11 +313,11 @@ def test_combine_cmor_yaml():
     output_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/FOO_cmor.yaml"
     if Path(output_combined_cmor_yaml).exists():
         Path(output_combined_cmor_yaml).unlink()
-    cy.consolidate_yamls( yamlfile = 'fre/yamltools/tests/AM5_example/am5.yaml',        
-                          experiment = 'c96L65_am5f7b12r1_amip',      
-                          platform = 'ncrc5.intel',        
-                          target = 'prod-openmp',          
-                          use = 'cmor',         
+    cy.consolidate_yamls( yamlfile = 'fre/yamltools/tests/AM5_example/am5.yaml',
+                          experiment = 'c96L65_am5f7b12r1_amip',
+                          platform = 'ncrc5.intel',
+                          target = 'prod-openmp',
+                          use = 'cmor',
                           output = output_combined_cmor_yaml )
     assert Path(output_combined_cmor_yaml).exists()
 
