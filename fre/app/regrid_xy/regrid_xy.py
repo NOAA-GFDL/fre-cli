@@ -24,7 +24,7 @@ def truncate_date(date, freq):
     """ truncates iso freq to iso date time """
     freq_in_date_format=freq_to_date_format(freq)
 
-    fre_logger.debug('cylc date --template '+freq_in_date_format+' '+date
+    fre_logger.debug('cylc date --template '+freq_in_date_format+' '+date)
     output =subprocess.Popen(["cylc", "cycle-point", "--template",
                               freq_in_date_format, date],
                               stdout = subprocess.PIPE)
