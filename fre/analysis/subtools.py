@@ -1,3 +1,5 @@
+""" holds subtool commands and related modules for 'fre analysis'  routines"""
+
 from pathlib import Path
 from subprocess import run
 from tempfile import TemporaryDirectory

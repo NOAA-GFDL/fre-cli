@@ -2,11 +2,22 @@
 Script combines the model yaml with exp, platform, and target to list experiment information.
 """
 
+#import logging
+#fre_logger = logging.getLogger(__name__)
+
 from pathlib import Path
-import yaml
+
+# this brings in the yaml module with the join_constructor
+# this is defined in the __init__
+from fre.yamltools import *
+
 import json
 from jsonschema import validate, ValidationError, SchemaError
+
+from fre.yamltools.helpers import yaml_load
+
 import fre.yamltools.combine_yamls as cy
+
 
 # To look into: ignore undefined alias error msg for listing?
 # Found this somewhere but don't fully understand yet
@@ -57,8 +68,6 @@ def list_platforms_subtool(yamlfile):
     """
     List the platforms available
     """
-    # Regsiter tag handler
-    yaml.add_constructor('!join', cy.join_constructor)
 
     e = yamlfile.split("/")[-1].split(".")[0]
     p = "None"
@@ -71,7 +80,7 @@ def list_platforms_subtool(yamlfile):
     quick_combine(yamlfile,p,t)
 
     # Print experiment names
-    yml = cy.yaml_load(f"{yamlpath}/{combined}")
+    yml = yaml_load(f"{yamlpath}/{combined}")
 
     # Validate the yaml
     validate_yaml(yml)

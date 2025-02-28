@@ -15,7 +15,7 @@ from .lazy_group import LazyGroup
 import logging
 fre_logger = logging.getLogger(__name__)
 FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
-MODE = 'x'
+#MODE = 'x'
 
 # versioning, turn xxxx.y into xxxx.0y
 version_unexpanded = importlib.metadata.version('fre-cli')
@@ -67,7 +67,7 @@ except IndexError:
 def fre(verbose, log_file):
     ''' entry point function to subgroup functions '''
     log_level=None
-    file_mode = None if log_file is None else MODE
+    #file_mode = None if log_file is None else MODE
     if verbose:
         log_level=logging.INFO
     else:

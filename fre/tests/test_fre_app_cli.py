@@ -80,7 +80,7 @@ def test_cli_fre_app_regrid_test_case_1(capfd):
         ex = [ "tar", "-C", t_rgxy.TEST_DIR, "-zxvf", t_rgxy.TAR_IN_DIR ]
         sp = subprocess.run( ex )
         assert all ( [ sp.returncode == 0,
-                       Path(IN_DIR).exists() ] )
+                       Path(t_rgxy.IN_DIR).exists() ] )
 
     # for the time being, still a little dependent on rose for configuration value passing
     if Path(os.getcwd()+'/rose-app-run.conf').exists():

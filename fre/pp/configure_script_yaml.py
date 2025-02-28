@@ -9,14 +9,13 @@
 
 import os
 import json
-import shutil
+
 from pathlib import Path
 from jsonschema import validate
 import yaml
 import metomi.rose.config
 
 import fre.yamltools.combine_yamls_script as cy
-import fre.yamltools.pp_info_parser as ppip
 
 ####################
 def yaml_load(yamlfile):

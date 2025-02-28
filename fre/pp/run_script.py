@@ -31,7 +31,7 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     # not interested in the confirmation? gb2work now
     if no_wait:
         return
-    
+
     # give the scheduler 30 seconds of peace before we hound it
     print("Workflow started; waiting 30 seconds to confirm")
     time.sleep(30)
@@ -40,11 +40,11 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     result = subprocess.run(
         ['cylc', 'scan', '--name', f"^{name}$"],
         capture_output = True ).stdout.decode('utf-8')
-    
+
     if not len(result):
         raise Exception('Cylc scheduler was started without error but is not running after 30 seconds')
 
     print(result)
-    
+
 if __name__ == "__main__":
     pp_run_subtool()

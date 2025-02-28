@@ -13,7 +13,6 @@ def print_data_minmax(ds_variable = None, desc = None):
     '''
     prints the min/max of numpy.ma.core.MaskedArray (ds_variable) and the name/description (desc) of the data
     '''
-    fre_logger.info('----------------------------------------------------------------------------------------------------------')
     try:
         fre_logger.info(f'info for \n'
               f'                    desc = {desc} \n {type(ds_variable)}')
@@ -22,7 +21,6 @@ def print_data_minmax(ds_variable = None, desc = None):
     except:
         fre_logger.warning(f'could not print min/max entries for desc = {desc}')
         pass
-    fre_logger.info('----------------------------------------------------------------------------------------------------------')
     return
 
 
@@ -201,7 +199,7 @@ def create_tmp_dir(outdir, json_exp_config = None):
                 os.makedirs(tmp_dir+'/'+outdir_from_exp_config, exist_ok = True)
             except: # ... but don't error out for lack of success here, not worth it. cmor can do the lift too.
                 fre_logger.info(f'attempting to create {outdir_from_exp_config} dir in tmp_dir targ did not work')
-                fre_logger.info( '                .... oh well! it was ust to try to avoid a warning anyways.... moving on')
+                fre_logger.info( '    ... attempt to avoid a toothless cmor warning failed... moving on')
                 pass
     except Exception as exc:
         raise OSError(f'problem creating tmp output directory {tmp_dir}. stop.') from exc
