@@ -121,7 +121,6 @@ def test_make_ncgen3_nc_inputs():
 
         assert all( [ sp.returncode == 0,
                       Path(ncgen3_output).exists() ] )
-        out, err = .readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
@@ -146,7 +145,6 @@ def test_make_ncgen_tile_nc_inputs():
 
             assert all( [sp.returncode == 0,
                          Path(ncgen_tile_i_nc_output).exists()] )
-            out, err = .readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
@@ -170,7 +168,6 @@ def test_make_ncgen_grid_spec_nc_inputs():
 
             assert all( [sp.returncode == 0,
                          Path(ncgen_grid_spec_i_nc_output).exists()] )
-            out, err = .readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
@@ -193,7 +190,6 @@ def test_make_hgrid_gold_input():
         sp = subprocess.run( ex , check = True )
 
         assert sp.returncode == 0
-        out, err = .readouterr()
 
         # now move the files...
         for i in range(1, 6+1):
@@ -205,7 +201,6 @@ def test_make_hgrid_gold_input():
 
             assert all( [sp.returncode == 0,
                          Path(grid_i_file_targ_loc).exists()] )
-            out, err = .readouterr()
 
 
 #@pytest.mark.skip(reason='debug')
@@ -338,7 +333,6 @@ def test_success_tar_grid_spec_regrid_xy():
         assert Path( WORK_YYYYMMDD_DIR + 'ocean_mosaic.nc' ).exists()
         assert Path( WORK_YYYYMMDD_DIR + 'ocean_static.nc' ).exists()
         assert Path( WORK_YYYYMMDD_DIR + 'ocean_topog.nc' ).exists()
-        out, err = .readouterr()
     assert True
 
 
