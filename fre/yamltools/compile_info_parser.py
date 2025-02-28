@@ -21,7 +21,7 @@ def get_compile_paths(full_path,loaded_yml):
 ## COMPILE CLASS ##
 class InitCompileYaml():
     """ class holding routines for initalizing compilation yamls """
-    def __init__(self,yamlfile,platform,target):#,join_constructor):
+    def __init__(self,yamlfile,platform,target):
         """
         Process to combine yamls applicable to compilation
         """

@@ -307,9 +307,11 @@ def test_combine_pp_yamls(tmp_path):
     # compare dictionaries
     assert output == combined
 
-## TO-DO:
-# - add tests for if output option is defined
 def test_combine_cmor_yaml():
+    """
+    Verify yaml combiner functionality by combining
+    a model yaml with a cmor yaml
+    """
     output_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/FOO_cmor.yaml"
     if Path(output_combined_cmor_yaml).exists():
         Path(output_combined_cmor_yaml).unlink()
