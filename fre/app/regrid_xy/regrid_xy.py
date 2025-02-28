@@ -5,6 +5,9 @@
   most valid input args to fregrid are valid in this script
 """
 
+import logging
+fre_logger = logging.getLogger(__name__)
+
 import subprocess
 import shutil
 import os
@@ -24,7 +27,7 @@ def truncate_date(date, freq):
     #in the shell version, this line simply gets run.
     #we will simply print this command to screen for now. TO DO (maybe we can work around it?)
     #not clear to me why piping to tr is necessary, doesnt seem to change output at all
-    #print('cylc date --template '+freq_in_date_format+' '+date+' | tr -d T')
+    #fre_logger.info('cylc date --template '+freq_in_date_format+' '+date+' | tr -d T')
     #output =subprocess.Popen(["cylc", "date", "--template", freq_in_date_format, date,
     #                          "|","tr","-d","T"],
     #                          stdout=subprocess.PIPE)
@@ -91,8 +94,8 @@ def check_interp_method( nc_variable, interp_method):
     if 'interp_method' not in attr_list:
         pass
     elif nc_variable.interp_method != interp_method:
-        print(f'WARNING: interp_method={interp_method} differs from what is in target_file')
-        print(f'WARNING: interp_method used may not be {interp_method}!')
+        fre_logger.info(f'WARNING: interp_method={interp_method} differs from what is in target_file')
+        fre_logger.info(f'WARNING: interp_method used may not be {interp_method}!')
 
 
 def check_per_component_settings(component_list, rose_app_cfg):
@@ -167,7 +170,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
     config_name = os.getcwd() #REMOVE ME TODO
     config_name += '/rose-app-run.conf'
     #config_name += '/rose-app.conf'
-    print(f'config_name = {config_name}')
+    fre_logger.info(f'config_name = {config_name}')
     try:
         rose_app_config = rose_cfg.load(config_name)
     except Exception as exc:
@@ -188,7 +191,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
                  begin     , tmp_dir       ,
                  remap_dir , source        ,
                  grid_spec , def_xy_interp  ]:
-        print( f'input_dir         = { input_dir        }\n' + \
+        fre_logger.info( f'input_dir         = { input_dir        }\n' + \
                f'output_dir        = { output_dir       }\n' + \
                f'begin             = { begin            }\n' + \
                f'tmp_dir           = { tmp_dir          }\n' + \
@@ -265,8 +268,8 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         do_regridding = \
             check_per_component_settings( \
                                           component_list, rose_app_config)
-        print(f'component_list = {component_list}')
-        print(f'do_regridding  = {do_regridding}')
+        fre_logger.info(f'component_list = {component_list}')
+        fre_logger.info(f'do_regridding  = {do_regridding}')
     else:
         do_regridding=[True]
 
@@ -274,7 +277,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         if not do_regridding[
                 component_list.index(component) ]:
             continue
-        print(f'\n\nregridding \nsource={source} for \ncomponent={component}\n')
+        fre_logger.info(f'\n\nregridding \nsource={source} for \ncomponent={component}\n')
 
         # mandatory per-component inputs, will error if nothing in rose config
         input_realm, interp_method, input_grid = None, None, None
@@ -287,7 +290,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
                             f'input_grid=\n{input_grid}\n,input_realm=\n' + \
                             f'{input_realm}\n,/interp_method=\n{interp_method}') \
                             from exc
-        print(f'input_grid    = {input_grid    }\n' + \
+        fre_logger.info(f'input_grid    = {input_grid    }\n' + \
               f'input_realm   = {input_realm   }\n' + \
               f'interp_method = {interp_method }'     )
 
@@ -299,7 +302,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             else  f"/{truncate_date(begin,'P1D')}.{source}.nc"
         if not Path( target_file ).exists():
             raise OSError(f'regrid_xy target does not exist. \ntarget_file={target_file}')
-        print(f'target_file={target_file}') #DELETE
+        fre_logger.info(f'target_file={target_file}') #DELETE
 
 
         # optional per-component inputs
@@ -316,7 +319,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             output_grid_lon = def_xy_interp[0]
             output_grid_lat = def_xy_interp[1]
 
-        print( f'output_grid_type = {output_grid_type }\n' + \
+        fre_logger.info( f'output_grid_type = {output_grid_type }\n' + \
                f'remap_file       = {remap_file       }\n' + \
                f'more_options     = {more_options     }\n' + \
                f'output_grid_lon  = {output_grid_lon  }\n' + \
@@ -336,22 +339,22 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             raise ValueError(f'input_realm={input_realm} not recognized.')
 
         # this is just to get the grid_file name
-        #print(f'mosaic_type    = {mosaic_type}')
-        #print(f'grid_spec_file = {grid_spec_file}')
-        #print(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)')
+        #fre_logger.info(f'mosaic_type    = {mosaic_type}')
+        #fre_logger.info(f'grid_spec_file = {grid_spec_file}')
+        #fre_logger.info(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)')
 
         # assume input_mosaic near input grid_spec, where intially specified.
         input_mosaic = input_dir + get_mosaic_file_name(grid_spec_file, mosaic_type)
-        #print(f'input_mosaic  = {input_mosaic}')
+        #fre_logger.info(f'input_mosaic  = {input_mosaic}')
 
         ## this is to get the tile1 filename?
         mosaic_grid_file = input_dir + get_mosaic_grid_file_name(input_mosaic)
-        #print(f'mosaic_grid_file = {mosaic_grid_file}')
+        #fre_logger.info(f'mosaic_grid_file = {mosaic_grid_file}')
 
         # need source file dimenions for lat/lon
         source_nx = str(int(Dataset(mosaic_grid_file).dimensions['nx'].size / 2 ))
         source_ny = str(int(Dataset(mosaic_grid_file).dimensions['ny'].size / 2 ))
-        print(f'source_[nx,ny] = ({source_nx},{source_ny})')
+        fre_logger.info(f'source_[nx,ny] = ({source_nx},{source_ny})')
         Dataset(mosaic_grid_file).close()
 
 
@@ -363,7 +366,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
                 raise OSError('remap_file={remap_file} could not be copied to local dir') \
                     from exc
         else:
-            print('remap_file was not specified nor found. looking for default one')
+            fre_logger.info('remap_file was not specified nor found. looking for default one')
             remap_file= f'fregrid_remap_file_{output_grid_lon}_by_{output_grid_lat}.nc' \
                                 if \
                                    all( [output_grid_lon is not None,
@@ -377,16 +380,16 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
                 f'{FREGRID_SHARED_FILES}/{input_grid}/' + \
                 f'{source_nx}_by_{source_ny}/{remap_file}'
 
-            print(f'remap_file               = {remap_file              }' + \
+            fre_logger.info(f'remap_file               = {remap_file              }' + \
                   f'remap_cache_file         = {remap_cache_file        }' + \
                   f'central_remap_cache_file = {central_remap_cache_file}' )
 
             if Path( remap_cache_file ).exists():
-                print(f'NOTE: using cached remap file {remap_cache_file}')
+                fre_logger.info(f'NOTE: using cached remap file {remap_cache_file}')
                 shutil.copy(remap_cache_file,
                             work_dir+remap_cache_file.split('/').pop())
             elif Path( central_remap_cache_file ).exists():
-                print(f'NOTE: using centrally cached remap file {remap_cache_file}')
+                fre_logger.info(f'NOTE: using centrally cached remap file {remap_cache_file}')
                 shutil.copy(central_remap_cache_file,
                             work_dir+central_remap_cache_file.split('/').pop())
 
@@ -395,12 +398,12 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         # if no variables in config, find the interesting ones to regrid
         if regrid_vars is None:
             regrid_vars=make_regrid_var_list( target_file , interp_method)
-        print(f'regrid_vars = {regrid_vars}') #DELETE
+        fre_logger.info(f'regrid_vars = {regrid_vars}') #DELETE
 
         #check if there's anything worth regridding
         if len(regrid_vars) < 1:
             raise ValueError('make_regrid_var_list found no vars to regrid. and no vars given. exit')
-        print(f'regridding {len(regrid_vars)} variables: {regrid_vars}')
+        fre_logger.info(f'regridding {len(regrid_vars)} variables: {regrid_vars}')
         regrid_vars_str=','.join(regrid_vars) # fregrid needs comma-demarcated list of vars
 
 
@@ -434,10 +437,10 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         if more_options is not None:
             fregrid_command.append(f'{more_options}')
 
-        print(f"\n\nabout to run the following command: \n{' '.join(fregrid_command)}\n")
+        fre_logger.info(f"\n\nabout to run the following command: \n{' '.join(fregrid_command)}\n")
         fregrid_proc = subprocess.run( fregrid_command, check = False )#i hate it
         fregrid_rc =fregrid_proc.returncode
-        print(f'fregrid_result.returncode()={fregrid_rc}')
+        fre_logger.info(f'fregrid_result.returncode()={fregrid_rc}')
 
 
         # output wrangling
@@ -446,8 +449,8 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         if not Path( remap_cache_file ).exists():
             remap_cache_file_dir='/'.join(remap_cache_file.split('/')[0:-1])
             Path( remap_cache_file_dir ).mkdir( parents = True , exist_ok = True)
-            print(f'copying \nremap_file={remap_file} to')
-            print(f'remap_cache_file_dir={remap_cache_file_dir}')
+            fre_logger.info(f'copying \nremap_file={remap_file} to')
+            fre_logger.info(f'remap_cache_file_dir={remap_cache_file_dir}')
             shutil.copy(remap_file, remap_cache_file_dir)
 
         # more output wrangling
@@ -456,12 +459,12 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             else output_dir + '/' + output_grid_type
         Path( final_output_dir ).mkdir( exist_ok = True)
 
-        print(f'TRYING TO COPY {output_file} TO {final_output_dir}')
+        fre_logger.info(f'TRYING TO COPY {output_file} TO {final_output_dir}')
         shutil.copy(output_file, final_output_dir)
 
         continue # end of comp loop, exit or next one.
 
-    print('done running regrid_xy()')
+    fre_logger.info('done running regrid_xy()')
     return 0
 
 
