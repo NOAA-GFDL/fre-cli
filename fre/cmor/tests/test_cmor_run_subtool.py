@@ -9,8 +9,6 @@ from datetime import date
 from fre.cmor import cmor_run_subtool
 
 
-import subprocess
-
 # where are we? we're running pytest from the base directory of this repo
 ROOTDIR = 'fre/tests/test_files'
 

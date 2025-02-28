@@ -4,9 +4,7 @@ focus on
 '''
 
 from datetime import date
-import os
 from pathlib import Path
-import sys
 import shutil
 
 import glob
@@ -50,10 +48,10 @@ def _case_function(testfile_dir, table, opt_var_name, grid):
 
     # define inputs to the cmor run tool
     indir = testfile_dir
-    table = table
+    #table = table
     table_file = f'{CMIP6_TABLE_REPO_PATH}/Tables/CMIP6_{table}.json'
-    opt_var_name = opt_var_name
-    grid = grid
+    #opt_var_name = opt_var_name
+    #grid = grid
 
     # if we can't find the input test file, do an xfail. most likely, you're not at PPAN.
     if not Path(testfile_dir).exists():

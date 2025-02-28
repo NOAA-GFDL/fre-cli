@@ -6,12 +6,9 @@ import shutil
 
 import pytest
 
-import click
 from click.testing import CliRunner
 
 from fre import fre
-
-import subprocess
 
 runner = CliRunner()
 
@@ -24,7 +21,7 @@ YYYYMMDD=date.today().strftime('%Y%m%d')
 COPIED_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc'
 ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199307-199308.sos.nc'
 
-def test_setup_test_files(capfd):
+def test_setup_test_files():
     "set-up test: copy and rename NetCDF file created in test_fre_cmor_run_subtool.py"
 
     assert Path(ORIGINAL_NC_FILEPATH).exists()
@@ -36,8 +33,6 @@ def test_setup_test_files(capfd):
     shutil.copy(Path(ORIGINAL_NC_FILEPATH), Path(COPIED_NC_FILEPATH))
 
     assert (Path(COPIED_NC_FILEPATH).exists())
-
-    out, err = capfd.readouterr()
 
 
 
@@ -80,18 +75,18 @@ def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml -y '''
 
     # FYI
-    indir = f'{ROOTDIR}/ocean_sos_var_file'
-    filename = 'reduced_ocean_monthly_1x1deg.199307-199308.sos.nc' # unneeded, this is mostly for reference
-    full_inputfile=f"{indir}/{filename}"
+    #indir = f'{ROOTDIR}/ocean_sos_var_file'
+    #filename = 'reduced_ocean_monthly_1x1deg.199307-199308.sos.nc' # unneeded, this is mostly for reference
+    #full_inputfile=f"{indir}/{filename}"
 
     # determined by cmor_run_subtool
-    outdir = f'{ROOTDIR}/outdir'
-    cmor_creates_dir = \
-        'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn'
-    full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldnt be
-    full_outputfile = \
-        f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199308.nc"
+    #outdir = f'{ROOTDIR}/outdir'
+    #cmor_creates_dir = \
+    #    'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn'
+    #full_outputdir = \
+    #    f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldnt be
+    #full_outputfile = \
+    #    f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199308.nc"
 
 
     result = runner.invoke(fre.fre, args=["cmor", "yaml", "--run_one",
@@ -128,7 +123,7 @@ def test_cli_fre_cmor_run_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
-def test_cli_fre_cmor_run_case1(capfd):
+def test_cli_fre_cmor_run_case1():
     ''' fre cmor run, test-use case '''
 
     # explicit inputs to tool
@@ -161,14 +156,11 @@ def test_cli_fre_cmor_run_case1(capfd):
                                             "--table_config", table_config,
                                             "--exp_config", exp_config,
                                             "--outdir",  outdir])
-    click.echo(f'stdout = \n {result.stdout}')
-    #click.echo(f'stderr = \n {result.stderr}') #not captured sep.
     assert all ( [ result.exit_code == 0,
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
-    _out, _err = capfd.readouterr()
 
-def test_cli_fre_cmor_run_case2(capfd):
+def test_cli_fre_cmor_run_case2():
     ''' fre cmor run, test-use case '''
 
     # explicit inputs to tool
@@ -201,12 +193,11 @@ def test_cli_fre_cmor_run_case2(capfd):
                                             "--table_config", table_config,
                                             "--exp_config", exp_config,
                                             "--outdir",  outdir])
-    click.echo(f'stdout = \n {result.stdout}')
+    #click.echo(f'stdout = \n {result.stdout}')
     #click.echo(f'stderr = \n {result.stderr}') #not captured sep.
     assert all ( [ result.exit_code == 0,
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
-    _out, _err = capfd.readouterr()
 
 # fre cmor find
 def test_cli_fre_cmor_find():

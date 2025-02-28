@@ -1,3 +1,8 @@
+""" 
+this module is for 'fre cmor yaml' calls, driving and steering the cmor_run_subtool via a model-yaml file holding
+configuration information on e.g. target experiments
+"""
+
 import logging
 fre_logger = logging.getLogger(__name__)
 
@@ -24,7 +29,6 @@ def cmor_yaml_subtool(yamlfile = None,
     # ---------------------------------------------------
     # parsing the target model yaml ---------------------
     # ---------------------------------------------------
-    #yaml_data = read_yaml_data(yamlfile)
     fre_logger.info(f'calling consolidate yamls to create a combined cmor-yaml dictionary')
     cmor_yaml_dict = consolidate_yamls(yamlfile = yamlfile,
                                        experiment = exp_name, platform = platform, target = target,
@@ -32,7 +36,7 @@ def cmor_yaml_subtool(yamlfile = None,
     import pprint
     pprint.PrettyPrinter(indent=1).pprint(cmor_yaml_dict)
 
-    return
+    raise NotImplementedError('under construction')
 
     # ---------------------------------------------------
     # inbetween-logic to form args ----------------------
@@ -46,20 +50,20 @@ def cmor_yaml_subtool(yamlfile = None,
 
     try:
         fre_logger.info('reading key/values from yamlfile...')
-        indir = yaml_data['indir']
-        json_var_list = yaml_data['json_var_list']
-        json_table_config = yaml_data['json_table_config']
-        json_exp_config = yaml_data['json_exp_config']
-        outdir = yaml_data['outdir']
+        indir = cmor_yaml_dict['indir']
+        json_var_list = cmor_yaml_dict['json_var_list']
+        json_table_config = cmor_yaml_dict['json_table_config']
+        json_exp_config = cmor_yaml_dict['json_exp_config']
+        outdir = cmor_yaml_dict['outdir']
     except:
         raise ValueError(f'(cmor_yaml_subtool) {yamlfile} does not have all the required information.\n'
-                         f'(cmor_yaml_subtool) yaml_data=\n{yaml_data}'      )
+                         f'(cmor_yaml_subtool) cmor_yaml_dict=\n{cmor_yaml_dict}'      )
 
     # its ok if this one doesn't work out, not reqd anyway
     opt_var_name = None
 
     try:
-        opt_var_name = yaml_data['opt_var_name']
+        opt_var_name = cmor_yaml_dict['opt_var_name']
     except:
         fre_logger.warning('could not read opt_var_name key/value. moving on.')
 

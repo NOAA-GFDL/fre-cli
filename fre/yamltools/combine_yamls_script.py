@@ -1,8 +1,4 @@
 import os
-import shutil
-
-from pathlib import Path
-import click
 
 import logging
 fre_logger = logging.getLogger(__name__)
@@ -15,7 +11,7 @@ from .helpers import output_yaml
 from . import cmor_info_parser as cmip
 from . import compile_info_parser as cip
 from . import pp_info_parser as ppip
-import pprint
+#import pprint
 
 
 ## Functions to combine the yaml files ##
