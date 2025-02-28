@@ -45,9 +45,15 @@ def status(experiment, platform, target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-def run(experiment, platform, target):
+@click.option("--pause", is_flag=True, default=False,
+              help="Pause the workflow immediately on start up",
+              required=False)
+@click.option("--no_wait", is_flag=True, default=False,
+              help="after submission, do not wait to ping the scheduler and confirm success",
+              required=False)
+def run(experiment, platform, target, pause, no_wait):
     """ - Run PP configuration"""
-    run_script.pp_run_subtool(experiment, platform, target)
+    run_script.pp_run_subtool(experiment, platform, target, pause, no_wait)
 
 # fre pp validate
 @pp_cli.command()

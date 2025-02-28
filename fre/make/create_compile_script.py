@@ -4,6 +4,8 @@ TODO: make docstring
 import os
 import sys
 import logging
+fre_logger = logging.getLogger(__name__)
+
 from pathlib import Path
 from multiprocessing.dummy import Pool
 
@@ -18,9 +20,9 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     jobs = str(jobs)
 
     if verbose:
-      logging.basicCOnfig(level=logging.INFO)
+        fre_logger.setLevel(level = logging.INFO)
     else:
-      logging.basicConfig(level=logging.ERROR)
+        fre_logger.setLevel(level = logging.ERROR)
 
     srcDir="src"
     checkoutScriptName = "checkout.sh"
@@ -79,7 +81,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                    fremakeBuild.writeBuildComponents(c)
               fremakeBuild.writeScript()
               fremakeBuildList.append(fremakeBuild)
-              print("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
+              fre_logger.info("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
 
     if execute:
         if baremetalRun:
