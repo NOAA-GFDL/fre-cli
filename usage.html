@@ -1,0 +1,695 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css?v=5583d106" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tools" href="tools.html" />
+    <link rel="prev" title="Setup" href="setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#yaml-framework">YAML Framework</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#yaml-formatting">Yaml Formatting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model-yaml">Model Yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compile-yaml">Compile Yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#platforms-yaml">Platforms Yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#post-processing-yaml">Post-Processing Yaml</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#build-fms-model">Build FMS model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Compile Yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#guide">Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quickstart">Quickstart</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#run-fms-model">Run FMS model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#postprocess-fms-history-output">Postprocess FMS history output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fms-history-files">FMS history files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#postprocess-components">Postprocess components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xy-regridding">XY-regridding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timeseries">Timeseries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#climatologies">Climatologies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#statics">Statics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis-scripts">Analysis scripts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#surface-masking-for-fms-pressure-level-history">Surface masking for FMS pressure-level history</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#legacy-refinediag-scripts">Legacy refineDiag scripts</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cmorize-postprocessed-output">CMORize postprocessed output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generate-data-catalogs">Generate data catalogs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<p>Using a set of YAML configuration files, <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">make</span></code> compiles a FMS-based model, and <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span></code> postprocesses the history output and runs diagnostic analysis scripts. Please note that model running is not yet supported in FRE 2025; continue to use FRE Bronx frerun.</p>
+<section id="yaml-framework">
+<h2>YAML Framework<a class="headerlink" href="#yaml-framework" title="Link to this heading"></a></h2>
+<p>In order to utilize these FRE tools, a distrubuted YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with <code class="docutils literal notranslate"><span class="pre">[key]:</span> <span class="pre">[value]</span></code> fields.</p>
+<section id="yaml-formatting">
+<h3>Yaml Formatting<a class="headerlink" href="#yaml-formatting" title="Link to this heading"></a></h3>
+<p>Helpful information and format recommendations for creating yaml files.</p>
+<ol class="arabic simple">
+<li><p>You can define a block of values as well as individual <code class="docutils literal notranslate"><span class="pre">[key]:</span> <span class="pre">[value]</span></code> pairs:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="n">name</span><span class="p">:</span>
+  <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+  <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">[key]:</span> <span class="pre">[value]</span></code> pairs can be made a list by utilizing a <code class="docutils literal notranslate"><span class="pre">-</span></code>:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="n">name</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+  <span class="o">-</span> <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>If you want to associate information with a certain listed element, follow this structure:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span> <span class="n">name</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+  <span class="o">-</span> <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+</pre></div>
+</div>
+<p>Where each dash indicates a list.</p>
+<ol class="arabic simple" start="4">
+<li><p>Yamls also allow for the capability of reusable variables. These variables are defined by:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&amp;</span><span class="n">ReusableVariable</span> <span class="n">Value</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>Users can apply a reusable variable on a block of values. For example, everything under “section” is associated with the reusable variable:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">section</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">ReusableVariable</span>
+  <span class="o">-</span> <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+  <span class="o">-</span> <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p>In order to use them as a reference else where in either the same or other yamls, use <code class="docutils literal notranslate"><span class="pre">*</span></code>:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span><span class="n">ReusableVariable</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="7">
+<li><p>If the reusable variable must be combined with other strings, the <strong>`!join`</strong> constructor is used. Simplified example:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&amp;name &quot;experiment-name&quot;
+...
+pp_dir: !join [/archive/$USER/, *name, /, pp]
+</pre></div>
+</div>
+<p>In this example, the variable <code class="docutils literal notranslate"><span class="pre">pp_dir</span></code> will be parsed as <code class="docutils literal notranslate"><span class="pre">/archive/$USER/experiment-name/pp</span></code>.</p>
+</section>
+<section id="model-yaml">
+<h3>Model Yaml<a class="headerlink" href="#model-yaml" title="Link to this heading"></a></h3>
+<p>The model yaml defines reusable variables, shared directories, switches, post-processing settings, and paths to compile and post-processing yamls. Required fields in the model yaml include: <code class="docutils literal notranslate"><span class="pre">fre_properties</span></code>, <code class="docutils literal notranslate"><span class="pre">build</span></code>, <code class="docutils literal notranslate"><span class="pre">shared</span></code>, and <code class="docutils literal notranslate"><span class="pre">experiments</span></code>.</p>
+<ul>
+<li><p><strong>fre_properties</strong>: Reusable variables</p>
+<ul class="simple">
+<li><p>list of variables</p></li>
+<li><p>these values can be extracted from <code class="docutils literal notranslate"><span class="pre">fre_properties</span></code> in a group’s XML, if available</p></li>
+<li><p>value type: string</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="o">&amp;</span><span class="n">variable1</span>  <span class="s2">&quot;value1&quot;</span>  <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+<span class="o">-</span> <span class="o">&amp;</span><span class="n">variable2</span>  <span class="s2">&quot;value2&quot;</span>  <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>build</strong>: paths to information needed for compilation</p>
+<ul class="simple">
+<li><p>subsections: <code class="docutils literal notranslate"><span class="pre">compileYaml</span></code>, <code class="docutils literal notranslate"><span class="pre">platformYaml</span></code></p></li>
+<li><p>value type: string</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">build</span><span class="p">:</span>
+  <span class="n">compileYaml</span><span class="p">:</span> <span class="s2">&quot;path the compile yaml in relation to model yaml&quot;</span>   <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+  <span class="n">platformYaml</span><span class="p">:</span> <span class="s2">&quot;path to platforms.yaml in relation to model yaml&quot;</span> <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>shared</strong>: shared settings across experiments</p>
+<ul class="simple">
+<li><p>subsections: <code class="docutils literal notranslate"><span class="pre">directories</span></code>, <code class="docutils literal notranslate"><span class="pre">postprocess</span></code></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shared</span><span class="p">:</span>
+  <span class="n">directories</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">shared_directories</span>
+    <span class="n">key</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>               <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
+  <span class="n">postprocess</span><span class="p">:</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">shared_settings</span>
+      <span class="n">key</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span>             <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">switches</span><span class="p">:</span> <span class="o">&amp;</span><span class="n">shared_switches</span>
+      <span class="n">key</span><span class="p">:</span> <span class="kc">True</span><span class="o">/</span><span class="kc">False</span>          <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Be sure to define directories, settings, and switches as reusable variables as well</strong></p>
+<ul>
+<li><p>they will be “inherited” in the post-processing yamls created</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>experiments</strong>: list of post-processing experiments</p>
+<ul class="simple">
+<li><p>subsections: <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">pp</span></code>, <code class="docutils literal notranslate"><span class="pre">analysis</span></code></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">experiments</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">name</span> <span class="n">of</span> <span class="n">post</span><span class="o">-</span><span class="n">processing</span> <span class="n">experiment</span>                                       <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">pp</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">post</span><span class="o">-</span><span class="n">processing</span><span class="o">/</span><span class="n">yaml</span> <span class="k">for</span> <span class="n">that</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">relation</span> <span class="n">to</span> <span class="n">model</span> <span class="n">yaml</span> <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">analysis</span><span class="p">:</span>
+      <span class="o">-</span> <span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">analysis</span><span class="o">/</span><span class="n">yaml</span> <span class="k">for</span> <span class="n">that</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="n">relation</span> <span class="n">to</span> <span class="n">model</span> <span class="n">yaml</span>        <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="compile-yaml">
+<h3>Compile Yaml<a class="headerlink" href="#compile-yaml" title="Link to this heading"></a></h3>
+<p>The compile yaml defines compilation information including component names, repos, branches, necessary flags, and necessary overrides. This is discussed more in the “Build FMS Model” section.</p>
+</section>
+<section id="platforms-yaml">
+<h3>Platforms Yaml<a class="headerlink" href="#platforms-yaml" title="Link to this heading"></a></h3>
+<p>The platform yaml contains user defined information for both bare-metal and container platforms. Information includes the platform name, the compiler used, necessary modules to load, an mk template, fc, cc, container build, and container run. This yaml file is not model specific.</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">platforms</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">name</span><span class="p">:</span> <span class="n">the</span> <span class="n">platform</span> <span class="n">name</span>
+    <span class="n">compiler</span><span class="p">:</span> <span class="n">the</span> <span class="n">compiler</span> <span class="n">you</span> <span class="n">are</span> <span class="n">using</span>
+    <span class="n">modulesInit</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;array of commands that are needed to load modules.&quot;</span> <span class="p">,</span> <span class="s2">&quot;each command must end with a newline character&quot;</span><span class="p">]</span>
+    <span class="n">modules</span><span class="p">:</span> <span class="p">[</span><span class="n">array</span> <span class="n">of</span> <span class="n">modules</span> <span class="n">to</span> <span class="n">load</span> <span class="n">including</span> <span class="n">compiler</span><span class="p">]</span>
+    <span class="n">mkTemplate</span><span class="p">:</span> <span class="n">The</span> <span class="n">location</span> <span class="n">of</span> <span class="n">the</span> <span class="n">mkmf</span> <span class="n">make</span> <span class="n">template</span>
+    <span class="n">modelRoot</span><span class="p">:</span> <span class="n">The</span> <span class="n">root</span> <span class="n">directory</span> <span class="n">of</span> <span class="n">the</span> <span class="n">model</span> <span class="p">(</span><span class="n">where</span> <span class="n">src</span><span class="p">,</span> <span class="n">exec</span><span class="p">,</span> <span class="n">experiments</span> <span class="n">will</span> <span class="n">go</span><span class="p">)</span>
+  <span class="o">-</span> <span class="n">container</span> <span class="n">platform</span><span class="p">:</span> <span class="n">container</span> <span class="n">platform</span> <span class="n">name</span>
+    <span class="n">compiler</span><span class="p">:</span> <span class="n">compiler</span> <span class="n">you</span> <span class="n">are</span> <span class="n">using</span>
+    <span class="n">RUNenv</span><span class="p">:</span> <span class="n">Commands</span> <span class="n">needed</span> <span class="n">at</span> <span class="n">the</span> <span class="n">beginning</span> <span class="n">of</span> <span class="n">a</span> <span class="n">RUN</span> <span class="ow">in</span> <span class="n">dockerfile</span>
+    <span class="n">modelRoot</span><span class="p">:</span> <span class="n">The</span> <span class="n">root</span> <span class="n">directory</span> <span class="n">of</span> <span class="n">the</span> <span class="n">model</span> <span class="p">(</span><span class="n">where</span> <span class="n">src</span><span class="p">,</span> <span class="n">exec</span><span class="p">,</span> <span class="n">experiments</span> <span class="n">will</span> <span class="n">go</span><span class="p">)</span> <span class="n">INSIDE</span> <span class="n">of</span> <span class="n">the</span> <span class="n">container</span> <span class="p">(</span><span class="o">/</span><span class="n">apps</span><span class="p">)</span>
+    <span class="n">container</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">container</span> <span class="n">platform</span>
+    <span class="n">containerBuild</span><span class="p">:</span> <span class="s2">&quot;podman&quot;</span> <span class="o">-</span> <span class="n">the</span> <span class="n">container</span> <span class="n">build</span> <span class="n">program</span>
+    <span class="n">containerRun</span><span class="p">:</span> <span class="s2">&quot;apptainer&quot;</span> <span class="o">-</span> <span class="n">the</span> <span class="n">container</span> <span class="n">run</span> <span class="n">program</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="post-processing-yaml">
+<h3>Post-Processing Yaml<a class="headerlink" href="#post-processing-yaml" title="Link to this heading"></a></h3>
+<p>The post-processing yamls include information specific to experiments, such as directories to data and other scripts used, switches, and component information. The post-processing yaml can further define more <code class="docutils literal notranslate"><span class="pre">fre_properties</span></code> that may be experiment specific. If there are any repeated reusable variables, the ones set in this yaml will overwrite those set in the model yaml. This is discussed further in the “Postprocess FMS History Output” section.</p>
+</section>
+</section>
+<section id="build-fms-model">
+<h2>Build FMS model<a class="headerlink" href="#build-fms-model" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">make</span></code> can compile a traditional “bare metal” executable or a containerized executable using a set of YAML configuration files.</p>
+<p>Through the fre-cli, <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">make</span></code> can be used to create and run a checkout script, makefile, and compile a model.</p>
+<dl class="simple">
+<dt>Fremake Canopy Supports:</dt><dd><ul class="simple">
+<li><p>multiple target use; <code class="docutils literal notranslate"><span class="pre">-t</span></code> flag to define each target (for multiple platform-target combinations)</p></li>
+<li><p>bare-metal build</p></li>
+<li><p>container creation</p></li>
+<li><p>parallel checkouts for bare-metal build</p></li>
+<li><p>parallel model builds</p></li>
+<li><p>one yaml format</p></li>
+<li><p>additional library support if needed</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Note: Users will not be able to create containers without access to podman. To get access, submit a helpdesk ticket.</strong></p>
+<p>Required configuration files:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Model Yaml</p></li>
+<li><p>Compile Yaml</p></li>
+<li><p>Platforms yaml</p></li>
+</ul>
+</div></blockquote>
+<p>These yamls are combined and further parsed through the <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">make</span></code> tools.</p>
+<section id="id1">
+<h3>Compile Yaml<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>To create the compile yaml, reference the compile section on an XML. Certain fields should be included under “compile”. These include <code class="docutils literal notranslate"><span class="pre">experiment</span></code>, <code class="docutils literal notranslate"><span class="pre">container_addlibs</span></code>, <code class="docutils literal notranslate"><span class="pre">baremetal_linkerflags</span></code>, and <code class="docutils literal notranslate"><span class="pre">src</span></code>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The experiment can be explicitly defined or can be used in conjunction with defined <code class="docutils literal notranslate"><span class="pre">fre_properties</span></code> from the model yaml, as seen in the code block below</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">container_addlibs</span></code>: list of strings of packages needed for the model to compile (used to create the link line in the Makefile)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">baremetal_linkerflags</span></code>: list of strings of linker flags (used to populate the link line in the Makefile</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src</span></code>: contains information about components needed for model compilation</p></li>
+</ul>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>compile:
+  experiment: !join [*group_version, &quot;_compile&quot;]
+  container_addlibs: &quot;libraries and packages needed for linking in container&quot; (string)
+  baremetal_linkerflags: &quot;linker flags of libraries and packages needed&quot;      (string)
+  src:
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">src</span></code> section is used to include component information. This will include: <code class="docutils literal notranslate"><span class="pre">component</span></code>, <code class="docutils literal notranslate"><span class="pre">repo</span></code>, <code class="docutils literal notranslate"><span class="pre">cpdefs</span></code>, <code class="docutils literal notranslate"><span class="pre">branch</span></code>, <code class="docutils literal notranslate"><span class="pre">paths</span></code>,  <code class="docutils literal notranslate"><span class="pre">otherFlags</span></code>, and <code class="docutils literal notranslate"><span class="pre">makeOverrides</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">src</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">component</span><span class="p">:</span> <span class="s2">&quot;component name&quot;</span>                                            <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">requires</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;list of components that this component depends on&quot;</span><span class="p">]</span>        <span class="p">(</span><span class="nb">list</span> <span class="n">of</span> <span class="n">string</span><span class="p">)</span>
+    <span class="n">repo</span><span class="p">:</span> <span class="s2">&quot;url of code repository&quot;</span>                                         <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">branch</span><span class="p">:</span> <span class="s2">&quot;version of code to clone&quot;</span>                                     <span class="p">(</span><span class="n">string</span> <span class="o">/</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">strings</span><span class="p">)</span>
+    <span class="n">paths</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;paths in the component to compile&quot;</span><span class="p">]</span>                           <span class="p">(</span><span class="nb">list</span> <span class="n">of</span> <span class="n">strings</span><span class="p">)</span>
+    <span class="n">cppdefs</span><span class="p">:</span> <span class="s2">&quot;CPPDEFS ot include in compiling componenet                   (string)</span>
+    <span class="n">makeOverrides</span><span class="p">:</span> <span class="s2">&quot;overrides openmp target for MOM6&quot;</span>                      <span class="p">(</span><span class="s1">&#39;OPENMP=&quot;&quot;&#39;</span><span class="p">)</span> <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">otherFlags</span><span class="p">:</span> <span class="s2">&quot;Include flags needed to retrieve other necessary code&quot;</span>    <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">doF90Cpp</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">the</span> <span class="n">preprocessor</span> <span class="n">needs</span> <span class="n">to</span> <span class="n">be</span> <span class="n">run</span>                     <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+    <span class="n">additionalInstructions</span><span class="p">:</span> <span class="n">additional</span> <span class="n">instructions</span> <span class="n">to</span> <span class="n">run</span> <span class="n">after</span> <span class="n">checkout</span>  <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="guide">
+<h3>Guide<a class="headerlink" href="#guide" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Bare-metal Build:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">platform</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+
+<span class="c1"># Create and run checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">platform</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">--</span><span class="n">execute</span>
+
+<span class="c1"># Create Makefile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">makefile</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">platform</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+
+<span class="c1"># Creat the compile script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="nb">compile</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">platform</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+
+<span class="c1"># Create and run the compile script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="nb">compile</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">platform</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">--</span><span class="n">execute</span>
+
+<span class="c1"># Run all of fremake</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">run</span><span class="o">-</span><span class="n">fremake</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">platform</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="p">[</span><span class="n">other</span> <span class="n">options</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Container Build:</p></li>
+</ol>
+<p>For the container build, parallel checkouts are not supported, so the <cite>-npc</cite> options must be used for the checkout script. In addition the platform must be a container platform.</p>
+<p>Gaea users will not be able to create containers unless they have requested and been given podman access.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">CONTAINER</span> <span class="n">PLATFORM</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">-</span><span class="n">npc</span>
+
+<span class="c1"># Create and run checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">CONTAINER</span> <span class="n">PLATFORM</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">--</span><span class="n">execute</span>
+
+<span class="c1"># Create Makefile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">makefile</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">CONTAINER</span> <span class="n">PLATFORM</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+
+<span class="c1"># Create a Dockerfile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">dockerfile</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">CONTAINER</span> <span class="n">PLATFORM</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>
+
+<span class="c1"># Create and run the Dockerfile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">dockerfile</span> <span class="o">-</span><span class="n">y</span> <span class="p">[</span><span class="n">model</span> <span class="n">yaml</span> <span class="n">file</span><span class="p">]</span> <span class="o">-</span><span class="n">p</span> <span class="p">[</span><span class="n">CONTAINER</span> <span class="n">PLATFORM</span><span class="p">]</span> <span class="o">-</span><span class="n">t</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">--</span><span class="n">execute</span>
+</pre></div>
+</div>
+</section>
+<section id="quickstart">
+<h3>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h3>
+<p>The quickstart instructions can be used with the null model example located in the fre-cli repository: <a class="reference external" href="https://github.com/NOAA-GFDL/fre-cli/tree/main/fre/make/tests/null_example">https://github.com/NOAA-GFDL/fre-cli/tree/main/fre/make/tests/null_example</a></p>
+<ol class="arabic simple">
+<li><p>Bare-metal Build:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span>
+
+<span class="c1"># Create and run checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">--</span><span class="n">execute</span>
+
+<span class="c1"># Create Makefile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">makefile</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span>
+
+<span class="c1"># Create the compile script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="nb">compile</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span>
+
+<span class="c1"># Create and run the compile script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="nb">compile</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">--</span><span class="n">execute</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Bare-metal Build Multi-target:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">-</span><span class="n">t</span> <span class="n">debug</span>
+
+<span class="c1"># Create and run checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">-</span><span class="n">t</span> <span class="n">debug</span> <span class="o">--</span><span class="n">execute</span>
+
+<span class="c1"># Create Makefile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">makefile</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">-</span><span class="n">t</span> <span class="n">debug</span>
+
+<span class="c1"># Create the compile script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="nb">compile</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">-</span><span class="n">t</span> <span class="n">debug</span>
+
+<span class="c1"># Create and run the compile script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="nb">compile</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">-</span><span class="n">t</span> <span class="n">debug</span> <span class="o">--</span><span class="n">execute</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Container Build:</p></li>
+</ol>
+<p>In order for the container to build successfully, a <cite>-npc</cite>, or <cite>–no-parallel-checkout</cite> is needed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">hpcme</span><span class="mf">.2023</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">-</span><span class="n">npc</span>
+
+<span class="c1"># Create and run checkout script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">checkout</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">hpcme</span><span class="mf">.2023</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">-</span><span class="n">npc</span> <span class="o">--</span><span class="n">execute</span>
+
+<span class="c1"># Create Makefile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">makefile</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">hpcme</span><span class="mf">.2023</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span>
+
+<span class="c1"># Create Dockerfile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">dockerfile</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">hpcme</span><span class="mf">.2023</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span>
+
+<span class="c1"># Create and run the Dockerfile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">create</span><span class="o">-</span><span class="n">dockerfile</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">hpcme</span><span class="mf">.2023</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">--</span><span class="n">execute</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Run all of fremake:</p></li>
+</ol>
+<p><cite>run-fremake</cite> kicks off the compilation automatically</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bare-metal: create and run checkout script, create makefile, create compile script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">run</span><span class="o">-</span><span class="n">fremake</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span>
+
+<span class="c1"># Bare-metal: create and run checkout script, create makefile, create and run compile script</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">run</span><span class="o">-</span><span class="n">fremake</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">ncrc5</span><span class="o">.</span><span class="n">intel23</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">--</span><span class="n">execute</span>
+
+<span class="c1"># Container: create checkout script, makefile, and dockerfile</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">run</span><span class="o">-</span><span class="n">fremake</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">hpcme</span><span class="mf">.2023</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">-</span><span class="n">npc</span>
+
+<span class="c1"># Container: create checkout script, makefile, create and run dockerfile to build container</span>
+<span class="n">fre</span> <span class="n">make</span> <span class="n">run</span><span class="o">-</span><span class="n">fremake</span> <span class="o">-</span><span class="n">y</span> <span class="n">null_model</span><span class="o">.</span><span class="n">yaml</span> <span class="o">-</span><span class="n">p</span> <span class="n">hpcme</span><span class="mf">.2023</span> <span class="o">-</span><span class="n">t</span> <span class="n">prod</span> <span class="o">-</span><span class="n">npc</span> <span class="o">--</span><span class="n">execute</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="run-fms-model">
+<h2>Run FMS model<a class="headerlink" href="#run-fms-model" title="Link to this heading"></a></h2>
+<p>Check back in the latter half of 2025 or so.</p>
+</section>
+<section id="postprocess-fms-history-output">
+<h2>Postprocess FMS history output<a class="headerlink" href="#postprocess-fms-history-output" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span></code> regrids FMS history files and generates timeseries, climatologies, and static postprocessed files, with instructions specified in YAML.</p>
+<p>Bronx plug-in refineDiag and analysis scripts can also be used, and a reimagined analysis script ecosystem is being developed and is available now (for adventurous users). The new analysis script framework is independent of and compatible with FRE (<a class="reference external" href="https://github.com/NOAA-GFDL/analysis-scripts">https://github.com/NOAA-GFDL/analysis-scripts</a>). The goal is to combine the ease-of-use of legacy FRE analysis scripts with the standardization of model output data catalogs and python virtual environments.</p>
+<p>In the future, output NetCDF files will be rewritten by CMOR by default, ready for publication to community archives (e.g. ESGF). Presently, standalone CMOR tooling is available as <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">cmor</span></code>.</p>
+<p>By default, an intake-esm-compatible data catalog is generated and updated, containing a programmatic metadata-enriched searchable interface to the postprocessed output. The catalog tooling can be independently assessed as <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">catalog</span></code>.</p>
+<section id="fms-history-files">
+<h3>FMS history files<a class="headerlink" href="#fms-history-files" title="Link to this heading"></a></h3>
+<p>FRE experiments are run in segments of simulated time. The FMS diagnostic manager, as configured in
+experiment configuration files (diag yamls) saves a set of diagnostic output files, or “history files.”
+The history files are organized by label and can contain one or more temporal or static diagnostics.
+FRE (Bronx frerun) renames and combines the raw model output (that is usually on a distributed grid),
+and saves the history files in one tarfile per segment, date-stamped with the date of the beginning of the segment.
+The FMS diagnostic manager requires
+that variables within one history file be the same temporal frequency (e.g. daily, monthly, annual),
+but statics are allowed in any history file. Usually, variables in a history file
+share a horizontal and vertical grid.</p>
+<p>Each history tarfile, again, is date-stamped with the date of the beginning of the segment, in YYYYMMDD format.
+For example, for a 5-year experiment with 6-month segments, there will be 10 history files containing the
+raw model output. Each history tarfile contains a segment’s worth of time (in this case 6 months).:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">19790101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19800101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19810101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19820101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19830101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>
+<span class="mf">19790701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19800701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19810701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19820701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19830701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>
+</pre></div>
+</div>
+<p>Each history file within the history tarfiles are also similarly date-stamped. Atmosphere and land history files
+are on the native cubed-sphere grid, which have 6 tiles that represent the global domain. Ocean, ice, and
+global scalar output have just one file that covers the global domain.</p>
+<p>For example, if the diagnostic manager were configured to save atmospheric and ocean annual and monthly history files,
+the 19790101.nc.tar tarfile might contain:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="o">-</span><span class="n">tf</span> <span class="mf">19790101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span> <span class="o">|</span> <span class="n">sort</span>
+
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile1</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile2</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile3</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile4</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile5</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile6</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile1</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile2</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile3</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile4</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile5</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile6</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">ocean_month</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">ocean_annual</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+<p>The name of the history file, while often predictably named, are arbitrary labels within the Diagnostic Manager configuration
+(diag yamls). Each history file is a CF-standard NetCDF file that can be inspected with common NetCDF tools such as the NCO or CDO tools, or even <code class="docutils literal notranslate"><span class="pre">ncdump</span></code>.</p>
+<p>Required configuration</p>
+<ol class="arabic simple">
+<li><p>Set the history directory in your postprocessing yaml:</p></li>
+</ol>
+<blockquote>
+<div><dl class="simple">
+<dt>directories:</dt><dd><p>history: /arch5/am5/am5/am5f7c1r0/c96L65_am5f7c1r0_amip/gfdl.ncrc5-deploy-prod-openmp/history</p>
+</dd>
+</dl>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Set the segment size as an ISO8601 duration (e.g. P1Y is “one year”):</p></li>
+</ol>
+<blockquote>
+<div><dl class="simple">
+<dt>postprocess:</dt><dd><dl class="simple">
+<dt>settings:</dt><dd><p>history_segment: P1Y</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>Set the date range to postprocess as ISO8601 dates:</p></li>
+</ol>
+<blockquote>
+<div><dl>
+<dt>postprocess:</dt><dd><dl>
+<dt>settings:</dt><dd><p>pp_start: 1979-01-01T0000Z</p>
+<p>pp_stop: 2020-01-01T0000Z</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="postprocess-components">
+<h3>Postprocess components<a class="headerlink" href="#postprocess-components" title="Link to this heading"></a></h3>
+<p>The history-file namespace is a single layer as shown above. By longtime tradition, FRE postprocessing namespaces are richer, with
+a distinction for timeseries, timeaveraged, and static output datasets, and includes frequency and chunk-size in the directory structure.</p>
+<p>Postprocessed files within a “component” share a horizontal grid; which can be the native grid or regridded to lat/lon.</p>
+<p>Required configuration</p>
+<ol class="arabic simple" start="4">
+<li><p>Define the atmos and ocean postprocess components:</p></li>
+</ol>
+<blockquote>
+<div><dl>
+<dt>postprocess:</dt><dd><dl>
+<dt>components:</dt><dd><ul>
+<li><p>type: atmos</p>
+<p>sources: [atmos_month, atmos_annual]</p>
+</li>
+<li><p>type: ocean</p>
+<p>sources: [ocean_month, ocean_annual]</p>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="xy-regridding">
+<h3>XY-regridding<a class="headerlink" href="#xy-regridding" title="Link to this heading"></a></h3>
+<p>Commonly, native grid history files are regridded during postprocessing. To regrid to a lat/lon grid, configure your
+desired output grid, interpolation method, input grid type, and path to your FMS exchange grid definition.</p>
+<p>Optional configuration (i.e. if xy-regridding is desired)</p>
+<ol class="arabic simple" start="5">
+<li><p>Regrid the atmos and ocean components to a 1x1 degree grid:</p></li>
+</ol>
+<blockquote>
+<div><dl>
+<dt>directories:</dt><dd><p>pp_grid_spec: /archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar</p>
+</dd>
+<dt>postprocess:</dt><dd><dl>
+<dt>components:</dt><dd><ul>
+<li><p>type: atmos</p>
+<p>sources: [atmos_month, atmos_annual]</p>
+<p>sourceGrid: cubedsphere</p>
+<p>inputRealm: atmos</p>
+<p>xyInterp: [180, 360]</p>
+<p>interpMethod: conserve_order2</p>
+</li>
+<li><p>type: ocean</p>
+<p>sources: [ocean_month, ocean_annual]</p>
+<p>sourceGrid: tripolar</p>
+<p>inputRealm: ocean</p>
+<p>xyInterp: [180, 360]</p>
+<p>interpMethod: conserve_order1</p>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="timeseries">
+<h3>Timeseries<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h3>
+<p>Timeseries output is the most common type of postprocessed output.</p>
+</section>
+<section id="climatologies">
+<h3>Climatologies<a class="headerlink" href="#climatologies" title="Link to this heading"></a></h3>
+<p>annual and monthly climatologies
+less fine-grained than bronx
+per-component switch coming
+now it’s one switch for entire pp</p>
+</section>
+<section id="statics">
+<h3>Statics<a class="headerlink" href="#statics" title="Link to this heading"></a></h3>
+<p>underbaked, known deficiency
+currently, takes statics from “source” history files</p>
+</section>
+<section id="analysis-scripts">
+<h3>Analysis scripts<a class="headerlink" href="#analysis-scripts" title="Link to this heading"></a></h3>
+</section>
+<section id="surface-masking-for-fms-pressure-level-history">
+<h3>Surface masking for FMS pressure-level history<a class="headerlink" href="#surface-masking-for-fms-pressure-level-history" title="Link to this heading"></a></h3>
+</section>
+<section id="legacy-refinediag-scripts">
+<h3>Legacy refineDiag scripts<a class="headerlink" href="#legacy-refinediag-scripts" title="Link to this heading"></a></h3>
+</section>
+</section>
+<section id="cmorize-postprocessed-output">
+<h2>CMORize postprocessed output<a class="headerlink" href="#cmorize-postprocessed-output" title="Link to this heading"></a></h2>
+<p>Brief rundown of commands also provided below:</p>
+<ul class="simple">
+<li><p>Enter commands and follow <code class="docutils literal notranslate"><span class="pre">--help</span></code> messages for guidance</p></li>
+<li><p>If the user just runs <code class="docutils literal notranslate"><span class="pre">fre</span></code>, it will list all the command groups following <code class="docutils literal notranslate"><span class="pre">fre</span></code>, such as
+<code class="docutils literal notranslate"><span class="pre">run</span></code>, <code class="docutils literal notranslate"><span class="pre">make</span></code>, <code class="docutils literal notranslate"><span class="pre">pp</span></code>, etc. and once the user specifies a command group, the list of available
+subcommands for that group will be shown</p></li>
+<li><p>Commands that require arguments to run will alert user about missing arguments, and will also list
+the rest of the optional parameters if <code class="docutils literal notranslate"><span class="pre">--help</span></code> is executed</p></li>
+<li><p>Argument flags are not positional, can be specified in any order as long as they are specified</p></li>
+<li><p>Can run directly from any directory, no need to clone repository</p></li>
+<li><p>May need to deactivate environment and reactivate it in order for changes to apply</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fre/setup.py</span></code> allows <code class="docutils literal notranslate"><span class="pre">fre/fre.py</span></code> to be ran as <code class="docutils literal notranslate"><span class="pre">fre</span></code> on the command line by defining it as an
+<em>entry point</em>. Without it, the call would be instead, something like <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">fre/fre.py</span></code></p></li>
+<li><p>See also, <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">cmor</span></code>’s <a class="reference external" href="https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/cmor/README.md">README</a></p></li>
+<li><p>See also, <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">cmor</span></code>’s <a class="reference external" href="https://github.com/orgs/NOAA-GFDL/projects/35">project board</a></p></li>
+</ul>
+<p>This set of tools leverages the external <code class="docutils literal notranslate"><span class="pre">cmor</span></code> python package within the <code class="docutils literal notranslate"><span class="pre">fre</span></code> ecosystem. <code class="docutils literal notranslate"><span class="pre">cmor</span></code> is an
+acronym for “climate model output rewriter”. The process of rewriting model-specific output files for model
+intercomparisons (MIPs) using the <code class="docutils literal notranslate"><span class="pre">cmor</span></code> module is, quite cleverly, referred to as “CMORizing”.</p>
+</section>
+<section id="generate-data-catalogs">
+<h2>Generate data catalogs<a class="headerlink" href="#generate-data-catalogs" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="setup.html" class="btn btn-neutral float-left" title="Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tools.html" class="btn btn-neutral float-right" title="Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

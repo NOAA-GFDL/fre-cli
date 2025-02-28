@@ -1,0 +1,7 @@
+fre.analysis.freanalysis module
+===============================
+
+.. automodule:: fre.analysis.freanalysis
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,235 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For developers &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css?v=5583d106" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Badges" href="badges.html" />
+    <link rel="prev" title="API" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">For developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#adding-new-tools">Adding New Tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#from-other-repositories">From Other Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#checklist">Checklist</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-fre-directory-structure">Example <code class="docutils literal notranslate"><span class="pre">fre/</span></code> Directory Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manifest-in"><code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-documentation">Adding Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">For developers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/for-developers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="for-developers">
+<h1>For developers<a class="headerlink" href="#for-developers" title="Link to this heading"></a></h1>
+<p>Developers are free to use the user guide above to familiarize with the CLI and save time from
+having to install any dependencies, but development within a Conda environment is heavily
+recommended regardless.</p>
+<p>Gain access to the repository with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">--recursive</span> <span class="pre">git&#64;github.com:NOAA-GFDL/fre-cli.git</span></code> or your fork’s
+link (recommended) and an SSH RSA key. Once inside the repository, developers can test local changes
+by running a <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code> inside of the root directory to install the <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> package locally
+with the newest local changes. Test as a normal user would use the CLI.</p>
+<section id="adding-new-tools">
+<h2>Adding New Tools<a class="headerlink" href="#adding-new-tools" title="Link to this heading"></a></h2>
+<section id="from-other-repositories">
+<h3>From Other Repositories<a class="headerlink" href="#from-other-repositories" title="Link to this heading"></a></h3>
+<p>Currently, the solution to this task is to approach it using Conda packages. The tool that is being
+added must reside within a repository that contains a <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> that includes Conda dependencies
+like the one in this repository and ideally a <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> (may be subject to change due to deprecation)
+that may include any potentially needed pip dependencies</p>
+<ul class="simple">
+<li><p>Once published as a Conda package, ideally on the <a class="reference external" href="https://anaconda.org/NOAA-GFDL">NOAA-GFDL conda channel</a>,
+an addition can be made to the <code class="docutils literal notranslate"><span class="pre">run</span></code> section under <code class="docutils literal notranslate"><span class="pre">requirements</span></code> in <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> of the <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code>
+following the syntax <code class="docutils literal notranslate"><span class="pre">channel::package</span></code></p></li>
+<li><p>On pushes to the main branch, the package located at <a class="reference external" href="https://anaconda.org/NOAA-GFDL/fre-cli">https://anaconda.org/NOAA-GFDL/fre-cli</a> will automatically
+be updated using by the workflow defined in <code class="docutils literal notranslate"><span class="pre">.github/workflows/publish_conda.yml</span></code></p></li>
+</ul>
+</section>
+<section id="checklist">
+<h3>Checklist<a class="headerlink" href="#checklist" title="Link to this heading"></a></h3>
+<p>For the new tool you are trying to develop, there are a few criteria to satisfy</p>
+<ol class="arabic simple">
+<li><p>Create a subdirectory for the tool group inside the <code class="docutils literal notranslate"><span class="pre">fre/</span></code> directory; i.e. <code class="docutils literal notranslate"><span class="pre">fre/&lt;tool&gt;</span></code></p></li>
+<li><p>Add an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> inside of <code class="docutils literal notranslate"><span class="pre">fre/&lt;tool&gt;</span></code></p></li>
+</ol>
+<ul class="simple">
+<li><p>typically this file should be empty, but it depends on the <code class="docutils literal notranslate"><span class="pre">&lt;tool&gt;</span></code>’s needs</p></li>
+<li><p>even if empty, the file facillitates module importability and must be present</p></li>
+</ul>
+<ol class="arabic simple" start="3">
+<li><p>Add a file named <code class="docutils literal notranslate"><span class="pre">fre/&lt;tool&gt;/fre&lt;tool&gt;.py</span></code>. This will serve as the main entry point for <code class="docutils literal notranslate"><span class="pre">fre</span></code>
+into the <code class="docutils literal notranslate"><span class="pre">&lt;tool&gt;</span></code>’s functionality</p></li>
+<li><p>Add a <code class="docutils literal notranslate"><span class="pre">click</span></code> group named after <code class="docutils literal notranslate"><span class="pre">&lt;tool&gt;</span></code> within <code class="docutils literal notranslate"><span class="pre">fre/&lt;tool&gt;/fre&lt;tool&gt;.py</span></code></p></li>
+</ol>
+<ul class="simple">
+<li><p>This <code class="docutils literal notranslate"><span class="pre">click</span></code> group will contain all the functionality under the <code class="docutils literal notranslate"><span class="pre">&lt;tool&gt;</span></code></p></li>
+</ul>
+<ol class="arabic simple" start="5">
+<li><p>Create separate files as needed for different commands; do not code out the full
+implemetation of <code class="docutils literal notranslate"><span class="pre">&lt;tool&gt;</span></code> inside of a <code class="docutils literal notranslate"><span class="pre">click</span></code> command within <code class="docutils literal notranslate"><span class="pre">fre/&lt;tool&gt;/fre&lt;tool&gt;.py</span></code>.</p></li>
+</ol>
+<ul class="simple">
+<li><p>better yet, consider what structure your tool may need in the future for maintainability’s sake</p></li>
+<li><p>if you need, specify a <code class="docutils literal notranslate"><span class="pre">&lt;subtool&gt;</span></code> like <code class="docutils literal notranslate"><span class="pre">fre/&lt;tool&gt;/&lt;subtool&gt;</span></code>. <code class="docutils literal notranslate"><span class="pre">fre/app</span></code> currently has
+this structure</p></li>
+</ul>
+<ol class="arabic simple" start="6">
+<li><p>Be sure to import the contents of the needed subcommand scripts inside of <code class="docutils literal notranslate"><span class="pre">fre&lt;tool&gt;.py</span></code></p></li>
+</ol>
+<ul class="simple">
+<li><p>i.e. from <code class="docutils literal notranslate"><span class="pre">fre.&lt;tool&gt;.toolCommandScript</span> <span class="pre">import</span> <span class="pre">*</span></code></p></li>
+</ul>
+<ol class="arabic simple" start="7">
+<li><p>At this point, you can copy and paste the parts of your main <code class="docutils literal notranslate"><span class="pre">click</span></code> command from its script
+into <code class="docutils literal notranslate"><span class="pre">fre&lt;tool&gt;.py</span></code> when implementing the function reflective of the command function</p></li>
+</ol>
+<ul class="simple">
+<li><p>Everything will remain the same; i.e. arguments, options, etc.</p></li>
+<li><p>However, this new function within <code class="docutils literal notranslate"><span class="pre">fre&lt;tool&gt;.py</span></code> must a new line after the arguments, options,
+and other command components; <code class="docutils literal notranslate"><span class="pre">&#64;click.pass_context</span></code></p></li>
+<li><p>Along with this, a new argument <code class="docutils literal notranslate"><span class="pre">context</span></code> must now be added to the parameters of the command
+(preferably at the beginning, but it won’t break it if it’s not)</p></li>
+</ul>
+<ol class="arabic simple" start="8">
+<li><p>From here, all that needs to be added after defining the command with a name is
+<code class="docutils literal notranslate"><span class="pre">context.forward(mainFunctionOfToolCommand)</span></code>, and done!</p></li>
+<li><dl class="simple">
+<dt>The last step is to replicate the command in the same way as done in <code class="docutils literal notranslate"><span class="pre">fre&lt;tool&gt;.py</span></code></dt><dd><p>inside of <code class="docutils literal notranslate"><span class="pre">fre.py</span></code>, but make sure to add <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">fre</span> <span class="pre">import</span> <span class="pre">&lt;tool&gt;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">fre.&lt;tool&gt;</span> <span class="pre">import</span> <span class="pre">*</span></code></p>
+</dd>
+</dl>
+</li>
+</ol>
+<p>Please refer to this issue when encountering naming issues:
+<a class="reference external" href="https://github.com/NOAA-GFDL/fre-cli/issues/31">NOAA-GFDL#31</a></p>
+</section>
+<section id="example-fre-directory-structure">
+<h3>Example <code class="docutils literal notranslate"><span class="pre">fre/</span></code> Directory Structure<a class="headerlink" href="#example-fre-directory-structure" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">fre/</span></code>
+├── <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>
+├── <code class="docutils literal notranslate"><span class="pre">fre.py</span></code>
+├── <code class="docutils literal notranslate"><span class="pre">fre&lt;tool&gt;</span></code>
+│   ├── <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>
+│   ├── <code class="docutils literal notranslate"><span class="pre">toolCommandScript.py</span></code>
+│   └── <code class="docutils literal notranslate"><span class="pre">fre&lt;tool&gt;.py</span></code></p>
+</section>
+<section id="manifest-in">
+<h3><code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code><a class="headerlink" href="#manifest-in" title="Link to this heading"></a></h3>
+<p>In the case where non-python files like templates, examples, and outputs are to be included in the <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> package,
+<code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> can provide the solution. Ensure that the file exists within the correct folder, and add a line to the
+<code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> file saying something like <code class="docutils literal notranslate"><span class="pre">include</span> <span class="pre">fre/fre&lt;tool&gt;/fileName.fileExtension</span></code></p>
+<ul class="simple">
+<li><p>For more efficiency, if there are multiple files of the same type needed, the <code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> addition can be something
+like <code class="docutils literal notranslate"><span class="pre">recursive-include</span> <span class="pre">fre/fre&lt;tool&gt;</span> <span class="pre">*.fileExtension</span></code> which would recursively include every file matching that
+<code class="docutils literal notranslate"><span class="pre">fileExtension</span></code> within the specified directory and its respective subdirectories.</p></li>
+</ul>
+</section>
+<section id="adding-documentation">
+<h3>Adding Documentation<a class="headerlink" href="#adding-documentation" title="Link to this heading"></a></h3>
+<p>see section “Documentation-Documentation”</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.html" class="btn btn-neutral float-left" title="API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="badges.html" class="btn btn-neutral float-right" title="Badges" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
