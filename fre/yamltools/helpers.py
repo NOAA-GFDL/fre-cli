@@ -1,7 +1,6 @@
 ''' this holds functions widely used across various parts of fre/yamltools '''
 
-# this brings in the yaml module with the join_constructor
-# this is defined in the __init__
+# this boots yaml with !join- see __init__
 from . import *
 
 def yaml_load(yamlfile):

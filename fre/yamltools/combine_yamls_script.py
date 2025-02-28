@@ -1,10 +1,12 @@
+'''
+ script that combines the model yaml with the compile, platform, and experiment yamls.
+'''
 import os
 
 import logging
 fre_logger = logging.getLogger(__name__)
 
-# this brings in the yaml module with the join_constructor
-# this is defined in the __init__
+# this boots yaml with !join- see __init__
 from . import *
 from .helpers import output_yaml
 

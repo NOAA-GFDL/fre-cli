@@ -12,13 +12,9 @@ import shutil
 from pathlib import Path
 import click
 
-
-# this brings in the yaml module with the join_constructor
-# this is defined in the __init__
+## this boots yaml with !join- see __init__
 from . import *
 from .helpers import yaml_load
-
-
 
 
 def get_compile_paths(mainyaml_dir,comb):

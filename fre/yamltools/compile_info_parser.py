@@ -1,9 +1,10 @@
+''' 
+compile-yaml configuration class
+'''
 import os
-# this brings in the yaml module with the join_constructor
-# this is defined in the __init__
+
+# this boots yaml with !join- see __init__
 from . import *
-
-
 
 def get_compile_paths(full_path,loaded_yml):
     """
