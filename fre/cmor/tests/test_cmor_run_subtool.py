@@ -4,8 +4,6 @@ import shutil
 from pathlib import Path
 from datetime import date
 
-#from fre.cmor import cmor_mixer
-#cmor_mixer.DEBUG_MODE_RUN_ONE = True
 from fre.cmor import cmor_run_subtool
 
 
