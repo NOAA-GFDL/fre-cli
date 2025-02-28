@@ -75,9 +75,9 @@ def test_cli_fre_cmor_yaml_opt_dne():
 
 TEST_YAML_PATH=f"{ROOTDIR}/fre/yamltools/tests/AM5_example/am5.yaml"
 TEST_CMOR_YAML_PATH=f"{ROOTDIR}/fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
+@pytest.mark.xfail(reason='under construction / being actively developed') #TODO
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml -y '''
-    pytest.xfail('under construction / being actively developed') #TODO
 
     # FYI
     indir = f'{ROOTDIR}/ocean_sos_var_file'
