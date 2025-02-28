@@ -24,24 +24,20 @@ def truncate_date(date, freq):
     """ truncates iso freq to iso date time """
     freq_in_date_format=freq_to_date_format(freq)
 
-    #in the shell version, this line simply gets run.
-    #we will simply print this command to screen for now. TO DO (maybe we can work around it?)
-    #not clear to me why piping to tr is necessary, doesnt seem to change output at all
-    #fre_logger.info('cylc date --template '+freq_in_date_format+' '+date+' | tr -d T')
-    #output =subprocess.Popen(["cylc", "date", "--template", freq_in_date_format, date,
-    #                          "|","tr","-d","T"],
-    #                          stdout=subprocess.PIPE)
-    output =subprocess.Popen(["cylc", "cycle-point", "--template", freq_in_date_format, date],
-                              stdout=subprocess.PIPE)
+    fre_logger.debug('cylc date --template '+freq_in_date_format+' '+date
+    output =subprocess.Popen(["cylc", "cycle-point", "--template",
+                              freq_in_date_format, date],
+                              stdout = subprocess.PIPE)
+                     
     bytedate = output.communicate()[0]
-    date=str(bytedate.decode())
+    date = str(bytedate.decode())
 
     #remove trailing newline
-    date=date[:(len(date)-1)]
+    date = date[:(len(date)-1)]
 
     #check for and remove 'T' if present
     if not date.isnumeric():
-        date=date[:8]+date[-2:]
+        date = date[:8]+date[-2:]
     return date
 
 def freq_to_date_format(iso_freq):
@@ -339,17 +335,17 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             raise ValueError(f'input_realm={input_realm} not recognized.')
 
         # this is just to get the grid_file name
-        #fre_logger.info(f'mosaic_type    = {mosaic_type}')
-        #fre_logger.info(f'grid_spec_file = {grid_spec_file}')
-        #fre_logger.info(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)')
+        fre_logger.debug(f'mosaic_type    = {mosaic_type}')
+        fre_logger.debug(f'grid_spec_file = {grid_spec_file}')
+        fre_logger.debug(f'input_mosaic  = get_mosaic_file_name(grid_spec_file, mosaic_type)')
 
         # assume input_mosaic near input grid_spec, where intially specified.
         input_mosaic = input_dir + get_mosaic_file_name(grid_spec_file, mosaic_type)
-        #fre_logger.info(f'input_mosaic  = {input_mosaic}')
+        fre_logger.debug(f'input_mosaic  = {input_mosaic}')
 
         ## this is to get the tile1 filename?
         mosaic_grid_file = input_dir + get_mosaic_grid_file_name(input_mosaic)
-        #fre_logger.info(f'mosaic_grid_file = {mosaic_grid_file}')
+        fre_logger.debug(f'mosaic_grid_file = {mosaic_grid_file}')
 
         # need source file dimenions for lat/lon
         source_nx = str(int(Dataset(mosaic_grid_file).dimensions['nx'].size / 2 ))
