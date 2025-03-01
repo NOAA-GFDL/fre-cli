@@ -116,6 +116,11 @@ def set_rose_suite(yamlfile,rose_suite):
         for i in pp.values():
             if not isinstance(i,list):
                 for key,value in i.items():
+                    # if pp start/stop is specified as integer, pad zeros
+                    # or else cylc validate will fail
+                    if key == 'pp_start' or key == 'pp_stop':
+                        if isinstance(value, int):
+                            value = f"{value:04}"
                     # rose-suite.conf is somewhat finicky with quoting
                     # cylc validate will reveal any complaints
                     rose_suite.set( keys = ['template variables', key.upper()],
