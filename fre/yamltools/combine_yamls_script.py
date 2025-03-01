@@ -123,7 +123,7 @@ def consolidate_yamls(yamlfile,experiment,platform,target,use,output):
             yml_dict = get_combined_ppyaml(combined,experiment)
         else:
             yml_dict = get_combined_ppyaml(combined,experiment,output)
-            print(f"Combined yaml file located here: {os.getcwd()}/{output}")
+            print(f"Combined yaml file located here: {output}")
 
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'") 
