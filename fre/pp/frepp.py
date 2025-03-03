@@ -184,6 +184,13 @@ def nccheck(file_path, num_steps):
     """ - Check that a netCDF (.nc) file contains expected number of timesteps - """
     nccheck_script.check(file_path,num_steps)
 
+#fre pp ncvalidate
+@pp_cli.command()
+@click.option('--diag_manifest','-d', required = True, help = "Diag manifest file to be parsed")
+def ncvalidate(diag_manifest)
+    """ Uses diag manifest to run nccheck command and validate timesteps in multiple files """
+    ncvalidate_script.validate(diag_manifest)
+
 #fre pp wrapper
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
