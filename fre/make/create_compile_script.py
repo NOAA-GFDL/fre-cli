@@ -10,7 +10,7 @@ from pathlib import Path
 from multiprocessing.dummy import Pool
 
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
     # Define variables
@@ -20,9 +20,9 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     jobs = str(jobs)
 
     if verbose:
-        fre_logger.setLevel(level = logging.INFO)
+        fre_logger.setLevel(level = logging.DEBUG)
     else:
-        fre_logger.setLevel(level = logging.ERROR)
+        fre_logger.setLevel(level = logging.INFO)
 
     srcDir="src"
     checkoutScriptName = "checkout.sh"
@@ -32,18 +32,22 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     plist = platform
     tlist = target
 
-    # Combined compile yaml file
-    combined = Path(f"combined-{name}.yaml")
+#    # Combined compile yaml file
+#    combined = Path(f"combined-{name}.yaml")
 
-    ## If combined yaml exists, note message of its existence
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
+    # Combine model, compile, and platform yamls
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined)
+    fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined,freVars)
+    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets

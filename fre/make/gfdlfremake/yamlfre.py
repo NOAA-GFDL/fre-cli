@@ -9,36 +9,13 @@ def parseCompile(fname,v):
     """
     Brief: Open the yaml file and parse as fremakeYaml
     Param:
-        - fname the name of the yaml file to parse
+        - fname yaml dictionary to parse
         - v the FRE yaml variables
     """
-    # Open the yaml file and parse as fremakeYaml
-    with open(fname, 'r') as yamlfile:
-        y = yaml.safe_load(v.freVarSub(yamlfile.read()))
+    # Convert yaml dictionary to string and substitute ${ -- }
+    y = v.freVarSub(str(fname))
 
     return y
-
-##### THIS SEEMS UNUSED
-## \brief Checks the yaml for variables. Required variables will dump and error. Non-required variables will
-## set a default value for the variable
-#def yamlVarCheck(var,val="",req=False,err="error"):
-#    """
-#    Brief: Checks the yaml for variables. Required variables will dump and error.
-#           Non-required variables will set a default value for the variable
-#    Param:
-#        - var A variable in the yaml
-#        - val a default value for var
-#        - req if true, the variable is required in the yaml and an exception will be raised
-#        - err An error message to print if the variable is required and doesn't exist
-#    """
-#     try:
-#          var
-#     except:
-#          if req:
-#               print (err)
-#               raise
-#          else:
-#               var = val
 
 class compileYaml():
     """
@@ -158,9 +135,11 @@ class freyaml():
             - combinedyaml The name of the combined yaml file
             - v FRE yaml variables
         """
-        self.combinedfile = combinedyaml
+        self.combinedfile = combinedyaml  #yaml dictionary
+        self.freyaml = parseCompile(self.combinedfile,v)
 
-        self.freyaml = parseCompile(self.combinedfile, v)
+        # convert edited string back to dictionary
+        self.freyaml = eval(self.freyaml)
 
         #get compile info
         self.compiledict = self.freyaml.get("compile")
