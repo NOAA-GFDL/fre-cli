@@ -67,7 +67,9 @@ class container():
             self.secondstage = [f"FROM {self.stage2base} as final\n",
                                 f"COPY --from=builder  {self.src} {self.src}\n",
                                 f"COPY --from=builder {self.bld} {self.bld}\n",
-                                f"ENV PATH=$PATH:{self.bld}\n"]
+                                f"RUN mkdir -p /apps/bin \\ \n",
+                                f" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh \n",
+                                f"ENV PATH=$PATH:{self.bld}:/apps/bin\n"]
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """
         Brief: writes to the checkout part of the Dockerfile and sets up the compile

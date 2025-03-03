@@ -1,5 +1,8 @@
 ''' fre lister '''
 
+#import logging
+#fre_logger = logging.getLogger(__name__)
+
 import click
 from fre.list_ import list_experiments_script
 from fre.list_ import list_platforms_script
