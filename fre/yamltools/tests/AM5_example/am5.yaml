@@ -43,12 +43,11 @@ build:
   compileYaml: "compile_yamls/compile.yaml"
   platformYaml: "compile_yamls/platforms.yaml"
 
-shared:
-
 
 experiments:
   - name: "c96L65_am5f7b12r1_amip"
     pp:
+      - "pp_yamls/settings.yaml"
       - "pp_yamls/pp.c96_amip.yaml"
       - "pp_yamls/pp-TEST.c96_amip.yaml"
     analysis:
