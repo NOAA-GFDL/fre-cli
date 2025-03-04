@@ -1,0 +1,25 @@
+# note that currently, these are all "filler" values
+cmor:
+
+  directories:
+    <<: *shared_directories
+    table_dir:
+      &table_dir "fre/tests/test_files/cmip6-cmor-tables/Tables"
+    exp_config_dir:
+      &exp_config_dir "fre/tests/test_files"
+      
+
+  targets:
+    Omon-ts-gr1:
+      json_table_config:
+        !join [ *table_dir, "/", "CMIP6_Omon.json" ]
+      json_exp_config:
+        !join [ *exp_config_dir, "/", "CMOR_input_example.json" ]
+      indir:
+        "fre/tests/test_files/ocean_sos_var_file"
+      json_var_list:
+        "fre/tests/test_files/varlist"
+      outdir:
+        "fre/tests/test_files/outdir"
+      opt_var_name:
+
