@@ -11,11 +11,11 @@ from fre.pp import nccheck_script as ncc
 levels={}
 
 def validate(diag_manifest):
-    output_path = ''
+    history_dir_path = ''
     with open(diag_manifest, 'r') as f:
 
         # Get dir path, open diag manifest
-        output_path=Path(diag_manifest).parent.absolute()
+        history_dir_path=Path(diag_manifest).parent.absolute()
         diag_manifest = yaml.safe_load(f)
 
         # Go through the diag manifest and get all expected_timelevels, add to dictionary
@@ -25,11 +25,11 @@ def validate(diag_manifest):
             levels.update({str(filename):expected_timelevels})
 
     #Run nccheck to compare actual timelevels to expected levels found in diag manifest
-    files = os.listdir(output_path)
+    files = os.listdir(history_dir_path)
     for _file in files:
         split_filename = re.search(r"\.(.*?)\.",_file).group(1)
         if 'diag_manifest' not in str(split_filename):
-            filepath = (str(output_path)+'/'+str(_file))
+            filepath = (str(history_dir_path)+'/'+str(_file))
             result = ncc.check(filepath,levels[split_filename])
 
     return result
