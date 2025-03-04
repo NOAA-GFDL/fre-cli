@@ -27,9 +27,9 @@ def test_install_analysis_package():
     url = "github.com/noaa-gfdl/analysis-scripts"
     name = "freanalysis_clouds"
     with TemporaryDirectory() as tmp:
-         install_analysis_package(url, name, tmp)
-         plugins = list_plugins(tmp)
-         assert name in list_plugins(tmp)
+        install_analysis_package(url, name, tmp)
+        plugins = list_plugins(tmp)
+        assert name in list_plugins(tmp)
 
 
 def test_run_analysis():
@@ -44,7 +44,7 @@ def test_run_analysis():
         install_analysis_package(url, name, library_directory)
         with pytest.raises(CalledProcessError) as err:
             run_analysis(name, str(catalog), ".", "output.yaml", experiment_yaml,
-                         library_directory)
+                    library_directory)
         for line in err._excinfo[1].output.decode("utf-8").split("\n"):
             if f"No such file or directory: '{str(catalog)}'" in line:
                 return
