@@ -32,27 +32,51 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
 
     # Extract yaml path for exp. provided
     # if experiment matches name in list of experiments in yaml, extract file path
+    cmoryaml_path = None
+    ppsettingsyaml_path = None
     for i in loaded_yaml.get("experiments"):
+        if experiment != i.get("name"):
+            continue
 
-        if experiment == i.get("name"):
-
-            expyaml=i.get("cmor")
-            if expyaml is None:
-                raise ValueError("No experiment yaml path given!")
-
-            ey = None
-            for e in expyaml:
-                ey_check = Path(
-                    os.path.join(
-                        mainyaml_dir, e ) )
-
-                if not ey_check.exists():
-                    raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
-
-                ey = ey_check
+        ppyamls=i.get('pp')
+        fre_logger.info(f'ppyamls is going to look like ppyamls=\n{ppyamls}')
+        if ppyamls is None:
+            raise ValueError(f"no ppyaml paths found under experiment = {experiment}")
+            
+        ppsettingsyaml=None
+        for ppyaml in ppyamls:
+            #fre_logger.info(f'\nwithin ppyamls we have (SINGULAR) ppyaml=\n{ppyaml}')
+            if 'settings' in ppyaml:
+                ppsettingsyaml=ppyaml
                 break
 
-            return ey
+        if ppsettingsyaml is None:
+            raise ValueError( f"could not find a path pointing to pp-settings for "
+                              f"cmor-yamler and experiment name = {experiment}" )
+
+        fre_logger.info(f'ppsettingsyaml path found- checking to see if it exists...')
+        if not Path(os.path.join(mainyaml_dir, ppsettingsyaml)).exists():
+            raise FileNotFoundError(f'ppsettingsyaml={ppsettingsyaml} does not exist!')
+        ppsettingsyaml_path=Path(os.path.join(mainyaml_dir, ppsettingsyaml))
+            
+        fre_logger.info(f'ppsettingsyaml={ppsettingsyaml}')
+
+        cmoryaml=i.get("cmor")[0]
+        if cmoryaml is None:
+            raise ValueError("No experiment yaml path given!")
+        
+        fre_logger.info(f'cmoryaml={cmoryaml} found- now checking for existence.')
+        if not Path(os.path.join(mainyaml_dir, cmoryaml)).exists():
+            raise FileNotFoundError(f'cmoryaml={cmoryaml} does not exist!')
+        
+        cmoryaml_path = Path(os.path.join(mainyaml_dir, cmoryaml))
+        break
+
+    if cmoryaml_path is None:
+        raise ValueError('... something wrong... cmoryaml_path is None... it should not be none!')
+
+    fre_logger.info(f'cmor_info_parser\'s experiment_check about to return cmoryaml_path!')
+    return cmoryaml_path, ppsettingsyaml_path
 
 ## CMOR CLASS ##
 class CMORYaml():
@@ -113,16 +137,28 @@ class CMORYaml():
         If more than 1 pp yaml defined, return a list of paths.
         """
         # Experiment Check
-        ey_path = experiment_check( self.mainyaml_dir, self.name,
-                                    loaded_yaml )
-        fre_logger.info(f'ey_path = {ey_path}')
-        if ey_path is None:
-            raise ValueError('ey_path is none!')
+        cmory_path, ppsettingsy_path = experiment_check( self.mainyaml_dir, self.name,
+                                                         loaded_yaml )
+        fre_logger.info(f'cmory_path = {cmory_path}')
+        if cmory_path is None:
+            raise ValueError('cmory_path is none!')
+
+        fre_logger.info(f'ppsettingsy_path = {ppsettingsy_path}')
+        if ppsettingsy_path is None:
+            raise ValueError('ppsettingsy_path is none!')
+
 
         cmor_yamls = []
-        with open(ey_path,'r') as eyp:
+        # ... append pp_settings first
+        with open(ppsettingsy_path,'r') as syp:
+            set_content = syp.read()
+            set_info = yaml_content + set_content
+            cmor_yamls.append(set_info)
+
+        # ... now append the cmor info?
+        with open(cmory_path,'r') as eyp:
             exp_content = eyp.read()
-            exp_info = yaml_content + exp_content
+            exp_info = exp_content
             #fre_logger.info(f'exp_content = \n {exp_content}')
             #fre_logger.info(f'exp_info = \n {exp_info}')
             cmor_yamls.append(exp_info)
@@ -138,40 +174,16 @@ class CMORYaml():
         if cmor_list is None:
             raise ValueError('cmor_list is none and should not be!!!')
 
-        ey_path = experiment_check( self.mainyaml_dir, self.name,
-                                    loaded_yaml )
+        cmory_path, ppsettingsy_path = experiment_check( self.mainyaml_dir, self.name,
+                                                         loaded_yaml )
         result = {}
 
         yml_cmor = "".join(cmor_list)
         result.update(
             yaml.load(
                 yml_cmor, Loader = yaml.Loader ))
-        #fre_logger.info(f"   experiment yaml: {exp}")
+        fre_logger.info(f"   experiment yaml: \n {yml_cmor}")
 
-        for i in cmor_list[1:]:
-            cmor_list_to_string_concat = "".join(i)
-            yf = yaml.load(cmor_list_to_string_concat,
-                           Loader = yaml.Loader)
-
-            for key in result:
-
-                if key not in yf:
-                    continue
-
-                if all( [ isinstance(result[key], dict),
-                          isinstance(yf[key], dict),
-                          key == "postprocess" ] ) :
-
-                    result['postprocess']["components"] += \
-                        yf['postprocess']["components"]
-
-                    if 'components' in result['postprocess']:
-                        result['postprocess']["components"] += \
-                            result[key]["components"]
-
-        if ey_path is not None:
-            exp = str(ey_path).rsplit('/', maxsplit=1)[-1]
-            fre_logger.info(f"   experiment yaml: {exp}")
 
         return result
 
@@ -182,7 +194,9 @@ class CMORYaml():
         """
         # Clean the yaml
         # If keys exists, delete:
-        keys_clean=["fre_properties", "shared", "experiments"]
+        keys_clean=["name", "platform", "target", # these are needed to create the final parsed dictionary fed to cmor
+                    "fre_properties", "directories", "experiments",
+                    'build', 'postprocess']
 
         for kc in keys_clean:
             if kc in yml_dict.keys():

@@ -1,9 +1,3 @@
-name: c96L65_am5f7b12r1_amip
-platform: ncrc5.intel
-target: prod-openmp
-build:
-  compileYaml: compile_yamls/compile.yaml
-  platformYaml: compile_yamls/platforms.yaml
 cmor:
   directories:
     history_dir: /archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/history
