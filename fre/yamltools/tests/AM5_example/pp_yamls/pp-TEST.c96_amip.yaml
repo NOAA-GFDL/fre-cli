@@ -7,7 +7,6 @@ fre_properties:
 directories:
   <<: *shared_directories
   ptmp_dir: "/ptmp/$USER"
-  pp_grid_spec: *GRID_SPEC96
 
 #c96_amip_postprocess:
 postprocess:
@@ -18,6 +17,7 @@ postprocess:
     pp_stop:    *ANA_AMIP_END
     pp_chunk_a: *PP_AMIP_CHUNK96
     pp_components: "atmos atmos_scalar"
+    pp_grid_spec: *GRID_SPEC96
   switches: 
     <<: *shared_switches
     do_statics: False
@@ -25,13 +25,13 @@ postprocess:
   # main pp instructions
   components:
     - type: "atmos_cmip-TEST"
-      sources: "atmos_month_cmip atmos_8xdaily_cmip atmos_daily_cmip"
+      sources: ["atmos_month_cmip", "atmos_8xdaily_cmip", "atmos_daily_cmip"]
       sourceGrid: "cubedsphere"
       xyInterp: *custom_interp
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
     - type: "atmos-TEST"
-      sources: "atmos_month"
+      sources: ["atmos_month"]
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
