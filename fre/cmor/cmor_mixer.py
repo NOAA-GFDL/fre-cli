@@ -19,9 +19,6 @@ import netCDF4 as nc
 import cmor
 from .cmor_helpers import *
 
-# ----- \start consts # TODO make this an input argument flag or smth.
-DEBUG_MODE_RUN_ONE = False
-# ----- \end consts
 
 
 ### ------ BULK ROUTINES ------ ###
@@ -45,7 +42,6 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         json_table_config: string, representing path to json configuration file holding variable names for a given table.
                            proj_table_vars is read from this file, but both are passed anyways.
     '''
-    fre_logger.info('\n\n-------------------------- START rewrite_netcdf_file_var call -----')
     fre_logger.info( "input data: " )
     fre_logger.info(f"    local_var   =  {local_var}" )
     fre_logger.info(f"    target_var = {target_var}")
@@ -528,7 +524,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
                               iso_datetime_arr = None, name_of_set = None,
                               json_exp_config = None, outdir = None,
-                              proj_table_vars = None, json_table_config = None ):
+                              proj_table_vars = None, json_table_config = None, run_one_mode = False ):
     ''' processes a target directory/file
     this routine is almost entirely exposed data movement before/after calling
     rewrite_netcdf_file_var it is also the most hopelessly opaque routine in this entire dang macro.
@@ -548,7 +544,6 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         json_table_config: see cmor_run_subtool arg desc
 
     '''
-    fre_logger.info('\n\n-------------------------- START cmorize_target_var_files call -----')
     fre_logger.info(f"local_var = {local_var} to be used for file-targeting.\n"
           f"    target_var = {target_var} to be used for reading the data \n"
            "    from the file\n"
@@ -661,8 +656,8 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         if Path(nc_ps_file_work).exists():
             Path(nc_ps_file_work).unlink()
 
-        if DEBUG_MODE_RUN_ONE:
-            fre_logger.warning('DEBUG_MODE_RUN_ONE is True!!!!')
+        if run_one_mode:
+            fre_logger.warning('run_one_mode is True!!!!')
             fre_logger.warning('done processing one file!!!')
             break
 
@@ -674,6 +669,7 @@ def cmor_run_subtool( indir = None,
                       json_table_config = None,
                       json_exp_config = None ,
                       outdir = None,
+                      run_one_mode = False,
                       opt_var_name = None
                       ):
     '''
@@ -785,10 +781,11 @@ def cmor_run_subtool( indir = None,
             indir, target_var, local_var, iso_datetime_arr, # OK
             name_of_set, json_exp_config,
             outdir,
-            proj_table_vars, json_table_config # a little redundant
+            proj_table_vars, json_table_config, # a little redundant
+            run_one_mode
         )
 
-        if DEBUG_MODE_RUN_ONE:
-            fre_logger.warning('DEBUG_MODE_RUN_ONE is True. breaking var_list loop')
+        if run_one_mode:
+            fre_logger.warning('run_one_mode is True. breaking var_list loop')
             break
     return 0
