@@ -1,0 +1,37 @@
+# reusable variables
+fre_properties:
+  - &ESM4_VERSION    "DECK"
+  - &FRE_STEM        !join [ESM4/, *ESM4_VERSION]
+  
+  - &PP_START        "0001"
+  - &PP_STOP         "0500"
+  - &PP_CHUNK_A      "P5Y"
+  - &PP_CHUNK_B      "P20Y"
+  
+#  - &PP_XYINTERP     "90,144"
+  - &PP_XYINTERP     "180,288"
+#  - &PP_XYINTERP     "180,360"
+
+
+  # grids
+  - &GRID_SPEC         "/archive/gold/datasets/OM4_05/mosaic_c96.v20180227.tar" #site: gfdl
+#  - &GRID_SPEC         "$(CMIP6_ARCHIVE_ROOT)/ESM4/OM4_05/mosaic_c96.v20180227.tar" #site: ncrc
+
+  # compile information
+  - &release             ""
+  - &FMSincludes         ""
+  - &momIncludes         ""
+
+build:
+  # compile information
+  compileYaml: "compile_yamls/compile.yaml"
+  platformYaml: "compile_yamls/platforms.yaml"
+
+
+experiments:
+  - name: "ESM4_esm-piControl_D"
+    pp:
+      - "pp_yamls/settings.yaml"
+      - "pp_yamls/pp.yaml"
+    cmor: # cmor-tool development, not part of official am5.yaml (yet)
+      - "cmor_yamls/cmor.yaml"

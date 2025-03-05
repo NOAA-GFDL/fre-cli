@@ -13,7 +13,7 @@ from .helpers import output_yaml
 from . import cmor_info_parser as cmip
 from . import compile_info_parser as cip
 from . import pp_info_parser as ppip
-#import pprint
+import pprint
 
 
 ## Functions to combine the yaml files ##
@@ -27,15 +27,23 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
 
     # Merge model into combined file
     try:
-        fre_logger.info('calling CMORYaml.combine_model() for yaml_content and loaded_yaml')
+        fre_logger.info('\n\ncalling CMORYaml.combine_model() for yaml_content and loaded_yaml...')
         yaml_content, loaded_yaml = CMORYaml.combine_model()
+        #fre_logger.info(f'loaded_yaml = \n {loaded_yaml}')
+        #fre_logger.info(f'yaml_content = \n {yaml_content}')
+        fre_logger.info('\n... CMORYaml.combine_model succeeded.\n')
     except:
         raise ValueError("CMORYaml.combine_model failed")
 
-    # Merge cmor experiment yamls into combined file
+    # Merge cmor experiment yamls into combined file, calls experiment_check
     try:
+        fre_logger.info('\n\ncalling CMORYaml.combine_experiment(), for comb_cmor_updated_list \n'
+                        'using args yaml_content and loaded_yaml...')
         comb_cmor_updated_list = CMORYaml.combine_experiment( yaml_content,
                                                               loaded_yaml   )
+        #fre_logger.info(f'comb_cmor_updated_list = ... \n ')#\n {comb_cmor_updated_list}')
+        #pprint.PrettyPrinter(indent=1).pprint(comb_cmor_updated_list)
+        fre_logger.info('\n... CMORYaml.combine_experiment succeeded.\n')
     except:
         raise ValueError("CMORYaml.combine_experiment failed")
 
@@ -43,8 +51,13 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
     # Merge model/cmor yamls if more than 1 is defined
     # (without overwriting the yaml)
     try:
+        fre_logger.info('\n\ncalling CMORYaml.merge_cmor_yaml(), for full_cmor_yaml'
+                        'using args comb_cmor_updated_list and loaded_yaml...')
         full_cmor_yaml = CMORYaml.merge_cmor_yaml( comb_cmor_updated_list,
                                                    loaded_yaml                 )
+        #fre_logger.info(f'full_cmor_yaml = \n ')
+        #pprint.PrettyPrinter(indent=1).pprint(full_cmor_yaml)
+        fre_logger.info('\n... CMORYaml.merge_cmor_yaml succeeded\n')
     except:
         raise ValueError("CMORYaml.merge_cmor_yaml failed")
 
@@ -159,8 +172,13 @@ def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
             fre_logger.info(f"Combined yaml file located here: {os.getcwd()}/{output}")
 
     elif use == "cmor":
+        fre_logger.info('initializing a CMORYaml instance...')
         CmorYaml = cmip.CMORYaml( yamlfile, experiment, platform, target )
+        fre_logger.info('...CMORYaml instance initialized')
+
+        fre_logger.info('attempting to combine cmor yaml info with info from other yamls...')
         yml_dict = get_combined_cmoryaml( CmorYaml, experiment, output )
+        fre_logger.info('... done attempting to combine cmor yaml info')
 
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'")
