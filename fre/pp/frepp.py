@@ -6,6 +6,7 @@ from fre.pp import checkout_script
 from fre.pp import configure_script_yaml
 from fre.pp import configure_script_xml
 from fre.pp import validate_script
+from fre.pp import ncvalidate_script
 from fre.pp import install_script
 from fre.pp import run_script
 from fre.pp import nccheck_script
@@ -183,6 +184,13 @@ def configure_xml(xml, platform, target, experiment, do_analysis, historydir, re
 def nccheck(file_path, num_steps):
     """ - Check that a netCDF (.nc) file contains expected number of timesteps - """
     nccheck_script.check(file_path,num_steps)
+
+#fre pp ncvalidate
+@pp_cli.command()
+@click.option('--diag_manifest','-d', required = True, help = "Diag manifest file to be parsed")
+def ncvalidate(diag_manifest):
+    """ Uses diag manifest to run nccheck command and validate timesteps in multiple files """
+    ncvalidate_script.validate(diag_manifest)
 
 #fre pp wrapper
 @pp_cli.command()
