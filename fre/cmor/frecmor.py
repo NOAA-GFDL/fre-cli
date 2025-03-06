@@ -38,13 +38,23 @@ def cmor_cli():
 @click.option("-o", "--output", type = str, default = None,
               help = "Output file if desired", required = False)
 def yaml(yamlfile, experiment, target, platform, output):
-    '''
-    fre cmor yamler gonna yaml.
-    where your cmorization yaml gets yamled by the cmor yamler.
-    i yaml what i yaml and that's all that i aml
-    i could do this all day.
-    shoutout to my federal home PEOPLE.
-    '''
+    """
+    Processes a CMOR (Climate Model Output Rewriter) YAML configuration file.
+
+    This function takes a YAML file and various parameters related to a climate model experiment,
+    and processes the YAML file using the CMOR YAML subtool.
+
+    Parameters:
+    yamlfile (str): Path to the YAML configuration file.
+    experiment (str): Name of the experiment.
+    target (str): Target specification for the CMOR process.
+    platform (str): Platform on which the CMOR process is being run.
+    output (str): Output directory or file for the processed data.
+
+    Raises:
+    ValueError: If the yamlfile is not provided.
+    """
+
 
     # if opt_var_name specified, forget the list.
     if yamlfile is None:
