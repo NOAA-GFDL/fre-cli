@@ -1,11 +1,11 @@
 analysis:
   land-test:
     required:
-      data_frequency: 'mon-test'
+      data_frequency: 'mon'
       date_range: [*ANA_AMIP_START, *ANA_AMIP_END]
     workflow:
       components: ["land-test"]
       cumulative: False
-      product: 'ts-test'
+      product: 'ts'
       script_frequency: 'R1'
       switch: True

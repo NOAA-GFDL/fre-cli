@@ -4,7 +4,6 @@ cmor:
     pp_dir: /archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp
     analysis_dir: /nbhome/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip
     ptmp_dir: /xtmp/$USER/ptmp
-    fre_analysis_home: /home/fms/local/opt/fre-analysis/test
     table_dir: fre/tests/test_files/cmip6-cmor-tables/Tables
     exp_config_dir: fre/tests/test_files
   targets:

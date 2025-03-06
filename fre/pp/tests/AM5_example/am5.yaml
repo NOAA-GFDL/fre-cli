@@ -51,7 +51,6 @@ shared:
     pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
     analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
     ptmp_dir:     "/xtmp/$USER/ptmp"
-    fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
 
   # shared pp settings
   postprocess: 
@@ -66,6 +65,7 @@ shared:
       do_atmos_plevel_masking: True
       do_preanalysis:     False
       do_analysis:        True
+      do_analysis_only:   False
 
 experiments:
   - name: "c96L65_am5f7b12r1_amip"
