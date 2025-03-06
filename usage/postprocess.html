@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FMS history files &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="../_static/fonts.css?v=5583d106" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">FMS history files</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/usage/postprocess.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span></code> regrids FMS history files and generates timeseries, climatologies, and static postprocessed files, with instructions specified in YAML.</p>
+<p>Bronx plug-in refineDiag and analysis scripts can also be used, and a reimagined analysis script ecosystem is being developed and is available now (for adventurous users). The new analysis script framework is independent of and compatible with FRE (<a class="reference external" href="https://github.com/NOAA-GFDL/analysis-scripts">https://github.com/NOAA-GFDL/analysis-scripts</a>). The goal is to combine the ease-of-use of legacy FRE analysis scripts with the standardization of model output data catalogs and python virtual environments.</p>
+<p>In the future, output NetCDF files will be rewritten by CMOR by default, ready for publication to community archives (e.g. ESGF). Presently, standalone CMOR tooling is available as <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">cmor</span></code>.</p>
+<p>By default, an intake-esm-compatible data catalog is generated and updated, containing a programmatic metadata-enriched searchable interface to the postprocessed output. The catalog tooling can be independently assessed as <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">catalog</span></code>.</p>
+<section id="fms-history-files">
+<h1>FMS history files<a class="headerlink" href="#fms-history-files" title="Link to this heading"></a></h1>
+<p>FRE experiments are run in segments of simulated time. The FMS diagnostic manager, as configured in
+experiment configuration files (diag yamls) saves a set of diagnostic output files, or “history files.”
+The history files are organized by label and can contain one or more temporal or static diagnostics.
+FRE (Bronx frerun) renames and combines the raw model output (that is usually on a distributed grid),
+and saves the history files in one tarfile per segment, date-stamped with the date of the beginning of the segment.
+The FMS diagnostic manager requires
+that variables within one history file be the same temporal frequency (e.g. daily, monthly, annual),
+but statics are allowed in any history file. Usually, variables in a history file
+share a horizontal and vertical grid.</p>
+<p>Each history tarfile, again, is date-stamped with the date of the beginning of the segment, in YYYYMMDD format.
+For example, for a 5-year experiment with 6-month segments, there will be 10 history files containing the
+raw model output. Each history tarfile contains a segment’s worth of time (in this case 6 months).:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">19790101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19800101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19810101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19820101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19830101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>
+<span class="mf">19790701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19800701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19810701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19820701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>  <span class="mf">19830701.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span>
+</pre></div>
+</div>
+<p>Each history file within the history tarfiles are also similarly date-stamped. Atmosphere and land history files
+are on the native cubed-sphere grid, which have 6 tiles that represent the global domain. Ocean, ice, and
+global scalar output have just one file that covers the global domain.</p>
+<p>For example, if the diagnostic manager were configured to save atmospheric and ocean annual and monthly history files,
+the 19790101.nc.tar tarfile might contain:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tar</span> <span class="o">-</span><span class="n">tf</span> <span class="mf">19790101.</span><span class="n">nc</span><span class="o">.</span><span class="n">tar</span> <span class="o">|</span> <span class="n">sort</span>
+
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile1</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile2</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile3</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile4</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile5</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_month</span><span class="o">.</span><span class="n">tile6</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile1</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile2</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile3</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile4</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile5</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">atmos_annual</span><span class="o">.</span><span class="n">tile6</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">ocean_month</span><span class="o">.</span><span class="n">nc</span>
+<span class="o">./</span><span class="mf">19790101.</span><span class="n">ocean_annual</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+<p>The name of the history file, while often predictably named, are arbitrary labels within the Diagnostic Manager configuration
+(diag yamls). Each history file is a CF-standard NetCDF file that can be inspected with common NetCDF tools such as the NCO or CDO tools, or even <code class="docutils literal notranslate"><span class="pre">ncdump</span></code>.</p>
+<p>Required configuration</p>
+<ol class="arabic simple">
+<li><p>Set the history directory in your postprocessing yaml:</p></li>
+</ol>
+<blockquote>
+<div><dl class="simple">
+<dt>directories:</dt><dd><p>history: /arch5/am5/am5/am5f7c1r0/c96L65_am5f7c1r0_amip/gfdl.ncrc5-deploy-prod-openmp/history</p>
+</dd>
+</dl>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Set the segment size as an ISO8601 duration (e.g. P1Y is “one year”):</p></li>
+</ol>
+<blockquote>
+<div><dl class="simple">
+<dt>postprocess:</dt><dd><dl class="simple">
+<dt>settings:</dt><dd><p>history_segment: P1Y</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>Set the date range to postprocess as ISO8601 dates:</p></li>
+</ol>
+<blockquote>
+<div><dl>
+<dt>postprocess:</dt><dd><dl>
+<dt>settings:</dt><dd><p>pp_start: 1979-01-01T0000Z</p>
+<p>pp_stop: 2020-01-01T0000Z</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="postprocess-components">
+<h1>Postprocess components<a class="headerlink" href="#postprocess-components" title="Link to this heading"></a></h1>
+<p>The history-file namespace is a single layer as shown above. By longtime tradition, FRE postprocessing namespaces are richer, with
+a distinction for timeseries, timeaveraged, and static output datasets, and includes frequency and chunk-size in the directory structure.</p>
+<p>Postprocessed files within a “component” share a horizontal grid; which can be the native grid or regridded to lat/lon.</p>
+<p>Required configuration</p>
+<ol class="arabic simple" start="4">
+<li><p>Define the atmos and ocean postprocess components:</p></li>
+</ol>
+<blockquote>
+<div><dl>
+<dt>postprocess:</dt><dd><dl>
+<dt>components:</dt><dd><ul>
+<li><p>type: atmos</p>
+<p>sources: [atmos_month, atmos_annual]</p>
+</li>
+<li><p>type: ocean</p>
+<p>sources: [ocean_month, ocean_annual]</p>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="xy-regridding">
+<h1>XY-regridding<a class="headerlink" href="#xy-regridding" title="Link to this heading"></a></h1>
+<p>Commonly, native grid history files are regridded during postprocessing. To regrid to a lat/lon grid, configure your
+desired output grid, interpolation method, input grid type, and path to your FMS exchange grid definition.</p>
+<p>Optional configuration (i.e. if xy-regridding is desired)</p>
+<ol class="arabic simple" start="5">
+<li><p>Regrid the atmos and ocean components to a 1x1 degree grid:</p></li>
+</ol>
+<blockquote>
+<div><dl>
+<dt>directories:</dt><dd><p>pp_grid_spec: /archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar</p>
+</dd>
+<dt>postprocess:</dt><dd><dl>
+<dt>components:</dt><dd><ul>
+<li><p>type: atmos</p>
+<p>sources: [atmos_month, atmos_annual]</p>
+<p>sourceGrid: cubedsphere</p>
+<p>inputRealm: atmos</p>
+<p>xyInterp: [180, 360]</p>
+<p>interpMethod: conserve_order2</p>
+</li>
+<li><p>type: ocean</p>
+<p>sources: [ocean_month, ocean_annual]</p>
+<p>sourceGrid: tripolar</p>
+<p>inputRealm: ocean</p>
+<p>xyInterp: [180, 360]</p>
+<p>interpMethod: conserve_order1</p>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="timeseries">
+<h1>Timeseries<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h1>
+<p>Timeseries output is the most common type of postprocessed output.</p>
+</section>
+<section id="climatologies">
+<h1>Climatologies<a class="headerlink" href="#climatologies" title="Link to this heading"></a></h1>
+<p>annual and monthly climatologies
+less fine-grained than bronx
+per-component switch coming
+now it’s one switch for entire pp</p>
+</section>
+<section id="statics">
+<h1>Statics<a class="headerlink" href="#statics" title="Link to this heading"></a></h1>
+<p>underbaked, known deficiency
+currently, takes statics from “source” history files</p>
+</section>
+<section id="analysis-scripts">
+<h1>Analysis scripts<a class="headerlink" href="#analysis-scripts" title="Link to this heading"></a></h1>
+</section>
+<section id="surface-masking-for-fms-pressure-level-history">
+<h1>Surface masking for FMS pressure-level history<a class="headerlink" href="#surface-masking-for-fms-pressure-level-history" title="Link to this heading"></a></h1>
+</section>
+<section id="legacy-refinediag-scripts">
+<h1>Legacy refineDiag scripts<a class="headerlink" href="#legacy-refinediag-scripts" title="Link to this heading"></a></h1>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
