@@ -22,3 +22,11 @@
 * Minimal Syntax: ``fre pp nccheck -f [netCDF file path] -n [number of expected time records]``
 * Module(s) needed: n/a
 * Example: ``fre pp nccheck -f /home/$user/some_netcdf_file -n 10``
+
+``ncvalidate``
+-----------
+
+* Run nccheck over all files found in diag manifest
+* Minimal Syntax: ``fre pp ncvalidate -d [diag manifest path]``
+* Module(s) needed: n/a
+* Example: ``fre pp ncvalidate -d /some_path/diag_manifest.yaml``
