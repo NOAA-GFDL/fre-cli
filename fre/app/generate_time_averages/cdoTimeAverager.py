@@ -27,6 +27,13 @@ class cdoTimeAverager(timeAverager):
         from cdo import Cdo
 
         _cdo=Cdo()
+        
+        merged = False
+        if type(infile)=='list' and len(infile)> 1:   #multiple files case. Generates one combined file
+            merged_file = "merged_output.nc"
+            cdo.mergetime(input=' '.join(infile), output=merged_file)
+            infile = merged_file
+            merged = True
 
         wgts_sum=0
         if not self.unwgt: #weighted case, cdo ops alone don't support a weighted time-average.
@@ -80,6 +87,9 @@ class cdoTimeAverager(timeAverager):
         else:
             print(f'problem: unknown avg_type={self.avg_type}')
             return 1
+
+        if merged:   #if multiple files where used, the merged version is now removed
+            os.remove(merged_file)
 
         print('done averaging')
         return 0
