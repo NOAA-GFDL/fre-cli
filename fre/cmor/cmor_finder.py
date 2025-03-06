@@ -107,3 +107,34 @@ def cmor_find_subtool( json_var_list = None, json_table_config_dir = None, opt_v
         assert False
 
     return
+
+def make_simple_varlist(dir_targ, output_variable_list):
+    """
+    Replicates the functionality of make_simple_varlist.sh script.
+    """
+    if not dir_targ.endswith("ts/monthly/5yr"):
+        dir_targ = os.path.join(dir_targ, "ts/monthly/5yr")
+
+    one_file = next(glob.iglob(os.path.join(dir_targ, "*.nc")), None)
+    if not one_file:
+        fre_logger.error("No files found in the directory.")
+        return
+
+    one_datetime = os.path.basename(one_file).split('.')[-3]
+    files = glob.glob(os.path.join(dir_targ, f"*{one_datetime}*.nc"))
+
+    if not files:
+        fre_logger.error("No files found matching the pattern.")
+        return
+    elif len(files) == 1:
+        fre_logger.warning("Warning: Only one file found matching the pattern.")
+    else:
+        fre_logger.info(f"Files found with {one_datetime} in the filename. Number of files: {len(files)}")
+
+    var_list = {}
+    for file in files:
+        a_var = os.path.basename(file).split('.')[-2]
+        var_list[a_var] = a_var
+
+    with open(output_variable_list, 'w') as f:
+        json.dump(var_list, f, indent=4)
