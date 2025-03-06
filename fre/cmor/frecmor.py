@@ -5,6 +5,7 @@ import click
 from . import cmor_find_subtool
 from . import cmor_run_subtool
 from . import cmor_yaml_subtool
+from .cmor_finder import make_simple_varlist
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
                   "matching that variable name. I.e., this string help target local_vars, not " + \
@@ -133,6 +134,15 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name)
         opt_var_name = opt_var_name,
         run_one_mode = run_one
     )
+
+@cmor_cli.command()
+@click.option("-d", "--dir_targ", type=str, required=True, help="Target directory")
+@click.option("-o", "--output_variable_list", type=str, required=True, help="Output variable list file")
+def varlist(dir_targ, output_variable_list):
+    """
+    Create a simple variable list from netCDF files in the target directory.
+    """
+    make_simple_varlist(dir_targ, output_variable_list)
 
 
 if __name__ == "__main__":

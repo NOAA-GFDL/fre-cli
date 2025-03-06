@@ -1,3 +1,6 @@
+# this is to try to process /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_esm-piControl_D/gfdl.ncrc4-intel16-prod-openmp/pp/
+
+
 # reusable variables
 fre_properties:
   - &ESM4_VERSION    "DECK"
