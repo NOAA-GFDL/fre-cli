@@ -1,0 +1,41 @@
+# note that currently, these are all "filler" values
+cmor:
+
+  directories:
+    <<: *shared_directories
+    table_dir:
+      &table_dir "local_cmor_config_dir"
+    exp_config_dir:
+      &exp_config_dir !join [./, *table_dir]
+      #"fre/tests/test_files"
+
+  mip_spec:
+      'CMIP6'
+  data_series_type:
+      'ts'
+  variable_list:
+      "foo_vars.list"
+  exp_json:
+      !join [*exp_config_dir, '/', "bar_exp_config.json"]
+  freq:
+      'monthly'
+  chunk:
+      *PP_CHUNK_A
+      
+  table_targets:
+    - table_name: 'Amon'
+      target_components:
+        - 'atmos_cmip'
+        - 'atmos_level_cmip'
+
+    - table_name: 'AERmon'
+      target_components:
+        - 'aerosol_cmip'
+
+    - table_name: 'CFmon'
+      target_components:
+        - 'aerosol_cmip'
+        - 'atmos_level_cmip'
+        - 'tracel_level'
+        
+

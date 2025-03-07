@@ -190,3 +190,10 @@ fre/make/tests/*/
 fre/pp/tests/configure_yaml_out/
 
 fre/yamltools/tests/combine_yamls_out/
+Dockerfile
+createContainer.sh
+FOO_cmor.yaml
+fregrid_remap_file_288_by_180.nc
+rose-app-run.conf
+.vscode/*
+.vscode

@@ -1,4 +1,6 @@
 ''' fre pp run '''
+import logging
+fre_logger = logging.getLogger(__name__)
 
 import subprocess
 import time
@@ -18,7 +20,7 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     name = experiment + '__' + platform + '__' + target
     result = subprocess.run(['cylc', 'scan', '--name', f"^{name}$"], capture_output=True).stdout.decode('utf-8')
     if len(result):
-        print("Workflow already running!")
+        fre_logger.info("Workflow already running!")
         return
 
     # If not running, start it
@@ -33,7 +35,7 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
         return
 
     # give the scheduler 30 seconds of peace before we hound it
-    print("Workflow started; waiting 30 seconds to confirm")
+    fre_logger.info("Workflow started; waiting 30 seconds to confirm")
     time.sleep(30)
 
     # confirm the scheduler came up. note the regex surrounding {name} for start/end of a string to avoid glob matches
@@ -44,7 +46,7 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     if not len(result):
         raise Exception('Cylc scheduler was started without error but is not running after 30 seconds')
 
-    print(result)
+    fre_logger.info(result)
 
 if __name__ == "__main__":
     pp_run_subtool()

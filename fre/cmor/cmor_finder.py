@@ -1,4 +1,14 @@
 ''' fre cmor find
+This module provides tools to find and print information about variables in CMIP6 JSON configuration files.
+
+Functions:
+    print_var_content(table_config_file, var_name):
+        Prints information about a specific variable from a given CMIP6 JSON configuration file.
+
+    cmor_find_subtool(json_var_list, json_table_config_dir, opt_var_name):
+        Finds and prints information about variables in CMIP6 JSON configuration files located in a specified directory.
+
+    make_simple_varlist(dir_targ, output_variable_list):
 because ian got tired of typing things like the following in bash...
 
 varname=sos; \
@@ -15,6 +25,8 @@ import json
 import logging
 fre_logger = logging.getLogger(__name__)
 
+import os
+
 from pathlib import Path
 
 DO_NOT_PRINT_LIST=[ 'comment',
@@ -22,7 +34,9 @@ DO_NOT_PRINT_LIST=[ 'comment',
                     'valid_min', 'valid_max' ]
 
 def print_var_content( table_config_file = None, var_name = None):
-    ''' one variable printing routine- looks for info regarding var_name in table_config_file '''
+    ''' outputs info on one variable to the logger looks for info regarding var_name in table_config_file 
+    the level of the messaging is INFO, requiring the verbose flag
+    '''
     try:
         proj_table_vars=json.load(table_config_file)
     except Exception as exc:
@@ -107,3 +121,59 @@ def cmor_find_subtool( json_var_list = None, json_table_config_dir = None, opt_v
         assert False
 
     return
+
+def make_simple_varlist(dir_targ, output_variable_list):
+    """
+    Generates a JSON file containing a list of variables from NetCDF files in a specified directory.
+    This function searches for NetCDF files in the given directory (or a subdirectory "ts/monthly/5yr" if not already included),
+    extracts variable names from the filenames, and writes these variable names to a JSON file.
+
+    Args:
+        dir_targ (str): The target directory to search for NetCDF files.
+        output_variable_list (str): The path to the output JSON file where the variable list will be saved.
+
+    Returns:
+        None
+
+    Raises:
+        Logs errors if no files are found in the directory or if no files match the expected pattern.
+        Logs a warning if only one file is found matching the pattern.
+
+    Notes:
+        The function assumes that the filenames of the NetCDF files contain the variable name as the second-to-last component
+        when split by periods ('.') and a datetime string as the third-to-last component.
+    """
+    # Check if the target directory contains the specific subdirectory, if not, append it
+    if "ts/monthly/5yr" not in dir_targ:
+        dir_targ = os.path.join(dir_targ, "ts/monthly/5yr")
+
+    # Get the first NetCDF file in the directory
+    one_file = next(glob.iglob(os.path.join(dir_targ, "*.nc")), None)
+    if not one_file:
+        fre_logger.error("No files found in the directory.")
+        return
+
+    # Extract the datetime component from the filename
+    one_datetime = os.path.basename(one_file).split('.')[-3]
+    
+    # Find all files in the directory that match the datetime component
+    files = glob.glob(os.path.join(dir_targ, f"*{one_datetime}*.nc"))
+
+    # Check if any files were found
+    if not files:
+        fre_logger.error("No files found matching the pattern.")
+        return
+    elif len(files) == 1:
+        fre_logger.warning("Warning: Only one file found matching the pattern.")
+    else:
+        fre_logger.info(f"Files found with {one_datetime} in the filename. Number of files: {len(files)}")
+
+    # Create a dictionary of variable names extracted from the filenames
+    var_list = {}
+    for file in files:
+        a_var = os.path.basename(file).split('.')[-2]
+        var_list[a_var] = a_var
+
+    # Write the variable list to the output JSON file
+    with open(output_variable_list, 'w') as f:
+        json.dump(var_list, f, indent=4)
