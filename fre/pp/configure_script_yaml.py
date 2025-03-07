@@ -11,11 +11,16 @@ import os
 import json
 
 from pathlib import Path
-from jsonschema import validate
+from jsonschema import validate, SchemaError, ValidationError
 import yaml
 import metomi.rose.config
 
 import fre.yamltools.combine_yamls_script as cy
+
+import logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 ####################
 def yaml_load(yamlfile):
@@ -35,17 +40,29 @@ def validate_yaml(yamlfile):
     """
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
+    logger.info(f"Using yaml schema '{schema_path}'")
     # Load the json schema: .load() (vs .loads()) reads and parses the json in one)
-    with open(schema_path,'r') as s:
-        schema = json.load(s)
+    try:
+        with open(schema_path,'r') as s:
+            schema = json.load(s)
+    except:
+        logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
+        raise
 
     # Validate yaml
     # If the yaml is not valid, the schema validation will raise errors and exit
     try:
         validate(instance=yamlfile,schema=schema)
-        print("\nCombined yaml VALID \n")
+        logger.info("Combined yaml valid")
+    except SchemaError:
+        logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
+        raise
+    except ValidationError:
+        logger.error("Combined yaml is not valid. Please fix the errors and try again.")
+        raise
     except:
-        raise ValueError("\nCombined yaml NOT VALID.\n")
+        logger.error("Unclear error from validation. Please try to find the error and try again.")
+        raise
 
 ####################
 def rose_init(experiment,platform,target):
@@ -83,7 +100,7 @@ def quote_rose_values(value):
     if isinstance(value, bool):
         return f"{value}"
     else:
-        return "'" + value + "'"
+        return "'" + str(value) + "'"
 
 ####################
 def set_rose_suite(yamlfile,rose_suite):
@@ -98,6 +115,11 @@ def set_rose_suite(yamlfile,rose_suite):
         for i in pp.values():
             if not isinstance(i,list):
                 for key,value in i.items():
+                    # if pp start/stop is specified as integer, pad zeros
+                    # or else cylc validate will fail
+                    if key == 'pp_start' or key == 'pp_stop':
+                        if isinstance(value, int):
+                            value = f"{value:04}"
                     # rose-suite.conf is somewhat finicky with quoting
                     # cylc validate will reveal any complaints
                     rose_suite.set( keys = ['template variables', key.upper()],
@@ -149,6 +171,8 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     directory. The pp.yaml is also copied to the
     cylc-src directory.
     """
+    logger.info('Starting')
+
     if None in [yamlfile, experiment, platform, target]:
         raise ValueError( 'yamlfile, experiment, platform, and target must all not be None.'
                           'currently, their values are...'
@@ -183,21 +207,23 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     set_rose_apps(full_yamldict,rose_regrid,rose_remap) ####comb_pp_yaml,rose_regrid,rose_remap)
 
     # Write output files
-    print("Writing output files...")
-    print("  " + outfile)
+    logger.info("Writing output files...")
+    logger.info("  " + outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
     outfile = os.path.join(cylc_dir, "rose-suite.conf")
     dumper(rose_suite, outfile)
-    print("  " + outfile)
+    logger.info("  " + outfile)
 
     outfile = os.path.join(cylc_dir, "app", "regrid-xy", "rose-app.conf")
     dumper(rose_regrid, outfile)
-    print("  " + outfile)
+    logger.info("  " + outfile)
 
     outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
     dumper(rose_remap, outfile)
-    print("  " + outfile)
+    logger.info("  " + outfile)
+
+    logger.info('Finished')
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':

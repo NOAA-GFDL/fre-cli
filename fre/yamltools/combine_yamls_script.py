@@ -156,7 +156,7 @@ def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
             yml_dict = get_combined_ppyaml(combined,experiment)
         else:
             yml_dict = get_combined_ppyaml(combined,experiment,output)
-            fre_logger.info(f"Combined yaml file located here: {os.getcwd()}/{output}")
+            fre_logger.info(f"Combined yaml file located here: {output}")
 
     elif use == "cmor":
         CmorYaml = cmip.CMORYaml( yamlfile, experiment, platform, target )
