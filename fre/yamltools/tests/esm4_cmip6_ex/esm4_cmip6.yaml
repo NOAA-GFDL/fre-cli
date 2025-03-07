@@ -1,29 +1,30 @@
-# this is to try to process /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_esm-piControl_D/gfdl.ncrc4-intel16-prod-openmp/pp/
-
+### ---------
+## this is to try to process /archive/lwh/ESM4/TOAR_O3RF/ESM4_TOAR_2014climo_2050ozone_v2/gfdl.ncrc5-intel22-prod-openmp/pp
+## and compare to larry's results
+## call to test this: \
+##      fre cmor yaml -y path/to/esm4_cmip6.yaml -e ESM4_TOAR_2014climo_2050ozone_v2 -p gfdl.ncrc5-intel22 -t prod-openmp
 
 # reusable variables
 fre_properties:
-  - &ESM4_VERSION    "DECK"
+  - &ESM4_VERSION    "TOAR_O3RF"
   - &FRE_STEM        !join [ESM4/, *ESM4_VERSION]
   
-  - &PP_START        "0001"
-  - &PP_STOP         "0500"
-  - &PP_CHUNK_A      "P5Y"
-  - &PP_CHUNK_B      "P20Y"
+  - &PP_START        "000101" # 5yr, 50yr,
+#  - &PP_START        "005101" # 20yr
+  - &PP_STOP         "005012" # 50 yr
+#  - &PP_STOP         "007012" # 5yr, 20yr
+
+#  - &PP_CHUNK_A      "P5Y"
+#  - &PP_CHUNK_A      "P20Y"
+  - &PP_CHUNK_A      "P50Y"
   
 #  - &PP_XYINTERP     "90,144"
-  - &PP_XYINTERP     "180,288"
+  - &PP_XYINTERP     "180,288" # for cases i've spot checked at least
 #  - &PP_XYINTERP     "180,360"
-
 
   # grids
   - &GRID_SPEC         "/archive/gold/datasets/OM4_05/mosaic_c96.v20180227.tar" #site: gfdl
-#  - &GRID_SPEC         "$(CMIP6_ARCHIVE_ROOT)/ESM4/OM4_05/mosaic_c96.v20180227.tar" #site: ncrc
 
-  # compile information
-  - &release             ""
-  - &FMSincludes         ""
-  - &momIncludes         ""
 
 build:
   # compile information
@@ -32,9 +33,51 @@ build:
 
 
 experiments:
-  - name: "ESM4_esm-piControl_D"
+  - name: "ESM4_TOAR_2014climo_v2"
+
+
+  - name: "ESM4_TOAR_2014climo_2050ozone_v2"
     pp:
       - "pp_yamls/settings.yaml"
       - "pp_yamls/pp.yaml"
-    cmor: # cmor-tool development, not part of official am5.yaml (yet)
+    cmor:
       - "cmor_yamls/cmor.yaml"
+
+  - name: "ESM4_TOAR_2014climo_2050ozone_2014ods_v2"
+
+      
+
+
+
+
+
+
+
+
+### ---------
+### this is to try to process /archive/oar.gfdl.cmip6/ESM4/DECK/ESM4_esm-piControl_D/gfdl.ncrc4-intel16-prod-openmp/pp/
+## reusable variables
+#fre_properties:
+##  - &ESM4_VERSION    "DECK"
+#  - &PP_START        "0001"
+#  - &PP_STOP         "0500"
+#  - &PP_CHUNK_A      "P5Y"
+#  - &PP_CHUNK_B      "P20Y"
+#  
+##  - &PP_XYINTERP     "90,144"
+#  - &PP_XYINTERP     "180,288"
+##  - &PP_XYINTERP     "180,360"
+#
+#
+#  # grids
+#  - &GRID_SPEC         "/archive/gold/datasets/OM4_05/mosaic_c96.v20180227.tar" #site: gfdl
+##  - &GRID_SPEC         "$(CMIP6_ARCHIVE_ROOT)/ESM4/OM4_05/mosaic_c96.v20180227.tar" #site: ncrc
+
+#experiments:
+#  - name: "ESM4_esm-piControl_D"
+#    pp:
+#      - "pp_yamls/settings.yaml"
+#      - "pp_yamls/pp.yaml"
+#    cmor: # cmor-tool development, not part of official am5.yaml (yet)
+#      - "cmor_yamls/cmor.yaml"
+

@@ -182,7 +182,7 @@ class CMORYaml():
         result.update(
             yaml.load(
                 yml_cmor, Loader = yaml.Loader ))
-        fre_logger.info(f"   experiment yaml: \n {yml_cmor}")
+        fre_logger.debug(f"   experiment yaml: \n {yml_cmor}")
 
 
         return result
