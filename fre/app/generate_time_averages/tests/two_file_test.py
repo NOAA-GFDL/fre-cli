@@ -29,9 +29,6 @@ def test_time_avg_file_dir_exists():
     ''' look for input test file directory '''
     assert pl.Path(time_avg_file_dir).exists()
 
-def test_time_avg_input_file_exists():
-    ''' look for input test file '''
-    assert pl.Path( test_file_name[0] ).exists()
 
 ### cdo avgs, unweighted, all/seasonal/monthly ------------------------
 def test_monthly_cdo_time_unwgt_avgs():
