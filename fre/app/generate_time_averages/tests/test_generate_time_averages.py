@@ -20,7 +20,6 @@ def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=No
 ### preamble tests. if these fail, none of the others will succeed. -----------------
 time_avg_file_dir=str(pl.Path.cwd())+'/fre/app/generate_time_averages/tests/time_avg_test_files/'
 test_file_name='atmos.197901-198312.LWP.nc'
-
 def test_time_avg_file_dir_exists():
     ''' look for input test file directory '''
     assert pl.Path(time_avg_file_dir).exists()
