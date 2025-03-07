@@ -23,6 +23,16 @@ test_file_names = ['ocean_1x1.000101-000212.tos.nc','ocean_1x1.000301-000412.tos
 test_file_names = [time_avg_file_dir+test_file_names[0],time_avg_file_dir+test_file_names[1]]
 
 out_file_name = 'test_out_double_hist.nc'
+
+#preamble tests
+def test_time_avg_file_dir_exists():
+    ''' look for input test file directory '''
+    assert pl.Path(time_avg_file_dir).exists()
+
+def test_time_avg_input_file_exists():
+    ''' look for input test file '''
+    assert pl.Path( test_file_name[0] ).exists()
+
 ### cdo avgs, unweighted, all/seasonal/monthly ------------------------
 def test_monthly_cdo_time_unwgt_avgs():
     ''' generates an unweighted monthly time averaged file using cdo '''
@@ -44,3 +54,35 @@ def test_cdo_time_unwgt_avgs():
         infile  = test_file_names,
         outfile = (time_avg_file_dir+'timmean_unwgt_'+out_file_name),
         pkg='cdo',avg_type='all',unwgt=True )
+  
+#### cdo avgs, weighted, all/seasonal/monthly ------------------------
+def test_cdo_time_avgs():
+    ''' generates a weighted time averaged file using cdo '''
+    assert run_avgtype_pkg_calculations(
+        infile  = (test_file_names),
+        outfile = (time_avg_file_dir+'timmean_'+test_file_name),
+        pkg='cdo',avg_type='all',unwgt=False )
+
+### cdo stddevs, unweighted, all/seasonal/monthly ------------------------
+def test_monthly_cdo_time_unwgt_stddevs():
+    ''' generates a monthly time averaged file using cdo '''
+    assert run_avgtype_pkg_calculations(
+        infile  = (test_file_names),
+        outfile = (time_avg_file_dir+'ymonstddev1_unwgt_'+test_file_name),
+        pkg='cdo',avg_type='month',stddev_type='samp', unwgt=True )
+
+def test_seasonal_cdo_time_unwgt_stddevs():
+    ''' generates a seasonal time averaged file using cdo '''
+    assert run_avgtype_pkg_calculations(
+        infile  = (test_file_names),
+        outfile = (time_avg_file_dir+'yseasstddev1_unwgt_'+test_file_name),
+        pkg='cdo',avg_type='seas',stddev_type='samp',unwgt=True )
+
+def test_cdo_time_unwgt_stddevs():
+    ''' generates a time averaged file using cdo '''
+    assert run_avgtype_pkg_calculations(
+        infile  = (test_file_names),
+        outfile = (time_avg_file_dir+'yseasmean_unwgt_'+test_file_name),
+        pkg='cdo',avg_type='all',stddev_type='samp', unwgt=True )
+
+
