@@ -60,7 +60,7 @@ def test_cdo_time_avgs():
     ''' generates a weighted time averaged file using cdo '''
     assert run_avgtype_pkg_calculations(
         infile  = (test_file_names),
-        outfile = (time_avg_file_dir+'timmean_'+test_file_name),
+        outfile = (time_avg_file_dir+'timmean_'+out_file_name),
         pkg='cdo',avg_type='all',unwgt=False )
 
 ### cdo stddevs, unweighted, all/seasonal/monthly ------------------------
@@ -68,21 +68,21 @@ def test_monthly_cdo_time_unwgt_stddevs():
     ''' generates a monthly time averaged file using cdo '''
     assert run_avgtype_pkg_calculations(
         infile  = (test_file_names),
-        outfile = (time_avg_file_dir+'ymonstddev1_unwgt_'+test_file_name),
+        outfile = (time_avg_file_dir+'ymonstddev1_unwgt_'+out_file_name),
         pkg='cdo',avg_type='month',stddev_type='samp', unwgt=True )
 
 def test_seasonal_cdo_time_unwgt_stddevs():
     ''' generates a seasonal time averaged file using cdo '''
     assert run_avgtype_pkg_calculations(
         infile  = (test_file_names),
-        outfile = (time_avg_file_dir+'yseasstddev1_unwgt_'+test_file_name),
+        outfile = (time_avg_file_dir+'yseasstddev1_unwgt_'+out_file_name),
         pkg='cdo',avg_type='seas',stddev_type='samp',unwgt=True )
 
 def test_cdo_time_unwgt_stddevs():
     ''' generates a time averaged file using cdo '''
     assert run_avgtype_pkg_calculations(
         infile  = (test_file_names),
-        outfile = (time_avg_file_dir+'yseasmean_unwgt_'+test_file_name),
+        outfile = (time_avg_file_dir+'yseasmean_unwgt_'+out_file_name),
         pkg='cdo',avg_type='all',stddev_type='samp', unwgt=True )
 
 
