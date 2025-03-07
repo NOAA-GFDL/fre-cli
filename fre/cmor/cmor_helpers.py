@@ -11,7 +11,8 @@ from pathlib import Path
 
 def print_data_minmax(ds_variable = None, desc = None):
     '''
-    prints the min/max of numpy.ma.core.MaskedArray (ds_variable) and the name/description (desc) of the data
+    outputs the the min/max of numpy.ma.core.MaskedArray (ds_variable) and the name/description (desc) of the data
+    to the screen if there's a verbose flag, and just to logger otherwise
     '''
     try:
         fre_logger.info(f'info for \n'

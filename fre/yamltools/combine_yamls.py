@@ -6,6 +6,9 @@ OLDER script that combines the model yaml with the compile, platform, and experi
 # - figure out way to safe_load (yaml_loader=yaml.SafeLoader?)
 # - condition where there are multiple pp and analysis yamls
 
+import logging
+fre_logger = logging.getLogger(__name__)
+
 import os
 import shutil
 
@@ -122,7 +125,7 @@ class init_compile_yaml():
         else:
             self.combined = f"{self.mainyaml_dir}/{base_name}"
 
-        print("Combining yaml files: ")
+        fre_logger.info("Combining yaml files: ")
 
     def combine_model(self):
         """
@@ -139,7 +142,7 @@ class init_compile_yaml():
                     shutil.copyfileobj(f2,f1)
             except Exception as exc:
                 raise FileNotFoundError(f'{self.yml} not found') from exc
-        print(f"   model yaml: {self.yml}")
+        fre_logger.info(f"   model yaml: {self.yml}")
 
     def combine_compile(self):
         """
@@ -154,7 +157,7 @@ class init_compile_yaml():
                 with open(cy_path,'r',encoding='UTF-8') as f2:
                     f1.write("\n### COMPILE INFO ###\n")
                     shutil.copyfileobj(f2,f1)
-            print(f"   compile yaml: {cy_path}")
+            fre_logger.info(f"   compile yaml: {cy_path}")
 
     def combine_platforms(self):
         """
@@ -169,7 +172,7 @@ class init_compile_yaml():
                 with open(py_path,'r',encoding='UTF-8') as f2:
                     f1.write("\n### PLATFORM INFO ###\n")
                     shutil.copyfileobj(f2,f1)
-            print(f"   platforms yaml: {py_path}")
+            fre_logger.info(f"   platforms yaml: {py_path}")
 
     def clean_yaml(self):
         """
@@ -189,7 +192,7 @@ class init_compile_yaml():
         with open(self.combined,'w',encoding='UTF-8') as f:
             yaml.safe_dump(full_yaml,f,default_flow_style=False,sort_keys=False)
 
-        print(f"Combined yaml located here: {os.path.abspath(self.combined)}")
+        fre_logger.info(f"Combined yaml located here: {os.path.abspath(self.combined)}")
         return self.combined
 
 ###########################################################################################
@@ -211,7 +214,7 @@ class init_pp_yaml():
         # Name of the combined yaml
         self.combined=f"combined-{self.name}.yaml"
 
-        print("Combining yaml files: ")
+        fre_logger.info("Combining yaml files: ")
 
     def combine_model(self):
         """
@@ -228,7 +231,7 @@ class init_pp_yaml():
                     shutil.copyfileobj(f2,f1)
             except Exception as exc:
                 raise FileNotFoundError(f'{self.yml} not found') from exc
-        print(f"   model yaml: {self.yml}")
+        fre_logger.info(f"   model yaml: {self.yml}")
 
     def combine_experiment(self):
         """
@@ -246,7 +249,7 @@ class init_pp_yaml():
                 with open(ey_path[0],'r',encoding='UTF-8') as f2:
                     #copy expyaml into combined
                     shutil.copyfileobj(f2,f1)
-            print(f"   experiment yaml: {ey_path[0]}")
+            fre_logger.info(f"   experiment yaml: {ey_path[0]}")
 
         # If more than 1 pp yaml listed, create an intermediate yaml folder to combine
         # each model and pp yaml into own combined yaml file
@@ -363,11 +366,11 @@ class init_pp_yaml():
             if pp_list is not None:
                 for i in pp_list:
                     exp = str(i).rsplit('/', maxsplit=1)[-1]
-                    print(f"   experiment yaml: {exp}")
+                    fre_logger.info(f"   experiment yaml: {exp}")
             if analysis_list is not None:
                 for i in analysis_list:
                     analysis = str(i).rsplit('/', maxsplit=1)[-1]
-                    print(f"   analysis yaml: {analysis}")
+                    fre_logger.info(f"   analysis yaml: {analysis}")
 
     def remove_tmp_yamlfiles(self, exp_yamls, analysis_yamls):
         """
@@ -401,7 +404,7 @@ class init_pp_yaml():
         with open(self.combined,'w') as f:
             yaml.safe_dump(full_yaml,f,default_flow_style=False,sort_keys=False)
 
-        print(f"Combined yaml located here: {os.path.abspath(self.combined)}")
+        fre_logger.info(f"Combined yaml located here: {os.path.abspath(self.combined)}")
         return self.combined
 
 ###########################################################################################
@@ -435,7 +438,7 @@ def combined_compile_existcheck(combined,yml,platform,target):
     # If fre yammltools combine-yamls tools was used, the combined yaml should exist
     if Path(combined_path).exists():
         full_combined = combined_path
-        print("\nNOTE: Yamls previously merged.")
+        fre_logger.info("\nNOTE: Yamls previously merged.")
     else:
         comb = init_compile_yaml(yml,platform,target)
         full_combined = get_combined_compileyaml(comb)

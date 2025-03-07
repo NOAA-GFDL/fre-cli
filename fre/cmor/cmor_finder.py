@@ -34,7 +34,9 @@ DO_NOT_PRINT_LIST=[ 'comment',
                     'valid_min', 'valid_max' ]
 
 def print_var_content( table_config_file = None, var_name = None):
-    ''' one variable printing routine- looks for info regarding var_name in table_config_file '''
+    ''' outputs info on one variable to the logger looks for info regarding var_name in table_config_file 
+    the level of the messaging is INFO, requiring the verbose flag
+    '''
     try:
         proj_table_vars=json.load(table_config_file)
     except Exception as exc:
