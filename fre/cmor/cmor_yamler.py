@@ -111,10 +111,8 @@ def cmor_yaml_subtool(yamlfile = None,
         fre_logger.warning(f'could not figure out archroot')
 
     # output directory specification is based on what's in the yaml, and if we could determine archroot
-    outdir = None
-    try:
-        outdir = f'{archroot}/publish' if yaml_outdir is None else yaml_outdir
-
+    outdir = f'{archroot}/publish' if yaml_outdir is None else yaml_outdir
+    
     if outdir is None:
         raise OSError('problem with figuring out what output directory should be')
 
