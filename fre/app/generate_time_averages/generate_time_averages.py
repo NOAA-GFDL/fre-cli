@@ -9,9 +9,21 @@ def generate_time_average(infile = None, outfile = None,
     if __debug__:
         fre_logger.info(locals()) #input argument details
     exitstatus=1
+    #Use cdo to merge multiple files if present
+    merged = False                            
+    if type(infile).__name__=='list' and len(infile)> 1:   #multiple files case. Generates one combined file                           
+        from cdo import Cdo
+        _cdo=Cdo()
+        merged = False
+        #needs a case statement. better yet, smarter way to do this? (TODO)
+        myavger=None
+        merged_file = "merged_output.nc"
+        _cdo.mergetime(input=' '.join(infile), output=merged_file)
+        infile = merged_file
+        merged = True
 
-    #needs a case statement. better yet, smarter way to do this? (TODO)
-    myavger=None
+
+                            
     if   pkg == 'cdo'            :
         from .cdoTimeAverager import cdoTimeAverager
         myavger=cdoTimeAverager(pkg = pkg, var=var,
@@ -40,7 +52,10 @@ def generate_time_average(infile = None, outfile = None,
         exitstatus=myavger.generate_timavg(infile=infile, outfile=outfile)
     else:
         fre_logger.info('ERROR: averager is None, check generate_time_average in generate_time_averages.py!')
-
+    #remove new file if merged created from multiple infiles
+    if merged:   #if multiple files where used, the merged version is now removed
+        import os
+        os.remove(merged_file)                            
     return exitstatus
 
 def generate(inf = None, outf = None,
