@@ -14,6 +14,7 @@ def temp_dir():
 def test_make_simple_varlist(temp_dir):
     # Create some dummy netCDF files
     nc_files = ["test.20230101.var1.nc", "test.20230101.var2.nc", "test.20230101.var3.nc"]
+    assert Path(temp_dir).exists()
     for nc_file in nc_files:
         Path(temp_dir, nc_file).touch()
 
