@@ -144,8 +144,8 @@ def make_simple_varlist(dir_targ, output_variable_list):
         when split by periods ('.') and a datetime string as the third-to-last component.
     """
     # Check if the target directory contains the specific subdirectory, if not, append it
-#    if "ts/monthly/5yr" not in dir_targ:
-#        dir_targ = os.path.join(dir_targ, "ts/monthly/5yr")
+    #    if "ts/monthly/5yr" not in dir_targ:
+    #        dir_targ = os.path.join(dir_targ, "ts/monthly/5yr")
 
     # Get the first NetCDF file in the directory
     one_file = next(glob.iglob(os.path.join(dir_targ, "*.nc")), None)

@@ -9,13 +9,13 @@ be called via this script. I.e. 'fre' is the entry point
 
 import importlib.metadata
 
-import click
-from .lazy_group import LazyGroup
-
 import logging
 fre_logger = logging.getLogger(__name__)
 FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
 #MODE = 'x'
+
+import click
+from .lazy_group import LazyGroup
 
 # versioning, turn xxxx.y into xxxx.0y
 version_unexpanded = importlib.metadata.version('fre-cli')
@@ -38,7 +38,7 @@ except IndexError:
 
 @click.version_option(
     package_name = "fre-cli",
-    version=version
+    version = version
 )
 
 
@@ -57,23 +57,23 @@ except IndexError:
                        "analysis": ".analysis.freanalysis.analysis_cli"},
     help = click.style(
         "'fre' is the main CLI click group. It houses the other tool groups as lazy subcommands.",
-        fg='cyan')
+        fg = 'cyan')
 )
-@click.option('-v', '--verbose', is_flag=True,
-              default=False, help="set logging verbosity higher",
-              required=False)
-@click.option('-l', '--log_file', default=None, required=False, type=str,
-              help='path to log file for all fre calls. leave as None to print to screen')
-def fre(verbose, log_file):
+@click.option('-v', '--verbose', is_flag = True,
+              default = False, help = "set logging verbosity higher",
+              required = False)
+@click.option('-l', '--log_file', default = None, required = False, type = str,
+              help = 'path to log file for all fre calls. leave as None to print to screen')
+def fre(verbose = False, log_file = None):
     ''' entry point function to subgroup functions '''
-    log_level=None
+    log_level = None
     #file_mode = None if log_file is None else MODE
     if verbose:
-        log_level=logging.INFO
+        log_level = logging.INFO
     else:
-        log_level=logging.WARN
-    logging.basicConfig(level=log_level, format=FORMAT,
-                        filename=log_file, encoding='utf-8')
+        log_level = logging.WARN
+    logging.basicConfig(level = log_level, format = FORMAT,
+                        filename = log_file, encoding = 'utf-8')
 
 if __name__ == '__main__':
     fre()

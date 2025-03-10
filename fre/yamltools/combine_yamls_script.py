@@ -13,7 +13,6 @@ from .helpers import output_yaml
 from . import cmor_info_parser as cmip
 from . import compile_info_parser as cip
 from . import pp_info_parser as ppip
-import pprint
 
 
 ## Functions to combine the yaml files ##
@@ -42,6 +41,7 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
         comb_cmor_updated_list = CMORYaml.combine_experiment( yaml_content,
                                                               loaded_yaml   )
         #fre_logger.info(f'comb_cmor_updated_list = ... \n ')#\n {comb_cmor_updated_list}')
+        #import pprint
         #pprint.PrettyPrinter(indent=1).pprint(comb_cmor_updated_list)
         fre_logger.info('\n... CMORYaml.combine_experiment succeeded.\n')
     except:
@@ -56,6 +56,7 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
         full_cmor_yaml = CMORYaml.merge_cmor_yaml( comb_cmor_updated_list,
                                                    loaded_yaml                 )
         #fre_logger.info(f'full_cmor_yaml = \n ')
+        #import pprint
         #pprint.PrettyPrinter(indent=1).pprint(full_cmor_yaml)
         fre_logger.info('\n... CMORYaml.merge_cmor_yaml succeeded\n')
     except:
