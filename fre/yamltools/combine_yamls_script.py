@@ -68,7 +68,7 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
 
     # OUTPUT IF NEEDED
     if output is not None:
-        output_yaml( cleaned_yaml, experiment, output )
+        output_yaml( cleaned_yaml, output )
         fre_logger.info(f"Combined cmor-yaml information saved to {output}")
 
     return cleaned_yaml
@@ -101,7 +101,7 @@ def get_combined_compileyaml(comb,output=None):
 
     # OUTPUT IF NEEDED
     if output is not None:
-        output_yaml(cleaned_yaml,experiment=None,output=output)
+        output_yaml(cleaned_yaml, output = output)
     else:
         fre_logger.info("Combined yaml information saved as dictionary")
 
@@ -143,7 +143,7 @@ def get_combined_ppyaml(comb,experiment,output=None):
 
     # OUTPUT IF NEEDED
     if output is not None:
-        output_yaml(cleaned_yaml,experiment,output)
+        output_yaml(cleaned_yaml, output)
     else:
         fre_logger.info("Combined yaml information saved as dictionary")
 

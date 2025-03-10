@@ -4,21 +4,23 @@ click API entry points
 see README.md for additional information on `fre cmor run` (cmor_mixer.py) usage
 '''
 
-import json
-import logging
-fre_logger = logging.getLogger(__name__)
-
 import os
 from pathlib import Path
 import shutil
 import subprocess
 
+import logging
+
+import json
+
 import numpy as np
 
 import netCDF4 as nc
 import cmor
+
 from .cmor_helpers import *
 
+fre_logger = logging.getLogger(__name__)
 
 
 ### ------ BULK ROUTINES ------ ###
@@ -37,9 +39,9 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
                    this argument is often equal to target_var.
         netcdf_file: string, representing path to intput netcdf file.
         target_var: string, representing the variable name attached to the data object in the netcdf file.
-        json_exp_config: string, representing path to json configuration file holding metadata for appending to output
-                         this argument is most used for making sure the right grid label is getting attached to the right output
-        json_table_config: string, representing path to json configuration file holding variable names for a given table.
+        json_exp_config: string, representing path to configuration file holding metadata for appending to output
+                         this config houses the desired output directory structure, grid label, and metadata header
+        json_table_config: string, representing path to configuration file holding variable names for a given table.
                            proj_table_vars is read from this file, but both are passed anyways.
     '''
     fre_logger.info( "input data: " )
@@ -583,7 +585,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
 
         # TODO think of better way to write this kind of conditional data movement...
         # now we have a file in our targets, point CMOR to the configs and the input file(s)
-        make_cmor_write_here = None        #fre_logger.info( Path( tmp_dir     ) )        #fre_logger.info( Path( os.getcwd() ) )
+        make_cmor_write_here = None        
         if Path( tmp_dir ).is_absolute():
             #fre_logger.info(f'tmp_dir is absolute')
             make_cmor_write_here = tmp_dir
@@ -596,8 +598,8 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         try:
             fre_logger.warning(f" changing directory to: \n {make_cmor_write_here}" )
             os.chdir( make_cmor_write_here )
-        except:
-            raise OSError(f'(cmorize_target_var_files) could not chdir to {make_cmor_write_here}')
+        except Exception as exc:
+            raise OSError(f'(cmorize_target_var_files) could not chdir to {make_cmor_write_here}') from exc
 
         fre_logger.info("calling rewrite_netcdf_file_var")
         try:
@@ -610,7 +612,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         except Exception as exc:
             raise Exception('(cmorize_target_var_files) problem with rewrite_netcdf_file_var. exc=\n'
                             f'                          {exc}\n'
-                            '                          exiting and executing finally block.')
+                            '                          exiting and executing finally block.') from exc
         finally: # should always execute, errors or not!
             fre_logger.warning(f'changing directory to: \n      {gotta_go_back_here}')
             os.chdir( gotta_go_back_here )

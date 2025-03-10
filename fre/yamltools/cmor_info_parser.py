@@ -7,8 +7,6 @@ from pathlib import Path
 import logging
 fre_logger = logging.getLogger(__name__)
 
-#import pprint
-
 # this boots yaml with !join- see __init__
 from . import *
 
@@ -164,6 +162,7 @@ class CMORYaml():
             cmor_yamls.append(exp_info)
 
         #fre_logger.info(f'cmor_yamls = \n {cmor_yamls}')
+        #import pprint
         #pprint.PrettyPrinter(indent=1).pprint(cmor_yamls)
 
         return cmor_yamls
@@ -174,8 +173,8 @@ class CMORYaml():
         if cmor_list is None:
             raise ValueError('cmor_list is none and should not be!!!')
 
-        cmory_path, ppsettingsy_path = experiment_check( self.mainyaml_dir, self.name,
-                                                         loaded_yaml )
+        _, _ = experiment_check( self.mainyaml_dir, self.name,
+                                 loaded_yaml )
         result = {}
 
         yml_cmor = "".join(cmor_list)

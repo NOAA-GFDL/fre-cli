@@ -1,22 +1,25 @@
-""" 
+"""
 this module is for 'fre cmor yaml' calls, driving and steering the cmor_run_subtool via a model-yaml file holding
 configuration information on e.g. target experiments
 """
 from pathlib import Path
-import os
-import shutil
+#import os
+#import shutil
+
 import logging
 fre_logger = logging.getLogger(__name__)
 
-from .cmor_mixer import cmor_run_subtool
-
 from fre.yamltools.combine_yamls_script import consolidate_yamls
+
+from .cmor_mixer import cmor_run_subtool
 
 
 def check_path_existence(some_path):
+    ''' simple function checking for pathlib.Path existence 
+    raising a FileNotFoundError if needed '''
     if not Path(some_path).exists():
-        raise FileNotFoundError(f'does not exist: \n     {some_path}')
-        
+        raise FileNotFoundError(f'does not exist:  {some_path}')
+
 
 
 def cmor_yaml_subtool(yamlfile = None,
@@ -52,28 +55,32 @@ def cmor_yaml_subtool(yamlfile = None,
     # inbetween-logic to form args ----------------------
     # ---------------------------------------------------
 
-    
+
     # stuff needed for run tool arg: input directory location of files...
     # component=mustbeassignedinloop
     data_series_type = cmor_yaml_dict['data_series_type']
     fre_logger.info(f'data_series_type = {data_series_type}')
+
     freq = cmor_yaml_dict['freq']
     fre_logger.info(f'freq = {freq}')
+
     chunk = cmor_yaml_dict['chunk']
     fre_logger.info(f'chunk = {chunk}')
+
     pp_dir = cmor_yaml_dict['directories']['pp_dir']
     fre_logger.info(f'pp_dir = {pp_dir}')
-    
-    
+
+
     # stuff needed for run tool arg: target variable list...
     json_var_list=cmor_yaml_dict['variable_list']
     fre_logger.info(f'json_var_list = {json_var_list}')
     check_path_existence(json_var_list)
-    
+
     # stuff needed for run tool arg: mip table...
     # table=mustbeassignedinloop
     mip_spec = cmor_yaml_dict['mip_spec']#'CMIP6'
     fre_logger.info(f'mip_spec = {mip_spec}')
+
     path_to_cmip_cmor_tables=cmor_yaml_dict['directories']['table_dir']
     fre_logger.info(f'path_to_cmip_cmor_tables = {path_to_cmip_cmor_tables}')
     check_path_existence(path_to_cmip_cmor_tables)
@@ -83,34 +90,34 @@ def cmor_yaml_subtool(yamlfile = None,
     json_exp_config = cmor_yaml_dict['exp_json']#f'{exp_json}
     fre_logger.info(f'json_exp_config = {json_exp_config}')
     check_path_existence(json_exp_config)
- 
 
-    # stuff needed for run tool arg: output directory
-    yaml_outdir=None
+
+    # OPTIONAL: output directory, **as specified in the yaml**
+    yaml_outdir = None
     try:
         yaml_outdir = cmor_yaml_dict['outdir']
         fre_logger.info(f'yaml_outdir = {yaml_outdir}')
-
     except:
-        fre_logger.warn(f'warning, could not read \'outdir\' key in cmor yaml dict, or has no/null value')
-        fre_logger.warn(f'warning, i will guess that you want your output near your input file directory as a default')
-        pass
-    
-    # argument to run tool: output directory
-    archroot=None
+        fre_logger.warning(f'warning, couldnt read \'outdir\' key in cmor yaml dict, or has no/null value')
+        fre_logger.warning(f'warning, guessing that you want your output near your input file directory as default')
+
+
+    # try to determine archroot directory as needed. if not, no biggie. 
+    archroot = None
     try:
         archroot='/'.join(pp_dir.split('/')[0:-1])
         fre_logger.info(f'from pp_dir, archroot must be: {archroot}')
     except:
-        fre_logger.warn(f'could not figure out archroot')
-        pass
+        fre_logger.warning(f'could not figure out archroot')
 
-    outdir=None
+    # output directory specification is based on what's in the yaml, and if we could determine archroot
+    outdir = None
     try:
         outdir = f'{archroot}/publish' if yaml_outdir is None else yaml_outdir
-    except:
+
+    if outdir is None:
         raise OSError('problem with figuring out what output directory should be')
-    
+
     if not Path(outdir).exists():
         fre_logger.info(f'this doesnt exist: outdir= \n    {outdir}')
         fre_logger.info('creating....')
@@ -123,31 +130,31 @@ def cmor_yaml_subtool(yamlfile = None,
         opt_var_name = cmor_yaml_dict['opt_var_name']
     except:
         fre_logger.warning('could not read opt_var_name key/value. moving on.')
-        
+
     # ---------------------------------------------------
     # showtime ------------------------------------------
     # ---------------------------------------------------
 
     # --- loop over mip table / component combos
     for table_config in cmor_yaml_dict['table_targets']:
-        table=table_config['table_name']        
+        table=table_config['table_name']
         table_components_list=table_config['target_components']
         for component in table_components_list:
-            
+
             # --- now form the arguments to the run subtool:
 
             # argument to run tool: input directory location of files
             indir = f'{pp_dir}/{component}/{data_series_type}/{freq}/{chunk}'
             fre_logger.info(f'indir = {indir}')
-            
-            ### configuration files ###            
+
+            ### configuration files ###
             json_table_config = f'{path_to_cmip_cmor_tables}/{mip_spec}_{table}.json'
             fre_logger.info(f'json_table_config = {json_table_config}')
 
             fre_logger.info(f'PROCESSING: table, component = {table}, {component}')
 
 
-            
+
             #
             #    # fire!
             #    cmor_run_subtool(
@@ -161,7 +168,7 @@ def cmor_yaml_subtool(yamlfile = None,
             #    )
 
     raise NotImplementedError('under construction')
-            
+
     return
 
 
@@ -170,6 +177,3 @@ def cmor_yaml_subtool(yamlfile = None,
 
 
 ### scratch-work, or old lines i wanna keep for now
-
-
-
