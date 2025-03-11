@@ -27,6 +27,6 @@
 -----------
 
 * Run nccheck over all files found in diag manifest
-* Minimal Syntax: ``fre pp ncvalidate -d [diag manifest path]``
+* Minimal Syntax: ``fre pp ncvalidate -h [path to directory containing history files]``
 * Module(s) needed: n/a
-* Example: ``fre pp ncvalidate -d /some_path/diag_manifest.yaml``
+* Example: ``fre pp ncvalidate -h /some_path/dir_with_history_files/``

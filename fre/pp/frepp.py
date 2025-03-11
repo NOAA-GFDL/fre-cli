@@ -187,10 +187,10 @@ def nccheck(file_path, num_steps):
 
 #fre pp ncvalidate
 @pp_cli.command()
-@click.option('--diag_manifest','-d', required = True, help = "Diag manifest file to be parsed")
-def ncvalidate(diag_manifest):
-    """ Uses diag manifest to run nccheck command and validate timesteps in multiple files """
-    ncvalidate_script.validate(diag_manifest)
+@click.option('--history','-h', required = True, help = "Path to directory containing history files")
+def ncvalidate(history):
+    """ Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps for all files in that directory """
+    ncvalidate_script.validate(history)
 
 #fre pp wrapper
 @pp_cli.command()
