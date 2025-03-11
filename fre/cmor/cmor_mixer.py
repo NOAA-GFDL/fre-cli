@@ -779,13 +779,20 @@ def cmor_run_subtool( indir = None,
 
         fre_logger.info(f'........beginning CMORization for {local_var}/\n'
                         f'                        {target_var}..........')
-        cmorize_target_var_files(
-            indir, target_var, local_var, iso_datetime_arr, # OK
-            name_of_set, json_exp_config,
-            outdir,
-            proj_table_vars, json_table_config, # a little redundant
-            run_one_mode
-        )
+        print(f'PRINT \n\n cmorize_target_var_files( \n'
+            f'{indir}, {target_var}, {local_var}, {iso_datetime_arr}, \n'
+            f'{name_of_set}, {json_exp_config}, \n'
+            f'{outdir}, \n'
+            f'proj_table_vars=TOO_BIG, \n'
+            f'{json_table_config}, \n'
+            f'{run_one_mode}      )')
+        #cmorize_target_var_files(
+        #    indir, target_var, local_var, iso_datetime_arr, # OK
+        #    name_of_set, json_exp_config,
+        #    outdir,
+        #    proj_table_vars, json_table_config, # a little redundant
+        #    run_one_mode
+        #)
 
         if run_one_mode:
             fre_logger.warning('run_one_mode is True. breaking var_list loop')

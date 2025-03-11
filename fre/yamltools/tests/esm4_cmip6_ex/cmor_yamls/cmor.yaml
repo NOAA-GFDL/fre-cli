@@ -3,18 +3,17 @@ cmor:
 
   directories:
     <<: *shared_directories
-    table_dir:
-      &table_dir "local_cmor_config_dir"
-    exp_config_dir:
-      &exp_config_dir !join [./, *table_dir]
-      #"fre/tests/test_files"
-
+    table_dir: &table_dir
+      "/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/"
+    exp_config_dir: &exp_config_dir
+      "/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/"
+      
+  outdir:
+    '/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
   mip_spec:
       'CMIP6'
   data_series_type:
       'ts'
-  variable_list:
-      "foo_vars.list"
   exp_json:
       !join [*exp_config_dir, '/', "bar_exp_config.json"]
   freq:
@@ -24,15 +23,21 @@ cmor:
       
   table_targets:
     - table_name: 'Amon'
+      variable_list:
+        !join [*table_dir, "GFDL-ESM4_amip_CMOR-Amon.lst"]
       target_components:
         - 'atmos_cmip'
         - 'atmos_level_cmip'
 
     - table_name: 'AERmon'
+      variable_list:
+        !join [*table_dir, "GFDL-ESM4_amip_CMOR-AERmon.lst"]
       target_components:
         - 'aerosol_cmip'
 
     - table_name: 'CFmon'
+      variable_list:
+        !join [*table_dir, "GFDL-ESM4_amip_CMOR-CFmon.lst"]
       target_components:
         - 'aerosol_cmip'
         - 'atmos_level_cmip'

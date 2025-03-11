@@ -72,6 +72,9 @@ def create_lev_bnds(bound_these = None, with_these = None):
     fre_logger.info(f'the_bnds = \n{the_bnds}')
     return the_bnds
 
+
+
+
 def get_var_filenames(indir, var_filenames = None, local_var = None):
     '''
     appends files ending in .nc located within indir to list var_filenames accepts three arguments
@@ -116,6 +119,8 @@ def get_iso_datetimes(var_filenames, iso_datetime_arr = None):
     #fre_logger.info(f" Available dates: {iso_datetime_arr}")
     if len(iso_datetime_arr) < 1:
         raise ValueError('ERROR: iso_datetime_arr has length 0!')
+
+
 
 
 def check_dataset_for_ocean_grid(ds):

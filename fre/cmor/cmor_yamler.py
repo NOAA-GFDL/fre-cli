@@ -64,17 +64,17 @@ def cmor_yaml_subtool(yamlfile = None,
     freq = cmor_yaml_dict['freq']
     fre_logger.info(f'freq = {freq}')
 
-    chunk = cmor_yaml_dict['chunk']
-    fre_logger.info(f'chunk = {chunk}')
+    chunk_yaml_input = cmor_yaml_dict['chunk']
+    fre_logger.info(f'chunk_yaml_input = {chunk_yaml_input}')
+    
+    chunk = None
+    if chunk_yaml_input[0] == 'P' and chunk_yaml_input[-1] == 'Y':
+        chunk = chunk_yaml_input[1:-1]+'yr'
+    fre_logger.warn(f'chunk = {chunk}')
 
     pp_dir = cmor_yaml_dict['directories']['pp_dir']
     fre_logger.info(f'pp_dir = {pp_dir}')
 
-
-    # stuff needed for run tool arg: target variable list...
-    json_var_list=cmor_yaml_dict['variable_list']
-    fre_logger.info(f'json_var_list = {json_var_list}')
-    check_path_existence(json_var_list)
 
     # stuff needed for run tool arg: mip table...
     # table=mustbeassignedinloop
@@ -137,6 +137,7 @@ def cmor_yaml_subtool(yamlfile = None,
     for table_config in cmor_yaml_dict['table_targets']:
         table=table_config['table_name']
         table_components_list=table_config['target_components']
+        json_var_list=table_config['variable_list']
         for component in table_components_list:
 
             # --- now form the arguments to the run subtool:
@@ -151,19 +152,24 @@ def cmor_yaml_subtool(yamlfile = None,
 
             fre_logger.info(f'PROCESSING: table, component = {table}, {component}')
 
+            # fire!
+            cmor_run_subtool(
+                indir = indir ,
+                json_var_list = json_var_list ,
+                json_table_config = json_table_config ,
+                json_exp_config = json_exp_config ,
+                outdir = outdir ,
+                run_one_mode = True, #run_one_mode,
+                opt_var_name = None #opt_var_name
+            )
+            
+            assert False
+                        
+        
 
 
-            #
-            #    # fire!
-            #    cmor_run_subtool(
-            #        indir = indir ,
-            #        json_var_list = json_var_list ,
-            #        json_table_config = json_table_config ,
-            #        json_exp_config = json_exp_config ,
-            #        outdir = outdir ,
-            #        run_one_mode = True, #run_one_mode,
-            #        opt_var_name = None #opt_var_name
-            #    )
+            
+
 
     raise NotImplementedError('under construction')
 
@@ -173,5 +179,3 @@ def cmor_yaml_subtool(yamlfile = None,
 
 
 
-
-### scratch-work, or old lines i wanna keep for now

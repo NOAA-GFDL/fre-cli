@@ -1,3 +1,4 @@
+# WARNING this is a carbon copy of the AM5 example in the fre-cli repo. it's filler, not real configuration!
 # local reusable variable overrides
 fre_properties: 
   - &custom_interp "180,360"
