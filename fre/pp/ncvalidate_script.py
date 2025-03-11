@@ -3,6 +3,7 @@
 import sys
 import os
 from pathlib import Path
+import glob
 import yaml
 import click
 import re
@@ -22,9 +23,10 @@ def validate(history):
     # Find diag_manifest files and add to mega_manifest
     files = os.listdir(history)
     for _file in files:
-        if _file[-1].isdigit() and not _file.startswith('.'):
+        if _file[-1].isdigit() and 'diag_manifest' in _file and not _file.startswith('.'):
             filepath = os.path.join(history,_file)
             with open(filepath, 'r') as f:
+                fre_logger.info(f" Grabbing data from {filepath}")
                 data = yaml.safe_load(f)
                 mega_manifest.append(data)
 
@@ -36,20 +38,17 @@ def validate(history):
             levels.update({str(filename):expected_timelevels})
 
     # Run nccheck to compare actual timelevels to expected levels found in mega manifest
-    for _file in files:
-        if _file.startswith('.') or _file[-1].isdigit():
-            continue
-        filepath = os.path.join(history,_file)
-        split_filename = re.search(r"\.(.*?)\.",_file).group(1)
-        ncc.check(filepath,levels[split_filename])
-        result = ncc.check(filepath,levels[split_filename])
+    for filename in levels:
+        filepath = glob.glob(os.path.join(history,'*'+filename+'*.nc'))[0]
+        ncc.check(filepath,levels[filename])
+        result = ncc.check(filepath,levels[filename])
         if result==1:
             fre_logger.info(f" Timesteps found in {filepath} differ from expectation in diag manifest")
-            #mismatch.append(_file)
+            mismatches.append(_file)
 
-    #TODO: Error Handling
-
-        #sys.exit(len(mismatch)+ " files contain an unexpected number of timesteps.")
+    #Error Handling
+    if mismatches:
+        sys.exit(str(len(mismatches))+ " files contain an unexpected number of timesteps." + "\n".join(mismatches))
 
 if __name__ == '__main__':
     validate()
