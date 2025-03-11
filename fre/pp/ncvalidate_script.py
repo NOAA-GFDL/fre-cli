@@ -17,7 +17,7 @@ mega_manifest=[]
 mismatches=[]
 levels={}
 
-def validate(history):
+def validate(history,date_string):
     """ Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found in the diag_manifest file(s) """
 
     # Find diag_manifest files and add to mega_manifest
@@ -39,7 +39,13 @@ def validate(history):
 
     # Run nccheck to compare actual timelevels to expected levels found in mega manifest
     for filename in levels:
-        filepath = glob.glob(os.path.join(history,'*'+filename+'*.nc'))[0]
+        if date_string:
+            try:
+                filepath = glob.glob(os.path.join(history,'*'+date_string+'*'+filename+'*.nc'))[0]
+            except:
+                sys.exit("Check date string for correctness")
+        else:    
+            filepath = glob.glob(os.path.join(history,'*'+filename+'*.nc'))[0]
         ncc.check(filepath,levels[filename])
         result = ncc.check(filepath,levels[filename])
         if result==1:

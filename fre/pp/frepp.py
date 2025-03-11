@@ -187,10 +187,11 @@ def nccheck(file_path, num_steps):
 
 #fre pp ncvalidate
 @pp_cli.command()
-@click.option('--history','-h', required = True, help = "Path to directory containing history files")
-def ncvalidate(history):
+@click.option('--history','-his', required = True, help = "Path to directory containing history files")
+@click.option('--date_string','-d', required = False, help = "Date string as written in netCDF (.nc) filename")
+def ncvalidate(history,date_string):
     """ Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps for all files in that directory """
-    ncvalidate_script.validate(history)
+    ncvalidate_script.validate(history,date_string)
 
 #fre pp wrapper
 @pp_cli.command()
