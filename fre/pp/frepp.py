@@ -6,7 +6,7 @@ from fre.pp import checkout_script
 from fre.pp import configure_script_yaml
 from fre.pp import configure_script_xml
 from fre.pp import validate_script
-from fre.pp import ncvalidate_script
+from fre.pp import histval_script
 from fre.pp import install_script
 from fre.pp import run_script
 from fre.pp import nccheck_script
@@ -185,13 +185,13 @@ def nccheck(file_path, num_steps):
     """ - Check that a netCDF (.nc) file contains expected number of timesteps - """
     nccheck_script.check(file_path,num_steps)
 
-#fre pp ncvalidate
+#fre pp histval
 @pp_cli.command()
-@click.option('--history','-his', required = True, help = "Path to directory containing history files")
+@click.option('--history','-hist', required = True, help = "Path to directory containing history files")
 @click.option('--date_string','-d', required = False, help = "Date string as written in netCDF (.nc) filename")
-def ncvalidate(history,date_string):
+def histval(history,date_string):
     """ Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps for all files in that directory """
-    ncvalidate_script.validate(history,date_string)
+    histval_script.validate(history,date_string)
 
 #fre pp wrapper
 @pp_cli.command()

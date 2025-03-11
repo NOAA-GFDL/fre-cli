@@ -23,10 +23,10 @@
 * Module(s) needed: n/a
 * Example: ``fre pp nccheck -f /home/$user/some_netcdf_file -n 10``
 
-``ncvalidate``
+``hist-val``
 -----------
 
 * Run nccheck over all files found in diag manifest
-* Minimal Syntax: ``fre pp ncvalidate -h [path to directory containing history files]``
+* Minimal Syntax: ``fre pp hist-val -hist [path to directory containing history files]``
 * Module(s) needed: n/a
-* Example: ``fre pp ncvalidate -h /some_path/dir_with_history_files/``
+* Example: ``fre pp hist-val -hist /some_path/dir_with_history_files/``
