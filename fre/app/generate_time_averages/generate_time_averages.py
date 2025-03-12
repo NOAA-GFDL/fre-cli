@@ -9,16 +9,17 @@ def generate_time_average(infile = None, outfile = None,
     if __debug__:
         fre_logger.info(locals()) #input argument details
     exitstatus=1
+        
+    myavger=None
+
     #Use cdo to merge multiple files if present
     merged = False                            
     if type(infile).__name__=='list' and len(infile)> 1:   #multiple files case. Generates one combined file                           
         from cdo import Cdo
         _cdo=Cdo()
-        merged = False
-        #needs a case statement. better yet, smarter way to do this? (TODO)
-        myavger=None
         merged_file = "merged_output.nc"
         _cdo.mergetime(input=' '.join(infile), output=merged_file)
+        multi_files = infile   #preserve the original file names for later
         infile = merged_file
         merged = True
 
@@ -36,7 +37,9 @@ def generate_time_average(infile = None, outfile = None,
                                        unwgt = unwgt ,
                                        avg_type = avg_type, stddev_type = stddev_type)
 
-    elif pkg == 'fre-python-tools':
+    elif pkg == 'fre-python-tools':   #fre-python-tools adresses var in a uniqe way, which is adressed here
+        if merged = True and self.var is None:
+            var = multi_file[0].split('/').pop().split('.')[-2]
         from .frepytoolsTimeAverager import frepytoolsTimeAverager
         myavger=frepytoolsTimeAverager(pkg = pkg, var=var,
                                        unwgt = unwgt,
