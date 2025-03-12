@@ -1,46 +1,71 @@
-# note that currently, these are all "filler" values
 cmor:
 
+  # -------------------------------------------------------------------------------------  
+  # these fields are for global directory configuration
   directories:
     <<: *shared_directories
     table_dir: &table_dir
-      "/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/"
-    exp_config_dir: &exp_config_dir
-      "/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/"
-      
-  outdir:
-    '/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
-  mip_spec:
-      'CMIP6'
-  data_series_type:
-      'ts'
+      "/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir"
+    outdir:
+      '/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
+
+  # -------------------------------------------------------------------------------------
+  # these fields are for global configuration that isn't a directory
+  mip_era: 
+    'CMIP6'
   exp_json:
-      !join [*exp_config_dir, '/', "bar_exp_config.json"]
-  freq:
-      'monthly'
-  chunk:
-      *PP_CHUNK_A
-      
+    '/home/Ian.Laflotte/Working/fre-cli/fre/tests/test_files/CMOR_input_example.json'
+#      !join [*table_dir, '/', "bar_exp_config.json"]
+
+  # -------------------------------------------------------------------------------------
+  # these fields are for configuration that changes by cmor-table-target
   table_targets:
-    - table_name: 'Amon'
+    # -----------------------------------------------------------------------------------
+    - table_name: 'Amon' #TODO if freq below is null, then from table, try to fill it in
+      freq: #'monthly' #TODO if this field is non-null 
+      grid_label: 'GRID_PLACEHOLDER'
       variable_list:
-        !join [*table_dir, "GFDL-ESM4_amip_CMOR-Amon.lst"]
+        !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-Amon.lst"]
+        
       target_components:
-        - 'atmos_cmip'
-        - 'atmos_level_cmip'
-
+        - component_name: 'atmos_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CHUNK_A
+          
+        - component_name: 'atmos_level_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CHUNK_A                  
+          
+    # -----------------------------------------------------------------------------------
     - table_name: 'AERmon'
+      freq: 'monthly'        
+      grid_label: 'GRID_PLACEHOLDER'
       variable_list:
-        !join [*table_dir, "GFDL-ESM4_amip_CMOR-AERmon.lst"]
+        !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-AERmon.lst"]
+        
       target_components:
-        - 'aerosol_cmip'
+        - component_name: 'aerosol_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CHUNK_A                  
 
+    # -----------------------------------------------------------------------------------
     - table_name: 'CFmon'
+      freq: 'monthly'
+      grid_label: 'GRID_PLACEHOLDER'
       variable_list:
-        !join [*table_dir, "GFDL-ESM4_amip_CMOR-CFmon.lst"]
+        !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-CFmon.lst"]
+        
       target_components:
-        - 'aerosol_cmip'
-        - 'atmos_level_cmip'
-        - 'tracel_level'
+        - component_name: 'aerosol_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CHUNK_A                  
+          
+        - component_name: 'atmos_level_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CHUNK_A                  
+          
+        - component_name: 'tracel_level'
+          data_series_type: 'ts'
+          chunk: *PP_CHUNK_A                  
         
 
