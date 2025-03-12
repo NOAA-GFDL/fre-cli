@@ -214,7 +214,7 @@ def cmor_yaml_subtool(yamlfile = None,
                 json_table_config = json_table_config ,
                 json_exp_config = json_exp_config ,
                 outdir = cmorized_outdir ,
-                run_one_mode = True, #run_one_mode,
+                run_one_mode = False, #run_one_mode,
                 opt_var_name = None #opt_var_name
             )
             #

@@ -7,7 +7,8 @@ cmor:
     table_dir: &table_dir
       "/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir"
     outdir:
-      '/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
+      '/work/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
+#      '/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
 
   # -------------------------------------------------------------------------------------
   # these fields are for global configuration that isn't a directory
@@ -17,13 +18,13 @@ cmor:
     '/home/Ian.Laflotte/Working/fre-cli/fre/tests/test_files/CMOR_input_example.json'
 #      !join [*table_dir, '/', "bar_exp_config.json"]
 
-  # -------------------------------------------------------------------------------------
+
   # these fields are for configuration that changes by cmor-table-target
   table_targets:
     # -----------------------------------------------------------------------------------
-    - table_name: 'Amon' #TODO if freq below is null, then from table, try to fill it in
-      freq: #'monthly' #TODO if this field is non-null 
-      grid_label: 'GRID_PLACEHOLDER'
+    - table_name: 'Amon' 
+      freq: 
+      grid_label: 
       variable_list:
         !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-Amon.lst"]
         
@@ -38,8 +39,8 @@ cmor:
           
     # -----------------------------------------------------------------------------------
     - table_name: 'AERmon'
-      freq: 'monthly'        
-      grid_label: 'GRID_PLACEHOLDER'
+      freq: 
+      grid_label: 
       variable_list:
         !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-AERmon.lst"]
         
@@ -50,8 +51,8 @@ cmor:
 
     # -----------------------------------------------------------------------------------
     - table_name: 'CFmon'
-      freq: 'monthly'
-      grid_label: 'GRID_PLACEHOLDER'
+      freq: 
+      grid_label: 
       variable_list:
         !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-CFmon.lst"]
         

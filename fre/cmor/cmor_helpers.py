@@ -195,7 +195,7 @@ def create_tmp_dir(outdir, json_exp_config = None):
     if any( [ outdir == "/local2",
               outdir.find("/work") != -1,
               outdir.find("/net" ) != -1 ] ):
-        tmp_dir = str( Path("{outdir}/").resolve() )
+        tmp_dir = str( Path(f"{outdir}/").resolve() )
         fre_logger.info(f'using /local /work /net ( tmp_dir = {tmp_dir} )')
     else:
         tmp_dir = str( Path(f"{outdir}/tmp/").resolve() )

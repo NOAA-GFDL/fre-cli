@@ -16,14 +16,14 @@ fre_properties:
   - &ESM4_VERSION    "TOAR_O3RF"
   - &FRE_STEM        !join [ESM4/, *ESM4_VERSION]
   
-  - &PP_START        "000101" # 5yr, 50yr,
-#  - &PP_START        "005101" # 20yr
+#  - &PP_START        "000101" # 5yr, 50yr,
+  - &PP_START        "005101" # 20yr
 
 #  - &PP_STOP         "005012" # 50 yr
   - &PP_STOP         "007012" # 5yr, 20yr
 
-  - &PP_CHUNK_A      "P5Y"
-#  - &PP_CHUNK_A      "P20Y"
+#  - &PP_CHUNK_A      "P5Y"
+  - &PP_CHUNK_A      "P20Y"
 #  - &PP_CHUNK_A      "P50Y"
   
 #  - &PP_XYINTERP     "90,144"
