@@ -38,6 +38,7 @@ def generate_time_average(infile = None, outfile = None,
                                        avg_type = avg_type, stddev_type = stddev_type)
 
     elif pkg == 'fre-python-tools':   #fre-python-tools adresses var in a uniqe way, which is adressed here
+      #TO-DO: generate an error message if multiple files exist in infiles, with different results for the var search
         if merged == True and var == None:
             var = multi_file[0].split('/').pop().split('.')[-2]
         from .frepytoolsTimeAverager import frepytoolsTimeAverager
