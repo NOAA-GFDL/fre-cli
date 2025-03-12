@@ -7,11 +7,14 @@ fre make is used to create, run and checkout code, and compile a model.
 
 import os
 import logging
+fre_logger = logging.getLogger(__name__)
+
+
 from multiprocessing.dummy import Pool
 from pathlib import Path
 
 import subprocess
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
@@ -30,9 +33,9 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
         pc = " &"
 
     if verbose:
-        logging.basicConfig(level=logging.INFO)
+        fre_logger.setLevel(level = logging.DEBUG)
     else:
-        logging.basicConfig(level=logging.ERROR)
+        fre_logger.setLevel(level = logging.INFO)
 
     #### Main
     srcDir="src"
@@ -43,18 +46,22 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
     plist = platform
     tlist = target
 
-    # Combined compile yaml file
-    combined = Path(f"combined-{name}.yaml")
+#    # Combined compile yaml file
+#    combined = Path(f"combined-{name}.yaml")
 
-    ## If combined yaml exists, note message of its existence
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined, yml, platform, target)
+    # Combine model, compile, and platform yamls
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined)
+    fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined, freVars)
+    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
@@ -84,7 +91,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                 freCheckout.finish(modelYaml.compile.getCompileYaml(),pc)
                 os.chmod(srcDir+"/checkout.sh", 0o744)
-                print("\nCheckout script created at "+ srcDir + "/checkout.sh \n")
+                logging.info("\nCheckout script created at "+ srcDir + "/checkout.sh \n")
                 ## TODO: Options for running on login cluster?
                 freCheckout.run()
 
@@ -131,7 +138,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 # Loop through components, send component name/requires/overrides for Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
-                print("\nMakefile created at " + bldDir + "/Makefile" + "\n")
+                logging.info("\nMakefile created at " + bldDir + "/Makefile" + "\n")
                 freMakefile.writeMakefile()
 
                 ## Create a list of compile scripts to run in parallel
@@ -152,7 +159,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 if execute:
                     fremakeBuild.run()
                 else:
-                    print("Compile script created at "+ bldDir+"/compile.sh\n\n")
+                    logging.info("Compile script created at "+ bldDir+"/compile.sh\n\n")
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
@@ -198,7 +205,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
 
                 # Create build script for container
                 dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], skip_format_transfer=no_format_transfer)
-                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
+                logging.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 # Execute if flag is given
                 if execute:

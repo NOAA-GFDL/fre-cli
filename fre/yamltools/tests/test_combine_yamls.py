@@ -200,3 +200,117 @@ def test_combined_ppyaml_validation():
     schema = json.loads(s)
 
     validate(instance=yml,schema=schema)
+
+def test_combine_pp_yamls(tmp_path):
+    """
+    Verify yaml combiner functionality by combining
+    a model yaml with 3 pp yamls (2 with components).
+    """
+
+    model = {
+        'experiments' : [
+            {
+                'name' : 'expname',
+                'pp'   : [
+                    'pp1.yaml',
+                    'pp2.yaml',
+                    'pp3.yaml'
+                ]
+            }
+        ]
+    }
+
+    pp1 = {
+        'directories' : {
+            'history_dir': 'one',
+            'pp_dir'     : 'two'
+        },
+        'postprocess' : {
+            'settings' : {
+                'history_segment' : 'three',
+                'pp_start'        : 'four'
+            }
+        }
+    }
+
+    pp2 = {
+        'postprocess' : {
+            'components' : [
+                {
+                    'type'    : 'atmos_cmip',
+                    'sources' : "foo bar" },
+                {
+                    'type'    : 'land',
+                    'sources' : "land_month"}
+            ]
+        }
+    }
+
+    pp3 = {
+        'postprocess' : {
+            'components' : [
+                {
+                    'type'    : 'ocean',
+                    'sources' : "a b c" },
+                {
+                    'type'    : 'ice',
+                    'sources' : "ice_month"}
+            ]
+        }
+    }
+
+    combined = {
+        'name' : 'expname',
+        'platform' : 'platform',
+        'target' : 'target',
+        'directories' : {
+            'history_dir': 'one',
+            'pp_dir'     : 'two'
+        },
+        'postprocess' : {
+            'settings' : {
+                'history_segment' : 'three',
+                'pp_start'        : 'four'
+            },
+            'components' : [
+                {
+                    'type'    : 'atmos_cmip',
+                    'sources' : "foo bar" },
+                {
+                    'type'    : 'land',
+                    'sources' : "land_month"},
+                {
+                    'type'    : 'ocean',
+                    'sources' : "a b c" },
+                {
+                    'type'    : 'ice',
+                    'sources' : "ice_month"}
+            ]
+        }
+    }
+
+    # create temp directory
+    tmp_path.mkdir(exist_ok=True)
+
+    # write model and pp yamls
+    file_model = open(tmp_path / 'model.yaml', 'w')
+    file_pp1 = open(tmp_path / 'pp1.yaml', 'w')
+    file_pp2 = open(tmp_path / 'pp2.yaml', 'w')
+    file_pp3 = open(tmp_path / 'pp3.yaml', 'w')
+
+    yaml.dump(model, file_model)
+    yaml.dump(pp1, file_pp1)
+    yaml.dump(pp2, file_pp2)
+    yaml.dump(pp3, file_pp3)
+
+    # combine the yamls
+    # output file is 'combined-expname.yaml' in the current directory
+    cy.consolidate_yamls(tmp_path / 'model.yaml', 'expname', 'platform', 'target', 'pp')
+
+    # open the combined yaml and compare to expected reference
+    file_output = open('combined-expname.yaml', 'r')
+    output = yaml.load(file_output, Loader=yaml.SafeLoader)
+    assert output == combined
+
+    # remove combined yaml
+    Path('combined-expname.yaml').unlink()

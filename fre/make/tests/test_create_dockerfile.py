@@ -9,7 +9,7 @@ from click.testing import CliRunner
 import pytest
 
 from fre import fre
-from fre.make import create_docker_script 
+from fre.make import create_docker_script
 
 runner=CliRunner()
 
@@ -91,7 +91,7 @@ def test_dockerfile_creation():
 def test_dockerfile_contents():
     ''' checks dockerfile contents from previous test'''
 
-    # for simplicity's sake just checks COPY commands for created files on the host 
+    # for simplicity's sake just checks COPY commands for created files on the host
     with open('Dockerfile', 'r') as f:
         lines = f.readlines()
     assert len(lines) > 2
@@ -105,4 +105,3 @@ def test_dockerfile_contents():
 
     line = copy_lines[2].strip().split()
     assert line == ["COPY", f"tmp/{PLATFORM[0]}/execrunscript.sh", f"{MODEL_ROOT}/{EXPERIMENT}/exec/execrunscript.sh"]
-     
