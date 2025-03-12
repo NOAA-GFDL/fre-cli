@@ -9,16 +9,78 @@ from pathlib import Path
 import logging
 fre_logger = logging.getLogger(__name__)
 
+import json
+
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 
 from .cmor_mixer import cmor_run_subtool
 
 
 def check_path_existence(some_path):
-    ''' simple function checking for pathlib.Path existence 
-    raising a FileNotFoundError if needed '''
+    ''' 
+    simple function checking for pathlib.Path existence, raising a FileNotFoundError if needed 
+    '''
     if not Path(some_path).exists():
         raise FileNotFoundError(f'does not exist:  {some_path}')
+
+def iso_to_bronx_chunk(cmor_chunk_in):
+    '''
+    converts a string representing a datetime chunk in ISO's convention (e.g. 'P5Y'), 
+    to a string representing the same thing in FRE-bronx's convention
+    '''
+    fre_logger.debug(f'cmor_chunk_in = {cmor_chunk_in}')
+    if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
+        bronx_chunk = cmor_chunk_in[1:-1] + 'yr'
+    else:
+        raise Exception('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py')            
+    fre_logger.debug(f'bronx_chunk = {bronx_chunk}')
+    return bronx_chunk
+
+
+
+def conv_cmor_to_bronx_freq(cmor_table_freq):
+    cmor_to_bronx_dict = {
+        "1hr"    : "1hr", #"hourly"
+        "1hrCM"  : None,
+        "1hrPt"  : None,
+        "3hr"    : "3hr",
+        "3hrPt"  : None,
+        "6hr"    : "6hr",
+        "6hrPt"  : None,
+        "day"    : "daily",
+        "dec"    : None,
+        "fx"     : None, # TODO: placeholder, for statics compatibility? 
+        "mon"    : "monthly",
+        "monC"   : None,
+        "monPt"  : None,
+        "subhrPt": None,
+        "yr"     : "annual",#"yearly",
+        "yrPt"   : None    }
+    bronx_freq = None
+    try:
+        bronx_freq = cmor_to_bronx_dict[cmor_table_freq]
+    except:
+        raise KeyError(f'frequency = {cmor_table_freq} does not exist in the targeted cmor table')
+        
+    return bronx_freq
+
+def get_freq_from_table(json_table_config):
+    ''' 
+    checks one of the variable fields within a cmip cmor table for the frequency of the data the table describes
+    takes in a path to a json cmip cmor table file, and output a string corresponding to a FREbronx style frequency 
+    '''
+    table_freq = None
+    with open( json_table_config, 'r', encoding = 'utf-8') as table_config_file:
+        table_config_data = json.load(table_config_file)
+        for var_entry in table_config_data['variable_entry']:
+            try:
+                table_freq = table_config_data['variable_entry'][var_entry]['frequency']
+                break
+            except:
+                raise KeyError( 'could not get freq from table!!! variable entries in cmip cmor tables'
+                                'ALWAYS have frequency info under the variable entry!! EXIT! BAD!')
+    bronx_freq = conv_cmor_to_bronx_freq(table_freq)
+    return bronx_freq
 
 
 
@@ -47,123 +109,117 @@ def cmor_yaml_subtool(yamlfile = None,
     cmor_yaml_dict = consolidate_yamls(yamlfile = yamlfile,
                                        experiment = exp_name, platform = platform, target = target,
                                        use = "cmor", output = output)['cmor']
-    import pprint
-    pprint.PrettyPrinter(indent=1).pprint(cmor_yaml_dict)
+    #import pprint
+    #pprint.PrettyPrinter(indent=1).pprint(cmor_yaml_dict)
 
 
     # ---------------------------------------------------
     # inbetween-logic to form args ----------------------
     # ---------------------------------------------------
 
-
-    # stuff needed for run tool arg: input directory location of files...
-    # component=mustbeassignedinloop
-    data_series_type = cmor_yaml_dict['data_series_type']
-    fre_logger.info(f'data_series_type = {data_series_type}')
-
-    freq = cmor_yaml_dict['freq']
-    fre_logger.info(f'freq = {freq}')
-
-    chunk_yaml_input = cmor_yaml_dict['chunk']
-    fre_logger.info(f'chunk_yaml_input = {chunk_yaml_input}')
-    
-    chunk = None
-    if chunk_yaml_input[0] == 'P' and chunk_yaml_input[-1] == 'Y':
-        chunk = chunk_yaml_input[1:-1]+'yr'
-    fre_logger.warn(f'chunk = {chunk}')
-
+    # --- fields that don't change across cmor table targets --- #
+    # path to input pp directory
     pp_dir = cmor_yaml_dict['directories']['pp_dir']
     fre_logger.info(f'pp_dir = {pp_dir}')
+    check_path_existence(pp_dir)
 
+    # path to cmor cmip table directory
+    cmip_cmor_table_dir = cmor_yaml_dict['directories']['table_dir']
+    fre_logger.info(f'cmip_cmor_table_dir = {cmip_cmor_table_dir}')
+    check_path_existence(cmip_cmor_table_dir)
 
-    # stuff needed for run tool arg: mip table...
-    # table=mustbeassignedinloop
-    mip_spec = cmor_yaml_dict['mip_spec']#'CMIP6'
-    fre_logger.info(f'mip_spec = {mip_spec}')
+    # output directory specification is based on what's in the yaml, and if we could determine archroot
+    cmorized_outdir = cmor_yaml_dict['directories']['outdir']
+    fre_logger.info(f'cmorized_outdir = {cmorized_outdir}')
+    if not Path(cmorized_outdir).exists():
+        try:
+            fre_logger.info('cmorized_outdir does not exist.')
+            fre_logger.info('attempt to create it...')
+            Path(cmorized_outdir).mkdir(exist_ok = False, parents = True)
+        except Exception as exc:
+            raise OSError(f'could not create cmorized_outdir = {cmorized_outdir} for some reason!') from exc
 
-    path_to_cmip_cmor_tables=cmor_yaml_dict['directories']['table_dir']
-    fre_logger.info(f'path_to_cmip_cmor_tables = {path_to_cmip_cmor_tables}')
-    check_path_existence(path_to_cmip_cmor_tables)
-
-    # stuff needed for run tool arg: experiment-specific metadata... easy
-    # argument to run tool: experiment-specific metadata (exp config)
+    # path to experiment-specific configuration
     json_exp_config = cmor_yaml_dict['exp_json']#f'{exp_json}
     fre_logger.info(f'json_exp_config = {json_exp_config}')
     check_path_existence(json_exp_config)
 
-
-    # OPTIONAL: output directory, **as specified in the yaml**
-    yaml_outdir = None
-    try:
-        yaml_outdir = cmor_yaml_dict['outdir']
-        fre_logger.info(f'yaml_outdir = {yaml_outdir}')
-    except:
-        fre_logger.warning(f'warning, couldnt read \'outdir\' key in cmor yaml dict, or has no/null value')
-        fre_logger.warning(f'warning, guessing that you want your output near your input file directory as default')
+    # used for making table filename string
+    mip_era = cmor_yaml_dict['mip_era']
+    fre_logger.info(f'mip_era = {mip_era}')
 
 
-    # try to determine archroot directory as needed. if not, no biggie. 
-    archroot = None
-    try:
-        archroot='/'.join(pp_dir.split('/')[0:-1])
-        fre_logger.info(f'from pp_dir, archroot must be: {archroot}')
-    except:
-        fre_logger.warning(f'could not figure out archroot')
 
-    # output directory specification is based on what's in the yaml, and if we could determine archroot
-    outdir = f'{archroot}/publish' if yaml_outdir is None else yaml_outdir
+
+    ## will be bother doing this? TBD...
+    #opt_var_name = None
+    #try:
+    #    opt_var_name = cmor_yaml_dict['opt_var_name']
+    #except:
+    #    fre_logger.warning('could not read opt_var_name key/value. moving on.')
+
+
+
     
-    if outdir is None:
-        raise OSError('problem with figuring out what output directory should be')
-
-    if not Path(outdir).exists():
-        fre_logger.info(f'this doesnt exist: outdir= \n    {outdir}')
-        fre_logger.info('creating....')
-        Path(outdir).mkdir(exist_ok=True, parents=False)
-
-
-    # its ok if this one doesn't work out
-    opt_var_name = None
-    try:
-        opt_var_name = cmor_yaml_dict['opt_var_name']
-    except:
-        fre_logger.warning('could not read opt_var_name key/value. moving on.')
-
     # ---------------------------------------------------
     # showtime ------------------------------------------
     # ---------------------------------------------------
 
-    # --- loop over mip table / component combos
+
+    
+    #    # stuff needed for run tool arg: input directory location of files...
+    #    # component = mustbeassignedinloop
+    #
+
+
+
+
+    # --- now form remaining args to run subtool, loop over mip table / component combos
     for table_config in cmor_yaml_dict['table_targets']:
-        table=table_config['table_name']
-        table_components_list=table_config['target_components']
-        json_var_list=table_config['variable_list']
-        for component in table_components_list:
+        table_name = table_config['table_name']
+        fre_logger.info(f'table_name = {table_name}')
+        
+        json_table_config = f'{cmip_cmor_table_dir}/{mip_era}_{table_name}.json'
+        fre_logger.info(f'json_table_config = {json_table_config}')
+        check_path_existence(json_table_config)
 
-            # --- now form the arguments to the run subtool:
+        freq = table_config['freq']
+        if freq is None:
+            freq = get_freq_from_table(json_table_config)
+        fre_logger.info(f'freq = {freq}')
 
+        json_var_list = table_config['variable_list']
+        fre_logger.info(f'json_var_list = {json_var_list}')
+
+        
+        table_components_list = table_config['target_components']
+        for targ_comp_config in table_components_list:            
+            component = targ_comp_config['component_name']
+
+            bronx_chunk = iso_to_bronx_chunk(targ_comp_config['chunk'])
+            data_series_type = targ_comp_config['data_series_type']
+            
             # argument to run tool: input directory location of files
-            indir = f'{pp_dir}/{component}/{data_series_type}/{freq}/{chunk}'
+            indir = f'{pp_dir}/{component}/{data_series_type}/{freq}/{bronx_chunk}'
             fre_logger.info(f'indir = {indir}')
 
-            ### configuration files ###
-            json_table_config = f'{path_to_cmip_cmor_tables}/{mip_spec}_{table}.json'
-            fre_logger.info(f'json_table_config = {json_table_config}')
 
-            fre_logger.info(f'PROCESSING: table, component = {table}, {component}')
+                        
+            fre_logger.info(f'PROCESSING:    ( {table_name}, {component} )'      )
 
-            # fire!
+            ## fire!
             cmor_run_subtool(
                 indir = indir ,
                 json_var_list = json_var_list ,
                 json_table_config = json_table_config ,
                 json_exp_config = json_exp_config ,
-                outdir = outdir ,
+                outdir = cmorized_outdir ,
                 run_one_mode = True, #run_one_mode,
                 opt_var_name = None #opt_var_name
             )
-            
-            assert False
+            #
+
+            #assert False
                         
         
 
@@ -171,7 +227,7 @@ def cmor_yaml_subtool(yamlfile = None,
             
 
 
-    raise NotImplementedError('under construction')
+    #raise NotImplementedError('under construction')
 
     return
 
