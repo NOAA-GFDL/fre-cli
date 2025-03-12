@@ -735,6 +735,9 @@ def cmor_run_subtool( indir = None,
             f'ERROR: json_exp_config file cannot be opened.\n'
             f'       json_exp_config = {json_exp_config}' )
 
+
+    
+
     # loop over entries in the json_var_list, read into var_list
     for local_var in var_list:
 
@@ -763,6 +766,9 @@ def cmor_run_subtool( indir = None,
         # examine input directory to obtain a list of input file targets
         var_filenames = []
         get_var_filenames(indir, var_filenames, local_var)
+        if len(var_filenames) == 0:
+            fre_logger.warning(f" no file targets found for {local_var}... continue!")
+            continue
         fre_logger.info(f" found filenames = \n {var_filenames}\n")
 
         # examine input files to obtain target date ranges
@@ -779,13 +785,13 @@ def cmor_run_subtool( indir = None,
 
         fre_logger.info(f'........beginning CMORization for {local_var}/\n'
                         f'                        {target_var}..........')
-        print(f'PRINT \n\n cmorize_target_var_files( \n' #TODO DELETEME
-            f'{indir}, {target_var}, {local_var}, {iso_datetime_arr}, \n'
-            f'{name_of_set}, {json_exp_config}, \n'
-            f'{outdir}, \n'
-            f'proj_table_vars=TOO_BIG, \n'
-            f'{json_table_config}, \n'
-            f'{run_one_mode}      )')
+        #print(f'PRINT \n\n cmorize_target_var_files( \n' #TODO DELETEME
+        #    f'{indir}, {target_var}, {local_var}, {iso_datetime_arr}, \n'
+        #    f'{name_of_set}, {json_exp_config}, \n'
+        #    f'{outdir}, \n'
+        #    f'proj_table_vars=TOO_BIG, \n'
+        #    f'{json_table_config}, \n'
+        #    f'{run_one_mode}      )')
         cmorize_target_var_files(
             indir, target_var, local_var, iso_datetime_arr, # OK
             name_of_set, json_exp_config,
@@ -794,7 +800,8 @@ def cmor_run_subtool( indir = None,
             run_one_mode
         )
 
-        if run_one_mode:
-            fre_logger.warning('run_one_mode is True. breaking var_list loop')
-            break
+    #if run_one_mode:
+    #    fre_logger.warning('run_one_mode is True. breaking var_list loop')
+    #    break
+    
     return 0
