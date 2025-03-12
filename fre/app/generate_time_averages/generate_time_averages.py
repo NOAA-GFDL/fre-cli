@@ -38,7 +38,7 @@ def generate_time_average(infile = None, outfile = None,
                                        avg_type = avg_type, stddev_type = stddev_type)
 
     elif pkg == 'fre-python-tools':   #fre-python-tools adresses var in a uniqe way, which is adressed here
-        if merged == True and self.var is None:
+        if merged == True and var == None:
             var = multi_file[0].split('/').pop().split('.')[-2]
         from .frepytoolsTimeAverager import frepytoolsTimeAverager
         myavger=frepytoolsTimeAverager(pkg = pkg, var=var,
