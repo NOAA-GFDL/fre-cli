@@ -56,6 +56,9 @@ def find_statics_file(bronx_file_path):
 
 
 def create_lev_bnds(bound_these = None, with_these = None):
+    '''
+    creates a (2, len(bound_these)) shaped array with values assigned from with_these and returns that array
+    '''
     the_bnds = None
     assert len(with_these) == len(bound_these) + 1
     fre_logger.info( 'bound_these is... ')
@@ -87,15 +90,18 @@ def get_var_filenames(indir, var_filenames = None, local_var = None):
     if var_filenames is None:
         var_filenames = []
     filename_pattern = '.nc' if local_var is None else f'.{local_var}.nc'
-    fre_logger.info(f'filename_pattern = {filename_pattern}\n')
-    fre_logger.info(f'indir = {indir}\n')
-    var_filenames_all = glob.glob(f'{indir}/*{filename_pattern}')
+    fre_logger.info(f'\nfilename_pattern = {filename_pattern}')
+    fre_logger.info(f'indir = {indir}')
+    glob_str=f'{indir}/*{filename_pattern}'
+    fre_logger.info(f'glob_str = {glob_str}')
+    var_filenames_all = glob.glob(glob_str)
     #fre_logger.info(f'var_filenames_all = {var_filenames_all}')
     for var_file in var_filenames_all:
         var_filenames.append( Path(var_file).name )
     #fre_logger.info(f" var_filenames = {var_filenames}")
     if len(var_filenames) < 1:
-        raise ValueError(f'target directory had no files with .nc ending. indir =\n {indir}')
+        fre_logger.warning(f'target directory had no files endings in {filename_pattern}')
+        #raise ValueError(f'target directory had no files with .nc ending. indir =\n {indir}')
     var_filenames.sort()
 
 
