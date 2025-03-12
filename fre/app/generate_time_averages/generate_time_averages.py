@@ -19,7 +19,7 @@ def generate_time_average(infile = None, outfile = None,
         _cdo=Cdo()
         merged_file = "merged_output.nc"
         _cdo.mergetime(input=' '.join(infile), output=merged_file)
-        multi_files = infile   #preserve the original file names for later
+        multi_file = infile   #preserve the original file names for later
         infile = merged_file
         merged = True
 
