@@ -11,6 +11,7 @@ import subprocess
 
 import logging
 
+import glob
 import json
 
 import numpy as np
@@ -24,7 +25,7 @@ fre_logger = logging.getLogger(__name__)
 
 
 ### ------ BULK ROUTINES ------ ###
-def rewrite_netcdf_file_var ( proj_table_vars = None,
+def rewrite_netcdf_file_var ( mip_var_cfgs = None,
                               local_var = None,
                               netcdf_file = None,
                               target_var = None,
@@ -34,7 +35,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     '''
     rewrite the input netcdf file nc_fl containing target_var in a CMIP-compliant manner.
     accepts six arguments, all required:
-        proj_table_vars: json dictionary object, variable table read from json_table_config.
+        mip_var_cfgs: json dictionary object, variable table read from json_table_config.
         local_var: string, variable name used for finding files locally containing target_var,
                    this argument is often equal to target_var.
         netcdf_file: string, representing path to intput netcdf file.
@@ -42,7 +43,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         json_exp_config: string, representing path to configuration file holding metadata for appending to output
                          this config houses the desired output directory structure, grid label, and metadata header
         json_table_config: string, representing path to configuration file holding variable names for a given table.
-                           proj_table_vars is read from this file, but both are passed anyways.
+                           mip_var_cfgs is read from this file, but both are passed anyways.
     '''
     fre_logger.info( "input data: " )
     fre_logger.info(f"    local_var   =  {local_var}" )
@@ -64,12 +65,12 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
     # try to read what coordinate(s) we're going to be expecting for the variable
     expected_mip_coord_dims = None
     try:
-        expected_mip_coord_dims = proj_table_vars["variable_entry"] [target_var] ["dimensions"]
+        expected_mip_coord_dims = mip_var_cfgs["variable_entry"] [target_var] ["dimensions"]
         fre_logger.info( 'i am hoping to find data for the following coordinate dimensions:\n'
               f'    expected_mip_coord_dims = {expected_mip_coord_dims}\n' )
     except Exception as exc:
         fre_logger.warning(f'could not get expected coordinate dimensions for {target_var}. '
-               '    in proj_table_vars file {json_table_config}. \n exc = {exc}')
+               '    in mip_var_cfgs file {json_table_config}. \n exc = {exc}')
 
 
     ## figure out the coordinate/dimension names programmatically TODO
@@ -252,8 +253,10 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
         print_data_minmax(xq, "xq")
         fre_logger.info('\n')
 
-        assert yh_dim == (len(yq)-1)
-        assert xh_dim == (len(xq)-1)
+        if any( [ yh_dim == ( len(yq) - 1 ), 
+                  xh_dim == ( len(xq) - 1 ) ] ):
+            raise ValueError('the number of h-point lat/lon coordinates is inconsistent with the number of'
+                             'q-point lat/lon coordinates! i.e. ( hpoint_dim != qpoint_dim+1 )')
 
         # create h-point bounds from the q-point lat lons
         fre_logger.info('creating yh_bnds, xh_bnds from yq, xq\n')
@@ -497,10 +500,10 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 
 
     # read positive/units attribute and create cmor_var
-    units = proj_table_vars["variable_entry"] [target_var] ["units"]
+    units = mip_var_cfgs["variable_entry"] [target_var] ["units"]
     fre_logger.info(f" units = {units}")
 
-    positive = proj_table_vars["variable_entry"] [target_var] ["positive"]
+    positive = mip_var_cfgs["variable_entry"] [target_var] ["positive"]
     fre_logger.info(f" positive = {positive}")
 
     cmor_var = cmor.variable(target_var, units, axes, positive = positive)
@@ -526,7 +529,7 @@ def rewrite_netcdf_file_var ( proj_table_vars = None,
 def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
                               iso_datetime_arr = None, name_of_set = None,
                               json_exp_config = None, outdir = None,
-                              proj_table_vars = None, json_table_config = None, run_one_mode = False ):
+                              mip_var_cfgs = None, json_table_config = None, run_one_mode = False ):
     ''' processes a target directory/file
     this routine is almost entirely exposed data movement before/after calling
     rewrite_netcdf_file_var it is also the most hopelessly opaque routine in this entire dang macro.
@@ -542,7 +545,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
         json_exp_config: see cmor_run_subtool arg desc
         outdir: string, path to output directory root to move the cmor module output to, including
                 the whole directory structure
-        proj_table_vars: an opened json file object, read from json_table_config
+        mip_var_cfgs: an opened json file object, read from json_table_config
         json_table_config: see cmor_run_subtool arg desc
 
     '''
@@ -585,14 +588,18 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
 
         # TODO think of better way to write this kind of conditional data movement...
         # now we have a file in our targets, point CMOR to the configs and the input file(s)
-        make_cmor_write_here = None        
-        if Path( tmp_dir ).is_absolute():
-            fre_logger.debug(f'tmp_dir is absolute')
-            make_cmor_write_here = tmp_dir
-        elif Path( tmp_dir ).exists(): # relative to where we are
-            fre_logger.debug(f'tmp_dir is relative to CWD!')
-            make_cmor_write_here = os.getcwd() + '/'+tmp_dir # unavoidable, cmor module FORCES write to CWD
-        assert make_cmor_write_here is not None
+        make_cmor_write_here = tmp_dir #None        
+        #        if Path( tmp_dir ).is_absolute():
+        #            fre_logger.debug(f'tmp_dir is absolute')
+        #            make_cmor_write_here = tmp_dir
+        #        elif Path( tmp_dir ).exists(): # relative to where we are
+        #            fre_logger.debug(f'tmp_dir is relative to CWD!')
+        #            make_cmor_write_here = os.getcwd() + '/'+tmp_dir # unavoidable, cmor module FORCES write to CWD
+
+        # make sure we know where we are writing, or else!
+        if not Path(make_cmor_write_here).exists():
+            raise ValueError(f'\n tmp_dir = \n    {tmp_dir} \n cannot be found/created/resolved!')
+
 
         gotta_go_back_here = os.getcwd()
         try:
@@ -603,7 +610,7 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
 
         fre_logger.info("calling rewrite_netcdf_file_var")
         try:
-            local_file_name = rewrite_netcdf_file_var( proj_table_vars      ,
+            local_file_name = rewrite_netcdf_file_var( mip_var_cfgs      ,
                                                        local_var            ,
                                                        nc_file_work         ,
                                                        target_var           ,
@@ -664,140 +671,32 @@ def cmorize_target_var_files( indir = None, target_var = None, local_var = None,
             break
 
 
-
-
-def cmor_run_subtool( indir = None,
-                      json_var_list = None,
-                      json_table_config = None,
-                      json_exp_config = None ,
-                      outdir = None,
-                      run_one_mode = False,
-                      opt_var_name = None
-                      ):
+def cmorize_all_variables_in_dir(vars_to_run,
+                                 indir, iso_datetime_arr, name_of_set, json_exp_config,
+                                 outdir, mip_var_cfgs, json_table_config, run_one_mode ):
     '''
-    primary steering function for the cmor_mixer tool, i.e essentially main. Accepts six args:
-        indir: string, directory containing netCDF files. keys specified in json_var_list are local
-               variable names used for targeting specific files
-        json_var_list: string, path pointing to a json file containing directory of key/value
-                       pairs. the keys are the "local" names used in the filename, and the
-                       values pointed to by those keys are strings representing the name of the
-                       variable contained in targeted files. the key and value are often the same,
-                       but it is not required.
-        json_table_config: json file containing CMIP-compliant per-variable/metadata for specific
-                           MIP table. The MIP table can generally be identified by the specific
-                           filename (e.g. "Omon")
-        json_exp_config: json file containing metadata dictionary for CMORization. this metadata is effectively
-                         appended to the final output file's header
-        outdir: string, directory root that will contain the full output and output directory
-                structure generated by the cmor module upon request.
-        opt_var_name: string, optional, specify a variable name to specifically process only filenames matching
-                      that variable name. I.e., this string help target local_vars, not target_vars.
-    '''
-    # check req'd inputs
-    if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
-        raise ValueError( '(cmor_run_subtool) all input arguments except opt_var_name are required!\n'
-                          '                   [indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
-                         f'                   [{indir}, {json_var_list}, {json_table_config}, '
-                         f'                   {json_exp_config}, {outdir}]' )
-
-    ## open CMOR table config file
-    fre_logger.info( 'loading json_table_config = \n'
-                     f'    {json_table_config}\n'                     )
-    try:
-        with open( json_table_config, "r", encoding = "utf-8") as table_config_file:
-            proj_table_vars = json.load(table_config_file)
-
-    except Exception as exc:
-        raise FileNotFoundError(
-            f'ERROR: json_table_config file cannot be opened.\n'
-            f'       json_table_config = {json_table_config}' ) from exc
-
-    # now resolve the json_table_config path after confirming it can be open
-    json_table_config= str( Path(json_table_config).resolve() )
-
-    # open input variable list
-    fre_logger.info('loading json_var_list = \n '
-                    f'    {json_var_list}\n')
-    try:
-        with open( json_var_list, "r", encoding = "utf-8"  ) as var_list_file:
-            var_list = json.load( var_list_file )
-
-    except Exception as exc:
-        raise FileNotFoundError(
-            f'ERROR: json_var_list file cannot be opened.\n'
-            f'       json_var_list = {json_var_list}' ) from exc
-
-    # make sure the exp config exists too while we're at it...
-    if Path(json_exp_config).exists(): # if so, resolve to absolute path
-        json_exp_config = str( Path( json_exp_config).resolve() )
-    else:
-        raise FileNotFoundError(
-            f'ERROR: json_exp_config file cannot be opened.\n'
-            f'       json_exp_config = {json_exp_config}' )
-
-
     
+    '''
+    
+    # loop over local-variable:target-variable pairs in vars_to_run
+    for local_var in vars_to_run:
 
-    # loop over entries in the json_var_list, read into var_list
-    for local_var in var_list:
-
-        # if its not in the table configurations variable_entry list, skip
-        if var_list[local_var] not in proj_table_vars["variable_entry"]:
-            fre_logger.warning(f"skipping local_var  = {local_var} /\n"
-                  f"... target_var = {var_list[local_var]}\n"
-                   "... target_var not found in CMOR variable group")
-            continue
-
-        if all( [ opt_var_name is not None,
-                  local_var != opt_var_name ] ):
-            fre_logger.warning(f'skipping local_var = {local_var} as it is not equal\n'
-                   '... to the opt_var_name argument.')
-            continue
-
-        # it is in there, get the name of the data inside the netcdf file.
-        target_var = var_list[local_var] # often equiv to local_var but not necessarily.
+        # if the target-variable is "good", get the name of the data inside the netcdf file.
+        target_var = vars_to_run[local_var] # often equiv to local_var but not necessarily.
         if local_var != target_var:
             fre_logger.warning(f'local_var == {local_var} \n'
-                  f'    != {target_var} == target_var\n'
-                  f'    i am expecting {local_var} to be in the filename, and i expect the variable\n'
-                  f'    in that file to be {target_var}')
-
-
-        # examine input directory to obtain a list of input file targets
-        var_filenames = []
-        get_var_filenames(indir, var_filenames, local_var)
-        if len(var_filenames) == 0:
-            fre_logger.warning(f" no file targets found for {local_var}... continue!")
-            continue
-        fre_logger.info(f" found filenames = \n {var_filenames}\n")
-
-        # examine input files to obtain target date ranges
-        iso_datetime_arr = []
-        get_iso_datetimes(var_filenames, iso_datetime_arr)
-        fre_logger.info(f" found iso datetimes = \n {iso_datetime_arr}\n")
-
-        # name_of_set == component label...
-        # which is not relevant for CMOR/CMIP... or is it?
-        name_of_set = var_filenames[0].split(".")[0]
-        fre_logger.info(f" setting name_of_set = {name_of_set}")
-
-
+                               f'    != {target_var} == target_var\n'
+                               f'    i am expecting {local_var} to be in the filename, and i expect the variable\n'
+                               f'    in that file to be named {target_var}')
 
         fre_logger.info(f'........beginning CMORization for {local_var}/\n'
                         f'                        {target_var}..........')
-        #print(f'PRINT \n\n cmorize_target_var_files( \n' #TODO DELETEME
-        #    f'{indir}, {target_var}, {local_var}, {iso_datetime_arr}, \n'
-        #    f'{name_of_set}, {json_exp_config}, \n'
-        #    f'{outdir}, \n'
-        #    f'proj_table_vars=TOO_BIG, \n'
-        #    f'{json_table_config}, \n'
-        #    f'{run_one_mode}      )')
         try:
             cmorize_target_var_files(
                 indir, target_var, local_var, iso_datetime_arr, # OK
                 name_of_set, json_exp_config,
                 outdir,
-                proj_table_vars, json_table_config, # a little redundant
+                mip_var_cfgs, json_table_config, # at this point, json_table_config is used strictly 
                 run_one_mode
             )
         except Exception as exc:
@@ -807,8 +706,111 @@ def cmor_run_subtool( indir = None,
             # log an omitted variable here...
             
 
-    #if run_one_mode:
-    #    fre_logger.warning('run_one_mode is True. breaking var_list loop')
-    #    break
-    
+        if run_one_mode: # TEMP DELETEME TODO
+            fre_logger.warning('run_one_mode is True. breaking vars_to_run loop')
+            break
     return 0
+    
+
+def cmor_run_subtool( indir = None,
+                      json_var_list = None, json_table_config = None, json_exp_config = None,
+                      outdir = None,
+                      run_one_mode = False, opt_var_name = None ):
+    '''
+    primary steering function for the other routines in this file, i.e essentially main. Accepts six args:
+        indir: string, directory containing netCDF files. keys specified in json_var_list are local
+               variable names used for targeting specific files
+        json_var_list: string, points to a json file containing directory of key/value pairs. keys are "local" names 
+                       used in the filename. values are strings representing the name of the data stored within the 
+                       file. the key and value are often the same. making the key and value different is helpful for 
+                       focusing on a specific file.
+        json_table_config: string, points to a json file containing per-variable-metadata for specific MIP table. 
+        json_exp_config: string, points to a json file containing metadata dictionary for CMORization. this metadata 
+                         is effectively appended to the final output file's header
+        outdir: string, directory root that will contain the full output and directory structure generated by 
+                the cmor module.
+        run_one_mode: bool, optional, for every variable in the list, if files are found, process one of them, then 
+                      move on. largely of interest when debugging.
+        opt_var_name: string, optional, specify a variable name to specifically process only files with that variable
+                      Note that this is checked against the variable name that's usually embedded in the nc filename
+    '''
+    # check req'd inputs
+    if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
+        raise ValueError( '    all input arguments except opt_var_name are required!\n'
+                          '    [indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
+                         f'    [{indir}, {json_var_list}, {json_table_config}, '
+                         f'    {json_exp_config}, {outdir}]' )
+
+    # do not open, but confirm the existence of the exp-specific metadata file
+    if Path(json_exp_config).exists(): 
+        json_exp_config = str( Path( json_exp_config ).resolve() )
+    else:
+        raise FileNotFoundError(
+            f'ERROR: json_exp_config file cannot be opened.\n'
+            f'       json_exp_config = {json_exp_config}' )
+
+
+    # open CMOR table config file - need it here for checking the TABLE's variable list
+    json_table_config = str( Path( json_table_config ).resolve() )
+    fre_logger.info( 'loading json_table_config = \n'
+                     f'    {json_table_config}\n'                     )
+    mip_var_cfgs = get_json_file_data(json_table_config)
+
+    # open input variable list, generally created by the user
+    json_var_list = str( Path( json_var_list ).resolve() )    
+    fre_logger.info('loading json_var_list = \n '
+                    f'    {json_var_list}\n' )
+    var_list = get_json_file_data( json_var_list )
+
+    # here, make a list of variables in the table, compare to var_list data.
+    vars_to_run = {}
+    for local_var in var_list:
+        if var_list[local_var] not in mip_var_cfgs["variable_entry"]:
+            fre_logger.warning( f"skipping local_var  = {local_var} /\n"
+                                f"... target_var = {var_list[local_var]}\n"
+                                 "... target_var not found in CMOR variable group" )
+            continue
+        else:
+            fre_logger.info( f'{var_list[local_var]} found in {Path(json_table_config).name}')
+            vars_to_run[local_var]=var_list[local_var]
+
+    # make sure there's stuff to run, otherwise, exit
+    if len(vars_to_run)<1:
+        raise ValueError( "runnable variable list is of length 0"
+                          "this means no variables in input variable list are in"
+                          "the mip table configuration, so there's nothing to process!" )
+    elif all( [ opt_var_name is not None,
+                opt_var_name not in list(vars_to_run.keys()) ] ):
+        raise ValueError( "opt_var_name is not None! (== {opt_var_name}"
+                          "... but the variable is not contained in the target mip table"
+                          "... there's nothing to process, exit" )
+    
+    fre_logger.info(f'runnable variable list formed, it is vars_to_run=\n{vars_to_run}')
+
+    
+    # make list of target files within targeted indir here
+    # examine input directory to obtain a list of input file targets
+    fre_logger.info(f'indir = {indir}')
+    indir_filenames = glob.glob(f'{indir}/*.nc')
+    indir_filenames.sort()
+    if len(indir_filenames) == 0:
+        raise ValueError(f'no files in input target directory = indir = \n {indir}')
+    fre_logger.debug(f" found filenames = \n {indir_filenames}\n")
+
+    # make list of iso-datetimes here
+    iso_datetime_arr = []
+    get_iso_datetimes(indir_filenames, iso_datetime_arr)
+    fre_logger.info(f" found iso datetimes = \n {iso_datetime_arr}\n")
+
+    # name_of_set == component label...
+    # which is not relevant for CMOR/CMIP... or is it?
+    name_of_set = Path(indir_filenames[0]).name.split(".")[0]
+    fre_logger.info(f" setting name_of_set = {name_of_set}")
+
+    # no longer needed.
+    del indir_filenames
+
+    return cmorize_all_variables_in_dir( vars_to_run,
+                                         indir, iso_datetime_arr, name_of_set, json_exp_config,
+                                         outdir, mip_var_cfgs, json_table_config, run_one_mode )
+

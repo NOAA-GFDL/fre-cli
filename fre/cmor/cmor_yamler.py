@@ -2,6 +2,7 @@
 this module is for 'fre cmor yaml' calls, driving and steering the cmor_run_subtool via a model-yaml file holding
 configuration information on e.g. target experiments
 """
+
 from pathlib import Path
 #import os
 #import shutil
@@ -203,30 +204,23 @@ def cmor_yaml_subtool(yamlfile = None,
             indir = f'{pp_dir}/{component}/{data_series_type}/{freq}/{bronx_chunk}'
             fre_logger.info(f'indir = {indir}')
 
-
-                        
-            fre_logger.info(f'PROCESSING:    ( {table_name}, {component} )'      )
-
             ## fire!
+            fre_logger.info(f'PROCESSING:    ( {table_name}, {component} )'      )
             cmor_run_subtool(
                 indir = indir ,
                 json_var_list = json_var_list ,
                 json_table_config = json_table_config ,
                 json_exp_config = json_exp_config ,
                 outdir = cmorized_outdir ,
-                run_one_mode = False, #run_one_mode,
+                run_one_mode = True, #run_one_mode,
                 opt_var_name = None #opt_var_name
             )
             #
 
-            #assert False
+            #break #TEMP DELETEME TODO
+        #break #TEMP DELETEME TODO
                         
         
-
-
-            
-
-
     #raise NotImplementedError('under construction')
 
     return
