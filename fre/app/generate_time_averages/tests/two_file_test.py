@@ -115,37 +115,39 @@ def test_fre_cli_time_unwgt_avgs_stddevs():
         infile  = (test_file_names),
         outfile = (time_avg_file_dir+'frepytools_unwgt_stddev_'+test_file_name),
         pkg='fre-python-tools',avg_type='all', stddev_type='samp', unwgt=True )
-
+'''
+To be implemnted when fre-nctools has been updated. these options currently work locally if a user has fre-nctools in their conda env.
 ## fre-nctools avgs+stddevs, weighted+unweighted, all ------------------------
 def test_fre_nctool_time_avgs():
-    ''' generates a time averaged file using fre_nctools's version '''
-    ''' weighted average, no std deviation '''
+    # generates a time averaged file using fre_nctools's version 
+    # weighted average, no std deviation 
     assert run_avgtype_pkg_calculations(
         infile  = (test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_timavg_'+test_file_name),
         pkg='fre-nctools',avg_type='all', unwgt=False )
 
 def test_fre_nctools_time_unwgt_avgs():
-    ''' generates a time averaged file using fre_nctools's version '''
-    ''' weighted average, no std deviation '''
+    # generates a time averaged file using fre_nctools's version 
+    # weighted average, no std deviation 
     assert run_avgtype_pkg_calculations(
         infile  = (test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_unwgt_timavg_'+test_file_name),
         pkg='fre-nctools',avg_type='all', unwgt=True )
 
 def test_fre_nctool_time_avgs_stddevs():
-    ''' generates a time averaged file using fre_nctool's version '''
-    ''' weighted average, no std deviation '''
+    # generates a time averaged file using fre_nctool's version 
+    # weighted average, no std deviation 
     assert run_avgtype_pkg_calculations(
         infile  = (test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_stddev_'+test_file_name),
         pkg='fre-nctools',avg_type='all', stddev_type='samp', unwgt=False )
 
 def test_fre_nctool_time_unwgt_avgs_stddevs():
-    ''' generates a time averaged file using fre_nctool's version '''
-    ''' weighted average, no std deviation '''
+    # generates a time averaged file using fre_nctool's version 
+    # weighted average, no std deviation 
     assert run_avgtype_pkg_calculations(
         infile  = (test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_unwgt_stddev_'+test_file_name),
         pkg='fre-nctools',avg_type='all', stddev_type='samp', unwgt=True )
 
+'''
