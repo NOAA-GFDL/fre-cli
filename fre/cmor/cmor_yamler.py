@@ -152,7 +152,7 @@ def cmor_yaml_subtool(yamlfile = None,
 
 
 
-    ## will be bother doing this? TBD...
+    ## will we bother to do this? TBD...
     #opt_var_name = None
     #try:
     #    opt_var_name = cmor_yaml_dict['opt_var_name']
@@ -165,15 +165,6 @@ def cmor_yaml_subtool(yamlfile = None,
     # ---------------------------------------------------
     # showtime ------------------------------------------
     # ---------------------------------------------------
-
-
-    
-    #    # stuff needed for run tool arg: input directory location of files...
-    #    # component = mustbeassignedinloop
-    #
-
-
-
 
     # --- now form remaining args to run subtool, loop over mip table / component combos
     for table_config in cmor_yaml_dict['table_targets']:
@@ -215,11 +206,6 @@ def cmor_yaml_subtool(yamlfile = None,
                 run_one_mode = True, #run_one_mode,
                 opt_var_name = None #opt_var_name
             )
-            #
-
-            #break #TEMP DELETEME TODO
-        #break #TEMP DELETEME TODO
-                        
         
     #raise NotImplementedError('under construction')
 

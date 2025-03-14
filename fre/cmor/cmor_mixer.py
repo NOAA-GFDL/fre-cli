@@ -23,6 +23,13 @@ from .cmor_helpers import *
 
 fre_logger = logging.getLogger(__name__)
 
+### consts
+ACCEPTED_VERT_DIMS = [ "z_l", "landuse", "plev39", "plev30", "plev19", "plev8",
+                       "height2m", "level", "lev", "levhalf"]
+## accepted vertical dimensions by coordinate-use-case
+NON_HYBRID_SIGMA_COORDS = ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]
+ALT_HYBRID_SIGMA_COORDS = ["level", "lev", "levhalf"]
+DEPTH_COORDS = ["z_l"]
 
 ### ------ BULK ROUTINES ------ ###
 def rewrite_netcdf_file_var ( mip_var_cfgs = None,
@@ -124,8 +131,7 @@ def rewrite_netcdf_file_var ( mip_var_cfgs = None,
     lev, lev_units = None, "1" #1 #"none" #None #""
     lev_bnds = None
     if vert_dim != 0:
-        if vert_dim.lower() not in [ "z_l", "landuse", "plev39", "plev30", "plev19", "plev8",
-                                          "height2m", "level", "lev", "levhalf"] :
+        if vert_dim.lower() not in ACCEPTED_VERT_DIMS:
             raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
         lev = ds[vert_dim]
         if vert_dim.lower() != "landuse":
@@ -140,7 +146,7 @@ def rewrite_netcdf_file_var ( mip_var_cfgs = None,
                                        lat is None,
                                        lon is None      ] )
     statics_file_path = None
-    xh, yh = None, None    #cmor_x, cmor_y = None, None
+    xh, yh = None, None
     xh_dim, yh_dim = None, None
     xh_bnds, yh_bnds = None, None
     vertex = None
@@ -374,17 +380,16 @@ def rewrite_netcdf_file_var ( mip_var_cfgs = None,
 
 
     # other vertical-axis-relevant initializations
-    save_ps = False
-    ps = None
+    save_ps, ps, ips = False, None, None
     ierr_ap, ierr_b = None, None
-    ips = None
+
 
     # set cmor vertical axis if relevant
     cmor_z = None
     if lev is not None:
         fre_logger.info('assigning cmor_z')
 
-        if vert_dim.lower() in ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]:
+        if vert_dim.lower() in NON_HYBRID_SIGMA_COORDS:
             fre_logger.info('non-hybrid sigma coordinate case')
             if vert_dim.lower() != "landuse":
                 cmor_vert_dim_name = vert_dim
@@ -400,7 +405,7 @@ def rewrite_netcdf_file_var ( mip_var_cfgs = None,
                                       units = lev_units )
 
 
-        elif vert_dim in ["z_l"]:
+        elif vert_dim in DEPTH_COORDS:
             lev_bnds = create_lev_bnds( bound_these = lev,
                                          with_these = ds['z_i'] )
             fre_logger.info('created lev_bnds...')
@@ -410,7 +415,7 @@ def rewrite_netcdf_file_var ( mip_var_cfgs = None,
                                   units = lev_units,
                                   cell_bounds = lev_bnds)
 
-        elif vert_dim in ["level", "lev", "levhalf"]:
+        elif vert_dim in ALT_HYBRID_SIGMA_COORDS:
             # find the ps file nearby
             ps_file = netcdf_file.replace(f'.{target_var}.nc', '.ps.nc')
             ds_ps = nc.Dataset(ps_file)
@@ -763,16 +768,21 @@ def cmor_run_subtool( indir = None,
     var_list = get_json_file_data( json_var_list )
 
     # here, make a list of variables in the table, compare to var_list data.
-    vars_to_run = {}
+    vars_to_run = {}    
     for local_var in var_list:
-        if var_list[local_var] not in mip_var_cfgs["variable_entry"]:
+        if opt_var_name is not None:
+            vars_to_run[opt_var_name]=opt_var_name 
+            break            
+        elif var_list[local_var] not in mip_var_cfgs["variable_entry"]:
             fre_logger.warning( f"skipping local_var  = {local_var} /\n"
                                 f"... target_var = {var_list[local_var]}\n"
                                  "... target_var not found in CMOR variable group" )
             continue
-        else:
-            fre_logger.info( f'{var_list[local_var]} found in {Path(json_table_config).name}')
-            vars_to_run[local_var]=var_list[local_var]
+
+        fre_logger.info( f'{var_list[local_var]} found in {Path(json_table_config).name}')
+        vars_to_run[local_var]=var_list[local_var]        
+    fre_logger.info(f'vars_to_run = {vars_to_run}')
+
 
     # make sure there's stuff to run, otherwise, exit
     if len(vars_to_run)<1:
@@ -810,7 +820,7 @@ def cmor_run_subtool( indir = None,
     # no longer needed.
     del indir_filenames
 
-    return cmorize_all_variables_in_dir( vars_to_run,
+    return cmorize_all_variables_in_dir( vars_to_run, 
                                          indir, iso_datetime_arr, name_of_set, json_exp_config,
                                          outdir, mip_var_cfgs, json_table_config, run_one_mode )
 
