@@ -16,7 +16,7 @@ from fre.pp import status_script
 from fre.pp import wrapper_script
 
 # fre pp
-@click.group(help=click.style(" - access fre pp subcommands", fg=(57,139,210)))
+@click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
 def pp_cli():
     ''' entry point to fre pp click commands '''
 

@@ -17,7 +17,7 @@ VARLIST_HELP="path pointing to a json file containing directory of key/value pai
              "but it is not required."
 RUN_ONE_HELP="process only one file, then exit. mostly for debugging and isolating issues."
 
-@click.group(help=click.style(" - access fre cmor subcommands", fg=(232,91,204)))
+@click.group(help=click.style(" - cmor subcommands", fg=(232,91,204)))
 def cmor_cli():
     ''' entry point to fre cmor click commands '''
 
