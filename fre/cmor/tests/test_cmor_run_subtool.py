@@ -147,7 +147,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
 
 # FYI, but again, helpful for tests
 FILENAME_DIFF = \
-    'ocean_monthly_1x1deg.199307-199308.sosV2.nc'
+    'reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc'
 FULL_INPUTFILE_DIFF = \
     f"{INDIR}/{FILENAME_DIFF}"
 VARLIST_DIFF = \
