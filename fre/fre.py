@@ -59,19 +59,26 @@ except IndexError:
         "'fre' is the main CLI click group. It houses the other tool groups as lazy subcommands.",
         fg = 'cyan')
 )
-@click.option('-v', '--verbose', is_flag = True,
-              default = False, help = "set logging verbosity higher",
-              required = False)
-@click.option('-l', '--log_file', default = None, required = False, type = str,
-              help = 'path to log file for all fre calls. leave as None to print to screen')
-def fre(verbose = False, log_file = None):
-    ''' entry point function to subgroup functions '''
-    log_level = None
-    #file_mode = None if log_file is None else MODE
-    if verbose:
-        log_level = logging.INFO
-    else:
-        log_level = logging.WARN
+@click.option( '-v', '--verbose', default = 0, required = False, count = True, type = int, 
+               help = "increment logging verbosity. two for logging.DEBUG, one for logging.INFO" )
+@click.option( '-q', '--quiet', default = False, required = False, is_flag = True, type = bool, 
+               help = "only output logging.ERROR messages, or worse." ) 
+@click.option( '-l', '--log_file', default = None, required = False, type = str,
+               help = 'path to log file for all fre calls. leave as None to print to screen' )
+def fre(verbose = 0, log_file = None):
+    ''' 
+    entry point function to subgroup functions, setting global verbosity/logging formats that all
+    other routines will utilize
+    '''
+
+    log_level = logging.WARN #default
+    if verbose == 1:
+        log_level = logging.INFO #more verbose than default
+    elif verbose == 2:
+        log_level = logging.DEBUG #most verbose
+
+    if quiet:
+        log_level = logging.ERROR #least verbose
     logging.basicConfig(level = log_level, format = FORMAT,
                         filename = log_file, encoding = 'utf-8')
 
