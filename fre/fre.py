@@ -65,7 +65,7 @@ except IndexError:
                help = "only output logging.ERROR messages, or worse." ) 
 @click.option( '-l', '--log_file', default = None, required = False, type = str,
                help = 'path to log file for all fre calls. leave as None to print to screen' )
-def fre(verbose = 0, log_file = None):
+def fre(verbose = 0, quiet = False, log_file = None):
     ''' 
     entry point function to subgroup functions, setting global verbosity/logging formats that all
     other routines will utilize
