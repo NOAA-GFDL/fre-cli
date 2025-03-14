@@ -67,7 +67,7 @@ def create_lev_bnds(bound_these = None, with_these = None):
     creates a (2, len(bound_these)) shaped array with values assigned from with_these and returns that array
     '''
     the_bnds = None
-    if not len(with_these) == ( len(bound_these) + 1 ):
+    if len(with_these) != ( len(bound_these) + 1 ):
         raise ValueError(f'failed creating bnds on-the-fly :-(')
     fre_logger.debug(f'bound_these = \n{bound_these}')
     fre_logger.debug(f'with_these = \n{with_these}')
