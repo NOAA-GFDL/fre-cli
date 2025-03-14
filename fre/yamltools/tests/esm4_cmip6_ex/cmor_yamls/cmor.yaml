@@ -8,7 +8,6 @@ cmor:
       "/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir"
     outdir:
       '/work/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
-#      '/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
 
   # -------------------------------------------------------------------------------------
   # these fields are for global configuration that isn't a directory
