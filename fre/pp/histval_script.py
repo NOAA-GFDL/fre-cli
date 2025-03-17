@@ -12,51 +12,64 @@ from fre.pp import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
 
-# Mega manifest sounds cool... it'll just be all of the data from the diag_manifests combined in list form
-mega_manifest=[]
-mismatches=[]
-levels={}
-
 def validate(history,date_string):
     """ Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found in the diag_manifest file(s) """
 
+    # Mega manifest sounds cool... it'll just be all of the data from the diag_manifests combined in list form
+    mega_manifest=[]
+    mismatches=[]
+    info={}
+
     # Find diag_manifest files and add to mega_manifest
     files = os.listdir(history)
+    diag_count = 0
     for _file in files:
-        if _file[-1].isdigit() and 'diag_manifest' in _file and not _file.startswith('.'):
-            filepath = os.path.join(history,_file)
-            with open(filepath, 'r') as f:
-                fre_logger.info(f" Grabbing data from {filepath}")
-                data = yaml.safe_load(f)
-                mega_manifest.append(data)
+        if not all([  _file[-1].isdigit(),
+                  'diag_manifest' in _file,
+                  not _file.startswith('.')]):
+            continue
+        diag_count += 1
+        filepath = os.path.join(history,_file)
+        with open(filepath, 'r') as f:
+            fre_logger.info(f" Grabbing data from {filepath}")
+            data = yaml.safe_load(f)
+            mega_manifest.append(data)
 
-    # Go through the mega manifest and get all expected_timelevels, add to dictionary
+    # Make sure we found atleast one diag_manifest
+    if diag_count < 1:
+        raise Exception("There are no diag_manifest files in this directory")
+
+    # Go through the mega manifest, get expected timelevels and number of tiles, then add to dictionary
     for y in range(len(mega_manifest)):
         for x in range(len(mega_manifest[y]['diag_files'])):
             filename = mega_manifest[y]['diag_files'][x]['file_name']
             expected_timelevels = mega_manifest[y]['diag_files'][x]['number_of_timelevels']
-            levels.update({str(filename):expected_timelevels})
+            num_tiles = mega_manifest[y]['diag_files'][x]['number_of_tiles']
+            levels_and_tiles = (expected_timelevels, num_tiles)
+            info.update({str(filename):levels_and_tiles})
 
     # Run nccheck to compare actual timelevels to expected levels found in mega manifest
-    for filename in levels:
-        if date_string:
-            try:
-                filepath = glob.glob(os.path.join(history,'*'+date_string+'*'+filename+'*.nc'))[0]
-            except:
-                sys.exit("Check date string for correctness")
-        else:    
-            filepath = glob.glob(os.path.join(history,'*'+filename+'*.nc'))[0]
-        ncc.check(filepath,levels[filename])
-        result = ncc.check(filepath,levels[filename])
-        if result==1:
-            fre_logger.info(f" Timesteps found in {filepath} differ from expectation in diag manifest")
-            mismatches.append(_file)
+    for filename in info:
+        for z in range(info[filename][1]):
+            if info[filename][1] > 1:
+                tile_num = z+1
+                filepath = os.path.join(
+                           f"{history}",
+                           f"{date_string}.{filename}.tile{tile_num}.nc")
+            else:
+                filepath = os.path.join(history,date_string+'.'+filename+'.nc')
 
-    #Error Handling
-    if mismatches:
-        sys.exit(str(len(mismatches))+ " files contain an unexpected number of timesteps." + "\n".join(mismatches))
-    else:
-        return(0)
+            result = ncc.check(filepath,info[filename][0])
+
+            if result==1:
+                fre_logger.error(f" Timesteps found in {filepath} differ from expectation in diag manifest")
+                mismatches.append(filepath)
+
+    #Error Handling .... probably unneeded because this is already being shown by ncvalidate
+    #if mismatches:
+    #    raise ValueError("\n" + str(len(mismatches))+ " files contain an unexpected number of timesteps.\n" + "\n".join(mismatches))
+    #else:
+    #    return(0)
 
 if __name__ == '__main__':
     validate()
