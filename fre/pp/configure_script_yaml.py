@@ -146,7 +146,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
         interp_method = i.get('interpMethod')
 
         # set remap items
-        rose_remap.set(keys=[f'{comp}', 'sources'], value=f'{sources}') #f'{source_str}')
+        rose_remap.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
         # if xyInterp doesnt exist, grid is native
         if i.get("xyInterp") is None:
             rose_remap.set(keys=[f'{comp}', 'grid'], value='native')
@@ -167,7 +167,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
                 for s in i.get("static"):
                     sources.append(s.get("source"))
 
-            rose_regrid.set(keys=[f'{comp}', 'sources'], value=f'{sources}') #f'{source_str}')
+            rose_regrid.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
             rose_regrid.set(keys=[f'{comp}', 'inputRealm'], value=f'{i.get("inputRealm")}')
             rose_regrid.set(keys=[f'{comp}', 'inputGrid'], value=f'{i.get("sourceGrid")}')
             rose_regrid.set(keys=[f'{comp}', 'interpMethod'], value=f'{interp_method}')
