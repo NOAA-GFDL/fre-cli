@@ -64,7 +64,7 @@ cmor:
           data_series_type: 'ts'
           chunk: *PP_CHUNK_A                  
           
-        - component_name: 'tracel_level'
+        - component_name: 'tracer_level'
           data_series_type: 'ts'
           chunk: *PP_CHUNK_A                  
         
