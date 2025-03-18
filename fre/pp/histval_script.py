@@ -65,11 +65,13 @@ def validate(history,date_string):
                 fre_logger.error(f" Timesteps found in {filepath} differ from expectation in diag manifest")
                 mismatches.append(filepath)
 
-    #Error Handling .... probably unneeded because this is already being shown by ncvalidate
-    #if mismatches:
-    #    raise ValueError("\n" + str(len(mismatches))+ " files contain an unexpected number of timesteps.\n" + "\n".join(mismatches))
-    #else:
-    #    return(0)
+    #Error Handling
+    if len(mismatches)==1:
+        raise ValueError("\n" + str(len(mismatches))+ " file contains an unexpected number of timesteps:\n" + "\n".join(mismatches))
+    elif len(mismatches) > 1:
+        raise ValueError("\n" + str(len(mismatches))+ " files contain an unexpected number of timesteps:\n" + "\n".join(mismatches))
+    else:
+        return(0)
 
 if __name__ == '__main__':
     validate()
