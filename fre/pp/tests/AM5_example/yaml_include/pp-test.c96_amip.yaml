@@ -20,24 +20,28 @@ postprocess:
     pp_components: "atmos atmos_scalar"
   switches:
     <<: *shared_switches
-    do_statics: False
 
   # main pp instructions
   components:
     - type: "atmos_cmip-TEST"
-      sources: ["atmos_month_cmip", "atmos_8xdaily_cmip", "atmos_daily_cmip"]
+      sources:
+        - history_file: "atmos_month_cmip"
+        - history_file: "atmos_8xdaily_cmip"
+        - history_file: "atmos_daily_cmip"
       sourceGrid: "cubedsphere"
       xyInterp: *custom_interp
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
     - type: "atmos-TEST"
-      sources: ["atmos_month"]
+      sources:
+        - history_file: "atmos_month"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
     - type: "atmos_level_cmip-TEST"
-      sources: ["atmos_level_cmip"]
+      sources:
+        - history_file: "atmos_level_cmip"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
