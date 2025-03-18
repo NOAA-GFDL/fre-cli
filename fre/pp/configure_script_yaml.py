@@ -136,6 +136,8 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
     components = yamlfile.get("postprocess").get("components")
     for i in components:
         comp = i.get('type')
+
+        # Get sources
         sources = []
         for s in i.get('sources'):
             sources.append(s.get("history_file"))
@@ -160,6 +162,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
             sources = []
             for s in i.get("sources"):
                 sources.append(s.get("history_file"))
+            # Add static sources to sources list if defined 
             if i.get("static") is not None:
                 for s in i.get("static"):
                     sources.append(s.get("source"))
