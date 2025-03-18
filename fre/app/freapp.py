@@ -8,7 +8,7 @@ from .mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
 from .regrid_xy.regrid_xy import regrid_xy
 
-@click.group(help=click.style(" - access fre app subcommands", fg=(250,154,90)))
+@click.group(help=click.style(" - app subcommands", fg=(250,154,90)))
 def app_cli():
     ''' entry point to fre app click commands '''
 

@@ -3,7 +3,7 @@
 import click
 from fre.yamltools import combine_yamls_script
 
-@click.group(help=click.style(" - access fre yamltools subcommands", fg=(202,177,95)))
+@click.group(help=click.style(" - yamltools subcommands", fg=(202,177,95)))
 def yamltools_cli():
     ''' entry point to fre yamltools click commands '''
 

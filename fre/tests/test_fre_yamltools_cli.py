@@ -40,15 +40,15 @@ def test_cli_fre_yamltools_combine_opt_dne():
     result = runner.invoke(fre.fre, args=["yamltools", "combine-yamls", "optionDNE"])
     assert result.exit_code == 2
 
+FAKE_AM5_EX_DIR = "fre/yamltools/tests/AM5_example"
 def test_cli_fre_yamltools_combine_cmoryaml():
     ''' fre yamltools combine-yamls for cmorization'''
-    FAKE_AM5_EX_DIR = "fre/yamltools/tests/AM5_example"
-    output_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/FOO_cmor.yaml"
+    output_combined_cmor_yaml = f"{FAKE_AM5_EX_DIR}/FOO_cmor.yaml"
     if Path(output_combined_cmor_yaml).exists():
         Path(output_combined_cmor_yaml).unlink()
 
     result = runner.invoke(fre.fre, args=[ "yamltools", "combine-yamls",
-                                           "-y", "fre/yamltools/tests/AM5_example/am5.yaml",
+                                           "-y", f"{FAKE_AM5_EX_DIR}/am5.yaml",
                                            "-e", "c96L65_am5f7b12r1_amip",
                                            "-p", "ncrc5.intel",
                                            "-t", "prod-openmp",
@@ -57,7 +57,7 @@ def test_cli_fre_yamltools_combine_cmoryaml():
                    Path(output_combined_cmor_yaml).exists()
     ] )
 
-    compare_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/COMPARE_TEST_OUTPUT_cmor.yaml"
+    compare_combined_cmor_yaml = f"{FAKE_AM5_EX_DIR}/COMPARE_TEST_OUTPUT_cmor.yaml"
     assert Path(compare_combined_cmor_yaml).exists()
     comp_file_output = open(compare_combined_cmor_yaml, 'r')
     comp_file_output_data = yaml.load(comp_file_output, Loader=yaml.SafeLoader)
