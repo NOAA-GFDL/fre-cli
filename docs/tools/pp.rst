@@ -27,6 +27,6 @@
 -----------
 
 * Run nccheck over all files found in diag manifest
-* Minimal Syntax: ``fre pp hist-val -hist [path to directory containing history files]``
+* Minimal Syntax: ``fre pp hist-val -hist [path to directory containing history files] -d [date_string]``
 * Module(s) needed: n/a
-* Example: ``fre pp hist-val -hist /some_path/dir_with_history_files/``
+* Example: ``fre pp hist-val -hist /some_path/dir_with_history_files/ -d 00010101``
