@@ -2,8 +2,7 @@
 import pathlib as pl
 import pytest
 
-def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=None, unwgt=None,
-                                 stddev_type=None):
+def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=None, unwgt=None):
     ''' test-harness function, called by other test functions. '''
     assert all( [infile is not None, outfile is not None,
                  pkg is not None, avg_type is not None,
@@ -14,7 +13,7 @@ def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=No
     from fre.app.generate_time_averages import generate_time_averages as gtas
     gtas.generate_time_average(infile = infile, outfile = outfile,
                                pkg = pkg, unwgt = unwgt,
-                               avg_type = avg_type, stddev_type = stddev_type)
+                               avg_type = avg_type)
     return pl.Path(outfile).exists()
 
 ### preamble tests. if these fail, none of the others will succeed. -----------------
@@ -65,36 +64,7 @@ def test_cdo_time_avgs():
         pkg='cdo',avg_type='all',unwgt=False )
 
 
-### cdo stddevs, unweighted, all/seasonal/monthly ------------------------
-def test_monthly_cdo_time_unwgt_stddevs():
-    ''' generates a monthly time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(
-        infile  = (time_avg_file_dir+test_file_name),
-        outfile = (time_avg_file_dir+'ymonstddev1_unwgt_'+test_file_name),
-        pkg='cdo',avg_type='month',stddev_type='samp', unwgt=True )
-
-def test_seasonal_cdo_time_unwgt_stddevs():
-    ''' generates a seasonal time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(
-        infile  = (time_avg_file_dir+test_file_name),
-        outfile = (time_avg_file_dir+'yseasstddev1_unwgt_'+test_file_name),
-        pkg='cdo',avg_type='seas',stddev_type='samp',unwgt=True )
-
-def test_cdo_time_unwgt_stddevs():
-    ''' generates a time averaged file using cdo '''
-    assert run_avgtype_pkg_calculations(
-        infile  = (time_avg_file_dir+test_file_name),
-        outfile = (time_avg_file_dir+'yseasmean_unwgt_'+test_file_name),
-        pkg='cdo',avg_type='all',stddev_type='samp', unwgt=True )
-
-
-#### cdo stddevs, weighted, all/seasonal/monthly -----------------------
-## (TODO) WRITE THESE VERSIONS FOR CDOTIMEAVERAGER CLASS THEN MAKE THESE TESTS
-#def test_monthly_cdo_time_stddevs():
-#def test_seasonal_cdo_time_stddevs():
-#def test_cdo_time_stddevs():
-
-## frepythontools avgs+stddevs, weighted+unweighted, all ------------------------
+## frepythontools avgs, weighted+unweighted, all ------------------------
 def test_fre_cli_time_avgs():
     ''' generates a time averaged file using fre_cli's version '''
     ''' weighted average, no std deviation '''
@@ -111,32 +81,13 @@ def test_fre_cli_time_unwgt_avgs():
         outfile = (time_avg_file_dir+'frepytools_unwgt_timavg_'+test_file_name),
         pkg='fre-python-tools',avg_type='all', unwgt=True )
 
-def test_fre_cli_time_avgs_stddevs():
-    ''' generates a time averaged file using fre_cli's version '''
-    ''' weighted average, no std deviation '''
-    assert run_avgtype_pkg_calculations(
-        infile  = (time_avg_file_dir+test_file_name),
-        outfile = (time_avg_file_dir+'frepytools_stddev_'+test_file_name),
-        pkg='fre-python-tools',avg_type='all', stddev_type='samp', unwgt=False )
-
-def test_fre_cli_time_unwgt_avgs_stddevs():
-    ''' generates a time averaged file using fre_cli's version '''
-    ''' weighted average, no std deviation '''
-    assert run_avgtype_pkg_calculations(
-        infile  = (time_avg_file_dir+test_file_name),
-        outfile = (time_avg_file_dir+'frepytools_unwgt_stddev_'+test_file_name),
-        pkg='fre-python-tools',avg_type='all', stddev_type='samp', unwgt=True )
 
 ## (TODO) WRITE THESE VERSIONS FOR FREPYTOOLSTIMEAVERAGER CLASS THEN MAKE THESE TESTS
 #def test_monthly_fre_cli_time_avgs():
 #def test_monthly_fre_cli_time_unwgt_avgs():
-#def test_monthly_fre_cli_time_avgs_stddevs():
-#def test_monthly_fre_cli_time_unwgt_avgs_stddevs():
 #
 #def test_seasonal_fre_cli_time_avgs():
 #def test_seasonal_fre_cli_time_unwgt_avgs():
-#def test_seasonal_fre_cli_time_avgs_stddevs():
-#def test_seasonal_fre_cli_time_unwgt_avgs_stddevs(:)
 
 
 
