@@ -309,7 +309,7 @@ def test_compare_cdo_to_fre_nctools():
 #################################################################################################
 ''' for testing fre app generate-time-averages with multiple files'''
 
-   return pl.Path(outfile).exists()
+return pl.Path(outfile).exists()
 
 #now test running of time averager with two different files
 time_avg_file_dir=str(pl.Path.cwd())+'/fre/app/generate_time_averages/tests/time_avg_test_files/'
