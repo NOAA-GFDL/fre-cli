@@ -23,7 +23,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      swicth: True
+      switch: True
     - type: "atmos_level_cmip"
       sources:
         - history_file: "atmos_level_cmip"
@@ -55,7 +55,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      swicth: False
+      switch: False
     - type: "atmos_scalar"
       sources:
         - history_file: "atmos_scalar"
