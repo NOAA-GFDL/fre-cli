@@ -17,3 +17,4 @@ postprocess:
     do_atmos_plevel_masking: True
     do_preanalysis:     False
     do_analysis:        True
+    do_analysis_only:   False
