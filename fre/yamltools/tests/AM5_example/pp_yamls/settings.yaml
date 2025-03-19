@@ -3,7 +3,7 @@ directories: &shared_directories
   pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
   analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
   ptmp_dir:     "/xtmp/$USER/ptmp"
-  fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
+#  fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
 
 # shared pp settings
 postprocess: 
