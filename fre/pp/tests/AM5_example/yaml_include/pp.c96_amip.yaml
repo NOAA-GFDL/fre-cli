@@ -2,25 +2,8 @@
 fre_properties: 
   - &custom_interp "180,360"
 
-# directory overrides
-#c96_amip_directories:
-directories:
-  <<: *shared_directories
-  ptmp_dir: "/ptmp/$USER"
-
 #c96_amip_postprocess:
 postprocess:
-  # pp setting overrides
-  settings:
-    <<: *shared_settings
-    pp_start:   *ANA_AMIP_START
-    pp_stop:    *ANA_AMIP_END
-    pp_chunk_a: *PP_AMIP_CHUNK96
-    pp_components: "atmos atmos_scalar"
-    pp_grid_spec: *GRID_SPEC96
-  switches: 
-    <<: *shared_switches
-
   # main pp instructions
   components:
     - type: "atmos_cmip"
@@ -32,6 +15,7 @@ postprocess:
       xyInterp: *custom_interp
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
+      switch: False
     - type: "atmos"
       sources:
         - history_file: "atmos_month"
@@ -39,6 +23,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
+      switch: True
     - type: "atmos_level_cmip"
       sources:
         - history_file: "atmos_level_cmip"
@@ -46,6 +31,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
+      switch: False
     - type: "atmos_level"
       sources:
         - history_file: "atmos_month"
@@ -53,6 +39,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
+      switch: False
     - type: "atmos_month_aer"
       sources:
         - history_file: "atmos_month_aer"
@@ -60,6 +47,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'atmos'
+      switch: False
     - type: "atmos_diurnal"
       sources:
         - history_file: "atmos_diurnal"
@@ -67,9 +55,11 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
+      switch: False
     - type: "atmos_scalar"
       sources:
         - history_file: "atmos_scalar"
+      switch: True
     - type: "aerosol_cmip"
       xyInterp: *PP_XYINTERP96
       sources:
@@ -77,6 +67,7 @@ postprocess:
       sourceGrid: "cubedsphere"
       interpMethod: "conserve_order1"
       inputRealm: 'atmos'
+      switch: False
     - type: "land"
       sources:
         - history_file: "land_month"
@@ -84,6 +75,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'land'
+      switch: False
     - type: "land_cmip"
       sources:
         - history_file: "land_month_cmip"
@@ -91,6 +83,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'land'
+      switch: False
     - type: "tracer_level"
       sources:
         - history_file: "atmos_tracer"
@@ -98,3 +91,4 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'atmos'
+      switch: False
