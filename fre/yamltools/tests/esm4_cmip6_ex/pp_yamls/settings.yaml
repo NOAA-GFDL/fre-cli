@@ -1,7 +1,6 @@
 directories: &shared_directories
   history_dir:  !join [/archive/lwh/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
   pp_dir:       !join [/archive/lwh/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
-
 #  analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
 #  ptmp_dir:     "/xtmp/$USER/ptmp"
 #  fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
@@ -19,3 +18,4 @@ postprocess:
     do_atmos_plevel_masking: True
     do_preanalysis:     False
     do_analysis:        True
+    do_analysis_only:   False
