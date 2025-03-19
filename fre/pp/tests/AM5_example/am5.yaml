@@ -58,7 +58,6 @@ shared:
       history_segment:    "P1Y"
       site:               "ppan"
     switches: &shared_switches
-      do_statics:         True
       do_timeavgs:        True
       clean_work:         True
       do_refinediag:      False
