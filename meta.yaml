@@ -38,7 +38,6 @@ requirements:
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
     - conda-forge::cmor>=3.9.0
-    - conda-forge::cylc-uiserver
     - conda-forge::pytest
     - conda-forge::pytest-cov
     - conda-forge::python-cdo
