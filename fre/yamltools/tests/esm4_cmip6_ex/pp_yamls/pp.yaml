@@ -1,3 +1,4 @@
+# WARNING this is a carbon copy of the AM5 example in the fre-cli repo. it's filler, not real configuration!
 # local reusable variable overrides
 fre_properties: 
   - &custom_interp "180,360"
@@ -7,17 +8,17 @@ postprocess:
   # main pp instructions
   components:
     - type: "atmos_cmip"
-      sources:
-        - history_file: "atmos_month_cmip"
-        - history_file: "atmos_8xdaily_cmip"
+      sources: 
+        - history_file: "atmos_month_cmip" 
+        - history_file: "atmos_8xdaily_cmip" 
         - history_file: "atmos_daily_cmip"
       sourceGrid: "cubedsphere"
       xyInterp: *custom_interp
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      switch: False
+      switch: True
     - type: "atmos"
-      sources:
+      sources: 
         - history_file: "atmos_month"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
@@ -25,7 +26,7 @@ postprocess:
       inputRealm: 'atmos'
       switch: True
     - type: "atmos_level_cmip"
-      sources:
+      sources: 
         - history_file: "atmos_level_cmip"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
@@ -33,7 +34,7 @@ postprocess:
       inputRealm: 'atmos'
       switch: False
     - type: "atmos_level"
-      sources:
+      sources: 
         - history_file: "atmos_month"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
@@ -41,7 +42,7 @@ postprocess:
       inputRealm: 'atmos'
       switch: False
     - type: "atmos_month_aer"
-      sources:
+      sources: 
         - history_file: "atmos_month_aer"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
@@ -49,7 +50,7 @@ postprocess:
       inputRealm: 'atmos'
       switch: False
     - type: "atmos_diurnal"
-      sources:
+      sources: 
         - history_file: "atmos_diurnal"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
@@ -57,7 +58,7 @@ postprocess:
       inputRealm: 'atmos'
       switch: False
     - type: "atmos_scalar"
-      sources:
+      sources: 
         - history_file: "atmos_scalar"
       switch: True
     - type: "aerosol_cmip"
@@ -69,7 +70,7 @@ postprocess:
       inputRealm: 'atmos'
       switch: False
     - type: "land"
-      sources:
+      sources: 
         - history_file: "land_month"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
@@ -77,7 +78,7 @@ postprocess:
       inputRealm: 'land'
       switch: False
     - type: "land_cmip"
-      sources:
+      sources: 
         - history_file: "land_month_cmip"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
@@ -85,7 +86,7 @@ postprocess:
       inputRealm: 'land'
       switch: False
     - type: "tracer_level"
-      sources:
+      sources: 
         - history_file: "atmos_tracer"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96

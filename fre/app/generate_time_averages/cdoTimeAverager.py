@@ -43,39 +43,22 @@ class cdoTimeAverager(timeAverager):
                 print(f'wgts_sum={wgts_sum}')
 
         if self.avg_type == 'all':
-            if self.stddev_type is None:
-                print('time average over all time requested.')
-                if self.unwgt:
-                    _cdo.timmean(input=infile, output=outfile, returnCdf=True)
-                else:
-                    _cdo.divc( str(wgts_sum), input="-timsum -muldpm "+infile, output=outfile)
-
-                print('done averaging over all time.')
+            print('time average over all time requested.')
+            if self.unwgt:
+                _cdo.timmean(input=infile, output=outfile, returnCdf=True)
             else:
-                print('time standard-deviation (N-1) over all time requested.')
-                _cdo.timstd1(input=infile, output=outfile, returnCdf=True)
-                print('done computing standard-deviation over all time.')
+                _cdo.divc( str(wgts_sum), input="-timsum -muldpm "+infile, output=outfile)
+            print('done averaging over all time.')
 
         elif self.avg_type == 'seas':
-            if self.stddev_type is None:
-                print('seasonal time-averages requested.')
-                _cdo.yseasmean(input=infile, output=outfile, returnCdf=True)
-                print('done averaging over seasons.')
-            else:
-                print('seasonal time standard-deviation (N-1) requested.')
-                _cdo.yseasstd1(input=infile, output=outfile, returnCdf=True)
-                print('done averaging over seasons.')
+            print('seasonal time-averages requested.')
+            _cdo.yseasmean(input=infile, output=outfile, returnCdf=True)
+            print('done averaging over seasons.')
 
         elif self.avg_type == 'month':
-
-            if self.stddev_type is None:
-                print('monthly time-averages requested.')
-                _cdo.ymonmean(input=infile, output=outfile, returnCdf=True)
-                print('done averaging over months.')
-            else:
-                print('monthly time standard-deviation (N-1) requested.')
-                _cdo.ymonstd1(input=infile, output=outfile, returnCdf=True)
-                print('done averaging over months.')
+            print('monthly time-averages requested.')
+            _cdo.ymonmean(input=infile, output=outfile, returnCdf=True)
+            print('done averaging over months.')
 
         else:
             print(f'problem: unknown avg_type={self.avg_type}')

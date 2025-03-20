@@ -24,12 +24,12 @@ COMP_OUT_DIR = Path(f"{TEST_DIR}/combine_yamls_out/compile")
 PP_OUT_DIR = Path(f"{TEST_DIR}/combine_yamls_out/pp")
 
 # If output directory exists, remove and create again
-for out in [COMP_OUT_DIR, PP_OUT_DIR]:
-    if out.exists():
-        shutil.rmtree(out)
-        Path(out).mkdir(parents=True,exist_ok=True)
+for outdir in [COMP_OUT_DIR, PP_OUT_DIR]:
+    if outdir.exists():
+        shutil.rmtree(outdir)
+        Path(outdir).mkdir(parents=True,exist_ok=True)
     else:
-        Path(out).mkdir(parents=True,exist_ok=True)
+        Path(outdir).mkdir(parents=True,exist_ok=True)
 
 ## Set what would be click options
 # Compile
@@ -112,7 +112,8 @@ def test_combined_compileyaml_combinefail():
 
     # Merge the yamls - should fail since there is no compile yaml specified in the model yaml
     try:
-        out = cy.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use, output = None)
+        #out =
+        cy.consolidate_yamls(modelyaml, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, use, output = None)
     except:
         print("EXPECTED FAILURE")
         assert True

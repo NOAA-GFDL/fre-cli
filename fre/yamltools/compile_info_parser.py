@@ -54,7 +54,7 @@ class InitCompileYaml():
         yaml_content += model_content
 
         # Load string as yaml
-        yml=yaml.load(yaml_content, Loader=yaml.Loader)
+        yml=yaml.load(yaml_content, Loader = yaml.Loader)
 
         # Return the combined string and loaded yaml
         print(f"   model yaml: {self.yml}")
@@ -67,22 +67,23 @@ class InitCompileYaml():
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Get compile info
-        (py_path,cy_path) = get_compile_paths(self.mainyaml_dir,loaded_yaml)
+        #( py_path, cy_path ) = get_compile_paths(self.mainyaml_dir,loaded_yaml)
+        ( _, cy_path ) = get_compile_paths(self.mainyaml_dir, loaded_yaml)
 
         # copy compile yaml info into combined yaml
         if cy_path is not None:
-            with open(cy_path,'r') as cf:
+            with open(cy_path, 'r') as cf:
                 compile_content = cf.read()
 
         # Combine information as strings
         yaml_content += compile_content
 
         # Load string as yaml
-        yml=yaml.load(yaml_content, Loader=yaml.Loader)
+        yml = yaml.load(yaml_content, Loader = yaml.Loader)
 
         # Return the combined string and loaded yaml
         print(f"   compile yaml: {cy_path}")
-        return (yaml_content,yml)
+        return ( yaml_content, yml )
 
     def combine_platforms(self, yaml_content, loaded_yaml):
         """
@@ -91,9 +92,10 @@ class InitCompileYaml():
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Get compile info
-        (py_path,cy_path) = get_compile_paths(self.mainyaml_dir, loaded_yaml)
+        ( py_path, _ ) = get_compile_paths(self.mainyaml_dir, loaded_yaml)
 
         # copy compile yaml info into combined yaml
+        platform_content = None
         if py_path is not None:
             with open(py_path,'r') as pf:
                 platform_content = pf.read()
@@ -102,7 +104,7 @@ class InitCompileYaml():
         yaml_content += platform_content
 
         # Load string as yaml
-        yml=yaml.load(yaml_content, Loader=yaml.Loader)
+        yml = yaml.load(yaml_content, Loader = yaml.Loader)
 
         # Return the combined string and loaded yaml
         print(f"   platforms yaml: {py_path}")
@@ -114,7 +116,7 @@ class InitCompileYaml():
         final combined yaml.
         """
         # Load the yaml
-        yml_dict=yaml.load(yaml_content, Loader=yaml.Loader)
+        yml_dict=yaml.load(yaml_content, Loader = yaml.Loader)
 
         # Clean the yaml
         # If keys exists, delete:
@@ -123,6 +125,8 @@ class InitCompileYaml():
             if kc in yml_dict.keys():
                 del yml_dict[kc]
 
-        cleaned_yml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
+        cleaned_yml = yaml.safe_dump( yml_dict,
+                                      default_flow_style = False,
+                                      sort_keys = False)
 
         return yml_dict  #either return dictionary OR string (cleaned_yml) - string works for fremake but dictionary works for pp and list

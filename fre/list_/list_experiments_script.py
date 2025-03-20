@@ -2,8 +2,8 @@
 Script combines the model yaml with exp, platform, and target to list experiment information.
 """
 
-#import logging
-#fre_logger = logging.getLogger(__name__)
+import logging
+fre_logger = logging.getLogger(__name__)
 
 from pathlib import Path
 
@@ -37,9 +37,7 @@ def remove(combined):
     """
     if Path(combined).exists():
         Path(combined).unlink()
-        #fre_logger.info("Remove intermediate combined yaml:\n",
-        print("Remove intermediate combined yaml:\n",
-              f"   {combined} removed.")
+        fre_logger.info(f"Intermediate combined yaml {combined} removed.")
     else:
         raise ValueError(f"{combined} could not be found to remove.")
 
@@ -56,24 +54,22 @@ def list_experiments_subtool(yamlfile):
 
     # Combine model / experiment
     quick_combine(yamlfile,e,p,t)
-
-    # Print experiment names
+    
+    # load the yaml we made
     c = yaml_load(combined)
 
+    # set logger level to INFO
+    former_log_level = fre_logger.level
+    fre_logger.setLevel(logging.INFO)
 
-    ## is this, perhaps, the one spot where print is preferred?
-    #fre_logger.info("\nPost-processing experiments available:")
-    #for i in c.get("experiments"):
-    #    fre_logger.info(f'   - {i.get("name")}')
-    #fre_logger.info("\n")
-
-
-    # is this, perhaps, the one spot where print is preferred?
-    # keep around for a minute as a comment, please.
-    print("\nPost-processing experiments available:")
+    # log the experiment names, which should show up on screen for sure
+    fre_logger.info("Post-processing experiments available:")
     for i in c.get("experiments"):
-        print(f'   - {i.get("name")}')
-    print("\n")
+        fre_logger.info(f'   - {i.get("name")}')
+    fre_logger.info("\n")
 
+    # set logger back to normal level
+    fre_logger.setLevel(former_log_level)
+    
     # Clean intermediate combined yaml
     remove(combined)

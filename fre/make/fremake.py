@@ -30,7 +30,7 @@ VERBOSE_OPT_HELP = """Get verbose messages (repeat the option to increase verbos
 
 
 
-@click.group(help=click.style(" - access fre make subcommands", fg=(210,73,57)))
+@click.group(help=click.style(" - make subcommands", fg=(210,73,57)))
 def make_cli():
     pass
 
