@@ -272,6 +272,19 @@ def test_compare_cdo_to_fre_nctools():
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 #################################################################################################
+time_avg_file_dir=str(pl.Path.cwd())+'/fre/app/generate_time_averages/tests/test_data/'
+base_file_names=['ocean_1x1.000101-000212.tos','ocean_1x1.000301-000412.tos']
+for base_file_name in base_file_names
+    ncgen_input = (time_avg_file_dir + base_file_name+".cdl")
+    ncgen_output = (time_avg_file_dir + base_file_name+".nc")
+    
+    if pl.Path(ncgen_output).exists():
+        pl.Path(ncgen_output).unlink()
+    assert pl.Path(ncgen_input).exists()
+    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
+    subprocess.run(ex, check = True)
+
+
 ''' for testing fre app generate-time-averages with multiple files'''
 
 #now test running of time averager with two different files
