@@ -72,6 +72,15 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                 baremetalRun = True
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
                 os.system("mkdir -p " + bldDir)
+                # check if mkTemplate has a / indicating it is a path
+                # if its not, prepend the template name with the mkmf submodule directory
+                if "/" not in platform["mkTemplate"]:
+                    topdir = Path(__file__).resolve().parents[2]
+                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
+                    if not Path(templatePath).exists():
+                        raise ValueError (f"Error with mkmf template. Created path from given file name: {templatePath} does not exist.")
+                else:
+                    templatePath = platform["mkTemplate"]
                 ## Create a list of compile scripts to run in parallel
                 fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],
                                                              mkTemplatePath=platform["mkTemplate"],

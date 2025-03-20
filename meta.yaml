@@ -52,6 +52,8 @@ test:
     - pytest-cov
   source_files:
     - fre/
+  files:
+    - mkmf/templates/linux-ubuntu-xenial-gnu.mk
   imports:
     - fre
     - fre.app
