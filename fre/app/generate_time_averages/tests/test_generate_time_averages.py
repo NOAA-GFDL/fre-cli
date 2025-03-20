@@ -1,6 +1,7 @@
 ''' for testing fre app generate-time-averages '''
 import pathlib as pl
 import pytest
+import subprocess
 
 def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=None, unwgt=None):
     ''' test-harness function, called by other test functions. '''
@@ -17,8 +18,21 @@ def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=No
     return pl.Path(outfile).exists()
 
 ### preamble tests. if these fail, none of the others will succeed. -----------------
-time_avg_file_dir=str(pl.Path.cwd())+'/fre/app/generate_time_averages/tests/time_avg_test_files/'
-test_file_name='atmos.197901-198312.LWP.nc'
+time_avg_file_dir=str(pl.Path.cwd())+'/fre/app/generate_time_averages/tests/test_data/'
+base_file_name='atmos.197901-198312.LWP'
+
+ncgen_input = (time_avg_file_dir + base_file_name+".cdl")
+ncgen_output = (time_avg_file_dir + base_file_name+".nc")
+test_file_name = 'atmos.197901-198312.LWP.nc'
+
+if pl.Path(ncgen_output).exists():
+    pl.Path(ncgen_output).unlink()
+assert pl.Path(ncgen_input).exists()
+ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
+subprocess.run(ex, check = True)
+print(ncgen_output)
+print(time_avg_file_dir+test_file_name)
+
 def test_time_avg_file_dir_exists():
     ''' look for input test file directory '''
     assert pl.Path(time_avg_file_dir).exists()
