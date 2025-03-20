@@ -274,7 +274,7 @@ def test_compare_cdo_to_fre_nctools():
 #################################################################################################
 time_avg_file_dir=str(pl.Path.cwd())+'/fre/app/generate_time_averages/tests/test_data/'
 base_file_names=['ocean_1x1.000101-000212.tos','ocean_1x1.000301-000412.tos']
-for base_file_name in base_file_names
+for base_file_name in base_file_names:
     ncgen_input = (time_avg_file_dir + base_file_name+".cdl")
     ncgen_output = (time_avg_file_dir + base_file_name+".nc")
     
