@@ -308,21 +308,21 @@ def test_monthly_cdo_time_unwgt_stddevs_two_files():
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'ymonstddev1_unwgt_'+two_out_file_name),
-        pkg='cdo',avg_type='month',stddev_type='samp', unwgt=True )
+        pkg='cdo',avg_type='month', unwgt=True )
 
 def test_seasonal_cdo_time_unwgt_stddevs_two_files():
     ''' generates a seasonal time averaged file using cdo '''
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'yseasstddev1_unwgt_'+two_out_file_name),
-        pkg='cdo',avg_type='seas',stddev_type='samp',unwgt=True )
+        pkg='cdo',avg_type='seas', unwgt=True )
 
 def test_cdo_time_unwgt_stddevs_two_files():
     ''' generates a time averaged file using cdo '''
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'yseasmean_unwgt_'+two_out_file_name),
-        pkg='cdo',avg_type='all',stddev_type='samp', unwgt=True )
+        pkg='cdo',avg_type='all', unwgt=True )
 
 
 ## frepythontools avgs+stddevs, weighted+unweighted, all ------------------------
@@ -348,7 +348,7 @@ def test_fre_cli_time_avgs_stddevs_two_files():
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'frepytools_stddev_'+two_out_file_name),
-        pkg='fre-python-tools',avg_type='all', stddev_type='samp', unwgt=False )
+        pkg='fre-python-tools',avg_type='all', unwgt=False )
 
 def test_fre_cli_time_unwgt_avgs_stddevs_two_files():
     ''' generates a time averaged file using fre_cli's version '''
@@ -356,7 +356,7 @@ def test_fre_cli_time_unwgt_avgs_stddevs_two_files():
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'frepytools_unwgt_stddev_'+two_out_file_name),
-        pkg='fre-python-tools',avg_type='all', stddev_type='samp', unwgt=True )
+        pkg='fre-python-tools',avg_type='all',  unwgt=True )
 '''
 To be implemnted when fre-nctools has been updated. these options currently work locally if a user has fre-nctools in their conda env.
 ## fre-nctools avgs+stddevs, weighted+unweighted, all ------------------------
@@ -382,7 +382,7 @@ def test_fre_nctool_time_avgs_stddevs():
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_stddev_'+two_out_file_name),
-        pkg='fre-nctools',avg_type='all', stddev_type='samp', unwgt=False )
+        pkg='fre-nctools',avg_type='all',  unwgt=False )
 
 def test_fre_nctool_time_unwgt_avgs_stddevs():
     # generates a time averaged file using fre_nctool's version 
@@ -390,6 +390,6 @@ def test_fre_nctool_time_unwgt_avgs_stddevs():
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_unwgt_stddev_'+two_out_file_name),
-        pkg='fre-nctools',avg_type='all', stddev_type='samp', unwgt=True )
+        pkg='fre-nctools',avg_type='all',  unwgt=True )
 
 '''
