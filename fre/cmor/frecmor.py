@@ -5,6 +5,7 @@ import click
 from . import cmor_find_subtool
 from . import cmor_run_subtool
 from . import cmor_yaml_subtool
+from .cmor_finder import make_simple_varlist
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
                   "matching that variable name. I.e., this string help target local_vars, not " + \
@@ -16,7 +17,7 @@ VARLIST_HELP="path pointing to a json file containing directory of key/value pai
              "but it is not required."
 RUN_ONE_HELP="process only one file, then exit. mostly for debugging and isolating issues."
 
-@click.group(help=click.style(" - access fre cmor subcommands", fg=(232,91,204)))
+@click.group(help=click.style(" - cmor subcommands", fg=(232,91,204)))
 def cmor_cli():
     ''' entry point to fre cmor click commands '''
 
@@ -37,13 +38,23 @@ def cmor_cli():
 @click.option("-o", "--output", type = str, default = None,
               help = "Output file if desired", required = False)
 def yaml(yamlfile, experiment, target, platform, output):
-    '''
-    fre cmor yamler gonna yaml.
-    where your cmorization yaml gets yamled by the cmor yamler.
-    i yaml what i yaml and that's all that i aml
-    i could do this all day.
-    shoutout to my federal home PEOPLE.
-    '''
+    """
+    Processes a CMOR (Climate Model Output Rewriter) YAML configuration file.
+
+    This function takes a YAML file and various parameters related to a climate model experiment,
+    and processes the YAML file using the CMOR YAML subtool.
+
+    Parameters:
+    yamlfile (str): Path to the YAML configuration file.
+    experiment (str): Name of the experiment.
+    target (str): Target specification for the CMOR process.
+    platform (str): Platform on which the CMOR process is being run.
+    output (str): Output directory or file for the processed data.
+
+    Raises:
+    ValueError: If the yamlfile is not provided.
+    """
+
 
     # if opt_var_name specified, forget the list.
     if yamlfile is None:
@@ -133,6 +144,15 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name)
         opt_var_name = opt_var_name,
         run_one_mode = run_one
     )
+
+@cmor_cli.command()
+@click.option("-d", "--dir_targ", type=str, required=True, help="Target directory")
+@click.option("-o", "--output_variable_list", type=str, required=True, help="Output variable list file")
+def varlist(dir_targ, output_variable_list):
+    """
+    Create a simple variable list from netCDF files in the target directory.
+    """
+    make_simple_varlist(dir_targ, output_variable_list)
 
 
 if __name__ == "__main__":

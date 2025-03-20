@@ -2,43 +2,32 @@
 fre_properties:
   - &custom_interp "200,200"
 
-# directory overrides
-#c96_amip_directories:
-directories:
-  <<: *shared_directories
-  ptmp_dir: "/ptmp/$USER"
-  pp_grid_spec: *GRID_SPEC96
-
 #c96_amip_postprocess:
 postprocess:
-  # pp setting overrides
-  settings:
-    <<: *shared_settings
-    pp_start:   *ANA_AMIP_START
-    pp_stop:    *ANA_AMIP_END
-    pp_chunk_a: *PP_AMIP_CHUNK96
-    pp_components: "atmos atmos_scalar"
-  switches:
-    <<: *shared_switches
-    do_statics: False
-
-  # main pp instructions
   components:
     - type: "atmos_cmip-TEST"
-      sources: ["atmos_month_cmip", "atmos_8xdaily_cmip", "atmos_daily_cmip"]
+      sources:
+        - history_file: "atmos_month_cmip"
+        - history_file: "atmos_8xdaily_cmip"
+        - history_file: "atmos_daily_cmip"
       sourceGrid: "cubedsphere"
       xyInterp: *custom_interp
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
+      switch: False
     - type: "atmos-TEST"
-      sources: ["atmos_month"]
+      sources:
+        - history_file: "atmos_month"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
+      switch: False
     - type: "atmos_level_cmip-TEST"
-      sources: ["atmos_level_cmip"]
+      sources:
+        - history_file: "atmos_level_cmip"
       sourceGrid: "cubedsphere"
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
+      switch: False

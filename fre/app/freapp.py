@@ -8,7 +8,7 @@ from .mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
 from .regrid_xy.regrid_xy import regrid_xy
 
-@click.group(help=click.style(" - access fre app subcommands", fg=(250,154,90)))
+@click.group(help=click.style(" - app subcommands", fg=(250,154,90)))
 def app_cli():
     ''' entry point to fre app click commands '''
 
@@ -103,17 +103,13 @@ def mask_atmos_plevel(infile, outfile, psfile):
               help = "Type of time average to generate. \n \
                      currently, fre-nctools and fre-python-tools pkg options\n \
                      do not support seasonal and monthly averaging.\n")
-@click.option("-s", "--stddev_type",
-              type = click.Choice(["samp","pop","samp_mean","pop_mean"]),
-              default = "samp",
-              help = "Compute standard deviations for time-averages as well")
-def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type, stddev_type):
+def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     """
     generate time averages for specified set of netCDF files. 
     Example: generate-time-averages.py /path/to/your/files/
     """
     start_time = time.perf_counter()
-    generate(inf, outf, pkg, var, unwgt, avg_type, stddev_type)
+    generate(inf, outf, pkg, var, unwgt, avg_type)
     click.echo(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
 
 if __name__ == "__main__":

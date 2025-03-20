@@ -13,7 +13,7 @@ def yaml_load(yamlfile):
     return y
 
 
-def output_yaml(cleaned_yaml, experiment, output):
+def output_yaml(cleaned_yaml, output):
     """
     Write out the combined yaml dictionary info
     to a file if --output is specified

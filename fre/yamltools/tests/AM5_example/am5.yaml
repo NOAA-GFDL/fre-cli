@@ -43,32 +43,10 @@ build:
   compileYaml: "compile_yamls/compile.yaml"
   platformYaml: "compile_yamls/platforms.yaml"
 
-shared:
-  # directories shared across tools
-  directories: &shared_directories
-    history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
-    pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
-    analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
-    ptmp_dir:     "/xtmp/$USER/ptmp"
-
-  # shared pp settings
-  postprocess: 
-    settings: &shared_settings
-      history_segment:    "P1Y"
-      site:               "ppan"
-    switches: &shared_switches
-      do_statics:         True
-      do_timeavgs:        True
-      clean_work:         True
-      do_refinediag:      False
-      do_atmos_plevel_masking: True
-      do_preanalysis:     False
-      do_analysis:        True
-      do_analysis_only:   False
-
 experiments:
   - name: "c96L65_am5f7b12r1_amip"
     pp:
+      - "pp_yamls/settings.yaml"
       - "pp_yamls/pp.c96_amip.yaml"
       - "pp_yamls/pp-TEST.c96_amip.yaml"
     analysis:

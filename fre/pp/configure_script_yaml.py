@@ -136,7 +136,13 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
     components = yamlfile.get("postprocess").get("components")
     for i in components:
         comp = i.get('type')
-        sources = i.get('sources')
+
+        # Get sources
+        sources = []
+        for s in i.get('sources'):
+            sources.append(s.get("history_file"))
+
+        #source_str = ' '.join(sources)
         interp_method = i.get('interpMethod')
 
         # set remap items
@@ -153,6 +159,14 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
 
         # set regrid items
         if i.get("xyInterp") is not None:
+            sources = []
+            for s in i.get("sources"):
+                sources.append(s.get("history_file"))
+            # Add static sources to sources list if defined 
+            if i.get("static") is not None:
+                for s in i.get("static"):
+                    sources.append(s.get("source"))
+
             rose_regrid.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
             rose_regrid.set(keys=[f'{comp}', 'inputRealm'], value=f'{i.get("inputRealm")}')
             rose_regrid.set(keys=[f'{comp}', 'inputGrid'], value=f'{i.get("sourceGrid")}')

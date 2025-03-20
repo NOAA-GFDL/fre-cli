@@ -1,6 +1,8 @@
 ''' fre pp '''
 
 import click
+import logging
+fre_logger = logging.getLogger(__name__)
 
 from fre.pp import checkout_script
 from fre.pp import configure_script_yaml
@@ -14,7 +16,7 @@ from fre.pp import status_script
 from fre.pp import wrapper_script
 
 # fre pp
-@click.group(help=click.style(" - access fre pp subcommands", fg=(57,139,210)))
+@click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
 def pp_cli():
     ''' entry point to fre pp click commands '''
 
@@ -206,9 +208,9 @@ def nccheck(file_path, num_steps):
               help="Time whose history files are ready")
 def wrapper(experiment, platform, target, config_file, branch, time):
     """ - Execute fre pp steps in order """
-    print('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
+    fre_logger.info('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
-    print('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
+    fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
