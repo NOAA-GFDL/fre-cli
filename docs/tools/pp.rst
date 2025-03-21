@@ -22,3 +22,11 @@
 * Minimal Syntax: ``fre pp nccheck -f [netCDF file path] -n [number of expected time records]``
 * Module(s) needed: n/a
 * Example: ``fre pp nccheck -f /home/$user/some_netcdf_file -n 10``
+
+``hist-val``
+-----------
+
+* Run nccheck over all files found in diag manifest
+* Minimal Syntax: ``fre pp hist-val -hist [path to directory containing history files] -d [date_string]``
+* Module(s) needed: n/a
+* Example: ``fre pp hist-val -hist /some_path/dir_with_history_files/ -d 00010101``

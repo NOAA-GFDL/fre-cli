@@ -1,0 +1,77 @@
+''' This script will locate all diag_manifest files in a provided directory containing history files then run the nccheck script to validate the number of timesteps in each file'''
+
+import sys
+import os
+from pathlib import Path
+import glob
+import yaml
+import click
+import re
+import logging
+from fre.pp import nccheck_script as ncc
+
+fre_logger = logging.getLogger(__name__)
+
+def validate(history,date_string):
+    """ Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found in the diag_manifest file(s) """
+
+    # Mega manifest sounds cool... it'll just be all of the data from the diag_manifests combined in list form
+    mega_manifest=[]
+    mismatches=[]
+    info={}
+
+    # Find diag_manifest files and add to mega_manifest
+    files = os.listdir(history)
+    diag_count = 0
+    for _file in files:
+        if not all([  _file[-1].isdigit(),
+                  'diag_manifest' in _file,
+                  not _file.startswith('.')]):
+            continue
+        diag_count += 1
+        filepath = os.path.join(history,_file)
+        with open(filepath, 'r') as f:
+            fre_logger.info(f" Grabbing data from {filepath}")
+            data = yaml.safe_load(f)
+            mega_manifest.append(data)
+
+    # Make sure we found atleast one diag_manifest
+    if diag_count < 1:
+        raise Exception("There are no diag_manifest files in this directory")
+
+    # Go through the mega manifest, get expected timelevels and number of tiles, then add to dictionary
+    for y in range(len(mega_manifest)):
+        for x in range(len(mega_manifest[y]['diag_files'])):
+            filename = mega_manifest[y]['diag_files'][x]['file_name']
+            expected_timelevels = mega_manifest[y]['diag_files'][x]['number_of_timelevels']
+            num_tiles = mega_manifest[y]['diag_files'][x]['number_of_tiles']
+            levels_and_tiles = (expected_timelevels, num_tiles)
+            info.update({str(filename):levels_and_tiles})
+
+    # Run nccheck to compare actual timelevels to expected levels found in mega manifest
+    for filename in info:
+        for z in range(info[filename][1]):
+            if info[filename][1] > 1:
+                tile_num = z+1
+                filepath = os.path.join(
+                           f"{history}",
+                           f"{date_string}.{filename}.tile{tile_num}.nc")
+            else:
+                filepath = os.path.join(history,date_string+'.'+filename+'.nc')
+
+            result = ncc.check(filepath,info[filename][0])
+
+            if result==1:
+                fre_logger.error(f" Timesteps found in {filepath} differ from expectation in diag manifest")
+                mismatches.append(filepath)
+
+    #Error Handling
+    if len(mismatches)==1:
+        raise ValueError("\n" + str(len(mismatches))+ " file contains an unexpected number of timesteps:\n" + "\n".join(mismatches))
+    elif len(mismatches) > 1:
+        raise ValueError("\n" + str(len(mismatches))+ " files contain an unexpected number of timesteps:\n" + "\n".join(mismatches))
+    else:
+        return(0)
+
+if __name__ == '__main__':
+    validate()
