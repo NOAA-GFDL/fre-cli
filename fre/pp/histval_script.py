@@ -12,7 +12,8 @@ from fre.pp import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
 
-def validate(history,date_string):
+
+def validate(history,date_string,warn):
     """ Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found in the diag_manifest file(s) """
 
     # Mega manifest sounds cool... it'll just be all of the data from the diag_manifests combined in list form
@@ -37,7 +38,10 @@ def validate(history,date_string):
 
     # Make sure we found atleast one diag_manifest
     if diag_count < 1:
-        raise Exception("There are no diag_manifest files in this directory")
+        if not warn:
+            raise FileNotFoundError(f" No diag_manifest files were found in {history}. History files cannot be validated.")    
+        fre_logger.warning(f" Warning: No diag_manifest files were found in {history}. History files cannot be validated.")
+        return(0)
 
     # Go through the mega manifest, get expected timelevels and number of tiles, then add to dictionary
     for y in range(len(mega_manifest)):
@@ -66,12 +70,19 @@ def validate(history,date_string):
                 mismatches.append(filepath)
 
     #Error Handling
-    if len(mismatches)==1:
-        raise ValueError("\n" + str(len(mismatches))+ " file contains an unexpected number of timesteps:\n" + "\n".join(mismatches))
-    elif len(mismatches) > 1:
-        raise ValueError("\n" + str(len(mismatches))+ " files contain an unexpected number of timesteps:\n" + "\n".join(mismatches))
-    else:
-        return(0)
+    if not warn:    
+        if len(mismatches)!=0:
+            raise ValueError(
+                  "\n" + str(len(mismatches)) + 
+                  " file(s) contains an unexpected number of timesteps:\n" + 
+                  "\n".join(mismatches))
+    if len(mismatches)!=0:
+        fre_logger.error(
+                  "\n" + str(len(mismatches)) +
+                  " file(s) contains an unexpected number of timesteps:\n" +
+                  "\n".join(mismatches))
+
+    return(0)
 
 if __name__ == '__main__':
     validate()

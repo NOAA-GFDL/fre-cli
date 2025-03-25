@@ -187,11 +187,12 @@ def nccheck(file_path, num_steps):
 
 #fre pp histval
 @pp_cli.command()
-@click.option('--history','-hist', required = True, help = "Path to directory containing history files")
-@click.option('--date_string','-d', required = False, help = "Date string as written in netCDF (.nc) filename")
-def histval(history,date_string):
+@click.option('--history','-hist', required=True, help="Path to directory containing history files")
+@click.option('--date_string','-d', required=True, help="Date string as written in netCDF (.nc) filename")
+@click.option('--warn', '-w', is_flag=True, default=False, help="Warn mode. Missing diag files and incorrect timesteps will not cause validation to fail. Instead, warnings will be printed in the fre log")
+def histval(history,date_string,warn):
     """ Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps for all files in that directory """
-    histval_script.validate(history,date_string)
+    histval_script.validate(history,date_string,warn)
 
 #fre pp wrapper
 @pp_cli.command()
