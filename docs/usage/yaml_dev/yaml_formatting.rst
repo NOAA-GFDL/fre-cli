@@ -1,5 +1,3 @@
-Yaml Formatting
-----------
 Helpful information and format recommendations for creating yaml files.
 
 1. You can define a block of values as well as individual ``[key]: [value]`` pairs:

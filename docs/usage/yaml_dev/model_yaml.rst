@@ -1,5 +1,3 @@
-Model Yaml
-----------
 The model yaml defines reusable variables, shared directories, switches, post-processing settings, and paths to compile and post-processing yamls. Required fields in the model yaml include: ``fre_properties``, ``build``, ``shared``, and ``experiments``.
 
 * **fre_properties**: Reusable variables
