@@ -9,7 +9,7 @@ YAML Framework
 
 Build FMS model
 =======================
-.. include:: usage/compile.rst
+.. include:: usage/build_fms_model.rst
 
 Run FMS model
 =======================
