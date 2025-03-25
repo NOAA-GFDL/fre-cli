@@ -19,7 +19,7 @@ from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose):
+def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -117,6 +117,16 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                          f'{platformName}-{target.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
 
+                # check if mkTemplate has a / indicating it is a path
+                # if its not, prepend the template name with the mkmf submodule directory
+                if "/" not in platform["mkTemplate"]:
+                    topdir = Path(__file__).resolve().parents[2]
+                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
+                    if not Path(templatePath).exists():
+                        raise ValueError (f"Error with mkmf template. Created path from given file name: {templatePath} does not exist.")
+                else:
+                    templatePath = platform["mkTemplate"]
+
                 ## Create the Makefile
                 freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
                                                    libs = fremakeYaml["baremetal_linkerflags"],
@@ -194,7 +204,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 dockerBuild.writeRunscript(platform["RUNenv"], platform["containerRun"], tmpDir+"/execrunscript.sh")
 
                 # Create build script for container
-                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], skip_format_transfer=no_format_transfer)
                 logging.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 # Execute if flag is given
