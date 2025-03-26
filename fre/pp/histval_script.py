@@ -70,17 +70,11 @@ def validate(history,date_string,warn):
                 mismatches.append(filepath)
 
     #Error Handling
-    if not warn:    
-        if len(mismatches)!=0:
-            raise ValueError(
-                  "\n" + str(len(mismatches)) + 
-                  " file(s) contains an unexpected number of timesteps:\n" + 
-                  "\n".join(mismatches))
     if len(mismatches)!=0:
-        fre_logger.error(
-                  "\n" + str(len(mismatches)) +
-                  " file(s) contains an unexpected number of timesteps:\n" +
-                  "\n".join(mismatches))
+        raise ValueError(
+              "\n" + str(len(mismatches)) + 
+              " file(s) contains an unexpected number of timesteps:\n" + 
+              "\n".join(mismatches))
 
     return(0)
 
