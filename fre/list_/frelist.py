@@ -1,10 +1,13 @@
 ''' fre lister '''
 
+#import logging
+#fre_logger = logging.getLogger(__name__)
+
 import click
 from fre.list_ import list_experiments_script
 from fre.list_ import list_platforms_script
 
-@click.group(help=click.style(" - access fre list subcommands", fg=(232,204,91)))
+@click.group(help=click.style(" - list subcommands", fg=(232,204,91)))
 def list_cli():
     ''' entry point to fre list click commands '''
 

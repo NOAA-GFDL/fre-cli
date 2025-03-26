@@ -8,10 +8,7 @@ import subprocess
 import logging
 fre_logger = logging.getLogger(__name__)
 
-
-import sys
-
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
 def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
@@ -21,7 +18,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     run = execute
     jobs = str(jobs)
     pcheck = no_parallel_checkout
-    
+
     if type(jobs) == bool and execute:
         raise ValueError ('jobs must be defined as number if --execute flag is True')
     if pcheck:
@@ -30,9 +27,9 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
         pc = " &"
 
     if verbose:
-        fre_logger.setLevel(level = logging.INFO)
+        fre_logger.setLevel(level = logging.DEBUG)
     else:
-        fre_logger.setLevel(level = logging.ERROR)
+        fre_logger.setLevel(level = logging.INFO)
 
     src_dir="src"
     checkout_script_name = "checkout.sh"
@@ -42,10 +39,16 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     plist = platform
     tlist = target
 
+#    # Combined compile yaml file
+#    combined = Path(f"combined-{name}.yaml")
+
     # Combine model, compile, and platform yamls
-    # Default behavior - combine yamls / rewrite combined yaml
-    comb = cy.init_compile_yaml(yml,platform,target)
-    full_combined = cy.get_combined_compileyaml(comb)
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
@@ -89,7 +92,6 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                 if run:
                     fre_checkout.run()
                 else:
-
                     return
 
             else:
@@ -102,7 +104,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                                       "\nTry removing test folder: " + platform["modelRoot"] +"\n")
 
                 else:
-                    return #0 #sys.exit()
+                    return
 
         else:
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"

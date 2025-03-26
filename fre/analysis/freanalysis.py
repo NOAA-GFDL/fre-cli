@@ -2,6 +2,8 @@
 
 # a third party package
 import click
+import logging
+fre_logger = logging.getLogger(__name__)
 
 ## a diff gfdl package
 #from analysis_scripts import available_plugins
@@ -11,7 +13,7 @@ from .subtools import install_analysis_package, list_plugins, run_analysis, \
                       uninstall_analysis_package
 
 
-@click.group(help=click.style(" - access fre analysis subcommands", fg=(250, 154, 90)))
+@click.group(help=click.style(" - analysis subcommands", fg=(250, 154, 90)))
 def analysis_cli():
     """Entry point to fre analysis click commands."""
 
@@ -34,11 +36,11 @@ def list(library_directory):
     """List available plugins."""
     plugins = list_plugins(library_directory)
     if plugins:
-        print("Installed analysis packages:\n")
+        fre_logger.info("Installed analysis packages:\n")
         for plugin in plugins:
-            print(plugin)
+            fre_logger.info(plugin)
     else:
-        print("No analysis packages found.")
+        fre_logger.info("No analysis packages found.")
 
 
 @analysis_cli.command()

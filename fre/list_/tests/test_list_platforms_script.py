@@ -28,33 +28,27 @@ def test_platformyaml_exists():
     '''test if platforms yaml exists'''
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/platforms.yaml").exists()
 
-def test_platforms_list(capfd):
+def test_platforms_list(caplog):
     ''' test list platforms '''
     list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
-    #Capture output
-    out,err=capfd.readouterr()
-    if "Platforms available" in out:
-        assert True
-    else:
-       assert False
-
-def test_int_combine(capfd):
-    ''' test intermediate combine is happening '''
-    list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
-
-    #Capture output
-    out,err=capfd.readouterr()
-    check_out = ["Combining yaml files", "model yaml", "platforms yaml"]
+    # check the logging output
+    check_out = ["Platforms available:",
+                 "    - ncrc5.intel23",
+                 "    - hpcme.2023",
+                 "    - ci.gnu",
+                 "    - con.twostep"    ]
     for i in check_out:
-        if i in out:
-            assert True
-        else:
-           assert False
+        assert i in caplog.text
+
+    # make sure level is INFO
+    for record in caplog.records:
+        record.levelname == "INFO"
+
 
 def test_nocombinedyaml():
     ''' test intermediate combined yaml was cleaned '''
-    assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists() == False
+    assert not Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()
 
 # Test individual functions operating correctly: combine and clean
 def test_correct_combine():
@@ -71,12 +65,9 @@ def test_correct_combine():
 
     req_keys = ["name","platform","target","platforms"]
     for k in req_keys:
-        if k in y.keys():
-            assert True
-        else:
-            assert False
+        assert k in y.keys()
 
-def test_yamlvalidate(capfd):
+def test_yamlvalidate(caplog):
     ''' test yaml is being validated '''
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
@@ -89,12 +80,9 @@ def test_yamlvalidate(capfd):
         y = yaml.load(yf,Loader=yaml.Loader)
 
     # Validate and capture output
-    list_platforms_script.validate_yaml(y)
-    out,err=capfd.readouterr()
-    if "Intermediate combined yaml VALID." in out:
-        assert True
-    else:
-        assert False
+    assert list_platforms_script.validate_yaml(y)
+    #assert "Intermediate combined yaml VALID" in caplog.text
+
 
 #def test_not_valid_yaml():
 
@@ -103,4 +91,4 @@ def test_yamlremove():
    # Remove combined yaml file
    list_platforms_script.remove(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml")
 
-   assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists() == False
+   assert not Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()

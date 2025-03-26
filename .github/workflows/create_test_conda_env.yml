@@ -46,7 +46,7 @@ jobs:
           export PATH="$path_save"
 
           # install genbadge to make badge from coverage/test stats
-          pip install genbadge
+          pip install defusedxml genbadge
 
           # genbadge coverage
           genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg

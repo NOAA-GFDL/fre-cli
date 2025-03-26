@@ -14,12 +14,12 @@ from multiprocessing.dummy import Pool
 from pathlib import Path
 
 import subprocess
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose):
+def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -33,9 +33,9 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
         pc = " &"
 
     if verbose:
-        fre_logger.setLevel(level = logging.INFO)
+        fre_logger.setLevel(level = logging.DEBUG)
     else:
-        fre_logger.setLevel(level = logging.ERROR)
+        fre_logger.setLevel(level = logging.INFO)
 
     #### Main
     srcDir="src"
@@ -46,18 +46,22 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
     plist = platform
     tlist = target
 
-    # Combined compile yaml file
-    combined = Path(f"combined-{name}.yaml")
+#    # Combined compile yaml file
+#    combined = Path(f"combined-{name}.yaml")
 
-    ## If combined yaml exists, note message of its existence
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined, yml, platform, target)
+    # Combine model, compile, and platform yamls
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined)
+    fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined, freVars)
+    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
@@ -112,6 +116,16 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
                          f'{platformName}-{target.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
+
+                # check if mkTemplate has a / indicating it is a path
+                # if its not, prepend the template name with the mkmf submodule directory
+                if "/" not in platform["mkTemplate"]:
+                    topdir = Path(__file__).resolve().parents[2]
+                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
+                    if not Path(templatePath).exists():
+                        raise ValueError (f"Error with mkmf template. Created path from given file name: {templatePath} does not exist.")
+                else:
+                    templatePath = platform["mkTemplate"]
 
                 ## Create the Makefile
                 freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
@@ -190,7 +204,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 dockerBuild.writeRunscript(platform["RUNenv"], platform["containerRun"], tmpDir+"/execrunscript.sh")
 
                 # Create build script for container
-                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], skip_format_transfer=no_format_transfer)
                 logging.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 # Execute if flag is given

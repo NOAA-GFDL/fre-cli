@@ -84,9 +84,6 @@ class frepytoolsTimeAverager(timeAverager):
         num_lon_bnds=fin_dims['lon'].size
         print(f'num_lon_bnds={num_lon_bnds}')
         avgvals=numpy.zeros((1,num_lat_bnds,num_lon_bnds),dtype=float)
-        if self.stddev_type is not None:
-            print('computing std. deviations')
-            stddevs=numpy.zeros((1,num_lat_bnds,num_lon_bnds),dtype=float)
 
         # this loop behavior 100% should be re-factored into generator functions.
         # they should be slightly faster, and much more readable. (TODO)
@@ -105,12 +102,6 @@ class frepytoolsTimeAverager(timeAverager):
                     avgvals[0][lat][lon]=sum( (tim_val_array[tim] * wgts[tim] )
                                               for tim in range(num_time_bnds) ) / wgts_sum
 
-                    if self.stddev_type is not None: # implement stddeviation types TO DO
-                        stddevs[0][lat][lon]=math.sqrt(
-                                             sum( wgts[tim] *
-                                                  (tim_val_array[tim]-avgvals[0][lat][lon]) ** 2
-                                                  for tim in range(num_time_bnds) )
-                                              / wgts_sum )
                     del tim_val_array
                 del lon_val_array
         else: #unweighted case
@@ -124,14 +115,6 @@ class frepytoolsTimeAverager(timeAverager):
                         tim_val_array[tim] for tim in range(num_time_bnds)
                                ) / num_time_bnds
 
-                    if self.stddev_type is not None:
-
-                        stddevs[0][lat][lon]=math.sqrt(
-                                                      sum(
-                                                  (tim_val_array[tim]-avgvals[0][lat][lon]) ** 2
-                                                          for tim in range(num_time_bnds)
-                                                      ) / ( (num_time_bnds - 1. ) )
-                                                           )
                     del tim_val_array
                 del lon_val_array
 
@@ -201,12 +184,6 @@ class frepytoolsTimeAverager(timeAverager):
 
 
         nc_fout.variables[targ_var][:]=avgvals
-        if self.stddev_type is not None:
-            stddev_varname=targ_var+'_'+self.stddev_type+'_stddev'
-            nc_fout.createVariable(
-                stddev_varname, nc_fin[targ_var].dtype, nc_fin[targ_var].dimensions )
-            nc_fout.variables[stddev_varname].setncatts(nc_fin[targ_var].__dict__)
-            nc_fout.variables[stddev_varname][:]=stddevs
         print('---------- DONE writing output variables. ---------')
         ##
 

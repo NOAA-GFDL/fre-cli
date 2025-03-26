@@ -1,9 +1,19 @@
 """
 Script combines the model yaml with exp, platform, and target to list experiment information.
 """
+
+import logging
+fre_logger = logging.getLogger(__name__)
+
 from pathlib import Path
-import yaml
-import fre.yamltools.combine_yamls as cy
+
+# this brings in the yaml module with the join_constructor
+# this is defined in the __init__
+from fre.yamltools import *
+
+
+from fre.yamltools.helpers import yaml_load
+from fre.yamltools import combine_yamls as cy
 
 # To look into: ignore undefined alias error msg for listing?
 # Found this somewhere but don't fully understand yet
@@ -17,6 +27,7 @@ def quick_combine(yml, exp, platform, target):
     This is done to avoid an "undefined alias" error
     """
     # Combine model / experiment
+    # note, this needs combine_yamls.py, instead of it's successor for now
     comb = cy.init_pp_yaml(yml,exp,platform,target)
     comb.combine_model()
 
@@ -26,8 +37,7 @@ def remove(combined):
     """
     if Path(combined).exists():
         Path(combined).unlink()
-        print("Remove intermediate combined yaml:\n",
-              f"   {combined} removed.")
+        fre_logger.info(f"Intermediate combined yaml {combined} removed.")
     else:
         raise ValueError(f"{combined} could not be found to remove.")
 
@@ -35,8 +45,6 @@ def list_experiments_subtool(yamlfile):
     """
     List the post-processing experiments available
     """
-    # Regsiter tag handler
-    yaml.add_constructor('!join', cy.join_constructor)
 
     e = "None"
     p = "None"
@@ -46,14 +54,22 @@ def list_experiments_subtool(yamlfile):
 
     # Combine model / experiment
     quick_combine(yamlfile,e,p,t)
+    
+    # load the yaml we made
+    c = yaml_load(combined)
 
-    # Print experiment names
-    c = cy.yaml_load(combined)
+    # set logger level to INFO
+    former_log_level = fre_logger.level
+    fre_logger.setLevel(logging.INFO)
 
-    print("\nPost-processing experiments available:")
+    # log the experiment names, which should show up on screen for sure
+    fre_logger.info("Post-processing experiments available:")
     for i in c.get("experiments"):
-        print(f'   - {i.get("name")}')
-    print("\n")
+        fre_logger.info(f'   - {i.get("name")}')
+    fre_logger.info("\n")
 
+    # set logger back to normal level
+    fre_logger.setLevel(former_log_level)
+    
     # Clean intermediate combined yaml
     remove(combined)

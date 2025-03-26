@@ -2,10 +2,20 @@
 Script combines the model yaml with exp, platform, and target to list experiment information.
 """
 
+import logging
+fre_logger = logging.getLogger(__name__)
+
 from pathlib import Path
-import yaml
+
+# this brings in the yaml module with the join_constructor
+# this is defined in the __init__
+from fre.yamltools import *
+
 import json
 from jsonschema import validate, ValidationError, SchemaError
+
+from fre.yamltools.helpers import yaml_load
+
 import fre.yamltools.combine_yamls as cy
 
 # To look into: ignore undefined alias error msg for listing?
@@ -31,8 +41,7 @@ def remove(combined):
     """
     if Path(combined).exists():
         Path(combined).unlink()
-        print("Remove intermediate combined yaml:\n",
-              f"   {combined} removed.")
+        fre_logger.info(f"Intermediate combined yaml {combined} removed.")
     else:
         raise ValueError(f"{combined} could not be found to remove.")
 
@@ -46,19 +55,18 @@ def validate_yaml(loaded_yaml):
     with open(schema_path, 'r') as s:
         schema = json.load(s)
 
-    print("\nValidating intermediate yaml:")
+    fre_logger.info("Validating intermediate yaml...")
     try:
         validate(instance=loaded_yaml, schema=schema)
-        print("    Intermediate combined yaml VALID.")
+        fre_logger.info("... Intermediate combined yaml VALID.")
+        return True
     except:
-        raise ValueError("\n\nIntermediate combined yaml NOT VALID.")
+        raise ValueError("\n... Intermediate combined yaml NOT VALID.")
 
 def list_platforms_subtool(yamlfile):
     """
     List the platforms available
     """
-    # Regsiter tag handler
-    yaml.add_constructor('!join', cy.join_constructor)
 
     e = yamlfile.split("/")[-1].split(".")[0]
     p = "None"
@@ -71,15 +79,20 @@ def list_platforms_subtool(yamlfile):
     quick_combine(yamlfile,p,t)
 
     # Print experiment names
-    yml = cy.yaml_load(f"{yamlpath}/{combined}")
+    yml = yaml_load(f"{yamlpath}/{combined}")
+
+    former_log_level = fre_logger.level
+    fre_logger.setLevel(logging.INFO)
 
     # Validate the yaml
     validate_yaml(yml)
 
-    print("\nPlatforms available:")
+    fre_logger.info("Platforms available:")
     for i in yml.get("platforms"):
-        print(f'    - {i.get("name")}')
-    print("\n")
+        fre_logger.info(f'    - {i.get("name")}')
+    fre_logger.info("\n")
+
+    fre_logger.setLevel(former_log_level)
 
     # Clean the intermediate combined yaml
     remove(f"{yamlpath}/{combined}")
