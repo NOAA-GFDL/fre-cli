@@ -65,8 +65,5 @@ class cdoTimeAverager(timeAverager):
             print(f'problem: unknown avg_type={self.avg_type}')
             return 1
 
-        if merged:   #if multiple files where used, the merged version is now removed
-            os.remove(merged_file)
-
         print('done averaging')
         return 0
