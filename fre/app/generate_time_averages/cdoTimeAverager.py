@@ -28,17 +28,6 @@ class cdoTimeAverager(timeAverager):
         from cdo import Cdo
 
         _cdo=Cdo()
-        
-        merged = False
-        print('MARKING THIS SPOT')
-        print(type(infile))
-        print(len(infile))
-        if type(infile).__name__=='list' and len(infile)> 1:   #multiple files case. Generates one combined file
-            merged_file = "merged_output.nc"
-            _cdo.mergetime(input=' '.join(infile), output=merged_file)
-            infile = merged_file
-            merged = True
-            print(infile)
 
         wgts_sum=0
         if not self.unwgt: #weighted case, cdo ops alone don't support a weighted time-average.
