@@ -22,7 +22,7 @@ def test_setup_histval(_file,capfd):
 
     #Set path
     input_path = Path(f"{test_dir}/{_file}.cdl")
-    output_path = Path(f"./{_file}.nc")
+    output_path = Path(f"{test_dir}/{_file}.nc")
 
     #Make sure output path doesn't exist for file
     if output_path.exists():
@@ -30,7 +30,7 @@ def test_setup_histval(_file,capfd):
 
     assert input_path.exists()
 
-    ex = ["ncgen3", "-k", "netCDF-4", "-o", f"./{_file}.nc", f"{test_dir}/{_file}.cdl" ]
+    ex = ["ncgen3", "-k", "netCDF-4", "-o", f"{test_dir}/{_file}.nc", f"{test_dir}/{_file}.cdl" ]
     sp = subprocess.run(ex, check = True)
     assert all( [ sp.returncode == 0, output_path.exists() ] )
     _out, _err = capfd.readouterr()
@@ -44,6 +44,6 @@ def test_histval(capfd):
         result=(histval.validate(test_dir,'00010101',warn=None))
 
     for x in test_files:
-        Path(f"./{x}.nc").unlink()
+        Path(f"{test_dir}/{x}.nc").unlink()
 
     _out, _err = capfd.readouterr()

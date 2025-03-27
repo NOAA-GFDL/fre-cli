@@ -1,13 +1,8 @@
 ''' This script will locate all diag_manifest files in a provided directory containing history files then run the nccheck script to validate the number of timesteps in each file'''
 
-import sys
 import os
-from pathlib import Path
-import glob
-import yaml
-import click
-import re
 import logging
+import yaml
 from fre.pp import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
@@ -39,9 +34,9 @@ def validate(history,date_string,warn):
     # Make sure we found atleast one diag_manifest
     if diag_count < 1:
         if not warn:
-            raise FileNotFoundError(f" No diag_manifest files were found in {history}. History files cannot be validated.")    
+            raise FileNotFoundError(f" No diag_manifest files were found in {history}. History files cannot be validated.")
         fre_logger.warning(f" Warning: No diag_manifest files were found in {history}. History files cannot be validated.")
-        return(0)
+        return 0
 
     # Go through the mega manifest, get expected timelevels and number of tiles, then add to dictionary
     for y in range(len(mega_manifest)):
@@ -76,7 +71,7 @@ def validate(history,date_string,warn):
               " file(s) contain(s) an unexpected number of timesteps:\n" + 
               "\n".join(mismatches))
 
-    return(0)
+    return 0
 
 if __name__ == '__main__':
     validate()
