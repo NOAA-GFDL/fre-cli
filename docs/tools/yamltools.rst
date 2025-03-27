@@ -10,4 +10,4 @@
         - `-e, --experiment [experiment name]`
         - `-p, --platform [platform] (required)`
         - `-t, --target [target] (required)`
-        - `--use [compile|pp] (required)`
+        - `--use [compile|pp|cmor] (required)`
