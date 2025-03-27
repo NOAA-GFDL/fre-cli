@@ -1,6 +1,8 @@
 The post-processing yamls include information specific to experiments, such as component information. The post-processing yamls can further define more ``fre_properties`` that may be experiment specific. If there are any repeated reusable variables, the ones set in this yaml will overwrite those set in the model yaml.
 
-The post-processing yamls include pp experiment yamls, along with a settings.yaml, that can be applied to all pp yamls. The pp experiment yamls can follow the structure below:
+* ** Post-processing yamls **
+
+The post-processing yamls include pp experiment yamls, along with a settings.yaml, that can be applied to all pp yamls. Users can add however many components are needed. The pp experiment yamls can follow the structure below:
 
 .. code-block:: 
 
@@ -21,9 +23,12 @@ The post-processing yamls include pp experiment yamls, along with a settings.yam
        do_postprocess: "switch to postprocess this component or not"                   (boolean)
 
 Out of the keys listed above, required keys include:
+    
     - type
     - sources
     - switch
+
+* ** Setting yaml **
 
 To define post-processing settings, a settings.yaml must also be created. This configuration file will include post-processing settings and switches and will be listed as the first yaml under the `pp` section of `experiments`.
 
@@ -56,6 +61,7 @@ This file can follow the format below:
        do_analysis_only: "switch to only launch analysis scripts"                                                         (boolean)
 
 Required keys include:
+
     - history_dir
     - pp_dir
     - ptmp_dir
