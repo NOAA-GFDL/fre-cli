@@ -1,19 +1,14 @@
 The model yaml defines reusable variables and paths to compile, post-processing, analysis, and cmor yamls. Required fields in the model yaml include: ``fre_properties``, ``build``,  and ``experiments``.
 
-* **fre_properties**: Reusable variables
+* `fre_properties`: Reusable variables
 
   - list of variables
   - these values can be extracted from ``fre_properties`` in a group's XML, if available
   - value type: string
 
-* **build**: paths to information needed for compilation
+* `build`: paths to information needed for compilation
 
-  - subsections: ``compileYaml``, ``platformYaml``
-  - value type: string
-
-* **experiments**: list of post-processing experiments
-
-  - subsections: ``name``, ``pp``, ``analysis``
+* `experiments`: list of post-processing experiments
 
 The model.yaml can follow the structure below:
 

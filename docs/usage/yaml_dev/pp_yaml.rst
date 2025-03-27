@@ -2,25 +2,26 @@ The post-processing yamls include information specific to experiments, such as c
 
 * ** Post-processing yamls **
 
-The post-processing yamls include pp experiment yamls, along with a settings.yaml, that can be applied to all pp yamls. Users can add however many components are needed. The pp experiment yamls can follow the structure below:
+The post-processing yamls include pp experiment yamls, along with a settings.yaml, that can be applied to all pp yamls. Users can add however many components are needed, as well as define any experiment specific `fre_properties`. The pp experiment yamls can follow the structure below:
 
 .. code-block:: 
 
-   components:
-     - type: "component name"                                                          (string)
-       sources:
-         - history_file: "history file to include with component"                      (string)
-           variables: "specific variables to postprocess associated with component"    (array with string elements)
-       xyInterp: "lat, lon grid configuration"                                         (string)
-       interpMethod: "interpolation method"                                            (string)
-       sourceGrid: "input grid type"                                                   (string)
-       inputRealm: "domain of component"                                               (string)
-       static:
-         - source: "static history file to include with component"                     (string)
-           variables: "specific static variables to postprocess"                       (array with string elements)
-         - offline_diagnostic: "path to static offline diagnostic"                     (string)
-           variables: "specific static variables to postprocess"                       (array with string elements)
-       do_postprocess: "switch to postprocess this component or not"                   (boolean)
+   postprocess:
+     components:
+       - type: "component name"                                                          (string)
+         sources:
+           - history_file: "history file to include with component"                      (string)
+             variables: "specific variables to postprocess associated with component"    (array with string elements)
+         xyInterp: "lat, lon grid configuration"                                         (string)
+         interpMethod: "interpolation method"                                            (string)
+         sourceGrid: "input grid type"                                                   (string)
+         inputRealm: "domain of component"                                               (string)
+         static:
+           - source: "static history file to include with component"                     (string)
+             variables: "specific static variables to postprocess"                       (array with string elements)
+           - offline_diagnostic: "path to static offline diagnostic"                     (string)
+             variables: "specific static variables to postprocess"                       (array with string elements)
+         do_postprocess: "switch to postprocess this component or not"                   (boolean)
 
 Out of the keys listed above, required keys include:
     
