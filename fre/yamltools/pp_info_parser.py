@@ -140,12 +140,11 @@ class InitPPYaml():
         """
         # Experiment Check
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,loaded_yaml)
-        
+ 
         analysis_yamls = []
         ## COMBINE EXPERIMENT YAML INFO
-        # If only 1 pp yaml defined, combine with model yaml
+        # If only 1 analysis yaml defined, combine with model yaml
         if ay_path is not None and len(ay_path) == 1:
-            #expyaml_path = os.path.join(mainyaml_dir, i)
             with open(ay_path[0],'r') as ayp:
                 analysis_content = ayp.read()
 
