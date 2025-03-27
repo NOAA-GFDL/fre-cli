@@ -1,6 +1,8 @@
 """
 Test nccheck_script
 """
+import pytest
+import re
 from pathlib import Path
 from fre.pp import histval_script as histval
 import subprocess
@@ -8,35 +10,29 @@ import subprocess
 # Set example input paths
 
 test_dir = Path("fre/tests/test_files/ascii_files")
-ncgen_input1 = Path(f"{test_dir}/00010101.atmos_month.tile1.cdl")
-ncgen_input2 = Path(f"{test_dir}/00010101.atmos_month.tile2.cdl")
-ncgen_input3 = Path(f"{test_dir}/00010101.ocean_cobalt_btm.cdl")
-ncgen_input4 = Path(f"{test_dir}/00010101.ocean_cobalt_fdet_100.cdl")
+test_file1 = "00010101.atmos_month.tile1"
+test_file2 = "00010101.atmos_month.tile2"
+test_file3 = "00010101.ocean_cobalt_btm"
+test_file4 = "00010101.ocean_cobalt_fdet_100"
+test_files = [test_file1,test_file2,test_file3,test_file4]
 
-input_paths = [ncgen_input1, ncgen_input2, ncgen_input3, ncgen_input4]
+@pytest.mark.parametrize("_file",test_files)
+def test_setup_histval(_file,capfd):
 
-ncgen_output1 = Path("./00010101.atmos_month.tile1.nc")
-ncgen_output2 = Path("./00010101.atmos_month.tile2.nc")
-ncgen_output3 = Path("./00010101.ocean_cobalt_btm.cdl")
-ncgen_output4 = Path("./00010101.ocean_cobalt_fdet_100.cdl")
 
-output_paths = [ncgen_output1, ncgen_output2, ncgen_output3, ncgen_output4]
+    #Set path
+    input_path = Path(f"{test_dir}/{_file}.cdl")
+    output_path = Path(f"./{_file}.nc")
 
-def test_setup_histval(capfd):
+    #Make sure output path doesn't exist for file
+    if output_path.exists():
+        output_path.unlink()
 
-    for _path1 in output_paths:
-        if Path(_path1).exists():
-            Path(_path1).unlink()
+    assert input_path.exists()
 
-    for _path2 in input_paths:
-        assert Path(_path2).exists()
-
-    for num in enumerate(input_paths):
-        ex = ["ncgen3", "-k", "netCDF-4", "-o", f"ncgen_output{num}", f"ncgen_input{num}" ]
-
-        sp = subprocess.run(ex, check = True)
-
-        assert all( [ sp.returncode == 0, Path(f"ncgen_output{num}").exists() ] )
+    ex = ["ncgen3", "-k", "netCDF-4", "-o", f"./{_file}.nc", f"{test_dir}/{_file}.cdl" ]
+    sp = subprocess.run(ex, check = True)
+    assert all( [ sp.returncode == 0, output_path.exists() ] )
     _out, _err = capfd.readouterr()
 
 def test_histval(capfd):
@@ -44,10 +40,10 @@ def test_histval(capfd):
     Test the functionality of the histval tool
     """
 
-    result=(histval.validate(test_dir,'00010101',warn=None))
+    with pytest.raises(ValueError,match=re.escape("\n2 file(s) contain(s) an unexpected number of timesteps:\nfre/tests/test_files/ascii_files/00010101.atmos_month.tile1.nc\nfre/tests/test_files/ascii_files/00010101.atmos_month.tile2.nc")):
+        result=(histval.validate(test_dir,'00010101',warn=None))
 
-    for x in output_paths:
-        Path(x).unlink()
+    for x in test_files:
+        Path(f"./{x}.nc").unlink()
 
-    assert result == 1
     _out, _err = capfd.readouterr()

@@ -73,7 +73,7 @@ def validate(history,date_string,warn):
     if len(mismatches)!=0:
         raise ValueError(
               "\n" + str(len(mismatches)) + 
-              " file(s) contains an unexpected number of timesteps:\n" + 
+              " file(s) contain(s) an unexpected number of timesteps:\n" + 
               "\n".join(mismatches))
 
     return(0)
