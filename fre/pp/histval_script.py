@@ -56,7 +56,9 @@ def validate(history,date_string,warn):
                            f"{history}",
                            f"{date_string}.{filename}.tile{tile_num}.nc")
             else:
-                filepath = os.path.join(history,date_string+'.'+filename+'.nc')
+                filepath = os.path.join(
+                           f"{history}",
+                           f"{date_string}.{filename}.nc")
 
             result = ncc.check(filepath,info[filename][0])
 
