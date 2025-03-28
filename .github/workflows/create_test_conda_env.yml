@@ -17,11 +17,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Create fre-cli environment
+      - name: Create environment holding fre-cli requirements
         run: |
           # create env holding all deps, the env cant be explicitly activated in CI/CD        
           conda env create -f environment.yml --name fre-cli
 
+      - name: bash shell configuration
+        run: |
           # sets CONDA to wherever it may be on the image
           source /root/.bashrc
 
@@ -29,21 +31,29 @@ jobs:
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
           echo $PWD/mkmf/bin >> $GITHUB_PATH
 
+      - name: pip install fre-cli into environment with reqs
+        run: |
           # use *conda environment's pip* to install fre-cli, called w/ full path as module for explicitness
           $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
 
-      - name: Run pytest in fre-cli environment
+      - name: more path configuration
         run: |
           # add spack installed binaries to front of path so that conda's netcdf/hdf5 installs don't break compilation tests
           export path_save=$PATH
           export PATH="/opt/views/view/bin:$PATH"
 
+      - name: run fre-cli unit tests with pytest 
+        run: |
           # run pytest
           coverage run -m pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
 
+      - name: path configuration
+        run: |
           # restore original path and install genbadge to generate coverage badge based on xml
           export PATH="$path_save"
-
+  
+      - name: pip install genbadge and generate code coverade badge from pytest xml
+        run: |
           # install genbadge to make badge from coverage/test stats
           pip install defusedxml genbadge
 
@@ -59,21 +69,26 @@ jobs:
           name: code-coverage-report
           path: coverage.xml
 
-      - name: Run pylint in fre-cli environment
+      - name: lint fre-cli code with pylint
         run: |
           # run pylint, ignored modules avoid warnings arising from code internal to those modules
           pylint --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
 
-      - name: Install Sphinx and Build Documentation
+      - name: pip install sphinx and themes
         run: |
           # pip install sphinx and themes, upgrade theme
           pip install sphinx renku-sphinx-theme sphinx-rtd-theme
           pip install --upgrade sphinx-rtd-theme
 
+# note that the generated badges in docs/ get used by the doc build here
+      - name: build sphinx docs
+        run: |
           # have sphinx build the docs
           sphinx-apidoc --output-dir docs fre/ --separate
           sphinx-build docs build
 
+# the deployed docs then host the generated badges, giving them a link
+# the README.md in this repo uses that link to display the badge
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
