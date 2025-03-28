@@ -1,5 +1,6 @@
 ''' class using (mostly) cdo functions for time-averages '''
 from .timeAverager import timeAverager
+import os
 
 class cdoTimeAverager(timeAverager):
     '''

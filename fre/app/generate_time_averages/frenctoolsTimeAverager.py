@@ -35,8 +35,7 @@ class frenctoolsTimeAverager(timeAverager):
 
         from subprocess import Popen, PIPE
 
-        precision='-r8'
-        timavgcsh_command=['timavg.csh', precision, '-mb','-o', outfile, infile]
+        timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
         exitstatus=1
         with Popen(timavgcsh_command,
                    stdout=PIPE, stderr=PIPE, shell=False) as subp:
