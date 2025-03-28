@@ -1,6 +1,9 @@
-''' this file holds any run-fremake tests that actually compile the model code
- these tests assume your os is the ci image (gcc 14 + mpich on rocky 8)
- you may need to add mkmf to your path or make other adjustments to the mkmf template to run elsewhere'''
+'''
+Holds any tests that compile model code or create runtime containers
+baremetal tests will be skipped unless gcc/mpi/netcdf is in your path
+for container tests, apptainer and singularity are required instead
+tests will always run in CI testing
+'''
 
 import os
 from shutil  import rmtree
@@ -39,7 +42,6 @@ retstat, version = subprocess.getstatusoutput('nc-config --version')
 has_ncdf = retstat == 0
 retstat, version = subprocess.getstatusoutput('mkmf -v')
 has_mkmf = retstat == 0
-## TODO this works, but hardcoded mkmf template path makes it fail
 can_compile = has_gcc and has_mpi and has_ncdf and has_mkmf
 
 retstat, version = subprocess.getstatusoutput('podman --version')
@@ -53,7 +55,9 @@ can_container = has_apptainer and has_podman
 def test_run_fremake_serial_compile():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, False, 1, False, True, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=False,
+        no_format_transfer=True, execute=True, VERBOSE)
     assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # same test with a parallel build
@@ -61,12 +65,23 @@ def test_run_fremake_serial_compile():
 def test_run_fremake_multijob_compile():
     ''' test run-fremake parallel compile with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, True, 4, False, True, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
+        parallel=True, jobs=4, no_parallel_checkout=False,
+        no_format_transfer=False, execute=True, VERBOSE)
     assert Path(f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # containerized build
 @pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
 def test_run_fremake_container_build():
     ''' checks image creation for the container build'''
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, True, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=True,
+        no_format_transfer=false, execute=True, VERBOSE)
     assert Path("null_model_full-debug.sif").exists()
+
+@pytest.mark.skipif(not has_podman, reason="missing podman")
+def test_run_fremake_container_build_notransfer():
+    ''' checks image creation with the .sif transfer turned off '''
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=True,
+        no_format_transfer=false, execute=True, VERBOSE)
