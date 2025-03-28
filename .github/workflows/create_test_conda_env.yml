@@ -20,23 +20,22 @@ jobs:
       - name: Create environment holding fre-cli requirements
         run: |
           # create env holding all deps, the env cant be explicitly activated in CI/CD        
+          # sets CONDA to wherever it may be on the image
+          source /root/.bashrc
+          
           which conda
           conda env create -f environment.yml --name fre-cli
 
       - name: bash shell configuration AND pip install.
         run: |
-          # sets CONDA to wherever it may be on the image
-          source /root/.bashrc
-          
           # add conda env's executables and mkmf to github's PATH equiv.
           echo $CONDA
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
           echo $PWD/mkmf/bin >> $GITHUB_PATH
 
           # use *conda environment's pip* to install fre-cli, called w/ full path as module for explicitness
-          which python
           which python3
-          $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
+          python3 -m pip install .
 
       - name: more path configuration
         run: |
