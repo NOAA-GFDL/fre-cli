@@ -21,13 +21,13 @@ The post-processing yamls include pp experiment yamls, along with a settings.yam
              variables: "specific static variables to postprocess"                       (array with string elements)
            - offline_diagnostic: "path to static offline diagnostic"                     (string)
              variables: "specific static variables to postprocess"                       (array with string elements)
-         do_postprocess: "switch to postprocess this component or not"                   (boolean)
+         postprocess_on: "switch to postprocess this component or not"                   (boolean)
 
 Out of the keys listed above, required keys include:
     
     - type
     - sources
-    - switch
+    - postprocess_on
 
 * **Setting yaml**
 
