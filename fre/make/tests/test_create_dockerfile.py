@@ -26,8 +26,6 @@ VERBOSE = False
 # container root (as set in platform yaml)
 MODEL_ROOT = "/apps"
 
-#def dockerfile_create(yamlfile,platform,target,execute):
-
 # yaml file checks
 def test_modelyaml_exists():
     assert Path(f"{YAMLDIR}/{YAMLFILE}").exists()
@@ -42,35 +40,34 @@ def test_platformyaml_exists():
 @pytest.mark.xfail()
 def test_bad_platform_option():
     ''' test -fremake with a invalid platform option'''
-    create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET,
-    	execute=False, skip_format_transfer=False)
+    create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET, execute=False, force_dockerfile=False, skip_format_transfer=False)
 
 @pytest.mark.xfail()
 def test_bad_target_option():
     ''' test create-dockerfile with a invalid target option'''
-    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, BADOPT,
-    	execute=False, skip_format_transfer=False)
+    create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET, execute=False, force_dockerfile=False, skip_format_transfer=False)
 
 @pytest.mark.xfail()
 def test_bad_yamlpath_option():
-    ''' test create-dockerfile with a invalid target option'''
-    create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET,
-    	execute=False, skip_format_transfer=False)
-
+    ''' test create-dockerfile with a invalid yaml option'''
+    create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET, execute=False, force_dockerfile=False, skip_format_transfer=False)
 
 def test_no_op_platform():
     '''test create-dockerfile will do nothing if non-container platform is given'''
     if Path(os.getcwd()+"/tmp").exists():
         rmtree(os.getcwd()+"/tmp") # clear out any past runs
     create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET,
-    	execute=False, skip_format_transfer=False)
+    	execute=False, force_dockerfile=False, skip_format_transfer=False)
     assert not Path(os.getcwd()+"/tmp").exists()
 
 # tests container build script/makefile/dockerfile creation
 def test_create_dockerfile():
     '''run create-dockerfile with options for containerized build'''
+    if Path(f"{os.getcwd()}/Dockerfile").exists():
+        Path(f"{os.getcwd()}/Dockerfile").unlink() 
+        Path(f"{os.getcwd()}/createContainer.sh").unlink()
     create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET,
-    	execute=False, skip_format_transfer=False)
+    	execute=False, force_dockerfile=False, skip_format_transfer=False)
 
 def test_container_dir_creation():
     '''check directories are created'''
@@ -105,3 +102,16 @@ def test_dockerfile_contents():
 
     line = copy_lines[2].strip().split()
     assert line == ["COPY", f"tmp/{PLATFORM[0]}/execrunscript.sh", f"{MODEL_ROOT}/{EXPERIMENT}/exec/execrunscript.sh"]
+
+def test_create_dockerfile_force_dockerfile(capfd):
+    '''run create-dockerfile with force-dockerfile option'''
+    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET, execute=False, force_dockerfile=True, skip_format_transfer=False)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    if "Re-creating Dockerfile" in out:
+        assert Path("Dockerfile").exists()
+        assert Path("createContainer.sh").exists()
+        assert Path(f"tmp/{PLATFORM[0]}/execrunscript.sh").exists()
+    else:
+       assert False
