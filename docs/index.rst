@@ -8,6 +8,8 @@
 Welcome to ``fre-cli``'s documentation!
 =======================================
 
+.. role:: underline
+    :class: underline
 .. the entry in the toc must be the .rst filename.
    what shows in the webpage is the first header or title
 .. toctree::
