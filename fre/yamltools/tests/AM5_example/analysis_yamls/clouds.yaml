@@ -6,6 +6,6 @@ analysis:
     workflow:
       components: ["atmos-test"]
       cumulative: False
-      product: 't-test'
+      product: 'ts'
       script_frequency: *PP_AMIP_CHUNK96
       switch: True

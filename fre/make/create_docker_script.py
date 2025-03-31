@@ -7,7 +7,7 @@ import sys
 import subprocess
 from pathlib import Path
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,cd):
     """
@@ -35,10 +35,11 @@ def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,c
     dockerBuild.createBuildScript(cb, cr)
     print(f"    Container build script created here: {dockerBuild.userScriptPath}\n")
 
-def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
+def dockerfile_create(yamlfile, platform, target, execute, force_dockerfile, skip_format_transfer):
     """
     Create the Dockerfile
     """
+
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -48,18 +49,22 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
     yml = yamlfile
     name = yamlfile.split(".")[0]
 
-    # Combined compile yaml file
-    combined = Path(f"combined-{name}.yaml")
+#    # Combined compile yaml file
+#    combined = Path(f"combined-{name}.yaml")
 
-    ## If combined yaml exists, note message of its existence
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
+    # Combine model, compile, and platform yamls
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined)
+    fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined,freVars)
+    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
@@ -115,6 +120,15 @@ def dockerfile_create(yamlfile,platform,target,execute,force_dockerfile):
                     else:
                         print(f"Dockerfile PREVIOUSLY created here: {curr_dir}/Dockerfile")
                         print(f"Container build script created here: {curr_dir}/createContainer.sh\n")
+
+                dockerBuild.writeRunscript(platform["RUNenv"],platform["containerRun"],tmpDir+"/execrunscript.sh")
+                currDir = os.getcwd()
+
+                # create build script for container
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], skip_format_transfer)
+                print("\ntmpDir created in " + currDir + "/tmp") #was click.echo and a few lines above
+                print("Dockerfile created in " + currDir +"\n") #was click.echo and a few lines above
+                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 # Execute if flag is given
                 if execute:

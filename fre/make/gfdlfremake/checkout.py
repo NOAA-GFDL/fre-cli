@@ -113,7 +113,7 @@ class checkout():
         else:
             for c in y['src']:
                 if c['additionalInstructions']!="":
-                    self.checkoutScript.write(c['additionalInstructions']!="")
+                    self.checkoutScript.write(c['additionalInstructions'])
 
             self.checkoutScript.close()
 

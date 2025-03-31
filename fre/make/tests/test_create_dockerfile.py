@@ -9,7 +9,7 @@ from click.testing import CliRunner
 import pytest
 
 from fre import fre
-from fre.make import create_docker_script 
+from fre.make import create_docker_script
 
 runner=CliRunner()
 
@@ -40,23 +40,24 @@ def test_platformyaml_exists():
 @pytest.mark.xfail()
 def test_bad_platform_option():
     ''' test -fremake with a invalid platform option'''
-    create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET, False, False)
+    create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET, execute=False, force_dockerfile=False, skip_format_transfer=False)
 
 @pytest.mark.xfail()
 def test_bad_target_option():
     ''' test create-dockerfile with a invalid target option'''
-    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, BADOPT, False, False)
+    create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET, execute=False, force_dockerfile=False, skip_format_transfer=False)
 
 @pytest.mark.xfail()
 def test_bad_yamlpath_option():
     ''' test create-dockerfile with a invalid yaml option'''
-    create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET, False, False)
+    create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET, execute=False, force_dockerfile=False, skip_format_transfer=False)
 
 def test_no_op_platform():
     '''test create-dockerfile will do nothing if non-container platform is given'''
     if Path(os.getcwd()+"/tmp").exists():
         rmtree(os.getcwd()+"/tmp") # clear out any past runs
-    create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET, False, False)
+    create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET,
+    	execute=False, force_dockerfile=False, skip_format_transfer=False)
     assert not Path(os.getcwd()+"/tmp").exists()
 
 # tests container build script/makefile/dockerfile creation
@@ -65,7 +66,8 @@ def test_create_dockerfile():
     if Path(f"{os.getcwd()}/Dockerfile").exists():
         Path(f"{os.getcwd()}/Dockerfile").unlink() 
         Path(f"{os.getcwd()}/createContainer.sh").unlink()
-    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET, False, False)
+    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET,
+    	execute=False, force_dockerfile=False, skip_format_transfer=False)
 
 def test_container_dir_creation():
     '''check directories are created'''
@@ -86,7 +88,7 @@ def test_dockerfile_creation():
 def test_dockerfile_contents():
     ''' checks dockerfile contents from previous test'''
 
-    # for simplicity's sake just checks COPY commands for created files on the host 
+    # for simplicity's sake just checks COPY commands for created files on the host
     with open('Dockerfile', 'r') as f:
         lines = f.readlines()
     assert len(lines) > 2
@@ -103,7 +105,7 @@ def test_dockerfile_contents():
 
 def test_create_dockerfile_force_dockerfile(capfd):
     '''run create-dockerfile with force-dockerfile option'''
-    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET, False, True)
+    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET, execute=False, force_dockerfile=True, skip_format_transfer=False)
 
     #Capture output
     out,err=capfd.readouterr()
