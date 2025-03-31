@@ -98,7 +98,8 @@ def dockerfile_create(yamlfile, platform, target, execute, force_dockerfile, ski
                                            td = tmp_dir,
                                            cr = platform["containerRun"],
                                            cb = platform["containerBuild"],
-                                           cd = curr_dir)
+                                           cd = curr_dir,
+                                           skip_format_transfer = skip_format_transfer)
                 else:
                     if force_dockerfile:
                         # Remove the dockerfile
@@ -116,7 +117,8 @@ def dockerfile_create(yamlfile, platform, target, execute, force_dockerfile, ski
                                                td = tmp_dir,
                                                cr = platform["containerRun"],
                                                cb = platform["containerBuild"],
-                                               cd = curr_dir)
+                                               cd = curr_dir,
+                                               skip_format_transfer = skip_format_transfer)
                     else:
                         print(f"Dockerfile PREVIOUSLY created here: {curr_dir}/Dockerfile")
                         print(f"Container build script created here: {curr_dir}/createContainer.sh\n")
