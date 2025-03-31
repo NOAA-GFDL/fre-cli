@@ -123,15 +123,6 @@ def dockerfile_create(yamlfile, platform, target, execute, force_dockerfile, ski
                         print(f"Dockerfile PREVIOUSLY created here: {curr_dir}/Dockerfile")
                         print(f"Container build script created here: {curr_dir}/createContainer.sh\n")
 
-                dockerBuild.writeRunscript(platform["RUNenv"],platform["containerRun"],tmpDir+"/execrunscript.sh")
-                currDir = os.getcwd()
-
-                # create build script for container
-                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], skip_format_transfer)
-                print("\ntmpDir created in " + currDir + "/tmp") #was click.echo and a few lines above
-                print("Dockerfile created in " + currDir +"\n") #was click.echo and a few lines above
-                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
-
                 # Execute if flag is given
                 if execute:
                     try:
