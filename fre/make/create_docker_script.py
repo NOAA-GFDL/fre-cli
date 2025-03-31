@@ -9,7 +9,7 @@ from pathlib import Path
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls_script as cy
 
-def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,cd):
+def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,cd,skip_format_transfer):
     """
     Go through steps to write the Dockerfile
     """
@@ -32,7 +32,7 @@ def dockerfile_write_steps(yaml_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,c
     print(f"    Dockerfile created here: {cd}/Dockerfile")
 
     # Create build script for container
-    dockerBuild.createBuildScript(cb, cr)
+    dockerBuild.createBuildScript(cb, cr, skip_format_transfer)
     print(f"    Container build script created here: {dockerBuild.userScriptPath}\n")
 
 def dockerfile_create(yamlfile, platform, target, execute, force_dockerfile, skip_format_transfer):
