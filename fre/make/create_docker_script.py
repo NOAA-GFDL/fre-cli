@@ -8,9 +8,9 @@ import subprocess
 from pathlib import Path
 
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
-def dockerfile_create(yamlfile, platform, target, execute):
+def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer):
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
@@ -21,18 +21,22 @@ def dockerfile_create(yamlfile, platform, target, execute):
     name = yamlfile.split(".")[0]
     run = execute
 
-    # Combined compile yaml file
-    combined = Path(f"combined-{name}.yaml")
+#    # Combined compile yaml file
+#    combined = Path(f"combined-{name}.yaml")
 
-    ## If combined yaml exists, note message of its existence
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
+    # Combine model, compile, and platform yamls
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined)
+    fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined,freVars)
+    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
@@ -72,7 +76,7 @@ def dockerfile_create(yamlfile, platform, target, execute):
                 currDir = os.getcwd()
 
                 # create build script for container
-                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"])
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], skip_format_transfer)
                 print("\ntmpDir created in " + currDir + "/tmp") #was click.echo and a few lines above
                 print("Dockerfile created in " + currDir +"\n") #was click.echo and a few lines above
                 print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")

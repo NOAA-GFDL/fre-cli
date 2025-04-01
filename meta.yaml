@@ -21,10 +21,10 @@ channels:
 
 requirements:
   host:
-    - python>=3.9
+    - python==3.10
     - pip
   run:
-    - python>=3.9
+    - python==3.10
     - pip
     - click
     - pyyaml
@@ -38,7 +38,6 @@ requirements:
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
     - conda-forge::cmor>=3.9.0
-    - conda-forge::cylc-uiserver
     - conda-forge::pytest
     - conda-forge::pytest-cov
     - conda-forge::python-cdo
@@ -52,13 +51,15 @@ test:
     - pytest-cov
   source_files:
     - fre/
+  files:
+    - mkmf/templates/linux-ubuntu-xenial-gnu.mk
   imports:
     - fre
     - fre.app
     - fre.catalog
     - fre.check
     - fre.cmor
-    - fre.list
+    - fre.list_
     - fre.make
     - fre.pp
     - fre.run

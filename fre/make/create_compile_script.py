@@ -4,12 +4,14 @@ Create the compile script to compile model
 import os
 import sys
 import logging
+fre_logger = logging.getLogger(__name__)
+
 from pathlib import Path
 from multiprocessing.dummy import Pool
 import subprocess
 
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,modules,modulesInit,jobs):
     """
@@ -44,9 +46,9 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
     jobs = str(jobs)
 
     if verbose:
-      logging.basicConfig(level=logging.INFO)
+        fre_logger.setLevel(level=logging.DEBUG)
     else:
-      logging.basicConfig(level=logging.ERROR)
+        fre_logger.setLevel(level=logging.INFO)
 
     src_dir="src"
     checkout_script_name = "checkout.sh"
@@ -57,32 +59,36 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
     tlist = target
 
     # Combined compile yaml file
-    combined = Path(f"combined-{name}.yaml")
+    # combined = Path(f"combined-{name}.yaml")
 
-    ## If combined yaml exists, note message of its existence
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
+    # Combine model, compile, and platform yamls
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
+    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    modelYaml = yamlfre.freyaml(full_combined, fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
     for targetName in tlist:
-         target = targetfre.fretarget(targetName)
+        target = targetfre.fretarget(targetName)
 
     fremakeBuildList = []
     ## Loop through platforms and targets
     for platformName in plist:
-      for targetName in tlist:
-         target = targetfre.fretarget(targetName)
-         if modelYaml.platforms.hasPlatform(platformName):
-              pass
-         else:
-              raise ValueError (f"{platformName} does not exist in platforms.yaml")
+        for targetName in tlist:
+            target = targetfre.fretarget(targetName)
+            if modelYaml.platforms.hasPlatform(platformName):
+                pass
+            else:
+                raise ValueError(f"{platformName} does not exist in platforms.yaml")
 
          platform=modelYaml.platforms.getPlatformFromName(platformName)
          ## Make the bldDir based on the modelRoot, the platform, and the target

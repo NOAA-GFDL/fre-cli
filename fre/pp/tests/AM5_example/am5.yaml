@@ -43,64 +43,13 @@ build:
   compileYaml: "compile.yaml"
   platformYaml: "yaml_include/platforms.yaml"
 
-
-shared:
-  # directories shared across tools
-  directories: &shared_directories
-    history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
-    pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
-    analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
-    ptmp_dir:     "/xtmp/$USER/ptmp"
-    fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
-
-  # shared pp settings
-  postprocess: 
-    settings: &shared_settings
-      history_segment:    "P1Y"
-      site:               "ppan"
-    switches: &shared_switches
-      do_statics:         True
-      do_timeavgs:        True
-      clean_work:         True
-      do_refinediag:      False
-      do_atmos_plevel_masking: True
-      do_preanalysis:     False
-      do_analysis:        True
-
 experiments:
   - name: "c96L65_am5f7b12r1_amip"
     pp:
+      - "yaml_include/settings.yaml"
       - "yaml_include/pp.c96_amip.yaml"
       - "yaml_include/pp-test.c96_amip.yaml"
   - name: "c96L65_am5f7b12r1_pdclim1850F"
     pp:
+      - "yaml_include/settings.yaml"
       - "yaml_include/pp.c96_clim.yaml"
-  - name: "c96L65_am5f7b12r1_pdclim2010F"
-    pp:
-      - "yaml_include/pp.c96_clim.yaml"
-  - name: "c96L65_am5f7b12r1_pdclim2010AERF"
-    pp:
-      - "yaml_include/pp.c96_clim.yaml"
-  - name: "c384L65_am5f7b12r1_amip"
-    pp:
-      - "yaml_include/pp.c384_amip.yaml"
-  - name: "c384L65_am5f7b12r1_pdclim2010F"
-    pp:
-      - "yaml_include/pp.c384_clim.yaml"
-  - name: "c384L65_am5f7b12r1_pdclim1850F"
-    pp:
-      - "yaml_include/pp.c384_clim.yaml"
-  - name: "c384L65_am5f7b12r1_pdclim2010AERF"
-    pp:
-      - "yaml_include/pp.c384_clim.yaml"
-  - name: "c384L65_am5f7b12r1_OM4_p25_piControl_noBLING_DynVeg"
-    pp:
-      - "yaml_include/pp.c384_amip.yaml"
-      - "yaml_include/pp.om4.yaml"
-  - name: "c96L65_am5f7b12r1_OM4_p25_piControl_noBLING_DynVeg"
-    pp:
-      - "yaml_include/pp.c96_amip.yaml"
-      - "yaml_include/pp.om4.yaml"
-  - name: "c96L65_am5f7b12r1_amip_cosp"
-    pp:
-      - "yaml_include/pp.c96_amip.yaml"

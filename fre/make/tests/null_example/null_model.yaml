@@ -11,5 +11,27 @@ build:
   compileYaml:  "compile.yaml"
   platformYaml: "platforms.yaml"
 
+shared:                                                                                                        # directories shared across tools
+  directories: &shared_directories
+    history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
+    pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
+    analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
+
+  # shared pp settings
+  postprocess:
+    settings: &shared_settings
+      site:               "ppan"
+    switches: &shared_switches
+      clean_work:         True
+      do_refinediag:      False
+      do_analysis:        True
+
 experiments:
   - name: "null_model_full"
+    pp:
+  - name: "null_model_0"
+    pp:
+  - name: "null_model_1"
+    pp:
+  - name: "null_model_2"
+    pp:
