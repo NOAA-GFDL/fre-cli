@@ -82,6 +82,8 @@ def test_run_fremake_container_build():
 @pytest.mark.skipif(not has_podman, reason="missing podman")
 def test_run_fremake_container_build_notransfer():
     ''' checks image creation with the .sif transfer turned off '''
+    if Path("createContainer.sh").exists():
+        os.remove("createContainer.sh")
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
         no_format_transfer=True, execute=True, verbose=VERBOSE)
