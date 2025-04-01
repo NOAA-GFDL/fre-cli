@@ -90,46 +90,46 @@ def compile_create(yamlfile,platform,target,jobs,parallel,execute,verbose,force_
             else:
                 raise ValueError(f"{platformName} does not exist in platforms.yaml")
 
-         platform=modelYaml.platforms.getPlatformFromName(platformName)
-         ## Make the bldDir based on the modelRoot, the platform, and the target
-         src_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
-         ## Check for type of build
-         if platform["container"] is False:
-              baremetalRun = True
-              bld_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
-              os.system("mkdir -p " + bld_dir)
-              if not os.path.exists(bld_dir+"/compile.sh"):
-                  print("\nCreating the compile script...")
-                  fremakeBuild = compile_script_write_steps(yaml_obj = fremakeYaml,
-                                                            mkTemplate = platform["mkTemplate"],
-                                                            src_dir = src_dir,
-                                                            bld_dir = bld_dir,
-                                                            target = target,
-                                                            modules = platform["modules"],
-                                                            modulesInit = platform["modulesInit"],
-                                                            jobs = jobs)
-                  # Append the compile script created
-                  fremakeBuildList.append(fremakeBuild)
-              else:
-                  if force_compile:
-                      # Remove compile script
-                      os.remove(bld_dir + "/compile.sh")
-                      # Re-create compile script
-                      print("\nRe-creating the compile script...")
-                      fremakeBuild = compile_script_write_steps(yaml_obj = fremakeYaml,
-                                                                mkTemplate = platform["mkTemplate"],
-                                                                src_dir = src_dir,
-                                                                bld_dir = bld_dir,
-                                                                target = target,
-                                                                modules = platform["modules"],
-                                                                modulesInit = platform["modulesInit"],
-                                                                jobs = jobs)
-                      # Append the returned compile script created
-                      fremakeBuildList.append(fremakeBuild)
-                  else:
-                      print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
-                      # Append the compile script
-                      fremakeBuildList.append(f"{bld_dir}/compile.sh")
+            platform=modelYaml.platforms.getPlatformFromName(platformName)
+            ## Make the bldDir based on the modelRoot, the platform, and the target
+            src_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
+            ## Check for type of build
+            if platform["container"] is False:
+                baremetalRun = True
+                bld_dir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
+                os.system("mkdir -p " + bld_dir)
+                if not os.path.exists(bld_dir+"/compile.sh"):
+                    print("\nCreating the compile script...")
+                    fremakeBuild = compile_script_write_steps(yaml_obj = fremakeYaml,
+                                                              mkTemplate = platform["mkTemplate"],
+                                                              src_dir = src_dir,
+                                                              bld_dir = bld_dir,
+                                                              target = target,
+                                                              modules = platform["modules"],
+                                                              modulesInit = platform["modulesInit"],
+                                                              jobs = jobs)
+                    # Append the compile script created
+                    fremakeBuildList.append(fremakeBuild)
+                else:
+                    if force_compile:
+                        # Remove compile script
+                        os.remove(bld_dir + "/compile.sh")
+                        # Re-create compile script
+                        print("\nRe-creating the compile script...")
+                        fremakeBuild = compile_script_write_steps(yaml_obj = fremakeYaml,
+                                                                  mkTemplate = platform["mkTemplate"],
+                                                                  src_dir = src_dir,
+                                                                  bld_dir = bld_dir,
+                                                                  target = target,
+                                                                  modules = platform["modules"],
+                                                                  modulesInit = platform["modulesInit"],
+                                                                  jobs = jobs)
+                        # Append the returned compile script created
+                        fremakeBuildList.append(fremakeBuild)
+                    else:
+                        print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
+                        # Append the compile script
+                        fremakeBuildList.append(f"{bld_dir}/compile.sh")
 
     if execute:
         if baremetalRun:
