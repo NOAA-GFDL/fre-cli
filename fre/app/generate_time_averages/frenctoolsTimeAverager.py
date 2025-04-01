@@ -21,9 +21,6 @@ class frenctoolsTimeAverager(timeAverager):
         if self.unwgt:
             print('WARNING: unwgt=True unsupported by frenctoolsAverager. ignoring!!!')
 
-        if self.stddev_type is not None:
-            print('WARNING: stddev_type arg unsupported by frenctoolsTimeAverager. ignoring!!!')
-
         if self.var is not None:
             print(f'WARNING: variable specification (var={self.var})' + \
                    ' not currently supported for frenctols time averaging. ignoring!')
@@ -38,8 +35,7 @@ class frenctoolsTimeAverager(timeAverager):
 
         from subprocess import Popen, PIPE
 
-        precision='-r8'
-        timavgcsh_command=['timavg.csh', precision, '-mb','-o', outfile, infile]
+        timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
         exitstatus=1
         with Popen(timavgcsh_command,
                    stdout=PIPE, stderr=PIPE, shell=False) as subp:

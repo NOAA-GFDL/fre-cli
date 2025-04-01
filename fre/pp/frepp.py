@@ -1,20 +1,23 @@
 ''' fre pp '''
 
 import click
+import logging
+fre_logger = logging.getLogger(__name__)
 
 from fre.pp import checkout_script
 from fre.pp import configure_script_yaml
 from fre.pp import configure_script_xml
 from fre.pp import validate_script
+from fre.pp import histval_script
 from fre.pp import install_script
 from fre.pp import run_script
+from fre.pp import nccheck_script
 from fre.pp import trigger_script
 from fre.pp import status_script
 from fre.pp import wrapper_script
 
-
 # fre pp
-@click.group(help=click.style(" - access fre pp subcommands", fg=(57,139,210)))
+@click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
 def pp_cli():
     ''' entry point to fre pp click commands '''
 
@@ -45,9 +48,15 @@ def status(experiment, platform, target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-def run(experiment, platform, target):
+@click.option("--pause", is_flag=True, default=False,
+              help="Pause the workflow immediately on start up",
+              required=False)
+@click.option("--no_wait", is_flag=True, default=False,
+              help="after submission, do not wait to ping the scheduler and confirm success",
+              required=False)
+def run(experiment, platform, target, pause, no_wait):
     """ - Run PP configuration"""
-    run_script.pp_run_subtool(experiment, platform, target)
+    run_script.pp_run_subtool(experiment, platform, target, pause, no_wait)
 
 # fre pp validate
 @pp_cli.command()
@@ -170,6 +179,23 @@ def configure_xml(xml, platform, target, experiment, do_analysis, historydir, re
     configure_script_xml.convert(xml, platform, target, experiment, do_analysis, historydir, refinedir,
                                  ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual)
 
+#fre pp nccheck
+@pp_cli.command()
+@click.option("--file_path", "-f", type=str, required=True, help="Path to netCDF (.nc) file")
+@click.option("--num_steps", "-n", type=str, required=True, help="Number of expected timesteps")
+def nccheck(file_path, num_steps):
+    """ - Check that a netCDF (.nc) file contains expected number of timesteps - """
+    nccheck_script.check(file_path,num_steps)
+
+#fre pp histval
+@pp_cli.command()
+@click.option('--history','-hist', required=True, help="Path to directory containing history files")
+@click.option('--date_string','-d', required=True, help="Date string as written in netCDF (.nc) filename")
+@click.option('--warn', '-w', is_flag=True, default=False, help="Warn mode. Instead of raising an error, a warning will be printed in the fre log if no diag manifest files are present")
+def histval(history,date_string,warn):
+    """ Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps for all files in that directory """
+    histval_script.validate(history,date_string,warn)
+
 #fre pp wrapper
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
@@ -192,9 +218,9 @@ def configure_xml(xml, platform, target, experiment, do_analysis, historydir, re
               help="Time whose history files are ready")
 def wrapper(experiment, platform, target, config_file, branch, time):
     """ - Execute fre pp steps in order """
-    print('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
+    fre_logger.info('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
-    print('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
+    fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,

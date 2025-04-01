@@ -5,12 +5,14 @@ fre make is used to create, run and checkout code, and compile a model.
 
 import os
 import logging
+fre_logger = logging.getLogger(__name__)
+
 from multiprocessing.dummy import Pool
 from pathlib import Path
 
 import subprocess
 import shutil
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
@@ -61,7 +63,7 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
     compile_script = f"{bld_dir}/compile.sh" 
     return compile_script
 
-def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,cd):
+def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,cd,no_format_transfer):
     """
     Go through steps to create Dockerfile and container build script.
     """
@@ -85,10 +87,10 @@ def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,s
     print(f"    Dockerfile created here: {cd}/Dockerfile")
 
     # Create build script for container
-    dockerBuild.createBuildScript(cb, cr)
+    dockerBuild.createBuildScript(cb, cr, skip_format_transfer=no_format_transfer)
     print(f"    Container build script created here: {dockerBuild.userScriptPath}\n")
 
-def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose,force_checkout,force_compile,force_dockerfile):
+def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,no_format_transfer,execute,verbose,force_checkout,force_compile,force_dockerfile):
     ''' run fremake via click'''
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -102,9 +104,9 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
         pc = " &"
 
     if verbose:
-        logging.basicConfig(level=logging.INFO)
+        fre_logger.setLevel(level = logging.DEBUG)
     else:
-        logging.basicConfig(level=logging.ERROR)
+        fre_logger.setLevel(level = logging.INFO)
 
     #### Main
     #srcDir="src"
@@ -115,21 +117,22 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
     plist = platform
     tlist = target
 
-    # If force-checkout defined: re-combine model, compile, and platform yamls
-    if force_checkout:
-        comb = cy.init_compile_yaml(yml,platform,target)
-        full_combined = cy.get_combined_compileyaml(comb)
-    else:
-        ## If combined yaml exists, note message of its existence
-        ## If combined yaml does not exist, combine model, compile, and platform yamls
-        combined = Path(f"combined-{name}.yaml")
-        full_combined = cy.combined_compile_existcheck(combined,yml,platform,target)
+#    # Combined compile yaml file
+#    combined = Path(f"combined-{name}.yaml")
+
+    # Combine model, compile, and platform yamls
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined)
+    fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined, freVars)
+    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     ## Error checking the targets
@@ -198,6 +201,16 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                           f'{platformName}-{target.gettargetName()}/exec'
                 os.system("mkdir -p " + bld_dir)
 
+                # check if mkTemplate has a / indicating it is a path
+                # if its not, prepend the template name with the mkmf submodule directory
+                if "/" not in platform["mkTemplate"]:
+                    topdir = Path(__file__).resolve().parents[2]
+                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
+                    if not Path(templatePath).exists():
+                        raise ValueError (f"Error with mkmf template. Created path from given file name: {templatePath} does not exist.")
+                else:
+                    templatePath = platform["mkTemplate"]
+
                 ## Create the Makefile
                 freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
                                                    libs = fremakeYaml["baremetal_linkerflags"],
@@ -208,7 +221,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                 # Loop through components, send component name/requires/overrides for Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'],c['requires'],c['makeOverrides'])
-                print("\nMakefile created here: " + bld_dir + "/Makefile")# + "\n")
+                logging.info("\nMakefile created here: " + bld_dir + "/Makefile" + "\n")
                 freMakefile.writeMakefile()
 
                 if not os.path.exists(bld_dir+"/compile.sh"):
@@ -239,7 +252,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                                    jobs = jobs)
                         fremakeBuildList.append(fremakeBuild)
                     else:
-                        print("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
+                        logging.info("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
                         fremakeBuildList.append(f"{bld_dir}/compile.sh")
             else:
                 ###################### container stuff below #######################################
@@ -304,7 +317,7 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                         print("\nRemoving previously made dockerfile")
                         os.remove(curr_dir+"/Dockerfile")
 
-                        # Create the checkout script
+                        # Create the dockerfile script
                         print("Re-creating Dockerfile...")
                         dockerfile_write_steps(yaml_obj = fremakeYaml,
                                                makefile_obj = freMakefile,
@@ -316,7 +329,8 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,exec
                                                s2i = stage2image,
                                                cr = platform["containerRun"],
                                                cb = platform["containerBuild"],
-                                               cd = curr_dir)
+                                               cd = curr_dir,
+                                               no_format_transfer = no_format_transfer)
                     else:
                         print(f"Dockerfile PREVIOUSLY created here: {curr_dir}/Dockerfile")
                         print(f"Container build script created here: {curr_dir}/createContainer.sh\n")

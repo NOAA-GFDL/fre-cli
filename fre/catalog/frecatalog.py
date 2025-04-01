@@ -10,7 +10,7 @@ from catalogbuilder.scripts import test_catalog
 from catalogbuilder.scripts import combine_cats
 
 
-@click.group(help=click.style(" - access fre catalog subcommands", fg=(64,94,213)))
+@click.group(help=click.style(" - catalog subcommands", fg=(64,94,213)))
 def catalog_cli():
     ''' entry point for click into fre catalog cli calls '''
 
