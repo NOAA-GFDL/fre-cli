@@ -96,7 +96,7 @@ def make_cli():
               "--force-dockerfile",
               is_flag=True,
               help = FORCE_DOCKERFILE_OPT_HELP)
-def run_fremake(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, execute, verbose, force_checkout, force_compile, force_dockerfile):
+def run_fremake(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout, force_compile, force_dockerfile):
     """
     - Perform all fremake functions to run checkout and compile model\n
     - For --target use: Predefined targets refer to groups of directives that exist in the mkmf template file.\n
