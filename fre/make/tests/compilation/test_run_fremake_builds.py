@@ -84,4 +84,4 @@ def test_run_fremake_container_build_notransfer():
     ''' checks image creation with the .sif transfer turned off '''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
-        no_format_transfer=False, execute=True, verbose=VERBOSE)
+        no_format_transfer=True, execute=True, verbose=VERBOSE)

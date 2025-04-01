@@ -35,6 +35,7 @@ def test_checkout_script_exists():
     """
     Make sure checkout file exists
     """
+    os.environ["TEST_BUILD_DIR"] = OUT # env vars seem to be carrying over from other tests, need to set it again
     shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
     create_checkout_script.checkout_create(YAMLFILE,
                                            PLATFORM,
