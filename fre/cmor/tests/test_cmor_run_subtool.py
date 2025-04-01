@@ -4,11 +4,8 @@ import shutil
 from pathlib import Path
 from datetime import date
 
-#import fre
-#from fre import cmor
 from fre.cmor import cmor_run_subtool
 
-import subprocess
 
 # where are we? we're running pytest from the base directory of this repo
 ROOTDIR = 'fre/tests/test_files'
@@ -97,7 +94,8 @@ def test_fre_cmor_run_subtool_case1(capfd):
         json_var_list = VARLIST,
         json_table_config = TABLE_CONFIG,
         json_exp_config = EXP_CONFIG,
-        outdir = OUTDIR
+        outdir = OUTDIR,
+        run_one_mode = True
     )
 
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
@@ -149,7 +147,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
 
 # FYI, but again, helpful for tests
 FILENAME_DIFF = \
-    'ocean_monthly_1x1deg.199307-199308.sosV2.nc'
+    'reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc'
 FULL_INPUTFILE_DIFF = \
     f"{INDIR}/{FILENAME_DIFF}"
 VARLIST_DIFF = \
@@ -217,7 +215,8 @@ def test_fre_cmor_run_subtool_case2(capfd):
         json_var_list = VARLIST_DIFF,
         json_table_config = TABLE_CONFIG,
         json_exp_config = EXP_CONFIG,
-        outdir = OUTDIR
+        outdir = OUTDIR,
+        run_one_mode = True
     )
 
     # check we ran on the right input file.

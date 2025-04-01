@@ -1,0 +1,1214 @@
+---
+title: ESM4.5v06_om5b08_cobv3_meke_final_piC_canopy_modern
+base_date: 1 1 1 0 0 0
+diag_files:
+- file_name: atmos_month
+  freq: 1
+  freq_units: months
+  time_units: days
+  unlimdim: time
+  new_file_freq:
+  new_file_freq_units:
+  start_time:
+  file_duration:
+  file_duration_units:
+  number_of_timelevels: 3
+  number_of_tiles: 2
+  varlist:
+  - module: dynamics
+    var_name: bk
+    reduction: none
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: phalf
+  - module: dynamics
+    var_name: pk
+    reduction: none
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: phalf
+  - module: flux
+    var_name: land_mask
+    reduction: none
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: grid_yt grid_xt
+  - module: dynamics
+    var_name: zsurf
+    reduction: none
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: grid_yt grid_xt
+  - module: dynamics
+    var_name: ps
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: dynamics
+    var_name: temp
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: ucomp
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: vcomp
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: sphum
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: omega
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: cld_amt
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: liq_wat
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: ice_wat
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: liq_drp
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: slp
+    reduction: average
+    kind: r4
+    output_name: slp_dyn
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: vert_turb
+    var_name: z_full
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: flux
+    var_name: ice_mask
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: lwflx
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: alb_sfc
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: lwup_sfc_clr
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: swdn_toa_clr
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: qo3_col
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: cloudrad
+    var_name: high_cld_amt
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: cloudrad
+    var_name: low_cld_amt
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: cloudrad
+    var_name: mid_cld_amt
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: cloudrad
+    var_name: reff_modis
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: cloudrad
+    var_name: reff_modis2
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: strat
+    var_name: droplets
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: strat
+    var_name: aliq
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: vert_turb
+    var_name: z_pbl
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: vert_turb
+    var_name: z_Ri_025
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: precip
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: prec_conv
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: prec_ls
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: snow_tot
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: snow_conv
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: snow_ls
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: WVP
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: LWP
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: IWP
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: WP_all_clouds
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: moist
+    var_name: IWP_all_clouds
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: cloudrad
+    var_name: tot_cld_amt
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: slp
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: evap
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: shflx
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: t_surf
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: t_ref
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: q_ref
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: u_ref
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: v_ref
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: wind_ref
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: rh_ref
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: tau_x
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: flux
+    var_name: tau_y
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: lwdn_sfc
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: lwup_sfc
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: swdn_sfc
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: swup_sfc
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: olr
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: swdn_toa
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: swup_toa
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: lwdn_sfc_clr
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: swdn_sfc_clr
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: swup_sfc_clr
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: olr_clr
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: radiation
+    var_name: swup_toa_clr
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time grid_yt grid_xt
+  - module: dynamics
+    var_name: rainwat
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: snowwat
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: graupel
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  - module: dynamics
+    var_name: ice_num
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time pfull grid_yt grid_xt
+  sub_region:
+  - grid_type:
+    tile:
+    corner1:
+    corner2:
+    corner3:
+    corner4:
+  global_meta:
+  - {}
+- file_name: ocean_cobalt_btm
+  freq: 1
+  freq_units: months
+  time_units: days
+  unlimdim: time
+  new_file_freq:
+  new_file_freq_units:
+  start_time:
+  file_duration:
+  file_duration_units:
+  number_of_timelevels: 1
+  number_of_tiles: 1
+  varlist:
+  - module: generic_cobalt
+    var_name: btm_temp
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: btm_o2
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: ffetot_btm
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: ffe_sed
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: ffe_geotherm
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: flithdet_btm
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fntot_btm
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fptot_btm
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fsitot_btm
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fcadet_arag_btm
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fcadet_calc_btm
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fcased_burial
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fcased_redis
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fnfeso4red_sed
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions:
+  - module: generic_cobalt
+    var_name: fno3denit_sed
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fnoxic_sed
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fn_burial
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fp_burial
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: cased_2d
+    reduction: average
+    kind: r4
+    output_name: cased
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: btm_co3_sol_arag
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: btm_co3_sol_calc
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: btm_co3_ion
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: btm_htotal
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fcased_redis_surfresp
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: cased_redis_coef
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: cased_redis_delz
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  sub_region:
+  - grid_type:
+    tile:
+    corner1:
+    corner2:
+    corner3:
+    corner4:
+  global_meta:
+  - {}
+- file_name: ocean_cobalt_fdet_100
+  freq: 1
+  freq_units: months
+  time_units: days
+  unlimdim: time
+  new_file_freq:
+  new_file_freq_units:
+  start_time:
+  file_duration:
+  file_duration_units:
+  number_of_timelevels: 1
+  number_of_tiles: 1
+  varlist:
+  - module: generic_cobalt
+    var_name: fntot_100
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fptot_100
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: ffetot_100
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fsitot_100
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fcadet_calc_100
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: fcadet_arag_100
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  - module: generic_cobalt
+    var_name: flithdet_100
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+  sub_region:
+  - grid_type:
+    tile:
+    corner1:
+    corner2:
+    corner3:
+    corner4:
+  global_meta:
+  - {}

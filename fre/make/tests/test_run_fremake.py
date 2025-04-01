@@ -52,24 +52,32 @@ def test_platformyaml_exists():
 @pytest.mark.xfail()
 def test_bad_platform_option():
     ''' test run-fremake with a invalid platform option'''
-    run_fremake_script.fremake_run(YAMLPATH, BADOPT, TARGET, False, 1, False, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, BADOPT, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=False,
+	no_format_transfer=False, execute=False, verbose=VERBOSE)
 
 @pytest.mark.xfail()
 def test_bad_target_option():
     ''' test run-fremake with a invalid target option'''
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT, False, 1, False, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT,
+        parallel=False, jobs=1, no_parallel_checkout=False,
+	no_format_transfer=False, execute=False, verbose=VERBOSE)
 
 @pytest.mark.xfail()
 def test_bad_yamlpath_option():
     ''' test run-fremake with a invalid target option'''
-    run_fremake_script.fremake_run(BADOPT[0], PLATFORM, TARGET, False, 1, False, False, VERBOSE)
+    run_fremake_script.fremake_run(BADOPT[0], PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=False,
+	no_format_transfer=False, execute=False, verbose=VERBOSE)
 
 # tests script/makefile creation without executing (serial compile)
 # first test runs the run-fremake command, subsequent tests check for creation of scripts
 def test_run_fremake_serial():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, False, 1, False, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=False,
+	no_format_transfer=False, execute=False, verbose=VERBOSE)
 
 def test_run_fremake_compile_script_creation_serial():
     ''' check for compile script creation from previous test '''
@@ -87,7 +95,9 @@ def test_run_fremake_makefile_creation_serial():
 def test_run_fremake_multijob():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, True, 4, True, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
+        parallel=True, jobs=4, no_parallel_checkout=True,
+	no_format_transfer=False, execute=False, verbose=VERBOSE)
 
 def test_run_fremake_compile_script_creation_multijob():
     ''' check for compile script creation from previous test '''
@@ -104,7 +114,9 @@ def test_run_fremake_makefile_creation_multijob():
 # tests container build script/makefile/dockerfile creation
 def test_run_fremake_container():
     '''run run-fremake with options for containerized build'''
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=True,
+	no_format_transfer=False, execute=False, verbose=VERBOSE)
 
 def test_run_fremake_build_script_creation_container():
     ''' checks container build script creation from previous test '''
@@ -127,29 +139,35 @@ def test_run_fremake_run_script_creation_container():
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
 
 # tests container 2 stage build script/makefile/dockerfile creation
-def test_run_fremake_container():
+def test_run_fremake_container_2stage():
     '''run run-fremake with options for containerized build'''
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET, False, 1, True, False, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=True,
+	no_format_transfer=False, execute=False, verbose=VERBOSE)
 
-def test_run_fremake_build_script_creation_container():
+def test_run_fremake_build_script_creation_container_2stage():
     ''' checks container build script creation from previous test '''
     assert Path("createContainer.sh").exists()
 
-def test_run_fremake_dockerfile_creation_container():
+def test_run_fremake_dockerfile_creation_container_2stage():
     ''' checks dockerfile creation from previous test '''
     assert Path("Dockerfile").exists()
 
-def test_run_fremake_checkout_script_creation_container():
+def test_run_fremake_checkout_script_creation_container_2stage():
     ''' checks checkout script creation from previous test '''
-    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
+    cwd = os.getcwd()
+    print(f"checking path: {cwd}/tmp/{CONTAINER_PLAT2[0]}/checkout.sh")
+    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
 
-def test_run_fremake_makefile_creation_container():
+def test_run_fremake_makefile_creation_container_2stage():
     ''' checks makefile creation from previous test '''
-    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
+    cwd = os.getcwd()
+    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
 
-def test_run_fremake_run_script_creation_container():
+def test_run_fremake_run_script_creation_container_2stage():
     ''' checks (internal) container run script creation from previous test '''
-    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
+    cwd = os.getcwd()
+    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
 
 # tests for builds with multiple targets
 

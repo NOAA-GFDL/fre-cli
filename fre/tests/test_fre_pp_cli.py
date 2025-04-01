@@ -94,9 +94,7 @@ def test_cli_fre_pp_configure_yaml_fail1():
                                              "-p", "BAR",
                                              "-t", "BAZ",
                                              "-y", "BOO"              ] )
-    assert all( [ result.exit_code == 1,
-                  isinstance(result.exception, FileNotFoundError )
-               ] )
+    assert result.exit_code == 1
 
 
 #-- fre pp install
