@@ -310,7 +310,9 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,no_f
                                            td = tmp_dir,
                                            cr = platform["containerRun"],
                                            cb = platform["containerBuild"],
-                                           cd = curr_dir)
+                                           cd = curr_dir,
+                                           no_format_transfer = no_transfer_format)
+
                 else:
                     if force_dockerfile or force_checkout:
                         # Remove the dockerfile

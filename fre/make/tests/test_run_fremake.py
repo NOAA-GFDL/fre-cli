@@ -217,7 +217,10 @@ def test_run_fremake_run_script_creation_container_2stage():
 
 def test_run_fremake_container_force_checkout(capfd):
     '''run run-fremake with options for containerized build with force-checkout option'''
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, False, VERBOSE, True, False, False)
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=True,
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=True, force_compile=False, force_dockerfile=False)
 
     #Capture output
     out,err=capfd.readouterr()
@@ -234,7 +237,10 @@ def test_run_fremake_container_force_checkout(capfd):
 
 def test_run_fremake_container_force_dockerfile(capfd):
     '''run run-fremake with options for containerized build with force-dockerfile option'''
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, False, VERBOSE, False, False, True)
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=True,
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=True)
 
     #Capture output
     out,err=capfd.readouterr()
