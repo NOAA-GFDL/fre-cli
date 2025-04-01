@@ -41,7 +41,9 @@ def test_checkout_script_exists():
                                            TARGET,
                                            no_parallel_checkout = False,
                                            jobs = False, execute = False,
-                                           verbose = False)
+                                           verbose = False,
+                                           force_checkout = False)
+
     #assert result.exit_code == 0
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
@@ -55,7 +57,8 @@ def test_checkout_verbose():
                                            no_parallel_checkout = False,
                                            jobs = False,
                                            execute = False,
-                                           verbose = True)
+                                           verbose = True,
+                                           force_checkout = False)
 
 def test_checkout_execute():
     """
@@ -68,7 +71,8 @@ def test_checkout_execute():
                                            no_parallel_checkout = False,
                                            jobs = 2,
                                            execute = True,
-                                           verbose = False)
+                                           verbose = False,
+                                           force_checkout = False)
 
 def test_checkout_no_parallel_checkout():
     """
@@ -80,4 +84,5 @@ def test_checkout_no_parallel_checkout():
                                            no_parallel_checkout = True,
                                            jobs = False,
                                            execute = False,
-                                           verbose = False)
+                                           verbose = False,
+                                           force_checkout = False)

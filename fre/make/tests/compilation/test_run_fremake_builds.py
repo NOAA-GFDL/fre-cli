@@ -35,7 +35,7 @@ Path(MULTIJOB_TEST_PATH).mkdir(parents=True,exist_ok=True)
 def test_run_fremake_serial_compile():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, False, 1, False, True, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, False, 1, False, True, VERBOSE, False, False, False)
     assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # same test with a parallel build
@@ -43,12 +43,12 @@ def test_run_fremake_serial_compile():
 def test_run_fremake_multijob_compile():
     ''' test run-fremake parallel compile with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, True, 4, False, True, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET, True, 4, False, True, VERBOSE, False, False, False)
     assert Path(f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # containerized build
 @pytest.mark.skip(reason="podman fails to pull image base on CI runner")
 def test_run_fremake_container_build():
     ''' checks image creation for the container build'''
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, True, VERBOSE)
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET, False, 1, True, True, VERBOSE, False, False, False)
     assert Path("null_model_full-debug.sif").exists()
