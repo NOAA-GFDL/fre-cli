@@ -2,13 +2,9 @@
 Script parses combined yaml dictionary to list components that will be post-processed
 """
 
-# this brings in the yaml module with the join_constructor
-# this is defined in the __init__
-from fre.yamltools import *
-
+import logging
 from fre.yamltools import combine_yamls_script as cy
 
-import logging
 fre_logger = logging.getLogger(__name__)
 
 def quick_combine(yml, exp, platform, target, use, output):
