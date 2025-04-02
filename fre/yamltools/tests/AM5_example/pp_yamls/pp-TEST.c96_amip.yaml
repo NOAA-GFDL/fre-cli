@@ -14,7 +14,7 @@ postprocess:
       xyInterp: *custom_interp
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      switch: False
+      postprocess_on: False
     - type: "atmos-TEST"
       sources:
         - history_file: "atmos_month"
@@ -22,4 +22,4 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      switch: False
+      postprocess_on: False
