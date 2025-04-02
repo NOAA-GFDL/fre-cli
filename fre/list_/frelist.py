@@ -43,7 +43,7 @@ def platforms(yamlfile):
               type=str,
               help="Experiment to be post-processed",
               required=True)
-def pp_comps(yamlfile, experiment):
+def pp_components(yamlfile, experiment):
     """ - List experiments  available"""
     list_pp_components_script.list_ppcomps_subtool(yamlfile, experiment)
 
