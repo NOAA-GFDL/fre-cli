@@ -44,7 +44,7 @@ def platforms(yamlfile):
               help="Experiment to be post-processed",
               required=True)
 def pp_components(yamlfile, experiment):
-    """ - List experiments  available"""
+    """ - List components to be ppst-processed for a defined experiment"""
     list_pp_components_script.list_ppcomps_subtool(yamlfile, experiment)
 
 if __name__ == "__main__":
