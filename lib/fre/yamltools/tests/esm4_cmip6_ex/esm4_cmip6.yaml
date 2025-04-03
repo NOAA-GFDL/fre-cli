@@ -1,0 +1,62 @@
+### ---------
+## this is to try to process 
+##     /archive/lwh/ESM4/TOAR_O3RF/ESM4_TOAR_2014climo_2050ozone_v2/gfdl.ncrc5-intel22-prod-openmp/pp
+## and compare to larry's results... call(s) to test this:
+##
+## yaml combining step:
+##   fre -v yamltools combine-yamls -y fre/yamltools/tests/esm4_cmip6_ex/esm4_cmip6.yaml --use 'cmor' \
+##                                  -e ESM4_TOAR_2014climo_2050ozone_v2 -p gfdl.ncrc5-intel22 -t prod-openmp 
+## 
+## running (includes yaml combining step):
+##   fre -v cmor yaml -y fre/yamltools/tests/esm4_cmip6_ex/esm4_cmip6.yaml \
+##                    -e ESM4_TOAR_2014climo_2050ozone_v2 -p gfdl.ncrc5-intel22 -t prod-openmp
+
+# reusable variables
+fre_properties:
+  - &ESM4_VERSION    "TOAR_O3RF"
+  - &FRE_STEM        !join [ESM4/, *ESM4_VERSION]
+  
+#  - &PP_START        "000101" # 5yr, 50yr,
+  - &PP_START        "005101" # 20yr
+
+#  - &PP_STOP         "005012" # 50 yr
+  - &PP_STOP         "007012" # 5yr, 20yr
+
+#  - &PP_CHUNK_A      "P5Y"
+  - &PP_CHUNK_A      "P20Y"
+#  - &PP_CHUNK_A      "P50Y"
+  
+#  - &PP_XYINTERP     "90,144"
+  - &PP_XYINTERP     "180,288" # for cases i've spot checked at least
+#  - &PP_XYINTERP     "180,360"
+
+  # grids
+  - &GRID_SPEC         "/archive/gold/datasets/OM4_05/mosaic_c96.v20180227.tar" #site: gfdl
+
+
+build:
+  # compile information
+  compileYaml: "compile_yamls/compile.yaml"
+  platformYaml: "compile_yamls/platforms.yaml"
+
+experiments:
+  - name: "ESM4_TOAR_2014climo_v2"
+    pp:
+      - ''
+      - ''
+    cmor:
+      - ''
+
+  - name: "ESM4_TOAR_2014climo_2050ozone_v2"
+    pp:
+      - "pp_yamls/settings.yaml"
+      - "pp_yamls/pp.yaml"
+    cmor:
+      - "cmor_yamls/cmor.yaml"
+
+  - name: "ESM4_TOAR_2014climo_2050ozone_2014ods_v2"
+    pp:
+      - ''
+      - ''
+    cmor:
+      - ''
