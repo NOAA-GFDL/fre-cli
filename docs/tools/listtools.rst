@@ -14,3 +14,11 @@
    - Options:
         - `-y, --yamlfile [experiment yaml]`
 
+``pp-components``
+-----------------
+
+``fre list pp-components [options]``
+   - Purpose: Lists components that have the `postprocess_on` key set to `True` in the postprocessing yaml configurations
+   - Options:
+        - `-y, --yamlfile [experiment yaml]`
+        - `-e, --experiment [experiment to be post-processed]`
