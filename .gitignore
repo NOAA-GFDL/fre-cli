@@ -185,8 +185,7 @@ fre/tests/test_files/outdir/
 fre/app/generate_time_averages/tests/time_avg_test_files/
 fre/app/regrid_xy/tests/*/
 
-fre/make/tests/*/
-
+fre/make/tests/*_out/
 fre/pp/tests/configure_yaml_out/
 
 fre/yamltools/tests/combine_yamls_out/

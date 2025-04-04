@@ -38,11 +38,11 @@ class container():
         self.stage2base = stage2base
 
         # Set up spack loads in RUN commands in dockerfile
-        if RUNenv == "":
+        if len(RUNenv) == 1 and RUNenv[0] == "":
             self.setup = ["RUN \\ \n"]
         else:
             self.setup = ["RUN "+RUNenv[0]+" \\ \n"]
-        self.setup
+
         for env in RUNenv[1:]:
             self.setup.append(" && "+env+" \\ \n")
         if self.l:
@@ -230,9 +230,9 @@ class container():
         """
         self.userScript = ["#!/bin/bash\n"]
         self.userScript.append(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName()+"\n")
-        self.userScript.append("rm -f "+self.e+".tar "+self.e+".sif\n")
-        self.userScript.append(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
         if not skip_format_transfer:
+            self.userScript.append("rm -f "+self.e+"-"+self.target.gettargetName()+".tar "+self.e+"-"+self.target.gettargetName()+".sif\n")
+            self.userScript.append(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
             self.userScript.append(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar\n")
         self.userScriptFile = open("createContainer.sh","w")
         self.userScriptFile.writelines(self.userScript)
