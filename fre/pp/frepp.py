@@ -8,6 +8,7 @@ from fre.pp import checkout_script
 from fre.pp import configure_script_yaml
 from fre.pp import configure_script_xml
 from fre.pp import validate_script
+from fre.pp import histval_script
 from fre.pp import install_script
 from fre.pp import run_script
 from fre.pp import nccheck_script
@@ -185,6 +186,15 @@ def configure_xml(xml, platform, target, experiment, do_analysis, historydir, re
 def nccheck(file_path, num_steps):
     """ - Check that a netCDF (.nc) file contains expected number of timesteps - """
     nccheck_script.check(file_path,num_steps)
+
+#fre pp histval
+@pp_cli.command()
+@click.option('--history','-hist', required=True, help="Path to directory containing history files")
+@click.option('--date_string','-d', required=True, help="Date string as written in netCDF (.nc) filename")
+@click.option('--warn', '-w', is_flag=True, default=False, help="Warn mode. Instead of raising an error, a warning will be printed in the fre log if no diag manifest files are present")
+def histval(history,date_string,warn):
+    """ Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps for all files in that directory """
+    histval_script.validate(history,date_string,warn)
 
 #fre pp wrapper
 @pp_cli.command()
