@@ -9,9 +9,16 @@ On GFDL systems
 
 use Lmod
 --------
-If you are at GFDL (gaea, PPAN, workstations), you may skip installation by using Lmod::
+If you are at GFDL (gaea, PPAN, workstations), you may skip installation by using Lmod.
+Use `module avail fre` to list the available `fre` releases, and then `module load` the
+most recent release::
 
-  module load fre/2025.01
+  # List the available FRE modules
+  module avail fre
+
+  # Load the latest FRE (<NN> is the latest)
+  module load fre/2025.<NN>
+
   fre --help
 
 use conda
@@ -39,8 +46,8 @@ If one is not interested in contributing to FRE or developing fre-cli, the simpl
 
   conda create --name fre --channel noaa-gfdl --channel conda-forge fre-cli
 
-  # to grab a specific version, instead do:
-  conda create --name fre-202501 --channel noaa-gfdl --channel conda-forge fre-cli::2025.01
+  # to grab a specific version (where NN is the latest release), instead do:
+  conda create --name fre-2025<NN> --channel noaa-gfdl --channel conda-forge fre-cli::2025.<NN>
 
 and activate it::
 
