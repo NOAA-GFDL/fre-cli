@@ -21,7 +21,6 @@ platforms:
    - name: hpcmini.2025
      compiler: gnu 
      modelRoot: /apps
-     RUNenv: [""]
      container: True
      containerBuild: "podman"
      containerRun: "apptainer" 

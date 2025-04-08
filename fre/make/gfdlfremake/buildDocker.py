@@ -38,7 +38,7 @@ class container():
         self.stage2base = stage2base
 
         # Set up spack loads in RUN commands in dockerfile
-        if len(RUNenv) == 1 and RUNenv[0] == "":
+        if RUNenv == "":
             self.setup = ["RUN \\ \n"]
         else:
             self.setup = ["RUN "+RUNenv[0]+" \\ \n"]
