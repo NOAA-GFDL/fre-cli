@@ -132,7 +132,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                                                    libs = fremakeYaml["baremetal_linkerflags"],
                                                    srcDir = srcDir,
                                                    bldDir = bldDir,
-                                                   mkTemplatePath = platform["mkTemplate"])
+                                                   mkTemplatePath = templatePath)
 
 
                 # Loop through components, send component name/requires/overrides for Makefile
@@ -143,7 +143,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
 
                 ## Create a list of compile scripts to run in parallel
                 fremakeBuild = buildBaremetal.buildBaremetal(exp = fremakeYaml["experiment"],
-                                                             mkTemplatePath = platform["mkTemplate"],
+                                                             mkTemplatePath = templatePath,
                                                              srcDir = srcDir,
                                                              bldDir = bldDir,
                                                              target = target,
@@ -172,13 +172,19 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
                 freCheckout.finish(modelYaml.compile.getCompileYaml(),pc)
+                # check if mkTemplate has a / indicating it is a path
+                # if its not, prepend the template name with the mkmf submodule directory
+                if "/" not in platform["mkTemplate"]:
+                    templatePath = platform["modelRoot"]+"/mkmf/templates/"+platform["mkTemplate"]
+                else:
+                    templatePath = platform["mkTemplate"]
                 ## Create the makefile
                 ### Should this even be a separate class from "makefile" in makefilefre? ~ ejs
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
                                                             libs = fremakeYaml["container_addlibs"],
                                                             srcDir = srcDir,
                                                             bldDir = bldDir,
-                                                            mkTemplatePath = platform["mkTemplate"],
+                                                            mkTemplatePath = templatePath,
                                                             tmpDir = tmpDir)
 
                 # Loop through components and send the component name and requires for the Makefile
@@ -192,7 +198,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                                                     libs = fremakeYaml["container_addlibs"],
                                                     RUNenv = platform["RUNenv"],
                                                     target = target,
-                                                    mkTemplate = platform["mkTemplate"],
+                                                    mkTemplate = templatePath,
                                                     stage2base = stage2image)
                 dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
                 dockerBuild.writeDockerfileMakefile(freMakefile.getTmpDir() + "/Makefile",
