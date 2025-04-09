@@ -90,6 +90,8 @@ def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,s
     dockerBuild.createBuildScript(cb, cr, skip_format_transfer=no_format_transfer)
     print(f"    Container build script created here: {dockerBuild.userScriptPath}\n")
 
+    return dockerBuild
+
 def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,no_format_transfer,execute,verbose,force_checkout,force_compile,force_dockerfile):
     ''' run fremake via click'''
     yml = yamlfile
@@ -306,18 +308,18 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,no_f
                 curr_dir = os.getcwd()
                 if not os.path.exists(f"{curr_dir}/Dockerfile"):
                     print("Creating Dockerfile and build script...")
-                    dockerfile_write_steps(yaml_obj = fremakeYaml,
-                                           makefile_obj = freMakefile,
-                                           img = image,
-                                           run_env = platform["RUNenv"],
-                                           target = target,
-                                           mkTemplate = platform["mkTemplate"],
-                                           s2i = stage2image,
-                                           td = tmp_dir,
-                                           cr = platform["containerRun"],
-                                           cb = platform["containerBuild"],
-                                           cd = curr_dir,
-                                           no_format_transfer = no_format_transfer)
+                    dockerBuild = dockerfile_write_steps(yaml_obj = fremakeYaml,
+                                                         makefile_obj = freMakefile,
+                                                         img = image,
+                                                         run_env = platform["RUNenv"],
+                                                         target = target,
+                                                         mkTemplate = platform["mkTemplate"],
+                                                         s2i = stage2image,
+                                                         td = tmp_dir,
+                                                         cr = platform["containerRun"],
+                                                         cb = platform["containerBuild"],
+                                                         cd = curr_dir,
+                                                         no_format_transfer = no_format_transfer)
 
                 else:
                     if force_dockerfile or force_checkout:
@@ -327,18 +329,18 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,no_f
 
                         # Create the dockerfile script
                         print("Re-creating Dockerfile...")
-                        dockerfile_write_steps(yaml_obj = fremakeYaml,
-                                               makefile_obj = freMakefile,
-                                               img = image,
-                                               run_env = platform["RUNenv"],
-                                               target = target,
-                                               td = tmp_dir,
-                                               mkTemplate = platform["mkTemplate"],
-                                               s2i = stage2image,
-                                               cr = platform["containerRun"],
-                                               cb = platform["containerBuild"],
-                                               cd = curr_dir,
-                                               no_format_transfer = no_format_transfer)
+                        dockerBuild = dockerfile_write_steps(yaml_obj = fremakeYaml,
+                                                             makefile_obj = freMakefile,
+                                                             img = image,
+                                                             run_env = platform["RUNenv"],
+                                                             target = target,
+                                                             td = tmp_dir,
+                                                             mkTemplate = platform["mkTemplate"],
+                                                             s2i = stage2image,
+                                                             cr = platform["containerRun"],
+                                                             cb = platform["containerBuild"],
+                                                             cd = curr_dir,
+                                                             no_format_transfer = no_format_transfer)
                     else:
                         print(f"Dockerfile PREVIOUSLY created here: {curr_dir}/Dockerfile")
                         print(f"Container build script created here: {curr_dir}/createContainer.sh\n")
