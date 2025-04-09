@@ -189,8 +189,7 @@ def test_combined_ppyaml_validation():
     Validate the combined compile yaml
     """
     combined_yamlfile =f"{PP_OUT_DIR}/combined-{PP_EXPERIMENT}.yaml"
-    schema_dir = Path(f"{IN_DIR}/pp_yamls")
-    schema_file = os.path.join(schema_dir, 'schema.json')
+    schema_file = os.path.join(SCHEMA_DIR, "fre_pp.json")
 
     with open(combined_yamlfile,'r') as cf:
         yml = yaml.safe_load(cf)
