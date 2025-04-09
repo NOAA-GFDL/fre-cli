@@ -8,4 +8,4 @@ analysis:
       cumulative: False
       product: 'ts'
       script_frequency: 'R1'
-      switch: True
+      analysis_on: True
