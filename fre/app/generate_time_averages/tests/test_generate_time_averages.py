@@ -432,3 +432,19 @@ def test_fre_nctool_time_unwgt_avgs_stddevs():
         pkg='fre-nctools',avg_type='all',  unwgt=True )
 
 '''
+#
+def test_fre_nctools_all():
+    ''' generates a time averaged file using fre_cli's version '''
+    ''' weighted average, no std deviation '''
+    assert run_avgtype_pkg_calculations(
+        infile  = (time_avg_file_dir+test_file_name),
+        outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
+        pkg='fre-nctools',avg_type='all', unwgt=False )
+    
+def test_fre_nctools_month():
+    ''' generates a time averaged file using fre_cli's version '''
+    ''' weighted average, no std deviation '''
+    assert run_avgtype_pkg_calculations(
+        infile  = (time_avg_file_dir+test_file_name),
+        outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
+        pkg='fre-nctools',avg_type='month', unwgt=False )
