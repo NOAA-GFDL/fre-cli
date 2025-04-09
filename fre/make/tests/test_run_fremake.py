@@ -3,11 +3,8 @@
 import os
 from shutil  import rmtree
 from pathlib import Path
-
 from click.testing import CliRunner
-
 import pytest
-
 from fre import fre
 from fre.make import run_fremake_script
 
@@ -17,7 +14,7 @@ runner=CliRunner()
 YAMLDIR = "fre/make/tests/null_example"
 YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
-PLATFORM = [ "ci.gnu" ]
+PLATFORM = ["ci.gnu"]
 CONTAINER_PLATFORM = ["hpcme.2023"]
 CONTAINER_PLAT2 = ["con.twostep"]
 TARGET = ["debug"]
@@ -54,21 +51,24 @@ def test_bad_platform_option():
     ''' test run-fremake with a invalid platform option'''
     run_fremake_script.fremake_run(YAMLPATH, BADOPT, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
 
 @pytest.mark.xfail()
 def test_bad_target_option():
     ''' test run-fremake with a invalid target option'''
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT,
         parallel=False, jobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
 
 @pytest.mark.xfail()
 def test_bad_yamlpath_option():
     ''' test run-fremake with a invalid target option'''
     run_fremake_script.fremake_run(BADOPT[0], PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
 
 # tests script/makefile creation without executing (serial compile)
 # first test runs the run-fremake command, subsequent tests check for creation of scripts
@@ -77,7 +77,8 @@ def test_run_fremake_serial():
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
 
 def test_run_fremake_compile_script_creation_serial():
     ''' check for compile script creation from previous test '''
@@ -91,13 +92,44 @@ def test_run_fremake_makefile_creation_serial():
     ''' check for makefile creation from previous test '''
     assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/Makefile").exists()
 
+def test_run_fremake_serial_force_checkout(capfd):
+    '''run run-fremake with options for serial build with force-checkout'''
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=False,
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=True, force_compile=False, force_dockerfile=False)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    if "Re-creating the checkout script" in out and "Re-creating the compile script" in out:
+        assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists()
+        assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/Makefile").exists()
+        assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/compile.sh").exists()
+    else:
+       assert False
+
+def test_run_fremake_serial_force_compile(capfd):
+    '''run run-fremake with options for serial build with force-compile'''
+    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=False,
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=True, force_dockerfile=False)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    if "Re-creating the compile script" in out:
+        assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/compile.sh").exists()
+    else:
+        assert False
+
 # same tests with multijob compile and non-parallel-checkout options enabled
 def test_run_fremake_multijob():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         parallel=True, jobs=4, no_parallel_checkout=True,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
 
 def test_run_fremake_compile_script_creation_multijob():
     ''' check for compile script creation from previous test '''
@@ -114,9 +146,14 @@ def test_run_fremake_makefile_creation_multijob():
 # tests container build script/makefile/dockerfile creation
 def test_run_fremake_container():
     '''run run-fremake with options for containerized build'''
+    if Path("Dockerfile").exists() or Path("createContainer.sh").exists():
+        Path(f"{os.getcwd()}/Dockerfile").unlink()
+        Path(f"{os.getcwd()}/createContainer.sh").unlink()
+
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
 
 def test_run_fremake_build_script_creation_container():
     ''' checks container build script creation from previous test '''
@@ -139,11 +176,18 @@ def test_run_fremake_run_script_creation_container():
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
 
 # tests container 2 stage build script/makefile/dockerfile creation
-def test_run_fremake_container_2stage():
+def test_run_fremake_2stage_container():
     '''run run-fremake with options for containerized build'''
+    # Without force-dockerfile or force-checkout option, clean files first
+    # or else it'll read that they exist already and not make the execrunscript.sh
+    if Path("Dockerfile").exists() or Path("createContainer.sh").exists():
+        Path("Dockerfile").unlink()
+        Path("createContainer.sh").unlink()
+
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
 
 def test_run_fremake_build_script_creation_container_2stage():
     ''' checks container build script creation from previous test '''
@@ -171,6 +215,43 @@ def test_run_fremake_run_script_creation_container_2stage():
 
 # tests for builds with multiple targets
 
+def test_run_fremake_container_force_checkout(capfd):
+    '''run run-fremake with options for containerized build with force-checkout option'''
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=True,
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=True, force_compile=False, force_dockerfile=False)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    print(out)
+
+    if "Re-creating the checkout script" in out:
+        assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists()
+        assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/Makefile").exists()
+        assert Path("Dockerfile").exists()
+        assert Path("createContainer.sh").exists()
+        assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
+    else:
+       assert False
+
+def test_run_fremake_container_force_dockerfile(capfd):
+    '''run run-fremake with options for containerized build with force-dockerfile option'''
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=True,
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=True)
+
+    #Capture output
+    out,err=capfd.readouterr()
+    if "Re-creating Dockerfile" in out:
+        assert Path("Dockerfile").exists()
+        assert Path("createContainer.sh").exists()
+        assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
+    else:
+       assert False
+
+# tests for builds with multiple targets
 def test_run_fremake_bad_target():
     ''' checks invalid target returns an error '''
     os.environ["TEST_BUILD_DIR"] = MULTITARGET_TEST_PATH

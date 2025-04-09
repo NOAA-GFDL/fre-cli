@@ -57,7 +57,8 @@ def test_run_fremake_serial_compile():
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=False,
-        no_format_transfer=True, execute=True, verbose=VERBOSE)
+        no_format_transfer=True, execute=True, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
     assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # same test with a parallel build
@@ -67,7 +68,8 @@ def test_run_fremake_multijob_compile():
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         parallel=True, jobs=4, no_parallel_checkout=False,
-        no_format_transfer=False, execute=True, verbose=VERBOSE)
+        no_format_transfer=False, execute=True, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
     assert Path(f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # containerized build
@@ -76,7 +78,8 @@ def test_run_fremake_container_build():
     ''' checks image creation for the container build'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
-        no_format_transfer=False, execute=True, verbose=VERBOSE)
+        no_format_transfer=False, execute=True, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
     assert Path("null_model_full-debug.sif").exists()
 
 @pytest.mark.skipif(not has_podman, reason="missing podman")
@@ -86,4 +89,5 @@ def test_run_fremake_container_build_notransfer():
         os.remove("createContainer.sh")
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
-        no_format_transfer=True, execute=True, verbose=VERBOSE)
+        no_format_transfer=True, execute=True, verbose=VERBOSE,
+        force_checkout=False, force_compile=False, force_dockerfile=False)
