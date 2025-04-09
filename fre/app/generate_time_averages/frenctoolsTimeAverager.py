@@ -14,7 +14,8 @@ class frenctoolsTimeAverager(timeAverager):
             print(locals()) #input argument details
 
         exitstatus=1
-        if self.avg_type!='all' or 'monthly':
+        if self.avg_type not in ['month','all']:
+            print('correct location')
             print(f'ERROR: avg_type={self.avg_type} not supported by this class at this time.')
             return exitstatus
 
