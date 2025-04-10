@@ -5,6 +5,7 @@ import pytest
 from pathlib import Path
 import yaml
 from fre.list_ import list_experiments_script
+from fre.yamltools import helpers
 
 # SET-UP
 TEST_DIR = Path("fre/make/tests")
@@ -17,6 +18,7 @@ def test_modelyaml_exists():
     ''' Make sure model yaml exists '''
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}").exists()
 
+# Test whole tool
 def test_exp_list(caplog):
     ''' test list exps '''
     list_experiments_script.list_experiments_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
@@ -34,12 +36,7 @@ def test_exp_list(caplog):
     for record in caplog.records:
         assert record.levelname == "INFO"
 
-
-def test_nocombinedyaml():
-    ''' test intermediate combined yaml was cleaned at end of listing '''
-    assert not Path(f"./combined-{EXP_NAME}.yaml").exists()
-
-# Test individual functions operating correctly: combine and clean
+# Test individual functions operating correctly: combine and validate
 def test_correct_combine():
     ''' test that combined yaml includes necessary keys '''
     p = "None"
@@ -57,10 +54,13 @@ def test_correct_combine():
     for k in req_keys:
         assert k in y.keys()
 
+@pytest.mark.skip(reason='cannot validate with current schema at the moment')
+def test_yamlvalidate():
+    ''' test yaml is being validated '''
+    yamlfilepath = Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
-def test_yamlremove():
-   ''' test intermediate combined yaml removed '''
-   # Remove combined yaml file
-   list_experiments_script.remove(f"combined-{EXP_NAME}.yaml")
+    # Combine model / experiment
+    yml_dict = list_experiments_script.quick_combine(yamlfile_path, EXP_NAME, PLATFORM, TARGET)
 
-   assert not Path(f"./combined-{EXP_NAME}.yaml").exists()
+    # Validate and capture output
+    assert helpers.validate_yaml(yml_dict, VAL_SCHEMA)

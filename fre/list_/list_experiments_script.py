@@ -4,6 +4,7 @@ Script combines the model yaml with exp, platform, and target to list experiment
 from pathlib import Path
 import logging
 from fre.yamltools import pp_info_parser as ppip
+from fre.yamltools import helpers
 
 fre_logger = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ def list_experiments_subtool(yamlfile):
 
 #    # Validate combined yaml information
 #    frelist_dir = Path(__file__).resolve().parents[2]
-#    schema_path = f"{frelist_dir}/fre/gfdl_msd_schemas/FRE/fre_pp.json"
+#    schema_path = f"{frelist_dir}/fre/gfdl_msd_schemas/FRE/fre_make.json"
 #    # from fre.yamltools
 #    helpers.validate_yaml(yml_dict, schema_path)
 
