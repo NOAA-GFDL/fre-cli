@@ -1,5 +1,6 @@
 ''' class for utilizing timavg.csh (aka script to TAVG fortran exe) in frenc-tools '''
 from .timeAverager import timeAverager
+import os 
 
 class frenctoolsTimeAverager(timeAverager):
     '''
@@ -35,7 +36,33 @@ class frenctoolsTimeAverager(timeAverager):
             print(f'WARNING: no output filename given, setting outfile={outfile}')
 
         from subprocess import Popen, PIPE
+########################################################################################
+        #recursive call if month is selcted for climatology. by Avery Kiihne
+        if self.avg_type == 'month':
+            output_dir = f"monthly_outputs"
+            os.makedirs(output_dir, exist_ok=True)
+            # Extract unique months from the infile 
+            with Dataset(infile) as ds:
+                times = ds.variables['time'][:]
+                dates = num2date(times, units=ds.variables['time'].units)
+            unique_month_names = sorted(set((date.month, date.year) for date in dates))
+            # Dictionary to store output filenames by month
+            month_file_names = {month: os.path.join(output_dir, f"{month:02d}_all_years.nc") for month, _ in unique_month_names}
 
+            # Loop through each month and select the corresponding data
+            for month, _ in unique_month_names:
+                # Select data for the given month
+                cdo.select(f"month={month}", input=infile, output=month_file_names[month])
+            
+                print(f"Created file for month {month}: {month_file_names[month]}")
+
+                #Delete files after being used to generate output files
+                for file in month_file_names:
+                    os.remove(file)
+                    
+########################################################################################
+
+            
         timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
         exitstatus=1
         with Popen(timavgcsh_command,
