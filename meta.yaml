@@ -37,7 +37,7 @@ requirements:
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
-    - conda-forge::cmor>=3.9.0
+    - conda-forge::cmor>=3.10.0
     - conda-forge::pytest
     - conda-forge::pytest-cov
     - conda-forge::python-cdo
