@@ -1,7 +1,8 @@
 ''' class for utilizing timavg.csh (aka script to TAVG fortran exe) in frenc-tools '''
 from .timeAverager import timeAverager
 import os 
-from netCDF4 import Dataset
+from netCDF4 import Dataset, num2date
+import calendar
 from cdo import Cdo
 cdo = Cdo()
 
@@ -45,18 +46,21 @@ class frenctoolsTimeAverager(timeAverager):
             output_dir = f"monthly_outputs"
             os.makedirs(output_dir, exist_ok=True)
             # Extract unique months from the infile 
-
-            unique_month_names = sorted(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
+            month_indices = list(range(1, 13))
+            month_names = [calendar.month_name[i] for i in month_indices]
 
             # Dictionary to store output filenames by month
             month_file_names = {month: os.path.join(output_dir, f"{month}_all_years.nc") for month in unique_month_names}
 
             # Loop through each month and select the corresponding data
-            for month in unique_month_names:
+        # Loop through each month and select the corresponding data
+            for month_index in month_indices:
+                month_name = month_names[month_index - 1]
+                output_file = month_file_paths[month_name]
+
                 # Select data for the given month
-                cdo.select(f"month={month}", input=infile, output=month_file_names[month])
-            
-                print(f"Created file for month {month}: {month_file_names[month]}")
+                cdo.select(f"month={month_index}", input=infile, output=output_file)
+
 
                 #Delete files after being used to generate output files
                 for file in month_file_names:
