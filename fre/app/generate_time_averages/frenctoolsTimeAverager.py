@@ -2,6 +2,8 @@
 from .timeAverager import timeAverager
 import os 
 from netCDF4 import Dataset
+from cdo import Cdo
+cdo = Cdo()
 
 class frenctoolsTimeAverager(timeAverager):
     '''
@@ -44,13 +46,13 @@ class frenctoolsTimeAverager(timeAverager):
             os.makedirs(output_dir, exist_ok=True)
             # Extract unique months from the infile 
 
-            unique_month_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            unique_month_names = sorted(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 
             # Dictionary to store output filenames by month
-            month_file_names = {month: os.path.join(output_dir, f"{month:02d}_all_years.nc") for month, _ in unique_month_names}
+            month_file_names = {month: os.path.join(output_dir, f"{month}_all_years.nc") for month in unique_month_names}
 
             # Loop through each month and select the corresponding data
-            for month, _ in unique_month_names:
+            for month in unique_month_names:
                 # Select data for the given month
                 cdo.select(f"month={month}", input=infile, output=month_file_names[month])
             
