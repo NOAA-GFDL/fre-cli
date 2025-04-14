@@ -50,7 +50,7 @@ class frenctoolsTimeAverager(timeAverager):
             month_names = [calendar.month_name[i] for i in month_indices]
 
             # Dictionary to store output filenames by month
-            month_file_names = {month: os.path.join(output_dir, f"{month}_all_years.nc") for month in unique_month_names}
+            month_file_paths = {month: os.path.join(output_dir, f"{month}_all_years.nc") for month in month_names}
 
             # Loop through each month and select the corresponding data
         # Loop through each month and select the corresponding data
@@ -61,11 +61,12 @@ class frenctoolsTimeAverager(timeAverager):
                 # Select data for the given month
                 cdo.select(f"month={month_index}", input=infile, output=output_file)
 
-
                 #Delete files after being used to generate output files
-                for file in month_file_names:
-                    os.remove(file)
-                    
+            #for month_index in month_indices:  
+             #   month_name = month_names[month_index - 1]
+              #  output_file = month_file_paths[month_name]              
+               # os.remove(output_file)
+           # os.rmdir('monthly_outputs')    
 ########################################################################################
 
             
