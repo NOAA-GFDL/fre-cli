@@ -1,6 +1,7 @@
 ''' class for utilizing timavg.csh (aka script to TAVG fortran exe) in frenc-tools '''
 from .timeAverager import timeAverager
 import os 
+from netCDF4 import Dataset
 
 class frenctoolsTimeAverager(timeAverager):
     '''
