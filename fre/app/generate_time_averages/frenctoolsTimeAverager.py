@@ -43,10 +43,9 @@ class frenctoolsTimeAverager(timeAverager):
             output_dir = f"monthly_outputs"
             os.makedirs(output_dir, exist_ok=True)
             # Extract unique months from the infile 
-            with Dataset(infile) as ds:
-                times = ds.variables['time'][:]
-                dates = num2date(times, units=ds.variables['time'].units)
-            unique_month_names = sorted(set((date.month, date.year) for date in dates))
+
+            unique_month_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
             # Dictionary to store output filenames by month
             month_file_names = {month: os.path.join(output_dir, f"{month:02d}_all_years.nc") for month, _ in unique_month_names}
 
