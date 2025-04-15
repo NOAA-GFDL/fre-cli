@@ -52,25 +52,38 @@ class frenctoolsTimeAverager(timeAverager):
             month_names = [calendar.month_name[i] for i in month_indices]
 
             # Dictionary to store output filenames by month
-            month_file_paths = {month: os.path.join(output_dir, f"{month}_all_years.nc") for month in month_names}
+            nc_month_file_paths = {month: os.path.join(monthly_nc_dir, f"{month}_all_years.nc") for month in month_names}
+            month_output_file_paths = {month: os.path.join(output_dir, f"{month}_{outfile}") for month in month_names}
 
             # Loop through each month and select the corresponding data
         # Loop through each month and select the corresponding data
             for month_index in month_indices:
                 month_name = month_names[month_index - 1]
-                nc_monthly_file = month_file_paths[month_name]
+                nc_monthly_file = nc_month_file_paths[month_name]
 
                 # Select data for the given month
                 cdo.select(f"month={month_index}", input=infile, output=nc_monthly_file)
 
                 #run timavg command for newly created file
-                month_output_file_name = outfile
+                month_output_file = month_output_file_paths[month_name]
+                timavgcsh_command=['timavg.csh', '-mb','-o', month_output_file, nc_monthly_file]
+                exitstatus=1
+                with Popen(timavgcsh_command,
+                        stdout=PIPE, stderr=PIPE, shell=False) as subp:
+                    output=subp.communicate()[0]
+                    print(f'output={output}')
+
+                    if subp.returncode < 0:
+                        print('error')
+                    else:
+                        print(f'{nc_monthly_file} climitology successfully ran')
+                        exitstatus=0
                 #Delete files after being used to generate output files
-            #for month_index in month_indices:  
-             #   month_name = month_names[month_index - 1]
-              #  nc_monthly_file = month_file_paths[month_name]              
-               # os.remove(nc_monthly_file)
-           # os.rmdir('monthly_outputs')    
+            for month_index in month_indices:  
+                month_name = month_names[month_index - 1]
+                nc_monthly_file = nc_month_file_paths[month_name]              
+                os.remove(nc_monthly_file)
+            os.rmdir('monthly_nc_files')    
 ########################################################################################
 
             
