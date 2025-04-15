@@ -43,7 +43,9 @@ class frenctoolsTimeAverager(timeAverager):
 ########################################################################################
         #recursive call if month is selcted for climatology. by Avery Kiihne
         if self.avg_type == 'month':
-            output_dir = f"monthly_outputs"
+            monthly_nc_dir = f"monthly_nc_files"
+            output_dir = f"monthly_output_files"
+            os.makedirs(monthly_nc_dir, exist_ok=True)
             os.makedirs(output_dir, exist_ok=True)
             # Extract unique months from the infile 
             month_indices = list(range(1, 13))
@@ -56,16 +58,18 @@ class frenctoolsTimeAverager(timeAverager):
         # Loop through each month and select the corresponding data
             for month_index in month_indices:
                 month_name = month_names[month_index - 1]
-                output_file = month_file_paths[month_name]
+                nc_monthly_file = month_file_paths[month_name]
 
                 # Select data for the given month
-                cdo.select(f"month={month_index}", input=infile, output=output_file)
+                cdo.select(f"month={month_index}", input=infile, output=nc_monthly_file)
 
+                #run timavg command for newly created file
+                month_output_file_name = outfile
                 #Delete files after being used to generate output files
             #for month_index in month_indices:  
              #   month_name = month_names[month_index - 1]
-              #  output_file = month_file_paths[month_name]              
-               # os.remove(output_file)
+              #  nc_monthly_file = month_file_paths[month_name]              
+               # os.remove(nc_monthly_file)
            # os.rmdir('monthly_outputs')    
 ########################################################################################
 
