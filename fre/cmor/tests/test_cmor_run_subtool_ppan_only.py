@@ -41,6 +41,9 @@ def _cleanup():
     if Path(f'{OUTDIR}/CMIP6').exists():
         shutil.rmtree(f'{OUTDIR}/CMIP6')
     assert not Path(f'{OUTDIR}/CMIP6').exists()
+    if Path(f'{OUTDIR}/tmp').exists():
+        shutil.rmtree(f'{OUTDIR}/tmp')
+    assert not Path(f'{OUTDIR}/tmp').exists()
 
 def _case_function(testfile_dir, table, opt_var_name, grid):
 
@@ -58,6 +61,17 @@ def _case_function(testfile_dir, table, opt_var_name, grid):
 
     # execute the test
     try:
+        print(
+        f'cmor_run_subtool('
+        f'    indir = {indir},'
+        f'    json_var_list = {CMORBITE_VARLIST},'
+        f'    json_table_config = {table_file},'
+        f'    json_exp_config = {EXP_CONFIG_DEFAULT},'
+        f'    outdir = {OUTDIR},'
+        f'    run_one_mode = True,'
+        f'    opt_var_name = {opt_var_name}'
+        ')'
+        )
         cmor_run_subtool(
             indir = indir,
             json_var_list = CMORBITE_VARLIST,
@@ -74,9 +88,9 @@ def _case_function(testfile_dir, table, opt_var_name, grid):
     # outputs that should be created
     cmor_output_dir = f'{OUTDIR}/{CMOR_CREATES_DIR_BASE}/{table}/{opt_var_name}/gn/v{YYYYMMDD}'
     cmor_output_file_glob=f'{cmor_output_dir}/{opt_var_name}_{table}_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_??????-??????.nc'
-    #print(f'cmor_output_file_glob  = {cmor_output_file_glob}')
+    print(f'cmor_output_file_glob  = {cmor_output_file_glob}')
     cmor_output_file = glob.glob( cmor_output_file_glob )[0]
-    #print(f'cmor_output_file  = {cmor_output_file}')
+    print(f'cmor_output_file  = {cmor_output_file}')
     #assert False
     
     # success criteria
@@ -91,32 +105,38 @@ def _case_function(testfile_dir, table, opt_var_name, grid):
 def test_cleanup():
     _cleanup()
 
-
-def test_case_Lmon_lai_gr1():
-    testfile_dir = \
-        '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
-        'pp/land/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Lmon',
-                             opt_var_name = 'lai',
-                             grid = 'gr1'
-    )
-
-
-def test_case_Amon_cl_gr1():
-    testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-        'pp/atmos_level_cmip/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Amon',
-                             opt_var_name = 'cl',
-                             grid = 'gr1'
-    )
+#
+#def test_case_Lmon_lai_gr1():
+##    testfile_dir = \
+##        '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+#    testfile_dir = \
+#        '/archive/inl/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+#        'pp/land/ts/monthly/5yr/'
+#    _case_function( testfile_dir = testfile_dir,
+#                             table = 'Lmon',
+#                             opt_var_name = 'lai',
+#                             grid = 'gr1'
+#    )
+#
+#
+#def test_case_Amon_cl_gr1():
+##    testfile_dir = \
+##        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#    testfile_dir = \
+#        '/archive/inl/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#        'pp/atmos_level_cmip/ts/monthly/5yr/'
+#    _case_function( testfile_dir = testfile_dir,
+#                             table = 'Amon',
+#                             opt_var_name = 'cl',
+#                             grid = 'gr1'
+#    )
 
 
 def test_case_Amon_mc_gr1():
+#    testfile_dir = \
+#        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
     testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+        '/archive/inl/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
         'pp/atmos_level_cmip/ts/monthly/5yr/'
     _case_function( testfile_dir = testfile_dir,
                              table = 'Amon',
@@ -126,8 +146,10 @@ def test_case_Amon_mc_gr1():
 
 
 def test_case_AERmonZ_ta_gr1():
+#    testfile_dir = \
+#        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
     testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+        '/archive/inl/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
         'pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/'
     _case_function( testfile_dir = testfile_dir,
                              table = 'AERmonZ',
@@ -137,8 +159,10 @@ def test_case_AERmonZ_ta_gr1():
 
 
 def test_case_Omon_sos_gr():
+#    testfile_dir = \
+#        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
     testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+        '/archive/inl/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
         'pp/ocean_monthly_1x1deg/ts/monthly/5yr/'
     _case_function( testfile_dir = testfile_dir,
                              table = 'Omon',
@@ -148,8 +172,10 @@ def test_case_Omon_sos_gr():
 
 
 def test_case_Omon_sos_gn():
+#    testfile_dir = \
+#        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
     testfile_dir = \
-        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+        '/archive/inl/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
         'pp/ocean_monthly/ts/monthly/5yr/'
     _case_function( testfile_dir = testfile_dir,
                              table = 'Omon',
@@ -159,8 +185,10 @@ def test_case_Omon_sos_gn():
 
 
 def test_case_Omon_so_gr():
+#    testfile_dir = \
+#        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
     testfile_dir = \
-        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+        '/archive/inl/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
         'pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/'
     _case_function( testfile_dir = testfile_dir,
                              table = 'Omon',
@@ -170,8 +198,10 @@ def test_case_Omon_so_gr():
 
 
 def test_case_Amon_ch4global_gn():
+#    testfile_dir = \
+#        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
     testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+        '/archive/inl/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
         'pp/atmos_scalar/ts/monthly/5yr/'
     _case_function( testfile_dir = testfile_dir,
                              table = 'Amon',
@@ -181,6 +211,9 @@ def test_case_Amon_ch4global_gn():
 
 
 def test_case_Emon_gppLut_gr1():
+#    testfile_dir = \
+#        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#        '/archive/inl/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
     testfile_dir = \
         '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
         'pp/LUmip_refined/ts/monthly/5yr/'

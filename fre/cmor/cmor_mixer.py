@@ -327,22 +327,22 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     cmor_time = None
     fre_logger.info('assigning cmor_time')
     try:
-        fre_logger.info(
+        fre_logger.info('    ... using time_bnds...')
+        fre_logger.debug(
             "Executing cmor.axis('time', \n"
             "    coord_vals = \n%s, \n"
             "    cell_bounds = %s, units = %s)",
             time_coords, time_bnds, time_coord_units
         )
-        fre_logger.info('assigning cmor_time using time_bnds...')
         cmor_time = cmor.axis("time", coord_vals=time_coords,
                               cell_bounds=time_bnds, units=time_coord_units)
     except ValueError as exc:
-        fre_logger.info(
+        fre_logger.info('    ... WITHOUT time_bnds...')
+        fre_logger.debug(
             "cmor_time = cmor.axis('time', \n"
             "    coord_vals = %s, units = %s)",
             time_coords, time_coord_units
         )
-        fre_logger.info('assigning cmor_time WITHOUT time_bnds...')
         cmor_time = cmor.axis("time", coord_vals=time_coords, units=time_coord_units)
     fre_logger.info('DONE assigning cmor_time')
 
@@ -356,12 +356,14 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
         fre_logger.info('assigning cmor_z')
 
         if vert_dim.lower() in NON_HYBRID_SIGMA_COORDS:
-            fre_logger.info('non-hybrid sigma coordinate case')
+            fre_logger.warning('vertical coord case: NON_HYBRID_SIGMA_COORDS')
             if vert_dim.lower() != "landuse":
+                fre_logger.info('vertical coord subcase: != landuse')
                 cmor_vert_dim_name = vert_dim
                 cmor_z = cmor.axis(cmor_vert_dim_name,
                                    coord_vals=lev[:], units=lev_units)
             else:
+                fre_logger.info('vertical coord subcase: == landuse')
                 landuse_str_list = ['primary_and_secondary_land', 'pastures', 'crops', 'urban']
                 cmor_vert_dim_name = "landUse"
                 cmor_z = cmor.axis(cmor_vert_dim_name,
@@ -372,6 +374,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                                    units=lev_units)
 
         elif vert_dim in DEPTH_COORDS:
+            fre_logger.warning('vertical coord case: DEPTH_COORDS')
             lev_bnds = create_lev_bnds(bound_these=lev, with_these=ds['z_i'])
             fre_logger.info('created lev_bnds...')
             fre_logger.info('lev_bnds = \n%s', lev_bnds)
@@ -381,6 +384,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                                cell_bounds=lev_bnds)
             
         elif vert_dim in ALT_HYBRID_SIGMA_COORDS:
+            fre_logger.warning('vertical coord case: ALT_HYBRID_SIGMA_COORDS')
             # find the ps file nearby
             ps_file = netcdf_file.replace(f'.{target_var}.nc', '.ps.nc')
             ds_ps = nc.Dataset(ps_file)
@@ -389,6 +393,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
 
             # assign lev_half specifics
             if vert_dim == "levhalf":
+                fre_logger.info('vertical coord subcase: == levhalf')
                 cmor_z = cmor.axis("alternate_hybrid_sigma_half",
                                    coord_vals=lev[:],
                                    units=lev_units)
@@ -403,6 +408,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                                       zfactor_values=ds["b_bnds"][:],
                                       units=ds["b_bnds"].units)
             else:
+                fre_logger.info('vertical coord subcase: != levhalf')
                 cmor_z = cmor.axis("alternate_hybrid_sigma",
                                    coord_vals=lev[:],
                                    units=lev_units,
@@ -475,9 +481,11 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     positive = mip_var_cfgs["variable_entry"][target_var]["positive"]
     fre_logger.info("positive = %s", positive)
 
+    fre_logger.info("calling cmor.variable...")
     cmor_var = cmor.variable(target_var, units, axes, positive=positive)
     
     # Write the output to disk
+    fre_logger.info("writing cmorized output to disk now")
     cmor.write(cmor_var, var)
     if save_ps:
         if any([ips is None, ps is None]):
@@ -485,7 +493,9 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                                'ps = %s, ips = %s\n'
                                'skipping ps writing!', ps, ips)
         else:
+            fre_logger.info("using cmor to write interp-pressures (ips) file...")
             cmor.write(ips, ps, store_with=cmor_var)
+            fre_logger.info("using cmor to close interp-pressure (ips) file...")
             cmor.close(ips, file_name=True, preserve=False)
     filename = cmor.close(cmor_var, file_name=True, preserve=False)
     fre_logger.info("returned by cmor.close: filename = %s", filename)
@@ -560,7 +570,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
             fre_logger.warning("changing directory to: \n%s", make_cmor_write_here)
             os.chdir(make_cmor_write_here)
         except Exception as exc:
-            raise OSError(f'(cmorize_target_var_files) could not chdir to {make_cmor_write_here}') from exc
+            raise OSError(f'could not chdir to {make_cmor_write_here}') from exc
 
         fre_logger.info("calling rewrite_netcdf_file_var")
         try:
@@ -571,7 +581,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
                                                       json_exp_config,
                                                       json_table_config, nc_fls[i])
         except Exception as exc:
-            raise Exception('(cmorize_target_var_files) problem with rewrite_netcdf_file_var. exc=\n'
+            raise Exception('problem with rewrite_netcdf_file_var. exc=\n'
                             'exiting and executing finally block.') from exc
         finally:  # should always execute, errors or not!
             fre_logger.warning('changing directory to: \n%s', gotta_go_back_here)
