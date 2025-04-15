@@ -12,12 +12,13 @@ setup(
         'click',
         'pyyaml',
         'pylint',
-        'pytest',
         'jsonschema',
         'cylc-flow',
         'cylc-rose',
-        'cdo',
-        'metomi-rose'
+        'metomi-rose',
+        'cmor',
+        'pytest',
+        'cdo'
     ],
     entry_points={
         'console_scripts': [
