@@ -17,6 +17,7 @@ setup(
         'cylc-flow',
         'cylc-rose',
         'cdo',
+        'cmor',
         'metomi-rose'
     ],
     entry_points={
