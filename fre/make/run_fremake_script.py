@@ -320,6 +320,12 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,no_f
                                                          cb = platform["containerBuild"],
                                                          cd = curr_dir,
                                                          no_format_transfer = no_format_transfer)
+         
+                    print(f"Container build script created here: {curr_dir}/createContainer.sh\n")
+
+                    # Execute if flag is given
+                    if execute:
+                        subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
                 else:
                     if force_dockerfile or force_checkout:
@@ -341,13 +347,15 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,no_f
                                                              cb = platform["containerBuild"],
                                                              cd = curr_dir,
                                                              no_format_transfer = no_format_transfer)
+
+                        print(f"Container build script created here: {curr_dir}/createContainer.sh\n")
+                        # Execute if flag is given
+                        if execute:
+                            subprocess.run(args=[dockerBuild.userScriptPath], check=True)
+
                     else:
                         print(f"Dockerfile PREVIOUSLY created here: {curr_dir}/Dockerfile")
                         print(f"Container build script created here: {curr_dir}/createContainer.sh\n")
-
-                # Execute if flag is given
-                if execute:
-                    subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
                 #freCheckout.cleanup()
                 #buildDockerfile(fremakeYaml, image)
