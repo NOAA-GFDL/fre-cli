@@ -110,6 +110,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
             bld_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/exec"
             tmp_dir = "tmp/"+platform_name
+            pc = "" #Set this way because containers do not support the parallel checkout
             fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
             fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
             fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
