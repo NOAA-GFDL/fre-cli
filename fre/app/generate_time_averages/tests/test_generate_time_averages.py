@@ -448,3 +448,9 @@ def test_fre_nctools_month():
         infile  = (time_avg_file_dir+test_file_name),
         outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
         pkg='fre-nctools',avg_type='month', unwgt=False )
+def test_path_frenctools_month():
+    run_avgtype_pkg_calculations(
+        infile  = (time_avg_file_dir+test_file_name),
+        outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
+        pkg='fre-nctools',avg_type='month', unwgt=False )
+    assert pl.Path(time_avg_file_dir+'../monthly_output_files/April_out.nc').exists()
