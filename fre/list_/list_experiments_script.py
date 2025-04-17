@@ -5,20 +5,9 @@ from pathlib import Path
 import logging
 from fre.yamltools import pp_info_parser as ppip
 from fre.yamltools import helpers
+from fre.yamltools import combine_yamls_script as cy
 
 fre_logger = logging.getLogger(__name__)
-
-def quick_combine(yml, exp, platform, target):
-    """
-    Create intermediate combined model and exp. yaml
-    This is done to avoid an "undefined alias" error
-    """
-
-    # Combine model / experiment
-    yamldict = ppip.InitPPYaml(yml,exp,platform,target)
-    model_yml_dict = yamldict.combine_model()
-
-    return model_yml_dict
 
 def list_experiments_subtool(yamlfile):
     """
@@ -28,12 +17,13 @@ def list_experiments_subtool(yamlfile):
     former_log_level = fre_logger.level
     fre_logger.setLevel(logging.INFO)
 
-    e = "None"
-    p = "None"
-    t = "None"
+    exp = "None"
+    platform = "None"
+    target = "None"
 
-    # Combine model / experiment
-    (yaml_info, yml_dict) = quick_combine(yamlfile, e, p, t)
+    # Combine model
+    yamldict = ppip.InitPPYaml(yamlfile, exp, platform, target)
+    (yaml_info, yml_dict) = yamldict.combine_model()
 
 #    # Validate combined yaml information
 #    frelist_dir = Path(__file__).resolve().parents[2]

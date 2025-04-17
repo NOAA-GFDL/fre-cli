@@ -8,20 +8,6 @@ from fre.yamltools import *
 
 fre_logger = logging.getLogger(__name__)
 
-def quick_combine(yml, exp, platform, target):
-    """
-    Create intermediate combined model and exp. yaml
-    This is done to avoid an "undefined alias" error
-    """
-    # Combine model / experiment
-    full_yamldict = cy.consolidate_yamls(yamlfile = yml,
-                                         experiment = exp,
-                                         platform = platform,
-                                         target = target,
-                                         use = "pp",
-                                         output = None)
-    return full_yamldict
-
 def list_ppcomps_subtool(yamlfile, experiment):
     """
     List the components to be post-processed
@@ -30,12 +16,17 @@ def list_ppcomps_subtool(yamlfile, experiment):
     former_log_level = fre_logger.level
     fre_logger.setLevel(logging.INFO)
 
-    e = experiment
-    p = "None"
-    t = "None"
+    exp = experiment
+    platform = "None"
+    target = "None"
 
     # Combine model / experiment
-    yml_dict = quick_combine(yamlfile, e, p, t)
+    yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
+                                    experiment = exp,
+                                    platform = platform,
+                                    target = target,
+                                    use = "pp",
+                                    output = None)
 
     # Validate combined yaml information
     frelist_dir = Path(__file__).resolve().parents[2]

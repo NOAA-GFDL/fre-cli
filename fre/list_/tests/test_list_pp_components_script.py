@@ -44,27 +44,19 @@ def test_exp_list(caplog):
     for record in caplog.records:
         assert record.levelname == "INFO"
 
-# Test individual functions operating correctly: combine and validation
-def test_correct_combine():
-    ''' test that combined yaml includes necesary keys '''
-    yamlfile_path = f"{TEST_DIR}/{AM5_EXAMPLE}/{MODEL_YAMLFILE}"
-
-    # Combine model / experiment
-    try:
-        yml_dict = list_pp_components_script.quick_combine(yamlfile_path, EXP_NAME, PLATFORM, TARGET)
-    except:
-        assert 1 == 2
-
-    req_keys = ["name", "directories", "postprocess"]
-    for k in req_keys:
-        assert k in yml_dict.keys()
-
-def test_yamlvalidate():
+# Test validation
+def test_yamlvalidate(caplog):
     ''' test yaml is being validated '''
     yamlfile_path = f"{TEST_DIR}/{AM5_EXAMPLE}/{MODEL_YAMLFILE}"
 
     # Combine model / experiment
-    yml_dict = list_pp_components_script.quick_combine(yamlfile_path, EXP_NAME, PLATFORM, TARGET)
+    list_pp_components_script.list_ppcomps_subtool(f"{TEST_DIR}/{AM5_EXAMPLE}/{MODEL_YAMLFILE}", EXP_NAME)
 
-    # Validate and capture output
-    assert helpers.validate_yaml(yml_dict, VAL_SCHEMA)
+    validate = ["Validating YAML information...",
+                "     YAML dictionary VALID."]
+
+    for i in validate:
+        assert i in caplog.text
+
+    for record in caplog.records:
+        record.levelname == "INFO"

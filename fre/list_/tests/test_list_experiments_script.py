@@ -36,30 +36,14 @@ def test_exp_list(caplog):
     for record in caplog.records:
         assert record.levelname == "INFO"
 
-# Test individual functions operating correctly: combine and validate
-def test_correct_combine():
-    ''' test that combined yaml includes necessary keys '''
-    p = "None"
-    t = "None"
-    yamlfilepath = Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
-
-    # Combine model / experiment
-    try:
-        yml_dict = list_experiments_script.quick_combine(yamlfilepath,EXP_NAME,p,t)
-    except:
-        assert 1 == 2
-
-    req_keys = ["name","platform","target","fre_properties","experiments"]
-    for k in req_keys:
-        assert k in yml_dict.keys()
-
+# Test validation
 @pytest.mark.skip(reason='cannot validate with current schema at the moment')
 def test_yamlvalidate():
     ''' test yaml is being validated '''
     yamlfilepath = Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
     # Combine model / experiment
-    yml_dict = list_experiments_script.quick_combine(yamlfile_path, EXP_NAME, PLATFORM, TARGET)
+    yml_dict = list_experiments_script.list_experiments_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
     # Validate and capture output
     assert helpers.validate_yaml(yml_dict, VAL_SCHEMA)
