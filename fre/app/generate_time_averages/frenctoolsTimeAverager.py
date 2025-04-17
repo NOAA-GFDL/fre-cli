@@ -41,30 +41,29 @@ class frenctoolsTimeAverager(timeAverager):
 
         from subprocess import Popen, PIPE
 ########################################################################################
-        #recursive call if month is selcted for climatology. by Avery Kiihne
+        #Recursive call if month is selcted for climatology. by Avery Kiihne
         if self.avg_type == 'month':
-            monthly_nc_dir = f"monthly_nc_files"
-            output_dir = f"monthly_output_files"
-            os.makedirs(monthly_nc_dir, exist_ok=True)
+            monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
+            output_dir = f"monthly_output_files"    #Folder for the results, split by month
+            os.makedirs(monthly_nc_dir, exist_ok=True)   #create directory if it does not exist
             os.makedirs(output_dir, exist_ok=True)
-            # Extract unique months from the infile 
+            #Extract unique months from the infile 
             month_indices = list(range(1, 13))
             month_names = [calendar.month_name[i] for i in month_indices]
 
-            # Dictionary to store output filenames by month
+            #Dictionary to store output filenames by month
             nc_month_file_paths = {month: os.path.join(monthly_nc_dir, f"{month}_all_years.nc") for month in month_names}
             month_output_file_paths = {month: os.path.join(output_dir, f"{month}_{outfile}") for month in month_names}
 
-            # Loop through each month and select the corresponding data
-        # Loop through each month and select the corresponding data
+            #Loop through each month and select the corresponding data
             for month_index in month_indices:
                 month_name = month_names[month_index - 1]
                 nc_monthly_file = nc_month_file_paths[month_name]
 
-                # Select data for the given month
+                #Select data for the given month
                 cdo.select(f"month={month_index}", input=infile, output=nc_monthly_file)
 
-                #run timavg command for newly created file
+                #Run timavg command for newly created file
                 month_output_file = month_output_file_paths[month_name]
                 timavgcsh_command=['timavg.csh', '-mb','-o', month_output_file, nc_monthly_file]
                 exitstatus=1
@@ -84,9 +83,11 @@ class frenctoolsTimeAverager(timeAverager):
                 nc_monthly_file = nc_month_file_paths[month_name]              
                 os.remove(nc_monthly_file)
             os.rmdir('monthly_nc_files')    
-########################################################################################
 
-            
+        if self.avg_type == 'month':   #End here if month variable used
+            return exitstatus
+########################################################################################
+        
         timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
         exitstatus=1
         with Popen(timavgcsh_command,
