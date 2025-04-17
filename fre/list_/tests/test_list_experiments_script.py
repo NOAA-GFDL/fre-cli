@@ -44,15 +44,14 @@ def test_correct_combine():
     yamlfilepath = Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
     # Combine model / experiment
-    list_experiments_script.quick_combine(yamlfilepath,EXP_NAME,p,t)
-    assert Path(f"./combined-{EXP_NAME}.yaml").exists()
-
-    with open(f"combined-{EXP_NAME}.yaml", 'r') as yf:
-        y = yaml.load(yf,Loader=yaml.Loader)
+    try:
+        yml_dict = list_experiments_script.quick_combine(yamlfilepath,EXP_NAME,p,t)
+    except:
+        assert 1 == 2
 
     req_keys = ["name","platform","target","fre_properties","experiments"]
     for k in req_keys:
-        assert k in y.keys()
+        assert k in yml_dict.keys()
 
 @pytest.mark.skip(reason='cannot validate with current schema at the moment')
 def test_yamlvalidate():
