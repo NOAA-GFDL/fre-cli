@@ -4,6 +4,7 @@ import click
 import logging
 fre_logger = logging.getLogger(__name__)
 
+#these run jobs
 from fre.pp import checkout_script
 from fre.pp import configure_script_yaml
 from fre.pp import configure_script_xml
@@ -15,6 +16,9 @@ from fre.pp import nccheck_script
 from fre.pp import trigger_script
 from fre.pp import status_script
 from fre.pp import wrapper_script
+
+#these are tools
+from fre.pp import split_netcdf
 
 # fre pp
 @click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
@@ -222,6 +226,7 @@ def wrapper(experiment, platform, target, config_file, branch, time):
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
     fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
 
+#fre pp trigger
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -238,6 +243,19 @@ def wrapper(experiment, platform, target, config_file, branch, time):
 def trigger(experiment, platform, target, time):
     """ - Start postprocessing for a particular time """
     trigger_script.trigger(experiment, platform, target, time)
+    
+@pp_cli.command()
+@click.option("-i", "--inputDir", type=str, required=True,
+              help="input directory")
+@click.option("-o", "--outputDir", type=str, required=True,
+              help="output directory")
+@click.option("-d", "--date", type=str, required=False, default="0000-0000"
+              help="date identifier to search for in the files. Currently not used by the script.")
+@click.option("-c", "--component", type=str, required=True,
+              help="component")
+@click.option("--use_subdirs", type=str, required=False, 
+              is_flag=True, default=False,
+              help="whether to process subdirs in the inputDir")
 
 if __name__ == "__main__":
     ''' entry point for click to fre pp commands '''
