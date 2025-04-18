@@ -228,10 +228,18 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
         print_data_minmax(xq, "xq")
         fre_logger.info('')
 
-        if any([yh_dim == (len(yq) - 1), xh_dim == (len(xq) - 1)]):
+        xq_dim = len(xq)
+        yq_dim = len(yq)
+
+        if any( [yh_dim != (yq_dim - 1),
+                 xh_dim != (xq_dim - 1)]):
             raise ValueError(
-                'the number of h-point lat/lon coordinates is inconsistent with the number of'
-                'q-point lat/lon coordinates! i.e. ( hpoint_dim != qpoint_dim+1 )'
+                'the number of h-point lat/lon coordinates is inconsistent with the number of\n'
+                'q-point lat/lon coordinates! i.e. ( hpoint_dim != qpoint_dim-1 )\n'
+                f'yh_dim = {yh_dim}\n'
+                f'xh_dim = {xh_dim}\n'
+                f'yq_dim = {yq_dim}\n'
+                f'xq_dim = {xq_dim}'
             )
 
         # create h-point bounds from the q-point lat lons
@@ -475,22 +483,35 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     positive = mip_var_cfgs["variable_entry"][target_var]["positive"]
     fre_logger.info("positive = %s", positive)
 
+    fre_logger.info('cmor.variable call: for target_var = %s ',target_var)
     cmor_var = cmor.variable(target_var, units, axes, positive=positive)
+    fre_logger.info('DONE cmor.variable call: for target_var = %s ',target_var)
     
     # Write the output to disk
+    fre_logger.info("cmor.write call: for var data into cmor_var")
     cmor.write(cmor_var, var)
+    fre_logger.info("DONE cmor.write call: for var data into cmor_var")
     if save_ps:
         if any([ips is None, ps is None]):
             fre_logger.warning('ps or ips is None!, but save_ps is True!\n'
                                'ps = %s, ips = %s\n'
                                'skipping ps writing!', ps, ips)
         else:
+            fre_logger.info("cmor.write call: for interp-pressure data (ips)")
             cmor.write(ips, ps, store_with=cmor_var)
+            fre_logger.info("DONE cmor.write call: for interp-pressure data (ips)")
+            fre_logger.info("cmor.close call: for interp-pressure data (ips)")
             cmor.close(ips, file_name=True, preserve=False)
+            fre_logger.info("DONE cmor.close call: for interp-pressure data (ips)")
+    fre_logger.info("cmor.close call: for cmor_var")
     filename = cmor.close(cmor_var, file_name=True, preserve=False)
+    fre_logger.info("DONE cmor.close call: for cmor_var")
     fre_logger.info("returned by cmor.close: filename = %s", filename)
+    fre_logger.info('closing netcdf4 dataset... ds')
     ds.close()
-
+    fre_logger.info('tearing-down the cmor module instance')
+    cmor.close()
+    
     fre_logger.info('-------------------------- END rewrite_netcdf_file_var call -----\n\n')
     return filename
 
@@ -571,10 +592,12 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
                                                       json_exp_config,
                                                       json_table_config, nc_fls[i])
         except Exception as exc:
-            raise Exception('(cmorize_target_var_files) problem with rewrite_netcdf_file_var. exc=\n'
-                            'exiting and executing finally block.') from exc
+            raise Exception(
+                'problem with rewrite_netcdf_file_var. ' 
+                f'exc={exc}\n'                            
+                'exiting and executing finally block.') from exc
         finally:  # should always execute, errors or not!
-            fre_logger.warning('changing directory to: \n%s', gotta_go_back_here)
+            fre_logger.warning('finally, changing directory to: \n%s', gotta_go_back_here)
             os.chdir(gotta_go_back_here)
 
         # now that CMOR has rewritten things... we can take our post-rewriting actions
@@ -638,9 +661,11 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
         run_one_mode: bool, if True, process only one file per variable.
 
     Returns:
-        int: 0 if successful.
+        int: 0 if *the last file processed* was successful. 1 if the last file processed was not successful. -1 if we didnt even try!
+
     '''
     # loop over local-variable:target-variable pairs in vars_to_run
+    return_status = -1
     for local_var in vars_to_run:
         # if the target-variable is "good", get the name of the data inside the netcdf file.
         target_var = vars_to_run[local_var]  # often equiv to local_var but not necessarily.
@@ -654,7 +679,9 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
             cmorize_target_var_files(indir, target_var, local_var, iso_datetime_arr,
                                      name_of_set, json_exp_config, outdir,
                                      mip_var_cfgs, json_table_config, run_one_mode)
+            return_status = 0
         except Exception as exc:
+            return_status = 1
             fre_logger.warning('!!!EXCEPTION CAUGHT!!!   !!!READ THE NEXT LINE!!!')
             fre_logger.warning('exc=%s', exc)
             fre_logger.warning('COULD NOT PROCESS: %s/%s...moving on', local_var, target_var)
@@ -663,10 +690,10 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
         if run_one_mode:  # TEMP DELETEME TODO
             fre_logger.warning('run_one_mode is True. breaking vars_to_run loop')
             break
-    return 0
+    return return_status
 
 def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, json_exp_config=None,
-                     outdir=None, run_one_mode=False, opt_var_name=None):
+                     outdir=None, run_one_mode=False, opt_var_name=None, grid=None, grid_label=None):
     '''
     Primary steering function for the other routines in this file, i.e essentially main.
 
@@ -686,6 +713,8 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
                       move on. largely of interest when debugging.
         opt_var_name: string, optional, specify a variable name to specifically process only files with that variable.
                       Note that this is checked against the variable name that's usually embedded in the nc filename.
+        grid and grid_label: strings, optional, grid labels for use in CMORization and replacing grid labels in the experiment
+                             config file. If one is 
 
     Returns:
         int: 0 if successful.
@@ -695,6 +724,15 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
         raise ValueError('all input arguments except opt_var_name are required!\n'
                          '[indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
                          '[%s, %s, %s, %s, %s]', indir, json_var_list, json_table_config, json_exp_config, outdir)
+
+    # check optional grid/grid_label inputs
+    # the function checks the potential error conditions
+    if any( [ grid_label is not None,
+              grid is not None ] ):
+        update_grid_and_label(json_exp_config,
+                              grid_label, grid,
+                              output_file_path = None)
+    
 
     # do not open, but confirm the existence of the exp-specific metadata file
     if Path(json_exp_config).exists():

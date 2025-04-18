@@ -23,6 +23,9 @@ def test_setup_cmor_cmip_table_repo():
                   ] )
 
 # explicit inputs to tool
+GRID = 'regridded to FOO grid from native'
+GRID_LABEL = 'gr'
+
 INDIR = f'{ROOTDIR}/ocean_sos_var_file'
 VARLIST = f'{ROOTDIR}/varlist'
 EXP_CONFIG = f'{ROOTDIR}/CMOR_input_example.json'
@@ -32,15 +35,16 @@ TMPDIR = f'{OUTDIR}/tmp'
 # determined by cmor_run_subtool
 YYYYMMDD = date.today().strftime('%Y%m%d')
 CMOR_CREATES_DIR = \
-    'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/gn'
+    f'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/{GRID_LABEL}'
 FULL_OUTPUTDIR = \
    f"{OUTDIR}/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
 FULL_OUTPUTFILE = \
-f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_gn_199307-199308.nc"
+f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{GRID_LABEL}_199307-199308.nc"
 
 # FYI but helpful for tests
 FILENAME = 'reduced_ocean_monthly_1x1deg.199307-199308.sos' # unneeded, this is mostly for reference
 FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
+
 
 def test_setup_fre_cmor_run_subtool(capfd):
     ''' The routine generates a netCDF file from an ascii (cdl) file. It also checks for a ncgen
@@ -95,7 +99,9 @@ def test_fre_cmor_run_subtool_case1(capfd):
         json_table_config = TABLE_CONFIG,
         json_exp_config = EXP_CONFIG,
         outdir = OUTDIR,
-        run_one_mode = True
+        run_one_mode = True,
+        grid = GRID,
+        grid_label = GRID_LABEL
     )
 
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
@@ -216,7 +222,9 @@ def test_fre_cmor_run_subtool_case2(capfd):
         json_table_config = TABLE_CONFIG,
         json_exp_config = EXP_CONFIG,
         outdir = OUTDIR,
-        run_one_mode = True
+        run_one_mode = True,
+        grid = GRID,
+        grid_label = GRID_LABEL
     )
 
     # check we ran on the right input file.
