@@ -14,6 +14,7 @@ import subprocess
 #import cdo
 import sys
 import xarray as xr
+import re
 
 #Set variables
 # inputDir = os.environ['inputDir']
@@ -110,7 +111,7 @@ def split_file_xarray(infile, outfilename, var_list='all', verbose=True):
   #also currently covered by teh var_shortvars query
   #var_metanames = ["bk", "pk"]
 
-  dataset = xr.load_dataset(infile)
+  dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False)
   allvars = dataset.data_vars.keys()
   #0 or 1-dim vars in the dataset (probably reference vars, not diagnostics)
   #note: netcdf dimensions and xarray coords are NOT ALWAYS THE SAME THING.
@@ -123,9 +124,9 @@ def split_file_xarray(infile, outfilename, var_list='all', verbose=True):
   var_exclude = list(set(var_patterns + [str(el) for el in var_shortvars] ))
   def matchlist(xstr):
     allmatch = [re.search(el, xstr)for el in var_exclude]
-    print(allmatch)
     #If there's at least one match in the var_exclude list (average_bnds is OK)
     return len(list(set(allmatch))) > 1
+  metavars = [el for el in allvars if matchlist(el) is True]
   datavars = [el for el in allvars if matchlist(el) is False]
   if verbose: print(datavars)
   
@@ -135,9 +136,51 @@ def split_file_xarray(infile, outfilename, var_list='all', verbose=True):
     #but KEEP the metadata vars
     #(seriously, we need the time_bnds)
     data2 = dataset.drop_vars([el for el in datavars if el is not variable])
+    vc_encode = set_coord_encoding(data2, variable)
+    v_encode= set_var_encoding(dataset, metavars)
+    var_encode = {**vc_encode, **v_encode}
+    if verbose: print(var_encode)
     #outfile = str(variable) + "." + infile_pieces[2] + ".nc"
+    #Encoding principles for xarray:
+    #  - no coords have a _FillValue
+    #  - Everything is written out with THE SAME precision it was read in
+    #  - Everything has THE SAME UNITS as it did when it was read in
     outfile = str(variable) + ".nc"
-    data2.to_netcdf(outfile, encoding = {'time' : {'_FillValue': None}})
+    data2.to_netcdf(outfile, encoding = var_encode)
+    
+def set_coord_encoding(dset, varname):
+  '''
+  Gets the encoding settings needed for xarray to write out the coordinates
+  as expected
+  (no promises on nv, because that's not always a coord)
+  '''
+  encode_dict = {}
+  vcoords = dset[varname].coords
+  for vc in vcoords:
+    vc_encoding = dset[vc].encoding #dict
+    encode_dict[vc] = {'_FillValue': None, 
+                            'dtype': dset[vc].encoding['dtype']}
+    if "units" in vc_encoding.keys():
+      if verbose: print(vc + " has units")
+      encode_dict[vc]['units'] = dset[vc].encoding['units']
+  return(encode_dict)
+
+def set_var_encoding(dset, varnames):
+  '''
+  Gets the encoding settings needed for xarray to write out the variables
+  as expected
+  mostly addressed to time_bnds, because xarray can drop the units attribute:
+    https://github.com/pydata/xarray/issues/8368
+  '''
+  encode_dict = {}
+  for v in varnames:
+    v_encoding = dset[v].encoding #dict
+    if not '_FillValue' in v_encoding.keys():
+      encode_dict[v] = {'_FillValue': None}
+    if "units" in v_encoding.keys():
+      if verbose: print(v + " has units")
+      encode_dict[v]['units'] = dset[v].encoding['units']
+  return(encode_dict)
 
 #Main method invocation
 if __name__ == '__main__':
