@@ -8,6 +8,7 @@ import logging
 import json
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 from .cmor_mixer import cmor_run_subtool
+import os
 
 fre_logger = logging.getLogger(__name__)
 
@@ -73,7 +74,8 @@ def get_freq_from_table(json_table_config):
     bronx_freq = conv_cmor_to_bronx_freq(table_freq)
     return bronx_freq
 
-def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, output=None, opt_var_name=None, run_one_mode=False):
+def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, output=None, opt_var_name=None,
+                      run_one_mode=False, dry_run_mode=False):
     '''
     A routine that cmorizes targets based on configuration stored in the model yaml. The model yaml
     points to various cmor-yaml configurations. The two levels of information are combined, their fields
@@ -101,7 +103,8 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
     # inbetween-logic to form args ----------------------
     # ---------------------------------------------------
 
-    pp_dir = cmor_yaml_dict['directories']['pp_dir']
+    pp_dir = os.path.expandvars(
+        cmor_yaml_dict['directories']['pp_dir'] )
     fre_logger.info('pp_dir = %s', pp_dir)
     check_path_existence(pp_dir)
 
@@ -117,9 +120,11 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             fre_logger.info('attempt to create it...')
             Path(cmorized_outdir).mkdir(exist_ok=False, parents=True)
         except Exception as exc:
-            raise OSError('could not create cmorized_outdir = {} for some reason!'.format(cmorized_outdir)) from exc
+            raise OSError(
+                'could not create cmorized_outdir = {} for some reason!'.format(cmorized_outdir)) from exc
 
-    json_exp_config = cmor_yaml_dict['exp_json']
+    json_exp_config = os.path.expandvars(
+        cmor_yaml_dict['exp_json'] )
     fre_logger.info('json_exp_config = %s', json_exp_config)
     check_path_existence(json_exp_config)
 
@@ -157,14 +162,27 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             fre_logger.info('indir = %s', indir)
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
-            cmor_run_subtool(
-                indir = indir ,
-                json_var_list = json_var_list ,
-                json_table_config = json_table_config ,
-                json_exp_config = json_exp_config ,
-                outdir = cmorized_outdir ,
-                run_one_mode = True ,
-                opt_var_name = None
-            )
+            if not dry_run_mode:
+                cmor_run_subtool(
+                    indir = indir ,
+                    json_var_list = json_var_list ,
+                    json_table_config = json_table_config ,
+                    json_exp_config = json_exp_config ,
+                    outdir = cmorized_outdir ,
+                    run_one_mode = True ,
+                    opt_var_name = None
+                )
+            else:
+                fre_logger.debug('--DRY RUN CALL---\n'
+                                 'cmor_run_subtool(\n'
+                                 f'    indir = {indir} ,\n'
+                                 f'    json_var_list = {json_var_list} ,\n'
+                                 f'    json_table_config = {json_table_config} ,\n'
+                                 f'    json_exp_config = {json_exp_config} ,\n'
+                                 f'    outdir = {cmorized_outdir} ,\n'
+                                 '    run_one_mode = True ,\n'
+                                 '    opt_var_name = None\n'
+                                 ')\n'
+                                 )
 
     return
