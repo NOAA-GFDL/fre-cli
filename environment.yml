@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - noaa-gfdl
 dependencies:
-  - python>=3.10
+  - python==3.10.*
   - pip
   - click
   - pyyaml
