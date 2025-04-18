@@ -4,15 +4,19 @@ cmor:
     pp_dir: /archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp
     analysis_dir: /nbhome/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip
     ptmp_dir: /xtmp/$USER/ptmp
-#    fre_analysis_home: /home/fms/local/opt/fre-analysis/test
     table_dir: fre/tests/test_files/cmip6-cmor-tables/Tables
-    exp_config_dir: fre/tests/test_files
-  targets:
-    Omon-ts-gr1:
-      json_table_config: fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json
-      json_exp_config: fre/tests/test_files/CMOR_input_example.json
-      indir: fre/tests/test_files/ocean_sos_var_file
-      json_var_list: fre/tests/test_files/varlist
-      outdir: fre/tests/test_files/outdir
-      opt_var_name: null
-#      FOO : BAR
+    outdir: fre/tests/test_files/iamnotreallyused/outdir/
+  mip_era: CMIP6
+  exp_json: /home/$USER/Working/fre-cli/fre/tests/test_files/CMOR_input_example.json
+  table_targets:
+  - table_name: Omon
+    freq: null
+    grid_label: null
+    variable_list: fre/tests/test_files/varlist
+    target_components:
+    - component_name: atmos_cmip
+      data_series_type: ts
+      chunk: P5Y
+    - component_name: atmos_level_cmip
+      data_series_type: ts
+      chunk: P5Y
