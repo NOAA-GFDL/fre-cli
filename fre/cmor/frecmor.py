@@ -16,6 +16,7 @@ VARLIST_HELP="path pointing to a json file containing directory of key/value pai
              "contained in targeted files. the key and value are often the same, " + \
              "but it is not required."
 RUN_ONE_HELP="process only one file, then exit. mostly for debugging and isolating issues."
+DRY_RUN_HELP="don't call the cmor_mixer subtool, just printout what would be called and move on until natural exit"
 
 @click.group(help=click.style(" - cmor subcommands", fg=(232,91,204)))
 def cmor_cli():
@@ -37,7 +38,13 @@ def cmor_cli():
               required = True )
 @click.option("-o", "--output", type = str, default = None,
               help = "Output file if desired", required = False)
-def yaml(yamlfile, experiment, target, platform, output):
+@click.option('--run_one', is_flag = True, default = False,
+              help=RUN_ONE_HELP,
+              required = False)
+@click.option('--dry_run', is_flag = True, default = False,
+              help=DRY_RUN_HELP,
+              required = False)
+def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run):
     """
     Processes a CMOR (Climate Model Output Rewriter) YAML configuration file.
 
@@ -50,6 +57,8 @@ def yaml(yamlfile, experiment, target, platform, output):
     target (str): Target specification for the CMOR process.
     platform (str): Platform on which the CMOR process is being run.
     output (str): Output directory or file for the processed data.
+    run_one (bool): only process one file then exit
+    dry_run (bool): don't call the cmor_mixer subtool, just printout what would be called
 
     Raises:
     ValueError: If the yamlfile is not provided.
@@ -65,7 +74,9 @@ def yaml(yamlfile, experiment, target, platform, output):
         exp_name = experiment,
         target = target,
         platform = platform,
-        output = output
+        output = output,
+        run_one_mode = run_one,
+        dry_run_mode = dry_run
     )
 
 @cmor_cli.command()
