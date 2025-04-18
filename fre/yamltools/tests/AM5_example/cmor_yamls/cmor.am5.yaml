@@ -5,21 +5,53 @@ cmor:
     <<: *shared_directories
     table_dir:
       &table_dir "fre/tests/test_files/cmip6-cmor-tables/Tables"
-    exp_config_dir:
-      &exp_config_dir "fre/tests/test_files"
-      
+    outdir:
+      'fre/tests/test_files/iamnotreallyused/outdir/'
 
-  targets:
-    Omon-ts-gr1:
-      json_table_config:
-        !join [ *table_dir, "/", "CMIP6_Omon.json" ]
-      json_exp_config:
-        !join [ *exp_config_dir, "/", "CMOR_input_example.json" ]
-      indir:
-        "fre/tests/test_files/ocean_sos_var_file"
-      json_var_list:
-        "fre/tests/test_files/varlist"
-      outdir:
-        "fre/tests/test_files/outdir"
-      opt_var_name:
+  # -------------------------------------------------------------------------------------
+  # these fields are for global configuration that isn't a directory
+  mip_era: 
+    'CMIP6'
+  exp_json:
+    '/home/$USER/Working/fre-cli/fre/tests/test_files/CMOR_input_example.json'
+
+  table_targets:
+    # -----------------------------------------------------------------------------------
+    - table_name: 'Omon' 
+      freq: 
+      grid_label: 
+      variable_list:
+        'fre/tests/test_files/varlist'
+        
+      target_components:
+        - component_name: 'atmos_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CPLD_CHUNK_A
+          
+        - component_name: 'atmos_level_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CPLD_CHUNK_A             
+    
+ 
+
+
+
+
+#    exp_config_dir:
+#      &exp_config_dir "fre/tests/test_files"
+#      
+#
+#  targets:
+#    Omon-ts-gr1:
+#      json_table_config:
+#        !join [ *table_dir, "/", "CMIP6_Omon.json" ]
+#      json_exp_config:
+#        !join [ *exp_config_dir, "/", "CMOR_input_example.json" ]
+#      indir:
+#        "fre/tests/test_files/ocean_sos_var_file"
+#      json_var_list:
+#        "fre/tests/test_files/varlist"
+#      outdir:
+#        "fre/tests/test_files/outdir"
+#      opt_var_name:
 
