@@ -57,3 +57,9 @@
         - `-npc, --no-parallel-checkout (for container build)`
         - `-j, --jobs [number of jobs to run simultneously]`
         - `-n, --parallel [number of concurrent modile compiles]`
+        - `-nft, --no-format-transfer [boolean]`
+        - `-e, --execute`
+        - `-v, --verbose`
+        - `-f, --force-checkout`
+        - `-F, --force-compile`
+        - `-FD, --force-dockerfile`
