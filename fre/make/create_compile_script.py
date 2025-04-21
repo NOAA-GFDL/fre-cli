@@ -99,7 +99,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     if execute:
         if baremetalRun:
             pool = Pool(processes=nparallel)  # Create a multiprocessing Pool
-            pool.map(buildBaremetal.run, fremakeBuildList)  # process data_inputs iterable with pool
+            pool.map(buildBaremetal.fremake_parellel, fremakeBuildList)  # process data_inputs iterable with pool
     else:
         return
 
