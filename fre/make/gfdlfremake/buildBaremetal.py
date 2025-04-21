@@ -8,34 +8,6 @@
 import subprocess
 import os
 
-#def run():
-#    """
-#    Brief: Run the build script
-#    Param:
-#        - cs : The created compile script
-#    """
-#    #command = [bld_dir, "compile.sh"]
-#    command = compile_script
-#    bld_dir = os.path.dirname(command)
-#
-#    # Run compile script
-#    p1 = subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-#
-#    # Direct output to log file as well
-#    p2 = subprocess.Popen(["tee",bld_dir+"/log.compile"], stdin=p1.stdout)
-#
-#    # Allow process1 to receive SIGPIPE is process2 exits
-#    p1.stdout.close()
-#    p2.communicate()
-#
-#    # wait for process1 to finish before checking return code
-#    p1.wait()
-#    if p1.returncode != 0:
-#        print(f"\nThere was an error running {bld_dir}/compile.sh")
-#        print(f"Check the log file: {bld_dir}/log.compile")
-#    else:
-#        print(f"\nSuccessful run of {bld_dir}/compile.sh")
-
 def fremake_parallel(fremakeBuildList):
     """
     Brief: Called for parallel execution purposes.  Runs the builds.
