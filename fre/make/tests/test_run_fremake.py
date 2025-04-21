@@ -26,9 +26,11 @@ VERBOSE = False
 targets = ["debug", "prod", "repro", "debug-openmp", "prod-openmp", "repro-openmp"]
 
 # set up some paths for the tests
-SERIAL_TEST_PATH="fre/make/tests/test_run_fremake_serial"
-MULTIJOB_TEST_PATH="fre/make/tests/test_run_fremake_multijob"
-MULTITARGET_TEST_PATH="fre/make/tests/test_run_fremake_multitarget"
+RUN_FREMAKE_OUT = "fre/make/tests/run_fremake_out"
+SERIAL_TEST_PATH = RUN_FREMAKE_OUT + "/test_run_fremake_serial"
+MULTIJOB_TEST_PATH = RUN_FREMAKE_OUT + "/test_run_fremake_multijob"
+MULTITARGET_TEST_PATH = RUN_FREMAKE_OUT + "/test_run_fremake_multitarget"
+
 Path(SERIAL_TEST_PATH).mkdir(parents=True,exist_ok=True)
 Path(MULTIJOB_TEST_PATH).mkdir(parents=True,exist_ok=True)
 Path(MULTITARGET_TEST_PATH).mkdir(parents=True,exist_ok=True)
