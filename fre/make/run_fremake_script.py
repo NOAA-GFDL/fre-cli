@@ -60,8 +60,8 @@ def compile_script_write_steps(yaml_obj,mkTemplate,src_dir,bld_dir,target,module
     fremakeBuild.writeScript()
     print("    Compile script created here: " + bld_dir + "/compile.sh" + "\n")
 
-    compile_script = f"{bld_dir}/compile.sh" 
-    return compile_script
+#    compile_script = f"{bld_dir}/compile.sh" 
+    return fremakeBuild
 
 def dockerfile_write_steps(yaml_obj,makefile_obj,img,run_env,target,mkTemplate,s2i,td,cr,cb,cd,no_format_transfer):
     """
@@ -253,9 +253,15 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,no_f
                                                    modulesInit = platform["modulesInit"],
                                                    jobs = jobs)
                         fremakeBuildList.append(fremakeBuild)
-                    else:
-                        logging.info("Compile script PREVIOUSLY created here: " + bld_dir + "/compile.sh" + "\n")
-                        fremakeBuildList.append(f"{bld_dir}/compile.sh")
+#                    else:
+#                        logging.info(f"Compile script PREVIOUSLY created here: {bld_dir}/compile.sh \n")
+#                        logging.info(f"Either run the compile script interactively or use '--force-checkout' or `--force-compile'")
+#                        fremakeBuildList.append(f"{bld_dir}/compile.sh")
+                if execute and nparallel==1:
+                    fremakeBuild.run()
+                else:
+                    logging.info(f"Compile script PREVIOUSLY created here: {bld_dir}/compile.sh \n")
+                    logging.info(f"Either run the compile script interactively or use '--force-checkout' or `--force-compile'")
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
