@@ -56,7 +56,7 @@ def test_run_fremake_serial_compile():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=False,
+        parallel=1, jobs=1, no_parallel_checkout=False,
         no_format_transfer=True, execute=True, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
     assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
@@ -67,7 +67,7 @@ def test_run_fremake_multijob_compile():
     ''' test run-fremake parallel compile with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
-        parallel=True, jobs=4, no_parallel_checkout=False,
+        parallel=2, jobs=4, no_parallel_checkout=False,
         no_format_transfer=False, execute=True, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
     assert Path(f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
@@ -77,7 +77,7 @@ def test_run_fremake_multijob_compile():
 def test_run_fremake_container_build():
     ''' checks image creation for the container build'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=True,
+        parallel=1, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=True, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
     assert Path("null_model_full-debug.sif").exists()
@@ -88,6 +88,6 @@ def test_run_fremake_container_build_notransfer():
     if Path("createContainer.sh").exists():
         os.remove("createContainer.sh")
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=True,
+        parallel=1, jobs=1, no_parallel_checkout=True,
         no_format_transfer=True, execute=True, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
