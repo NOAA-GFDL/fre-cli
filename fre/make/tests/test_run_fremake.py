@@ -50,7 +50,7 @@ def test_platformyaml_exists():
 def test_bad_platform_option():
     ''' test run-fremake with a invalid platform option'''
     run_fremake_script.fremake_run(YAMLPATH, BADOPT, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=False,
+        parallel=1, jobs=1, no_parallel_checkout=False,
 	no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
 
@@ -58,7 +58,7 @@ def test_bad_platform_option():
 def test_bad_target_option():
     ''' test run-fremake with a invalid target option'''
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT,
-        parallel=False, jobs=1, no_parallel_checkout=False,
+        parallel=1, jobs=1, no_parallel_checkout=False,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
 
@@ -66,7 +66,7 @@ def test_bad_target_option():
 def test_bad_yamlpath_option():
     ''' test run-fremake with a invalid target option'''
     run_fremake_script.fremake_run(BADOPT[0], PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=False,
+        parallel=1, jobs=1, no_parallel_checkout=False,
 	no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
 
@@ -76,7 +76,7 @@ def test_run_fremake_serial():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=False,
+        parallel=1, jobs=1, no_parallel_checkout=False,
 	no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
 
@@ -95,7 +95,7 @@ def test_run_fremake_makefile_creation_serial():
 def test_run_fremake_serial_force_checkout(capfd):
     '''run run-fremake with options for serial build with force-checkout'''
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=False,
+        parallel=1, jobs=1, no_parallel_checkout=False,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=True, force_compile=False, force_dockerfile=False)
 
@@ -111,7 +111,7 @@ def test_run_fremake_serial_force_checkout(capfd):
 def test_run_fremake_serial_force_compile(capfd):
     '''run run-fremake with options for serial build with force-compile'''
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=False,
+        parallel=1, jobs=1, no_parallel_checkout=False,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=True, force_dockerfile=False)
 
@@ -127,7 +127,7 @@ def test_run_fremake_multijob():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
-        parallel=True, jobs=4, no_parallel_checkout=True,
+        parallel=2, jobs=4, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
 
@@ -151,7 +151,7 @@ def test_run_fremake_container():
         Path(f"{os.getcwd()}/createContainer.sh").unlink()
 
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=True,
+        parallel=1, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
 
@@ -185,7 +185,7 @@ def test_run_fremake_2stage_container():
         Path("createContainer.sh").unlink()
 
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=True,
+        parallel=1, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=False)
 
@@ -218,7 +218,7 @@ def test_run_fremake_run_script_creation_container_2stage():
 def test_run_fremake_container_force_checkout(capfd):
     '''run run-fremake with options for containerized build with force-checkout option'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=True,
+        parallel=1, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=True, force_compile=False, force_dockerfile=False)
 
@@ -238,7 +238,7 @@ def test_run_fremake_container_force_checkout(capfd):
 def test_run_fremake_container_force_dockerfile(capfd):
     '''run run-fremake with options for containerized build with force-dockerfile option'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
-        parallel=False, jobs=1, no_parallel_checkout=True,
+        parallel=1, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=True)
 
