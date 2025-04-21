@@ -23,7 +23,8 @@ import re
 # component = os.environ['component']
 # use_subdirs = os.environ['use_subdirs'] 
 
-def split_netcdf(inputDir, outputDir, date, component, use_subdirs):
+def split_netcdf(inputDir, outputDir, date, component, use_subdirs, 
+                 var_list='all', verbose=False):
   '''
   Given a directory of netcdf files, splits those netcdf files into separate
   files for each data variable and copies the data variable files of interest
@@ -58,13 +59,10 @@ def split_netcdf(inputDir, outputDir, date, component, use_subdirs):
           os.mkdir(os.path.abspath(outputDir)/subdir)
   
           # Split the files by variable
-          # Note: cdo may miss some weird land variables related to metadata/cell_measures
           for file in files:
-               loopfile = re.sub("nc$", "", file)
                #newfile = subprocess.call(["sed 's/nc$//' {file}"],shell=True)
                #subprocess.call("cdo --history splitname $file $outputDir/$subdir/$(echo $file | sed 's/nc$//')", shell=True)
-               split_file_cdo(infile, loopfile)
-          
+               split_file_xarray(infile, os.path.abspath(os.path.join(outputDir, infile)))
           os.chdir(recent_dirs[-2])   #popd     
   else:
       files=glob.glob('*'+'.'+component+'?'+'(.tile?)'+'.nc')
@@ -75,8 +73,7 @@ def split_netcdf(inputDir, outputDir, date, component, use_subdirs):
    
       # Split the files by variable
       for file in files:
-          loopfile = re.sub("nc$", "", file)
-          split_file_cdo(infile, loopfile)
+          split_file_xarray(infile, infile)
     
   print("Natural end of the NetCDF splitting")
   sys.exit(0) #check this
@@ -92,7 +89,7 @@ def split_file_cdo(infile, outfile):
                 output=outfile_components)
 
   
-def split_file_xarray(infile, outfilename, var_list='all', verbose=True):
+def split_file_xarray(infile, outfile, var_list='all', verbose=True):
   '''
   Given a netcdf infile containing one or more data variables, 
   writes out a separate file for each data variable in the file, including the
@@ -101,7 +98,11 @@ def split_file_xarray(infile, outfilename, var_list='all', verbose=True):
   if no vars in the file match the vars in var_list, no files are written.
   Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
   '''
-  #do_not_include = ["time_bnds", "average_T1", "average_T2", "average_DT", "bk", "pk"]
+  if verbose:
+    print("Verbose setting turned on")
+  outfiledir = os.path.dirname(outfile)
+  outfilename = os.path.basename(outfile)
+  outfile_cmpnt = re.split('.', outfilename) #idx=1 gets replaced later
   
   #patterns meant to match the bounds vars
   #the i and j offsets + the average_* vars are also included in this category,
@@ -120,7 +121,7 @@ def split_file_xarray(infile, outfilename, var_list='all', verbose=True):
   #instead of this:
   var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= 1)]
   if verbose: print(var_shortvars)
-  #all 3 combined gets you a decent list of non-diagnostic variables
+  #both combined gets you a decent list of non-diagnostic variables
   var_exclude = list(set(var_patterns + [str(el) for el in var_shortvars] ))
   def matchlist(xstr):
     allmatch = [re.search(el, xstr)for el in var_exclude]
@@ -128,25 +129,41 @@ def split_file_xarray(infile, outfilename, var_list='all', verbose=True):
     return len(list(set(allmatch))) > 1
   metavars = [el for el in allvars if matchlist(el) is True]
   datavars = [el for el in allvars if matchlist(el) is False]
-  if verbose: print(datavars)
+  if verbose: print("printing metavars then datavars"); print(metavars); print(datavars)
   
-  for variable in datavars:
-    if verbose: print(variable)
-    #drop all data vars (diagnostics) that are not the current var of interest
-    #but KEEP the metadata vars
-    #(seriously, we need the time_bnds)
-    data2 = dataset.drop_vars([el for el in datavars if el is not variable])
-    vc_encode = set_coord_encoding(data2, variable)
-    v_encode= set_var_encoding(dataset, metavars)
-    var_encode = {**vc_encode, **v_encode}
-    if verbose: print(var_encode)
-    #outfile = str(variable) + "." + infile_pieces[2] + ".nc"
-    #Encoding principles for xarray:
-    #  - no coords have a _FillValue
-    #  - Everything is written out with THE SAME precision it was read in
-    #  - Everything has THE SAME UNITS as it did when it was read in
-    outfile = str(variable) + ".nc"
-    data2.to_netcdf(outfile, encoding = var_encode)
+  if var_list != "all":
+    if verbose:
+      print("datavars: " + datavars)
+      print("var_list: " + var_list)
+    var_list = ",".split(var_list)
+    datavars = [el for el in datavars if el in var_list]
+    if verbose:
+      print("intersection of datavars and var_list: " + datavars)
+  
+  if len(datavars) > 0:
+    for variable in datavars:
+      if verbose: print(variable)
+      #drop all data vars (diagnostics) that are not the current var of interest
+      #but KEEP the metadata vars
+      #(seriously, we need the time_bnds)
+      data2 = dataset.drop_vars([el for el in datavars if el is not variable])
+      vc_encode = set_coord_encoding(data2, variable)
+      v_encode= set_var_encoding(dataset, metavars)
+      var_encode = {**vc_encode, **v_encode}
+      if verbose: print(var_encode)
+      #outfile = str(variable) + "." + infile_pieces[2] + ".nc"
+      #Encoding principles for xarray:
+      #  - no coords have a _FillValue
+      #  - Everything is written out with THE SAME precision it was read in
+      #  - Everything has THE SAME UNITS as it did when it was read in
+      #2025-04-18: units on time_bnds aren't getting detected when running non-
+      #interactively. Not much more I can do on this unless I dip into the 
+      #system calls.
+      var_outfile = ".".join([outfile_cmpnt[0], variable] + outfile_cmpnt[2:])
+      var_out = os.path.join(outfiledir, var_outfile)
+      data2.to_netcdf(var_out, encoding = var_encode)
+  else:
+    print("No data variables found in " + infile + "; no writes take place.")
     
 def set_coord_encoding(dset, varname):
   '''

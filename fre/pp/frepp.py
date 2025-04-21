@@ -243,7 +243,8 @@ def wrapper(experiment, platform, target, config_file, branch, time):
 def trigger(experiment, platform, target, time):
     """ - Start postprocessing for a particular time """
     trigger_script.trigger(experiment, platform, target, time)
-    
+
+#fre pp split_netcdf    
 @pp_cli.command()
 @click.option("-i", "--inputDir", type=str, required=True,
               help="input directory")
@@ -253,9 +254,17 @@ def trigger(experiment, platform, target, time):
               help="date identifier to search for in the files. Currently not used by the script.")
 @click.option("-c", "--component", type=str, required=True,
               help="component")
-@click.option("--use_subdirs", type=str, required=False, 
+@click.option("--use_subdirs", required=False, 
               is_flag=True, default=False,
-              help="whether to process subdirs in the inputDir")
+              help="whether to process subdirs in the inputDir; set to True for regridded data.")
+#assumes that 'all' is never a variable, but that's a pretty safe assumption
+@click.option("-l", "--var-list", type=str, required=False, is_flag=False, 
+              default="all", help="Comma-separated string of variables to split " + 
+                                  "out of this file. Variables not in this " + 
+                                  "string will not be written out; files with " + 
+                                  "no variables in this string will have no " + 
+                                  "vars written out. Defaults to 'all', " + 
+                                  "which splits and writes all available vars.")
 
 if __name__ == "__main__":
     ''' entry point for click to fre pp commands '''
