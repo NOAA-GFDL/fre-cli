@@ -253,15 +253,9 @@ def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,no_f
                                                    modulesInit = platform["modulesInit"],
                                                    jobs = jobs)
                         fremakeBuildList.append(fremakeBuild)
-#                    else:
-#                        logging.info(f"Compile script PREVIOUSLY created here: {bld_dir}/compile.sh \n")
-#                        logging.info(f"Either run the compile script interactively or use '--force-checkout' or `--force-compile'")
-#                        fremakeBuildList.append(f"{bld_dir}/compile.sh")
-                if execute and nparallel==1:
-                    fremakeBuild.run()
-                else:
-                    logging.info(f"Compile script PREVIOUSLY created here: {bld_dir}/compile.sh \n")
-                    logging.info(f"Either run the compile script interactively or use '--force-checkout' or `--force-compile'")
+                    else:
+                        logging.info(f"Compile script PREVIOUSLY created here: {bld_dir}/compile.sh \n")
+                        logging.info(f"Either run the compile script interactively or use '--force-checkout' or '--force-compile' with '--execute' to re-create the compile script and run.")
             else:
                 ###################### container stuff below #######################################
                 ## Run the checkout script
