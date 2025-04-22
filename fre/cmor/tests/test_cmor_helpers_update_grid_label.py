@@ -7,6 +7,7 @@ from fre.cmor.cmor_helpers import update_grid_and_label
 TEST_JSON_CONTENT = {
     "grid_label": "original_label",
     "grid": "original_grid",
+    "nominal_resolution": "original_nom_res",
     "other_field": "some_value"
 }
 
@@ -31,17 +32,19 @@ def test_update_grid_label_and_grid_success(temp_json_file):
     Test successful update of 'grid_label' and 'grid' fields.
     """
     # Arrange
-    new_grid_label = "updated_label"
     new_grid = "updated_grid"
+    new_grid_label = "updated_label"
+    new_nom_res = "updated_nom_res"
 
     # Act
-    update_grid_and_label(temp_json_file, new_grid_label, new_grid)
+    update_grid_and_label(temp_json_file, new_grid_label, new_grid, new_nom_res)
 
     # Assert
     with open(temp_json_file, "r", encoding="utf-8") as file:
         data = json.load(file)
-        assert data["grid_label"] == new_grid_label
         assert data["grid"] == new_grid
+        assert data["grid_label"] == new_grid_label
+        assert data["nominal_resolution"] == new_nom_res
         assert data["other_field"] == "some_value"  # Ensure other fields are untouched
 
 def test_missing_grid_label_field(temp_json_file):
@@ -58,10 +61,11 @@ def test_missing_grid_label_field(temp_json_file):
 
     new_grid_label = "updated_label"
     new_grid = "updated_grid"
-
+    new_nom_res = "updated_nom_res"
+    
     # Act & Assert
     with pytest.raises(KeyError, match="Error while updating 'grid_label'"):
-        update_grid_and_label(temp_json_file, new_grid_label, new_grid)
+        update_grid_and_label(temp_json_file, new_grid_label, new_grid, new_nom_res)
 
 def test_missing_grid_field(temp_json_file):
     """
@@ -77,10 +81,11 @@ def test_missing_grid_field(temp_json_file):
 
     new_grid_label = "updated_label"
     new_grid = "updated_grid"
+    new_nom_res = "updated_nom_res"
 
     # Act & Assert
     with pytest.raises(KeyError, match="Error while updating 'grid'"):
-        update_grid_and_label(temp_json_file, new_grid_label, new_grid)
+        update_grid_and_label(temp_json_file, new_grid_label, new_grid, new_nom_res)
 
 def test_invalid_json_file(tmp_path):
     """
@@ -93,10 +98,11 @@ def test_invalid_json_file(tmp_path):
 
     new_grid_label = "updated_label"
     new_grid = "updated_grid"
+    new_nom_res = "updated_nom_res"
 
     # Act & Assert
     with pytest.raises(json.JSONDecodeError):
-        update_grid_and_label(invalid_json_file, new_grid_label, new_grid)
+        update_grid_and_label(invalid_json_file, new_grid_label, new_grid, new_nom_res)
 
 def test_nonexistent_file():
     """
@@ -106,7 +112,8 @@ def test_nonexistent_file():
     nonexistent_file = Path("nonexistent.json")
     new_grid_label = "updated_label"
     new_grid = "updated_grid"
+    new_nom_res = "updated_nom_res"
 
     # Act & Assert
     with pytest.raises(FileNotFoundError):
-        update_grid_and_label(nonexistent_file, new_grid_label, new_grid)
+        update_grid_and_label(nonexistent_file, new_grid_label, new_grid, new_nom_res)

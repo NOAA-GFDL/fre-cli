@@ -23,8 +23,9 @@ def test_setup_cmor_cmip_table_repo():
                   ] )
 
 # explicit inputs to tool
-GRID = 'regridded to FOO grid from native'
+GRID = 'regridded to FOO grid from native' #placeholder value
 GRID_LABEL = 'gr'
+NOM_RES = '10000 km' #placeholder value
 
 INDIR = f'{ROOTDIR}/ocean_sos_var_file'
 VARLIST = f'{ROOTDIR}/varlist'
@@ -100,8 +101,9 @@ def test_fre_cmor_run_subtool_case1(capfd):
         json_exp_config = EXP_CONFIG,
         outdir = OUTDIR,
         run_one_mode = True,
+        grid_label = GRID_LABEL,
         grid = GRID,
-        grid_label = GRID_LABEL
+        nom_res = NOM_RES
     )
 
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
@@ -223,8 +225,9 @@ def test_fre_cmor_run_subtool_case2(capfd):
         json_exp_config = EXP_CONFIG,
         outdir = OUTDIR,
         run_one_mode = True,
+        grid_label = GRID_LABEL,
         grid = GRID,
-        grid_label = GRID_LABEL
+        nom_res = NOM_RES
     )
 
     # check we ran on the right input file.

@@ -116,7 +116,8 @@ def test_cli_fre_cmor_run_case1():
     exp_config = f'{ROOTDIR}/CMOR_input_example.json'
     outdir = f'{ROOTDIR}/outdir'
     grid_label = 'gr'
-    grid = 'FOO_BAR_PLACEHOLD'
+    grid_desc = 'FOO_BAR_PLACEHOLD'
+    nom_res = '10000 km'
 
     # determined by cmor_run_subtool
     cmor_creates_dir = \
@@ -134,15 +135,16 @@ def test_cli_fre_cmor_run_case1():
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
-    #click.echo('')
-    result = runner.invoke(fre.fre, args = ["cmor", "run", "--run_one",
-                                            "--indir", indir,
-                                            "--varlist", varlist,
-                                            "--table_config", table_config,
-                                            "--exp_config", exp_config,
-                                            "--outdir",  outdir,
-                                            "--grid_label", grid_label,
-                                            "--grid", grid ] )
+    result = runner.invoke(fre.fre, args = [ "-v", "-v",
+                                             "cmor", "run", "--run_one",
+                                             "--indir", indir,
+                                             "--varlist", varlist,
+                                             "--table_config", table_config,
+                                             "--exp_config", exp_config,
+                                             "--outdir",  outdir,
+                                             "--grid_label", grid_label,
+                                             "--grid_desc", grid_desc,
+                                             "--nom_res", nom_res ] )
     assert all ( [ result.exit_code == 0,
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
@@ -157,7 +159,8 @@ def test_cli_fre_cmor_run_case2():
     exp_config = f'{ROOTDIR}/CMOR_input_example.json'
     outdir = f'{ROOTDIR}/outdir'
     grid_label = 'gr'
-    grid = 'FOO_BAR_PLACEHOLD'
+    grid_desc = 'FOO_BAR_PLACEHOLD'
+    nom_res = '10000 km'
 
     # determined by cmor_run_subtool
     cmor_creates_dir = \
@@ -175,15 +178,16 @@ def test_cli_fre_cmor_run_case2():
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
-    #click.echo('')
-    result = runner.invoke(fre.fre, args = ["cmor", "run", "--run_one",
+    result = runner.invoke(fre.fre, args = ["-v", "-v",
+                                            "cmor", "run", "--run_one",
                                             "--indir", indir,
                                             "--varlist", varlist,
                                             "--table_config", table_config,
                                             "--exp_config", exp_config,
                                             "--outdir",  outdir,
-                                            "--grid_label", grid_label,
-                                            "--grid", grid ] )
+                                             "--grid_label", grid_label,
+                                             "--grid_desc", grid_desc,
+                                             "--nom_res", nom_res ] )
     assert all ( [ result.exit_code == 0,
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
