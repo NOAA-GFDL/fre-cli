@@ -433,6 +433,7 @@ def test_fre_nctool_time_unwgt_avgs_stddevs():
 
 '''
 #
+#if pl.Path archive exists, run these tests
 def test_fre_nctools_all():
     ''' generates a time averaged file using fre_cli's version '''
     ''' weighted average, no std deviation '''
