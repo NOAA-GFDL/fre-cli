@@ -13,7 +13,7 @@ cmor:
   mip_era: 
     'CMIP6'
   exp_json:
-    '/home/$USER/Working/fre-cli/fre/tests/test_files/CMOR_input_example.json'
+    'fre/tests/test_files/CMOR_input_example.json'
 
   table_targets:
     # -----------------------------------------------------------------------------------
