@@ -1,15 +1,10 @@
-'''
-This script contains the refineDiags that produce data at the same
-frequency as the input data (no reduction) such as surface albedo,
-masking fields,...
-It can accept any file and will only compute refineDiags in fields
-are present.
-'''
-
 import os
 import netCDF4 as nc
 import xarray as xr
 
+import logging
+fre_logger = logging.getLogger(__name__)
+fre_logger.setLevel(logging.DEBUG)
 
 def mask_atmos_plevel_subtool(infile, outfile, psfile):
     ''' click entry point to fre cmor mask-atmos-plevel'''
@@ -32,36 +27,25 @@ def mask_atmos_plevel_subtool(infile, outfile, psfile):
         raise FileNotFoundError(f"ERROR: Input file {infile} does not exist")
     ds_in = xr.open_dataset(infile)
 
-    # The trigger for atmos masking is a variable attribute "needs_atmos_masking = True".
-    # In the future this will be set within the model, but for now and testing,
-    # we'll add the attribute for variables that end with "_unmsk".
-    ds_in = preprocess(ds_in)
-
     ds_out = xr.Dataset()
 
-    # Process all variables with attribute "needs_atmos_masking = True"
+    # The trigger for atmos masking is a variable attribute "pressure_mask = False".
+    # Then change the attribute to True after the dataset is modified
     for var in list(ds_in.variables):
-        if 'needs_atmos_masking' in ds_in[var].attrs:
-            del ds_in[var].attrs['needs_atmos_masking']
+        if 'pressure_mask' in ds_in[var].attrs and not ds_in[var].attrs['pressure_mask']:
             ds_out[var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
+            ds_out[var].attrs['pressure_mask'] = True
+            fre_logger.info(f"Finished processing '{var}' and set 'pressure_mask' to False")
         else:
+            fre_logger.debug(f"Not processing '{var}'")
             continue
 
     # Write the output file if anything was done
     if ds_out.variables:
-        print(f"Modifying variables: {list(ds_out.variables)}\n appending into new file {outfile}")
+        fre_logger.info(f"Modifed {list(ds_out.variables)} variables, so writing into new file '{outfile}'")
         write_dataset(ds_out, ds_in, outfile)
     else:
-        print(f"No variables modified, so not writing output file {outfile}")
-
-
-
-def preprocess(ds):
-    """add needs_atmos_masking attribute if var ends with _unmsk"""
-    for var in list(ds.variables):
-        if var.endswith('_unmsk'):
-            ds[var].attrs['needs_atmos_masking'] = True
-    return ds
+        fre_logger.debug(f"No variables modified, so not writing output file '{outfile}'")
 
 
 def mask_field_above_surface_pressure(ds, var, ds_ps):
@@ -86,7 +70,7 @@ def mask_field_above_surface_pressure(ds, var, ds_ps):
 
     # transpose dims like the original array
     masked = masked.transpose(*ds[var].dims)
-    print(f"Processed {var}")
+    fre_logger.debug(f"Processed {var}")
 
     return masked
 
