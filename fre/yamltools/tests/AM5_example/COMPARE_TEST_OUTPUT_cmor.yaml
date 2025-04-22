@@ -7,7 +7,7 @@ cmor:
     table_dir: fre/tests/test_files/cmip6-cmor-tables/Tables
     outdir: fre/tests/test_files/iamnotreallyused/outdir/
   mip_era: CMIP6
-  exp_json: /home/$USER/Working/fre-cli/fre/tests/test_files/CMOR_input_example.json
+  exp_json: fre/tests/test_files/CMOR_input_example.json
   table_targets:
   - table_name: Omon
     freq: null
