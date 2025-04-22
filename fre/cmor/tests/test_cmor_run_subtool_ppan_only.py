@@ -46,10 +46,7 @@ def _case_function(testfile_dir, table, opt_var_name, grid_label):
 
     # define inputs to the cmor run tool
     indir = testfile_dir
-    #table = table
     table_file = f'{CMIP6_TABLE_REPO_PATH}/Tables/CMIP6_{table}.json'
-    #opt_var_name = opt_var_name
-    #grid_label = grid_label
 
     # if we can't find the input test file, do an xfail. most likely, you're not at PPAN.
     if not Path(testfile_dir).exists():
@@ -77,7 +74,8 @@ def _case_function(testfile_dir, table, opt_var_name, grid_label):
             run_one_mode = True,
             opt_var_name = opt_var_name,
             grid = 'FOO_PLACEHOLDER',
-            grid_label = grid_label            
+            grid_label = grid_label,
+            nom_res = '10000 km' # placeholder
         )
         some_return = 0
     except Exception as exc:
