@@ -693,7 +693,8 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
     return return_status
 
 def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, json_exp_config=None,
-                     outdir=None, run_one_mode=False, opt_var_name=None, grid=None, grid_label=None):
+                     outdir=None, run_one_mode=False,
+                     opt_var_name=None, grid=None, grid_label=None, nom_res=None):
     '''
     Primary steering function for the other routines in this file, i.e essentially main.
 
@@ -713,9 +714,10 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
                       move on. largely of interest when debugging.
         opt_var_name: string, optional, specify a variable name to specifically process only files with that variable.
                       Note that this is checked against the variable name that's usually embedded in the nc filename.
-        grid and grid_label: strings, optional, grid labels for use in CMORization and replacing grid labels in the experiment
-                             config file. If one is 
-
+        grid: string, description of grid pointed to by grid_label field, optional.
+        grid_label: string, label of grid of data, must be one of several possibilities in controlled vocab file, optional.
+        nom_res: string, one-dimensional size representing approximate distance spanned by a grid cell, must be one of
+                 several possibilities in the controlled vocab file, optional.
     Returns:
         int: 0 if successful.
     '''
@@ -728,9 +730,10 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
     # check optional grid/grid_label inputs
     # the function checks the potential error conditions
     if any( [ grid_label is not None,
-              grid is not None ] ):
+              grid is not None,
+              nom_res is not None ] ):
         update_grid_and_label(json_exp_config,
-                              grid_label, grid,
+                              grid_label, grid, nom_res,
                               output_file_path = None)
     
 

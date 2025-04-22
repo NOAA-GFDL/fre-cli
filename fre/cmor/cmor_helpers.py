@@ -185,7 +185,7 @@ def get_json_file_data(json_file_path=None):
 
 
 
-def update_grid_and_label(json_file_path, new_grid_label, new_grid, output_file_path=None):
+def update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res, output_file_path=None):
     """
     Updates the "grid_label" and "grid" fields in a specified JSON file housing exp-specific
     configuration information req'd by CMOR for re-writing data compliantly
@@ -194,6 +194,7 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, output_file_
         json_file_path (str): Path to the input JSON file.
         new_grid_label (str): New value for the "grid_label" field.
         new_grid (str): New value for the "grid" field.
+        new_nom_res (str): New value for the "nominal_resolution" field
         output_file_path (str, optional): Path to save the updated JSON file. If None, overwrites the original file.
 
     Raises:
@@ -201,9 +202,9 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, output_file_
         KeyError: If the "grid_label" or "grid" fields are not found in the JSON file.
         json.JSONDecodeError: If the JSON file cannot be decoded.
     """
-    if None in [new_grid_label, new_grid]:
-        fre_logger.error('ERROR: grid/grid_label updating requested for exp_config file, but one of them is None\n'
-                        'bailing...')
+    if None in [new_grid_label, new_grid, new_nom_res]:
+        fre_logger.error('ERROR: grid/grid_label/nom_res updating requested for exp_config file, but one of them is None\n'
+                        'bailing...!')
         raise ValueError
         
     
@@ -211,6 +212,15 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, output_file_
         # Open and load the JSON file
         with open(json_file_path, "r", encoding="utf-8") as file:
             data = json.load(file)
+
+        # Update the "grid" field
+        try:
+            fre_logger.info('Original "grid": %s', data["grid"])
+            data["grid"] = new_grid
+            fre_logger.info('Updated "grid": %s', data["grid"])
+        except KeyError as e:
+            fre_logger.error("Failed to update 'grid': %s", e)
+            raise KeyError("Error while updating 'grid'. Ensure the field exists and is modifiable.") from e
 
         # Update the "grid_label" field
         try:
@@ -221,14 +231,14 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, output_file_
             fre_logger.error("Failed to update 'grid_label': %s", e)
             raise KeyError("Error while updating 'grid_label'. Ensure the field exists and is modifiable.") from e
 
-        # Update the "grid" field
+        # Update the "nominal_resolution" field
         try:
-            fre_logger.info('Original "grid": %s', data["grid"])
-            data["grid"] = new_grid
-            fre_logger.info('Updated "grid": %s', data["grid"])
+            fre_logger.info('Original "nominal_resolution": %s', data["nominal_resolution"])
+            data["nominal_resolution"] = new_nom_res
+            fre_logger.info('Updated "nominal_resolution": %s', data["nominal_resolution"])
         except KeyError as e:
-            fre_logger.error("Failed to update 'grid': %s", e)
-            raise KeyError("Error while updating 'grid'. Ensure the field exists and is modifiable.") from e
+            fre_logger.error("Failed to update 'nominal_resolution': %s", e)
+            raise KeyError("Error while updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from e
 
         # Determine the file path for saving
         output_file_path = output_file_path or json_file_path
@@ -248,21 +258,3 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, output_file_
     except Exception as e:
         fre_logger.error("An unexpected error occurred: %s", e)
         raise
-
-## Example usage
-#if __name__ == "__main__":
-#    # Path to the input JSON file
-#    input_json_path = "fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_input_example.json"
-#
-#    # New values for the fields
-#    new_grid_label = "gn"
-#    new_grid = "native grid"
-#    #new_grid_label = "gr"
-#    #new_grid = "regridded to some other grid"
-#
-#    # Path to save the updated JSON file (optional)
-#    # Set to None to overwrite the original file
-#    output_json_path = None#'./CMIP6_input_example_REWRITE.json'  
-#
-#    # Update the grid and label
-#    update_grid_and_label(input_json_path, new_grid_label, new_grid, output_json_path)

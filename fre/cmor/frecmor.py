@@ -138,10 +138,24 @@ def find(varlist, table_config_dir, opt_var_name):
 @click.option('--run_one', is_flag = True, default = False,
               help=RUN_ONE_HELP,
               required = False)
-@click.option('-v', "--opt_var_name", type = str,
+@click.option('-v', "--opt_var_name", type = str, default = None,
               help=OPT_VAR_NAME_HELP,
               required=False)
-def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name):
+@click.option('-g', '--grid_label', type = str, default = None,
+              help = 'label representing grid type of input data, e.g. "gn" for native or "gr" for regridded, ' + \
+                     'replaces the "grid_label" field in the CMOR experiment configuration file. The label must ' + \
+                     'be one of the entries in the MIP controlled-vocab file.',
+              required = False)
+@click.option('--grid_desc', type = str, default = None,
+              help = 'description of grid indicated by grid label, replaces the "grid" field in the CMOR ' + \
+                     'experiment configuration file.',
+              required = False)
+@click.option('--nom_res', type = str, default = None,
+              help = 'nominal resolution indicated by grid and/or grid label, replaces the "nominal_resolution", ' + \
+                     'replaces the "grid" field in the CMOR experiment configuration file. The entered string ' + \
+                     'must be one of the entries in the MIP controlled-vocab file.',
+              required = False)
+def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name, grid_label, grid_desc, nom_res):
     # pylint: disable=unused-argument
     """
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
@@ -152,8 +166,11 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name)
         json_table_config = table_config,
         json_exp_config = exp_config,
         outdir = outdir,
+        run_one_mode = run_one,
         opt_var_name = opt_var_name,
-        run_one_mode = run_one
+        grid = grid_desc,
+        grid_label = grid_label,
+        nom_res = nom_res        
     )
 
 @cmor_cli.command()
