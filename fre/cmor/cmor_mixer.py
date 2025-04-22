@@ -500,9 +500,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
             fre_logger.info("cmor.write call: for interp-pressure data (ips)")
             cmor.write(ips, ps, store_with=cmor_var)
             fre_logger.info("DONE cmor.write call: for interp-pressure data (ips)")
-            fre_logger.info("cmor.close call: for interp-pressure data (ips)")
-            cmor.close(ips, file_name=True, preserve=False)
-            fre_logger.info("DONE cmor.close call: for interp-pressure data (ips)")
+            
     fre_logger.info("cmor.close call: for cmor_var")
     filename = cmor.close(cmor_var, file_name=True, preserve=False)
     fre_logger.info("DONE cmor.close call: for cmor_var")
