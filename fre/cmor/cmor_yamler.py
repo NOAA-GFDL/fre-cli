@@ -17,7 +17,7 @@ def check_path_existence(some_path):
     simple function checking for pathlib.Path existence, raising a FileNotFoundError if needed 
     '''
     if not Path(some_path).exists():
-        raise FileNotFoundError('does not exist:  {}'.format(some_path))
+        raise FileNotFoundError('does not exist:  {}'.format(some_path)) # uncovered
 
 def iso_to_bronx_chunk(cmor_chunk_in):
     '''
@@ -28,7 +28,7 @@ def iso_to_bronx_chunk(cmor_chunk_in):
     if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
         bronx_chunk = cmor_chunk_in[1:-1] + 'yr'
     else:
-        raise Exception('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py')            
+        raise Exception('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py') #uncovered
     fre_logger.debug('bronx_chunk = %s', bronx_chunk)
     return bronx_chunk
 
@@ -53,7 +53,7 @@ def conv_cmor_to_bronx_freq(cmor_table_freq):
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
     if bronx_freq is None:
-        raise KeyError('frequency = {} does not exist in the targeted cmor table'.format(cmor_table_freq))
+        raise KeyError('frequency = {} does not exist in the targeted cmor table'.format(cmor_table_freq)) #uncovered
     return bronx_freq
 
 def get_freq_from_table(json_table_config):
@@ -68,7 +68,7 @@ def get_freq_from_table(json_table_config):
             try:
                 table_freq = table_config_data['variable_entry'][var_entry]['frequency']
                 break
-            except KeyError:
+            except KeyError: #uncovered
                 raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
                                'ALWAYS have frequency info under the variable entry!! EXIT! BAD!')
     bronx_freq = conv_cmor_to_bronx_freq(table_freq)
@@ -119,7 +119,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             fre_logger.info('cmorized_outdir does not exist.')
             fre_logger.info('attempt to create it...')
             Path(cmorized_outdir).mkdir(exist_ok=False, parents=True)
-        except Exception as exc:
+        except Exception as exc: #uncovered
             raise OSError(
                 'could not create cmorized_outdir = {} for some reason!'.format(cmorized_outdir)) from exc
 
@@ -163,7 +163,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
             if not dry_run_mode:
-                cmor_run_subtool(
+                cmor_run_subtool( #uncovered
                     indir = indir ,
                     json_var_list = json_var_list ,
                     json_table_config = json_table_config ,

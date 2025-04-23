@@ -66,8 +66,8 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run):
 
 
     # if opt_var_name specified, forget the list.
-    if yamlfile is None:
-        raise ValueError('I need a yamlfile!!!')
+    if yamlfile is None: 
+        raise ValueError('I need a yamlfile!!!') #uncovered TODO
 
     cmor_yaml_subtool(
         yamlfile = yamlfile,
@@ -89,7 +89,7 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run):
 @click.option('-v', "--opt_var_name", type = str,
               help=OPT_VAR_NAME_HELP,
               required=False)
-def find(varlist, table_config_dir, opt_var_name):
+def find(varlist, table_config_dir, opt_var_name): #uncovered
     '''
     loop over json table files in config_dir and show which tables contain variables in var list/
     the tool will also print what that table entry is expecting of that variable as well. if given
