@@ -53,6 +53,8 @@ test:
     - fre/
   files:
     - mkmf/templates/linux-ubuntu-xenial-gnu.mk
+	- pytest.ini
+	- coveragerc
   imports:
     - fre
     - fre.app

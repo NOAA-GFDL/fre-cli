@@ -67,7 +67,7 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run):
 
     # if opt_var_name specified, forget the list.
     if yamlfile is None: 
-        raise ValueError('I need a yamlfile!!!') #uncovered TODO
+        raise ValueError('I need a yamlfile!!!') #uncovered
 
     cmor_yaml_subtool(
         yamlfile = yamlfile,
