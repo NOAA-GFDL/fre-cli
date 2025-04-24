@@ -69,12 +69,18 @@ class frenctoolsTimeAverager(timeAverager):
                 with Popen(timavgcsh_command,
                         stdout=PIPE, stderr=PIPE, shell=False) as subp:
                     output=subp.communicate()[0]
-
+                            
+                    if pathlib.Path.exists("timavg.csh"):
+                        continue
+                    else:
+                        print("No timavg.csh file found")
+                        
                     if subp.returncode < 0:
                         print('error')
                     else:
                         print(f'{nc_monthly_file} climatology successfully ran')
                         exitstatus=0
+                        
                 #Delete files after being used to generate output files
             for month_index in month_indices:  
                 month_name = month_names[month_index - 1]
