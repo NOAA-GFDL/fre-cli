@@ -20,7 +20,6 @@ class frenctoolsTimeAverager(timeAverager):
 
         exitstatus=1
         if self.avg_type not in ['month','all']:
-            print('correct location')
             print(f'ERROR: avg_type={self.avg_type} not supported by this class at this time.')
             return exitstatus
 
@@ -70,12 +69,11 @@ class frenctoolsTimeAverager(timeAverager):
                 with Popen(timavgcsh_command,
                         stdout=PIPE, stderr=PIPE, shell=False) as subp:
                     output=subp.communicate()[0]
-                    print(f'output={output}')
 
                     if subp.returncode < 0:
                         print('error')
                     else:
-                        print(f'{nc_monthly_file} climitology successfully ran')
+                        print(f'{nc_monthly_file} climatology successfully ran')
                         exitstatus=0
                 #Delete files after being used to generate output files
             for month_index in month_indices:  
