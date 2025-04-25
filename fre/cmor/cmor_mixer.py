@@ -791,8 +791,10 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
 
     # make list of iso-datetimes here
     iso_datetime_arr = []
-    get_iso_datetimes(indir_filenames, iso_datetime_arr)
+    get_iso_datetimes(indir_filenames, iso_datetime_arr) # filter within this function?
     fre_logger.info('found iso datetimes = \n%s', iso_datetime_arr)
+    # another function that removes the entries from the list that arent in range ?
+    #assert False #uncomment me for convenient spot to begin dev on min/max dates
 
     # name_of_set == component label...
     # which is not relevant for CMOR/CMIP... or is it?
