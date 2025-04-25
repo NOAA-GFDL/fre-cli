@@ -76,12 +76,12 @@ class frenctoolsTimeAverager(timeAverager):
                     if pathlib.Path.exists("timavg.csh"):
                         continue
                     else:
-                        print("No timavg.csh file found")
+                        fre_logger.error("No timavg.csh file found")
                         
                     if subp.returncode < 0:
-                        print('error')
+                        fre_logger.error('error')
                     else:
-                        print(f'{nc_monthly_file} climatology successfully ran')
+                        fre_logger.info('%s climatology successfully ran',nc_monthly_file)
                         exitstatus=0
                         
                 #Delete files after being used to generate output files
@@ -100,12 +100,12 @@ class frenctoolsTimeAverager(timeAverager):
         with Popen(timavgcsh_command,
                    stdout=PIPE, stderr=PIPE, shell=False) as subp:
             output=subp.communicate()[0]
-            print(f'output={output}')
+            fre_logger.info('output= %s',output)
 
             if subp.returncode < 0:
-                print('error')
+                fre_logger.error('error')
             else:
-                print('success')
+                fre_logger.info('success')
                 exitstatus=0
 
         return exitstatus
