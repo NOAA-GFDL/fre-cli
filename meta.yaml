@@ -42,7 +42,6 @@ requirements:
     - conda-forge::pytest-cov
     - conda-forge::python-cdo
     - conda-forge::pyyaml
-    - conda-forge::sqlite
 
 test:
   source_files:
