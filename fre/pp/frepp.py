@@ -200,9 +200,10 @@ def histval(history,date_string,warn):
 #fre pp ppval
 @pp_cli.command()
 @click.option('--pp_dir','-p', required=True, help="Path to pp dir")
-def ppval(pp_dir):
+@click.option('--calendar','-c', required=True, help="Calendar used in dataset")
+def ppval(pp_dir,calendar):
     """ words """
-    ppval_script.validate(pp_dir)
+    ppval_script.validate(pp_dir,calendar)
 
 #fre pp wrapper
 @pp_cli.command()
