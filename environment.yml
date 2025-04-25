@@ -7,6 +7,7 @@ dependencies:
   - pip
   - click
   - pyyaml
+  - sqlite3
   - pylint
   - jsonschema
   - noaa-gfdl::fre-nctools

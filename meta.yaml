@@ -42,6 +42,7 @@ requirements:
 
 test:
   requires:
+    - sqlite3
     - pylint
     - conda-forge::pytest
     - conda-forge::pytest-cov
