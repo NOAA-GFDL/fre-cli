@@ -4,7 +4,10 @@ import os
 from netCDF4 import Dataset, num2date
 import calendar
 from cdo import Cdo
+import logging
+
 cdo = Cdo()
+fre_logger = logging.getLogger(__name__)
 
 class frenctoolsTimeAverager(timeAverager):
     '''
@@ -16,27 +19,27 @@ class frenctoolsTimeAverager(timeAverager):
         ''' use fre-nctool's CLI timavg.csh with subprocess call '''
         assert self.pkg=="fre-nctools"
         if __debug__:
-            print(locals()) #input argument details
+            fre_logger.debug(locals()) #input argument details
 
         exitstatus=1
         if self.avg_type not in ['month','all']:
-            print(f'ERROR: avg_type={self.avg_type} not supported by this class at this time.')
+            fre_logger.error('avg_type= %s not supported by this class at this time.', self.avg_type)
             return exitstatus
 
         if self.unwgt:
-            print('WARNING: unwgt=True unsupported by frenctoolsAverager. ignoring!!!')
+            fre_logger.warning('unwgt=True unsupported by frenctoolsAverager. Ignoring!!!')
 
         if self.var is not None:
-            print(f'WARNING: variable specification (var={self.var})' + \
-                   ' not currently supported for frenctols time averaging. ignoring!')
+            fre_logger.warning('Variable specification (var= %s)' + \
+                   ' not currently supported for frenctols time averaging. ignoring!', self.var)
 
         if infile is None:
-            print('ERROR: I need an input file, specify a value for the infile argument')
+            fre_logger.error('Need an input file, specify a value for the infile argument')
             return exitstatus
 
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
-            print(f'WARNING: no output filename given, setting outfile={outfile}')
+            fre_logger.warning('No output filename given, setting outfile= %s', outfile)
 
         from subprocess import Popen, PIPE
 ########################################################################################
