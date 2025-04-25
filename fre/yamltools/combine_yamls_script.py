@@ -51,7 +51,7 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
     # Merge model/cmor yamls if more than 1 is defined
     # (without overwriting the yaml)
     try:
-        fre_logger.info('\n\ncalling CMORYaml.merge_cmor_yaml(), for full_cmor_yaml'
+        fre_logger.info('\ncalling CMORYaml.merge_cmor_yaml(), for full_cmor_yaml.\n'
                         'using args comb_cmor_updated_list and loaded_yaml...')
         full_cmor_yaml = CMORYaml.merge_cmor_yaml( comb_cmor_updated_list,
                                                    loaded_yaml                 )
@@ -176,6 +176,8 @@ def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
         fre_logger.info('initializing a CMORYaml instance...')
         CmorYaml = cmip.CMORYaml( yamlfile, experiment, platform, target )
         fre_logger.info('...CMORYaml instance initialized')
+        #print(CmorYaml)
+        #assert False
 
         fre_logger.info('attempting to combine cmor yaml info with info from other yamls...')
         yml_dict = get_combined_cmoryaml( CmorYaml, experiment, output )

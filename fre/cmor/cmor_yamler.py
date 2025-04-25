@@ -3,12 +3,13 @@ this module is for 'fre cmor yaml' calls, driving and steering the cmor_run_subt
 configuration information on e.g. target experiments
 """
 
-from pathlib import Path
-import logging
 import json
+from pathlib import Path
+import pprint
+import logging
+import os
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 from .cmor_mixer import cmor_run_subtool
-import os
 
 fre_logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ def iso_to_bronx_chunk(cmor_chunk_in):
     fre_logger.debug('bronx_chunk = %s', bronx_chunk)
     return bronx_chunk
 
-def conv_cmor_to_bronx_freq(cmor_table_freq):
+def conv_mip_to_bronx_freq(cmor_table_freq):
     cmor_to_bronx_dict = {
         "1hr"    : "1hr",
         "1hrCM"  : None,
@@ -56,7 +57,7 @@ def conv_cmor_to_bronx_freq(cmor_table_freq):
         raise KeyError('frequency = {} does not exist in the targeted cmor table'.format(cmor_table_freq)) #uncovered
     return bronx_freq
 
-def get_freq_from_table(json_table_config):
+def get_bronx_freq_from_mip_table(json_table_config):
     ''' 
     checks one of the variable fields within a cmip cmor table for the frequency of the data the table describes
     takes in a path to a json cmip cmor table file, and output a string corresponding to a FREbronx style frequency 
@@ -71,7 +72,7 @@ def get_freq_from_table(json_table_config):
             except KeyError: #uncovered
                 raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
                                'ALWAYS have frequency info under the variable entry!! EXIT! BAD!')
-    bronx_freq = conv_cmor_to_bronx_freq(table_freq)
+    bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
 
 def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, output=None, opt_var_name=None,
@@ -98,21 +99,29 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
     cmor_yaml_dict = consolidate_yamls(yamlfile=yamlfile,
                                        experiment=exp_name, platform=platform, target=target,
                                        use="cmor", output=output)['cmor']
+    fre_logger.debug('consolidate_yamls produced the following dictionary of cmor-settings from yamls: \n%s',
+                     pprint.pformat(cmor_yaml_dict) )
+                     
 
     # ---------------------------------------------------
     # inbetween-logic to form args ----------------------
     # ---------------------------------------------------
 
+    # target input pp directory 
     pp_dir = os.path.expandvars(
         cmor_yaml_dict['directories']['pp_dir'] )
     fre_logger.info('pp_dir = %s', pp_dir)
     check_path_existence(pp_dir)
 
-    cmip_cmor_table_dir = cmor_yaml_dict['directories']['table_dir']
+    # directory holding mip table config inputs
+    cmip_cmor_table_dir = os.path.expandvars(
+        cmor_yaml_dict['directories']['table_dir'] )
     fre_logger.info('cmip_cmor_table_dir = %s', cmip_cmor_table_dir)
     check_path_existence(cmip_cmor_table_dir)
 
-    cmorized_outdir = cmor_yaml_dict['directories']['outdir']
+    # final directory housing whole CMOR dir structure at the end of it all
+    cmorized_outdir = os.path.expandvars(
+        cmor_yaml_dict['directories']['outdir'] )
     fre_logger.info('cmorized_outdir = %s', cmorized_outdir)
     if not Path(cmorized_outdir).exists():
         try:
@@ -123,41 +132,69 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             raise OSError(
                 'could not create cmorized_outdir = {} for some reason!'.format(cmorized_outdir)) from exc
 
+    # path to metadata header to be appended to output netcdf file
     json_exp_config = os.path.expandvars(
         cmor_yaml_dict['exp_json'] )
     fre_logger.info('json_exp_config = %s', json_exp_config)
     check_path_existence(json_exp_config)
 
+    # e.g. CMIP6
     mip_era = cmor_yaml_dict['mip_era']
     fre_logger.info('mip_era = %s', mip_era)
 
     # ---------------------------------------------------
     # showtime ------------------------------------------
     # ---------------------------------------------------
-
     for table_config in cmor_yaml_dict['table_targets']:
         table_name = table_config['table_name']
         fre_logger.info('table_name = %s', table_name)
+
+        json_var_list = os.path.expandvars(
+            table_config['variable_list']
+        )
+        fre_logger.info('json_var_list = %s', json_var_list)
         
         json_table_config = f'{cmip_cmor_table_dir}/{mip_era}_{table_name}.json'
         fre_logger.info('json_table_config = %s', json_table_config)
         check_path_existence(json_table_config)
 
+        
+        # frequency of data ---- revisit/TODO
+        # if freq is None:
+        #   use whats in the targeted mip table
+        #   if it's not right, we'll error trying to open input later...
+        # else: 
+        #   check freq consistent with whats in the mip table
+        #   error now if it's inconsistent        
         freq = table_config['freq']
+        table_freq = get_bronx_freq_from_mip_table(json_table_config)
         if freq is None:
-            freq = get_freq_from_table(json_table_config)
-        fre_logger.info('freq = %s', freq)
+            freq = table_freq
+        fre_logger.info('freq = %s', freq)    
+        # check frequency info
+        if freq is None:
+            raise ValueError(f'not enough frequency information to process variables for {table_config}')
+        elif freq != table_freq:
+            raise ValueError('frequency from MIP table is incompatible with requested frequency in cmor yaml for {table_config}')
+        # frequency of data ---- revisit
 
-        json_var_list = table_config['variable_list']
-        fre_logger.info('json_var_list = %s', json_var_list)
-
+        # gridding info of data ---- revisit/TODO
+        gridding_dict = table_config['gridding']
+        fre_logger.debug('gridding_dict = %s', gridding_dict)
+        grid_label, grid_desc, nom_res = None, None, None
+        if gridding_dict is not None:
+            grid_label = gridding_dict['grid_label']
+            grid_desc = gridding_dict['grid_desc']
+            nom_res = gridding_dict['nom_res']
+            if None in [grid_label, grid_desc, nom_res]:
+                raise ValueError('gridding dictionary, if present, must have all three fields be non-empty.')
+        # gridding info of data ---- revisit
+        
         table_components_list = table_config['target_components']
         for targ_comp_config in table_components_list:            
             component = targ_comp_config['component_name']
-
             bronx_chunk = iso_to_bronx_chunk(targ_comp_config['chunk'])
-            data_series_type = targ_comp_config['data_series_type']
-            
+            data_series_type = targ_comp_config['data_series_type']            
             indir = f'{pp_dir}/{component}/{data_series_type}/{freq}/{bronx_chunk}'
             fre_logger.info('indir = %s', indir)
 
@@ -169,8 +206,11 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                     json_table_config = json_table_config ,
                     json_exp_config = json_exp_config ,
                     outdir = cmorized_outdir ,
-                    run_one_mode = True ,
-                    opt_var_name = None
+                    run_one_mode = run_one_mode ,
+                    opt_var_name = None ,
+                    grid = grid_desc ,
+                    grid_label = grid_label ,
+                    nom_res = nom_res
                 )
             else:
                 fre_logger.debug('--DRY RUN CALL---\n'
@@ -180,9 +220,12 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                  f'    json_table_config = {json_table_config} ,\n'
                                  f'    json_exp_config = {json_exp_config} ,\n'
                                  f'    outdir = {cmorized_outdir} ,\n'
-                                 '    run_one_mode = True ,\n'
-                                 '    opt_var_name = None\n'
-                                 ')\n'
+                                 f'    run_one_mode = {run_one_mode} ,\n'
+                                  '    opt_var_name = None ,\n'
+                                 f'    grid = {grid_desc} ,\n'
+                                 f'    grid_label = {grid_label} ,\n'
+                                 f'    nom_res = {nom_res}\n'
+                                  ')\n'
                                  )
 
     return
