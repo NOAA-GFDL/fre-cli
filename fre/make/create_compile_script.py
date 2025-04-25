@@ -70,7 +70,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
             ## Check for type of build
             if platform["container"] is False:
                 baremetalRun = True
-                bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \ 
+                bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
                          f'{platformName}-{target.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
                 # check if mkTemplate has a / indicating it is a path

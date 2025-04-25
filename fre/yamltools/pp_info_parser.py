@@ -3,6 +3,8 @@ post-processing yaml class
 '''
 
 import os
+import logging
+fre_logger = logging.getLogger(__name__)
 from pathlib import Path
 #import pprint
 
@@ -75,7 +77,7 @@ class InitPPYaml():
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Create combined pp yaml
-        print("Combining yaml files into one dictionary: ")
+        fre_logger.info("Combining yaml files into one dictionary: ")
 
     def combine_model(self):
         """
@@ -94,7 +96,7 @@ class InitPPYaml():
         yaml_content_str += model_content
 
         # Return the combined string and loaded yaml
-        print(f"   model yaml: {self.yml}")
+        fre_logger.info(f"   model yaml: {self.yml}")
         return yaml_content_str
 
     def combine_experiment(self, yaml_content_str):
@@ -117,7 +119,7 @@ class InitPPYaml():
 
             exp_info = yaml_content_str + exp_content
             pp_yamls.append(exp_info)
-            #print(f"   experiment yaml: {ey_path}")
+            #fre_logger.info(f"   experiment yaml: {ey_path}")
 
         # If more than 1 pp yaml listed
         # (Must be done for aliases defined)
@@ -149,7 +151,7 @@ class InitPPYaml():
 
             analysis_info = yaml_content_str + analysis_content
             analysis_yamls.append(analysis_info)
-            print(f"   analysis yaml: {ay_path}")
+            fre_logger.info(f"   analysis yaml: {ay_path}")
 
         # If more than 1 pp yaml listed
         # (Must be done for aliases defined)
@@ -226,11 +228,11 @@ class InitPPYaml():
         if ey_path is not None:
             for i in ey_path:
                 exp = str(i).rsplit('/', maxsplit=1)[-1]
-                print(f"   experiment yaml: {exp}")
+                fre_logger.info(f"   experiment yaml: {exp}")
         if ay_path is not None:
             for i in ay_path:
                 analysis = str(i).rsplit('/', maxsplit=1)[-1]
-                print(f"   analysis yaml: {analysis}")
+                fre_logger.info(f"   analysis yaml: {analysis}")
 
         return result
 

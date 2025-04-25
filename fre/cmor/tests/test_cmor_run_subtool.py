@@ -70,9 +70,6 @@ def test_setup_fre_cmor_run_subtool(capfd):
         Path(FULL_OUTPUTFILE).unlink()
 
     assert not Path(FULL_OUTPUTFILE).exists()
-
-    #assert not any ( [ Path(FULL_OUTPUTFILE).exists(),
-    #                   Path(OUTDIR).exists()           ] )
     _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case1(capfd):
@@ -80,7 +77,6 @@ def test_fre_cmor_run_subtool_case1(capfd):
 
     #import sys
     #assert False, f'{sys.path}'
-
 
     #debug
     #print(
