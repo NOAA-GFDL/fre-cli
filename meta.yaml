@@ -21,14 +21,13 @@ channels:
 
 requirements:
   host:
-    - python==3.10.*
+    - python
     - pip
   run:
     - python>=3.10.*
     - pip
     - click
     - pyyaml
-    - pylint
     - jsonschema
     - noaa-gfdl::catalogbuilder
     - noaa-gfdl::fre-nctools
@@ -38,17 +37,14 @@ requirements:
     - conda-forge::cylc-rose
     - conda-forge::metomi-rose
     - conda-forge::cmor>=3.10.0
-    - conda-forge::pytest
-    - conda-forge::pytest-cov
     - conda-forge::python-cdo
     - conda-forge::cdo>=2.0.0
 
 test:
   requires:
-    - pip
     - pylint
-    - pytest
-    - pytest-cov
+    - conda-forge::pytest
+    - conda-forge::pytest-cov
   source_files:
     - fre/
   files:
