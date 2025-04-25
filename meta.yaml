@@ -45,7 +45,6 @@ requirements:
     - conda-forge::sqlite
 
 test:
-  requires:
   source_files:
     - fre/
   files:
