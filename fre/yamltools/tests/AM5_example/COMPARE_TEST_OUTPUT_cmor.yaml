@@ -1,4 +1,36 @@
+grids:
+- gm:
+    grid_label: gm
+    grid_desc: global mean data
+    nom_res: 5000 km
+- gn:
+    grid_label: gn
+    grid_desc: reported data on native grid
+    nom_res: 1 km
+- gr:
+    grid_label: gr
+    grid_desc: reported data regridded to preferred target grid
+    nom_res: 10 km
+- gr1:
+    grid_label: gr1
+    grid_desc: reported data regridded to non-preferred target grid different from
+      gr
+    nom_res: 25 km
+- gr2:
+    grid_label: gr2
+    grid_desc: reported data regridded to non-preferred target grid different from
+      gr, gr1
+    nom_res: 100 km
+- gr3:
+    grid_label: gr3
+    grid_desc: reported data regridded to non-preferred target grid different from
+      gr, gr1, gr2
+    nom_res: 250 km
 cmor:
+  cmor_start: ''
+  cmor_stop: ''
+  mip_era: CMIP6
+  exp_json: fre/tests/test_files/CMOR_input_example.json
   directories:
     history_dir: /archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/history
     pp_dir: /archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp
@@ -6,13 +38,14 @@ cmor:
     ptmp_dir: /xtmp/$USER/ptmp
     table_dir: fre/tests/test_files/cmip6-cmor-tables/Tables
     outdir: fre/tests/test_files/iamnotreallyused/outdir/
-  mip_era: CMIP6
-  exp_json: fre/tests/test_files/CMOR_input_example.json
   table_targets:
-  - table_name: Omon
-    freq: null
-    grid_label: null
+  - table_name: Amon
     variable_list: fre/tests/test_files/varlist
+    freq: null
+    gridding:
+      grid_label: gn
+      grid_desc: reported data on native grid
+      nom_res: 1 km
     target_components:
     - component_name: atmos_cmip
       data_series_type: ts

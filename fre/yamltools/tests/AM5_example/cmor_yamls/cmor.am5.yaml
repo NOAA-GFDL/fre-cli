@@ -25,14 +25,14 @@ cmor:
   # -------------------------------------------------------------------------------------
   table_targets:
 
-	# -----------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------
     - table_name: 'Amon' 
       variable_list:
         'fre/tests/test_files/varlist'
       freq: #optional, if not specified we try to figure it out from the MIP table entries
-      gridding: #optional, if empty or not present, use grid info in exp_json as-is
-#      gridding: #optional, a grids.yaml is necessary to specify grid info this way
-#        <<: *gn
+#      gridding: #optional, if empty or not present, use grid info in exp_json as-is
+      gridding: #optional, a grids.yaml is necessary to specify grid info this way
+        <<: *gn
 #      gridding: #optional, no yaml necessary, all three must be non-empty, checked against CV by CMOR
 #          grid_label: "gn"
 #          grid_desc: "native gridding ex description"
