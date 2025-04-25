@@ -39,7 +39,7 @@ CLEANUP_AFTER_EVERY_TEST = False
 def _cleanup():
     # clean up from previous tests
     if Path(f'{OUTDIR}').exists():
-        shutil.rmtree(f'{OUTDIR}')    
+        shutil.rmtree(f'{OUTDIR}')
     assert not Path(f'{OUTDIR}').exists()
 
 def _case_function(testfile_dir, table, opt_var_name, grid_label):
@@ -88,7 +88,7 @@ def _case_function(testfile_dir, table, opt_var_name, grid_label):
     cmor_output_file = glob.glob( cmor_output_file_glob )[0]
     #print(f'cmor_output_file  = {cmor_output_file}')
     #assert False
-    
+
     # success criteria
     assert all( [ some_return == 0,
                   Path(cmor_output_dir).exists(),
@@ -116,7 +116,7 @@ def test_case_Omon_sos_gr():
 
 
 
-def test_case_Omon_sos_gn():    
+def test_case_Omon_sos_gn():
     #_cleanup() # so the results of the previous test don't fool this one...
     if Path(f'{OUTDIR}/CMIP6').exists():
         shutil.rmtree(f'{OUTDIR}/CMIP6')
@@ -217,4 +217,3 @@ def test_case_Amon_mc_gr1():
                              opt_var_name = 'mc',
                              grid_label = 'gr1'
     )
-

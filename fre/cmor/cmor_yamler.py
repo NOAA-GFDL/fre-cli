@@ -14,15 +14,15 @@ from .cmor_mixer import cmor_run_subtool
 fre_logger = logging.getLogger(__name__)
 
 def check_path_existence(some_path):
-    ''' 
-    simple function checking for pathlib.Path existence, raising a FileNotFoundError if needed 
+    '''
+    simple function checking for pathlib.Path existence, raising a FileNotFoundError if needed
     '''
     if not Path(some_path).exists():
         raise FileNotFoundError('does not exist:  {}'.format(some_path)) # uncovered
 
 def iso_to_bronx_chunk(cmor_chunk_in):
     '''
-    converts a string representing a datetime chunk in ISO's convention (e.g. 'P5Y'), 
+    converts a string representing a datetime chunk in ISO's convention (e.g. 'P5Y'),
     to a string representing the same thing in FRE-bronx's convention
     '''
     fre_logger.debug('cmor_chunk_in = %s', cmor_chunk_in)
@@ -58,9 +58,9 @@ def conv_mip_to_bronx_freq(cmor_table_freq):
     return bronx_freq
 
 def get_bronx_freq_from_mip_table(json_table_config):
-    ''' 
+    '''
     checks one of the variable fields within a cmip cmor table for the frequency of the data the table describes
-    takes in a path to a json cmip cmor table file, and output a string corresponding to a FREbronx style frequency 
+    takes in a path to a json cmip cmor table file, and output a string corresponding to a FREbronx style frequency
     '''
     table_freq = None
     with open(json_table_config, 'r', encoding='utf-8') as table_config_file:
@@ -101,13 +101,13 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                        use="cmor", output=output)['cmor']
     fre_logger.debug('consolidate_yamls produced the following dictionary of cmor-settings from yamls: \n%s',
                      pprint.pformat(cmor_yaml_dict) )
-                     
+
 
     # ---------------------------------------------------
     # inbetween-logic to form args ----------------------
     # ---------------------------------------------------
 
-    # target input pp directory 
+    # target input pp directory
     pp_dir = os.path.expandvars(
         cmor_yaml_dict['directories']['pp_dir'] )
     fre_logger.info('pp_dir = %s', pp_dir)
@@ -153,24 +153,24 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             table_config['variable_list']
         )
         fre_logger.info('json_var_list = %s', json_var_list)
-        
+
         json_table_config = f'{cmip_cmor_table_dir}/{mip_era}_{table_name}.json'
         fre_logger.info('json_table_config = %s', json_table_config)
         check_path_existence(json_table_config)
 
-        
+
         # frequency of data ---- revisit/TODO
         # if freq is None:
         #   use whats in the targeted mip table
         #   if it's not right, we'll error trying to open input later...
-        # else: 
+        # else:
         #   check freq consistent with whats in the mip table
-        #   error now if it's inconsistent        
+        #   error now if it's inconsistent
         freq = table_config['freq']
         table_freq = get_bronx_freq_from_mip_table(json_table_config)
         if freq is None:
             freq = table_freq
-        fre_logger.info('freq = %s', freq)    
+        fre_logger.info('freq = %s', freq)
         # check frequency info
         if freq is None:
             raise ValueError(f'not enough frequency information to process variables for {table_config}')
@@ -189,12 +189,12 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             if None in [grid_label, grid_desc, nom_res]:
                 raise ValueError('gridding dictionary, if present, must have all three fields be non-empty.')
         # gridding info of data ---- revisit
-        
+
         table_components_list = table_config['target_components']
-        for targ_comp_config in table_components_list:            
+        for targ_comp_config in table_components_list:
             component = targ_comp_config['component_name']
             bronx_chunk = iso_to_bronx_chunk(targ_comp_config['chunk'])
-            data_series_type = targ_comp_config['data_series_type']            
+            data_series_type = targ_comp_config['data_series_type']
             indir = f'{pp_dir}/{component}/{data_series_type}/{freq}/{bronx_chunk}'
             fre_logger.info('indir = %s', indir)
 

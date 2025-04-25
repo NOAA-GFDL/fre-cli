@@ -45,12 +45,12 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
             grid_yaml_path=os.path.join(mainyaml_dir, gridyaml)
             if not Path(grid_yaml_path).exists():
                 raise FileNotFoundError('%s not found!!!', grid_yaml_path)
-            
+
         ppyamls=i.get('pp')
         fre_logger.info(f'ppyamls is going to look like ppyamls=\n{ppyamls}')
         if ppyamls is None:
             raise ValueError(f"no ppyaml paths found under experiment = {experiment}")
-            
+
         ppsettingsyaml=None
         for ppyaml in ppyamls:
             #fre_logger.info(f'\nwithin ppyamls we have (SINGULAR) ppyaml=\n{ppyaml}')
@@ -66,17 +66,17 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
         if not Path(os.path.join(mainyaml_dir, ppsettingsyaml)).exists():
             raise FileNotFoundError(f'ppsettingsyaml={ppsettingsyaml} does not exist!')
         ppsettingsyaml_path=Path(os.path.join(mainyaml_dir, ppsettingsyaml))
-            
+
         fre_logger.info(f'ppsettingsyaml={ppsettingsyaml}')
 
         cmoryaml=i.get("cmor")[0]
         if cmoryaml is None:
             raise ValueError("No experiment yaml path given!")
-        
+
         fre_logger.info(f'cmoryaml={cmoryaml} found- now checking for existence.')
         if not Path(os.path.join(mainyaml_dir, cmoryaml)).exists():
             raise FileNotFoundError(f'cmoryaml={cmoryaml} does not exist!')
-        
+
         cmoryaml_path = Path(os.path.join(mainyaml_dir, cmoryaml))
         break
 
@@ -150,7 +150,7 @@ class CMORYaml():
                 self.mainyaml_dir,
                 self.name,
                 loaded_yaml )
-        
+
         fre_logger.info(f'cmory_path = {cmory_path}')
         if cmory_path is None:
             raise ValueError('cmory_path is none!')
@@ -171,7 +171,7 @@ class CMORYaml():
             #grid_info = yaml_content + grid_content
             grid_info = grid_content
             cmor_yamls.append(grid_info)
-        
+
         # ... then append pp_settings
         with open(ppsettingsy_path,'r') as syp:
             set_content = syp.read()
@@ -201,7 +201,7 @@ class CMORYaml():
 
         #_, _, _ = experiment_check( self.mainyaml_dir, self.name,
         #loaded_yaml )
-        
+
         result = {}
 
         yml_cmor = "".join(cmor_list)

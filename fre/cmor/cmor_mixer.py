@@ -387,7 +387,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                                coord_vals=lev[:],
                                units=lev_units,
                                cell_bounds=lev_bnds)
-            
+
         elif vert_dim in ALT_HYBRID_SIGMA_COORDS:
             # find the ps file nearby
             ps_file = netcdf_file.replace(f'.{target_var}.nc', '.ps.nc')
@@ -486,21 +486,21 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     fre_logger.info('cmor.variable call: for target_var = %s ',target_var)
     cmor_var = cmor.variable(target_var, units, axes, positive=positive)
     fre_logger.info('DONE cmor.variable call: for target_var = %s ',target_var)
-    
+
     # Write the output to disk
     fre_logger.info("cmor.write call: for var data into cmor_var")
     cmor.write(cmor_var, var)
     fre_logger.info("DONE cmor.write call: for var data into cmor_var")
     if save_ps:
-        if any([ips is None, ps is None]): 
+        if any([ips is None, ps is None]):
             fre_logger.warning('ps or ips is None!, but save_ps is True!\n' #uncovered
                                'ps = %s, ips = %s\n'
-                               'skipping ps writing!', ps, ips) 
+                               'skipping ps writing!', ps, ips)
         else:
             fre_logger.info("cmor.write call: for interp-pressure data (ips)")
             cmor.write(ips, ps, store_with=cmor_var)
             fre_logger.info("DONE cmor.write call: for interp-pressure data (ips)")
-            
+
     fre_logger.info("cmor.close call: for cmor_var")
     filename = cmor.close(cmor_var, file_name=True, preserve=False)
     fre_logger.info("DONE cmor.close call: for cmor_var")
@@ -509,7 +509,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     ds.close()
     fre_logger.info('tearing-down the cmor module instance')
     cmor.close()
-    
+
     fre_logger.info('-------------------------- END rewrite_netcdf_file_var call -----\n\n')
     return filename
 
@@ -591,8 +591,8 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
                                                       json_table_config, nc_fls[i])
         except Exception as exc: #uncovered
             raise Exception(
-                'problem with rewrite_netcdf_file_var. ' 
-                f'exc={exc}\n'                            
+                'problem with rewrite_netcdf_file_var. '
+                f'exc={exc}\n'
                 'exiting and executing finally block.') from exc
         finally:  # should always execute, errors or not!
             fre_logger.warning('finally, changing directory to: \n%s', gotta_go_back_here)
@@ -733,7 +733,7 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
         update_grid_and_label(json_exp_config,
                               grid_label, grid, nom_res,
                               output_file_path = None)
-    
+
 
     # do not open, but confirm the existence of the exp-specific metadata file
     if Path(json_exp_config).exists():

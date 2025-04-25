@@ -66,7 +66,7 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run):
 
 
     # if opt_var_name specified, forget the list.
-    if yamlfile is None: 
+    if yamlfile is None:
         raise ValueError('I need a yamlfile!!!') #uncovered
 
     cmor_yaml_subtool(
@@ -170,7 +170,7 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         opt_var_name = opt_var_name,
         grid = grid_desc,
         grid_label = grid_label,
-        nom_res = nom_res        
+        nom_res = nom_res
     )
 
 @cmor_cli.command()

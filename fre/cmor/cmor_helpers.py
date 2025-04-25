@@ -171,7 +171,7 @@ def create_tmp_dir(outdir, json_exp_config=None):
     return tmp_dir
 
 def get_json_file_data(json_file_path=None):
-    ''' 
+    '''
     returns loaded data from a json file pointed to by arg json_file_path (string, required)
     '''
     try:
@@ -206,8 +206,8 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res,
         fre_logger.error('ERROR: grid/grid_label/nom_res updating requested for exp_config file, but one of them is None\n'
                         'bailing...!') #uncovered
         raise ValueError
-        
-    
+
+
     try:
         # Open and load the JSON file
         with open(json_file_path, "r", encoding="utf-8") as file:
@@ -246,7 +246,7 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res,
         # Save the updated JSON back to the file
         with open(output_file_path, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=4)
-        
+
         fre_logger.info('Successfully updated fields and saved to %s', output_file_path)
 
     except FileNotFoundError:

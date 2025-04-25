@@ -1,4 +1,4 @@
-''' 
+'''
 post-processing yaml class
 '''
 
@@ -140,7 +140,7 @@ class InitPPYaml():
         """
         # Experiment Check
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,loaded_yaml)
- 
+
         analysis_yamls = []
         ## COMBINE EXPERIMENT YAML INFO
         # If only 1 analysis yaml defined, combine with model yaml

@@ -35,7 +35,7 @@ DO_NOT_PRINT_LIST = [
 ]
 
 def print_var_content(table_config_file, var_name): #uncovered
-    ''' outputs info on one variable to the logger looks for info regarding var_name in table_config_file 
+    ''' outputs info on one variable to the logger looks for info regarding var_name in table_config_file
     the level of the messaging is INFO, requiring the verbose flag
     '''
     try:
@@ -135,7 +135,7 @@ def make_simple_varlist(dir_targ, output_variable_list):
     # Find all files in the directory that match the datetime component
     files = glob.glob(os.path.join(dir_targ, f"*{one_datetime}*.nc"))
 
-    # Check if any files were found    
+    # Check if any files were found
     if not files:
         fre_logger.error("No files found matching the pattern.") #uncovered
         return
