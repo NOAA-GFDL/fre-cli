@@ -111,7 +111,8 @@ def test_cli_fre_make_create_checkout_container():
     os.environ["HOME"]=str(Path(OUT_PATH))
 
     # run create-checkout
-    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target])
+    result = runner.invoke(fre.fre, args=["make", "create-checkout",
+                                          "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target])
 
     os.environ["HOME"] = old_home
 

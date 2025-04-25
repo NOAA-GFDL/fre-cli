@@ -4,6 +4,9 @@ TODO- make docstring
 
 import os
 import sys
+import logging
+fre_logger = logging.getLogger(__name__)
+
 import subprocess
 from pathlib import Path
 
@@ -76,10 +79,11 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
                 currDir = os.getcwd()
 
                 # create build script for container
-                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], skip_format_transfer)
-                print("\ntmpDir created in " + currDir + "/tmp") #was click.echo and a few lines above
-                print("Dockerfile created in " + currDir +"\n") #was click.echo and a few lines above
-                print("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
+                dockerBuild.createBuildScript(
+                    platform["containerBuild"], platform["containerRun"], skip_format_transfer)
+                fre_logger.info("\ntmpDir created in " + currDir + "/tmp")
+                fre_logger.info("Dockerfile created in " + currDir +"\n")
+                fre_logger.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 # run the script if option is given
                 if run:

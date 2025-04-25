@@ -129,4 +129,6 @@ class InitCompileYaml():
                                       default_flow_style = False,
                                       sort_keys = False)
 
-        return yml_dict  #either return dictionary OR string (cleaned_yml) - string works for fremake but dictionary works for pp and list
+        # either return dictionary OR string (cleaned_yml)
+        # - string works for fremake but dictionary works for pp and list
+        return yml_dict  

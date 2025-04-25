@@ -70,7 +70,8 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
             ## Check for type of build
             if platform["container"] is False:
                 baremetalRun = True
-                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + target.gettargetName() + "/exec"
+                bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \ 
+                         f'{platformName}-{target.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
                 # check if mkTemplate has a / indicating it is a path
                 # if its not, prepend the template name with the mkmf submodule directory
@@ -78,7 +79,9 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                     topdir = Path(__file__).resolve().parents[2]
                     templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
                     if not Path(templatePath).exists():
-                        raise ValueError (f"Error with mkmf template. Created path from given file name: {templatePath} does not exist.")
+                        raise ValueError (
+                            "Error with mkmf template. Created path from given file name: "
+                            f"{templatePath} does not exist.")
                 else:
                     templatePath = platform["mkTemplate"]
                 ## Create a list of compile scripts to run in parallel

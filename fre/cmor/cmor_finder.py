@@ -107,8 +107,9 @@ def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_na
 def make_simple_varlist(dir_targ, output_variable_list):
     """
     Generates a JSON file containing a list of variables from NetCDF files in a specified directory.
-    This function searches for NetCDF files in the given directory (or a subdirectory "ts/monthly/5yr" if not already included),
-    extracts variable names from the filenames, and writes these variable names to a JSON file.
+    This function searches for NetCDF files in the given directory, or a subdirectory, "ts/monthly/5yr", 
+    if not already included. then extracts variable names from the filenames, and writes these variable 
+    names to a JSON file.
 
     Args:
         dir_targ (str): The target directory to search for NetCDF files.
@@ -122,8 +123,8 @@ def make_simple_varlist(dir_targ, output_variable_list):
         Logs a warning if only one file is found matching the pattern.
 
     Notes:
-        The function assumes that the filenames of the NetCDF files contain the variable name as the second-to-last component
-        when split by periods ('.') and a datetime string as the third-to-last component.
+        The function assumes that the filenames of the NetCDF files contain the variable name as the 
+        second-to-last component when split by periods ('.') and a datetime string as the third-to-last component.
     """
     one_file = next(glob.iglob(os.path.join(dir_targ, "*.nc")), None)
     if not one_file:

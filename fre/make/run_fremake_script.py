@@ -123,7 +123,8 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                     topdir = Path(__file__).resolve().parents[2]
                     templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
                     if not Path(templatePath).exists():
-                        raise ValueError (f"Error with mkmf template. Created path from given file name: {templatePath} does not exist.")
+                        raise ValueError (
+                            f"Error w/ mkmf template. Created path from given filename: {templatePath} does not exist.")
                 else:
                     templatePath = platform["mkTemplate"]
 
@@ -155,7 +156,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                     fremakeBuild.writeBuildComponents(c)
                 fremakeBuild.writeScript()
                 fremakeBuildList.append(fremakeBuild)
-                ## Run the build if --execute option given, otherwise print out compile script path
+                ## Run the build if --execute option given, otherwise log compile script path
                 if execute:
                     fremakeBuild.run()
                 else:
@@ -210,7 +211,8 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 dockerBuild.writeRunscript(platform["RUNenv"], platform["containerRun"], tmpDir+"/execrunscript.sh")
 
                 # Create build script for container
-                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"], skip_format_transfer=no_format_transfer)
+                dockerBuild.createBuildScript(platform["containerBuild"], platform["containerRun"],
+                                              skip_format_transfer = no_format_transfer)
                 logging.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
 
                 # Execute if flag is given

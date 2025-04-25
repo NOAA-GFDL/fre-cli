@@ -52,13 +52,19 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     fre_logger.info("opening %s", netcdf_file)
     ds = nc.Dataset(netcdf_file, 'r+')
 
-    # ocean grids are not implemented yet.
+    # CMORizing ocean grids are implemented only for scalar quantities valued
+    # at the central T/h-point of the grid cell.
+    # https://en.wikipedia.org/wiki/Arakawa_grids heavily consulted for this work.
+    # we also need to do:
+    # - ice tripolar cases
+    # - vector cases (quantities valued on edges in B/C/D for ocean and ice)
+    # - probably others that i cannot currently fathom but will bump into.
     fre_logger.info('checking input netcdf file for oceangrid condition')
     uses_ocean_grid = check_dataset_for_ocean_grid(ds)
     if uses_ocean_grid:
-        fre_logger.info(
-            'OH BOY you have a file on the native tripolar grid...\n'
-            '... this is gonna be fun!'
+        fre_logger.warning(
+            'cmor_mixer suspects this is ocean data, being reported on \n'
+            ' native tripolar grid. i may treat this differently than other files!'
         )
 
     # try to read what coordinate(s) we're going to be expecting for the variable
@@ -659,7 +665,9 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
         run_one_mode: bool, if True, process only one file per variable.
 
     Returns:
-        int: 0 if *the last file processed* was successful. 1 if the last file processed was not successful. -1 if we didnt even try!
+        int: 0 if *the last file processed* was successful. 
+             1 if the last file processed was not successful. 
+             -1 if we didnt even try!
 
     '''
     # loop over local-variable:target-variable pairs in vars_to_run
@@ -712,8 +720,9 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
                       move on. largely of interest when debugging.
         opt_var_name: string, optional, specify a variable name to specifically process only files with that variable.
                       Note that this is checked against the variable name that's usually embedded in the nc filename.
+        -- gridding section: if one is specified, the other two must be as well, or error. pass otherwise. 
         grid: string, description of grid pointed to by grid_label field, optional.
-        grid_label: string, label of grid of data, must be one of several possibilities in controlled vocab file, optional.
+        grid_label: string, label of grid, must be one of several possibilities in controlled vocab file, optional.
         nom_res: string, one-dimensional size representing approximate distance spanned by a grid cell, must be one of
                  several possibilities in the controlled vocab file, optional.
     Returns:

@@ -83,7 +83,8 @@ def _case_function(testfile_dir, table, opt_var_name, grid_label):
 
     # outputs that should be created
     cmor_output_dir = f'{OUTDIR}/{CMOR_CREATES_DIR_BASE}/{table}/{opt_var_name}/{grid_label}/v{YYYYMMDD}'
-    cmor_output_file_glob=f'{cmor_output_dir}/{opt_var_name}_{table}_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_??????-??????.nc'
+    cmor_output_file_glob =
+    f'{cmor_output_dir}/{opt_var_name}_{table}_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_??????-??????.nc'
     #print(f'cmor_output_file_glob  = {cmor_output_file_glob}')
     cmor_output_file = glob.glob( cmor_output_file_glob )[0]
     #print(f'cmor_output_file  = {cmor_output_file}')

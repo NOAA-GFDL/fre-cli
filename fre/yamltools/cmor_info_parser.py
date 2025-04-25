@@ -40,7 +40,8 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
         gridyaml=i.get('grid_yaml')[0]
         fre_logger.info(f'gridyaml is going to look like gridyaml=\n{gridyaml}')
         if gridyaml is None:
-            fre_logger.warning('WARNING! no grid yaml specified! moving on, but I hope you put this info in your CMOR yaml instead')
+            fre_logger.warning('WARNING! no grid yaml specified! moving on,'
+                               ' but I hope you put this info in your CMOR yaml instead')
         else:
             grid_yaml_path=os.path.join(mainyaml_dir, gridyaml)
             if not Path(grid_yaml_path).exists():

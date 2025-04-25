@@ -13,8 +13,8 @@ fre_logger = logging.getLogger(__name__)
 
 def print_data_minmax(ds_variable=None, desc=None):
     '''
-    outputs the the min/max of numpy.ma.core.MaskedArray (ds_variable) and the name/description (desc) of the data
-    to the screen if there's a verbose flag, and just to logger otherwise
+    outputs the the min/max of numpy.ma.core.MaskedArray (ds_variable) and the name/description (desc) 
+    of the data to the screen if there's a verbose flag, and just to logger otherwise
     '''
     try:
         fre_logger.info('info for \n desc = %s \n %s', desc, type(ds_variable))
@@ -152,7 +152,8 @@ def create_tmp_dir(outdir, json_exp_config=None):
             try:
                 outdir_from_exp_config = json.load(table_config_file)["outpath"]
             except: #uncovered
-                fre_logger.warning('could not read outdir from json_exp_config. the cmor module will throw a toothless warning')
+                fre_logger.warning(
+                    'could not read outdir from json_exp_config. the cmor module will throw a toothless warning')
 
     tmp_dir = str(Path("{}/tmp/".format(outdir)).resolve())
     try:
@@ -203,8 +204,9 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res,
         json.JSONDecodeError: If the JSON file cannot be decoded.
     """
     if None in [new_grid_label, new_grid, new_nom_res]:
-        fre_logger.error('ERROR: grid/grid_label/nom_res updating requested for exp_config file, but one of them is None\n'
-                        'bailing...!') #uncovered
+        fre_logger.error(
+            'grid/grid_label/nom_res updating requested for exp_config file, but one of them is None\n'
+            'bailing...!') #uncovered
         raise ValueError
 
 

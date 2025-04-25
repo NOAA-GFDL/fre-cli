@@ -173,9 +173,11 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         fre_logger.info('freq = %s', freq)
         # check frequency info
         if freq is None:
-            raise ValueError(f'not enough frequency information to process variables for {table_config}')
+            raise ValueError(
+                f'not enough frequency information to process variables for {table_config}')
         elif freq != table_freq:
-            raise ValueError('frequency from MIP table is incompatible with requested frequency in cmor yaml for {table_config}')
+            raise ValueError(
+                'frequency from MIP table is incompatible with requested frequency in cmor yaml for {table_config}')
         # frequency of data ---- revisit
 
         # gridding info of data ---- revisit/TODO
