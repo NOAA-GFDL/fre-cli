@@ -54,19 +54,19 @@ class frenctoolsTimeAverager(timeAverager):
             month_names = [calendar.month_name[i] for i in month_indices]
 
             #Dictionary to store output filenames by month
-            nc_month_file_paths = {month: os.path.join(monthly_nc_dir, f"{month}_all_years.nc") for month in month_names}
-            month_output_file_paths = {number: os.path.join(output_dir, f"{outfile}_.{number}.nc") for number in month_indices}
+            nc_month_file_paths = {month_index: os.path.join(monthly_nc_dir, f"{month}_all_years.nc") for month_index in month_indices}
+            month_output_file_paths = {month_index: os.path.join(output_dir, f"{outfile}_.{number}.nc") for month_index in month_indices}
 
             #Loop through each month and select the corresponding data
             for month_index in month_indices:
                 month_name = month_names[month_index - 1]
-                nc_monthly_file = nc_month_file_paths[month_name]
+                nc_monthly_file = nc_month_file_paths[month_index]
 
                 #Select data for the given month
                 cdo.select(f"month={month_index}", input=infile, output=nc_monthly_file)
 
                 #Run timavg command for newly created file
-                month_output_file = month_output_file_paths[month_name]
+                month_output_file = month_output_file_paths[month_index]
                 timavgcsh_command=['timavg.csh', '-mb','-o', month_output_file, nc_monthly_file]
                 exitstatus=1
                 with Popen(timavgcsh_command,
@@ -86,8 +86,7 @@ class frenctoolsTimeAverager(timeAverager):
                         
                 #Delete files after being used to generate output files
             for month_index in month_indices:  
-                month_name = month_names[month_index - 1]
-                nc_monthly_file = nc_month_file_paths[month_name]              
+                nc_monthly_file = nc_month_file_paths[month_index]              
                 os.remove(nc_monthly_file)
             os.rmdir('monthly_nc_files')    
 
