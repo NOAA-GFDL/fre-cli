@@ -1,5 +1,5 @@
 """
-Test nccheck_script
+Test histval_script
 """
 import pytest
 import re

@@ -1,5 +1,5 @@
 """
-Test nccheck_script
+Test ppval_script
 """
 import pytest
 import re
