@@ -15,28 +15,28 @@ fre_logger = logging.getLogger(__name__)
 def getenot(date_start,date_end,chunk_type,cal):
 
     if chunk_type == 'yearly':
-        enot = int(date_end[1])-int(date_start[1])+1
+        enot = int(date_end[1]) - int(date_start[1])+ 1
 
     if chunk_type == 'monthly':
-        enot = (int(date_end[1])*12+int(date_end[2]))-(int(date_start[1])*12+int(date_start[2]))+1
+        enot = (int(date_end[1]) * 12 + int(date_end[2])) - (int(date_start[1]) * 12 + int(date_start[2]))+ 1
 
     if chunk_type == 'daily':
         start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')),calendar = cal)
         end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')),calendar = cal) 
         diff = end - start
-        enot = diff.days
+        enot = diff.days + 1
 
     if chunk_type == '4xdaily':
         start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]))
         end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]))
         diff = end - start
-        enot = (diff.days+1) * 4
+        enot = (diff.days + 1) * 4
 
     if chunk_type == '8xdaily':
         start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]))
         end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]))
         diff = end - start
-        enot = (diff.days+1) * 8
+        enot = (diff.days + 1) * 8
 
     if chunk_type == 'hourly':
         start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]))
@@ -101,7 +101,7 @@ def validate(filepath):
         result = ncc.check(filepath,enot)
 
     # We would rather not check filepaths but it's necessary for sub-daily files
-    path_elements = filepath.split('/')
+    path_elements = os.path.abspath(filepath).split('/')
 
     # 4x Daily
     if '6hr' in path_elements:
@@ -123,7 +123,7 @@ def validate(filepath):
         enot = getenot(date_start,date_end,'30minute',cal)
         result = ncc.check(filepath,enot)
 
-    if result==1:
+    if result == 1:
                 fre_logger.error(f" Timesteps found in {filepath} differ from expectation")
     return result
 
