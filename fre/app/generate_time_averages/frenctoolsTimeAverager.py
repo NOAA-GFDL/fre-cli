@@ -54,7 +54,7 @@ class frenctoolsTimeAverager(timeAverager):
             month_names = [calendar.month_name[i] for i in month_indices]
 
             #Dictionary to store output filenames by month
-            nc_month_file_paths = {month_index: os.path.join(monthly_nc_dir, f"{month}_all_years.nc") for month_index in month_indices}
+            nc_month_file_paths = {month_index: os.path.join(monthly_nc_dir, f"all_years.{month_index}.nc") for month_index in month_indices}
             month_output_file_paths = {month_index: os.path.join(output_dir, f"{outfile}_.{number}.nc") for month_index in month_indices}
 
             #Loop through each month and select the corresponding data
