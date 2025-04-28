@@ -431,20 +431,18 @@ def test_fre_nctool_time_unwgt_avgs_stddevs():
         outfile = (time_avg_file_dir+'fre_nctools_unwgt_stddev_'+two_out_file_name),
         pkg='fre-nctools',avg_type='all',  unwgt=True )
 
-'''
-#
-#if pl.Path archive exists, run these tests
+# This set of tests is for the monthly frenctools option
 def test_fre_nctools_all():
-    ''' generates a time averaged file using fre_cli's version '''
-    ''' weighted average, no std deviation '''
+    # generates a time averaged file using fre_cli's version 
+    # weighted average, no std deviation 
     assert run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
         outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
         pkg='fre-nctools',avg_type='all', unwgt=False )
     
 def test_fre_nctools_month():
-    ''' generates a time averaged file using fre_cli's version '''
-    ''' weighted average, no std deviation '''
+    # generates a time averaged file using fre_cli's version 
+    # weighted average, no std deviation 
     assert run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
         outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
@@ -455,3 +453,4 @@ def test_path_frenctools_month():
         outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
         pkg='fre-nctools',avg_type='month', unwgt=False )
     assert pl.Path(time_avg_file_dir+'../monthly_output_files/April_out.nc').exists()
+'''
