@@ -7,7 +7,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from fre.pp import nccheck_script as ncc
 import cftime
-#import sys
+import netCDF4
 
 fre_logger = logging.getLogger(__name__)
 
@@ -52,12 +52,11 @@ def getenot(date_start,date_end,chunk_type,cal):
     
     return enot
 
-def validate(filepath,calendar):
+def validate(filepath):
     """ Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found the file name """
 
     import re
     # Get the date range from the filename
-    #match = re.compile("\.(\d{4}(?:\d{2})?(?::\d{2})?)-(\d{4}(?:\d{2})?(?::\d{2})?)\.")
     match = re.compile("\.((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)-((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)\.")
     #match = re.compile("\.(\d{4}(?:\d{2}))-(\d{4}(?:\d{2}))\.")
     filename = os.path.basename(filepath)
@@ -77,58 +76,56 @@ def validate(filepath,calendar):
     # day (date_end[3]), and the hour (date_end[4]).
     # You can use the value of date_end.lastindex to know if this is
     # a yearly, monthly, daily, or sub-daily file.
- 
+
+    # Get calendar type from metadata and make sure it's valid
+    dataset = netCDF4.Dataset(filepath, 'r')
+    cal = dataset.variables['time'].calendar.lower()
+    try:
+        cftime.datetime(1,1,1, calendar = cal)
+    except:
+            raise ValueError("Calendar name must follow cf convention for validation")
+
     # YEARLY
     if date_end.lastindex == 1:
-        enot = getenot(date_start,date_end,'yearly',calendar)
+        enot = getenot(date_start,date_end,'yearly',cal)
         result = ncc.check(filepath, enot)
-        print(result)
-        return
 
     # MONTHLY
     if date_end.lastindex == 2:
-        enot = getenot(date_start,date_end,'monthly',calendar)
+        enot = getenot(date_start,date_end,'monthly',cal)
         result = ncc.check(filepath,enot)
-        print(result)
-        return
 
     # DAILY
     if date_end.lastindex == 3:
-        enot = getenot(date_start,date_end,'daily',calendar)
+        enot = getenot(date_start,date_end,'daily',cal)
         result = ncc.check(filepath,enot)
-        print(result)
-        return
 
     # We would rather not check filepaths but it's necessary for sub-daily files
     path_elements = filepath.split('/')
 
     # 4x Daily
     if '6hr' in path_elements:
-        enot = getenot(date_start,date_end,'4xdaily',calendar)
+        enot = getenot(date_start,date_end,'4xdaily',cal)
         result = ncc.check(filepath,enot)
-        print(result)
-        return
 
     # 8x Daily
     if '3hr' in path_elements:
-        enot = getenot(date_start,date_end,'8xdaily',calendar)
+        enot = getenot(date_start,date_end,'8xdaily',cal)
         result = ncc.check(filepath,enot)
-        print(result)
-        return
 
     # HOURLY
     if '1hr' in path_elements:
-        enot = getenot(date_start,date_end,'hourly',calendar)
+        enot = getenot(date_start,date_end,'hourly',cal)
         result = ncc.check(filepath,enot)
-        print(result)
-        return
 
-    # 30 MINUTE .. not sure about this yet
+    # 30 MINUTE
     if '30min' in path_elements:
-        enot = getenot(date_start,date_end,'30minute',calendar)
+        enot = getenot(date_start,date_end,'30minute',cal)
         result = ncc.check(filepath,enot)
-        print(result)
-        return
+
+    if result==1:
+                fre_logger.error(f" Timesteps found in {filepath} differ from expectation")
+    return result
 
 if __name__ == '__main__':
     validate()
