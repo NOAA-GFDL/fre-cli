@@ -73,7 +73,7 @@ class frenctoolsTimeAverager(timeAverager):
                         stdout=PIPE, stderr=PIPE, shell=False) as subp:
                     output=subp.communicate()[0]
                             
-                    if pathlib.Path.exists("timavg.csh"):
+                    if os.path.exists("timavg.csh"):
                         continue
                     else:
                         fre_logger.error("No timavg.csh file found")
