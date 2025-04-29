@@ -1,4 +1,4 @@
-''' This script will locate all diag_manifest files in a provided directory containing history files then run the nccheck script to validate the number of timesteps in each file'''
+''' This script will determine an estimated number of timesteps from a postprocessed time-series file's name and run nccheck on it'''
 
 import os
 import logging

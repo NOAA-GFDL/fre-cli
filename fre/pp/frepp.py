@@ -199,10 +199,10 @@ def histval(history,date_string,warn):
 
 #fre pp ppval
 @pp_cli.command()
-@click.option('--pp_dir','-p', required=True, help="Path to pp dir")
-def ppval(pp_dir):
-    """ words """
-    ppval_script.validate(pp_dir)
+@click.option('--path','-p', required=True, help="Path to postprocessed time-series file")
+def ppval(path):
+    """ Determines an estimated number of timesteps from a postprocessed time-series file's name and run nccheck on it """
+    ppval_script.validate(path)
 
 #fre pp wrapper
 @pp_cli.command()
