@@ -41,7 +41,11 @@ class frenctoolsTimeAverager(timeAverager):
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
             fre_logger.warning('No output filename given, setting outfile= %s', outfile)
-
+        try:
+            subprocess.run(['which timavg.csh'], shell = True)
+        except:
+            fre_logger.error('did not find timavg.csh')
+            
         from subprocess import Popen, PIPE
 ########################################################################################
         #Recursive call if month is selcted for climatology. by Avery Kiihne
@@ -74,10 +78,7 @@ class frenctoolsTimeAverager(timeAverager):
                         stdout=PIPE, stderr=PIPE, shell=False) as subp:
                     output=subp.communicate()[0]
                             
-                    try:
-                        subprocess.run(['which timavg.csh'], shell = True)
-                    except:
-                        fre_logger.error('did not find timavg.csh')
+
                         
                     if subp.returncode < 0:
                         fre_logger.error('error')
