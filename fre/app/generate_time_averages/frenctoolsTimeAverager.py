@@ -5,6 +5,7 @@ from netCDF4 import Dataset, num2date
 import calendar
 from cdo import Cdo
 import logging
+import subprocess
 
 cdo = Cdo()
 fre_logger = logging.getLogger(__name__)
@@ -73,10 +74,10 @@ class frenctoolsTimeAverager(timeAverager):
                         stdout=PIPE, stderr=PIPE, shell=False) as subp:
                     output=subp.communicate()[0]
                             
-                    if os.path.exists("timavg.csh"):
-                        continue
-                    else:
-                        fre_logger.error("No timavg.csh file found")
+                    try:
+                        subprocess.run(['which timavg.csh'], shell = True)
+                    except:
+                        fre_logger.error('did not find timavg.csh')
                         
                     if subp.returncode < 0:
                         fre_logger.error('error')
