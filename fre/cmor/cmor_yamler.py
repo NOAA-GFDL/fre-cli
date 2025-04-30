@@ -76,7 +76,7 @@ def get_bronx_freq_from_mip_table(json_table_config):
     return bronx_freq
 
 def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, output=None, opt_var_name=None,
-                      run_one_mode=False, dry_run_mode=False):
+                      run_one_mode=False, dry_run_mode=False, start=None, stop=None):
     '''
     A routine that cmorizes targets based on configuration stored in the model yaml. The model yaml
     points to various cmor-yaml configurations. The two levels of information are combined, their fields
@@ -89,7 +89,9 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         output   (optional): string or Path representing target location for yamlfile output if desired
         opt_var_name (optional): string, specify a variable name to specifically process only filenames matching
                                  that variable name. I.e., this string help target local_vars, not target_vars.
+
         run_one_mode (optional): boolean, when True, will only process one of targeted files, then exit.
+        start, stop: string, optional arguments, strings of four integers representing years (YYYY). 
     '''
 
     # ---------------------------------------------------
@@ -142,6 +144,25 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
     mip_era = cmor_yaml_dict['mip_era']
     fre_logger.info('mip_era = %s', mip_era)
 
+    # check start/stop years range to target desired input files
+    if start is None:
+        try:
+            yaml_start = cmor_yaml_dict['start']
+            start = yaml_start
+        except:
+            fre_logger.warning(
+                'no start year for fre.cmor given, will start with earliest datetime found in filenames!')
+            pass
+        
+    if stop is None:
+        try:
+            yaml_stop = cmor_yaml_dict['stop']
+            stop = yaml_stop
+        except:
+            fre_logger.warning(
+                'no stop year for fre.cmor given, will end with latest datetime found in filenames!')
+            pass
+    
     # ---------------------------------------------------
     # showtime ------------------------------------------
     # ---------------------------------------------------
@@ -212,7 +233,9 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                     opt_var_name = None ,
                     grid = grid_desc ,
                     grid_label = grid_label ,
-                    nom_res = nom_res
+                    nom_res = nom_res ,
+                    start = start,
+                    stop = stop
                 )
             else:
                 fre_logger.debug('--DRY RUN CALL---\n'
@@ -226,7 +249,9 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                   '    opt_var_name = None ,\n'
                                  f'    grid = {grid_desc} ,\n'
                                  f'    grid_label = {grid_label} ,\n'
-                                 f'    nom_res = {nom_res}\n'
+                                 f'    nom_res = {nom_res} ,\n'
+                                 f'    start = {start} ,\n'
+                                 f'    stop = {stop}\n'
                                   ')\n'
                                  )
 

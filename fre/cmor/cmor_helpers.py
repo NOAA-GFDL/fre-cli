@@ -71,27 +71,58 @@ def create_lev_bnds(bound_these=None, with_these=None):
     fre_logger.info('the_bnds = \n%s', the_bnds)
     return the_bnds
 
-def get_iso_datetimes(var_filenames, iso_datetime_arr=None):
+def get_iso_datetime_ranges(var_filenames, iso_daterange_arr=None, start=None,stop=None):
     '''
     appends iso datetime strings found amongst filenames to iso_datetime_arr.
         var_filenames: non-empty list of strings representing filenames. some of which presumably
-                       contain datetime strings
-        iso_datetime_arr: list of strings, empty or non-empty, representing datetimes found in
-                          var_filenames entries. the object pointed to by the reference
-                          iso_datetime_arr is manipulated, and so need-not be returned
+                       contain ranges of datetimes as strings, hopefully like ????????-????????
+        iso_daterange_arr: list of strings, empty or non-empty, representing datetime ranges found in
+                          var_filenames entries. the object pointed to by the reference iso_dateramge_arr 
+                          is manipulated directly, and so need-not be returned.
+        start: string of four integers representing a year in any calendar. only YYYY format supported. 
+               if the starting year of the data is before this, the datetime range is excluded from var_filenames
+        start: string of four integers representing a year in any calendar. only YYYY format supported. 
     '''
-    if iso_datetime_arr is None:
-        raise ValueError('this function requires the list one desires to fill with datetimes') #uncovered
+    fre_logger.debug('start = %s',start)
+    fre_logger.debug('stop = %s',stop)
+    start_stop_filter=False
+    stop_yr_int, start_yr_int = None, None
+    if start is not None and len(start)==4:
+        start_yr_int=int(start)
+        start_stop_filter=True
+    if stop is not None and len(stop)==4:
+        stop_yr_int=int(stop)
+        start_stop_filter=True
+    fre_logger.debug('start_yr_int = %s', start_yr_int)
+    fre_logger.debug(' stop_yr_int = %s',  stop_yr_int)
+    
+        
+    if iso_daterange_arr is None:
+        raise ValueError('this function requires the list one desires to fill with datetime ranges from filenames') #uncovered
+    
     for filename in var_filenames:
-        iso_datetime = filename.split(".")[-3]
-        fre_logger.debug('iso_datetime = %s', iso_datetime)
-        if iso_datetime not in iso_datetime_arr:
-            iso_datetime_arr.append(iso_datetime)
+        fre_logger.debug('filename = %s', filename)
+        iso_daterange = filename.split(".")[-3] # '????????-????????'
+        fre_logger.debug('iso_daterange = %s', iso_daterange)
+        
+        if start_stop_filter:
+            iso_datetimes=iso_daterange.split('-') # ['????????', '????????']
+            fre_logger.debug('iso_datetimes = %s', iso_datetimes)
+            if start is not None and \
+               int(iso_datetimes[0][0:4])<start_yr_int:
+                continue
+            if stop is not None and \
+               int(iso_datetimes[1][0:4])>stop_yr_int:
+                continue
+        
+        if iso_daterange not in iso_daterange_arr:
+            iso_daterange_arr.append(iso_daterange)
+        
+    iso_daterange_arr.sort()
+    #fre_logger.debug('Available dates: %s', iso_daterange_arr)
 
-    iso_datetime_arr.sort()
-    fre_logger.debug('Available dates: %s', iso_datetime_arr)
-    if len(iso_datetime_arr) < 1:
-        raise ValueError('ERROR: iso_datetime_arr has length 0! i need to find at least one!') #uncovered
+    if len(iso_daterange_arr) < 1:
+        raise ValueError('iso_daterange_arr has length 0! i need to find at least one datetime range!') #uncovered
 
 def check_dataset_for_ocean_grid(ds):
     '''

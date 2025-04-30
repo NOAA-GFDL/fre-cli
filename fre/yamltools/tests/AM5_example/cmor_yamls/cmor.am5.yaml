@@ -2,9 +2,9 @@ cmor:
 
   # these fields are for global configuration that isn't a directory
   # -------------------------------------------------------------------------------------
-  cmor_start:
-    *CMOR_START
-  cmor_stop:
+  start:
+#    *CMOR_START
+  stop:
     *CMOR_STOP
     
   mip_era: 
@@ -43,6 +43,6 @@ cmor:
           data_series_type: 'ts'
           chunk: *PP_CPLD_CHUNK_A
           
-        - component_name: 'atmos_level_cmip'
-          data_series_type: 'ts'
-          chunk: *PP_CPLD_CHUNK_A
+#        - component_name: 'atmos_level_cmip'
+#          data_series_type: 'ts'
+#          chunk: *PP_CPLD_CHUNK_A

@@ -30,8 +30,8 @@ fre_properties:
   - &PP_XYINTERP     "180,288" # for cases i've spot checked at least
 #  - &PP_XYINTERP     "180,360"
 
-  - &CMOR_START ""
-  - &CMOR_STOP ""
+  - &CMOR_START 
+  - &CMOR_STOP 
 
   # grids
   - &GRID_SPEC         "/archive/gold/datasets/OM4_05/mosaic_c96.v20180227.tar" #site: gfdl

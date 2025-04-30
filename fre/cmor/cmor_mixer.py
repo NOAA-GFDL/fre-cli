@@ -45,7 +45,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
         filename: The name of the file returned by cmor.close.
     '''
     fre_logger.info("input data:")
-    fre_logger.info("    local_var   =  %s", local_var)
+    fre_logger.info("     local_var = %s", local_var)
     fre_logger.info("    target_var = %s", target_var)
 
     # open the input file
@@ -520,7 +520,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     return filename
 
 def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
-                             iso_datetime_arr=None, name_of_set=None,
+                             iso_datetime_range_arr=None, name_of_set=None,
                              json_exp_config=None, outdir=None,
                              mip_var_cfgs=None, json_table_config=None, run_one_mode=False):
     ''' processes a target directory/file
@@ -531,7 +531,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
         target_var: string, name of variable inside the netcdf file to cmorize
         local_var: string, value of the variable name in the filename, right before the .nc
                    extension. often identical to target_var but not always.
-        iso_datetime_arr: list of strings, each one a unique ISO datetime string found in targeted
+        iso_datetime_range_arr: list of strings, each one a unique ISO datetime string found in targeted
                           netcdf filenames
         name_of_set: string, representing the post-processing component (GFDL convention) of the
                      targeted files.
@@ -552,7 +552,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
 
     # loop over sets of dates, each one pointing to a file
     nc_fls = {}
-    for i, iso_datetime in enumerate(iso_datetime_arr):
+    for i, iso_datetime in enumerate(iso_datetime_range_arr):
         # why is nc_fls a filled list/array/object thingy here? see above line
         nc_fls[i] = f"{indir}/{name_of_set}.{iso_datetime}.{local_var}.nc"
         fre_logger.info("input file = %s", nc_fls[i])
@@ -648,7 +648,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
             fre_logger.warning('done processing one file!!!')
             break
 
-def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_set, json_exp_config,
+def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, name_of_set, json_exp_config,
                                  outdir, mip_var_cfgs, json_table_config, run_one_mode):
     '''
     Processes all variables in the given directory.
@@ -656,7 +656,7 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
     Parameters:
         vars_to_run: dictionary, local-variable:target-variable pairs to process.
         indir: string, path to directory containing netCDF files.
-        iso_datetime_arr: list of strings, ISO datetime strings found in targeted netCDF filenames.
+        iso_datetime_range_arr: list of strings, ISO datetime strings found in targeted netCDF filenames.
         name_of_set: string, representing the post-processing component (GFDL convention) of the targeted files.
         json_exp_config: string, path to experiment configuration JSON file.
         outdir: string, path to output directory root.
@@ -682,7 +682,7 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
 
         fre_logger.info('........beginning CMORization for %s/%s..........', local_var, target_var)
         try:
-            cmorize_target_var_files(indir, target_var, local_var, iso_datetime_arr,
+            cmorize_target_var_files(indir, target_var, local_var, iso_datetime_range_arr,
                                      name_of_set, json_exp_config, outdir,
                                      mip_var_cfgs, json_table_config, run_one_mode)
             return_status = 0
@@ -700,7 +700,7 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
 
 def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, json_exp_config=None,
                      outdir=None, run_one_mode=False,
-                     opt_var_name=None, grid=None, grid_label=None, nom_res=None):
+                     opt_var_name=None, grid=None, grid_label=None, nom_res=None, start=None, stop=None):
     '''
     Primary steering function for the other routines in this file, i.e essentially main.
 
@@ -725,6 +725,7 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
         grid_label: string, label of grid, must be one of several possibilities in controlled vocab file, optional.
         nom_res: string, one-dimensional size representing approximate distance spanned by a grid cell, must be one of
                  several possibilities in the controlled vocab file, optional.
+        start, stop: string, optional arguments, strings of four integers representing years (YYYY).
     Returns:
         int: 0 if successful.
     '''
@@ -796,23 +797,21 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
     indir_filenames.sort()
     if len(indir_filenames) == 0:
         raise ValueError('no files in input target directory = indir = \n%s', indir) #uncovered
-    fre_logger.debug('found filenames = \n%s', indir_filenames)
+    fre_logger.debug('found %s filenames', len(indir_filenames))
 
-    # make list of iso-datetimes here
-    iso_datetime_arr = []
-    get_iso_datetimes(indir_filenames, iso_datetime_arr) # filter within this function?
-    fre_logger.info('found iso datetimes = \n%s', iso_datetime_arr)
-    # another function that removes the entries from the list that arent in range ?
-    #assert False #uncomment me for convenient spot to begin dev on min/max dates
-
-    # name_of_set == component label...
-    # which is not relevant for CMOR/CMIP... or is it?
+    # name_of_set == component label
     name_of_set = Path(indir_filenames[0]).name.split(".")[0]
     fre_logger.info('setting name_of_set = %s', name_of_set)
 
+    # make list of iso-datetimes here
+    iso_datetime_range_arr = []
+    get_iso_datetime_ranges(indir_filenames, iso_datetime_range_arr, start, stop) 
+    fre_logger.info('\nfound iso datetimes = %s', iso_datetime_range_arr)
+    #assert False
+    
     # no longer needed.
     del indir_filenames
 
-    return cmorize_all_variables_in_dir(vars_to_run,
-                                        indir, iso_datetime_arr, name_of_set, json_exp_config,
-                                        outdir, mip_var_cfgs, json_table_config, run_one_mode)
+    return cmorize_all_variables_in_dir( vars_to_run,
+                                         indir, iso_datetime_range_arr, name_of_set, json_exp_config,
+                                         outdir, mip_var_cfgs, json_table_config, run_one_mode        )

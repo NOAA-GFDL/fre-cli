@@ -30,8 +30,8 @@ fre_properties:
   - &PP_CPLD_CHUNK_B    "P20Y"
 
   # cmor
-  - &CMOR_START ""
-  - &CMOR_STOP ""
+  - &CMOR_START 
+  - &CMOR_STOP "2000"
   
   # grids
   - &GRID_SPEC96         "/archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar"

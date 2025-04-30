@@ -2,9 +2,9 @@ cmor:
 
   # these fields are for global configuration that isn't a directory
   # -------------------------------------------------------------------------------------
-  cmor_start:
+  start:
     *CMOR_START
-  cmor_stop:
+  stop:
     *CMOR_STOP
     
   mip_era: 
@@ -25,7 +25,7 @@ cmor:
   # -------------------------------------------------------------------------------------
   table_targets:
 
-	# -----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
 #    - table_name: 'CFmon'
 #      variable_list:
 #        !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-CFmon.lst"]
