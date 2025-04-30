@@ -27,13 +27,16 @@ def iso_to_bronx_chunk(cmor_chunk_in):
     '''
     fre_logger.debug('cmor_chunk_in = %s', cmor_chunk_in)
     if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
-        bronx_chunk = cmor_chunk_in[1:-1] + 'yr'
+        bronx_chunk = f'{cmor_chunk_in[1:-1]}yr'
     else:
-        raise Exception('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py') #uncovered
+        raise ValueError('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py') #uncovered
     fre_logger.debug('bronx_chunk = %s', bronx_chunk)
     return bronx_chunk
 
 def conv_mip_to_bronx_freq(cmor_table_freq):
+    '''
+    uses a look up table to convert a given frequency in a MIP table, to that same frequency under FRE-bronx convention instead
+    '''
     cmor_to_bronx_dict = {
         "1hr"    : "1hr",
         "1hrCM"  : None,
@@ -54,7 +57,7 @@ def conv_mip_to_bronx_freq(cmor_table_freq):
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
     if bronx_freq is None:
-        raise KeyError('frequency = {} does not exist in the targeted cmor table'.format(cmor_table_freq)) #uncovered
+        raise KeyError(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent') #uncovered
     return bronx_freq
 
 def get_bronx_freq_from_mip_table(json_table_config):
@@ -69,9 +72,9 @@ def get_bronx_freq_from_mip_table(json_table_config):
             try:
                 table_freq = table_config_data['variable_entry'][var_entry]['frequency']
                 break
-            except KeyError: #uncovered
+            except Exception as exc: #uncovered
                 raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
-                               'ALWAYS have frequency info under the variable entry!! EXIT! BAD!')
+                               'ALWAYS have frequency info under the variable entry!! EXIT! BAD!') from exc
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
 
@@ -91,7 +94,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                  that variable name. I.e., this string help target local_vars, not target_vars.
 
         run_one_mode (optional): boolean, when True, will only process one of targeted files, then exit.
-        start, stop: string, optional arguments, strings of four integers representing years (YYYY). 
+        start, stop: string, optional arguments, strings of four integers representing years (YYYY).
     '''
 
     # ---------------------------------------------------
@@ -132,7 +135,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             Path(cmorized_outdir).mkdir(exist_ok=False, parents=True)
         except Exception as exc: #uncovered
             raise OSError(
-                'could not create cmorized_outdir = {} for some reason!'.format(cmorized_outdir)) from exc
+                f'could not create cmorized_outdir = {cmorized_outdir} for some reason!') from exc
 
     # path to metadata header to be appended to output netcdf file
     json_exp_config = os.path.expandvars(
@@ -149,20 +152,18 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         try:
             yaml_start = cmor_yaml_dict['start']
             start = yaml_start
-        except:
+        except KeyError:
             fre_logger.warning(
-                'no start year for fre.cmor given, will start with earliest datetime found in filenames!')
-            pass
-        
+                'no start year for fre.cmor given anywhere, will start with earliest datetime found in filenames!')
+
     if stop is None:
         try:
             yaml_stop = cmor_yaml_dict['stop']
             stop = yaml_stop
-        except:
+        except KeyError:
             fre_logger.warning(
-                'no stop year for fre.cmor given, will end with latest datetime found in filenames!')
-            pass
-    
+                'no stop year for fre.cmor given anywhere, will end with latest datetime found in filenames!')
+
     # ---------------------------------------------------
     # showtime ------------------------------------------
     # ---------------------------------------------------
@@ -230,7 +231,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                     json_exp_config = json_exp_config ,
                     outdir = cmorized_outdir ,
                     run_one_mode = run_one_mode ,
-                    opt_var_name = None ,
+                    opt_var_name = opt_var_name ,
                     grid = grid_desc ,
                     grid_label = grid_label ,
                     nom_res = nom_res ,
@@ -246,7 +247,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                  f'    json_exp_config = {json_exp_config} ,\n'
                                  f'    outdir = {cmorized_outdir} ,\n'
                                  f'    run_one_mode = {run_one_mode} ,\n'
-                                  '    opt_var_name = None ,\n'
+                                 f'    opt_var_name = {opt_var_name} ,\n'
                                  f'    grid = {grid_desc} ,\n'
                                  f'    grid_label = {grid_label} ,\n'
                                  f'    nom_res = {nom_res} ,\n'
@@ -255,4 +256,4 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                   ')\n'
                                  )
 
-    return
+

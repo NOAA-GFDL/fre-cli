@@ -8,14 +8,16 @@ be called via this script. I.e. 'fre' is the entry point
 """
 
 import importlib.metadata
-
 import logging
+
+import click
+
+from .lazy_group import LazyGroup
+
+# base fre_logger set here, configured within fre
 fre_logger = logging.getLogger(__name__)
 FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
 #MODE = 'x'
-
-import click
-from .lazy_group import LazyGroup
 
 # versioning, turn xxxx.y into xxxx.0y
 version_unexpanded = importlib.metadata.version('fre-cli')
