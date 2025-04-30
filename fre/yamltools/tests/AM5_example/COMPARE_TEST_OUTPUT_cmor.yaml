@@ -27,8 +27,8 @@ grids:
       gr, gr1, gr2
     nom_res: 250 km
 cmor:
-  cmor_start: ''
-  cmor_stop: ''
+  start: null
+  stop: '2000'
   mip_era: CMIP6
   exp_json: fre/tests/test_files/CMOR_input_example.json
   directories:

@@ -96,9 +96,10 @@ def get_iso_datetime_ranges(var_filenames, iso_daterange_arr=None, start=None,st
     fre_logger.debug('start_yr_int = %s', start_yr_int)
     fre_logger.debug(' stop_yr_int = %s',  stop_yr_int)
     
-        
+    
     if iso_daterange_arr is None:
-        raise ValueError('this function requires the list one desires to fill with datetime ranges from filenames') #uncovered
+        raise ValueError(
+            'this function requires the list one desires to fill with datetime ranges from filenames') #uncovered
     
     for filename in var_filenames:
         fre_logger.debug('filename = %s', filename)

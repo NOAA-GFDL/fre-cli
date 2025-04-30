@@ -43,6 +43,6 @@ cmor:
           data_series_type: 'ts'
           chunk: *PP_CPLD_CHUNK_A
           
-#        - component_name: 'atmos_level_cmip'
-#          data_series_type: 'ts'
-#          chunk: *PP_CPLD_CHUNK_A
+        - component_name: 'atmos_level_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CPLD_CHUNK_A
