@@ -44,7 +44,7 @@ class frenctoolsTimeAverager(timeAverager):
         try:
             subprocess.run(['which timavg.csh'], shell = True)
         except:
-            fre_logger.error('did not find timavg.csh')
+            raise fre_logger.error('did not find timavg.csh')
             
         from subprocess import Popen, PIPE
 ########################################################################################
@@ -81,7 +81,7 @@ class frenctoolsTimeAverager(timeAverager):
 
                         
                     if subp.returncode < 0:
-                        fre_logger.error('error')
+                        fre_logger.error('error: timavgcsh command not properly executed')
                     else:
                         fre_logger.info('%s climatology successfully ran',nc_monthly_file)
                         exitstatus=0
@@ -104,9 +104,9 @@ class frenctoolsTimeAverager(timeAverager):
             fre_logger.info('output= %s',output)
 
             if subp.returncode < 0:
-                fre_logger.error('error')
+                fre_logger.error('error: timavgcsh command not properly executed')
             else:
-                fre_logger.info('success')
+                fre_logger.info('climatology successfully ran')
                 exitstatus=0
 
         return exitstatus
