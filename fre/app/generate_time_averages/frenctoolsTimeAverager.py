@@ -42,14 +42,16 @@ class frenctoolsTimeAverager(timeAverager):
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
             fre_logger.warning('No output filename given, setting outfile= %s', outfile)
-            
+        
+        #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
         try:
             shutil.which('timavg.csh')
         except:
             raise fre_logger.error('did not find timavg.csh')
             
         from subprocess import Popen, PIPE
-########################################################################################
+
+        
         #Recursive call if month is selcted for climatology. by Avery Kiihne
         if self.avg_type == 'month':
             monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
@@ -57,7 +59,7 @@ class frenctoolsTimeAverager(timeAverager):
             os.makedirs(monthly_nc_dir, exist_ok=True)   #create directory if it does not exist
             os.makedirs(output_dir, exist_ok=True)
             #Extract unique months from the infile 
-            month_indices = list(range(1, 13))
+            month_indices = list(range(1, 13))   #serves to track month index and as part of the outfile name
             month_names = [calendar.month_name[i] for i in month_indices]
 
             #Dictionary to store output filenames by month
@@ -81,7 +83,6 @@ class frenctoolsTimeAverager(timeAverager):
                     output=subp.communicate()[0]
                             
 
-                        
                     if subp.returncode < 0:
                         fre_logger.error('error: timavgcsh command not properly executed')
                     else:
@@ -96,7 +97,6 @@ class frenctoolsTimeAverager(timeAverager):
 
         if self.avg_type == 'month':   #End here if month variable used
             return exitstatus
-########################################################################################
         
         timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
         exitstatus=1
