@@ -195,6 +195,29 @@ def nccheck(file_path, num_steps):
 def histval(history,date_string,warn):
     """ Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps for all files in that directory """
     histval_script.validate(history,date_string,warn)
+    
+#fre pp split-netcdf-wrapper
+@pp_cli.command()
+#fre pp split-netcdf-wrapper -i $inputDir -o outputDir -c $component -s $history_file --use-subdirs
+@click.option('-i', '--inputDir', required=True, help='directory in which to search for the postprocess files')
+@click.option('-o', '--outputDir', required=True, help='directory to which to write postprocessed files')
+@click.option('-c', '--component', required=True, help='component')
+@click.option('-s', '--history-source', required=True, help='source')
+@click.option('-use-subdirs', '-u', is_flag=True, default=False, 
+              help="whether to use subdirs. defaults to false. option most often used for regridding.")
+def split_netcdf_wrapper(inputDir, outputDir, component, history_source)
+    ''' '''
+    split_netcdf_script.split_netcdf()
+
+#fre pp split-netcdf
+@pp_cli.command()
+@click.option('-f', '--file', required=True, help='netcdf file to split')
+@click.option('-o', '--outputDir', required=True, help='directory to which to write postprocessed files')
+@click.option('-v', '--varlist', required=True, help='list of variables to filter on')
+def split_netcdf(infile, outputDir, var_list)
+    ''' '''
+    split_netcdf_script.split_file_xarray(infile, outputDir, var_list)
+
 
 #fre pp wrapper
 @pp_cli.command()

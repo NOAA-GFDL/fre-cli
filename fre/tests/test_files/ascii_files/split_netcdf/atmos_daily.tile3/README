@@ -1,0 +1,94 @@
+split-netcdf testfiles
+
+This consists of 1 main dir and 3 subdirs with a mix of cdl and yaml files.
+The cdl file in the main dir is the one that is split for each of the tests;
+the files that are meant to match the output of the tests are in the subdirs with
+a yamlfile that, when parsed, gives a varlist that, when used on the netcdf
+file in the main dir, produces the netcdf files in teh subdirs.
+
+pushd /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3
+ncgen3 00010101.atmos_daily.tile3.cdl
+python split-netcdf-wrapper -i -o 
+
+#####################
+#!/bin/bash
+
+Rough set of instructions for how to generate the netcdf and cdl files for
+testing from a single large input file
+(ncks should cut the netcdf file down to < 12.5 MB; git wants files under 50 MB 
+and ncdump $file.nc > $file.cdl expands files by about a factor of 4)
+
+infile=/home/cew/Code/cmip7-sprint/testfiles/input/00010101.atmos_daily.tile3.nc
+outfile=/home/cew/Code/cmip7-sprint/testfiles/00010101.atmos_daily.tile3.nc
+ncks -d grid_xt,0,14 -d grid_yt,0,9 -d time,0,181 $infile -O $outfile
+ncdump $outfile > /home/cew/Code/cmip7-sprint/testfiles/00010101.atmos_daily.tile3.cdl
+
+fre pp split-netcdf-wrapper -i /home/cew/Code/cmip7-sprint/testfiles -o /home/cew/Code/cmip7-sprint/testfiles/all_varlist/ -c 'atmos' -s atmos_daily -y /home/cew/Code/cmip7-sprint/testfiles/all_varlist/am5_components_varlist.yml
+
+fre pp split-netcdf-wrapper -i /home/cew/Code/cmip7-sprint/testfiles -o /home/cew/Code/cmip7-sprint/testfiles/some_varlist/ -c 'atmos' -s atmos_daily -y /home/cew/Code/cmip7-sprint/testfiles/some_varlist/am5_components_varlist.yml
+
+fre pp split-netcdf-wrapper -i /home/cew/Code/cmip7-sprint/testfiles -o /home/cew/Code/cmip7-sprint/testfiles/none_varlist/ -c 'atmos' -s atmos_daily -y /home/cew/Code/cmip7-sprint/testfiles/none_varlist/am5_components_varlist.yml
+
+
+cd /home/cew/Code/cmip7-sprint/testfiles/all_varlist
+for f in $( ls $(pwd) ); do
+  echo $f | grep ".nc" > /dev/null
+  if [ $? == 0 ]; then
+  outfile=$( echo $f | sed -e s:.nc:.cdl:g ) 
+  #echo "ncdump $outfile > $f"
+  ncdump $f > $outfile
+  fi
+done
+
+rm -rf * netcdf
+mkdir netcdf
+for f in $( ls $(pwd) ); do
+  echo $f | grep ".nc" > /dev/null
+  if [ $? == 0 ]; then
+  mv $f netcdf/f
+  fi
+done
+
+
+cd /home/cew/Code/cmip7-sprint/testfiles/some_varlist
+for f in $( ls $(pwd) ); do
+  echo $f | grep ".nc" > /dev/null
+  if [ $? == 0 ]; then
+  outfile=$( echo $f | sed -e s:.nc:.cdl:g ) 
+  echo "ncdump $f > $outfile"
+  ncdump $f > $outfile
+  fi
+done
+
+rm -rf * netcdf
+mkdir netcdf
+for f in $( ls $(pwd) ); do
+  echo $f | grep ".nc" > /dev/null
+  if [ $? == 0 ]; then
+  mv $f netcdf/f
+  fi
+done
+
+cp /home/cew/Code/cmip7-sprint/testfiles/some_varlist/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/some_varlist
+cp /home/cew/Code/cmip7-sprint/testfiles/all_varlist/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/all_varlist
+cp /home/cew/Code/cmip7-sprint/testfiles/none_varlist/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/none_varlist
+
+cp /home/cew/Code/cmip7-sprint/testfiles/some_varlist/*.yml /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/some_varlist
+cp /home/cew/Code/cmip7-sprint/testfiles/all_varlist/*.yml /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/all_varlist
+cp /home/cew/Code/cmip7-sprint/testfiles/none_varlist/*.yml /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/none_varlist
+
+cp /home/cew/Code/cmip7-sprint/testfiles/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/
+
+
+cp /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_all_varlist/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/all_varlist
+
+
+
+#script duplicating problematic behavior
+mkdir /home/cew/Code/cmip7-sprint/ncgen-problem
+cp /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_all_varlist/00010101.hfls.atmos_daily.tile3.nc /home/cew/Code/cmip7-sprint/ncgen-problem
+cd /home/cew/Code/cmip7-sprint/ncgen-problem
+ncdump 00010101.hfls.atmos_daily.tile3.nc > 00010101.hfls.atmos_daily.tile3.cdl
+ncgen3 -k netCDF-4 -o new_00010101.hfls.atmos_daily.tile3.nc 00010101.hfls.atmos_daily.tile3.cdl
+nccmp -mg new_00010101.hfls.atmos_daily.tile3.nc 00010101.hfls.atmos_daily.tile3.nc
+
