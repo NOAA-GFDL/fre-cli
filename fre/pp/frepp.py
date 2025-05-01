@@ -203,18 +203,19 @@ def histval(history,date_string,warn):
 @click.option('-o', '--outputDir', required=True, help='directory to which to write postprocessed files')
 @click.option('-c', '--component', required=True, help='component')
 @click.option('-s', '--history-source', required=True, help='source')
-@click.option('-use-subdirs', '-u', is_flag=True, default=False, 
+@click.option('-y', '--yamlfile', required=True, help='config file from which to get variable list')
+@click.option('--use-subdirs', '-u', is_flag=True, default=False, 
               help="whether to use subdirs. defaults to false. option most often used for regridding.")
-def split_netcdf_wrapper(inputDir, outputDir, component, history_source)
+def split_netcdf_wrapper(inputDir, outputDir, component, history_source):
     ''' '''
-    split_netcdf_script.split_netcdf()
+    split_netcdf_script.split_netcdf(inputDir, outputDir, component, history_source, yamlfile)
 
 #fre pp split-netcdf
 @pp_cli.command()
 @click.option('-f', '--file', required=True, help='netcdf file to split')
 @click.option('-o', '--outputDir', required=True, help='directory to which to write postprocessed files')
-@click.option('-v', '--varlist', required=True, help='list of variables to filter on')
-def split_netcdf(infile, outputDir, var_list)
+@click.option('-v', '--var_list', required=True, help='list of variables to filter on')
+def split_netcdf(infile, outputDir, var_list):
     ''' '''
     split_netcdf_script.split_file_xarray(infile, outputDir, var_list)
 
