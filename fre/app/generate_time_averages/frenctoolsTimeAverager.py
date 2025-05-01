@@ -6,6 +6,7 @@ import calendar
 from cdo import Cdo
 import logging
 import subprocess
+import shutil
 
 cdo = Cdo()
 fre_logger = logging.getLogger(__name__)
@@ -41,8 +42,9 @@ class frenctoolsTimeAverager(timeAverager):
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
             fre_logger.warning('No output filename given, setting outfile= %s', outfile)
+            
         try:
-            subprocess.run(['which timavg.csh'], shell = True)
+            shutil.which('timavg.csh')
         except:
             raise fre_logger.error('did not find timavg.csh')
             
