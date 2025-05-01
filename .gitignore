@@ -1,0 +1,3 @@
+#ignores any testing directories created when testing split-netcdf
+fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_*
+*~
