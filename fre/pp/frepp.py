@@ -4,6 +4,7 @@ import click
 import logging
 fre_logger = logging.getLogger(__name__)
 
+#fre tools
 from fre.pp import checkout_script
 from fre.pp import configure_script_yaml
 from fre.pp import configure_script_xml
@@ -15,6 +16,7 @@ from fre.pp import nccheck_script
 from fre.pp import trigger_script
 from fre.pp import status_script
 from fre.pp import wrapper_script
+from fre.pp import split_netcdf_script
 
 # fre pp
 @click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
@@ -199,25 +201,25 @@ def histval(history,date_string,warn):
 #fre pp split-netcdf-wrapper
 @pp_cli.command()
 #fre pp split-netcdf-wrapper -i $inputDir -o outputDir -c $component -s $history_file --use-subdirs
-@click.option('-i', '--inputDir', required=True, help='directory in which to search for the postprocess files')
-@click.option('-o', '--outputDir', required=True, help='directory to which to write postprocessed files')
+@click.option('-i', '--inputdir', required=True, help='directory in which to search for the postprocess files')
+@click.option('-o', '--outputdir', required=True, help='directory to which to write postprocessed files')
 @click.option('-c', '--component', required=True, help='component')
 @click.option('-s', '--history-source', required=True, help='source')
 @click.option('-y', '--yamlfile', required=True, help='config file from which to get variable list')
 @click.option('--use-subdirs', '-u', is_flag=True, default=False, 
               help="whether to use subdirs. defaults to false. option most often used for regridding.")
-def split_netcdf_wrapper(inputDir, outputDir, component, history_source):
+def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_subdirs, yamlfile):
     ''' '''
-    split_netcdf_script.split_netcdf(inputDir, outputDir, component, history_source, yamlfile)
+    split_netcdf_script.split_netcdf(inputdir, outputdir, component, history_source, use_subdirs, yamlfile)
 
 #fre pp split-netcdf
 @pp_cli.command()
 @click.option('-f', '--file', required=True, help='netcdf file to split')
-@click.option('-o', '--outputDir', required=True, help='directory to which to write postprocessed files')
-@click.option('-v', '--var_list', required=True, help='list of variables to filter on')
-def split_netcdf(infile, outputDir, var_list):
+@click.option('-o', '--outputdir', required=True, help='directory to which to write postprocessed files')
+@click.option('-v', '--variables', required=True, help='list of variables to filter on')
+def split_netcdf(file, outputdir, variables):
     ''' '''
-    split_netcdf_script.split_file_xarray(infile, outputDir, var_list)
+    split_netcdf_script.split_file_xarray(file, outputdir, variables)
 
 
 #fre pp wrapper

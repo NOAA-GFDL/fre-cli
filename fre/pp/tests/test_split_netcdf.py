@@ -80,6 +80,7 @@ def test_split_file_run(infile, outfiledir, varlist):
                                           "--file", infile, 
                                           "--outputdir", outfiledir, 
                                           "--variables", varlist]
+    print(" ".join(split_netcdf_args))
     result = runner.invoke(fre.fre, args=split_netcdf_args)
     assert result.exit_code == 0
 
