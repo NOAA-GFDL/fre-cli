@@ -136,7 +136,9 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   #If they were, I could get away with the following:
   #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
   #instead of this:
-  var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= 1)]
+  var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= 1) and v not in dataset._coord_names]
+  #having a variable listed as both a metadata var and a coordinate var seems to
+  #lead to the weird adding a _FillValue behavior
   fre_logger.debug(f"var patterns: {var_patterns}")
   fre_logger.debug(f"1 or 2-d vars: {var_shortvars}")
   #both combined gets you a decent list of non-diagnostic variables
@@ -157,7 +159,7 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   fre_logger.debug(f"intersection of datavars and var_list: {datavars}")
   
   if len(datavars) > 0:
-    vc_encode = set_coord_encoding(data2, data2._coord_names)
+    vc_encode = set_coord_encoding(dataset, dataset._coord_names)
     for variable in datavars:
       fre_logger.info(f"splitting var {variable}")
       #drop all data vars (diagnostics) that are not the current var of interest
@@ -197,9 +199,6 @@ def set_coord_encoding(dset, vcoords):
   '''
   fre_logger.debug(f"getting coord encode settings")
   encode_dict = {}
-  ##coords are defined in relation with a var; need to check al vars for all coords
-  #vcoords = [list(dset[el].coords) for el in varnames]
-  #vcoords = list(set(chain.from_iterable(vcoords)))
   for vc in vcoords:
     vc_encoding = dset[vc].encoding #dict
     encode_dict[vc] = {'_FillValue': None, 

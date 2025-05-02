@@ -176,3 +176,37 @@ def test_cli_fre_pp_wrapper_opt_dne():
     ''' fre pp wrapper optionDNE '''
     result = runner.invoke(fre.fre, args=["pp", "wrapper", "optionDNE"])
     assert result.exit_code == 2
+
+#-- fre pp split-netcdf-wrapper
+
+def test_cli_fre_pp_split_netcdf_wrapper():
+    ''' fre pp split-netcdf-wrapper '''
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf-wrapper"])
+    assert result.exit_code == 2
+
+def test_cli_fre_pp_split-netcdf-wrapper_help():
+    ''' fre pp split-netcdf-wrapper --help '''
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf-wrapper", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_pp_split-netcdf-wrapper_opt_dne():
+    ''' fre pp split-netcdf-wrapper optionDNE '''
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf-wrapper", "optionDNE"])
+    assert result.exit_code == 2
+    
+#-- fre pp split-netcdf
+
+def test_cli_fre_pp_split-netcdf():
+    ''' fre pp split-netcdf '''
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf"])
+    assert result.exit_code == 2
+
+def test_cli_fre_pp_split-netcdf_help():
+    ''' fre pp split-netcdf --help '''
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_pp_split-netcdf_opt_dne():
+    ''' fre pp split-netcdf optionDNE '''
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf", "optionDNE"])
+    assert result.exit_code == 2

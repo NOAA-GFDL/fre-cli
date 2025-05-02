@@ -54,15 +54,6 @@ def test_split_file_setup():
         for ncg in ncgen_commands:
             sp = subprocess.run(ncg, check = True, capture_output=True)
             sp_stat.append(sp.returncode)
-            if sp.returncode == 0:
-                #check over the ncgenned files and remove the _FillValue from
-                #the variables it has added a new _FillValue
-                #todo: find a programmatic way to do this; ncatted is a workaround
-                problem_vars = ['phalf', 'pfull']
-                for pv in problem_vars:
-                    ncatted_cmd = ["ncatted", "-a", f"_FillValue,{pv},d,,", ncg[-2]]
-                    spv = subprocess.run(ncatted_cmd, capture_output=True)
-                    sp_stat.append(spv.returncode)
         sp_success = [el == 0 for el in sp_stat]
         nc_files_exist = [osp.isfile(el) for el in nc_files]
     assert all( [ sp_success + nc_files_exist ] )
