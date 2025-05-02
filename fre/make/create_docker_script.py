@@ -24,8 +24,8 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
     name = yamlfile.split(".")[0]
     run = execute
 
-#    # Combined compile yaml file
-#    combined = Path(f"combined-{name}.yaml")
+    ## Combined compile yaml file
+    #combined = Path(f"combined-{name}.yaml")
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yml,
@@ -81,10 +81,14 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
                 # create build script for container
                 dockerBuild.createBuildScript(
                     platform["containerBuild"], platform["containerRun"], skip_format_transfer)
+
+                former_log_level = fre_logger.level
+                fre_logger.setLevel(logging.INFO)                
                 fre_logger.info("\ntmpDir created in " + currDir + "/tmp")
                 fre_logger.info("Dockerfile created in " + currDir +"\n")
                 fre_logger.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
-
+                fre_logger.setLevel(former_log_level)
+                
                 # run the script if option is given
                 if run:
                     subprocess.run(args=[dockerBuild.userScriptPath], check=True)
