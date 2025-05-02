@@ -47,9 +47,7 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
     for platformName in plist:
         for targetName in tlist:
             targetObject = targetfre.fretarget(targetName)
-            if modelYaml.platforms.hasPlatform(platformName):
-                pass
-            else:
+            if not modelYaml.platforms.hasPlatform(platformName):
                 raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
@@ -57,41 +55,43 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
             ## Make the bldDir based on the modelRoot, the platform, and the target
             srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
-            if platform["container"] is True:
-                image=modelYaml.platforms.getContainerImage(platformName)
-                stage2image = modelYaml.platforms.getContainer2base(platformName)
-                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
-                tmpDir = "tmp/"+platformName
-                dockerBuild = buildDocker.container(base = image,
+            if not platform["container"]:
+                continue
+
+            image=modelYaml.platforms.getContainerImage(platformName)
+            stage2image = modelYaml.platforms.getContainer2base(platformName)
+            bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
+            tmpDir = "tmp/"+platformName
+            dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],
                                               libs = fremakeYaml["container_addlibs"],
                                               RUNenv = platform["RUNenv"],
                                               target = targetObject,
                                               mkTemplate = platform["mkTemplate"],
                                               stage2base = stage2image)
-                dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
-                dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
+            dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
+            dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
 
-                for c in fremakeYaml['src']:
-                    dockerBuild.writeDockerfileMkmf(c)
+            for c in fremakeYaml['src']:
+                dockerBuild.writeDockerfileMkmf(c)
 
-                dockerBuild.writeRunscript(platform["RUNenv"],platform["containerRun"],tmpDir+"/execrunscript.sh")
-                currDir = os.getcwd()
+            dockerBuild.writeRunscript(platform["RUNenv"], platform["containerRun"], tmpDir+"/execrunscript.sh")
+            currDir = os.getcwd()
 
-                # create build script for container
-                dockerBuild.createBuildScript(
+            # create build script for container
+            dockerBuild.createBuildScript(
                     platform["containerBuild"], platform["containerRun"], skip_format_transfer)
 
-                former_log_level = fre_logger.level
-                fre_logger.setLevel(logging.INFO)                
-                fre_logger.info("\ntmpDir created in " + currDir + "/tmp")
-                fre_logger.info("Dockerfile created in " + currDir +"\n")
-                fre_logger.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
-                fre_logger.setLevel(former_log_level)
+            former_log_level = fre_logger.level
+            fre_logger.setLevel(logging.INFO)                
+            fre_logger.info("\ntmpDir created in " + currDir + "/tmp")
+            fre_logger.info("Dockerfile created in " + currDir +"\n")
+            fre_logger.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
+            fre_logger.setLevel(former_log_level)
                 
-                # run the script if option is given
-                if run:
-                    subprocess.run(args=[dockerBuild.userScriptPath], check=True)
+            # run the script if option is given
+            if run:
+                subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
 if __name__ == "__main__":
     dockerfile_create()
