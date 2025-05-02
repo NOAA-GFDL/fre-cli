@@ -16,6 +16,8 @@ fre_logger = logging.getLogger(__name__)
 def check_path_existence(some_path):
     '''
     simple function checking for pathlib.Path existence, raising a FileNotFoundError if needed
+    Args:
+        some_path (str), required, a string representing a path. can be relative or absolute
     '''
     if not Path(some_path).exists():
         raise FileNotFoundError('does not exist:  {}'.format(some_path)) # uncovered
@@ -24,6 +26,8 @@ def iso_to_bronx_chunk(cmor_chunk_in):
     '''
     converts a string representing a datetime chunk in ISO's convention (e.g. 'P5Y'),
     to a string representing the same thing in FRE-bronx's convention
+    Args:
+        cmor_chunk_in (str), required, ISO 8601 formatted string representing a datetime interval
     '''
     fre_logger.debug('cmor_chunk_in = %s', cmor_chunk_in)
     if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
@@ -36,6 +40,8 @@ def iso_to_bronx_chunk(cmor_chunk_in):
 def conv_mip_to_bronx_freq(cmor_table_freq):
     '''
     uses a look up table to convert a given frequency in a MIP table, to that same frequency under FRE-bronx convention instead
+    Args:
+        cmor_table_freq (str), required, a frequency string read from a MIP table, subject to a controlled vocabulary. 
     '''
     cmor_to_bronx_dict = {
         "1hr"    : "1hr",
@@ -64,6 +70,8 @@ def get_bronx_freq_from_mip_table(json_table_config):
     '''
     checks one of the variable fields within a cmip cmor table for the frequency of the data the table describes
     takes in a path to a json cmip cmor table file, and output a string corresponding to a FREbronx style frequency
+    Args:
+        json_table_config (str), required, a string representing a path to a json MIP table holding metadata under variable names
     '''
     table_freq = None
     with open(json_table_config, 'r', encoding='utf-8') as table_config_file:
