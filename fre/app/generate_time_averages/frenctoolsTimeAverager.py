@@ -44,10 +44,8 @@ class frenctoolsTimeAverager(timeAverager):
             fre_logger.warning('No output filename given, setting outfile= %s', outfile)
         
         #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
-        try:
-            shutil.which('timavg.csh')
-        except:
-            raise fre_logger.error('did not find timavg.csh')
+        if shutil.which('timavg.csh') == None:
+            fre_logger.error('did not find timavg.csh')
             
         from subprocess import Popen, PIPE
 
@@ -90,10 +88,7 @@ class frenctoolsTimeAverager(timeAverager):
                         exitstatus=0
                         
                 #Delete files after being used to generate output files
-            for month_index in month_indices:  
-                nc_monthly_file = nc_month_file_paths[month_index]              
-                os.remove(nc_monthly_file)
-            os.rmdir('monthly_nc_files')    
+            shutil.rmtree('monthly_nc_files')    
 
         if self.avg_type == 'month':   #End here if month variable used
             return exitstatus
