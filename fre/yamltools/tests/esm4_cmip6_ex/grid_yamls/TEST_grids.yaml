@@ -1,6 +1,6 @@
 # WARNING this file is for testing and examples only.
 # WARNING it is not for production/deployment use.
-grids: &grids
+grids:
 
 # gm is the only grid label that has no variants. 
   - gm: &gm
