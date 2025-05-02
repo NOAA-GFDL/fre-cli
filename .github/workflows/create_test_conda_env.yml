@@ -12,7 +12,8 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
+      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24_gcc14_v2
+      options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,7 +40,7 @@ jobs:
           export PATH="/opt/views/view/bin:$PATH"
 
           # run pytest
-          coverage run -m pytest --junit-xml=pytest_results.xml --config-file=fre/pytest.ini --cov-config=fre/coveragerc --cov-report=xml --cov=fre fre/
+          coverage run -m pytest --durations=20 --log-level INFO --junit-xml=pytest_results.xml --config-file=pytest.ini --cov-config=coveragerc --cov-report=xml --cov=fre fre/
 
           # restore original path and install genbadge to generate coverage badge based on xml
           export PATH="$path_save"

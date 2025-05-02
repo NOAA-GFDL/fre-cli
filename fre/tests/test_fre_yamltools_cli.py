@@ -47,7 +47,7 @@ def test_cli_fre_yamltools_combine_cmoryaml():
     if Path(output_combined_cmor_yaml).exists():
         Path(output_combined_cmor_yaml).unlink()
 
-    result = runner.invoke(fre.fre, args=[ "yamltools", "combine-yamls",
+    result = runner.invoke(fre.fre, args=[ "-v", "-v", "yamltools", "combine-yamls",
                                            "-y", f"{FAKE_AM5_EX_DIR}/am5.yaml",
                                            "-e", "c96L65_am5f7b12r1_amip",
                                            "-p", "ncrc5.intel",

@@ -185,8 +185,7 @@ fre/tests/test_files/outdir/
 fre/app/generate_time_averages/tests/time_avg_test_files/
 fre/app/regrid_xy/tests/*/
 
-fre/make/tests/*/
-
+fre/make/tests/*_out/
 fre/pp/tests/configure_yaml_out/
 
 fre/yamltools/tests/combine_yamls_out/
@@ -197,3 +196,4 @@ fregrid_remap_file_288_by_180.nc
 rose-app-run.conf
 .vscode/*
 .vscode
+fre/tests/test_files/CMOR_input_example.json

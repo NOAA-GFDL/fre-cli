@@ -35,7 +35,9 @@ def pp_cli():
               help="Target name",
               required=True)
 def status(experiment, platform, target):
-    """ - Report status of PP configuration"""
+    """
+    Report status of PP configuratio
+    """
     status_script.status_subtool(experiment, platform, target)
 
 # fre pp run
@@ -56,7 +58,9 @@ def status(experiment, platform, target):
               help="after submission, do not wait to ping the scheduler and confirm success",
               required=False)
 def run(experiment, platform, target, pause, no_wait):
-    """ - Run PP configuration"""
+    """
+    Run PP configuration
+    """
     run_script.pp_run_subtool(experiment, platform, target, pause, no_wait)
 
 # fre pp validate
@@ -71,7 +75,9 @@ def run(experiment, platform, target, pause, no_wait):
               help="Target name",
               required=True)
 def validate(experiment, platform, target):
-    """ - Validate PP configuration"""
+    """
+    Validate PP configuration
+    """
     validate_script.validate_subtool(experiment, platform, target)
 
 # fre pp install
@@ -86,7 +92,9 @@ def validate(experiment, platform, target):
               help="Target name",
               required=True)
 def install(experiment, platform, target):
-    """ - Install PP configuration"""
+    """
+    Install PP configuration
+    """
     install_script.install_subtool(experiment, platform, target)
 
 @pp_cli.command()
@@ -103,7 +111,9 @@ def install(experiment, platform, target):
               help="Target name",
               required=True)
 def configure_yaml(yamlfile,experiment,platform,target):
-    """ - Execute fre pp configure """
+    """
+    Execute fre pp configure
+    """
     configure_script_yaml.yaml_info(yamlfile,experiment,platform,target)
 
 @pp_cli.command()
@@ -120,7 +130,9 @@ def configure_yaml(yamlfile,experiment,platform,target):
               required=False, default = None,
               help="fre-workflows branch/tag to clone; default is $(fre --version)")
 def checkout(experiment, platform, target, branch=None):
-    """ - Execute fre pp checkout """
+    """
+    Execute fre pp checkout
+    """
     checkout_script.checkout_template(experiment, platform, target, branch)
 
 @pp_cli.command()
@@ -176,7 +188,9 @@ def checkout(experiment, platform, target, branch=None):
               help="Optional. Append '_canopy' to pp, analysis, and refinediag dirs")
 def configure_xml(xml, platform, target, experiment, do_analysis, historydir, refinedir,
                   ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
-    """ - Converts a Bronx XML to a Canopy rose-suite.conf """
+    """
+    Converts a Bronx XML to a Canopy rose-suite.conf
+    """
     configure_script_xml.convert(xml, platform, target, experiment, do_analysis, historydir, refinedir,
                                  ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual)
 
@@ -185,16 +199,23 @@ def configure_xml(xml, platform, target, experiment, do_analysis, historydir, re
 @click.option("--file_path", "-f", type=str, required=True, help="Path to netCDF (.nc) file")
 @click.option("--num_steps", "-n", type=str, required=True, help="Number of expected timesteps")
 def nccheck(file_path, num_steps):
-    """ - Check that a netCDF (.nc) file contains expected number of timesteps - """
+    """
+    Check that a netCDF (.nc) file contains expected number of timesteps
+    """
     nccheck_script.check(file_path,num_steps)
 
 #fre pp histval
 @pp_cli.command()
 @click.option('--history','-hist', required=True, help="Path to directory containing history files")
 @click.option('--date_string','-d', required=True, help="Date string as written in netCDF (.nc) filename")
-@click.option('--warn', '-w', is_flag=True, default=False, help="Warn mode. Instead of raising an error, a warning will be printed in the fre log if no diag manifest files are present")
+@click.option('--warn', '-w', is_flag=True, default=False,
+              help = "Warn mode. Instead of raising an error, a warning will be printed in the fre log if no " \
+                     "diag manifest files are present")
 def histval(history,date_string,warn):
-    """ Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps for all files in that directory """
+    """
+    Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps
+    for all files in that directory
+    """
     histval_script.validate(history,date_string,warn)
 
 #fre pp ppval
@@ -225,7 +246,9 @@ def ppval(path):
               required=False, default=None,
               help="Time whose history files are ready")
 def wrapper(experiment, platform, target, config_file, branch, time):
-    """ - Execute fre pp steps in order """
+    """
+    Execute fre pp steps in order
+    """
     fre_logger.info('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
     fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
@@ -244,7 +267,9 @@ def wrapper(experiment, platform, target, config_file, branch, time):
               required=True,
               help="Time whose history files are ready")
 def trigger(experiment, platform, target, time):
-    """ - Start postprocessing for a particular time """
+    """
+    Start postprocessing for a particular time
+    """
     trigger_script.trigger(experiment, platform, target, time)
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ postprocess:
       xyInterp: *custom_interp
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      switch: False
+      postprocess_on: False
     - type: "atmos"
       sources:
         - history_file: "atmos_month"
@@ -23,7 +23,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      switch: True
+      postprocess_on: True
     - type: "atmos_level_cmip"
       sources:
         - history_file: "atmos_level_cmip"
@@ -31,7 +31,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      switch: False
+      postprocess_on: False
     - type: "atmos_level"
       sources:
         - history_file: "atmos_month"
@@ -39,7 +39,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      switch: False
+      postprocess_on: False
     - type: "atmos_month_aer"
       sources:
         - history_file: "atmos_month_aer"
@@ -47,7 +47,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'atmos'
-      switch: False
+      postprocess_on: False
     - type: "atmos_diurnal"
       sources:
         - history_file: "atmos_diurnal"
@@ -55,11 +55,11 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order2"
       inputRealm: 'atmos'
-      switch: False
+      postprocess_on: False
     - type: "atmos_scalar"
       sources:
         - history_file: "atmos_scalar"
-      switch: True
+      postprocess_on: True
     - type: "aerosol_cmip"
       xyInterp: *PP_XYINTERP96
       sources:
@@ -67,7 +67,7 @@ postprocess:
       sourceGrid: "cubedsphere"
       interpMethod: "conserve_order1"
       inputRealm: 'atmos'
-      switch: False
+      postprocess_on: False
     - type: "land"
       sources:
         - history_file: "land_month"
@@ -75,7 +75,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'land'
-      switch: False
+      postprocess_on: False
     - type: "land_cmip"
       sources:
         - history_file: "land_month_cmip"
@@ -83,7 +83,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'land'
-      switch: False
+      postprocess_on: False
     - type: "tracer_level"
       sources:
         - history_file: "atmos_tracer"
@@ -91,4 +91,4 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'atmos'
-      switch: False
+      postprocess_on: False
