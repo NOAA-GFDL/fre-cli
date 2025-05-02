@@ -41,8 +41,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     used when regridding.
   yamlfile - a .yml config file for fre postprocessing
   '''
-  if __debug__:
-    fre_logger.debug(locals()) #input argument details
+  
   #Verify input/output dirs exist and are dirs
   if not (os.path.isdir(inputDir)):
     fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
@@ -60,7 +59,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #note to self: if CYLC_TASK_PARAM_component isn't doing what we think it's
   #doing, we can also use history_source to get the component but it's
   #going to be a bit of a pain
-  varlist = parse_yaml_for_varlist(yamlfile, component)
+  varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
   
   #extend globbing used to find both tiled and non-tiled files
   #all files that contain the current source:history_file name,
@@ -71,35 +70,37 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   file_regex = '*'+'.'+history_source+'*.*.nc'
   
   #If in sub-dir mode, process the sub-directories instead of the main one
+  # and write to $outputdir/$subdir
   if use_subdirs:
-      for subdir in os.listdir():
-        
-          recent_dirs=[]
-          recent_dirs.append(subdir)   #pushd
-          files=glob.glob(file_regex)
-          # Exit if no input files found 
-          if len(files) == 0:
-            fre_logger.info(f"No input files found; skipping subdir {subdir}")
-            os.chdir(recent_dirs[-2])   #popd
-            continue
-          # Create output subdir if needed
-          os.mkdir(os.path.abspath(outputDir)/subdir)
-          # Split the files by variable
-          for infile in files:
-               split_file_xarray(infile, os.path.abspath(outputDir), varlist)
-          os.chdir(recent_dirs[-2])   #popd     
-  else:
-      dirpath = os.path.join(workdir, file_regex)
-      print(dirpath)
-      files=glob.glob(dirpath)
-      # Exit if not input files are found
+    subdirs = [el for el in os.listdir() if os.path.isdir(el)]
+    num_subdirs = len(subdirs)
+    fre_logger.info(f"checking {num_subdirs} under {workdir}")
+    files_split = 0
+    for sd in subdirs: 
+      os.chdir(sd)
+      files=glob.glob(file_regex)
       if len(files) == 0:
-        fre_logger.error("error: no input files found in {workdir}")
-        sys.exit(1)
-   
+        fre_logger.info(f"No input files found; skipping subdir {subdir}")
+      else:
+        output_subdir = os.path.join(os.path.abspath(outputDir)/subdir)
+        if not os.path.isdir(ouput_subdir):
+          os.mkdir(output_subdir)
+        for infile in files:
+          split_file_xarray(infile, output_subdir, varlist)
+          files_split += 1
+      os.chdir(workdir)
+    fre_logger.info(f"{files_split} files split")
+    if files_split == 0:
+      fre_logger.warning("warning: no files found in dirs under {workdir} that match pattern {file_regex}; no splitting took place")
+  else:
+      #dirpath = os.path.join(workdir, file_regex)
+      #print(dirpath)
+      files=glob.glob(file_regex)
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
+      if len(files) == 0:
+        fre_logger.warning("warning: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
     
   fre_logger.info("split-netcdf-wrapper call complete")
   sys.exit(0) #check this
@@ -121,13 +122,14 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
     
   if not os.path.isfile(infile):
     fre_logger.error(f"error: input file {infile} not found. Please check the path.")
+    sys.exit(1)
   
   #patterns meant to match the bounds vars
   #the i and j offsets + the average_* vars are included in this category,
   #but they also get covered in the var_shortvars query below
   var_patterns = ["_bnds", "_bounds", "_offset", "average_"]
 
-  dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False)
+  dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False, decode_coords="all")
   allvars = dataset.data_vars.keys()
   #0 or 1-dim vars in the dataset (probably reference vars, not diagnostics)
   #note: netcdf dimensions and xarray coords are NOT ALWAYS THE SAME THING.
@@ -155,13 +157,13 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   fre_logger.debug(f"intersection of datavars and var_list: {datavars}")
   
   if len(datavars) > 0:
+    vc_encode = set_coord_encoding(data2, data2._coord_names)
     for variable in datavars:
       fre_logger.info(f"splitting var {variable}")
       #drop all data vars (diagnostics) that are not the current var of interest
       #but KEEP the metadata vars
       #(seriously, we need the time_bnds)
       data2 = dataset.drop_vars([el for el in datavars if el is not variable])
-      vc_encode = set_coord_encoding(data2, variable, list(data2.data_vars.keys()))
       v_encode= set_var_encoding(dataset, metavars)
       var_encode = {**vc_encode, **v_encode}
       fre_logger.debug(f"var_encode settings: {var_encode}")
@@ -175,7 +177,7 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   else:
     fre_logger.info(f"No data variables found in {infile}; no writes take place.")
     
-def set_coord_encoding(dset, varname, varnames):
+def set_coord_encoding(dset, vcoords):
   '''
   Gets the encoding settings needed for xarray to write out the coordinates
   as expected
@@ -186,16 +188,22 @@ def set_coord_encoding(dset, varname, varnames):
   varnames: list of all variables (string) in the dataset; needed to get
     names of all coordinate variables since coordinate status is defined
     only in relation with a variable
+  Note: this code removes _FillValue from coordinates. CF-compliant files do not
+  have _FillValue on coordinates, and xarray does not have a good way to get
+  _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
+  when coordinates *have* a _FillValue gets you wrong metadata, and bad metadata
+  is worse than no metadata. Dropping the attribute if it's present seems to be 
+  the lesser of two evils.
   '''
-  fre_logger.debug(f"getting coord encode settings for {varname}")
+  fre_logger.debug(f"getting coord encode settings")
   encode_dict = {}
-  #coords are defined in relation with a var; need to check al vars for all coords
-  vcoords = [list(dset[el].coords) for el in varnames]
-  vcoords = list(set(chain.from_iterable(vcoords)))
+  ##coords are defined in relation with a var; need to check al vars for all coords
+  #vcoords = [list(dset[el].coords) for el in varnames]
+  #vcoords = list(set(chain.from_iterable(vcoords)))
   for vc in vcoords:
     vc_encoding = dset[vc].encoding #dict
     encode_dict[vc] = {'_FillValue': None, 
-                            'dtype': dset[vc].encoding['dtype']}
+                              'dtype': dset[vc].encoding['dtype']}
     if "units" in vc_encoding.keys():
       encode_dict[vc]['units'] = dset[vc].encoding['units']
   return(encode_dict)
@@ -233,18 +241,21 @@ def fre_outfile_name(infile, varname):
   infile_comp = infile.split(".")
   #tiles get the varname in a slight different position
   if re.search("tile", infile_comp[-2]) is not None and len(infile_comp) > 2:
-    var_outfile = ".".join([infile_comp[:-3], varname] + infile_comp[-2:])
-  else:  
-    var_outfile = ".".join([infile_comp[:-2], varname] + infile_comp[-1:])
+    infile_comp.insert(len(infile_comp)-2,varname)
+  else:
+    infile_comp.insert(len(infile_comp)-1,varname)
+  var_outfile = ".".join(infile_comp)
   return(var_outfile)
 
-def parse_yaml_for_varlist(yamlfile,yamlcomp):
+def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
   '''
   Given a yaml config file, parses the structure looking for the list of
   variables to postprocess (https://github.com/NOAA-GFDL/fre-workflows/issues/51)
   and returns "all" if no such list is found
   yamlfile: .yml file used for fre pp configuration
   yamlcomp: string, one of the components in the yamlfile
+  hist_source: string, optional, allows you to check that the hist_source
+    is under the specified component
   '''
   with open(yamlfile,'r') as yml:
     yml_info = yaml.safe_load(yml)
@@ -259,6 +270,13 @@ def parse_yaml_for_varlist(yamlfile,yamlcomp):
   if len(comp_el) == 0:
     fre_logger.error(f"error in parse_yaml_for_varlist: component {yamlcomp} not found in {yamlfile}")
     sys.exit(1)
+  #if hist_source is specified, check that it is under right component
+  if hist_source != "none":
+    ymlsources = comp_el[0]["sources"]
+    hist_srces = [el['history_file'] for el in ymlsources]
+    if not any([el == hist_source for el in hist_srces]):
+      fre_logger.error(f"error in parse_yaml_for_varlist: history_file {hist_source} is not found under component {yamlcomp} in file {yamlfile}")
+      sys.exit(1)
   #"variables" is at the same level as "sources" in the yaml
   if "variables" in comp_el[0].keys():
     varlist = comp_el[0]["variables"]
@@ -269,4 +287,3 @@ def parse_yaml_for_varlist(yamlfile,yamlcomp):
 #Main method invocation
 if __name__ == '__main__':
     split_file_xarray(sys.argv[1], sys.argv[2])
-
