@@ -68,8 +68,15 @@ def test_split_file_setup():
                               pytest.param(test_ncfile1, "new_none_varlist", 
                                 ",".join(none_varlist), id='none')])
 def test_split_file_run(infile, outfiledir, varlist):
-    ''' Can split-netcdf run when called from the command line? 
-        Parameters are based off of the list of variables:
+    ''' Checks that split-netcdf will run when called from the command line 
+    
+        infile: netcdf file to split into single-var files
+        outfiledir: directory to which to write the split netcdf files
+          (new_all_varlist, new_some_varlist, new_none_varlist)
+        varlist: comma-separated string specifying which variables to write 
+          ("all", some_varlist, none_varlist)
+        
+        Parameters for the 3 tests are based off of the list of variables to filter on:
             all: "all", the default, processes all variables in the input
             some: processes a list of variables, some of which are and some of 
                 which are not in the input; includes one duplicate var
@@ -87,7 +94,16 @@ def test_split_file_run(infile, outfiledir, varlist):
                          [pytest.param("new_all_varlist", "all_varlist", id='all'), 
                          pytest.param("new_some_varlist", "some_varlist", id='some')])    
 def test_split_file_data(newdir, origdir):
-    ''' Does the data in the new files match the data in the old files? '''
+    ''' Checks that the data in the new files match the data in the old files
+        newdir: the directory containing the newly-written files
+          (new_all_varlist, new_some_varlist)
+        origdir: dir containing the old files to check against
+          (all_varlist, some_varlist)
+        Parameters for the 2 tests differ based off the variable list from test_split_file_run: 
+            all: "all", the default, processes all variables in the input
+            some: processes a list of variables, some of which are and some of 
+                which are not in the input; includes one duplicate var
+                '''
     os.chdir(test_dir1)
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     all_files_equal=True
@@ -112,7 +128,16 @@ def test_split_file_data(newdir, origdir):
                          [pytest.param("new_all_varlist", "all_varlist", id='all'),
                          pytest.param("new_some_varlist", "some_varlist", id='some')])
 def test_split_file_metadata(newdir, origdir):
-    ''' Does the metadata in the new files match the metadata in the old files? '''
+    ''' Checks that the metadata in the new files match the metadata in the old files 
+        newdir: the directory containing the newly-written files
+          (new_all_varlist, new_some_varlist)
+        origdir: dir containing the old files to check against
+          (all_varlist, some_varlist)
+        Parameters for the 2 tests differ based off the variable list from test_split_file_run: 
+            all: "all", the default, processes all variables in the input
+            some: processes a list of variables, some of which are and some of 
+                which are not in the input; includes one duplicate var
+                '''
     os.chdir(test_dir1)
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     all_files_equal=True
@@ -130,7 +155,7 @@ def test_split_file_metadata(newdir, origdir):
 #clean up splitting files
 def test_split_file_cleanup():
     ''' Cleaning up files and dirs created for this set of tests. 
-        Deletes all netcdf files and all dirs created for this test (new_*)'''
+        Deletes all netcdf files (*.nc) and all dirs created for this test (new_*)'''
     el_list = []
     dir_list = []
     for path, subdirs, files in os.walk(test_dir):
@@ -148,12 +173,30 @@ def test_split_file_cleanup():
     assert True
 
 #test parsing yaml
-@pytest.mark.parametrize("component,compdir,varlist", 
-                             [("atmos", "all_varlist","all"), 
-                             ("atmos", "some_varlist", some_varlist), 
-                             pytest.param("mantle", "none_varlist", "", marks=pytest.mark.xfail)])
-def test_parse_yaml(component, compdir, varlist):
-    ''' Tests parsing yaml for the pieces we need for splitting '''
+@pytest.mark.parametrize("component,compdir,varlist,hist_source", 
+                             [("atmos", "all_varlist","all", "none"), 
+                             ("atmos", "some_varlist", some_varlist, "none"), 
+                             pytest.param("mantle", "none_varlist", 
+                                          "", "none", marks=pytest.mark.xfail), 
+                             pytest.param("atmos", "all_varlist", "all", 
+                                          "atmos_diurnal", marks=pytest.mark.xfail)])
+def test_parse_yaml(component, compdir, varlist, hist_source):
+    ''' Tests parsing yaml for the variable_list we need for splitting 
+        component: string corresponding to a component in the yaml
+        compdir: directory in which to look for the yaml (all use same filename)
+        varlist: list of variables expected to match what we get from the yaml
+        hist_source: optional, string corresponding to a hist_source that should be under the component in the yaml
+        
+        Parameters for the tests are based off of the following: 
+            parses the yaml, does not find a varlist, gets the right default
+            parses the yaml, finds a varlist and it matches the orig results
+            parses the yaml, does not find the component and throws an error
+            parses the yaml, finds the varlist, but does not find a history_file
+              under sources that matches the hist_source
+            '''
     yamlfile = osp.join(osp.join(test_dir1, compdir), "am5_components_varlist.yml")
-    new_varlist = parse_yaml_for_varlist(yamlfile, component)
+    if hist_source == "none":
+      new_varlist = parse_yaml_for_varlist(yamlfile, component)
+    else:
+      new_varlist = parse_yaml_for_varlist(yamlfile, component, hist_source)  
     assert varlist == new_varlist

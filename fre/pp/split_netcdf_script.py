@@ -45,11 +45,10 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #Verify input/output dirs exist and are dirs
   if not (os.path.isdir(inputDir)):
     fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
-    print("Error: Input directory "+ inputDir + " does not exists or isnt a directory")
-    sys.exit(1)
+    raise OSError(f"error: input dir {inputDir} does not exist or is not a directory")
   if not (os.path.isdir(outputDir)):
     fre_logger.error(f"error: output dir {outputDir} does not exist or is not a directory")
-    sys.exit(1)
+    raise OSError(f"error: output dir {outputDir} does not exist or is not a directory")
   
   #Find files to split
   curr_dir = os.getcwd()
@@ -91,7 +90,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       os.chdir(workdir)
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
-      fre_logger.warning("warning: no files found in dirs under {workdir} that match pattern {file_regex}; no splitting took place")
+      fre_logger.warning(f"warning: no files found in dirs under {workdir} that match pattern {file_regex}; no splitting took place")
   else:
       #dirpath = os.path.join(workdir, file_regex)
       #print(dirpath)
@@ -100,7 +99,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
       if len(files) == 0:
-        fre_logger.warning("warning: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
+        fre_logger.warning(f"warning: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
     
   fre_logger.info("split-netcdf-wrapper call complete")
   sys.exit(0) #check this
@@ -122,7 +121,7 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
     
   if not os.path.isfile(infile):
     fre_logger.error(f"error: input file {infile} not found. Please check the path.")
-    sys.exit(1)
+    raise OSError(f"error: input file {infile} not found. Please check the path.")
   
   #patterns meant to match the bounds vars
   #the i and j offsets + the average_* vars are included in this category,
@@ -233,9 +232,10 @@ def fre_outfile_name(infile, varname):
   (and in a way that should work for any .nc file)
   infile: string name of a file with a . somwehere in the filename
   varname: string to add to the infile
+  This is expected to work with files formed the following way: 
    Fre Input format:  date.component(.tileX).nc
    Fre Output format: date.component.var(.tileX).nc
-  should work on any file filename.nc
+  but it should also work on any file filename.nc
   '''
   infile_comp = infile.split(".")
   #tiles get the varname in a slight different position
@@ -268,14 +268,14 @@ def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
   comp_el = [el for el in yml_info['postprocess']['components'] if el.get("type") == yamlcomp]
   if len(comp_el) == 0:
     fre_logger.error(f"error in parse_yaml_for_varlist: component {yamlcomp} not found in {yamlfile}")
-    sys.exit(1)
+    raise ValueError(f"error in parse_yaml_for_varlist: component {yamlcomp} not found in {yamlfile}")
   #if hist_source is specified, check that it is under right component
   if hist_source != "none":
     ymlsources = comp_el[0]["sources"]
     hist_srces = [el['history_file'] for el in ymlsources]
     if not any([el == hist_source for el in hist_srces]):
       fre_logger.error(f"error in parse_yaml_for_varlist: history_file {hist_source} is not found under component {yamlcomp} in file {yamlfile}")
-      sys.exit(1)
+      raise ValueError(f"error in parse_yaml_for_varlist: history_file {hist_source} is not found under component {yamlcomp} in file {yamlfile}")
   #"variables" is at the same level as "sources" in the yaml
   if "variables" in comp_el[0].keys():
     varlist = comp_el[0]["variables"]
