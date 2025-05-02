@@ -98,21 +98,25 @@ def validate(filepath):
     # a yearly, monthly, daily, or sub-daily file.
 
     # Result is the return code from the nccheck script (0 = Expected number of timesteps found, 1 = Unexpected number of timesteps found) 
+    result = None
 
     # YEARLY
     if date_end.lastindex == 1:
         enot = getenot(date_start,date_end,'yearly',cal)
         result = ncc.check(filepath, enot)
+        return result
 
     # MONTHLY
     if date_end.lastindex == 2:
         enot = getenot(date_start,date_end,'monthly',cal)
         result = ncc.check(filepath,enot)
+        return result
 
     # DAILY
     if date_end.lastindex == 3:
         enot = getenot(date_start,date_end,'daily',cal)
         result = ncc.check(filepath,enot)
+        return result
 
     # We would rather not check filepaths but it's necessary for sub-daily files
     # Path elements contains the directories from the filepath.. we use this to determine frequency/chunk_size in sub-daily files
@@ -141,9 +145,10 @@ def validate(filepath):
 
     if result == 1:
         fre_logger.error(f" Timesteps found in {filepath} differ from expectation")
+        return
 
-    if all(freq not in path_elements for freq in expected_frequencies):
-        raise ValueError(f" Cannot determine freqency from {filepath}")
+    if all(freq not in path_elements for freq in expected_frequencies) and result != None:
+        raise ValueError(f" Cannot determine freqency from {filepath}.")
 
     return result
 
