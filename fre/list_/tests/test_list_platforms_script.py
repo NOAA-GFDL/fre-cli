@@ -5,6 +5,7 @@ import pytest
 from pathlib import Path
 import yaml
 from fre.list_ import list_platforms_script
+from fre.yamltools import helpers
 
 # SET-UP
 TEST_DIR = Path("fre/make/tests")
@@ -14,6 +15,7 @@ TARGET = "None"
 YAMLFILE = "null_model.yaml"
 BADYAMLFILE = "null_model_bad.yaml"
 EXP_NAME = YAMLFILE.split(".")[0]
+VAL_SCHEMA = Path("fre/gfdl_msd_schemas/FRE/fre_make.json")
 
 # yaml file checks
 def test_modelyaml_exists():
@@ -28,6 +30,7 @@ def test_platformyaml_exists():
     '''test if platforms yaml exists'''
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/platforms.yaml").exists()
 
+# Test whole tool 
 def test_platforms_list(caplog):
     ''' test list platforms '''
     list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
@@ -45,50 +48,21 @@ def test_platforms_list(caplog):
     for record in caplog.records:
         record.levelname == "INFO"
 
-
-def test_nocombinedyaml():
-    ''' test intermediate combined yaml was cleaned '''
-    assert not Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()
-
-# Test individual functions operating correctly: combine and clean
-def test_correct_combine():
-    ''' test that combined yaml includes necesary keys '''
-    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
-
-    # Combine model / experiment
-    list_platforms_script.quick_combine(yamlfile_path,PLATFORM,TARGET)
-    assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()
-
-    comb_yamlfile = f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml"
-    with open(comb_yamlfile, 'r') as yf:
-        y = yaml.load(yf,Loader=yaml.Loader)
-
-    req_keys = ["name","platform","target","platforms"]
-    for k in req_keys:
-        assert k in y.keys()
-
+# Test validation
 def test_yamlvalidate(caplog):
     ''' test yaml is being validated '''
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Combine model / experiment
-    list_platforms_script.quick_combine(yamlfile_path,PLATFORM,TARGET)
-    assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()
+    list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
-    comb_yamlfile = f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml"
-    with open(comb_yamlfile, 'r') as yf:
-        y = yaml.load(yf,Loader=yaml.Loader)
+    validate = ["Validating YAML information...",
+                "     YAML dictionary VALID."]
 
-    # Validate and capture output
-    assert list_platforms_script.validate_yaml(y)
-    #assert "Intermediate combined yaml VALID" in caplog.text
+    for i in validate:
+        assert i in caplog.text
 
+    for record in caplog.records:
+        record.levelname == "INFO"
 
 #def test_not_valid_yaml():
-
-def test_yamlremove():
-   ''' test intermediate combined yaml removed '''
-   # Remove combined yaml file
-   list_platforms_script.remove(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml")
-
-   assert not Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()
