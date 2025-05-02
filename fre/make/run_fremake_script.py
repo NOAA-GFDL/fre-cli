@@ -20,7 +20,9 @@ from .gfdlfremake import (
     makefilefre, buildDocker, buildBaremetal )
 
 def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
-    ''' run fremake via click'''
+    ''' 
+    run fremake
+    '''
     yml = yamlfile
     name = yamlfile.split(".")[0]
     nparallel = parallel
@@ -73,37 +75,36 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
     ## This should be done separately and serially because bare metal platforms should all be using
     ## the same source code.
     for platformName in plist:
-        if modelYaml.platforms.hasPlatform(platformName):
-            pass
-        else:
+        if not modelYaml.platforms.hasPlatform(platformName):
             raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
         platform = modelYaml.platforms.getPlatformFromName(platformName)
 
         ## Create the checkout script
-        if not platform["container"]:
-            ## Create the source directory for the platform
-            srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
-            if not os.path.exists(srcDir):
-                os.system("mkdir -p " + srcDir)
-            if not os.path.exists(srcDir+"/checkout.sh"):
-                freCheckout = checkout.checkout("checkout.sh",srcDir)
-                freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
-                freCheckout.finish(modelYaml.compile.getCompileYaml(),pc)
-                os.chmod(srcDir+"/checkout.sh", 0o744)
-                logging.info("\nCheckout script created at "+ srcDir + "/checkout.sh \n")
-                ## TODO: Options for running on login cluster?
-                freCheckout.run()
+        if platform["container"]:
+            continue
+
+        ## Create the source directory for the platform
+        srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
+        if not os.path.exists(srcDir):
+            os.system("mkdir -p " + srcDir)
+        if not os.path.exists(srcDir+"/checkout.sh"):
+            freCheckout = checkout.checkout("checkout.sh",srcDir)
+            freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
+            freCheckout.finish(modelYaml.compile.getCompileYaml(),pc)
+            os.chmod(srcDir+"/checkout.sh", 0o744)
+            logging.info("\nCheckout script created at "+ srcDir + "/checkout.sh \n")
+            ## TODO: Options for running on login cluster?
+            freCheckout.run()
 
     fremakeBuildList = []
     ## Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
             target = targetfre.fretarget(targetName)
-            if modelYaml.platforms.hasPlatform(platformName):
-                pass
-            else:
+            if not modelYaml.platforms.hasPlatform(platformName):
                 raise ValueError (platformName + " does not exist in " + modelYaml.platformsfile)
+                
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the source directory based on the modelRoot and platform
