@@ -59,9 +59,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     for platformName in plist:
         for targetName in tlist:
             target = targetfre.fretarget(targetName)
-            if modelYaml.platforms.hasPlatform(platformName):
-                pass
-            else:
+            if not modelYaml.platforms.hasPlatform(platformName):
                 raise ValueError(f"{platformName} does not exist in platforms.yaml")
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
