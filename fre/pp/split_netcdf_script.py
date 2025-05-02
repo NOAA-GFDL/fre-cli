@@ -12,7 +12,6 @@ from os import path
 import glob
 import subprocess
 import re
-#import cdo
 import sys
 import xarray as xr
 import re
@@ -20,13 +19,9 @@ from pathlib import Path
 import yaml
 import sys
 from itertools import chain
+import logging
 
-#Set variables
-# inputDir = os.environ['inputDir']
-# outputDir = os.environ['outputDir']
-# date = os.environ['date']
-# component = os.environ['component']
-# use_subdirs = os.environ['use_subdirs'] 
+fre_logger = logging.getLogger(__name__)
 
 def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs, 
                  yamlfile="fake_yamlfile", verbose=False):
@@ -37,17 +32,27 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   Intended to work with data structured for fre-workflows and fre-workflows
     file naming conventions
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
+  inputDir - directory containg netcdf files
+  outputDir - directory to which to write netcdf files
+  component - the 'component' element we are currently working with in the yaml
+  history_source - a history_file under a 'source' under the 'component' that
+    we are working with. Is used to identify the files in inputDir.
+  use_subdirs - whether to recursively search through inputDir under the subdirectories.
+    used when regridding.
+  yamlfile - a .yml config file for fre postprocessing
   '''
+  if __debug__:
+    fre_logger.debug(locals()) #input argument details
   #Verify input/output dirs exist and are dirs
   if not (os.path.isdir(inputDir)):
-      print("Error: Input directory "+ inputDir + " does not exists or isnt a directory")
-      sys.exit(1)
+    fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
+    print("Error: Input directory "+ inputDir + " does not exists or isnt a directory")
+    sys.exit(1)
   if not (os.path.isdir(outputDir)):
-      print("Error: Output directory" + outputDir + " does not exist or isn't a directory")
-      sys.exit(1)
+    fre_logger.error(f"error: output dir {outputDir} does not exist or is not a directory")
+    sys.exit(1)
   
   #Find files to split
-  #extend globbing used to find both tiled and non-tiled files
   curr_dir = os.getcwd()
   workdir = os.path.abspath(inputDir)
   os.chdir(workdir)
@@ -56,15 +61,14 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #doing, we can also use history_source to get the component but it's
   #going to be a bit of a pain
   varlist = parse_yaml_for_varlist(yamlfile, component)
-  print(varlist)
   
+  #extend globbing used to find both tiled and non-tiled files
   #all files that contain the current source:history_file name,
   #0-1 instances of "tile" and end in .nc
-  #under most sircumstances, this shoule match 1 file
+  #under most circumstances, this should match 1 file
+  #older regex - not currently working
   #file_regex = '*'+'.'+history_source+'?'+'(.tile?)'+'.nc'
-  file_regex = '*'+'.'+history_source+'.*.nc'
-  print(file_regex)
-  print(workdir)
+  file_regex = '*'+'.'+history_source+'*.*.nc'
   
   #If in sub-dir mode, process the sub-directories instead of the main one
   if use_subdirs:
@@ -75,16 +79,13 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
           files=glob.glob(file_regex)
           # Exit if no input files found 
           if len(files) == 0:
-               print("No input files found, skipping the subdir "+subdir)
-               os.chdir(recent_dirs[-2])   #popd
-               continue
+            fre_logger.info(f"No input files found; skipping subdir {subdir}")
+            os.chdir(recent_dirs[-2])   #popd
+            continue
           # Create output subdir if needed
           os.mkdir(os.path.abspath(outputDir)/subdir)
           # Split the files by variable
           for infile in files:
-               #newfile = subprocess.call(["sed 's/nc$//' {file}"],shell=True)
-               #subprocess.call("cdo --history splitname $file $outputDir/$subdir/$(echo $file | sed 's/nc$//')", shell=True)
-               print(infile)
                split_file_xarray(infile, os.path.abspath(outputDir), varlist)
           os.chdir(recent_dirs[-2])   #popd     
   else:
@@ -93,26 +94,15 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       files=glob.glob(dirpath)
       # Exit if not input files are found
       if len(files) == 0:
-        print("ERROR: No input files found")
+        fre_logger.error("error: no input files found in {workdir}")
         sys.exit(1)
    
       # Split the files by variable
       for infile in files:
-        print(infile)
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
     
-  print("Natural end of the NetCDF splitting")
+  fre_logger.info("split-netcdf-wrapper call complete")
   sys.exit(0) #check this
-
-def split_file_cdo(infile, outfile):
-  '''
-  Given a netcdf infile containing one or more data variables, 
-  writes out a separate file for each data variable in the file, including the
-  variable name in the filename. 
-  '''
-  cdo=Cdo()
-  cdo.splitname(input=infile, 
-                output=outfile_components)
 
 def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   '''
@@ -121,17 +111,20 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   variable name in the filename. 
   if var_list if specified, only the vars in var_list are written to file; 
   if no vars in the file match the vars in var_list, no files are written.
+  infile: input netcdf file
+  outfiledir: writeable directory to which to write netcdf files
+  var_list: python list of string variable names or a string "all"
   '''
   if not os.path.isdir(outfiledir):
-    print("creating output directory")
+    fre_logger.info("creating output directory")
     os.makedirs(outfiledir)
     
   if not os.path.isfile(infile):
-    print("input file " + infile + " not found. Please check the path.")
+    fre_logger.error(f"error: input file {infile} not found. Please check the path.")
   
   #patterns meant to match the bounds vars
-  #the i and j offsets + the average_* vars are also included in this category,
-  #but they get covered in the var_shortvars query below
+  #the i and j offsets + the average_* vars are included in this category,
+  #but they also get covered in the var_shortvars query below
   var_patterns = ["_bnds", "_bounds", "_offset", "average_"]
 
   dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False)
@@ -142,29 +135,28 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
   #instead of this:
   var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= 1)]
-  if verbose: print(var_shortvars)
+  fre_logger.debug(f"var patterns: {var_patterns}")
+  fre_logger.debug(f"1 or 2-d vars: {var_shortvars}")
   #both combined gets you a decent list of non-diagnostic variables
   var_exclude = list(set(var_patterns + [str(el) for el in var_shortvars] ))
   def matchlist(xstr):
     allmatch = [re.search(el, xstr)for el in var_exclude]
     #If there's at least one match in the var_exclude list (average_bnds is OK)
     return len(list(set(allmatch))) > 1
-  metavars = [el for el in allvars if matchlist(el) is True]
-  datavars = [el for el in allvars if matchlist(el) is False]
-  if verbose: print("printing metavars then datavars"); print(metavars); print(datavars)
+  metavars = [el for el in allvars if matchlist(el)]
+  datavars = [el for el in allvars if not matchlist(el)]
+  fre_logger.debug(f"metavars: {metavars}")
+  fre_logger.debug(f"datavars: {datavars}")
+  fre_logger.debug(f"var filter list: {var_list}")
   
   if var_list != "all":
-    if verbose:
-      print("datavars: " + datavars)
-      print("var_list: " + var_list)
     var_list = list(set(var_list))
     datavars = [el for el in datavars if el in var_list]
-    if verbose:
-      print("intersection of datavars and var_list: " + datavars)
+  fre_logger.debug(f"intersection of datavars and var_list: {datavars}")
   
   if len(datavars) > 0:
     for variable in datavars:
-      if verbose: print(variable)
+      fre_logger.info(f"splitting var {variable}")
       #drop all data vars (diagnostics) that are not the current var of interest
       #but KEEP the metadata vars
       #(seriously, we need the time_bnds)
@@ -172,20 +164,16 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
       vc_encode = set_coord_encoding(data2, variable, list(data2.data_vars.keys()))
       v_encode= set_var_encoding(dataset, metavars)
       var_encode = {**vc_encode, **v_encode}
-      if verbose: print(var_encode)
-      #outfile = str(variable) + "." + infile_pieces[2] + ".nc"
+      fre_logger.debug(f"var_encode settings: {var_encode}")
       #Encoding principles for xarray:
       #  - no coords have a _FillValue
       #  - Everything is written out with THE SAME precision it was read in
       #  - Everything has THE SAME UNITS as it did when it was read in
-      #2025-04-18: units on time_bnds aren't getting detected when running non-
-      #interactively. Not much more I can do on this unless I dip into the 
-      #system calls.
       var_outfile = fre_outfile_name(os.path.basename(infile), variable)
       var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
       data2.to_netcdf(var_out, encoding = var_encode)
   else:
-    print("No data variables found in " + infile + "; no writes take place.")
+    fre_logger.info(f"No data variables found in {infile}; no writes take place.")
     
 def set_coord_encoding(dset, varname, varnames):
   '''
@@ -193,9 +181,15 @@ def set_coord_encoding(dset, varname, varnames):
   as expected
   we need the list of all vars (varnames) because that's how you get coords
   for the metadata vars (i.e. nv or bnds for time_bnds)
+  dset: xarray dataset object
+  varname: name (string) of data variable we intend to write to file
+  varnames: list of all variables (string) in the dataset; needed to get
+    names of all coordinate variables since coordinate status is defined
+    only in relation with a variable
   '''
+  fre_logger.debug(f"getting coord encode settings for {varname}")
   encode_dict = {}
-  #vcoords = dset[varname].coords
+  #coords are defined in relation with a var; need to check al vars for all coords
   vcoords = [list(dset[el].coords) for el in varnames]
   vcoords = list(set(chain.from_iterable(vcoords)))
   for vc in vcoords:
@@ -203,7 +197,6 @@ def set_coord_encoding(dset, varname, varnames):
     encode_dict[vc] = {'_FillValue': None, 
                             'dtype': dset[vc].encoding['dtype']}
     if "units" in vc_encoding.keys():
-      if verbose: print(vc + " has units")
       encode_dict[vc]['units'] = dset[vc].encoding['units']
   return(encode_dict)
 
@@ -213,7 +206,10 @@ def set_var_encoding(dset, varnames):
   as expected
   mostly addressed to time_bnds, because xarray can drop the units attribute:
     https://github.com/pydata/xarray/issues/8368
+  dset: xarray dataset object
+  varnames: list of variables (strings) that will be written to file
   '''
+  fre_logger.debug(f"getting var encode settings")
   encode_dict = {}
   for v in varnames:
     v_encoding = dset[v].encoding #dict
@@ -221,56 +217,34 @@ def set_var_encoding(dset, varnames):
       encode_dict[v] = {'_FillValue': None,
                              'dtype': dset[v].encoding['dtype']}
     if "units" in v_encoding.keys():
-      if verbose: print(v + " has units")
       encode_dict[v]['units'] = dset[v].encoding['units']
   return(encode_dict)
-
-def outfile_name(infile, varname):
-  '''
-  Builds split var filenames in a way that should work for any .nc file
-  '''
-  infile_comp = infile.split(".")
-  var_outfile = ".".join(infile_comp[:-1] + [varname, infile_comp[-1]])
-  return(var_outfile)
 
 def fre_outfile_name(infile, varname):
   '''
   Builds split var filenames the way that fre expects them
   (and in a way that should work for any .nc file)
+  infile: string name of a file with a . somwehere in the filename
+  varname: string to add to the infile
+   Fre Input format:  date.component(.tileX).nc
+   Fre Output format: date.component.var(.tileX).nc
+  should work on any file filename.nc
   '''
   infile_comp = infile.split(".")
-  var_outfile = ".".join([infile_comp[0], varname] + infile_comp[1:])
+  #tiles get the varname in a slight different position
+  if re.search("tile", infile_comp[-2]) is not None and len(infile_comp) > 2:
+    var_outfile = ".".join([infile_comp[:-3], varname] + infile_comp[-2:])
+  else:  
+    var_outfile = ".".join([infile_comp[:-2], varname] + infile_comp[-1:])
   return(var_outfile)
-
-def parse_yaml_for_varlist_old(yamlfile,yamlcomp):
-  '''
-  Given a yaml config file, parses the structure looking for the list of
-  variables to postprocess (https://github.com/NOAA-GFDL/fre-workflows/issues/51)
-  and returns "all" if no such list is found
-  '''
-  with open(yamlfile,'r') as yml:
-    yml_info = yaml.safe_load(yml)
-  #yml_info["postprocess"]["components"] is a list from which we want the att 'type'
-  #see the cylc documentation on task parameters for more information - 
-  #but the short version is that by the time that split_netcdf is getting called,
-  #we're going to have an env variable called "component" that stores which
-  #component we're currently looping on
-  comp_el = [el for el in yml_info['postprocess']['components'] if el.get("type") == yamlcomp]
-  if len(comp_el) == 0:
-    print("Error in parse_yaml_for_varlist: component " + yamlcomp + " is not present in " + yamlfile +"!" )
-    sys.exit(1)
-  #"variables" is at the same level as "sources" in the yaml
-  if "variables" in comp_el[0].keys():
-    varlist = comp_el[0]["variables"]
-  else:
-    varlist = "all"
-  return(varlist)
 
 def parse_yaml_for_varlist(yamlfile,yamlcomp):
   '''
   Given a yaml config file, parses the structure looking for the list of
   variables to postprocess (https://github.com/NOAA-GFDL/fre-workflows/issues/51)
   and returns "all" if no such list is found
+  yamlfile: .yml file used for fre pp configuration
+  yamlcomp: string, one of the components in the yamlfile
   '''
   with open(yamlfile,'r') as yml:
     yml_info = yaml.safe_load(yml)
@@ -280,10 +254,10 @@ def parse_yaml_for_varlist(yamlfile,yamlcomp):
   #we're going to have an env variable called CYLC_TASK_PARAM_component that's a
   #comma-separated list of all components we're postprocessing and an env variable 
   #called history_file (inherited from CYLC_TASK_PARAM_(regrid/native))
-  #that refers to he 
+  #that refers to the parameter combo cylc is currently on 
   comp_el = [el for el in yml_info['postprocess']['components'] if el.get("type") == yamlcomp]
   if len(comp_el) == 0:
-    print("Error in parse_yaml_for_varlist: component " + yamlcomp + " is not present in " + yamlfile +"!" )
+    fre_logger.error(f"error in parse_yaml_for_varlist: component {yamlcomp} not found in {yamlfile}")
     sys.exit(1)
   #"variables" is at the same level as "sources" in the yaml
   if "variables" in comp_el[0].keys():

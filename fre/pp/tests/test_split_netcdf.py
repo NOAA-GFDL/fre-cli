@@ -54,6 +54,15 @@ def test_split_file_setup():
         for ncg in ncgen_commands:
             sp = subprocess.run(ncg, check = True, capture_output=True)
             sp_stat.append(sp.returncode)
+            if sp.returncode == 0:
+                #check over the ncgenned files and remove the _FillValue from
+                #the variables it has added a new _FillValue
+                #todo: find a programmatic way to do this; ncatted is a workaround
+                problem_vars = ['phalf', 'pfull']
+                for pv in problem_vars:
+                    ncatted_cmd = ["ncatted", "-a", f"_FillValue,{pv},d,,", ncg[-2]]
+                    spv = subprocess.run(ncatted_cmd, capture_output=True)
+                    sp_stat.append(spv.returncode)
         sp_success = [el == 0 for el in sp_stat]
         nc_files_exist = [osp.isfile(el) for el in nc_files]
     assert all( [ sp_success + nc_files_exist ] )
@@ -80,7 +89,6 @@ def test_split_file_run(infile, outfiledir, varlist):
                                           "--file", infile, 
                                           "--outputdir", outfiledir, 
                                           "--variables", varlist]
-    print(" ".join(split_netcdf_args))
     result = runner.invoke(fre.fre, args=split_netcdf_args)
     assert result.exit_code == 0
 
@@ -109,24 +117,24 @@ def test_split_file_data(newdir, origdir):
 #produces different metadata on the _FillValue in each context.
 #everything else seems to be matching; discussing this at the code review.
 
-# @pytest.mark.parametrize("newdir,origdir", 
-#                          [pytest.param("new_all_varlist", "all_varlist", id='all'), 
-#                          pytest.param("new_some_varlist", "some_varlist", id='some')])  
-# def test_split_file_metadata(newdir, origdir):
-#     ''' Does the metadata in the new files match the metadata in the old files? '''
-#     os.chdir(test_dir1)
-#     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
-#     all_files_equal=True
-#     for sf in split_files:
-#         nccmp_cmd = [ 'nccmp', '-mg', '--force', 
-#                      osp.join(origdir, sf), osp.join(newdir, sf) ]
-#         sp = subprocess.run( nccmp_cmd)
-#         if sp.returncode != 0:
-#             print(" ".join(nccmp_cmd))
-#             all_files_equal=False
-#             print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
-#             print(sp.stdout, sp.stderr)
-#     assert all_files_equal == True
+@pytest.mark.parametrize("newdir,origdir",
+                         [pytest.param("new_all_varlist", "all_varlist", id='all'),
+                         pytest.param("new_some_varlist", "some_varlist", id='some')])
+def test_split_file_metadata(newdir, origdir):
+    ''' Does the metadata in the new files match the metadata in the old files? '''
+    os.chdir(test_dir1)
+    split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
+    all_files_equal=True
+    for sf in split_files:
+        nccmp_cmd = [ 'nccmp', '-mg', '--force',
+                     osp.join(origdir, sf), osp.join(newdir, sf) ]
+        sp = subprocess.run( nccmp_cmd)
+        if sp.returncode != 0:
+            print(" ".join(nccmp_cmd))
+            all_files_equal=False
+            print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
+            print(sp.stdout, sp.stderr)
+    assert all_files_equal == True
 
 #clean up splitting files
 def test_split_file_cleanup():
