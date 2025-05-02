@@ -67,9 +67,13 @@ def makefile_create(yamlfile, platform, target):
                                              bldDir = bldDir,
                                              mkTemplatePath = platform["mkTemplate"])
                 # Loop through components and send the component name, requires, and overrides for the Makefile
-                for c in fremakeYaml['src']: freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
+                for c in fremakeYaml['src']: 
+                    freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
-                fre_logger.info("\nMakefile created at " + bldDir + "/Makefile" + "\n") # was click.echo
+                former_log_level = fre_logger.level
+                fre_logger.setLevel(logging.INFO)
+                fre_logger.info("\nMakefile created at " + bldDir + "/Makefile" + "\n")
+                fre_logger.setLevel(former_log_level)
             else:
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "./tmp/"+platformName
@@ -84,7 +88,10 @@ def makefile_create(yamlfile, platform, target):
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
-                fre_logger.info("\nMakefile created at " + tmpDir + "/Makefile" + "\n") # was click.echo
+                former_log_level = fre_logger.level
+                fre_logger.setLevel(logging.INFO)
+                fre_logger.info("\nMakefile created at " + tmpDir + "/Makefile" + "\n")
+                fre_logger.setLevel(former_log_level)
 
 if __name__ == "__main__":
     makefile_create()
