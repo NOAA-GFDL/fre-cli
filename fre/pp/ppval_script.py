@@ -117,6 +117,7 @@ def validate(filepath):
     # We would rather not check filepaths but it's necessary for sub-daily files
     # Path elements contains the directories from the filepath.. we use this to determine frequency/chunk_size in sub-daily files
     path_elements = os.path.abspath(filepath).split('/')
+    expected_frequencies  = ['6hr', '3hr', '1hr', '30min']
 
     # 4x Daily
     if '6hr' in path_elements:
@@ -140,6 +141,10 @@ def validate(filepath):
 
     if result == 1:
         fre_logger.error(f" Timesteps found in {filepath} differ from expectation")
+
+    if all(freq not in path_elements for freq in expected_frequencies):
+        raise ValueError(f" Cannot determine freqency from {filepath}")
+
     return result
 
 if __name__ == '__main__':

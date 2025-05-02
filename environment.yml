@@ -9,7 +9,6 @@ dependencies:
   - pyyaml
   - pylint
   - jsonschema
-  - cftime
   - noaa-gfdl::fre-nctools
   - noaa-gfdl::catalogbuilder
   - noaa-gfdl::analysis_scripts
@@ -22,3 +21,4 @@ dependencies:
   - conda-forge::pytest-cov
   - conda-forge::python-cdo
   - conda-forge::cdo>=2.0.0
+  - conda-forge::cftime
