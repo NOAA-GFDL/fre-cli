@@ -42,7 +42,7 @@ class frenctoolsTimeAverager(timeAverager):
             fre_logger.warning('No output filename given, setting outfile= %s', outfile)
         
         #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
-        if shutil.which('timavg.csh') == None:
+        if shutil.which('timavg.csh') is None:
             raise fre_logger.error('did not find timavg.csh')
             
         from subprocess import Popen, PIPE
