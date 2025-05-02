@@ -433,21 +433,21 @@ def test_fre_nctool_time_unwgt_avgs_stddevs():
 
 # This set of tests is for the monthly frenctools option
 def test_fre_nctools_all():
-    # generates a time averaged file using fre_cli's version 
-    # weighted average, no std deviation 
+    # tests run of frenctools climatology with all flag
     assert run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
         outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
         pkg='fre-nctools',avg_type='all', unwgt=False )
     
 def test_fre_nctools_month():
-    # generates a time averaged file using fre_cli's version 
-    # weighted average, no std deviation 
+    # tests run of frenctools climatology with month flag
     assert run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
         outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
         pkg='fre-nctools',avg_type='month', unwgt=False )
+        
 def test_path_frenctools_month():
+    #tests if files are being generated in the right spot for frenctools monthly climatology
     run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
         outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
