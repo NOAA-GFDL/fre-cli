@@ -1,8 +1,10 @@
-''' 
+'''
 post-processing yaml class
 '''
 
 import os
+import logging
+fre_logger = logging.getLogger(__name__)
 from pathlib import Path
 #import pprint
 
@@ -28,36 +30,36 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
 
     # Extract yaml path for exp. provided
     # if experiment matches name in list of experiments in yaml, extract file path
+    ey_path = [] # empty list b.c. req'd
+    ay_path = None # None b.c. optional
     for i in loaded_yaml.get("experiments"):
-        if experiment == i.get("name"):
-            expyaml=i.get("pp")
-            analysisyaml=i.get("analysis")
+        if experiment != i.get("name"):
+            continue
+        
+        expyaml=i.get("pp")
+        analysisyaml=i.get("analysis")
 
-            if expyaml is None:
-                raise ValueError("No experiment yaml path given!")
+        if expyaml is None:
+            raise ValueError("No experiment yaml path given!")
 
-            ey_path=[]
-            for e in expyaml:
-                if not Path(os.path.join(mainyaml_dir,e)).exists():
-                    raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
+        for e in expyaml:
+            ey = Path( os.path.join(mainyaml_dir, e) )                
+            if not ey.exists():
+                raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
+            ey_path.append(ey)
 
-                ey=Path(os.path.join(mainyaml_dir,e))
-                ey_path.append(ey)
+        # Currently, if there are no analysis scripts defined, set None
+            
+        if analysisyaml is not None:
+            ay_path=[] #now an empty list, because we know we want to do analysis
+            for a in analysisyaml:
+                # prepend the directory containing the yaml
+                ay = Path(os.path.join(mainyaml_dir,a))
+                if not ay.exists():
+                    raise ValueError("Incorrect analysis yaml path given; does not exist.")                    
+                ay_path.append(ay)
 
-            # Currently, if there are no analysis scripts defined, set None
-            if analysisyaml is not None:
-                ay_path=[]
-                for a in analysisyaml:
-                    # prepend the directory containing the yaml
-                    if Path(os.path.join(mainyaml_dir, a)).exists():
-                        ay=Path(os.path.join(mainyaml_dir,a))
-                        ay_path.append(ay)
-                    else:
-                        raise ValueError("Incorrect analysis yaml path given; does not exist.")
-            else:
-                ay_path=None
-
-            return (ey_path,ay_path)
+        return (ey_path,ay_path)
 
 ## PP CLASS ##
 class InitPPYaml():
@@ -75,8 +77,11 @@ class InitPPYaml():
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Create combined pp yaml
-        print("Combining yaml files into one dictionary: ")
-
+        former_log_level = fre_logger.level
+        fre_logger.setLevel(logging.INFO)        
+        fre_logger.info("Combining yaml files into one dictionary: ")
+        fre_logger.setLevel(former_log_level)
+        
     def combine_model(self):
         """
         Create the combined.yaml and merge it with the model yaml
@@ -94,7 +99,10 @@ class InitPPYaml():
         yaml_content_str += model_content
 
         # Return the combined string and loaded yaml
-        print(f"   model yaml: {self.yml}")
+        former_log_level = fre_logger.level
+        fre_logger.setLevel(logging.INFO)      
+        fre_logger.info(f"   model yaml: {self.yml}")
+        fre_logger.setLevel(former_log_level)
         return yaml_content_str
 
     def combine_experiment(self, yaml_content_str):
@@ -110,18 +118,20 @@ class InitPPYaml():
         pp_yamls = []
         ## COMBINE EXPERIMENT YAML INFO
         # If only 1 pp yaml defined, combine with model yaml
-        if ey_path is not None and len(ey_path) == 1:
+        if ey_path is None:
+            raise ValueError('if ey_path is None, then pp_yamls will be an empty list. Exit!')
+        
+        elif len(ey_path) == 1:
             #expyaml_path = os.path.join(mainyaml_dir, i)
             with open(ey_path[0],'r') as eyp:
                 exp_content = eyp.read()
 
             exp_info = yaml_content_str + exp_content
             pp_yamls.append(exp_info)
-            #print(f"   experiment yaml: {ey_path}")
 
         # If more than 1 pp yaml listed
         # (Must be done for aliases defined)
-        elif ey_path is not None and len(ey_path) > 1:
+        elif len(ey_path) > 1:
             for i in ey_path:
                 with open(i,'r') as eyp:
                     exp_content = eyp.read()
@@ -136,25 +146,30 @@ class InitPPYaml():
         Combine analysis yamls with the defined combined.yaml
         If more than 1 analysis yaml defined, return a list of paths.
         """
-        # Experiment Check
         # Load string as yaml
         yml=yaml.load(yaml_content_str,Loader=yaml.Loader)
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yml)
  
         analysis_yamls = []
         ## COMBINE EXPERIMENT YAML INFO
+        # If no analysis yaml defined, move on silently. 
+        if ay_path is None:
+            pass
         # If only 1 analysis yaml defined, combine with model yaml
-        if ay_path is not None and len(ay_path) == 1:
+        elif len(ay_path) == 1:
             with open(ay_path[0],'r') as ayp:
                 analysis_content = ayp.read()
 
             analysis_info = yaml_content_str + analysis_content
             analysis_yamls.append(analysis_info)
-            print(f"   analysis yaml: {ay_path}")
+            former_log_level = fre_logger.level
+            fre_logger.setLevel(logging.INFO)   
+            fre_logger.info(f"   analysis yaml: {ay_path}")
+            fre_logger.setLevel(former_log_level)
 
         # If more than 1 pp yaml listed
         # (Must be done for aliases defined)
-        elif ay_path is not None and len(ay_path) > 1:
+        elif len(ay_path) > 1:
             for i in ay_path:
                 with open(i,'r') as ayp:
                     analysis_content = ayp.read()
@@ -191,12 +206,14 @@ class InitPPYaml():
                     # Only concerned with merging component information in "postprocess" sections across yamls
                     if key != "postprocess":
                         continue
-                    if key in yf:
-                        if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                            if 'components' in result['postprocess']:
-                                result['postprocess']["components"] += yf['postprocess']["components"]
-                            else:
-                                result['postprocess']["components"] = yf['postprocess']["components"]
+                    if key not in yf:
+                        continue
+
+                    if isinstance(result[key],dict) and isinstance(yf[key],dict):
+                        if 'components' in result['postprocess']:
+                            result['postprocess']["components"] += yf['postprocess']["components"]
+                        else:
+                            result['postprocess']["components"] = yf['postprocess']["components"]
 
         # If only one post-processing yaml listed
         elif pp_list is not None and len(pp_list) == 1:
@@ -215,9 +232,10 @@ class InitPPYaml():
                analysis_list_to_string_concat = "".join(i)
                yf = yaml.load(analysis_list_to_string_concat,Loader=yaml.Loader)
                for key in result:
-                   if key in yf:
-                       if isinstance(result[key],dict) and isinstance(yf[key],dict):
-                           result['analysis'] = yf['analysis'] | result['analysis']
+                   if key not in yf:
+                       continue
+                   if isinstance(result[key],dict) and isinstance(yf[key],dict):
+                       result['analysis'] = yf['analysis'] | result['analysis']
 
         # If only one analysis yaml listed
         elif analysis_list is not None and len(analysis_list) == 1:
@@ -225,13 +243,21 @@ class InitPPYaml():
             result.update(yaml.load(yml_analysis,Loader=yaml.Loader))
 
         if ey_path is not None:
+            former_log_level = fre_logger.level
+            fre_logger.setLevel(logging.INFO)    
             for i in ey_path:
                 exp = str(i).rsplit('/', maxsplit=1)[-1]
-                print(f"   experiment yaml: {exp}")
+                fre_logger.info(f"   experiment yaml: {exp}")
+            fre_logger.setLevel(former_log_level)
         if ay_path is not None:
+            former_log_level = fre_logger.level
+            fre_logger.setLevel(logging.INFO)    
             for i in ay_path:
                 analysis = str(i).rsplit('/', maxsplit=1)[-1]
-                print(f"   analysis yaml: {analysis}")
+                fre_logger.info(f"   analysis yaml: {analysis}")
+            fre_logger.setLevel(former_log_level)
+                
+
 
         return result
 

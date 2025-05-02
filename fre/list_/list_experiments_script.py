@@ -54,7 +54,7 @@ def list_experiments_subtool(yamlfile):
 
     # Combine model / experiment
     quick_combine(yamlfile,e,p,t)
-    
+
     # load the yaml we made
     c = yaml_load(combined)
 
@@ -70,6 +70,6 @@ def list_experiments_subtool(yamlfile):
 
     # set logger back to normal level
     fre_logger.setLevel(former_log_level)
-    
+
     # Clean intermediate combined yaml
     remove(combined)
