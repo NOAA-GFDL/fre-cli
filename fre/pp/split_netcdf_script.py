@@ -24,7 +24,7 @@ import logging
 fre_logger = logging.getLogger(__name__)
 
 def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs, 
-                 yamlfile="fake_yamlfile", verbose=False):
+                 yamlfile):
   '''
   Given a directory of netcdf files, splits those netcdf files into separate
   files for each data variable and copies the data variable files of interest
@@ -143,6 +143,9 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   #both combined gets you a decent list of non-diagnostic variables
   var_exclude = list(set(var_patterns + [str(el) for el in var_shortvars] ))
   def matchlist(xstr):
+    ''' checks a string for matches in a list of patterns
+        xstr: string to search for matches 
+        var_exclude: list of patterns defined in line 144'''
     allmatch = [re.search(el, xstr)for el in var_exclude]
     #If there's at least one match in the var_exclude list (average_bnds is OK)
     return len(list(set(allmatch))) > 1

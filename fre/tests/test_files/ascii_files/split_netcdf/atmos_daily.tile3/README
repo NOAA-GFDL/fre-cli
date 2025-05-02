@@ -6,31 +6,36 @@ the files that are meant to match the output of the tests are in the subdirs wit
 a yamlfile that, when parsed, gives a varlist that, when used on the netcdf
 file in the main dir, produces the netcdf files in teh subdirs.
 
-pushd /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3
-ncgen3 00010101.atmos_daily.tile3.cdl
-python split-netcdf-wrapper -i -o 
-
 #####################
 #!/bin/bash
 
-Rough set of instructions for how to generate the netcdf and cdl files for
-testing from a single large input file
-(ncks should cut the netcdf file down to < 12.5 MB; git wants files under 50 MB 
-and ncdump $file.nc > $file.cdl expands files by about a factor of 4)
+#Rough set of instructions for how to generate the netcdf and cdl files for
+#testing from a single large input file
+#(ncks should cut the netcdf file down to < 12.5 MB; git wants files under 50 MB 
+#and ncdump $file.nc > $file.cdl expands files by about a factor of 4)
 
-infile=/home/cew/Code/cmip7-sprint/testfiles/input/00010101.atmos_daily.tile3.nc
+#Please note that the locations here are not fixed; they should be swapped
+#for the locations that you are working with currently.
+indir=/home/cew/Code/cmip7-sprint/testfiles/input/
+infile=$indir/00010101.atmos_daily.tile3.nc
 outfile=/home/cew/Code/cmip7-sprint/testfiles/00010101.atmos_daily.tile3.nc
+outdir=/home/cew/Code/cmip7-sprint/testfiles/
+fre_cli_loc=/home/cew/Code/fre-cli/
+repo_outdir=$fre_cli_loc/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3
+
+#cut original file down to size and dunp to cdl
 ncks -d grid_xt,0,14 -d grid_yt,0,9 -d time,0,181 $infile -O $outfile
 ncdump $outfile > /home/cew/Code/cmip7-sprint/testfiles/00010101.atmos_daily.tile3.cdl
 
-fre pp split-netcdf-wrapper -i /home/cew/Code/cmip7-sprint/testfiles -o /home/cew/Code/cmip7-sprint/testfiles/all_varlist/ -c 'atmos' -s atmos_daily -y /home/cew/Code/cmip7-sprint/testfiles/all_varlist/am5_components_varlist.yml
+#call the wrapper function 
+fre pp split-netcdf-wrapper -i $indir -o $outdir/all_varlist/ -c 'atmos' -s atmos_daily -y $outdir/all_varlist/am5_components_varlist.yml
+fre pp split-netcdf-wrapper -i $indir -o $outdir/some_varlist/ -c 'atmos' -s atmos_daily -y $outdir/some_varlist/am5_components_varlist.yml
+fre pp split-netcdf-wrapper -i $indir -o $outdir/none_varlist/ -c 'atmos' -s atmos_daily -y $outdir/none_varlist/am5_components_varlist.yml
 
-fre pp split-netcdf-wrapper -i /home/cew/Code/cmip7-sprint/testfiles -o /home/cew/Code/cmip7-sprint/testfiles/some_varlist/ -c 'atmos' -s atmos_daily -y /home/cew/Code/cmip7-sprint/testfiles/some_varlist/am5_components_varlist.yml
+#only the all_varlist and some_varlist cases produce netcdf files; 
+#and thus only those need to be dumped to cdl
 
-fre pp split-netcdf-wrapper -i /home/cew/Code/cmip7-sprint/testfiles -o /home/cew/Code/cmip7-sprint/testfiles/none_varlist/ -c 'atmos' -s atmos_daily -y /home/cew/Code/cmip7-sprint/testfiles/none_varlist/am5_components_varlist.yml
-
-
-cd /home/cew/Code/cmip7-sprint/testfiles/all_varlist
+cd $outdir/all_varlist
 for f in $( ls $(pwd) ); do
   echo $f | grep ".nc" > /dev/null
   if [ $? == 0 ]; then
@@ -40,17 +45,7 @@ for f in $( ls $(pwd) ); do
   fi
 done
 
-rm -rf * netcdf
-mkdir netcdf
-for f in $( ls $(pwd) ); do
-  echo $f | grep ".nc" > /dev/null
-  if [ $? == 0 ]; then
-  mv $f netcdf/f
-  fi
-done
-
-
-cd /home/cew/Code/cmip7-sprint/testfiles/some_varlist
+cd $outdir/some_varlist
 for f in $( ls $(pwd) ); do
   echo $f | grep ".nc" > /dev/null
   if [ $? == 0 ]; then
@@ -60,35 +55,14 @@ for f in $( ls $(pwd) ); do
   fi
 done
 
-rm -rf * netcdf
-mkdir netcdf
-for f in $( ls $(pwd) ); do
-  echo $f | grep ".nc" > /dev/null
-  if [ $? == 0 ]; then
-  mv $f netcdf/f
-  fi
-done
+#copy to repo locations with globbing to pick up only the cdl files
+cp $outdir/some_varlist/*.cdl $repo_outdir/some_varlist
+cp $outdir/all_varlist/*.cdl $repo_outdir/all_varlist
+cp $outdir/none_varlist/*.cdl $repo_outdir/none_varlist
 
-cp /home/cew/Code/cmip7-sprint/testfiles/some_varlist/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/some_varlist
-cp /home/cew/Code/cmip7-sprint/testfiles/all_varlist/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/all_varlist
-cp /home/cew/Code/cmip7-sprint/testfiles/none_varlist/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/none_varlist
+cp $outdir/some_varlist/*.yml $repo_outdir/some_varlist
+cp $outdir/all_varlist/*.yml $repo_outdir/all_varlist
+cp $outdir/none_varlist/*.yml $repo_outdir/none_varlist
 
-cp /home/cew/Code/cmip7-sprint/testfiles/some_varlist/*.yml /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/some_varlist
-cp /home/cew/Code/cmip7-sprint/testfiles/all_varlist/*.yml /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/all_varlist
-cp /home/cew/Code/cmip7-sprint/testfiles/none_varlist/*.yml /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/none_varlist
-
-cp /home/cew/Code/cmip7-sprint/testfiles/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/
-
-
-cp /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_all_varlist/*.cdl /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/all_varlist
-
-
-
-#script duplicating problematic behavior
-mkdir /home/cew/Code/cmip7-sprint/ncgen-problem
-cp /home/cew/Code/fre-cli/fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_all_varlist/00010101.hfls.atmos_daily.tile3.nc /home/cew/Code/cmip7-sprint/ncgen-problem
-cd /home/cew/Code/cmip7-sprint/ncgen-problem
-ncdump 00010101.hfls.atmos_daily.tile3.nc > 00010101.hfls.atmos_daily.tile3.cdl
-ncgen3 -k netCDF-4 -o new_00010101.hfls.atmos_daily.tile3.nc 00010101.hfls.atmos_daily.tile3.cdl
-nccmp -mg new_00010101.hfls.atmos_daily.tile3.nc 00010101.hfls.atmos_daily.tile3.nc
+cp $outdir/*.cdl $repo_outdir/
 
