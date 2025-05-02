@@ -9,6 +9,7 @@ from fre.pp import configure_script_yaml
 from fre.pp import configure_script_xml
 from fre.pp import validate_script
 from fre.pp import histval_script
+from fre.pp import ppval_script
 from fre.pp import install_script
 from fre.pp import run_script
 from fre.pp import nccheck_script
@@ -216,6 +217,13 @@ def histval(history,date_string,warn):
     for all files in that directory
     """
     histval_script.validate(history,date_string,warn)
+
+#fre pp ppval
+@pp_cli.command()
+@click.option('--path','-p', required=True, help="Path to postprocessed time-series file")
+def ppval(path):
+    """ Determines an estimated number of timesteps from a postprocessed time-series file's name and run nccheck on it """
+    ppval_script.validate(path)
 
 #fre pp wrapper
 @pp_cli.command()

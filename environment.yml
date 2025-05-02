@@ -20,4 +20,5 @@ dependencies:
   - conda-forge::pytest
   - conda-forge::pytest-cov
   - conda-forge::python-cdo
+  - conda-forge::cftime
   - conda-forge::pyyaml
