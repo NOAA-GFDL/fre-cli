@@ -37,7 +37,7 @@ class frenctoolsTimeAverager(timeAverager):
 
         if infile is None:
             fre_logger.error('Need an input file, specify a value for the infile argument')
-            return exitstatus
+            raise exitstatus
 
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
@@ -91,7 +91,7 @@ class frenctoolsTimeAverager(timeAverager):
             shutil.rmtree('monthly_nc_files')    
 
         if self.avg_type == 'month':   #End here if month variable used
-            return exitstatus
+            raise exitstatus
         
         timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
         exitstatus=1
@@ -106,4 +106,4 @@ class frenctoolsTimeAverager(timeAverager):
                 fre_logger.info('climatology successfully ran')
                 exitstatus=0
 
-        return exitstatus
+        raise exitstatus
