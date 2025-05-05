@@ -81,7 +81,7 @@ class frenctoolsTimeAverager(timeAverager):
                     output=subp.communicate()[0]
                             
 
-                    if subp.returncode < 0:
+                    if subp.returncode > 0:
                         raise ValueError('error: timavgcsh command not properly executed')
                     else:
                         fre_logger.info('%s climatology successfully ran',nc_monthly_file)
@@ -100,7 +100,7 @@ class frenctoolsTimeAverager(timeAverager):
             output=subp.communicate()[0]
             fre_logger.info('output= %s',output)
 
-            if subp.returncode < 0:
+            if subp.returncode > 0:
                 raise ValueError('error: timavgcsh command not properly executed')
             else:
                 fre_logger.info('climatology successfully ran')
