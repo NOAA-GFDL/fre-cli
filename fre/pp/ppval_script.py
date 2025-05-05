@@ -2,12 +2,10 @@
 
 import os
 import logging
-import yaml
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-from fre.pp import nccheck_script as ncc
+import re
 import cftime
 import netCDF4
+from fre.pp import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
 
@@ -26,7 +24,7 @@ def getenot(date_start,date_end,chunk_type,cal):
 
     if chunk_type == 'daily':
         start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')),calendar = cal)
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')),calendar = cal) 
+        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')),calendar = cal)
         diff = end - start
         enot = diff.days + 1
 
@@ -53,7 +51,7 @@ def getenot(date_start,date_end,chunk_type,cal):
         end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]), minute = int(date_end[5]))
         diff = end - start
         enot = (diff.days + 1) * 48
-    
+ 
     return enot
 
 # Filepath is the path to the time-series file to be checked
@@ -74,7 +72,7 @@ def validate(filepath):
     # date_range[1] is the start date (e.g., "202201")
     # date_range[2] is the end date (e.g., "202501")
     # This regular expression captures date start/end individually by first capturing the year as a 4 digit number then capturing each following group of two digits
-    # Minute string is identified by ':' followed with two digits 
+    # Minute string is identified by ':' followed with two digits
     d_regex = re.compile(r"(\d{4})(\d{2})?(\d{2})?(\d{2})?(?::(\d{2}))?")
     date_end = d_regex.search(date_range[2])
     date_start = d_regex.search(date_range[1])
@@ -91,13 +89,13 @@ def validate(filepath):
     except:
         raise ValueError(f" Calendar name must follow cf convention for validation. {cal} is not a valid calendar.")
 
-    # date_{end,start} will have a total of date_end.lastindex groups, 
+    # date_{end,start} will have a total of date_end.lastindex groups,
     # that are the year (date_end[1]), the month (date_end[2]), the
     # day (date_end[3]), and the hour (date_end[4]).
     # You can use the value of date_end.lastindex to know if this is
     # a yearly, monthly, daily, or sub-daily file.
 
-    # Result is the return code from the nccheck script (0 = Expected number of timesteps found, 1 = Unexpected number of timesteps found) 
+    # Result is the return code from the nccheck script (0 = Expected number of timesteps found, 1 = Unexpected number of timesteps found)
     result = None
 
     # YEARLY
@@ -145,7 +143,6 @@ def validate(filepath):
 
     if result == 1:
         fre_logger.error(f" Timesteps found in {filepath} differ from expectation")
-        return
 
     # If none of the expected frequencies are found in filepath, raise ValueError
     if all(freq not in path_elements for freq in expected_frequencies):
