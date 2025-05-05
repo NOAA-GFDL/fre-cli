@@ -34,7 +34,7 @@ class frenctoolsTimeAverager(timeAverager):
                    ' not currently supported for frenctols time averaging. ignoring!', self.var)
 
         if infile is None:
-            fre_logger.error('Need an input file, specify a value for the infile argument')
+            raise ValueError('Need an input file, specify a value for the infile argument')
             
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
@@ -42,7 +42,7 @@ class frenctoolsTimeAverager(timeAverager):
         
         #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
         if shutil.which('timavg.csh') is None:
-            fre_logger.error('did not find timavg.csh')
+            raise ValueError'did not find timavg.csh')
             
         from subprocess import Popen, PIPE
 
@@ -82,7 +82,7 @@ class frenctoolsTimeAverager(timeAverager):
                             
 
                     if subp.returncode < 0:
-                        fre_logger.error('error: timavgcsh command not properly executed')
+                        raise ValueError('error: timavgcsh command not properly executed')
                     else:
                         fre_logger.info('%s climatology successfully ran',nc_monthly_file)
                         exitstatus=0
@@ -101,7 +101,7 @@ class frenctoolsTimeAverager(timeAverager):
             fre_logger.info('output= %s',output)
 
             if subp.returncode < 0:
-                fre_logger.error('error: timavgcsh command not properly executed')
+                raise ValueError('error: timavgcsh command not properly executed')
             else:
                 fre_logger.info('climatology successfully ran')
                 exitstatus=0
