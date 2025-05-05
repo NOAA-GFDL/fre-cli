@@ -147,8 +147,9 @@ def validate(filepath):
         fre_logger.error(f" Timesteps found in {filepath} differ from expectation")
         return
 
-    if all(freq not in path_elements for freq in expected_frequencies) and result != None:
-        raise ValueError(f" Cannot determine freqency from {filepath}.")
+    # If none of the expected frequencies are found in filepath, raise ValueError
+    if all(freq not in path_elements for freq in expected_frequencies):
+        raise ValueError(f" Cannot determine frequency from {filepath}. Sub-daily files must at minimum be placed in a directory corresponding to data frequency: '6hr', '3hr', '1hr', '30min'")
 
     return result
 
