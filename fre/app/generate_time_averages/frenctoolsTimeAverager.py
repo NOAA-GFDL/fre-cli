@@ -24,7 +24,7 @@ class frenctoolsTimeAverager(timeAverager):
 
         exitstatus=1
         if self.avg_type not in ['month','all']:
-            raise fre_logger.error('avg_type= %s not supported by this class at this time.', self.avg_type)
+            fre_logger.error('avg_type= %s not supported by this class at this time.', self.avg_type)
 
         if self.unwgt:
             fre_logger.warning('unwgt=True unsupported by frenctoolsAverager. Ignoring!!!')
@@ -35,7 +35,6 @@ class frenctoolsTimeAverager(timeAverager):
 
         if infile is None:
             fre_logger.error('Need an input file, specify a value for the infile argument')
-            raise FileError()
             
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
@@ -44,7 +43,6 @@ class frenctoolsTimeAverager(timeAverager):
         #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
         if shutil.which('timavg.csh') is None:
             fre_logger.error('did not find timavg.csh')
-            raise FileError()
             
         from subprocess import Popen, PIPE
 
@@ -63,9 +61,10 @@ class frenctoolsTimeAverager(timeAverager):
             nc_month_file_paths = {month_index: os.path.join(monthly_nc_dir, f"all_years.{month_index}.nc") for month_index in month_indices}
             month_output_file_paths = {month_index: os.path.join(output_dir, f"{outfile}_.{month_index}.nc") for month_index in month_indices}
 
+            cdo = Cdo()
             #Loop through each month and select the corresponding data
             for month_index in month_indices:
-                cdo = Cdo()
+                
 
                 month_name = month_names[month_index - 1]
                 nc_monthly_file = nc_month_file_paths[month_index]
@@ -84,7 +83,6 @@ class frenctoolsTimeAverager(timeAverager):
 
                     if subp.returncode < 0:
                         fre_logger.error('error: timavgcsh command not properly executed')
-                        raise FileError()
                     else:
                         fre_logger.info('%s climatology successfully ran',nc_monthly_file)
                         exitstatus=0
