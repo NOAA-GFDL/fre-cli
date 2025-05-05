@@ -24,7 +24,7 @@ class frenctoolsTimeAverager(timeAverager):
 
         exitstatus=1
         if self.avg_type not in ['month','all']:
-            fre_logger.error('avg_type= %s not supported by this class at this time.', self.avg_type)
+            raise FileError(f'avg_type= {self.avg_type} not supported by this class at this time.')
 
         if self.unwgt:
             fre_logger.warning('unwgt=True unsupported by frenctoolsAverager. Ignoring!!!')
