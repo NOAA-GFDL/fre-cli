@@ -8,7 +8,6 @@ import logging
 import subprocess
 import shutil
 
-cdo = Cdo()
 fre_logger = logging.getLogger(__name__)
 
 class frenctoolsTimeAverager(timeAverager):
@@ -35,15 +34,17 @@ class frenctoolsTimeAverager(timeAverager):
                    ' not currently supported for frenctols time averaging. ignoring!', self.var)
 
         if infile is None:
-            raise fre_logger.error('Need an input file, specify a value for the infile argument')
-
+            fre_logger.error('Need an input file, specify a value for the infile argument')
+            raise FileError()
+            
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
             fre_logger.warning('No output filename given, setting outfile= %s', outfile)
         
         #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
         if shutil.which('timavg.csh') is None:
-            raise fre_logger.error('did not find timavg.csh')
+            fre_logger.error('did not find timavg.csh')
+            raise FileError()
             
         from subprocess import Popen, PIPE
 
@@ -64,6 +65,8 @@ class frenctoolsTimeAverager(timeAverager):
 
             #Loop through each month and select the corresponding data
             for month_index in month_indices:
+                cdo = Cdo()
+
                 month_name = month_names[month_index - 1]
                 nc_monthly_file = nc_month_file_paths[month_index]
 
@@ -81,6 +84,7 @@ class frenctoolsTimeAverager(timeAverager):
 
                     if subp.returncode < 0:
                         fre_logger.error('error: timavgcsh command not properly executed')
+                        raise FileError()
                     else:
                         fre_logger.info('%s climatology successfully ran',nc_monthly_file)
                         exitstatus=0
@@ -89,7 +93,7 @@ class frenctoolsTimeAverager(timeAverager):
             shutil.rmtree('monthly_nc_files')    
 
         if self.avg_type == 'month':   #End here if month variable used
-            raise exitstatus
+            return exitstatus
         
         timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
         exitstatus=1
@@ -104,4 +108,4 @@ class frenctoolsTimeAverager(timeAverager):
                 fre_logger.info('climatology successfully ran')
                 exitstatus=0
 
-        raise exitstatus
+        return exitstatus
