@@ -431,4 +431,26 @@ def test_fre_nctool_time_unwgt_avgs_stddevs():
         outfile = (time_avg_file_dir+'fre_nctools_unwgt_stddev_'+two_out_file_name),
         pkg='fre-nctools',avg_type='all',  unwgt=True )
 
+# This set of tests is for the monthly frenctools option
+def test_fre_nctools_all():
+    # tests run of frenctools climatology with all flag
+    assert run_avgtype_pkg_calculations(
+        infile  = (time_avg_file_dir+test_file_name),
+        outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
+        pkg='fre-nctools',avg_type='all', unwgt=False )
+    
+def test_fre_nctools_month():
+    # tests run of frenctools climatology with month flag
+    assert run_avgtype_pkg_calculations(
+        infile  = (time_avg_file_dir+test_file_name),
+        outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
+        pkg='fre-nctools',avg_type='month', unwgt=False )
+        
+def test_path_frenctools_month():
+    #tests if files are being generated in the right spot for frenctools monthly climatology
+    run_avgtype_pkg_calculations(
+        infile  = (time_avg_file_dir+test_file_name),
+        outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
+        pkg='fre-nctools',avg_type='month', unwgt=False )
+    assert pl.Path(time_avg_file_dir+'../monthly_output_files/April_out.nc').exists()
 '''
