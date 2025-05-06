@@ -1,4 +1,4 @@
-''' test "fre make run-fremake" calls without actual compilation '''
+''' test "fre make run-all" calls without actual compilation '''
 
 import os
 from shutil  import rmtree
@@ -180,12 +180,12 @@ def test_run_fremake_run_script_creation_container_2stage():
 def test_run_fremake_bad_target():
     ''' checks invalid target returns an error '''
     os.environ["TEST_BUILD_DIR"] = MULTITARGET_TEST_PATH
-    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM[0], "-t", "prod-repro"])
+    result = runner.invoke(fre.fre, args=["make", "run-all", "-y", YAMLPATH, "-p", PLATFORM[0], "-t", "prod-repro"])
     assert result.exit_code == 1
 
 def test_run_fremake_multiple_targets():
     ''' passes all valid targets for a build '''
-    result = runner.invoke(fre.fre, args=["make", "run-fremake", "-y", YAMLPATH, "-p", PLATFORM[0], "-t",  \
+    result = runner.invoke(fre.fre, args=["make", "run-all", "-y", YAMLPATH, "-p", PLATFORM[0], "-t",  \
                                           "debug", "-t", "prod", "-t", "repro", "-t", "debug-openmp", "-t",\
                                           "prod-openmp", "-t", "repro-openmp"])
     assert result.exit_code == 0

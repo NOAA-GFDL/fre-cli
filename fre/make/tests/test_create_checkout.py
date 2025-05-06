@@ -1,4 +1,4 @@
-#tests for the create-checkout step of fre-make, for null_model.yaml
+#tests for the checkout step of fre-make, for null_model.yaml
 from pathlib import Path
 import os
 import subprocess
