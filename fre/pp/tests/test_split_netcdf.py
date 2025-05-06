@@ -159,17 +159,19 @@ def test_split_file_cleanup():
     el_list = []
     dir_list = []
     for path, subdirs, files in os.walk(test_dir):
-        for name in files:
-            el_list.append(osp.join(path, name))
-        for name in subdirs:
-            dir_list.append(osp.join(path,name))
-    netcdf = [el for el in el_list if el.endswith(".nc")]
-    for nc in netcdf:
-        pathlib.Path.unlink(nc)
+      for name in files:
+        el_list.append(osp.join(path, name))
+      for name in subdirs:
+        dir_list.append(osp.join(path,name))
+    netcdf_files = [el for el in el_list if el.endswith(".nc")]
+    print("printing netcdf")
+    for nc in netcdf_files:
+      print(nc)
+      pathlib.Path.unlink(Path(nc))
     newdir = [el for el in dir_list if osp.basename(el).startswith("new_")]
     for nd in newdir:
-        print(nd)
-        pathlib.Path.rmdir(nd)
+      print(nd)
+      pathlib.Path.rmdir(Path(nd))
     assert True
 
 #test parsing yaml
