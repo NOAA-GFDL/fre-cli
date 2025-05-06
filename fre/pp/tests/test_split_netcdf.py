@@ -60,12 +60,12 @@ def test_split_file_setup():
 
 #test splitting files
 @pytest.mark.parametrize("infile,outfiledir,varlist", 
-                             [pytest.param(test_ncfile1, "new_all_varlist",  "all", 
+                             [pytest.param(osp.join(test_dir1, test_ncfile1), "new_all_varlist",  "all", 
                                 id="all"), 
-                              pytest.param(test_ncfile1, "new_some_varlist",
+                              pytest.param(osp.join(test_dir1, test_ncfile1), "new_some_varlist",
                                 ",".join(some_varlist),
                                 id="some"), 
-                              pytest.param(test_ncfile1, "new_none_varlist", 
+                              pytest.param(osp.join(test_dir1, test_ncfile1), "new_none_varlist", 
                                 ",".join(none_varlist), id='none')])
 def test_split_file_run(infile, outfiledir, varlist):
     ''' Checks that split-netcdf will run when called from the command line 
@@ -82,7 +82,6 @@ def test_split_file_run(infile, outfiledir, varlist):
                 which are not in the input; includes one duplicate var
             none: processes a list of variables, none of which are in the input;
                 should produce no files'''
-    os.chdir(test_dir1)
     split_netcdf_args = ["pp", "split-netcdf", 
                                           "--file", infile, 
                                           "--outputdir", outfiledir, 
@@ -104,7 +103,8 @@ def test_split_file_data(newdir, origdir):
             some: processes a list of variables, some of which are and some of 
                 which are not in the input; includes one duplicate var
                 '''
-    os.chdir(test_dir1)
+    newdir = osp.join(test_dir1, newdir)
+    origdir = osp.join(test_dir1, origdir)
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     all_files_equal=True
     for sf in split_files:
@@ -138,7 +138,8 @@ def test_split_file_metadata(newdir, origdir):
             some: processes a list of variables, some of which are and some of 
                 which are not in the input; includes one duplicate var
                 '''
-    os.chdir(test_dir1)
+    newdir = osp.join(test_dir1, newdir)
+    origdir = osp.join(test_dir1, origdir)
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     all_files_equal=True
     for sf in split_files:
