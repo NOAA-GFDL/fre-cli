@@ -115,5 +115,5 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
             fre_logger.info("\nCheckout script created at %s/checkout.sh \n", tmp_dir)
 
-#if __name__ == "__main__":
-#    checkout_create()
+if __name__ == "__main__":
+    checkout_create()
