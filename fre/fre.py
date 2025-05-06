@@ -3,19 +3,21 @@ Main host file for FRE-CLI program scripts
 authored by Bennett.Chang@noaa.gov | bcc2761
 NOAA | GFDL
 2023-2024
-principal click group for main/fre allows for subgroup functions to 
+principal click group for main/fre allows for subgroup functions to
 be called via this script. I.e. 'fre' is the entry point
 """
 
 import importlib.metadata
-
 import logging
+
+import click
+
+from .lazy_group import LazyGroup
+
+# base fre_logger set here, configured within fre
 fre_logger = logging.getLogger(__name__)
 FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
 #MODE = 'x'
-
-import click
-from .lazy_group import LazyGroup
 
 # versioning, turn xxxx.y into xxxx.0y
 version_unexpanded = importlib.metadata.version('fre-cli')
@@ -59,14 +61,14 @@ except IndexError:
         "'fre' is the main CLI click group. It houses the other tool groups as lazy subcommands.",
         fg = 'cyan')
 )
-@click.option( '-v', '--verbose', default = 0, required = False, count = True, type = int, 
+@click.option( '-v', '--verbose', default = 0, required = False, count = True, type = int,
                help = "increment logging verbosity. two for logging.DEBUG, one for logging.INFO" )
-@click.option( '-q', '--quiet', default = False, required = False, is_flag = True, type = bool, 
-               help = "only output logging.ERROR messages, or worse." ) 
+@click.option( '-q', '--quiet', default = False, required = False, is_flag = True, type = bool,
+               help = "only output logging.ERROR messages, or worse." )
 @click.option( '-l', '--log_file', default = None, required = False, type = str,
                help = 'path to log file for all fre calls. leave as None to print to screen' )
 def fre(verbose = 0, quiet = False, log_file = None):
-    ''' 
+    '''
     entry point function to subgroup functions, setting global verbosity/logging formats that all
     other routines will utilize
     '''

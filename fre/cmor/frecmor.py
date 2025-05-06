@@ -16,6 +16,11 @@ VARLIST_HELP="path pointing to a json file containing directory of key/value pai
              "contained in targeted files. the key and value are often the same, " + \
              "but it is not required."
 RUN_ONE_HELP="process only one file, then exit. mostly for debugging and isolating issues."
+DRY_RUN_HELP="don't call the cmor_mixer subtool, just printout what would be called and move on until natural exit"
+START_YEAR_HELP = 'string representing the minimum calendar year CMOR should start processing for. ' + \
+                  'currently, only YYYY format is supported.'
+STOP_YEAR_HELP = 'string representing the maximum calendar year CMOR should stop processing for. ' + \
+                  'currently, only YYYY format is supported.'
 
 @click.group(help=click.style(" - cmor subcommands", fg=(232,91,204)))
 def cmor_cli():
@@ -37,7 +42,19 @@ def cmor_cli():
               required = True )
 @click.option("-o", "--output", type = str, default = None,
               help = "Output file if desired", required = False)
-def yaml(yamlfile, experiment, target, platform, output):
+@click.option('--run_one', is_flag = True, default = False,
+              help=RUN_ONE_HELP,
+              required = False)
+@click.option('--dry_run', is_flag = True, default = False,
+              help=DRY_RUN_HELP,
+              required = False)
+@click.option('--start', type=str, default=None,
+              help = START_YEAR_HELP, 
+              required = False)
+@click.option('--stop', type=str, default=None,
+              help = STOP_YEAR_HELP,
+              required = False)
+def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start, stop):
     """
     Processes a CMOR (Climate Model Output Rewriter) YAML configuration file.
 
@@ -45,27 +62,35 @@ def yaml(yamlfile, experiment, target, platform, output):
     and processes the YAML file using the CMOR YAML subtool.
 
     Parameters:
-    yamlfile (str): Path to the YAML configuration file.
-    experiment (str): Name of the experiment.
-    target (str): Target specification for the CMOR process.
-    platform (str): Platform on which the CMOR process is being run.
-    output (str): Output directory or file for the processed data.
+        yamlfile (str): Path to the YAML configuration file.
+        experiment (str): Name of the experiment.
+        target (str): Target specification for the CMOR process.
+        platform (str): Platform on which the CMOR process is being run.
+        output (str): Output directory or file for the processed data.
+        run_one (bool): only process one file then exit
+        dry_run (bool): don't call the cmor_mixer subtool, just printout what would be called
+        start (str): optional, year to begin cmorizing, YYYY format only
+        stop  (str): optional year to stop cmorizing, YYYY format only.
 
     Raises:
-    ValueError: If the yamlfile is not provided.
+        ValueError: If the yamlfile is not provided.
     """
 
 
     # if opt_var_name specified, forget the list.
     if yamlfile is None:
-        raise ValueError('I need a yamlfile!!!')
+        raise ValueError('I need a yamlfile!!!') #uncovered
 
     cmor_yaml_subtool(
         yamlfile = yamlfile,
         exp_name = experiment,
         target = target,
         platform = platform,
-        output = output
+        output = output,
+        run_one_mode = run_one,
+        dry_run_mode = dry_run,
+        start = start,
+        stop = stop
     )
 
 @cmor_cli.command()
@@ -78,7 +103,7 @@ def yaml(yamlfile, experiment, target, platform, output):
 @click.option('-v', "--opt_var_name", type = str,
               help=OPT_VAR_NAME_HELP,
               required=False)
-def find(varlist, table_config_dir, opt_var_name):
+def find(varlist, table_config_dir, opt_var_name): #uncovered
     '''
     loop over json table files in config_dir and show which tables contain variables in var list/
     the tool will also print what that table entry is expecting of that variable as well. if given
@@ -127,10 +152,31 @@ def find(varlist, table_config_dir, opt_var_name):
 @click.option('--run_one', is_flag = True, default = False,
               help=RUN_ONE_HELP,
               required = False)
-@click.option('-v', "--opt_var_name", type = str,
+@click.option('-v', "--opt_var_name", type = str, default = None,
               help=OPT_VAR_NAME_HELP,
               required=False)
-def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name):
+@click.option('-g', '--grid_label', type = str, default = None,
+              help = 'label representing grid type of input data, e.g. "gn" for native or "gr" for regridded, ' + \
+                     'replaces the "grid_label" field in the CMOR experiment configuration file. The label must ' + \
+                     'be one of the entries in the MIP controlled-vocab file.',
+              required = False)
+@click.option('--grid_desc', type = str, default = None,
+              help = 'description of grid indicated by grid label, replaces the "grid" field in the CMOR ' + \
+                     'experiment configuration file.',
+              required = False)
+@click.option('--nom_res', type = str, default = None,
+              help = 'nominal resolution indicated by grid and/or grid label, replaces the "nominal_resolution", ' + \
+                     'replaces the "grid" field in the CMOR experiment configuration file. The entered string ' + \
+                     'must be one of the entries in the MIP controlled-vocab file.',
+              required = False)
+@click.option('--start', type=str, default=None,
+              help = START_YEAR_HELP, 
+              required = False)
+@click.option('--stop', type=str, default=None,
+              help = STOP_YEAR_HELP,
+              required = False)
+def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
+        grid_label, grid_desc, nom_res, start, stop):
     # pylint: disable=unused-argument
     """
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
@@ -141,8 +187,13 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name)
         json_table_config = table_config,
         json_exp_config = exp_config,
         outdir = outdir,
+        run_one_mode = run_one,
         opt_var_name = opt_var_name,
-        run_one_mode = run_one
+        grid = grid_desc,
+        grid_label = grid_label,
+        nom_res = nom_res,
+        start = start,
+        stop = stop
     )
 
 @cmor_cli.command()

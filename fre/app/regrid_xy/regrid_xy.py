@@ -28,7 +28,7 @@ def truncate_date(date, freq):
     output =subprocess.Popen(["cylc", "cycle-point", "--template",
                               freq_in_date_format, date],
                               stdout = subprocess.PIPE)
-                     
+
     bytedate = output.communicate()[0]
     date = str(bytedate.decode())
 
