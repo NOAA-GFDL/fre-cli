@@ -168,6 +168,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "tmp/"+platformName
+                pc = "" #Set this way because containers do not support the parallel checkout
                 ## Create the checkout script
                 freCheckout = checkout.checkoutForContainer("checkout.sh", srcDir, tmpDir)
                 freCheckout.writeCheckout(modelYaml.compile.getCompileYaml(),jobs,pc)
