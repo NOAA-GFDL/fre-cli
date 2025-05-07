@@ -45,10 +45,10 @@
         - `-p, --platform [platform] (required)`
         - `-t, --target [target] (required)`
 
-``run-all``
+``all``
 -------------
 
-``fre make run-all [options]``
+``fre make all [options]``
    - Purpose: Create the checkout script, Makefile, compile script, and dockerfile (platform dependent) for the compilation of the model
    - Options:
         - `-y, --yamlfile [experiment yaml] (required)`

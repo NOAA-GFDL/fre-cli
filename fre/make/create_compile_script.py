@@ -2,7 +2,6 @@
 TODO: make docstring
 '''
 import os
-import sys
 import logging
 fre_logger = logging.getLogger(__name__)
 

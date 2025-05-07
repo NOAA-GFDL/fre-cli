@@ -225,7 +225,7 @@ def ppval(path):
     """ Determines an estimated number of timesteps from a postprocessed time-series file's name and run nccheck on it """
     ppval_script.validate(path)
 
-#fre pp wrapper
+#fre pp all
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -245,7 +245,7 @@ def ppval(path):
 @click.option("-t", "--time",
               required=False, default=None,
               help="Time whose history files are ready")
-def wrapper(experiment, platform, target, config_file, branch, time):
+def all(experiment, platform, target, config_file, branch, time):
     """
     Execute fre pp steps in order
     """

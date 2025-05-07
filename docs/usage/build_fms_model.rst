@@ -43,7 +43,7 @@ Guide
   fre make compile -y [model yaml file] -p [platform] -t [target] --execute
 
   # Run all of fremake
-  fre make run-all -y [model yaml file] -p [platform] -t [target] [other options...]
+  fre make all -y [model yaml file] -p [platform] -t [target] [other options...]
 
 2. Container Build:
 
@@ -77,38 +77,38 @@ The quickstart instructions can be used with the null model example located in t
 .. code-block::
 
   # Create checkout script
-  fre make checkout -y null_model.yaml -p ncrc5.intel23 -t prod
+  fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod
 
   # Create and run checkout script
-  fre make checkout -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+  fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
   # Create Makefile
   fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod
 
   # Create the compile script
-  fre make compile -y null_model.yaml -p ncrc5.intel23 -t prod
+  fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod
 
   # Create and run the compile script
-  fre make compile -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+  fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
 2. Bare-metal Build Multi-target:
 
 .. code-block::
 
   # Create checkout script
-  fre make checkout -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
+  fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
   # Create and run checkout script
-  fre make checkout -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
+  fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
   # Create Makefile
   fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
   # Create the compile script
-  fre make compile -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
+  fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
   # Create and run the compile script
-  fre make compile -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
+  fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
 3. Container Build:
 
@@ -117,10 +117,10 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
 .. code-block::
 
   # Create checkout script
-  fre make checkout -y null_model.yaml -p hpcme.2023 -t prod -npc
+  fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod -npc
 
   # Create and run checkout script
-  fre make checkout -y null_model.yaml -p hpcme.2023 -t prod -npc --execute
+  fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod -npc --execute
 
   # Create Makefile
   fre make makefile -y null_model.yaml -p hpcme.2023 -t prod
@@ -133,18 +133,18 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
 
 4. Run all of fremake:
 
-`run-fremake` kicks off the compilation automatically
+`all` kicks off the compilation automatically
 
 .. code-block::
 
   # Bare-metal: create and run checkout script, create makefile, create compile script
-  fre make run-all -y null_model.yaml -p ncrc5.intel23 -t prod
+  fre make all -y null_model.yaml -p ncrc5.intel23 -t prod
 
   # Bare-metal: create and run checkout script, create makefile, create and run compile script
-  fre make run-all -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+  fre make all -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
   # Container: create checkout script, makefile, and dockerfile
-  fre make run-all -y null_model.yaml -p hpcme.2023 -t prod -npc
+  fre make all -y null_model.yaml -p hpcme.2023 -t prod -npc
 
   # Container: create checkout script, makefile, create and run dockerfile to build container
-  fre make run-all -y null_model.yaml -p hpcme.2023 -t prod -npc --execute
+  fre make all -y null_model.yaml -p hpcme.2023 -t prod -npc --execute

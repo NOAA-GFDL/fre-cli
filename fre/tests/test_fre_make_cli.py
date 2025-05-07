@@ -45,8 +45,9 @@ def test_cli_fre_make_create_checkout_baremetal():
     os.environ["HOME"]=str(Path(OUT_PATH))
 
     # run checkout
-    result = runner.invoke(fre.fre, args = [ "make", "checkout", "-y", f"{yamlfile}/null_model.yaml",
-                                                                       "-p", platform, "-t", target  ])
+    result = runner.invoke(fre.fre, args = [ "make", "checkout-script", 
+                                             "-y", f"{yamlfile}/null_model.yaml",
+                                             "-p", platform, "-t", target  ])
 
     os.environ["HOME"] = old_home
 
@@ -78,8 +79,9 @@ def test_cli_fre_make_create_checkout_baremetal_npc():
     os.environ["HOME"]=str(Path(OUT_PATH))
 
     # run checkout
-    result = runner.invoke(fre.fre, args = [ "make", "checkout", "-y", f"{yamlfile}/null_model.yaml",
-                                                              "-p", platform, "-t", target, "-npc"  ])
+    result = runner.invoke(fre.fre, args = [ "make", "checkout-script",
+                                             "-y", f"{yamlfile}/null_model.yaml",
+                                             "-p", platform, "-t", target, "-npc"  ])
 
     os.environ["HOME"] = old_home
 
@@ -111,8 +113,10 @@ def test_cli_fre_make_create_checkout_container():
     os.environ["HOME"]=str(Path(OUT_PATH))
 
     # run checkout
-    result = runner.invoke(fre.fre, args=["make", "checkout",
-                                          "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target])
+    result = runner.invoke(fre.fre, args=["make", "checkout-script",
+                                          "-y", f"{yamlfile}/null_model.yaml",
+                                          "-p", platform,
+                                          "-t", target])
 
     os.environ["HOME"] = old_home
 

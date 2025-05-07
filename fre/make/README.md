@@ -21,22 +21,22 @@ To combine:
 ### **Bare-metal Build:**
 ```bash
 # Create checkout script
-fre make checkout -y [model yaml file] -p [platform] -t [target]
+fre make checkout-script -y [model yaml file] -p [platform] -t [target]
       
 # Create and run checkout script
-fre make checkout -y [model yaml file] -p [platform] -t [target] --execute
+fre make checkout-script -y [model yaml file] -p [platform] -t [target] --execute
 
 # Create Makefile
 fre make makefile -y [model yaml file] -p [platform] -t [target]
 
 # Creat the compile script
-fre make compile -y [model yaml file] -p [platform] -t [target]
+fre make compile-script -y [model yaml file] -p [platform] -t [target]
 
 # Create and run the compile script
-fre make compile -y [model yaml file] -p [platform] -t [target] --execute
+fre make compile-script -y [model yaml file] -p [platform] -t [target] --execute
 
 # Run all of fremake 
-fre make run-all -y [model yaml file] -p [platform] -t [target] [other options...]
+fre make all -y [model yaml file] -p [platform] -t [target] [other options...]
 ```
 
 ### **Container Build:**
@@ -45,10 +45,10 @@ For the container build, parallel checkouts are not supported, so the `-npc` opt
 ***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
 ```bash
 # Create checkout script
-fre make checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
+fre make checkout-script -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
       
 # Create and run checkout script
-fre make checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
+fre make checkout-script -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 
 # Create Makefile
 fre make makefile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]

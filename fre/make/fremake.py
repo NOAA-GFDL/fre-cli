@@ -30,7 +30,7 @@ VERBOSE_OPT_HELP = """Get verbose messages (repeat the option to increase verbos
 
 
 
-@click.group(help=click.style(" - make subcommands", fg=(210,73,57)))
+@click.group(help=click.style(" - make subcommands", fg=(57,139,210)))
 def make_cli():
     pass
 
@@ -80,8 +80,8 @@ def make_cli():
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def run_all(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
-    """ - Perform all fremake functions to run checkout and compile model"""
+def all(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
+    """ - Perform all fre make functions; run checkout and compile scripts to create model executable or container"""
     run_fremake_script.fremake_run(
         yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose)
 
@@ -120,7 +120,7 @@ def run_all(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def checkout(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
+def checkout_script(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
     """ - Write the checkout script """
     create_checkout_script.checkout_create(
         yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose)
@@ -180,7 +180,7 @@ def makefile(yamlfile, platform, target):
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def compile(yamlfile, platform, target, jobs, parallel, execute, verbose):
+def compile_script(yamlfile, platform, target, jobs, parallel, execute, verbose):
     """ - Write the compile script """
     create_compile_script.compile_create(
         yamlfile, platform, target, jobs, parallel, execute, verbose)
