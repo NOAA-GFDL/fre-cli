@@ -73,6 +73,8 @@ def rose_init(experiment,platform,target):
     rose_suite = metomi.rose.config.ConfigNode()
     # disagreeable; these should be optional
     rose_suite.set(keys=['template variables', 'DO_ANALYSIS_ONLY'],  value='False')
+    rose_suite.set(keys=['template variables', 'DO_MDTF'],  value='False')
+    rose_suite.set(keys=['template variables', 'PP_DEFAULT_XYINTERP'],  value='0,0')
 
     # set some rose suite vars
     rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{experiment}"')
