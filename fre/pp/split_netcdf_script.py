@@ -14,10 +14,8 @@ import subprocess
 import re
 import sys
 import xarray as xr
-import re
 from pathlib import Path
 import yaml
-import sys
 from itertools import chain
 import logging
 
@@ -168,6 +166,8 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
       #(seriously, we need the time_bnds)
       data2 = dataset.drop_vars([el for el in datavars if el is not variable])
       v_encode= set_var_encoding(dataset, metavars)
+      #combine 2 dicts into 1 dict - should be no shared keys, 
+      #so the merge is straightforward
       var_encode = {**vc_encode, **v_encode}
       fre_logger.debug(f"var_encode settings: {var_encode}")
       #Encoding principles for xarray:
