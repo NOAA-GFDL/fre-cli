@@ -41,6 +41,7 @@ def test_split_file_setup():
         newdir = osp.join(test_dir1, "new_" + os.path.basename(sd))
         if not osp.exists(newdir):
             os.makedirs(newdir)
+            print(newdir)
         cdl_files = [f.path for f in os.scandir(sd) if f.is_file]
         cdl_files = [el for el in cdl_files if re.search("cdl", el) is not None]
         for cdlf in cdl_files:
@@ -82,6 +83,7 @@ def test_split_file_run(infile, outfiledir, varlist):
                 which are not in the input; includes one duplicate var
             none: processes a list of variables, none of which are in the input;
                 should produce no files'''
+    outfiledir = osp.join(test_dir1, outfiledir)
     split_netcdf_args = ["pp", "split-netcdf", 
                                           "--file", infile, 
                                           "--outputdir", outfiledir, 
@@ -105,7 +107,12 @@ def test_split_file_data(newdir, origdir):
                 '''
     newdir = osp.join(test_dir1, newdir)
     origdir = osp.join(test_dir1, origdir)
+    orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
+    new_count = len(split_files)
+    same_count_files = (new_count == orig_count)
+    print(f"orig dir: {origdir}  new dir: {newdir}")
+    print(f"orig count: {orig_count}  new count: {new_count}")
     all_files_equal=True
     for sf in split_files:
         nccmp_cmd = [ 'nccmp', '-d', '--force', 
@@ -116,7 +123,7 @@ def test_split_file_data(newdir, origdir):
             print(" ".join(nccmp_cmd))
             print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
             print(sp.stdout, sp.stderr)
-    assert all_files_equal == True
+    assert all_files_equal and same_count_files
 
 #test_split_file_metadata is currently commented out because the set of commands:
 #  ncdump file.nc > file.cdl
@@ -140,7 +147,10 @@ def test_split_file_metadata(newdir, origdir):
                 '''
     newdir = osp.join(test_dir1, newdir)
     origdir = osp.join(test_dir1, origdir)
+    orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
+    new_count = len(split_files)
+    same_count_files = (new_count == orig_count)
     all_files_equal=True
     for sf in split_files:
         nccmp_cmd = [ 'nccmp', '-mg', '--force',
@@ -151,7 +161,7 @@ def test_split_file_metadata(newdir, origdir):
             all_files_equal=False
             print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
             print(sp.stdout, sp.stderr)
-    assert all_files_equal == True
+    assert all_files_equal and same_count_files
 
 #clean up splitting files
 def test_split_file_cleanup():
@@ -165,15 +175,14 @@ def test_split_file_cleanup():
       for name in subdirs:
         dir_list.append(osp.join(path,name))
     netcdf_files = [el for el in el_list if el.endswith(".nc")]
-    print("printing netcdf")
     for nc in netcdf_files:
-      print(nc)
       pathlib.Path.unlink(Path(nc))
     newdir = [el for el in dir_list if osp.basename(el).startswith("new_")]
     for nd in newdir:
-      print(nd)
       pathlib.Path.rmdir(Path(nd))
-    assert True
+    dir_deleted = [not osp.isdir(el) for el in newdir]
+    el_deleted = [not osp.isdir(el) for el in netcdf_files]
+    assert all(el_deleted + dir_deleted)
 
 #test parsing yaml
 @pytest.mark.parametrize("component,compdir,varlist,hist_source", 

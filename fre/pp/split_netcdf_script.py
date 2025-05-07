@@ -53,7 +53,6 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #Find files to split
   curr_dir = os.getcwd()
   workdir = os.path.abspath(inputDir)
-  os.chdir(workdir)
   
   #note to self: if CYLC_TASK_PARAM_component isn't doing what we think it's
   #doing, we can also use history_source to get the component but it's
@@ -65,36 +64,32 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #0-1 instances of "tile" and end in .nc
   #under most circumstances, this should match 1 file
   #older regex - not currently working
-  #file_regex = '*'+'.'+history_source+'?'+'(.tile?)'+'.nc'
-  file_regex = '*'+'.'+history_source+'*.*.nc'
+  #file_regex = f'*.{history_source}?(.tile?).nc'
+  file_regex = f'*.{history_source}*.*.nc'
   
   #If in sub-dir mode, process the sub-directories instead of the main one
   # and write to $outputdir/$subdir
   if use_subdirs:
-    subdirs = [el for el in os.listdir() if os.path.isdir(el)]
+    subdirs = [el for el in os.listdir(workdir) if os.path.isdir(el)]
     num_subdirs = len(subdirs)
     fre_logger.info(f"checking {num_subdirs} under {workdir}")
     files_split = 0
     for sd in subdirs: 
-      os.chdir(sd)
-      files=glob.glob(file_regex)
+      files=glob.glob(os.path.join(sd,file_regex))
       if len(files) == 0:
         fre_logger.info(f"No input files found; skipping subdir {subdir}")
       else:
-        output_subdir = os.path.join(os.path.abspath(outputDir)/subdir)
+        output_subdir = os.path.join(os.path.abspath(outputDir)/sd)
         if not os.path.isdir(ouput_subdir):
           os.mkdir(output_subdir)
         for infile in files:
           split_file_xarray(infile, output_subdir, varlist)
           files_split += 1
-      os.chdir(workdir)
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
       fre_logger.warning(f"warning: no files found in dirs under {workdir} that match pattern {file_regex}; no splitting took place")
   else:
-      #dirpath = os.path.join(workdir, file_regex)
-      #print(dirpath)
-      files=glob.glob(file_regex)
+      files=glob.glob(os.path.join(workdir, file_regex))
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
@@ -138,8 +133,8 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= 1) and v not in dataset._coord_names]
   #having a variable listed as both a metadata var and a coordinate var seems to
   #lead to the weird adding a _FillValue behavior
-  fre_logger.debug(f"var patterns: {var_patterns}")
-  fre_logger.debug(f"1 or 2-d vars: {var_shortvars}")
+  fre_logger.info(f"var patterns: {var_patterns}")
+  fre_logger.info(f"1 or 2-d vars: {var_shortvars}")
   #both combined gets you a decent list of non-diagnostic variables
   var_exclude = list(set(var_patterns + [str(el) for el in var_shortvars] ))
   def matchlist(xstr):
@@ -156,11 +151,15 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   fre_logger.debug(f"var filter list: {var_list}")
   
   if var_list != "all":
+    if isinstance(var_list, str):
+      var_list = var_list.split(",")
     var_list = list(set(var_list))
     datavars = [el for el in datavars if el in var_list]
   fre_logger.debug(f"intersection of datavars and var_list: {datavars}")
   
-  if len(datavars) > 0:
+  if len(datavars) < 0:
+    fre_logger.info(f"No data variables found in {infile}; no writes take place.")
+  else:
     vc_encode = set_coord_encoding(dataset, dataset._coord_names)
     for variable in datavars:
       fre_logger.info(f"splitting var {variable}")
@@ -178,8 +177,7 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
       var_outfile = fre_outfile_name(os.path.basename(infile), variable)
       var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
       data2.to_netcdf(var_out, encoding = var_encode)
-  else:
-    fre_logger.info(f"No data variables found in {infile}; no writes take place.")
+    
     
 def set_coord_encoding(dset, vcoords):
   '''
