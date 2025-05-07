@@ -74,12 +74,9 @@ def validate(history,date_string,warn):
                 fre_logger.error(f" Timesteps found in {filepath} differ from expectation in diag manifest")
                 mismatches.append(filepath)
 
-            #if result==1:
-            #    fre_logger.error(f" Timesteps found in {filepath} differ from expectation in diag manifest")
-            #    mismatches.append(filepath)
-
     #Error Handling
     if len(mismatches)!=0:
+        fre_logger.error("Unexpected number of timesteps found")
         raise ValueError(
               "\n" + str(len(mismatches)) + 
               " file(s) contain(s) an unexpected number of timesteps:\n" + 
