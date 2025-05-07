@@ -1,4 +1,4 @@
-''' test "fre make create-dockerfile" calls '''
+''' test "fre make dockerfile" calls '''
 
 import os
 from shutil  import rmtree
