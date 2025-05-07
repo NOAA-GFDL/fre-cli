@@ -2,6 +2,7 @@
 import pathlib as pl
 import pytest
 import subprocess
+import os
 
 def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=None, unwgt=None):
     ''' test-harness function, called by other test functions. '''
@@ -396,6 +397,16 @@ def test_fre_cli_time_unwgt_avgs_stddevs_two_files():
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'frepytools_unwgt_stddev_'+two_out_file_name),
         pkg='fre-python-tools',avg_type='all',  unwgt=True )
+
+def test_fre_cli_app_gen_time_avg_cleanup():
+    ''' Removes all .nc files in fre/app/generate_time_averages/tests/test_data/ '''
+    nc_files = [os.path.join(time_avg_file_dir, el) for el in os.listdir(time_avg_file_dir)
+                 if el.endswith(".nc")]
+    for nc in nc_files:
+        pl.Path.unlink(pl.Path(nc))
+    nc_remove = [not pl.Path.exists(pl.Path(el)) for el in nc_files]
+    assert all(nc_remove)
+
 '''
 To be implemnted when fre-nctools has been updated. these options currently work locally if a user has fre-nctools in their conda env.
 ## fre-nctools avgs+stddevs, weighted+unweighted, all ------------------------
@@ -454,3 +465,5 @@ def test_path_frenctools_month():
         pkg='fre-nctools',avg_type='month', unwgt=False )
     assert pl.Path(time_avg_file_dir+'../monthly_output_files/April_out.nc').exists()
 '''
+
+
