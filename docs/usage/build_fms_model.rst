@@ -47,14 +47,14 @@ Guide
 
 2. Container Build:
 
-For the container build, parallel checkouts are not supported, so the `-npc` options must be used for the checkout script. In addition the platform must be a container platform.
+For the container build, parallel checkouts are not supported. In addition the platform must be a container platform.
 
 Gaea users will not be able to create containers unless they have requested and been given podman access.
 
 .. code-block::
 
   # Create checkout script
-  fre make create-checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
+  fre make create-checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
 
   # Create and run checkout script
   fre make create-checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
