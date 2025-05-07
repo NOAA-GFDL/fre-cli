@@ -4,6 +4,7 @@ import click
 import logging
 fre_logger = logging.getLogger(__name__)
 
+#fre tools
 from fre.pp import checkout_script
 from fre.pp import configure_script_yaml
 from fre.pp import configure_script_xml
@@ -16,6 +17,7 @@ from fre.pp import nccheck_script
 from fre.pp import trigger_script
 from fre.pp import status_script
 from fre.pp import wrapper_script
+from fre.pp import split_netcdf_script
 
 # fre pp
 @click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
@@ -217,6 +219,52 @@ def histval(history,date_string,warn):
     for all files in that directory
     """
     histval_script.validate(history,date_string,warn)
+    
+#fre pp split-netcdf-wrapper
+@pp_cli.command()
+@click.option('-i', '--inputdir', required=True, 
+              help='Path to a directory in which to search for netcdf files to split. Files matching the pattern in $history-source will be split.')
+@click.option('-o', '--outputdir', required=True, 
+             help='Path to a directory to which to write split netcdf files.')
+@click.option('-c', '--component', required=True, 
+              help='component specified in yamlfile under postprocess:components. Needs to be the same component that contains the sources:history-file.')
+@click.option('-s', '--history-source', required=True, 
+              help='history-file specification under postprocess:components:type=component:sources in the fre postprocess config yamlfile. Used to match files in inputdir.')
+@click.option('-y', '--yamlfile', required=True, 
+              help='fre postprocessing .yml file from which to get the variable filtering list under postprocess:components:type=component:variables.')
+@click.option('--use-subdirs', '-u', is_flag=True, default=False, 
+              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
+def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_subdirs, yamlfile):
+    ''' Splits all netcdf files matching the pattern specified by $history_source in $inputdir
+        into files with a single data variable written to $outputdir. If $yamlfile contains 
+        variable filtering settings under $component, only those variables specified will
+        be split into files for $outdir. If no variables in the variable filtering match 
+        vars in the netcdf files, no files will be written to $outdir. If --use-subdirs 
+        is set, netcdf files will be searched for in subdirs under $outdir.
+        
+        This tool is intended for use in fre-workflows and assumes files to split have
+        fre-specific naming conventions. For a more general tool, look at split-netcdf.'''
+    split_netcdf_script.split_netcdf(inputdir, outputdir, component, history_source, use_subdirs, yamlfile)
+
+#fre pp split-netcdf
+@pp_cli.command()
+@click.option('-f', '--file', type = str, required=True, help='path to a netcdf file')
+@click.option('-o', '--outputdir', type = str, required=True, help='path to a directory to which to write single-data-variable output files')
+@click.option('-v', '--variables', type = str, required=True, 
+              help='''Specifies which variables in $file are split and written to $outputdir. 
+                     Either a string "all" or a comma-separated string of variable names ("tasmax,tasmin,pr")''')
+def split_netcdf(file, outputdir, variables):
+    ''' Splits a single netcdf file into one netcdf file per data variable and writes
+        files to $outputdir.
+        $variables is an option to filter the variables split out of $file and 
+        written to $outputdir. If set to "all" (the default), all data variables
+        in $file are split and written to $outputdir; if set to a comma-separated
+        string of variable names, only the variable names in the string will be 
+        split and written to $outputdir. If no variable names in $variables match
+        variables in $file, no files will be written to $outputdir.'''
+    var_list = variables.split(",")
+    split_netcdf_script.split_file_xarray(file, outputdir, variables)
+
 
 #fre pp ppval
 @pp_cli.command()
