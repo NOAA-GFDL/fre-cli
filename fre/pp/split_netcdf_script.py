@@ -85,14 +85,16 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
           files_split += 1
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
-      fre_logger.warning(f"warning: no files found in dirs under {workdir} that match pattern {file_regex}; no splitting took place")
+      fre_logger.error(f"error: no files found in dirs under {workdir} that match pattern {file_regex}; no splitting took place")
+      raise OSError
   else:
       files=glob.glob(os.path.join(workdir, file_regex))
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
       if len(files) == 0:
-        fre_logger.warning(f"warning: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
+        fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
+        raise OSError
     
   fre_logger.info("split-netcdf-wrapper call complete")
   sys.exit(0) #check this
