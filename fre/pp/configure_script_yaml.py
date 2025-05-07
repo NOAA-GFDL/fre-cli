@@ -73,8 +73,6 @@ def rose_init(experiment,platform,target):
     rose_suite = metomi.rose.config.ConfigNode()
     # disagreeable; these should be optional
     rose_suite.set(keys=['template variables', 'DO_ANALYSIS_ONLY'],  value='False')
-    rose_suite.set(keys=['template variables', 'DO_MDTF'],  value='False')
-    rose_suite.set(keys=['template variables', 'PP_DEFAULT_XYINTERP'],  value='0,0')
 
     # set some rose suite vars
     rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{experiment}"')
@@ -95,9 +93,11 @@ def rose_init(experiment,platform,target):
 def quote_rose_values(value):
     """
     rose-suite.conf template variables must be quoted unless they are
-    boolean, in which case do not quote them.
+    boolean or a list, in which case do not quote them.
     """
     if isinstance(value, bool):
+        return f"{value}"
+    elif isinstance(value, list):
         return f"{value}"
     else:
         return "'" + str(value) + "'"
