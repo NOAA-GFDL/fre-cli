@@ -1,0 +1,33 @@
+fre.yamltools package
+=====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.yamltools.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.yamltools.cmor_info_parser
+   fre.yamltools.combine_yamls
+   fre.yamltools.combine_yamls_script
+   fre.yamltools.compile_info_parser
+   fre.yamltools.constructors
+   fre.yamltools.freyamltools
+   fre.yamltools.helpers
+   fre.yamltools.pp_info_parser
+
+Module contents
+---------------
+
+.. automodule:: fre.yamltools
+   :members:
+   :show-inheritance:
+   :undoc-members:

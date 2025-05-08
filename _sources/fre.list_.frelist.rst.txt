@@ -1,0 +1,7 @@
+fre.list\_.frelist module
+=========================
+
+.. automodule:: fre.list_.frelist
+   :members:
+   :show-inheritance:
+   :undoc-members:

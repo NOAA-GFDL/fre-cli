@@ -1,0 +1,7 @@
+fre.cmor.tests.test\_cmor\_run\_subtool\_ppan\_only module
+==========================================================
+
+.. automodule:: fre.cmor.tests.test_cmor_run_subtool_ppan_only
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,19 @@
+fre.check package
+=================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.check.frecheck
+   fre.check.frecheckexample
+
+Module contents
+---------------
+
+.. automodule:: fre.check
+   :members:
+   :show-inheritance:
+   :undoc-members:

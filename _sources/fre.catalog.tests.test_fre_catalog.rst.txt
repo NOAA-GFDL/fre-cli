@@ -1,0 +1,7 @@
+fre.catalog.tests.test\_fre\_catalog module
+===========================================
+
+.. automodule:: fre.catalog.tests.test_fre_catalog
+   :members:
+   :show-inheritance:
+   :undoc-members:

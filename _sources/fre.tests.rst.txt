@@ -1,0 +1,28 @@
+fre.tests package
+=================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.tests.test_fre_analysis_cli
+   fre.tests.test_fre_app_cli
+   fre.tests.test_fre_catalog_cli
+   fre.tests.test_fre_check_cli
+   fre.tests.test_fre_cli
+   fre.tests.test_fre_cmor_cli
+   fre.tests.test_fre_list_cli
+   fre.tests.test_fre_make_cli
+   fre.tests.test_fre_pp_cli
+   fre.tests.test_fre_run_cli
+   fre.tests.test_fre_yamltools_cli
+
+Module contents
+---------------
+
+.. automodule:: fre.tests
+   :members:
+   :show-inheritance:
+   :undoc-members:

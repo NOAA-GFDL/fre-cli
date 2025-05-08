@@ -1,0 +1,19 @@
+fre.run package
+===============
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.run.frerun
+   fre.run.frerunexample
+
+Module contents
+---------------
+
+.. automodule:: fre.run
+   :members:
+   :show-inheritance:
+   :undoc-members:

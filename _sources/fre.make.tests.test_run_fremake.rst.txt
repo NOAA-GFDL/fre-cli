@@ -1,0 +1,7 @@
+fre.make.tests.test\_run\_fremake module
+========================================
+
+.. automodule:: fre.make.tests.test_run_fremake
+   :members:
+   :show-inheritance:
+   :undoc-members:

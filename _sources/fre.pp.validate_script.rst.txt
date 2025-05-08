@@ -1,0 +1,7 @@
+fre.pp.validate\_script module
+==============================
+
+.. automodule:: fre.pp.validate_script
+   :members:
+   :show-inheritance:
+   :undoc-members:

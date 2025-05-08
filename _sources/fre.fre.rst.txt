@@ -1,0 +1,7 @@
+fre.fre module
+==============
+
+.. automodule:: fre.fre
+   :members:
+   :show-inheritance:
+   :undoc-members:

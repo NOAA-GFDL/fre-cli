@@ -1,0 +1,7 @@
+fre.pp.frepp module
+===================
+
+.. automodule:: fre.pp.frepp
+   :members:
+   :show-inheritance:
+   :undoc-members:

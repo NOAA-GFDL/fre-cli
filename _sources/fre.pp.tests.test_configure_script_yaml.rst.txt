@@ -1,0 +1,7 @@
+fre.pp.tests.test\_configure\_script\_yaml module
+=================================================
+
+.. automodule:: fre.pp.tests.test_configure_script_yaml
+   :members:
+   :show-inheritance:
+   :undoc-members:
