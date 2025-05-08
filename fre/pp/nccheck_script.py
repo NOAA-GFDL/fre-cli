@@ -15,18 +15,19 @@ def check(file_path, num_steps):
     fre_logger.info("Grabbed data from file")
 
     timesteps = dataset.variables['time'][:]
+    num_actual_steps = len(timesteps)
     dataset.close()
 
     fre_logger.info("Closed file")
 
     #Compare
-    if len(timesteps) == int(num_steps):
+    if num_actual_steps == int(num_steps):
         fre_logger.info(f" Expected number of timesteps found in {file_path}")
         return 0
 
     else:
-        fre_logger.info(f" Unexpected number of timesteps found in {file_path}")
-        return 1
+        fre_logger.error(f" Unexpected number of timesteps found in {file_path}. Found: {num_actual_steps} timesteps  Expected: {num_steps} timesteps")
+        raise ValueError(f" Unexpected number of timesteps found in {file_path}. Found: {num_actual_steps} timesteps  Expected: {num_steps} timesteps")
 
 if __name__  == "__main__":
     check()
