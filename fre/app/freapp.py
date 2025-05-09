@@ -53,11 +53,15 @@ def app_cli():
               help = "`defaultxyInterp` / `def_xy_interp` (env var) default lat/lon resolution " + \
                      "for output regridding. (change me? TODO)",
               required = True)
+@click.option("--rose_config",
+              type = str,
+              help = "Path to Rose app configuration (to be removed soon)",
+              required = True)
 def regrid( input_dir, output_dir, begin, tmp_dir,
-            remap_dir, source, grid_spec, def_xy_interp ):
+            remap_dir, source, grid_spec, def_xy_interp, rose_config ):
     ''' regrid target netcdf file '''
     regrid_xy( input_dir, output_dir, begin, tmp_dir,
-               remap_dir, source, grid_spec, def_xy_interp )
+               remap_dir, source, grid_spec, def_xy_interp, rose_config )
 
 @app_cli.command()
 @click.option("-i", "--infile",

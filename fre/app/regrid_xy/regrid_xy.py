@@ -7,6 +7,7 @@
 
 import logging
 fre_logger = logging.getLogger(__name__)
+#fre_logger.setLevel(logging.INFO)
 
 import subprocess
 import shutil
@@ -121,13 +122,12 @@ def make_component_list(config, source):
     comp_list=[] #will not contain env, or command
     try:
         for keys, sub_node in config.walk():
-            sources = sub_node.get_value(keys=['sources'])#.split(' ')
+            sources = sub_node.get_value(keys=['sources'])
             if any( [ len(keys) < 1,
                       keys[0] in ['env', 'command'],
                       keys[0] in comp_list,
                       sources is None                ] ):
                 continue
-            sources = sources.split(' ')
             if source in sources:
                 comp_list.append(keys[0])
     except Exception as exc:
@@ -156,23 +156,20 @@ def make_regrid_var_list(target_file, interp_method = None):
 
 
 def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
-              remap_dir = None, source = None, grid_spec = None, def_xy_interp = None
+              remap_dir = None, source = None, grid_spec = None, def_xy_interp = None,
+              rose_config = None
               ):
     """
     calls fre-nctools' fregrid to regrid net cdf files
     """
 
     ## rose config load check
-    config_name = os.getcwd() #REMOVE ME TODO
-    config_name += '/rose-app-run.conf'
-    #config_name += '/rose-app.conf'
-    fre_logger.info(f'config_name = {config_name}')
+    fre_logger.info(f'rose_config = {rose_config}')
     try:
-        rose_app_config = rose_cfg.load(config_name)
+        rose_app_config = rose_cfg.load(rose_config)
     except Exception as exc:
-        raise ValueError(f'config_name = {config_name} not found.') \
+        raise ValueError(f'rose_config = {rose_config} not found.') \
             from exc
-
 
     # mandatory arguments- code exits if any of these are not present
     #input_dir     = os.getenv( 'inputDir'        )
@@ -208,6 +205,8 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
     # input dir must exist
     if not Path( input_dir ).exists():
         raise OSError(f'input_dir={input_dir} \n does not exist')
+    # workaround for the moment
+    input_dir += '/'
 
     # tmp_dir check
     if not Path( tmp_dir ).exists():
@@ -242,15 +241,15 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
             raise OSError(
                 f'untarring of {grid_spec} file failed, ' + \
                 f'ret_code={untar_sp.returncode}, stderr={untar_sp.stderr}')
-        if Path( input_dir+'mosaic.nc' ).exists():
-            grid_spec_file=input_dir+'mosaic.nc'
-        elif Path( input_dir+'grid_spec.nc' ).exists():
-            grid_spec_file=input_dir+'grid_spec.nc'
+        if Path( input_dir, 'mosaic.nc' ).exists():
+            grid_spec_file=Path(input_dir, 'mosaic.nc')
+        elif Path( input_dir, 'grid_spec.nc' ).exists():
+            grid_spec_file=Path(input_dir, 'grid_spec.nc')
         else:
             raise ValueError(f'grid_spec_file cannot be determined from grid_spec={grid_spec}')
     else:
         try: #attempt to copy directly from uncompressed grid_spec location
-            grid_spec_file=input_dir+grid_spec.split('/').pop()
+            grid_spec_file=Path(input_dir, grid_spec.split('/').pop())
             shutil.copy(grid_spec, grid_spec_file )
         except Exception as exc:
             raise OSError(f'grid_spec={grid_spec} could not be copied.') \
