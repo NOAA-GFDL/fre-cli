@@ -18,8 +18,6 @@ fre_logger = logging.getLogger(__name__)
 import metomi.rose.config as rose_cfg
 from netCDF4 import Dataset
 
-FREGRID_SHARED_FILES='/home/fms/shared_fregrid_remap_files'
-
 def truncate_date(date, freq):
     """ truncates iso freq to iso date time """
     format_=freq_to_date_format(freq)
@@ -86,8 +84,7 @@ def check_interp_method( nc_variable, interp_method):
     if 'interp_method' not in attr_list:
         pass
     elif nc_variable.interp_method != interp_method:
-        fre_logger.info(f'WARNING: interp_method={interp_method} differs from what is in target_file')
-        fre_logger.info(f'WARNING: interp_method used may not be {interp_method}!')
+        fre_logger.info(f"WARNING: variable '{nc_variable.name}' has attribute interp_method '{nc_variable.interp_method}'")
 
 
 def check_per_component_settings(component_list, rose_app_cfg):
@@ -153,7 +150,7 @@ def make_regrid_var_list(target_file, interp_method = None):
 
 
 def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
-              grid_spec, def_xy_interp, rose_config):
+              grid_spec, rose_config):
     '''
     calls fre-nctools' fregrid to regrid netcdf files
     '''
@@ -162,27 +159,18 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
     if None in [ input_dir , output_dir    ,
                  begin     , tmp_dir       ,
                  remap_dir , source        ,
-                 grid_spec , def_xy_interp,
-                 rose_config ]:
+                 grid_spec , rose_config ]:
         raise Exception(f'a mandatory input argument is not present in {config_name})')
 
-    def_xy_interp    = def_xy_interp.split(',')
-    def_xy_interp[0] = def_xy_interp[0].replace('"', '')
-    def_xy_interp[1] = def_xy_interp[1].replace('"', '')
-    fre_logger.info( f'input_dir         = { input_dir        }\n' + \
+    fre_logger.info(
+         f'\ninput_dir         = { input_dir        }\n' + \
            f'output_dir        = { output_dir       }\n' + \
            f'begin             = { begin            }\n' + \
            f'tmp_dir           = { tmp_dir          }\n' + \
            f'remap_dir         = { remap_dir        }\n' + \
            f'source            = { source           }\n' + \
            f'grid_spec         = { grid_spec        }\n' + \
-           f'rose_config       = { rose_config      }\n' + \
-           f'def_xy_interp     = { def_xy_interp    }\n' + \
-           f'def_xy_interp[0]  = { def_xy_interp[0] }\n' + \
-           f'def_xy_interp[1]  = { def_xy_interp[1] }'       )
-    if any( [  def_xy_interp == [] or len(def_xy_interp) != 2  ] ):
-        raise ValueError(
-            f'default xy interpolation has invalid format: \n def_xy_interp = {def_xy_interp}')
+           f'rose_config       = { rose_config      }\n')
 
     # rose config load check
     rose_app_config = rose_cfg.load(rose_config)
@@ -208,12 +196,10 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
         raise OSError('the following does not exist and/or could not be created:' +
                         f'work_dir=\n{work_dir}')
 
-
     # fregrid remap dir check
     Path(remap_dir).mkdir( exist_ok = True )
     if not Path( remap_dir ).exists():
         raise OSError(f'{remap_dir} could not be created')
-
 
     # grid_spec file management
     starting_dir = os.getcwd()
@@ -235,24 +221,25 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
             raise OSError(f'grid_spec={grid_spec} could not be copied.') \
                 from exc
 
-    # ------------------------------------------------------------------ component loop
+    # component loop
     component_list = make_component_list(rose_app_config, source)
+    fre_logger.info(f'component_list = {component_list}')
     if len(component_list) == 0:
         raise ValueError('component list empty- source file not found in any source file list!')
     if len(component_list) > 1: # check settings for uniqueness
         do_regridding = \
             check_per_component_settings( \
                                           component_list, rose_app_config)
-        fre_logger.info(f'component_list = {component_list}')
-        fre_logger.info(f'do_regridding  = {do_regridding}')
     else:
         do_regridding=[True]
+    fre_logger.info(f'component_list = {component_list}')
+    fre_logger.info(f'do_regridding  = {do_regridding}')
 
-    for component in component_list:
+    for index, component in enumerate(component_list):
         if not do_regridding[
                 component_list.index(component) ]:
             continue
-        fre_logger.info(f'\n\nregridding \nsource={source} for \ncomponent={component}\n')
+        fre_logger.info(f'Regridding source={source} for component={component}\n')
 
         # mandatory per-component inputs, will error if nothing in rose config
         input_realm, interp_method, input_grid = None, None, None
@@ -265,9 +252,9 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
                             f'input_grid=\n{input_grid}\n,input_realm=' + \
                             f'\n{input_realm}\n,/interp_method=\n{interp_method}') \
                             from exc
-        fre_logger.info(f'input_grid    = {input_grid    }' + \
-              f'input_realm   = {input_realm   }' + \
-              f'interp_method = {interp_method }'     )
+        fre_logger.info(f'input_grid = {input_grid    }, ' + \
+              f'input_realm = {input_realm   }, ' + \
+              f'interp_method = {interp_method }')
 
         #target input variable resolution
         is_tiled = 'cubedsphere' in input_grid
@@ -277,7 +264,7 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
             else  f"/{truncate_date(begin,'P1D')}.{source}.nc"
         if not Path( target_file ).exists():
             raise OSError(f'regrid_xy target does not exist. \ntarget_file={target_file}')
-        fre_logger.info(f'target_file={target_file}') #DELETE
+        fre_logger.info(f'target_file = {target_file}') #DELETE
 
 
         # optional per-component inputs
@@ -288,12 +275,6 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
         output_grid_lon  = safe_rose_config_get( rose_app_config, component, 'outputGridLon')
         output_grid_lat  = safe_rose_config_get( rose_app_config, component, 'outputGridLat')
         
-        # if no input args specified, grab the defaul values
-        if any( [ output_grid_lon is None,
-                  output_grid_lat is None ] ):
-            output_grid_lon = def_xy_interp[0]
-            output_grid_lat = def_xy_interp[1]
-
         fre_logger.info( f'output_grid_type = {output_grid_type }\n' + \
                f'remap_file       = {remap_file       }\n' + \
                f'more_options     = {more_options     }\n' + \
@@ -336,39 +317,26 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
                 raise OSError('remap_file={remap_file} could not be copied to local dir') \
                     from exc
         else:
-            fre_logger.info('remap_file was not specified nor found. looking for default one')
-            remap_file= f'fregrid_remap_file_{output_grid_lon}_by_{output_grid_lat}.nc' \
-                                if \
-                                   all( [output_grid_lon is not None,
-                                         output_grid_lat is not None]) \
-                                else \
-                                   f'fregrid_remap_file_{def_xy_interp(0)}_by_{def_xy_interp(1)}.nc'
+            remap_file= f'fregrid_remap_file_{output_grid_lon}_by_{output_grid_lat}.nc'
             remap_cache_file = \
                 f'{remap_dir}/{input_grid}/{input_realm}/' + \
                 f'{source_nx}-by-{source_ny}/{interp_method}/{remap_file}'
-            central_remap_cache_file = \
-                f'{FREGRID_SHARED_FILES}/{input_grid}/' + \
-                f'{source_nx}_by_{source_ny}/{remap_file}'
 
-            fre_logger.info(f'remap_file               = {remap_file              }' + \
-                  f'remap_cache_file         = {remap_cache_file        }' + \
-                  f'central_remap_cache_file = {central_remap_cache_file}' )
+            fre_logger.info(f'remap_file               = {remap_file              }\n' + \
+                  f'remap_cache_file         = {remap_cache_file        }' )
 
             if Path( remap_cache_file ).exists():
                 fre_logger.info(f'NOTE: using cached remap file {remap_cache_file}')
                 shutil.copy(remap_cache_file,
                             remap_cache_file.split('/').pop())
-            elif Path( central_remap_cache_file ).exists():
-                fre_logger.info(f'NOTE: using centrally cached remap file {remap_cache_file}')
-                shutil.copy(central_remap_cache_file,
-                            central_remap_cache_file.split('/').pop())
+            else:
+                fre_logger.info(f'NOTE: Will generate remap file and cache to {remap_cache_file}')
 
 
 
         # if no variables in config, find the interesting ones to regrid
         if regrid_vars is None:
             regrid_vars=make_regrid_var_list( target_file , interp_method)
-        fre_logger.info(f'regrid_vars = {regrid_vars}') #DELETE
 
         #check if there's anything worth regridding
         if len(regrid_vars) < 1:
@@ -431,8 +399,6 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
 
         fre_logger.info(f'TRYING TO COPY {output_file} TO {final_output_dir}')
         shutil.copy(output_file, final_output_dir)
-
-        continue # end of comp loop, exit or next one.
 
     os.chdir(starting_dir) # not clear this is necessary.
     fre_logger.info('done running regrid_xy()')
