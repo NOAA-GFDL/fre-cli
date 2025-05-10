@@ -49,17 +49,17 @@ def freq_to_date_format(iso_freq):
     raise ValueError(f"ERROR: Unknown Frequency '{iso_freq}'")
 
 def test_import():
-    '''for quickly testing import within pytest'''
+    """for quickly testing import within pytest"""
     return 1
 
 def safe_rose_config_get(config, section, field):
-    '''read optional variables from rose configuration, and don't error on None value'''
+    """read optional variables from rose configuration, and don't error on None value"""
     config_dict = config.get( [section,field] )
     return None if config_dict is None else config_dict.get_value()
 
 
 def get_mosaic_file_name(grid_spec_file, mosaic_type):
-    '''read string from a numpy masked array WHY'''
+    """read string from a numpy masked array WHY"""
     grid_spec_nc = Dataset(grid_spec_file, 'r')
     masked_data = grid_spec_nc[mosaic_type][:].copy() # maskedArray
     grid_spec_nc.close()
@@ -69,7 +69,7 @@ def get_mosaic_file_name(grid_spec_file, mosaic_type):
 
 
 def get_mosaic_grid_file_name(input_mosaic):
-    '''get mosaic grid file name from NESTED numpy masked array WHY'''
+    """get mosaic grid file name from NESTED numpy masked array WHY"""
     input_mosaic_nc = Dataset(input_mosaic,'r')
     masked_data = input_mosaic_nc['gridfiles'][0].copy()
     input_mosaic_nc.close()
@@ -79,7 +79,7 @@ def get_mosaic_grid_file_name(input_mosaic):
 
 
 def check_interp_method( nc_variable, interp_method):
-    '''print warning if optional interp_method clashes with nc file attribute field, if present'''
+    """print warning if optional interp_method clashes with nc file attribute field, if present"""
     attr_list=nc_variable.ncattrs()
     if 'interp_method' not in attr_list:
         pass
@@ -88,9 +88,9 @@ def check_interp_method( nc_variable, interp_method):
 
 
 def check_per_component_settings(component_list, rose_app_cfg):
-    '''for a source file ref'd by multiple components check per-component
+    """for a source file ref'd by multiple components check per-component
     settings for uniqueness. output list of bools of same length to check
-    in componenet loop'''
+    in componenet loop"""
     do_regridding = [True] #first component will always be run
     curr_out_grid_type_list = [safe_rose_config_get( \
                                                rose_app_cfg, component_list[0], 'outputGridType')]
@@ -110,7 +110,7 @@ def check_per_component_settings(component_list, rose_app_cfg):
 
 
 def make_component_list(config, source):
-    '''make list of relevant component names where source file appears in sources'''
+    """make list of relevant component names where source file appears in sources"""
     comp_list=[] #will not contain env, or command
     for keys, sub_node in config.walk():
         # only target the keys
@@ -131,7 +131,7 @@ def make_component_list(config, source):
 
 
 def make_regrid_var_list(target_file, interp_method = None):
-    '''create default list of variables to be regridded within target file.'''
+    """create default list of variables to be regridded within target file."""
     fin = Dataset(target_file,'r')
     all_fin_vars = fin.variables
     regrid_vars = []
@@ -151,9 +151,9 @@ def make_regrid_var_list(target_file, interp_method = None):
 
 def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
               grid_spec, rose_config):
-    '''
+    """
     calls fre-nctools' fregrid to regrid netcdf files
-    '''
+    """
 
     # mandatory arguments- code exits if any of these are not present
     if None in [ input_dir , output_dir    ,
@@ -235,7 +235,7 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
     fre_logger.info(f'component_list = {component_list}')
     fre_logger.info(f'do_regridding  = {do_regridding}')
 
-    for index, component in enumerate(component_list):
+    for component in component_list:
         if not do_regridding[
                 component_list.index(component) ]:
             continue
@@ -293,9 +293,11 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
             mosaic_type = 'lnd_mosaic_file'
         else:
             raise ValueError(f'input_realm={input_realm} not recognized.')
+        fre_logger.info(f'mosaic_type = {mosaic_type}')
 
         # this is just to get the grid_file name
         input_mosaic = get_mosaic_file_name(grid_spec_file, mosaic_type)
+        fre_logger.info(f'grid_spec_file = {grid_spec_file}')
         fre_logger.info(f'input_mosaic = {input_mosaic}') #DELETE
 
         ## this is to get the tile1 filename?
@@ -406,7 +408,7 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
 
 
 def main():
-    '''steering, local test/debug'''
+    """steering, local test/debug"""
     return regrid_xy()
 
 if __name__=='__main__':
