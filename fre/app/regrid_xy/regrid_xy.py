@@ -18,6 +18,15 @@ fre_logger = logging.getLogger(__name__)
 import metomi.rose.config as rose_cfg
 from netCDF4 import Dataset
 
+## TEMPORARILY including this hack until the yaml
+## config is read through this script instead 
+non_regriddable_variables = [
+    'geolon_c', 'geolat_c', 'geolon_u', 'geolat_u', 'geolon_v', 'geolat_v',
+    'FA_X', 'FA_Y', 'FI_X', 'FI_Y', 'IX_TRANS', 'IY_TRANS', 'UI', 'VI', 'UO', 'VO',
+    'wet_c', 'wet_v', 'wet_u', 'dxCu', 'dyCu', 'dxCv', 'dyCv', 'Coriolis',
+    'areacello_cu', 'areacello_cv', 'areacello_bu'
+]
+
 def truncate_date(date, freq):
     """ truncates iso freq to iso date time """
     format_=freq_to_date_format(freq)
@@ -138,6 +147,8 @@ def make_regrid_var_list(target_file, interp_method = None):
     for var_name in all_fin_vars:
         if var_name in ['average_T1','average_T2',
                         'average_DT','time_bnds' ]:
+            continue
+        if var_name in non_regriddable_variables:
             continue
         if len(all_fin_vars[var_name].shape) < 2 :
             continue
