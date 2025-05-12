@@ -58,7 +58,8 @@ def test_run_fremake_serial_compile():
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=False,
         no_format_transfer=True, execute=True, verbose=VERBOSE)
-    assert Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
+    assert Path(
+        f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # same test with a parallel build
 @pytest.mark.skipif(not can_compile, reason="missing GNU compiler, mpi, netcdf, or mkmf in PATH")
@@ -68,7 +69,8 @@ def test_run_fremake_multijob_compile():
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         parallel=True, jobs=4, no_parallel_checkout=False,
         no_format_transfer=False, execute=True, verbose=VERBOSE)
-    assert Path(f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
+    assert Path(
+        f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # containerized build
 @pytest.mark.skipif(not can_container, reason="missing podman/apptainer")

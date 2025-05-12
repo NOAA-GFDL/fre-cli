@@ -546,22 +546,13 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     # Process all of the found PP chunks into the rose-suite configuration
     fre_logger.info("Setting PP chunks...")
 
-    sorted_chunks = list(chunks)
-    sorted_chunks.sort(key=duration_to_seconds, reverse=False)
-
     if len(chunks) == 0:
         raise ValueError('no chunks found! exit.')
 
+    sorted_chunks = list(chunks)
+    sorted_chunks.sort(key=duration_to_seconds, reverse=False)
     fre_logger.info("  Chunks found: %s", ', '.join(sorted_chunks))
-    if len(chunks) == 1:
-        rose_suite.set(['template variables', 'PP_CHUNK_A'],
-                       f"'{sorted_chunks[0]}'")
-    else:
-        rose_suite.set(['template variables', 'PP_CHUNK_A'],
-                       f"'{sorted_chunks[0]}'")
-        rose_suite.set(['template variables', 'PP_CHUNK_B'],
-                       f"'{sorted_chunks[1]}'")
-    fre_logger.info("  Chunks used: %s", ', '.join(sorted_chunks[0:2]) )
+    rose_suite.set(['template variables', 'PP_CHUNKS'], f"{sorted_chunks}")
 
     # Write out the final configurations.
     fre_logger.info("Writing output files...")

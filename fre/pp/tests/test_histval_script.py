@@ -1,5 +1,5 @@
 """
-Test nccheck_script
+Test histval_script
 """
 import pytest
 import re
@@ -42,7 +42,13 @@ def test_histval(capfd):
     """
 
     #Run the histval tool and make sure we get the ValueError we expect
-    with pytest.raises(ValueError,match=re.escape("\n2 file(s) contain(s) an unexpected number of timesteps:\nfre/tests/test_files/ascii_files/00010101.atmos_month.tile1.nc\nfre/tests/test_files/ascii_files/00010101.atmos_month.tile2.nc")):
+    value_err_str="\n2 file(s) contain(s) an unexpected number of timesteps:\n" + \
+        "fre/tests/test_files/ascii_files/00010101.atmos_month.tile1.nc\n" + \
+        "fre/tests/test_files/ascii_files/00010101.atmos_month.tile2.nc"
+    with pytest.raises( ValueError,
+                        match=re.escape(
+                            value_err_str
+                        ) ):
         result=(histval.validate(test_dir,'00010101',warn=None))
 
     #Delete the test files

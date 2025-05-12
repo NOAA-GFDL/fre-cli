@@ -73,8 +73,10 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         if current_tag == git_clone_branch_arg or current_branch == git_clone_branch_arg:
             fre_logger.info(f"checkout exists ('{directory}/{name}'), and matches '{git_clone_branch_arg}'")
         else:
-            fre_logger.info(f"ERROR: checkout exists ('{directory}/{name}') and does not match '{git_clone_branch_arg}'")
-            fre_logger.info(f"ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
+            fre_logger.info(
+                f"ERROR: checkout exists ('{directory}/{name}') and does not match '{git_clone_branch_arg}'")
+            fre_logger.info(
+                f"ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
             os.chdir(go_back_here)
             raise ValueError('neither tag nor branch matches the git clone branch arg') #exit(1)
 

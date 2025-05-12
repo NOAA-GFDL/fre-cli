@@ -1,25 +1,48 @@
-
 cmor:
 
+  # these fields are for global configuration that isn't a directory
+  # -------------------------------------------------------------------------------------
+  start:
+#    *CMOR_START
+  stop:
+    *CMOR_STOP
+    
+  mip_era: 
+    'CMIP6'
+  exp_json:
+    'fre/tests/test_files/CMOR_input_example.json'
+
+  # these fields are for global directory configuration
+  # -------------------------------------------------------------------------------------  
   directories:
     <<: *shared_directories
-    table_dir:
-      &table_dir "fre/tests/test_files/cmip6-cmor-tables/Tables"
-    exp_config_dir:
-      &exp_config_dir "fre/tests/test_files"
-      
+    table_dir: &table_dir
+      "fre/tests/test_files/cmip6-cmor-tables/Tables"
+    outdir:
+      'fre/tests/test_files/iamnotreallyused/outdir/'
 
-  targets:
-    Omon-ts-gr1:
-      json_table_config:
-        !join [ *table_dir, "/", "CMIP6_Omon.json" ]
-      json_exp_config:
-        !join [ *exp_config_dir, "/", "CMOR_input_example.json" ]
-      indir:
-        "fre/tests/test_files/ocean_sos_var_file"
-      json_var_list:
-        "fre/tests/test_files/varlist"
-      outdir:
-        "fre/tests/test_files/outdir"
-      opt_var_name:
+  # these fields are for configuration that changes by cmor-table-target, or by-component
+  # -------------------------------------------------------------------------------------
+  table_targets:
 
+    # -----------------------------------------------------------------------------------
+    - table_name: 'Amon' 
+      variable_list:
+        'fre/tests/test_files/varlist'
+      freq: #optional, if not specified we try to figure it out from the MIP table entries
+#      gridding: #optional, if empty or not present, use grid info in exp_json as-is
+      gridding: #optional, a grids.yaml is necessary to specify grid info this way
+        <<: *gn
+#      gridding: #optional, no yaml necessary, all three must be non-empty, checked against CV by CMOR
+#          grid_label: "gn"
+#          grid_desc: "native gridding ex description"
+#          nom_res: "1000 km"
+        
+      target_components:
+        - component_name: 'atmos_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CPLD_CHUNK_A
+          
+        - component_name: 'atmos_level_cmip'
+          data_series_type: 'ts'
+          chunk: *PP_CPLD_CHUNK_A

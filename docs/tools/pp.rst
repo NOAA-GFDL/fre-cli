@@ -30,3 +30,11 @@
 * Minimal Syntax: ``fre pp histval --history [path to directory containing history files] --date_string [date_string]``
 * Module(s) needed: n/a
 * Example: ``fre pp histval --history /some_path/dir_with_history_files/ --date_string 00010101``
+
+``ppval``
+-----------
+
+* Run nccheck over postprocessed time-series files
+* Minimal Syntax: ``fre pp ppval --path [path to file]``
+* Module(s) needed: n/a
+* Example: ``fre pp ppval --path /some_path/example.200001-200412.nc``

@@ -1,5 +1,5 @@
 """
-Test fre make create-compile
+Test fre make compile-script
 """
 import os
 import shutil
