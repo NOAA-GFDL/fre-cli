@@ -285,8 +285,7 @@ def test_success_tar_grid_spec_regrid_xy():
             tmp_dir = TEST_DIR,
             remap_dir = REMAP_DIR,
             source = SOURCE,
-            grid_spec = GOLD_GRID_SPEC,
-            def_xy_interp = f'"{NLON},{NLAT}"'
+            grid_spec = GOLD_GRID_SPEC
         )
 
         # uhm....
@@ -368,8 +367,7 @@ def test_success_no_tar_grid_spec_regrid_xy():
         tmp_dir = TEST_DIR,
         remap_dir = REMAP_DIR,
         source = SOURCE,
-        grid_spec = GOLD_GRID_SPEC_NO_TAR,
-        def_xy_interp = f'"{NLON},{NLAT}"'
+        grid_spec = GOLD_GRID_SPEC_NO_TAR
     )
 
     # uhm....
@@ -428,8 +426,7 @@ def test_failure_wrong_datetime_regrid_xy():
             tmp_dir = TEST_DIR,
             remap_dir = REMAP_DIR,
             source = SOURCE,
-            grid_spec = GOLD_GRID_SPEC,
-            def_xy_interp = f'"{NLON},{NLAT}"'
+            grid_spec = GOLD_GRID_SPEC
         )
     except:
         # yay good job
