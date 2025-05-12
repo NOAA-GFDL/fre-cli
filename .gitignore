@@ -1,4 +1,4 @@
-># Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -197,4 +197,10 @@ rose-app-run.conf
 .vscode/*
 .vscode
 fre/tests/test_files/CMOR_input_example.json
-fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_*
+fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/*
+fre/app/generate_time_averages/tests/test_data/*.nc
+fre/make/tests/test_run_fremake_serial
+fre/make/tests/test_run_fremake_multijob
+fre/make/tests/test_run_fremake_multitarget
+fre/make/tests/test_run_fremake_multiserial
+fre/tests/test_files/outdir_ppan_only
