@@ -62,7 +62,7 @@ def conv_mip_to_bronx_freq(cmor_table_freq):
         "yrPt"   : None
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
-    if bronx_freq is None:
+    if bronx_freq is None and cmor_table_freq != 'fx':
         raise KeyError(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent') #uncovered
     return bronx_freq
 
@@ -82,7 +82,7 @@ def get_bronx_freq_from_mip_table(json_table_config):
                 break
             except Exception as exc: #uncovered
                 raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
-                               'ALWAYS have frequency info under the variable entry!! EXIT! BAD!') from exc
+                               'have frequency info under the variable entry!') from exc
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
 
@@ -189,13 +189,10 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         check_path_existence(json_table_config)
 
 
-        # frequency of data ---- revisit/TODO
-        # if freq is None:
-        #   use whats in the targeted mip table
-        #   if it's not right, we'll error trying to open input later...
-        # else:
-        #   check freq consistent with whats in the mip table
-        #   error now if it's inconsistent
+        # frequency of data ---- the reason this spot looks kind of awkward is because of the case where
+        #                        the table if e.g. Ofx and thus the table's frequency field is smth like 'fx'
+        #                        if that's the case, we only demand that the freq field is filled out in the yaml
+        #                        which is really more about path resolving than anything.
         freq = table_config['freq']
         table_freq = get_bronx_freq_from_mip_table(json_table_config)
         if freq is None:
@@ -205,10 +202,10 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         if freq is None:
             raise ValueError(
                 f'not enough frequency information to process variables for {table_config}')
-        elif freq != table_freq:
+        elif freq != table_freq and table_freq is not None:
             raise ValueError(
                 'frequency from MIP table is incompatible with requested frequency in cmor yaml for {table_config}')
-        # frequency of data ---- revisit
+        # frequency of data ---- the reason this spot looks kind of 
 
         # gridding info of data ---- revisit/TODO
         gridding_dict = table_config['gridding']
