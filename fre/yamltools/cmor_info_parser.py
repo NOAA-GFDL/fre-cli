@@ -3,6 +3,7 @@
 import os
 import yaml
 from pathlib import Path
+from pprint import pformat
 
 import logging
 fre_logger = logging.getLogger(__name__)
@@ -188,8 +189,7 @@ class CMORYaml():
             #fre_logger.info(f'exp_info = \n {exp_info}')
             cmor_yamls.append(exp_info)
 
-        #import pprint
-        #fre_logger.info(f'cmor_yamls = \n {pprint.PrettyPrinter(indent=2).pformat(cmor_yamls)}')
+        #fre_logger.debug(f'cmor_yamls = \n %s', pformat(cmor_yamls))
         #assert False
 
         return cmor_yamls
@@ -199,18 +199,19 @@ class CMORYaml():
         """
         if cmor_list is None:
             raise ValueError('cmor_list is none and should not be!!!')
-
+        #fre_logger.debug("loaded_yaml =\n  %s", pformat(loaded_yaml))
+        #fre_logger.debug("cmor_list =\n  %s", pformat(cmor_list))
+        
         #_, _, _ = experiment_check( self.mainyaml_dir, self.name,
-        #loaded_yaml )
-
-        result = {}
+        #                            loaded_yaml )
 
         yml_cmor = "".join(cmor_list)
+
+        result = {}
         result.update(
             yaml.load(
                 yml_cmor, Loader = yaml.Loader ))
         #fre_logger.debug(f"   experiment yaml: \n {yml_cmor}")
-
 
         return result
 
@@ -219,8 +220,7 @@ class CMORYaml():
         Clean the yaml; remove unnecessary sections in
         final combined yaml.
         """
-        # Clean the yaml
-        # If keys exists, delete:
+        # Clean the yaml, the key exists, delete
         keys_clean=["name", "platform", "target", # these are needed to create the final parsed dictionary fed to cmor
                     "fre_properties", "directories", "experiments",
                     'build', 'postprocess']

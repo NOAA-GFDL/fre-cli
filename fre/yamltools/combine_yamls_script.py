@@ -3,6 +3,7 @@
 '''
 import os
 import logging
+from pprint import pformat
 
 # this boots yaml with !join- see __init__
 from . import *
@@ -15,7 +16,8 @@ from . import pp_info_parser as ppip
 fre_logger = logging.getLogger(__name__)
 
 ## Functions to combine the yaml files ##
-def get_combined_cmoryaml(CMORYaml, experiment, output = None):
+#def get_combined_cmoryaml(CMORYaml, experiment, output = None):
+def get_combined_cmoryaml(yamlfile, experiment, platform, target, output = None):
     """
     Combine the model, experiment, and cmor yamls
     Arguments:
@@ -23,47 +25,65 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
         output   (optional): string/Path representing target output file to write yamlfile to
     """
 
+    # Instantiate a CMORYaml instance.
+    try:
+        fre_logger.info('calling cmor_info_parser.CMORYaml to initialize a CMORYaml instance...')
+        CmorYaml = cmip.CMORYaml( yamlfile, experiment, platform, target )
+        fre_logger.debug('...CmorYaml =\n %s...',pformat(CmorYaml))
+        fre_logger.info('...CmorYaml instance initialized...')
+    except Exception as exc:
+        raise Exception(f'cmor_info_parser.CMORYaml() initialization failed for some reason.\n exc =\n {exc}') from exc
+        #print(CmorYaml)
+        #assert False
+
+
     # Merge model into combined file
     try:
-        fre_logger.info('\n\ncalling CMORYaml.combine_model() for yaml_content and loaded_yaml...')
-        yaml_content, loaded_yaml = CMORYaml.combine_model()
-        #fre_logger.info(f'loaded_yaml = \n {loaded_yaml}')
-        #fre_logger.info(f'yaml_content = \n {yaml_content}')
-        fre_logger.info('\n... CMORYaml.combine_model succeeded.\n')
+        fre_logger.info('calling CmorYaml.combine_model() for yaml_content and loaded_yaml...')
+        yaml_content, loaded_yaml = CmorYaml.combine_model()
+        #fre_logger.debug('yaml_content = \n %s', pformat(yaml_content))
+        fre_logger.info('... CmorYaml.combine_model succeeded.\n')
     except Exception as exc:
-        raise ValueError("CMORYaml.combine_model failed") from exc
+        raise Exception(f"CmorYaml.combine_model failed for some reason.\n exc =\n {exc}") from exc
+
 
     # Merge cmor experiment yamls into combined file, calls experiment_check
     try:
-        fre_logger.info('\n\ncalling CMORYaml.combine_experiment(), for comb_cmor_updated_list \n'
+        fre_logger.info('calling CmorYaml.combine_experiment(), for comb_cmor_updated_list '
                         'using args yaml_content and loaded_yaml...')
-        comb_cmor_updated_list = CMORYaml.combine_experiment( yaml_content,
+        comb_cmor_updated_list = CmorYaml.combine_experiment( yaml_content,
                                                               loaded_yaml   )
-        #fre_logger.info(f'comb_cmor_updated_list = ... \n ')#\n {comb_cmor_updated_list}')
-        #import pprint
-        #pprint.PrettyPrinter(indent=1).pprint(comb_cmor_updated_list)
-        fre_logger.info('\n... CMORYaml.combine_experiment succeeded.\n')
+        #fre_logger.debug('comb_cmor_updated_list = \n %s', pformat(comb_cmor_updated_list) )
+        fre_logger.info('... CmorYaml.combine_experiment succeeded.\n')
     except Exception as exc:
-        raise ValueError("CMORYaml.combine_experiment failed") from exc
-
+        raise Exception(f"CmorYaml.combine_experiment failed for some reason.\n exc =\n {exc}") from exc
 
     # Merge model/cmor yamls if more than 1 is defined
     # (without overwriting the yaml)
     try:
-        fre_logger.info('\ncalling CMORYaml.merge_cmor_yaml(), for full_cmor_yaml.\n'
+        fre_logger.info('\ncalling CmorYaml.merge_cmor_yaml(), for full_cmor_yaml.\n'
                         'using args comb_cmor_updated_list and loaded_yaml...')
-        full_cmor_yaml = CMORYaml.merge_cmor_yaml( comb_cmor_updated_list,
-                                                   loaded_yaml                 )
-        #fre_logger.info(f'full_cmor_yaml = \n ')
-        #import pprint
-        #pprint.PrettyPrinter(indent=1).pprint(full_cmor_yaml)
-        fre_logger.info('\n... CMORYaml.merge_cmor_yaml succeeded\n')
+        full_cmor_yaml = CmorYaml.merge_cmor_yaml( comb_cmor_updated_list, loaded_yaml )
+        #fre_logger.debug('full_cmor_yaml = %s ', pformat(full_cmor_yaml) )
+        fre_logger.info('... CmorYaml.merge_cmor_yaml succeeded\n')
     except Exception as exc:
-        raise ValueError("CMORYaml.merge_cmor_yaml failed") from exc
+        raise Exception(f"CmorYaml.merge_cmor_yaml failed for some reason.\n exc =\n {exc}") from exc
+
+
+    #    assert False
+
+
+
+
+
 
     # Clean the yaml
-    cleaned_yaml = CMORYaml.clean_yaml( full_cmor_yaml )
+    cleaned_yaml = CmorYaml.clean_yaml( full_cmor_yaml )
     fre_logger.info("Combined cmor-yaml information cleaned+saved as dictionary")
+    fre_logger.debug("cleaned_yaml = \n %s", pformat(cleaned_yaml))
+
+    
+    #assert False
 
     # OUTPUT IF NEEDED
     if output is not None:
@@ -174,17 +194,12 @@ def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
             yml_dict = get_combined_ppyaml(combined, output)
             fre_logger.info("Combined yaml file located here: %s", output)
 
-    elif use == "cmor":
-        fre_logger.info('initializing a CMORYaml instance...')
-        CmorYaml = cmip.CMORYaml( yamlfile, experiment, platform, target )
-        fre_logger.info('...CMORYaml instance initialized')
-        #print(CmorYaml)
-        #assert False
-
+    elif use == "cmor":        
+        # call routines that create a dictionary of arguments to be fed to cmor_yamler from the target yamlfile
+        # and the e/p/t args
         fre_logger.info('attempting to combine cmor yaml info with info from other yamls...')
-        yml_dict = get_combined_cmoryaml( CmorYaml, experiment, output )
+        yml_dict = get_combined_cmoryaml( yamlfile, experiment, platform, target, output )
         fre_logger.info('... done attempting to combine cmor yaml info')
-
     else:
         raise ValueError("'use' value is not valid; must be 'compile' or 'pp'")
 
