@@ -14,42 +14,42 @@ def app_cli():
 
 @app_cli.command()
 @click.option("-i", "--input_dir",
-              type = str,
+              type = str, default = None,
               help = "`inputDir` / `input_dir` (env var) specifies input directory to regrid, " + \
                      "typically an untarredv history file archive" ,
               required = True)
 @click.option("-o", "--output_dir",
-              type = str,
+              type = str, default = None,
               help = "`outputDir` / `output_dir` (env var) specifies target location for output" + \
                      " regridded files",
               required = True)
 @click.option("-b", "--begin",
-              type = str,
+              type = str, default = None,
               help = "`begin` / `begin` (env var) ISO8601 datetime format specification for" + \
                      " starting date of data, part of input target file name",
               required = True)
 @click.option("-tmp", "--tmp_dir",
-              type = str,
+              type = str, default = None,
               help = "`TMPDIR` / `tmp_dir` (env var) temp directory for location of file " + \
                      "read/writes",
               required = True)
 @click.option("-rd", "--remap_dir",
-              type = str,
+              type = str, default = None,
               help = "`fregridRemapDir` / `remap_dir` (env var) directory containing remap file" + \
                      " for regridding",
               required = True)
 @click.option("-s", "--source",
-              type = str,
+              type = str, default = None,
               help = "`source` / `source` (env var) source name for input target file name " + \
                      "within input directory to target for regridding. the value for `source` " + \
                      "must be present in at least one component's configuration fields",
               required = True)
 @click.option("-g", "--grid_spec",
-              type = str,
+              type = str, default = None,
               help = "`gridSpec` / `grid_spec` (env var) file containing mosaic for regridding",
               required = True)
 @click.option("--rose_config",
-              type = str,
+              type = str, default = None,
               help = "Path to Rose app configuration (to be removed soon)",
               required = True)
 def regrid( input_dir, output_dir, begin, tmp_dir,
