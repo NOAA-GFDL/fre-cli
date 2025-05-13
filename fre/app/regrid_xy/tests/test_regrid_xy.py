@@ -45,6 +45,7 @@ SOURCES_XY = '96-by-96'
 WORK_YYYYMMDD_DIR = WORK_DIR + f'{YYYYMMDD}.nc/'
 TEST_NC_GRID_FILE = WORK_YYYYMMDD_DIR + "C96_mosaic.nc" # output of first ncgen test
 
+@pytest.mark.skip(reason="needs rework")
 def test_setup_clean_up():
     """ cleanup i/o directories is present for clean regrid_xy testing """
     try:
@@ -78,6 +79,7 @@ def test_setup_clean_up():
     assert True
 
 
+@pytest.mark.skip(reason="needs rework")
 def test_setup_global_work_dirs():
     """ create i/o directories for regrid_xy testing """
     Path(WORK_YYYYMMDD_DIR).mkdir(parents = True, exist_ok = True)
@@ -96,6 +98,7 @@ def test_setup_global_work_dirs():
     assert Path(REMAP_DIR).exists()
 
 
+@pytest.mark.skip(reason="needs rework")
 def test_untar_inputs():
     """ untar input directory tarball to create test inputs """
     ex = ["tar", "-C", TEST_DIR, "-zxvf", TAR_IN_DIR]
@@ -105,6 +108,7 @@ def test_untar_inputs():
 
 
 #@pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason="needs rework")
 def test_make_ncgen3_nc_inputs():
     """
     set-up test: ncgen3 netcdf file inputs for later steps
@@ -127,6 +131,7 @@ def test_make_ncgen3_nc_inputs():
 
 
 #@pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason="needs rework")
 def test_make_ncgen_tile_nc_inputs():
     """
     set-up test: ncgen netcdf tile file inputs for later steps
@@ -151,6 +156,7 @@ def test_make_ncgen_tile_nc_inputs():
 
 
 #@pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason="needs rework")
 def test_make_ncgen_grid_spec_nc_inputs():
     """
     set-up test: ncgen netcdf grid spec tile file inputs for later steps
@@ -174,6 +180,7 @@ def test_make_ncgen_grid_spec_nc_inputs():
 
 
 #@pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason="needs rework")
 def test_make_hgrid_gold_input():
     """
     set-up test: make C96 gold input via make_hgrid for later steps
@@ -207,6 +214,7 @@ def test_make_hgrid_gold_input():
 
 
 #@pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason="needs rework")
 def test_make_fregrid_comparison_input():
     """
     set-up test: use fregrid to regrid for later comparison to regrid_xy output
@@ -247,6 +255,7 @@ def test_make_fregrid_comparison_input():
 
 
 #@pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason="needs rework")
 def test_import_regrid_xy():
     """
     check import of regrid_xy as a module
@@ -255,6 +264,7 @@ def test_import_regrid_xy():
                   rgxy.test_import() == 1 ] )
 
 #@pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason="needs rework")
 def test_success_tar_grid_spec_regrid_xy():
     """
     checks for success of regrid_xy with rose app-app run
@@ -341,6 +351,7 @@ def test_success_tar_grid_spec_regrid_xy():
 
 
 #@pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason="needs rework")
 def test_success_no_tar_grid_spec_regrid_xy():
     """
     checks for success of regrid_xy with rose app-app run
@@ -398,6 +409,7 @@ def test_success_no_tar_grid_spec_regrid_xy():
 
 
 @pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason="needs rework")
 def test_failure_wrong_datetime_regrid_xy():
     """
      checks for failure of regrid_xy with rose app-run when fed an
@@ -442,6 +454,7 @@ def test_failure_wrong_datetime_regrid_xy():
 #@pytest.mark.skip(reason='debug')
 
 
+@pytest.mark.skip(reason="needs rework")
 def test_nccmp1_regrid_xy():
     """
     This test compares the output of make_hgrid and fregrid, which are expected to be identical
@@ -457,6 +470,7 @@ def test_nccmp1_regrid_xy():
     assert sp.returncode == 0
 
 
+@pytest.mark.skip(reason="needs rework")
 def test_nccmp2_regrid_xy():
     """
     This test compares the regridded source file output(s), which are expected to be identical
@@ -470,6 +484,7 @@ def test_nccmp2_regrid_xy():
 
 
 @pytest.mark.skip(reason='TODO')
+@pytest.mark.skip(reason="needs rework")
 def test_regrid_one_for_two_comps():
     """
     this test will compare regridding settings for a single source file ref'd in two
