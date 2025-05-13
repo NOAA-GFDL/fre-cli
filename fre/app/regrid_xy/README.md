@@ -1,3 +1,5 @@
+# WARNING: OUT OF DATE
+
 # ABOUT
 
 `regrid_xy.py` remaps scalar and/or vector fields from one kind of lat/lon grid to another.  It can remap between different grids of the same type (e.g. spherical), and between grids of different types (e.g. spherical to tripolar). By default, it uses an O(1) conservative interpolation scheme to accomplish the regridding, except under certain conditions [defined within `fregrid`](https://github.com/NOAA-GFDL/FRE-NCtools/blob/master/tools/fregrid/fregrid.c#L915-L920) the underlying CLI tool which does the heavy lifting.

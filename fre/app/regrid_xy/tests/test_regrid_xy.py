@@ -8,6 +8,7 @@ import pytest
 import fre.app.regrid_xy.regrid_xy as rgxy
 
 # directories for tests
+CWD = os.getcwd() # this should be the base repo directory (aka proj directory)
 TEST_DIR = os.getcwd() + "/fre/app/regrid_xy/tests/test_inputs_outputs/"
 
 TAR_IN_DIR = TEST_DIR + 'input_directory.tar.gz' #contains in-dir
@@ -73,6 +74,7 @@ def test_setup_clean_up():
     except OSError:
         pass
     assert True
+    assert os.getcwd() == CWD
 
 def test_setup_global_work_dirs():
     """ create i/o directories for regrid_xy testing """
@@ -90,6 +92,7 @@ def test_setup_global_work_dirs():
 
     Path(REMAP_DIR).mkdir(exist_ok = True)
     assert Path(REMAP_DIR).exists()
+    assert os.getcwd() == CWD
 
 
 def test_untar_inputs():
@@ -98,6 +101,7 @@ def test_untar_inputs():
     sp = subprocess.run( ex , check = True )
     assert all ( [ sp.returncode == 0,
                    Path(IN_DIR).exists() ] )
+    assert os.getcwd() == CWD
 
 
 #@pytest.mark.skip(reason='debug')
@@ -120,6 +124,7 @@ def test_make_ncgen3_nc_inputs():
 
         assert all( [ sp.returncode == 0,
                       Path(ncgen3_output).exists() ] )
+    assert os.getcwd() == CWD
 
 
 #@pytest.mark.skip(reason='debug')
@@ -144,6 +149,7 @@ def test_make_ncgen_tile_nc_inputs():
 
             assert all( [sp.returncode == 0,
                          Path(ncgen_tile_i_nc_output).exists()] )
+    assert os.getcwd() == CWD
 
 
 #@pytest.mark.skip(reason='debug')
@@ -167,6 +173,7 @@ def test_make_ncgen_grid_spec_nc_inputs():
 
             assert all( [sp.returncode == 0,
                          Path(ncgen_grid_spec_i_nc_output).exists()] )
+    assert os.getcwd() == CWD
 
 
 #@pytest.mark.skip(reason='debug')
@@ -200,6 +207,7 @@ def test_make_hgrid_gold_input():
 
             assert all( [sp.returncode == 0,
                          Path(grid_i_file_targ_loc).exists()] )
+    assert os.getcwd() == CWD
 
 
 #@pytest.mark.skip(reason='debug')
@@ -240,7 +248,7 @@ def test_make_fregrid_comparison_input():
     assert all( [ sp.returncode == 0,
                   Path(fregrid_remap_file_arg).exists(),
                   Path(fregrid_output_file_arg).exists() ] )
-
+    assert os.getcwd() == CWD
 
 #@pytest.mark.skip(reason='debug')
 def test_import_regrid_xy():
@@ -249,6 +257,8 @@ def test_import_regrid_xy():
     """
     assert all( [ rgxy is not None,
                   rgxy.test_import() == 1 ] )
+    assert os.getcwd() == CWD
+
 
 #@pytest.mark.skip(reason='debug')
 def test_success_tar_grid_spec_regrid_xy(monkeypatch):
@@ -337,7 +347,7 @@ def test_success_tar_grid_spec_regrid_xy(monkeypatch):
         assert Path( WORK_DIR + 'ocean_static.nc' ).exists()
         assert Path( WORK_DIR + 'ocean_topog.nc' ).exists()
     assert True
-
+    assert os.getcwd() == CWD
 
 
 
@@ -399,7 +409,7 @@ def test_success_no_tar_grid_spec_regrid_xy(monkeypatch):
     assert Path( WORK_DIR + 'C96_grid.tile6.nc' ).exists()
     assert Path( WORK_DIR + 'C96_mosaic.nc' ).exists()
     assert Path( WORK_DIR + 'mosaic.nc' ).exists()
-
+    assert os.getcwd() == CWD
 
 
 
@@ -446,7 +456,7 @@ def test_failure_wrong_datetime_regrid_xy(monkeypatch):
     except:
         # yay good job
         assert True
-
+    assert os.getcwd() == CWD
 
 
 
@@ -466,7 +476,7 @@ def test_nccmp1_regrid_xy():
     print (' '.join(nccmp))
     sp = subprocess.run( nccmp, check = True)
     assert sp.returncode == 0
-
+    assert os.getcwd() == CWD
 
 def test_nccmp2_regrid_xy():
     """
@@ -478,7 +488,7 @@ def test_nccmp2_regrid_xy():
     print (' '.join(nccmp))
     sp = subprocess.run( nccmp, check = True)
     assert sp.returncode == 0
-
+    assert os.getcwd() == CWD
 
 @pytest.mark.skip(reason='TODO')
 def test_regrid_one_for_two_comps():
@@ -488,3 +498,4 @@ def test_regrid_one_for_two_comps():
     and only once if the settings are the same.
     """
     assert False
+    assert os.getcwd() == CWD

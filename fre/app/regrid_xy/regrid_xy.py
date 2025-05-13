@@ -160,8 +160,8 @@ def make_regrid_var_list(target_file, interp_method = None):
     return regrid_vars
 
 
-def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
-              grid_spec, rose_config):
+def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
+              remap_dir = None, source = None, grid_spec = None, rose_config = None):
     """
     calls fre-nctools' fregrid to regrid netcdf files
     """
