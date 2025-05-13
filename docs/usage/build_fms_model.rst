@@ -47,14 +47,14 @@ Guide
 
 2. Container Build:
 
-For the container build, parallel checkouts are not supported, so the `-npc` options must be used for the checkout script. In addition the platform must be a container platform.
+For the container build, parallel checkouts are not supported. In addition the platform must be a container platform.
 
 Gaea users will not be able to create containers unless they have requested and been given podman access.
 
 .. code-block::
 
   # Create checkout script
-  fre make checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
+  fre make checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
 
   # Create and run checkout script
   fre make checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
@@ -112,15 +112,15 @@ The quickstart instructions can be used with the null model example located in t
 
 3. Container Build:
 
-In order for the container to build successfully, a `-npc`, or `--no-parallel-checkout` is needed.
+In order for the container to build successfully, the parallel checkout feature is disabled.
 
 .. code-block::
 
   # Create checkout script
-  fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod -npc
+  fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod
 
   # Create and run checkout script
-  fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod -npc --execute
+  fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod --execute
 
   # Create Makefile
   fre make makefile -y null_model.yaml -p hpcme.2023 -t prod
@@ -144,7 +144,7 @@ In order for the container to build successfully, a `-npc`, or `--no-parallel-ch
   fre make all -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
   # Container: create checkout script, makefile, and dockerfile
-  fre make all -y null_model.yaml -p hpcme.2023 -t prod -npc
+  fre make all -y null_model.yaml -p hpcme.2023 -t prod
 
   # Container: create checkout script, makefile, create and run dockerfile to build container
-  fre make all -y null_model.yaml -p hpcme.2023 -t prod -npc --execute
+  fre make all -y null_model.yaml -p hpcme.2023 -t prod --execute
