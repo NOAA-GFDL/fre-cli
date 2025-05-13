@@ -3,6 +3,7 @@
 import os
 import subprocess
 from pathlib import Path
+import pytest
 
 import click
 from click.testing import CliRunner
