@@ -2,6 +2,7 @@
 from pathlib import Path
 import subprocess
 import os
+import shutil
 
 import pytest
 
@@ -45,35 +46,20 @@ TEST_NC_GRID_FILE = WORK_YYYYMMDD_DIR + "C96_mosaic.nc" # output of first ncgen 
 
 def test_setup_clean_up():
     """ cleanup i/o directories is present for clean regrid_xy testing """
-    try:
-        Path(IN_DIR).unlink()
-    except OSError:
-        pass
-    try:
+    if Path(IN_DIR).exists():
+        shutil.rmtree(IN_DIR)
+    if Path(TEST_NC_GRID_FILE).exists():
         Path(TEST_NC_GRID_FILE).unlink()
-    except OSError:
-        pass
-    try:
-        Path(WORK_DIR).unlink()
-    except OSError:
-        pass
-    try:
-        Path(TEST_OUT_DIR).unlink()
-    except OSError:
-        pass
-    try:
-        Path(ALL_TEST_OUT_DIR).unlink()
-    except OSError:
-        pass
-    try:
-        Path(REMAP_DIR).unlink()
-    except OSError:
-        pass
-    try:
-        Path(REMAP_TEST_DIR).unlink()
-    except OSError:
-        pass
-    assert True
+    if Path(WORK_DIR).exists():
+        shutil.rmtree(WORK_DIR)
+    if Path(TEST_OUT_DIR).exists():
+        shutil.rmtree(TEST_OUT_DIR)
+    if Path(ALL_TEST_OUT_DIR).exists():
+        shutil.rmtree(ALL_TEST_OUT_DIR)
+    if Path(REMAP_DIR).exists():
+        shutil.rmtree(REMAP_DIR)
+    if Path(REMAP_TEST_DIR).exists():
+        shutil.rmtree(REMAP_TEST_DIR)
     assert os.getcwd() == CWD
 
 
@@ -115,16 +101,16 @@ def test_make_ncgen3_nc_inputs():
     ncgen3_output = TEST_NC_GRID_FILE
     ncgen3_input = TEST_CDL_GRID_FILE
     if Path(ncgen3_output).exists():
-        assert True
-    else:
-        assert Path(TEST_DIR).exists()
-        assert Path(ncgen3_input).exists()
-        ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen3_output , ncgen3_input ]
-        print (' '.join(ex))
-        sp = subprocess.run( ex , check = True )
-
-        assert all( [ sp.returncode == 0,
-                      Path(ncgen3_output).exists() ] )
+        Path(ncgen3_output).unlink()
+    
+    assert Path(TEST_DIR).exists()
+    assert Path(ncgen3_input).exists()
+    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen3_output , ncgen3_input ]
+    print (' '.join(ex))
+    sp = subprocess.run( ex , check = True )
+    
+    assert all( [ sp.returncode == 0,
+                  Path(ncgen3_output).exists() ] )
     assert os.getcwd() == CWD
 
 
@@ -261,14 +247,14 @@ def test_import_regrid_xy():
     assert os.getcwd() == CWD
 
 
-#@pytest.mark.skip(reason='debug')
+@pytest.mark.skip(reason='sometimes i cover up mistakes of the next test. if mysterious failures, skip me to debug!')
 def test_success_tar_grid_spec_regrid_xy():
     """
     checks for success of regrid_xy with rose app-app run
     """
     # this will only work at GFDL for now.
     if not Path(GOLD_GRID_SPEC).exists():
-        assert True
+        pytest.xfail('I require /archive at GFDL to succeed because i required a GOLD_GRID_SPEC located there')
     else:
         # for the time being, still a little dependent on rose for configuration value passing
         if Path(os.getcwd()+'/rose-app-run.conf').exists():
@@ -279,7 +265,7 @@ def test_success_tar_grid_spec_regrid_xy():
             rose_app_run_config.write(  'default=regrid-xy\n'            )
             rose_app_run_config.write(  '\n'                             )
             rose_app_run_config.write( f'[{COMPONENT}]\n'                )
-            rose_app_run_config.write( f"sources=['{SOURCE}']\n"             )
+            rose_app_run_config.write( f"sources=['{SOURCE}']\n"         )
             rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
             rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
             rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
@@ -303,10 +289,9 @@ def test_success_tar_grid_spec_regrid_xy():
         assert rgxy_returncode == 0
         assert Path( REMAP_DIR + \
                      f'{INPUT_GRID}/{INPUT_REALM}/96-by-96/{INTERP_METHOD}/' + \
-                     f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' \
-        ).exists()
+                     f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' ).exists()
         assert Path( TEST_OUT_DIR ).exists()
-        assert Path( TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
+        assert Path( TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc'  ).exists()
         assert Path( WORK_DIR ).exists()
         assert Path( WORK_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
         assert Path( WORK_DIR + 'basin_codes.nc' ).exists()
@@ -342,7 +327,7 @@ def test_success_tar_grid_spec_regrid_xy():
         assert Path( WORK_DIR + 'ocean_mosaic.nc' ).exists()
         assert Path( WORK_DIR + 'ocean_static.nc' ).exists()
         assert Path( WORK_DIR + 'ocean_topog.nc' ).exists()
-    assert True
+
     assert os.getcwd() == CWD
 
 
@@ -447,8 +432,6 @@ def test_failure_wrong_datetime_regrid_xy():
 
 
 #@pytest.mark.skip(reason='debug')
-
-
 def test_nccmp1_regrid_xy():
     """
     This test compares the output of make_hgrid and fregrid, which are expected to be identical
