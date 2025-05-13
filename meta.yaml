@@ -29,7 +29,7 @@ requirements:
     - noaa-gfdl::analysis_scripts
     - noaa-gfdl::catalogbuilder
     - noaa-gfdl::fre-nctools
-    - conda-forge::click
+    - conda-forge::click<8.2
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
     - conda-forge::cmor>=3.10.0
