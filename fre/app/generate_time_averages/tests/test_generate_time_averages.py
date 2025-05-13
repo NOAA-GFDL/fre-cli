@@ -402,9 +402,10 @@ def test_fre_cli_app_gen_time_avg_cleanup():
     ''' Removes all .nc files in fre/app/generate_time_averages/tests/test_data/ '''
     nc_files = [os.path.join(time_avg_file_dir, el) for el in os.listdir(time_avg_file_dir)
                  if el.endswith(".nc")]
+    nc_files = [pl.Path(el) for el in nc_files]
     for nc in nc_files:
-        pl.Path.unlink(pl.Path(nc))
-    nc_remove = [not pl.Path.exists(pl.Path(el)) for el in nc_files]
+        pl.Path.unlink(nc)
+    nc_remove = [not pl.Path.exists(el) for el in nc_files]
     assert all(nc_remove)
 
 '''

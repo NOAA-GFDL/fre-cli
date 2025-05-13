@@ -95,8 +95,7 @@ def test_run_fremake_cleanup():
     dirstrings = ["test_run_fremake_multijob", "test_run_fremake_serial", "test_run_fremake_multitarget"]
     test_paths = [f"fre/make/tests/{el}/" for el in dirstrings]
     for tp in test_paths:
-        print(tp)
         rmtree(tp)
-    tp_remove = [not Path.exists(Path(el)) for el in test_paths]
+    tp_remove = [not Path(el).exists() for el in test_paths]
     assert all(tp_remove)
     
