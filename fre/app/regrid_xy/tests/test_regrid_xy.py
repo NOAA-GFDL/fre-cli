@@ -266,9 +266,7 @@ def test_success_tar_grid_spec_regrid_xy(monkeypatch):
     checks for success of regrid_xy with rose app-app run
     """
     # Set output dir for just this test
-    monkeypatch.setenv('input_dir', WORK_YYYYMMDD_DIR)
     monkeypatch.setenv('output_dir', TEST_OUT_DIR)
-    monkeypatch.setenv('tmp_dir', TEST_DIR)
 
     # this will only work at GFDL for now.
     if not Path(GOLD_GRID_SPEC).exists():
@@ -293,10 +291,10 @@ def test_success_tar_grid_spec_regrid_xy(monkeypatch):
         assert Path('./rose-app-run.conf').exists()
 
         rgxy_returncode = rgxy.regrid_xy(
-            input_dir = os.environ['input_dir'],
+            input_dir = WORK_YYYYMMDD_DIR,
             output_dir = os.environ['output_dir'], #TEST_OUT_DIR,
             begin = f'{YYYYMMDD}T000000',
-            tmp_dir = os.environ['tmp_dir'],
+            tmp_dir = TEST_DIR,
             remap_dir = REMAP_DIR,
             source = SOURCE,
             grid_spec = GOLD_GRID_SPEC,
@@ -357,9 +355,7 @@ def test_success_no_tar_grid_spec_regrid_xy(monkeypatch):
     checks for success of regrid_xy with rose app-app run
     """
     # Set output dir for just this test
-    monkeypatch.setenv('input_dir', WORK_YYYYMMDD_DIR)
     monkeypatch.setenv('output_dir', TEST_OUT_DIR)
-    monkeypatch.setenv('tmp_dir', TEST_DIR)
 
     # for the time being, still a little dependent on rose for configuration value passing
     if Path(os.getcwd()+'/rose-app-run.conf').exists():
@@ -380,10 +376,10 @@ def test_success_no_tar_grid_spec_regrid_xy(monkeypatch):
     assert Path('./rose-app-run.conf').exists()
 
     rgxy_returncode = rgxy.regrid_xy(
-        input_dir = os.environ['input_dir'],
+        input_dir = WORK_YYYYMMDD_DIR,
         output_dir = os.environ['output_dir'], #TEST_OUT_DIR,
         begin = f'{YYYYMMDD}T000000',
-        tmp_dir = os.environ['tmp_dir'],
+        tmp_dir = TEST_DIR,
         remap_dir = REMAP_DIR,
         source = SOURCE,
         grid_spec = GOLD_GRID_SPEC_NO_TAR,
@@ -420,9 +416,7 @@ def test_failure_wrong_datetime_regrid_xy(monkeypatch):
     invalid date for begin
     """
     # Set output dir for just this test
-    monkeypatch.setenv('input_dir', WORK_YYYYMMDD_DIR)
     monkeypatch.setenv('output_dir', TEST_OUT_DIR)
-    monkeypatch.setenv('tmp_dir', TEST_DIR)
 
     # for the time being, still a little dependent on rose for configuration value passing
     if Path(os.getcwd()+'/rose-app-run.conf').exists():
@@ -444,10 +438,10 @@ def test_failure_wrong_datetime_regrid_xy(monkeypatch):
 
     try:
         rgxy_returncode = rgxy.regrid_xy(
-            input_dir = os.environ[input_dir],
-            output_dir = os.environ['output_dir'],
+            input_dir = WORK_YYYYMMDD_DIR,
+            output_dir = os.environ['output_dir'], #TEST_OUT_DIR,
             begin = '99999999T999999',
-            tmp_dir = os.environ['tmp_dir'],
+            tmp_dir = TEST_DIR,
             remap_dir = REMAP_DIR,
             source = SOURCE,
             grid_spec = GOLD_GRID_SPEC,
