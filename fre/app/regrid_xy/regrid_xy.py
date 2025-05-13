@@ -69,6 +69,8 @@ def safe_rose_config_get(config, section, field):
 
 def get_mosaic_file_name(grid_spec_file, mosaic_type):
     """read string from a numpy masked array WHY"""
+    fre_logger.debug('grid_spec_file = %s', grid_spec_file)
+    fre_logger.debug('mosaic_type = %s', mosaic_type)
     grid_spec_nc = Dataset(grid_spec_file, 'r')
     masked_data = grid_spec_nc[mosaic_type][:].copy() # maskedArray
     grid_spec_nc.close()
@@ -79,6 +81,7 @@ def get_mosaic_file_name(grid_spec_file, mosaic_type):
 
 def get_mosaic_grid_file_name(input_mosaic):
     """get mosaic grid file name from NESTED numpy masked array WHY"""
+    fre_logger.debug('input_mosaic = %s',input_mosaic)
     input_mosaic_nc = Dataset(input_mosaic,'r')
     masked_data = input_mosaic_nc['gridfiles'][0].copy()
     input_mosaic_nc.close()
@@ -159,7 +162,6 @@ def make_regrid_var_list(target_file, interp_method = None):
     fin.close()
     return regrid_vars
 
-
 def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
               remap_dir = None, source = None, grid_spec = None, rose_config = None):
     """
@@ -173,8 +175,14 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
                  grid_spec , rose_config ]:
         raise Exception(f'a mandatory input argument is not present in {config_name})')
 
+    input_dir = os.path.abspath(input_dir)
+    output_dir = os.path.abspath(output_dir)
+    tmp_dir = os.path.abspath(tmp_dir)
+    remap_dir = os.path.abspath(remap_dir)
+    grid_spec = os.path.abspath(grid_spec)
+    rose_config = os.path.abspath(rose_config)
     fre_logger.info(
-         f'\ninput_dir         = { input_dir        }\n' + \
+           f'\ninput_dir         = { input_dir        }\n' + \
            f'output_dir        = { output_dir       }\n' + \
            f'begin             = { begin            }\n' + \
            f'tmp_dir           = { tmp_dir          }\n' + \
@@ -201,7 +209,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
                         f'output_dir=\n{output_dir}')
 
     # work/ dir check
-    work_dir = tmp_dir + 'work/'
+    work_dir = tmp_dir + '/work/'
     Path( work_dir ).mkdir( exist_ok = True )
     if not Path( work_dir ).exists():
         raise OSError('the following does not exist and/or could not be created:' +
@@ -214,19 +222,29 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
 
     # grid_spec file management
     starting_dir = os.getcwd()
-    os.chdir(work_dir)
+    #    os.chdir(work_dir)
     if '.tar' in grid_spec:
         untar_sp = \
-            subprocess.run( ['tar', '-xvf', grid_spec], check = True , capture_output = True)
-        if Path( 'mosaic.nc' ).exists():
-            grid_spec_file='mosaic.nc'
-        elif Path( 'grid_spec.nc' ).exists():
-            grid_spec_file='grid_spec.nc'
+            subprocess.run( ['tar', '-xvf', grid_spec, '-C', work_dir],
+                            check = False , capture_output = True        )
+        if untar_sp.returncode != 0:
+            raise OSError(
+                f'untarring of {grid_spec} file failed, ' + \
+                f'ret_code={untar_sp.returncode}, stderr={untar_sp.stderr}')
+        if Path( work_dir+'mosaic.nc' ).exists():
+            grid_spec_file=work_dir+'mosaic.nc'
+        elif Path( work_dir+'grid_spec.nc' ).exists():
+            grid_spec_file=work_dir+'grid_spec.nc'            
+#            subprocess.run( ['tar', '-xvf', grid_spec], check = True , capture_output = True)
+#        if Path( 'mosaic.nc' ).exists():
+#            grid_spec_file='mosaic.nc'
+#        elif Path( 'grid_spec.nc' ).exists():
+#            grid_spec_file='grid_spec.nc'
         else:
             raise ValueError(f'grid_spec_file cannot be determined from grid_spec={grid_spec}')
     else:
         try:
-            grid_spec_file=grid_spec.split('/').pop()
+            grid_spec_file=work_dir+grid_spec.split('/').pop()
             shutil.copy(grid_spec, grid_spec_file )
         except Exception as exc:
             raise OSError(f'grid_spec={grid_spec} could not be copied.') \
@@ -307,11 +325,12 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         fre_logger.info(f'mosaic_type = {mosaic_type}')
 
         # this is just to get the grid_file name
+        fre_logger.info(f'CALLING get_mosaic_file_name') 
         input_mosaic = get_mosaic_file_name(grid_spec_file, mosaic_type)
-        fre_logger.info(f'grid_spec_file = {grid_spec_file}')
         fre_logger.info(f'input_mosaic = {input_mosaic}') #DELETE
 
         ## this is to get the tile1 filename?
+        fre_logger.info(f'CALLING get_mosaic_grid_file_name') 
         mosaic_grid_file = get_mosaic_grid_file_name(input_mosaic)
         fre_logger.info(f'mosaic_grid_file = {mosaic_grid_file}') #DELETE
 
@@ -413,7 +432,7 @@ def regrid_xy(input_dir = None, output_dir = None, begin = None, tmp_dir = None,
         fre_logger.info(f'TRYING TO COPY {output_file} TO {final_output_dir}')
         shutil.copy(output_file, final_output_dir)
 
-    os.chdir(starting_dir) # not clear this is necessary.
+#    os.chdir(starting_dir) # not clear this is necessary.
     fre_logger.info('done running regrid_xy()')
     return 0
 

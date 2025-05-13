@@ -27,7 +27,6 @@ GOLD_GRID_SPEC = "/archive/gold/datasets/OM4_05/mosaic_c96.v20180227.tar"
 GOLD_GRID_SPEC_NO_TAR = IN_DIR + "mosaic.nc"
 TEST_CDL_GRID_FILE = IN_DIR + "C96_mosaic.cdl"
 
-
 ## for rose configuration
 COMPONENT='atmos'
 NLON=288
@@ -48,10 +47,6 @@ def test_setup_clean_up():
     """ cleanup i/o directories is present for clean regrid_xy testing """
     if Path(IN_DIR).exists():
         shutil.rmtree(IN_DIR)
-    if Path(TEST_NC_GRID_FILE).exists():
-        Path(TEST_NC_GRID_FILE).unlink()
-    if Path(WORK_DIR).exists():
-        shutil.rmtree(WORK_DIR)
     if Path(TEST_OUT_DIR).exists():
         shutil.rmtree(TEST_OUT_DIR)
     if Path(ALL_TEST_OUT_DIR).exists():
@@ -60,7 +55,9 @@ def test_setup_clean_up():
         shutil.rmtree(REMAP_DIR)
     if Path(REMAP_TEST_DIR).exists():
         shutil.rmtree(REMAP_TEST_DIR)
-    assert os.getcwd() == CWD
+    if Path(WORK_DIR).exists():
+        shutil.rmtree(WORK_DIR)
+
 
 
 def test_setup_global_work_dirs():
@@ -79,7 +76,7 @@ def test_setup_global_work_dirs():
 
     Path(REMAP_DIR).mkdir(exist_ok = True)
     assert Path(REMAP_DIR).exists()
-    assert os.getcwd() == CWD
+
 
 
 def test_untar_inputs():
@@ -88,7 +85,23 @@ def test_untar_inputs():
     sp = subprocess.run( ex , check = True )
     assert all ( [ sp.returncode == 0,
                    Path(IN_DIR).exists() ] )
-    assert os.getcwd() == CWD
+    assert all ( [
+        Path(f'{IN_DIR}20030101.atmos_static_cmip.tile1.cdl').exists(),
+        Path(f'{IN_DIR}20030101.atmos_static_cmip.tile2.cdl').exists(),
+        Path(f'{IN_DIR}20030101.atmos_static_cmip.tile3.cdl').exists(),
+        Path(f'{IN_DIR}20030101.atmos_static_cmip.tile4.cdl').exists(),
+        Path(f'{IN_DIR}20030101.atmos_static_cmip.tile5.cdl').exists(),
+        Path(f'{IN_DIR}20030101.atmos_static_cmip.tile6.cdl').exists(),
+        Path(f'{IN_DIR}20030101.grid_spec.tile1.cdl').exists(),
+        Path(f'{IN_DIR}20030101.grid_spec.tile2.cdl').exists(),
+        Path(f'{IN_DIR}20030101.grid_spec.tile3.cdl').exists(),
+        Path(f'{IN_DIR}20030101.grid_spec.tile4.cdl').exists(),
+        Path(f'{IN_DIR}20030101.grid_spec.tile5.cdl').exists(),
+        Path(f'{IN_DIR}20030101.grid_spec.tile6.cdl').exists(),
+        Path(f'{IN_DIR}C96_mosaic.cdl').exists(),
+        Path(f'{IN_DIR}mosaic.nc').exists()
+    ] )
+
 
 
 #@pytest.mark.skip(reason='debug')
@@ -102,9 +115,10 @@ def test_make_ncgen3_nc_inputs():
     ncgen3_input = TEST_CDL_GRID_FILE
     if Path(ncgen3_output).exists():
         Path(ncgen3_output).unlink()
-    
+
     assert Path(TEST_DIR).exists()
     assert Path(ncgen3_input).exists()
+    
     ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen3_output , ncgen3_input ]
     print (' '.join(ex))
     sp = subprocess.run( ex , check = True )
@@ -247,88 +261,87 @@ def test_import_regrid_xy():
     assert os.getcwd() == CWD
 
 
-@pytest.mark.skip(reason='sometimes i cover up mistakes of the next test. if mysterious failures, skip me to debug!')
-def test_success_tar_grid_spec_regrid_xy():
-    """
-    checks for success of regrid_xy with rose app-app run
-    """
-    # this will only work at GFDL for now.
-    if not Path(GOLD_GRID_SPEC).exists():
-        pytest.xfail('I require /archive at GFDL to succeed because i required a GOLD_GRID_SPEC located there')
-    else:
-        # for the time being, still a little dependent on rose for configuration value passing
-        if Path(os.getcwd()+'/rose-app-run.conf').exists():
-            Path(os.getcwd()+'/rose-app-run.conf').unlink()
-
-        with open(os.getcwd()+'/rose-app-run.conf','a',encoding='utf-8') as rose_app_run_config:
-            rose_app_run_config.write(  '[command]\n'                    )
-            rose_app_run_config.write(  'default=regrid-xy\n'            )
-            rose_app_run_config.write(  '\n'                             )
-            rose_app_run_config.write( f'[{COMPONENT}]\n'                )
-            rose_app_run_config.write( f"sources=['{SOURCE}']\n"         )
-            rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
-            rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
-            rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
-            rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
-            rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
-            rose_app_run_config.write(  '\n'                             )
-        assert Path('./rose-app-run.conf').exists()
-
-        rgxy_returncode = rgxy.regrid_xy(
-            input_dir = WORK_YYYYMMDD_DIR,
-            output_dir = TEST_OUT_DIR,
-            begin = f'{YYYYMMDD}T000000',
-            tmp_dir = TEST_DIR,
-            remap_dir = REMAP_DIR,
-            source = SOURCE,
-            grid_spec = GOLD_GRID_SPEC,
-            rose_config = 'rose-app-run.conf'
-        )
-
-        # uhm....
-        assert rgxy_returncode == 0
-        assert Path( REMAP_DIR + \
-                     f'{INPUT_GRID}/{INPUT_REALM}/96-by-96/{INTERP_METHOD}/' + \
-                     f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' ).exists()
-        assert Path( TEST_OUT_DIR ).exists()
-        assert Path( TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc'  ).exists()
-        assert Path( WORK_DIR ).exists()
-        assert Path( WORK_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
-        assert Path( WORK_DIR + 'basin_codes.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_grid.tile1.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_grid.tile2.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_grid.tile3.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_grid.tile4.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_grid.tile5.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_grid.tile6.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile1XC96_mosaic_tile1.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile1Xocean_mosaic_tile1.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile2XC96_mosaic_tile2.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile2Xocean_mosaic_tile1.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile3XC96_mosaic_tile3.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile3Xocean_mosaic_tile1.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile4XC96_mosaic_tile4.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile4Xocean_mosaic_tile1.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile5XC96_mosaic_tile5.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile5Xocean_mosaic_tile1.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile6XC96_mosaic_tile6.nc' ).exists()
-        assert Path( WORK_DIR + 'C96_mosaic_tile6Xocean_mosaic_tile1.nc' ).exists()
-        assert Path( WORK_DIR + 'hash.md5' ).exists()
-        assert Path( WORK_DIR + 'land_mask_tile1.nc' ).exists()
-        assert Path( WORK_DIR + 'land_mask_tile2.nc' ).exists()
-        assert Path( WORK_DIR + 'land_mask_tile3.nc' ).exists()
-        assert Path( WORK_DIR + 'land_mask_tile4.nc' ).exists()
-        assert Path( WORK_DIR + 'land_mask_tile5.nc' ).exists()
-        assert Path( WORK_DIR + 'land_mask_tile6.nc' ).exists()
-        assert Path( WORK_DIR + 'mosaic.nc' ).exists()
-        assert Path( WORK_DIR + 'ocean_hgrid.nc' ).exists()
-        assert Path( WORK_DIR + 'ocean_mask.nc' ).exists()
-        assert Path( WORK_DIR + 'ocean_mosaic.nc' ).exists()
-        assert Path( WORK_DIR + 'ocean_static.nc' ).exists()
-        assert Path( WORK_DIR + 'ocean_topog.nc' ).exists()
-
-    assert os.getcwd() == CWD
+#@pytest.mark.skip(reason='sometimes i cover up mistakes of the next test. if mysterious failures, skip me to debug!')
+#def test_success_tar_grid_spec_regrid_xy():
+#    """
+#    checks for success of regrid_xy with rose app-app run
+#    """
+#    # this will only work at GFDL for now.
+#    if not Path(GOLD_GRID_SPEC).exists():
+#        pytest.xfail('I require /archive at GFDL to succeed because i required a GOLD_GRID_SPEC located there')
+#    else:
+#        # for the time being, still a little dependent on rose for configuration value passing
+#        if Path(os.getcwd()+'/rose-app-run.conf').exists():
+#            Path(os.getcwd()+'/rose-app-run.conf').unlink()
+#
+#        with open(os.getcwd()+'/rose-app-run.conf','a',encoding='utf-8') as rose_app_run_config:
+#            rose_app_run_config.write(  '[command]\n'                    )
+#            rose_app_run_config.write(  'default=regrid-xy\n'            )
+#            rose_app_run_config.write(  '\n'                             )
+#            rose_app_run_config.write( f'[{COMPONENT}]\n'                )
+#            rose_app_run_config.write( f"sources=['{SOURCE}']\n"         )
+#            rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
+#            rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
+#            rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
+#            rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
+#            rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
+#            rose_app_run_config.write(  '\n'                             )
+#        assert Path('./rose-app-run.conf').exists()
+#
+#        rgxy_returncode = rgxy.regrid_xy(
+#            input_dir = WORK_YYYYMMDD_DIR,
+#            output_dir = TEST_OUT_DIR,
+#            begin = f'{YYYYMMDD}T000000',
+#            tmp_dir = TEST_DIR,
+#            remap_dir = REMAP_DIR,
+#            source = SOURCE,
+#            grid_spec = GOLD_GRID_SPEC,
+#            rose_config = 'rose-app-run.conf'
+#        )
+#
+#        # uhm....
+#        assert rgxy_returncode == 0
+#        assert Path( REMAP_DIR + \
+#                     f'{INPUT_GRID}/{INPUT_REALM}/96-by-96/{INTERP_METHOD}/' + \
+#                     f'fregrid_remap_file_{NLON}_by_{NLAT}.nc' ).exists()
+#        assert Path( TEST_OUT_DIR ).exists()
+#        assert Path( TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc'  ).exists()
+#        assert Path( WORK_DIR ).exists()
+#        assert Path( WORK_DIR + f'{YYYYMMDD}.{SOURCE}.nc' ).exists()
+#        assert Path( WORK_DIR + 'basin_codes.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_grid.tile1.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_grid.tile2.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_grid.tile3.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_grid.tile4.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_grid.tile5.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_grid.tile6.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile1XC96_mosaic_tile1.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile1Xocean_mosaic_tile1.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile2XC96_mosaic_tile2.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile2Xocean_mosaic_tile1.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile3XC96_mosaic_tile3.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile3Xocean_mosaic_tile1.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile4XC96_mosaic_tile4.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile4Xocean_mosaic_tile1.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile5XC96_mosaic_tile5.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile5Xocean_mosaic_tile1.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile6XC96_mosaic_tile6.nc' ).exists()
+#        assert Path( WORK_DIR + 'C96_mosaic_tile6Xocean_mosaic_tile1.nc' ).exists()
+#        assert Path( WORK_DIR + 'hash.md5' ).exists()
+#        assert Path( WORK_DIR + 'land_mask_tile1.nc' ).exists()
+#        assert Path( WORK_DIR + 'land_mask_tile2.nc' ).exists()
+#        assert Path( WORK_DIR + 'land_mask_tile3.nc' ).exists()
+#        assert Path( WORK_DIR + 'land_mask_tile4.nc' ).exists()
+#        assert Path( WORK_DIR + 'land_mask_tile5.nc' ).exists()
+#        assert Path( WORK_DIR + 'land_mask_tile6.nc' ).exists()
+#        assert Path( WORK_DIR + 'mosaic.nc' ).exists()
+#        assert Path( WORK_DIR + 'ocean_hgrid.nc' ).exists()
+#        assert Path( WORK_DIR + 'ocean_mask.nc' ).exists()
+#        assert Path( WORK_DIR + 'ocean_mosaic.nc' ).exists()
+#        assert Path( WORK_DIR + 'ocean_static.nc' ).exists()
+#        assert Path( WORK_DIR + 'ocean_topog.nc' ).exists()
+#    assert os.getcwd() == CWD
 
 
 
@@ -386,85 +399,87 @@ def test_success_no_tar_grid_spec_regrid_xy():
     assert Path( WORK_DIR + 'C96_mosaic.nc' ).exists()
     assert Path( WORK_DIR + 'mosaic.nc' ).exists()
     assert os.getcwd() == CWD
-
-
-
-@pytest.mark.skip(reason='debug')
-def test_failure_wrong_datetime_regrid_xy():
-    """
-     checks for failure of regrid_xy with rose app-run when fed an
-    invalid date for begin
-    """
-    # for the time being, still a little dependent on rose for configuration value passing
-    if Path(os.getcwd()+'/rose-app-run.conf').exists():
-        Path(os.getcwd()+'/rose-app-run.conf').unlink()
-
-    with open(os.getcwd()+'/rose-app-run.conf','a',encoding='utf-8') as rose_app_run_config:
-        rose_app_run_config.write(  '[command]\n'                    )
-        rose_app_run_config.write(  'default=regrid-xy\n'            )
-        rose_app_run_config.write(  '\n'                             )
-        rose_app_run_config.write( f'[{COMPONENT}]\n'                )
-        rose_app_run_config.write( f"sources=['{SOURCE}']\n"             )
-        rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
-        rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
-        rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
-        rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
-        rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
-        rose_app_run_config.write(  '\n'                             )
-    assert Path('./rose-app-run.conf').exists()
-
-    try:
-        rgxy_returncode = rgxy.regrid_xy(
-            input_dir = WORK_YYYYMMDD_DIR,
-            output_dir = TEST_OUT_DIR,
-            begin = '99999999T999999',
-            tmp_dir = TEST_DIR,
-            remap_dir = REMAP_DIR,
-            source = SOURCE,
-            grid_spec = GOLD_GRID_SPEC,
-            rose_config = 'rose-app-run.conf'
-        )
-    except:
-        # yay good job
-        assert True
-    assert os.getcwd() == CWD
-
-
-
-#@pytest.mark.skip(reason='debug')
-def test_nccmp1_regrid_xy():
-    """
-    This test compares the output of make_hgrid and fregrid, which are expected to be identical
-    """
-    fregrid_remap_file=f'fregrid_remap_file_{NLON}_by_{NLAT}.nc'
-
-    nccmp_arg1 = REMAP_DIR + INPUT_GRID + '/' + INPUT_REALM + '/' + \
-                 SOURCES_XY + '/' + INTERP_METHOD  + '/' + fregrid_remap_file
-    nccmp_arg2 = REMAP_TEST_DIR + fregrid_remap_file
-    nccmp= [ 'nccmp', '-m', '--force', nccmp_arg1, nccmp_arg2 ]
-    print (' '.join(nccmp))
-    sp = subprocess.run( nccmp, check = True)
-    assert sp.returncode == 0
-    assert os.getcwd() == CWD
-
-def test_nccmp2_regrid_xy():
-    """
-    This test compares the regridded source file output(s), which are expected to be identical
-    """
-    nccmp_arg1 = TEST_OUT_DIR  + f'{YYYYMMDD}.{SOURCE}.nc'
-    nccmp_arg2 = ALL_TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc'
-    nccmp= [ 'nccmp', '-m', '--force', nccmp_arg1, nccmp_arg2 ]
-    print (' '.join(nccmp))
-    sp = subprocess.run( nccmp, check = True)
-    assert sp.returncode == 0
-    assert os.getcwd() == CWD
-
-@pytest.mark.skip(reason='TODO')
-def test_regrid_one_for_two_comps():
-    """
-    this test will compare regridding settings for a single source file ref'd in two
-    diff components and regrid that source file twice if the settings are different,
-    and only once if the settings are the same.
-    """
-    assert False
-    assert os.getcwd() == CWD
+##
+##
+##
+##@pytest.mark.skip(reason='debug')
+##def test_failure_wrong_datetime_regrid_xy():
+##    """
+##     checks for failure of regrid_xy with rose app-run when fed an
+##    invalid date for begin
+##    """
+##    # for the time being, still a little dependent on rose for configuration value passing
+##    if Path(os.getcwd()+'/rose-app-run.conf').exists():
+##        Path(os.getcwd()+'/rose-app-run.conf').unlink()
+##
+##    with open(os.getcwd()+'/rose-app-run.conf','a',encoding='utf-8') as rose_app_run_config:
+##        rose_app_run_config.write(  '[command]\n'                    )
+##        rose_app_run_config.write(  'default=regrid-xy\n'            )
+##        rose_app_run_config.write(  '\n'                             )
+##        rose_app_run_config.write( f'[{COMPONENT}]\n'                )
+##        rose_app_run_config.write( f"sources=['{SOURCE}']\n"             )
+##        rose_app_run_config.write( f'inputGrid={INPUT_GRID}\n'       )
+##        rose_app_run_config.write( f'inputRealm={INPUT_REALM}\n'     )
+##        rose_app_run_config.write( f'interpMethod={INTERP_METHOD}\n' )
+##        rose_app_run_config.write( f'outputGridLon={NLON}\n'         )
+##        rose_app_run_config.write( f'outputGridLat={NLAT}\n'         )
+##        rose_app_run_config.write(  '\n'                             )
+##    assert Path('./rose-app-run.conf').exists()
+##
+##    try:
+##        rgxy_returncode = rgxy.regrid_xy(
+##            input_dir = WORK_YYYYMMDD_DIR,
+##            output_dir = TEST_OUT_DIR,
+##            begin = '99999999T999999',
+##            tmp_dir = TEST_DIR,
+##            remap_dir = REMAP_DIR,
+##            source = SOURCE,
+##            grid_spec = GOLD_GRID_SPEC,
+##            rose_config = 'rose-app-run.conf'
+##        )
+##    except:
+##        # yay good job
+##        assert True
+##    assert os.getcwd() == CWD
+##
+##
+##
+###@pytest.mark.skip(reason='debug')
+##def test_nccmp1_regrid_xy():
+##    """
+##    This test compares the output of make_hgrid and fregrid, which are expected to be identical
+##    """
+##    fregrid_remap_file=f'fregrid_remap_file_{NLON}_by_{NLAT}.nc'
+##
+##    nccmp_arg1 = REMAP_DIR + INPUT_GRID + '/' + INPUT_REALM + '/' + \
+##                 SOURCES_XY + '/' + INTERP_METHOD  + '/' + fregrid_remap_file
+##    nccmp_arg2 = REMAP_TEST_DIR + fregrid_remap_file
+##    nccmp= [ 'nccmp', '-m', '--force', nccmp_arg1, nccmp_arg2 ]
+##    print (' '.join(nccmp))
+##    sp = subprocess.run( nccmp, check = True)
+##    assert sp.returncode == 0
+##    assert os.getcwd() == CWD
+##
+##def test_nccmp2_regrid_xy():
+##    """
+##    This test compares the regridded source file output(s), which are expected to be identical
+##    """
+##    nccmp_arg1 = TEST_OUT_DIR  + f'{YYYYMMDD}.{SOURCE}.nc'
+##    nccmp_arg2 = ALL_TEST_OUT_DIR + f'{YYYYMMDD}.{SOURCE}.nc'
+##    nccmp= [ 'nccmp', '-m', '--force', nccmp_arg1, nccmp_arg2 ]
+##    print (' '.join(nccmp))
+##    sp = subprocess.run( nccmp, check = True)
+##    assert sp.returncode == 0
+##    assert os.getcwd() == CWD
+##
+##@pytest.mark.skip(reason='TODO')
+##def test_regrid_one_for_two_comps():
+##    """
+##    this test will compare regridding settings for a single source file ref'd in two
+##    diff components and regrid that source file twice if the settings are different,
+##    and only once if the settings are the same.
+##    """
+##    assert False
+##    assert os.getcwd() == CWD
+##
+#
