@@ -45,7 +45,7 @@ def print_var_content(table_config_file, var_name): #uncovered
 
     var_content = proj_table_vars.get("variable_entry", {}).get(var_name)
     if var_content is None:
-        fre_logger.warning('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
+        fre_logger.debug('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
         return
 
     table_name = None

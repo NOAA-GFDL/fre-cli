@@ -292,3 +292,60 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res,
     except Exception as e:
         fre_logger.error("An unexpected error occurred: %s", e)
         raise
+
+
+
+def update_calendar_type(json_file_path, new_calendar_type, output_file_path=None):
+    """
+    Updates the "calendar" fields in a specified JSON file housing exp-specific
+    configuration information req'd by CMOR for re-writing data compliantly
+
+    Args:
+        json_file_path (str): Path to the input JSON file.
+        new_calendar_type (str): New value for the "calendar" field
+        output_file_path (str, optional): Path to save the updated JSON file. If None, overwrites the original file.
+
+    Raises:
+        FileNotFoundError: If the input JSON file does not exist.
+        KeyError: If the "calendar" field is not found in the JSON file.
+        ValueError: if the input "new_calendar_type" is None
+        json.JSONDecodeError: If the JSON file cannot be decoded.
+    """
+    if new_calendar_type is None:
+        fre_logger.error(
+            'calendar_type updating requested for exp_config file, but one of them is None\n'
+            'bailing...!') #uncovered
+        raise ValueError
+
+    try:
+        # Open and load the JSON file
+        with open(json_file_path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        # Update the "calendar" field
+        try:
+            fre_logger.info('Original "calendar": %s', data["calendar"])
+            data["calendar"] = new_calendar_type
+            fre_logger.info('Updated "calendar": %s', data["calendar"])
+        except KeyError as e:
+            fre_logger.error("Failed to update 'calendar': %s", e)
+            raise KeyError("Error while updating 'calendar'. Ensure the field exists and is modifiable.") from e
+
+        # Determine the file path for saving
+        output_file_path = output_file_path or json_file_path
+
+        # Save the updated JSON back to the file
+        with open(output_file_path, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4)
+
+        fre_logger.info('Successfully updated fields and saved to %s', output_file_path)
+
+    except FileNotFoundError:
+        fre_logger.error("The file '%s' does not exist.", json_file_path)
+        raise
+    except json.JSONDecodeError:
+        fre_logger.error("Failed to decode JSON from the file '%s'.", json_file_path)
+        raise
+    except Exception as e:
+        fre_logger.error("An unexpected error occurred: %s", e)
+        raise
