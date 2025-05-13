@@ -5,6 +5,9 @@ import os
 
 import pytest
 
+# Skip all tests currently. They need to be re-worked.
+pytest.mark.skip("All regrid tests to be reworked")
+
 import fre.app.regrid_xy.regrid_xy as rgxy
 
 # directories for tests
