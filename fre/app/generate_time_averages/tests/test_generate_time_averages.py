@@ -405,7 +405,7 @@ def test_fre_cli_app_gen_time_avg_cleanup():
     nc_files = [pl.Path(el) for el in nc_files]
     for nc in nc_files:
         pl.Path.unlink(nc)
-    nc_remove = [not pl.Path.exists(el) for el in nc_files]
+    nc_remove = [not pl.Path(el).exists() for el in nc_files]
     assert all(nc_remove)
 
 '''
