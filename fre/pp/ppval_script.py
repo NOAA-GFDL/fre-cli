@@ -95,60 +95,56 @@ def validate(filepath):
     # You can use the value of date_end.lastindex to know if this is
     # a yearly, monthly, daily, or sub-daily file.
 
-    # Result is the return code from the nccheck script (0 = Expected number of timesteps found, 1 = Unexpected number of timesteps found)
-    result = None
+    # Estimated number of timesteps
+    enot = None
 
     # YEARLY
     if date_end.lastindex == 1:
         enot = getenot(date_start,date_end,'yearly',cal)
-        result = ncc.check(filepath, enot)
-        return result
 
     # MONTHLY
     if date_end.lastindex == 2:
         enot = getenot(date_start,date_end,'monthly',cal)
-        result = ncc.check(filepath,enot)
-        return result
 
     # DAILY
     if date_end.lastindex == 3:
         enot = getenot(date_start,date_end,'daily',cal)
-        result = ncc.check(filepath,enot)
-        return result
 
-    # We would rather not check filepaths but it's necessary for sub-daily files
-    # Path elements contains the directories from the filepath.. we use this to determine frequency/chunk_size in sub-daily files
-    path_elements = os.path.abspath(filepath).split('/')
-    expected_frequencies  = ['6hr', '3hr', '1hr', '30min']
+    # If the file seems to be subdaily...
+    if enot == None:
 
-    # 4x Daily
-    if '6hr' in path_elements:
-        enot = getenot(date_start,date_end,'4xdaily',cal)
-        result = ncc.check(filepath,enot)
+        # We would rather not check filepaths but it's necessary for sub-daily files
+        # Path elements contains the directories from the filepath.. we use this to determine frequency/chunk_size in sub-daily files
+        path_elements = os.path.abspath(filepath).split('/')
+        expected_frequencies  = ['6hr', '3hr', '1hr', '30min']
 
-    # 8x Daily
-    if '3hr' in path_elements:
-        enot = getenot(date_start,date_end,'8xdaily',cal)
-        result = ncc.check(filepath,enot)
+        # 4x Daily
+        if '6hr' in path_elements:
+            enot = getenot(date_start,date_end,'4xdaily',cal)
 
-    # HOURLY
-    if '1hr' in path_elements:
-        enot = getenot(date_start,date_end,'hourly',cal)
-        result = ncc.check(filepath,enot)
+        # 8x Daily
+        if '3hr' in path_elements:
+            enot = getenot(date_start,date_end,'8xdaily',cal)
 
-    # 30 MINUTE
-    if '30min' in path_elements:
-        enot = getenot(date_start,date_end,'30minute',cal)
-        result = ncc.check(filepath,enot)
+        # HOURLY
+        if '1hr' in path_elements:
+            enot = getenot(date_start,date_end,'hourly',cal)
 
-    if result == 1:
+        # 30 MINUTE
+        if '30min' in path_elements:
+            enot = getenot(date_start,date_end,'30minute',cal)
+
+        # If none of the expected frequencies are found in filepath, raise ValueError
+        if all(freq not in path_elements for freq in expected_frequencies):
+            raise ValueError(f" Cannot determine frequency from {filepath}. Sub-daily files must at minimum be placed in a directory corresponding to data frequency: '6hr', '3hr', '1hr', '30min'")
+
+    try:
+        ncc.check(filepath, enot)
+    except:
+        raise ValueError
         fre_logger.error(f" Timesteps found in {filepath} differ from expectation")
 
-    # If none of the expected frequencies are found in filepath, raise ValueError
-    if all(freq not in path_elements for freq in expected_frequencies):
-        raise ValueError(f" Cannot determine frequency from {filepath}. Sub-daily files must at minimum be placed in a directory corresponding to data frequency: '6hr', '3hr', '1hr', '30min'")
-
-    return result
+    return 0
 
 if __name__ == '__main__':
     validate()

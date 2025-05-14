@@ -68,14 +68,15 @@ def validate(history,date_string,warn):
                            f"{history}",
                            f"{date_string}.{filename}.nc")
 
-            result = ncc.check(filepath,info[filename][0])
-
-            if result==1:
+            try:
+                ncc.check(filepath,info[filename][0])
+            except ValueError:
                 fre_logger.error(f" Timesteps found in {filepath} differ from expectation in diag manifest")
                 mismatches.append(filepath)
 
     #Error Handling
     if len(mismatches)!=0:
+        fre_logger.error("Unexpected number of timesteps found")
         raise ValueError(
               "\n" + str(len(mismatches)) + 
               " file(s) contain(s) an unexpected number of timesteps:\n" + 

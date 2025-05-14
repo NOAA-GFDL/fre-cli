@@ -95,9 +95,11 @@ def rose_init(experiment,platform,target):
 def quote_rose_values(value):
     """
     rose-suite.conf template variables must be quoted unless they are
-    boolean, in which case do not quote them.
+    boolean or a list, in which case do not quote them.
     """
     if isinstance(value, bool):
+        return f"{value}"
+    elif isinstance(value, list):
         return f"{value}"
     else:
         return "'" + str(value) + "'"
