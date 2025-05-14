@@ -236,7 +236,7 @@ def histval(history,date_string,warn):
               help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
 @click.option('--split-all-vars', '-a', is_flag=True, default=False, 
               help="Whether to ignore other config options and split all vars in the file. Defaults to false. Conflicts with -c, -s and -y options.")
-def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_subdirs, yamlfile):
+def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars):
     ''' Splits all netcdf files matching the pattern specified by $history_source in $inputdir
         into files with a single data variable written to $outputdir. If $yamlfile contains 
         variable filtering settings under $component, only those variables specified will
@@ -250,8 +250,8 @@ def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_sub
         none_args = [component, yamlfile]
         if any([el is not None for el in none_args]):
             fre_logger.error('''Error in split_netcdf_wrapper arg parsing: --split-all-vars was set and one or more of
-                                mutually exclusive options --component and --yamlfile was also set! 
-                                Either unset --split-all-vars or parse the varlist from the yaml - do not try do do both!''')
+mutually exclusive options --component and --yamlfile was also set! 
+Either unset --split-all-vars or parse the varlist from the yaml - do not try do do both!''')
     split_netcdf_script.split_netcdf(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars)
 
 #fre pp split-netcdf
