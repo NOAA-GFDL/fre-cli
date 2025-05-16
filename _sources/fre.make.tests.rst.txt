@@ -1,0 +1,30 @@
+fre.make.tests package
+======================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.make.tests.compilation
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.make.tests.test_create_checkout
+   fre.make.tests.test_create_compile
+   fre.make.tests.test_create_dockerfile
+   fre.make.tests.test_create_makefile
+   fre.make.tests.test_run_fremake
+
+Module contents
+---------------
+
+.. automodule:: fre.make.tests
+   :members:
+   :show-inheritance:
+   :undoc-members:

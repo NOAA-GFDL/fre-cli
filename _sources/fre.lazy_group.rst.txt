@@ -1,0 +1,7 @@
+fre.lazy\_group module
+======================
+
+.. automodule:: fre.lazy_group
+   :members:
+   :show-inheritance:
+   :undoc-members:

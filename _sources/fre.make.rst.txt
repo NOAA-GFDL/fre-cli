@@ -1,0 +1,31 @@
+fre.make package
+================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.make.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.make.create_checkout_script
+   fre.make.create_compile_script
+   fre.make.create_docker_script
+   fre.make.create_makefile_script
+   fre.make.fremake
+   fre.make.run_fremake_script
+
+Module contents
+---------------
+
+.. automodule:: fre.make
+   :members:
+   :show-inheritance:
+   :undoc-members:

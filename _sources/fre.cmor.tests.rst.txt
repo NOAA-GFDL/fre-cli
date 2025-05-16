@@ -1,0 +1,21 @@
+fre.cmor.tests package
+======================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.cmor.tests.test_cmor_find_subtool
+   fre.cmor.tests.test_cmor_helpers_update_grid_label
+   fre.cmor.tests.test_cmor_run_subtool
+   fre.cmor.tests.test_cmor_run_subtool_ppan_only
+
+Module contents
+---------------
+
+.. automodule:: fre.cmor.tests
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,7 @@
+fre.pp.trigger\_script module
+=============================
+
+.. automodule:: fre.pp.trigger_script
+   :members:
+   :show-inheritance:
+   :undoc-members:

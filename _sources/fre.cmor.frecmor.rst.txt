@@ -1,0 +1,7 @@
+fre.cmor.frecmor module
+=======================
+
+.. automodule:: fre.cmor.frecmor
+   :members:
+   :show-inheritance:
+   :undoc-members:

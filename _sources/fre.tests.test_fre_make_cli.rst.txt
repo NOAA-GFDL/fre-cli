@@ -1,0 +1,7 @@
+fre.tests.test\_fre\_make\_cli module
+=====================================
+
+.. automodule:: fre.tests.test_fre_make_cli
+   :members:
+   :show-inheritance:
+   :undoc-members:

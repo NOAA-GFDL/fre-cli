@@ -1,0 +1,7 @@
+fre.cmor.tests.test\_cmor\_helpers\_update\_grid\_label module
+==============================================================
+
+.. automodule:: fre.cmor.tests.test_cmor_helpers_update_grid_label
+   :members:
+   :show-inheritance:
+   :undoc-members:

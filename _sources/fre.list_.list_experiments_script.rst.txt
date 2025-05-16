@@ -1,0 +1,7 @@
+fre.list\_.list\_experiments\_script module
+===========================================
+
+.. automodule:: fre.list_.list_experiments_script
+   :members:
+   :show-inheritance:
+   :undoc-members:
