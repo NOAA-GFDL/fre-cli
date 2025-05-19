@@ -67,8 +67,6 @@ def validate(filepath):
     filename = os.path.basename(filepath)
     date_range = match.search(filename)
 
-    if
-
     # Get the year, month, day, hour from the datestring(s)
     # date_range[0] is the full match (e.g., ".202201-202501."
     # date_range[1] is the start date (e.g., "202201")
