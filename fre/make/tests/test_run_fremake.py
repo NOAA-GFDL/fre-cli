@@ -99,32 +99,27 @@ def test_run_fremake_makefile_creation_serial():
     assert Path(
         f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/Makefile").exists()
 
-def test_run_fremake_serial_force_checkout(capfd):
+def test_run_fremake_serial_force_checkout(caplog):
     '''run run-fremake with options for serial build with force-checkout'''
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         parallel=1, jobs=1, no_parallel_checkout=False,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=True, force_compile=False, force_dockerfile=False)
 
-    #Capture output
-    out,err=capfd.readouterr()
-    assert all(["Re-creating the checkout script" in out,
-                "Re-creating the compile script" in out,
+    assert all(["Re-creating the checkout script" in caplog.text,
+                "Re-creating the compile script" in caplog.text,
                 Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists(),
                 Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/Makefile").exists(),
                 Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/compile.sh").exists()])
 
-@pytest.mark.skip(reason="test")
-def test_run_fremake_serial_force_compile(capfd):
+def test_run_fremake_serial_force_compile(caplog):
     '''run run-fremake with options for serial build with force-compile'''
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         parallel=1, jobs=1, no_parallel_checkout=False,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=True, force_dockerfile=False)
 
-    #Capture output
-    out,err=capfd.readouterr()
-    assert all(["Re-creating the compile script" in out,
+    assert all(["Re-creating the compile script" in caplog.text,
                 Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/compile.sh").exists()])
 
 # same tests with multijob compile and non-parallel-checkout options enabled
@@ -222,42 +217,32 @@ def test_run_fremake_run_script_creation_container_2stage():
     assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
 
 # tests for builds with multiple targets
-@pytest.mark.skip(reason="test")
-def test_run_fremake_container_force_checkout(capfd):
+def test_run_fremake_container_force_checkout(caplog):
     '''run run-fremake with options for containerized build with force-checkout option'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         parallel=1, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=True, force_compile=False, force_dockerfile=False)
 
-    #Capture output
-    out,err=capfd.readouterr()
-    print(out)
-
-    assert all(["Re-creating the checkout script..." in out,
+    assert all(["Re-creating the checkout script..." in caplog.text,
                 Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists(),
                 Path(f"tmp/{CONTAINER_PLATFORM[0]}/Makefile").exists(),
                 Path("Dockerfile").exists(),
                 Path("createContainer.sh").exists(),
                 Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()])
 
-@pytest.mark.skip(reason="test")
-def test_run_fremake_container_force_dockerfile(capfd):
+def test_run_fremake_container_force_dockerfile(caplog):
     '''run run-fremake with options for containerized build with force-dockerfile option'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         parallel=1, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=False, force_compile=False, force_dockerfile=True)
 
-    #Capture output
-    out,err=capfd.readouterr()
-
-    assert all(["Re-creating Dockerfile" in out,
+    assert all(["Re-creating Dockerfile" in caplog.text,
                 Path("Dockerfile").exists(),
                 Path("createContainer.sh").exists(),
                 Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()])
 
-@pytest.mark.skip(reason="test")
 # tests for builds with multiple targets
 def test_run_fremake_bad_target():
     ''' checks invalid target returns an error '''
@@ -266,7 +251,6 @@ def test_run_fremake_bad_target():
     assert result.exit_code == 1
 
 
-@pytest.mark.skip(reason="test")
 def test_run_fremake_multiple_targets():
     ''' passes all valid targets for a build '''
     result = runner.invoke(fre.fre, args=["make", "all", "-y", YAMLPATH, "-p", PLATFORM[0], "-t",  \
@@ -274,21 +258,18 @@ def test_run_fremake_multiple_targets():
                                           "prod-openmp", "-t", "repro-openmp"])
     assert result.exit_code == 0
 
-@pytest.mark.skip(reason="test")
 def test_run_fremake_compile_script_creation_multitarget():
     ''' check compile scripts for all targets exist from previous test'''
     for t in targets:
         assert Path(
             f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{t}/exec/compile.sh").exists()
 
-@pytest.mark.skip(reason="test")
 def test_run_fremake_checkout_script_creation_multitarget():
     ''' check for checkout script creation for mulit-target build'''
     ''' check checkout script exists from previous test'''
     assert Path(
         f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists()
 
-@pytest.mark.skip(reason="test")
 def test_run_fremake_makefile_creation_multitarget():
     ''' check for makefile creation from previous test '''
     for t in targets:
