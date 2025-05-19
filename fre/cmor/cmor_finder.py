@@ -116,7 +116,8 @@ def make_simple_varlist(dir_targ, output_variable_list):
         output_variable_list (str): The path to the output JSON file where the variable list will be saved.
 
     Returns:
-        None
+        a list, minimum one element, of strings representing variables in a target directory, encoded as a dictionary 
+        of key/value pairs that are equal to each other
 
     Raises:
         Logs errors if no files are found in the directory or if no files match the expected pattern.
@@ -146,8 +147,14 @@ def make_simple_varlist(dir_targ, output_variable_list):
         fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
 
     # Create a dictionary of variable names extracted from the filenames
-    var_list = {os.path.basename(file).split('.')[-2]: os.path.basename(file).split('.')[-2] for file in files}
+    var_list = {
+        os.path.basename(file).split('.')[-2] : os.path.basename(file).split('.')[-2] for file in files}
 
     # Write the variable list to the output JSON file
-    with open(output_variable_list, 'w') as f:
-        json.dump(var_list, f, indent=4)
+    if output_variable_list is not None:
+        try:
+            with open(output_variable_list, 'w') as f:
+                json.dump(var_list, f, indent=4)
+        except:
+            raise OSError('output variable list cannot be written')
+    return var_list
