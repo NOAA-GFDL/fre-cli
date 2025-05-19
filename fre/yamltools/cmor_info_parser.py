@@ -32,15 +32,26 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
     # if experiment matches name in list of experiments in yaml, extract file path
     cmoryaml_path = None
     ppsettingsyaml_path = None
+    cmor_yaml_path = None
     for i in loaded_yaml.get("experiments"):
         if experiment != i.get("name"):
             continue
+
+        gridyaml=i.get('grid_yaml')[0]
+        fre_logger.info(f'gridyaml is going to look like gridyaml=\n{gridyaml}')
+        if gridyaml is None:
+            fre_logger.warning('WARNING! no grid yaml specified! moving on,'
+                               ' but I hope you put this info in your CMOR yaml instead')
+        else:
+            grid_yaml_path=os.path.join(mainyaml_dir, gridyaml)
+            if not Path(grid_yaml_path).exists():
+                raise FileNotFoundError('%s not found!!!', grid_yaml_path)
 
         ppyamls=i.get('pp')
         fre_logger.info(f'ppyamls is going to look like ppyamls=\n{ppyamls}')
         if ppyamls is None:
             raise ValueError(f"no ppyaml paths found under experiment = {experiment}")
-            
+
         ppsettingsyaml=None
         for ppyaml in ppyamls:
             #fre_logger.info(f'\nwithin ppyamls we have (SINGULAR) ppyaml=\n{ppyaml}')
@@ -56,17 +67,17 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
         if not Path(os.path.join(mainyaml_dir, ppsettingsyaml)).exists():
             raise FileNotFoundError(f'ppsettingsyaml={ppsettingsyaml} does not exist!')
         ppsettingsyaml_path=Path(os.path.join(mainyaml_dir, ppsettingsyaml))
-            
+
         fre_logger.info(f'ppsettingsyaml={ppsettingsyaml}')
 
         cmoryaml=i.get("cmor")[0]
         if cmoryaml is None:
             raise ValueError("No experiment yaml path given!")
-        
+
         fre_logger.info(f'cmoryaml={cmoryaml} found- now checking for existence.')
         if not Path(os.path.join(mainyaml_dir, cmoryaml)).exists():
             raise FileNotFoundError(f'cmoryaml={cmoryaml} does not exist!')
-        
+
         cmoryaml_path = Path(os.path.join(mainyaml_dir, cmoryaml))
         break
 
@@ -74,7 +85,7 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
         raise ValueError('... something wrong... cmoryaml_path is None... it should not be none!')
 
     fre_logger.info(f'cmor_info_parser\'s experiment_check about to return cmoryaml_path!')
-    return cmoryaml_path, ppsettingsyaml_path
+    return cmoryaml_path, ppsettingsyaml_path, grid_yaml_path
 
 ## CMOR CLASS ##
 class CMORYaml():
@@ -135,8 +146,12 @@ class CMORYaml():
         If more than 1 pp yaml defined, return a list of paths.
         """
         # Experiment Check
-        cmory_path, ppsettingsy_path = experiment_check( self.mainyaml_dir, self.name,
-                                                         loaded_yaml )
+        cmory_path, ppsettingsy_path, gridsy_path = \
+            experiment_check(
+                self.mainyaml_dir,
+                self.name,
+                loaded_yaml )
+
         fre_logger.info(f'cmory_path = {cmory_path}')
         if cmory_path is None:
             raise ValueError('cmory_path is none!')
@@ -145,12 +160,24 @@ class CMORYaml():
         if ppsettingsy_path is None:
             raise ValueError('ppsettingsy_path is none!')
 
+        fre_logger.info(f'gridsy_path = {gridsy_path}')
+        if gridsy_path is None:
+            fre_logger.warning('WARNING gridsy_path is None! maybe ok?')
 
-        cmor_yamls = []
-        # ... append pp_settings first
+        cmor_yamls = [yaml_content]
+
+        # ... append grids content first
+        with open(gridsy_path,'r') as gyp:
+            grid_content = gyp.read()
+            #grid_info = yaml_content + grid_content
+            grid_info = grid_content
+            cmor_yamls.append(grid_info)
+
+        # ... then append pp_settings
         with open(ppsettingsy_path,'r') as syp:
             set_content = syp.read()
-            set_info = yaml_content + set_content
+            #set_info = yaml_content + set_content
+            set_info = set_content
             cmor_yamls.append(set_info)
 
         # ... now append the cmor info?
@@ -161,9 +188,9 @@ class CMORYaml():
             #fre_logger.info(f'exp_info = \n {exp_info}')
             cmor_yamls.append(exp_info)
 
-        #fre_logger.info(f'cmor_yamls = \n {cmor_yamls}')
         #import pprint
-        #pprint.PrettyPrinter(indent=1).pprint(cmor_yamls)
+        #fre_logger.info(f'cmor_yamls = \n {pprint.PrettyPrinter(indent=2).pformat(cmor_yamls)}')
+        #assert False
 
         return cmor_yamls
 
@@ -173,15 +200,16 @@ class CMORYaml():
         if cmor_list is None:
             raise ValueError('cmor_list is none and should not be!!!')
 
-        _, _ = experiment_check( self.mainyaml_dir, self.name,
-                                 loaded_yaml )
+        #_, _, _ = experiment_check( self.mainyaml_dir, self.name,
+        #loaded_yaml )
+
         result = {}
 
         yml_cmor = "".join(cmor_list)
         result.update(
             yaml.load(
                 yml_cmor, Loader = yaml.Loader ))
-        fre_logger.debug(f"   experiment yaml: \n {yml_cmor}")
+        #fre_logger.debug(f"   experiment yaml: \n {yml_cmor}")
 
 
         return result

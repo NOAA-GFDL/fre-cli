@@ -95,9 +95,11 @@ def rose_init(experiment,platform,target):
 def quote_rose_values(value):
     """
     rose-suite.conf template variables must be quoted unless they are
-    boolean, in which case do not quote them.
+    boolean or a list, in which case do not quote them.
     """
     if isinstance(value, bool):
+        return f"{value}"
+    elif isinstance(value, list):
         return f"{value}"
     else:
         return "'" + str(value) + "'"
@@ -162,7 +164,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
             sources = []
             for s in i.get("sources"):
                 sources.append(s.get("history_file"))
-            # Add static sources to sources list if defined 
+            # Add static sources to sources list if defined
             if i.get("static") is not None:
                 for s in i.get("static"):
                     sources.append(s.get("source"))
