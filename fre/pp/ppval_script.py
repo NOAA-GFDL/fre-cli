@@ -67,6 +67,8 @@ def validate(filepath):
     filename = os.path.basename(filepath)
     date_range = match.search(filename)
 
+    if
+
     # Get the year, month, day, hour from the datestring(s)
     # date_range[0] is the full match (e.g., ".202201-202501."
     # date_range[1] is the start date (e.g., "202201")
@@ -119,24 +121,24 @@ def validate(filepath):
         expected_frequencies  = ['6hr', '3hr', '1hr', '30min']
 
         # 4x Daily
-        if '6hr' in path_elements:
+        if 'PT6H' in path_elements or '6hr' in path_elements:
             enot = getenot(date_start,date_end,'4xdaily',cal)
 
         # 8x Daily
-        if '3hr' in path_elements:
+        if 'PT3H' in path_elements or '3hr' in path_elements:
             enot = getenot(date_start,date_end,'8xdaily',cal)
 
         # HOURLY
-        if '1hr' in path_elements:
+        if 'PT1H' in path_elements or '1hr' in path_elements:
             enot = getenot(date_start,date_end,'hourly',cal)
 
         # 30 MINUTE
-        if '30min' in path_elements:
+        if 'PT30M' in path_elements or 'PT0.5H' in path_elements or '30min' in path_elements:
             enot = getenot(date_start,date_end,'30minute',cal)
 
         # If none of the expected frequencies are found in filepath, raise ValueError
         if all(freq not in path_elements for freq in expected_frequencies):
-            raise ValueError(f" Cannot determine frequency from {filepath}. Sub-daily files must at minimum be placed in a directory corresponding to data frequency: '6hr', '3hr', '1hr', '30min'")
+            raise ValueError(f" Cannot determine frequency from {filepath}. Sub-daily files must at minimum be placed in a directory corresponding to data frequency: '6hr, 'PT6H', '3hr, 'PT3H', '1hr, 'PT1H', '30min, 'PT30M, 'PT0.5H'")
 
     try:
         ncc.check(filepath, enot)
