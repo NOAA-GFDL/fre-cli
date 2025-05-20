@@ -7,36 +7,20 @@ principal click group for main/fre allows for subgroup functions to
 be called via this script. I.e. 'fre' is the entry point
 """
 
-import importlib.metadata
-import logging
+
+
+from . import version
 
 import click
 
 from .lazy_group import LazyGroup
 
+import logging
+
 # base fre_logger set here, configured within fre
 fre_logger = logging.getLogger(__name__)
 FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
 #MODE = 'x'
-
-# versioning, turn xxxx.y into xxxx.0y
-version_unexpanded = importlib.metadata.version('fre-cli')
-version_unexpanded_split = version_unexpanded.split('.')
-if len(version_unexpanded_split[1]) == 1:
-    version_minor = "0" + version_unexpanded_split[1]
-else:
-    version_minor = version_unexpanded_split[1]
-# if the patch version is present, then use it. otherwise, omit
-try:
-    len(version_unexpanded_split[2])
-    if len(version_unexpanded_split[2]) == 1:
-        version_patch = "0" + version_unexpanded_split[2]
-    else:
-        version_patch = version_unexpanded_split[2]
-    version = version_unexpanded_split[0] + '.' + version_minor + '.' + version_patch
-except IndexError:
-    version = version_unexpanded_split[0] + '.' + version_minor
-
 
 @click.version_option(
     package_name = "fre-cli",
@@ -72,7 +56,7 @@ def fre(verbose = 0, quiet = False, log_file = None):
     entry point function to subgroup functions, setting global verbosity/logging formats that all
     other routines will utilize
     '''
-
+    fre_logger.debug('setting log level')
     log_level = logging.WARN #default
     if verbose == 1:
         log_level = logging.INFO #more verbose than default
@@ -83,6 +67,8 @@ def fre(verbose = 0, quiet = False, log_file = None):
         log_level = logging.ERROR #least verbose
     logging.basicConfig(level = log_level, format = FORMAT,
                         filename = log_file, encoding = 'utf-8')
+    fre_logger.debug('log level set')
+
 
 if __name__ == '__main__':
     fre()
