@@ -22,7 +22,7 @@ import logging
 fre_logger = logging.getLogger(__name__)
 
 def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs, 
-                 yamlfile):
+                 yamlfile, split_all_vars=False):
   '''
   Given a directory of netcdf files, splits those netcdf files into separate
   files for each data variable and copies the data variable files of interest
@@ -55,7 +55,10 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #note to self: if CYLC_TASK_PARAM_component isn't doing what we think it's
   #doing, we can also use history_source to get the component but it's
   #going to be a bit of a pain
-  varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
+  if split_all_vars:
+    varlist = "all"
+  else:
+    varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
   
   #extend globbing used to find both tiled and non-tiled files
   #all files that contain the current source:history_file name,
