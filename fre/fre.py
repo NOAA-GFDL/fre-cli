@@ -7,8 +7,6 @@ principal click group for main/fre allows for subgroup functions to
 be called via this script. I.e. 'fre' is the entry point
 """
 
-
-
 from . import version
 
 import click
