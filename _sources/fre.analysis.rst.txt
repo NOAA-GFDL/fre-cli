@@ -1,0 +1,27 @@
+fre.analysis package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.analysis.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.analysis.freanalysis
+   fre.analysis.subtools
+
+Module contents
+---------------
+
+.. automodule:: fre.analysis
+   :members:
+   :show-inheritance:
+   :undoc-members:

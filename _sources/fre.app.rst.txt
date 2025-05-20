@@ -1,0 +1,28 @@
+fre.app package
+===============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.app.generate_time_averages
+   fre.app.regrid_xy
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.app.freapp
+   fre.app.mask_atmos_plevel
+
+Module contents
+---------------
+
+.. automodule:: fre.app
+   :members:
+   :show-inheritance:
+   :undoc-members:

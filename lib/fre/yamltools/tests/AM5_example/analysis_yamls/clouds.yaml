@@ -1,0 +1,11 @@
+analysis:
+  clouds-test:
+    required:
+      data_frequency: 'mon'
+      date_range: [*ANA_AMIP_START, *ANA_AMIP_END]
+    workflow:
+      components: ["atmos-test"]
+      script_type: 'independent'
+      product: 'ts'
+      chunk_size: *PP_AMIP_CHUNK96
+      analysis_on: True

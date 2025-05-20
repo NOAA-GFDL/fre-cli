@@ -1,0 +1,7 @@
+fre.yamltools.cmor\_info\_parser module
+=======================================
+
+.. automodule:: fre.yamltools.cmor_info_parser
+   :members:
+   :show-inheritance:
+   :undoc-members:

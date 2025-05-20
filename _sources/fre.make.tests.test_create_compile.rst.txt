@@ -1,0 +1,7 @@
+fre.make.tests.test\_create\_compile module
+===========================================
+
+.. automodule:: fre.make.tests.test_create_compile
+   :members:
+   :show-inheritance:
+   :undoc-members:

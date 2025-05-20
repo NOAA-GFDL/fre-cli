@@ -1,0 +1,7 @@
+fre.pp.tests.test\_split\_netcdf module
+=======================================
+
+.. automodule:: fre.pp.tests.test_split_netcdf
+   :members:
+   :show-inheritance:
+   :undoc-members:

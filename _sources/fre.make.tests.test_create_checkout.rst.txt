@@ -1,0 +1,7 @@
+fre.make.tests.test\_create\_checkout module
+============================================
+
+.. automodule:: fre.make.tests.test_create_checkout
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fre.pp.split_netcdf_script module &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css?v=5583d106" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">fre.pp.split_netcdf_script module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/fre.pp.split_netcdf_script.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-fre.pp.split_netcdf_script">
+<span id="fre-pp-split-netcdf-script-module"></span><h1>fre.pp.split_netcdf_script module<a class="headerlink" href="#module-fre.pp.split_netcdf_script" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.pp.split_netcdf_script.fre_outfile_name">
+<span class="sig-prename descclassname"><span class="pre">fre.pp.split_netcdf_script.</span></span><span class="sig-name descname"><span class="pre">fre_outfile_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.pp.split_netcdf_script.fre_outfile_name" title="Link to this definition"></a></dt>
+<dd><p>Builds split var filenames the way that fre expects them
+(and in a way that should work for any .nc file)
+infile: string name of a file with a . somwehere in the filename
+varname: string to add to the infile
+This is expected to work with files formed the following way:</p>
+<blockquote>
+<div><p>Fre Input format:  date.component(.tileX).nc
+Fre Output format: date.component.var(.tileX).nc</p>
+</div></blockquote>
+<p>but it should also work on any file filename.nc</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.pp.split_netcdf_script.parse_yaml_for_varlist">
+<span class="sig-prename descclassname"><span class="pre">fre.pp.split_netcdf_script.</span></span><span class="sig-name descname"><span class="pre">parse_yaml_for_varlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yamlcomp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hist_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.pp.split_netcdf_script.parse_yaml_for_varlist" title="Link to this definition"></a></dt>
+<dd><p>Given a yaml config file, parses the structure looking for the list of
+variables to postprocess (<a class="reference external" href="https://github.com/NOAA-GFDL/fre-workflows/issues/51">https://github.com/NOAA-GFDL/fre-workflows/issues/51</a>)
+and returns “all” if no such list is found
+yamlfile: .yml file used for fre pp configuration
+yamlcomp: string, one of the components in the yamlfile
+hist_source: string, optional, allows you to check that the hist_source</p>
+<blockquote>
+<div><p>is under the specified component</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.pp.split_netcdf_script.set_coord_encoding">
+<span class="sig-prename descclassname"><span class="pre">fre.pp.split_netcdf_script.</span></span><span class="sig-name descname"><span class="pre">set_coord_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vcoords</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.pp.split_netcdf_script.set_coord_encoding" title="Link to this definition"></a></dt>
+<dd><p>Gets the encoding settings needed for xarray to write out the coordinates
+as expected
+we need the list of all vars (varnames) because that’s how you get coords
+for the metadata vars (i.e. nv or bnds for time_bnds)
+dset: xarray dataset object
+varname: name (string) of data variable we intend to write to file
+varnames: list of all variables (string) in the dataset; needed to get</p>
+<blockquote>
+<div><p>names of all coordinate variables since coordinate status is defined
+only in relation with a variable</p>
+</div></blockquote>
+<p>Note: this code removes _FillValue from coordinates. CF-compliant files do not
+have _FillValue on coordinates, and xarray does not have a good way to get
+_FillValue from coordinates. Letting xarray set _FillValue for coordinates 
+when coordinates <em>have</em> a _FillValue gets you wrong metadata, and bad metadata
+is worse than no metadata. Dropping the attribute if it’s present seems to be 
+the lesser of two evils.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.pp.split_netcdf_script.set_var_encoding">
+<span class="sig-prename descclassname"><span class="pre">fre.pp.split_netcdf_script.</span></span><span class="sig-name descname"><span class="pre">set_var_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varnames</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.pp.split_netcdf_script.set_var_encoding" title="Link to this definition"></a></dt>
+<dd><p>Gets the encoding settings needed for xarray to write out the variables
+as expected
+mostly addressed to time_bnds, because xarray can drop the units attribute:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://github.com/pydata/xarray/issues/8368">https://github.com/pydata/xarray/issues/8368</a></p>
+</div></blockquote>
+<p>dset: xarray dataset object
+varnames: list of variables (strings) that will be written to file</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.pp.split_netcdf_script.split_file_xarray">
+<span class="sig-prename descclassname"><span class="pre">fre.pp.split_netcdf_script.</span></span><span class="sig-name descname"><span class="pre">split_file_xarray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfiledir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.pp.split_netcdf_script.split_file_xarray" title="Link to this definition"></a></dt>
+<dd><p>Given a netcdf infile containing one or more data variables, 
+writes out a separate file for each data variable in the file, including the
+variable name in the filename. 
+if var_list if specified, only the vars in var_list are written to file; 
+if no vars in the file match the vars in var_list, no files are written.
+infile: input netcdf file
+outfiledir: writeable directory to which to write netcdf files
+var_list: python list of string variable names or a string “all”</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.pp.split_netcdf_script.split_netcdf">
+<span class="sig-prename descclassname"><span class="pre">fre.pp.split_netcdf_script.</span></span><span class="sig-name descname"><span class="pre">split_netcdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_subdirs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_all_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.pp.split_netcdf_script.split_netcdf" title="Link to this definition"></a></dt>
+<dd><p>Given a directory of netcdf files, splits those netcdf files into separate
+files for each data variable and copies the data variable files of interest
+to the output directory
+Intended to work with data structured for fre-workflows and fre-workflows</p>
+<blockquote>
+<div><p>file naming conventions
+Sample infile name convention: “19790101.atmos_tracer.tile6.nc”</p>
+</div></blockquote>
+<p>inputDir - directory containg netcdf files
+outputDir - directory to which to write netcdf files
+component - the ‘component’ element we are currently working with in the yaml
+history_source - a history_file under a ‘source’ under the ‘component’ that</p>
+<blockquote>
+<div><p>we are working with. Is used to identify the files in inputDir.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>use_subdirs - whether to recursively search through inputDir under the subdirectories.</dt><dd><p>used when regridding.</p>
+</dd>
+</dl>
+<p>yamlfile - a .yml config file for fre postprocessing</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

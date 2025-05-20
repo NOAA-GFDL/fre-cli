@@ -1,0 +1,7 @@
+fre.make.run\_fremake\_script module
+====================================
+
+.. automodule:: fre.make.run_fremake_script
+   :members:
+   :show-inheritance:
+   :undoc-members:

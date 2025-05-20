@@ -1,0 +1,7 @@
+fre.cmor.tests.test\_cmor\_run\_subtool module
+==============================================
+
+.. automodule:: fre.cmor.tests.test_cmor_run_subtool
+   :members:
+   :show-inheritance:
+   :undoc-members:
