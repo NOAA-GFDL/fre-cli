@@ -116,7 +116,7 @@ def validate(filepath):
         # We would rather not check filepaths but it's necessary for sub-daily files
         # Path elements contains the directories from the filepath.. we use this to determine frequency/chunk_size in sub-daily files
         path_elements = os.path.abspath(filepath).split('/')
-        expected_frequencies  = ['6hr', '3hr', '1hr', '30min']
+        expected_frequencies  = ['6hr', 'PT6H', '3hr', 'PT3H', '1hr', 'PT1H', '30min', 'PT30M', 'PT0.5H']
 
         # 4x Daily
         if 'PT6H' in path_elements or '6hr' in path_elements:
