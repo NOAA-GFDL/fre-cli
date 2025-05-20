@@ -19,6 +19,11 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     """
     Checkout the workflow template files from the repo
     """
+    fre_logger.debug('hello world?')
+    fre_logger.info('hello world?')
+    fre_logger.warning('hello world?')
+    fre_logger.error('hello world?')
+    print('FUCKING HELLO')
     ## Chdir back to here before we exit this routine
     go_back_here = os.getcwd()
 

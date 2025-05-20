@@ -3,6 +3,9 @@
 from pathlib import Path
 import os
 import subprocess
+import logging
+fre_logger =logging.getLogger(__name__)
+
 
 def install_subtool(experiment, platform, target):
     """

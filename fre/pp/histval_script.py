@@ -6,7 +6,7 @@ history files then run the nccheck script to validate the number of timesteps in
 import os
 import logging
 import yaml
-from fre.pp import nccheck_script as ncc
+from . import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
 

@@ -18,9 +18,9 @@ import metomi.rose.config
 import fre.yamltools.combine_yamls_script as cy
 
 import logging
-logging.basicConfig()
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+#logging.basicConfig()
+fre_logger = logging.getLogger(__name__)
+#logger.setLevel(logging.INFO)
 
 ####################
 def yaml_load(yamlfile):
