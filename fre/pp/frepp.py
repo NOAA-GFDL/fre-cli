@@ -1,23 +1,23 @@
 ''' fre pp '''
 
 import click
-import logging
-fre_logger = logging.getLogger(__name__)
+#import logging
+#fre_logger = logging.getLogger(__name__)
 
 #fre tools
-from fre.pp import checkout_script
-from fre.pp import configure_script_yaml
-from fre.pp import configure_script_xml
-from fre.pp import validate_script
-from fre.pp import histval_script
-from fre.pp import ppval_script
-from fre.pp import install_script
-from fre.pp import run_script
-from fre.pp import nccheck_script
-from fre.pp import trigger_script
-from fre.pp import status_script
-from fre.pp import wrapper_script
-from fre.pp import split_netcdf_script
+from . import checkout_script
+from . import configure_script_yaml
+from . import configure_script_xml
+from . import validate_script
+from . import histval_script
+from . import ppval_script
+from . import install_script
+from . import run_script
+from . import nccheck_script
+from . import trigger_script
+from . import status_script
+from . import wrapper_script
+from . import split_netcdf_script
 
 # fre pp
 @click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
@@ -305,9 +305,9 @@ def all(experiment, platform, target, config_file, branch, time):
     """
     Execute fre pp steps in order
     """
-    fre_logger.info('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
+    #fre_logger.info('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
-    fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
+    #fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
