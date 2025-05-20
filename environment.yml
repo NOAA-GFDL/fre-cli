@@ -3,11 +3,12 @@ channels:
   - conda-forge
   - noaa-gfdl
 dependencies:
-  - python==3.11
+  - python=3.11.*
   - pip
   - noaa-gfdl::analysis_scripts
   - noaa-gfdl::catalogbuilder
   - noaa-gfdl::fre-nctools
+  - conda-forge::cftime
   - conda-forge::click<8.2
   - conda-forge::cylc-flow>=8.2.0
   - conda-forge::cylc-rose
@@ -20,5 +21,4 @@ dependencies:
   - conda-forge::pytest
   - conda-forge::pytest-cov
   - conda-forge::python-cdo
-  - conda-forge::cftime
   - conda-forge::pyyaml
