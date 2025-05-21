@@ -90,12 +90,14 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     num_subdirs = len(subdirs)
     fre_logger.info(f"checking {num_subdirs} under {workdir}")
     files_split = 0
-    for sd in subdirs: 
-      files=[os.path.join(sd,el) for el in os.listdir(sd) if re.match(file_regex, el) is not None]
+    sd_string = ",".join(subdirs)
+    for sd in subdirs:
+      sdw = os.path.join(workdir,sd)
+      files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
       if len(files) == 0:
         fre_logger.info(f"No input files found; skipping subdir {subdir}")
       else:
-        output_subdir = os.path.join(os.path.abspath(outputDir)/sd)
+        output_subdir = os.path.join(os.path.abspath(outputDir), sd)
         if not os.path.isdir(ouput_subdir):
           os.mkdir(output_subdir)
         for infile in files:
@@ -103,7 +105,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
           files_split += 1
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
-      fre_logger.error(f"error: no files found in dirs under {workdir} that match pattern {file_regex}; no splitting took place")
+      fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir} that match pattern {file_regex}; no splitting took place")
       raise OSError
   else:
       files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
@@ -148,7 +150,7 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   #If they were, I could get away with the following:
   #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
   #instead of this:
-  var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= 1) and v not in dataset._coord_names]
+  var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= 2) and v not in dataset._coord_names]
   #having a variable listed as both a metadata var and a coordinate var seems to
   #lead to the weird adding a _FillValue behavior
   fre_logger.info(f"var patterns: {var_patterns}")
