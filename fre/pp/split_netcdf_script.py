@@ -103,7 +103,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
         if not os.path.isdir(output_subdir):
           os.mkdir(output_subdir)
         for infile in files:
-          is_static = re.match("static", infile) is not None
+          is_static = re.match(".*static.nc", infile) is not None
           split_file_xarray(infile, output_subdir, varlist, is_static)
           files_split += 1
     fre_logger.info(f"{files_split} files split")
@@ -114,7 +114,9 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
       # Split the files by variable
       for infile in files:
-        is_static = re.match("static", infile) is not None
+        print(infile)
+        is_static = re.match(".*static.nc", infile) is not None
+        print(f"is_static: {is_static}")
         split_file_xarray(infile, os.path.abspath(outputDir), varlist, is_static)
       if len(files) == 0:
         fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
@@ -174,6 +176,8 @@ def split_file_xarray(infile, outfiledir, var_list='all', is_static=False):
     return len(list(set(allmatch))) > 1
   metavars = [el for el in allvars if matchlist(el)]
   datavars = [el for el in allvars if not matchlist(el)]
+  print(f"metavars: {metavars}")
+  print(f"datavars: {datavars}")
   fre_logger.debug(f"metavars: {metavars}")
   fre_logger.debug(f"datavars: {datavars}")
   fre_logger.debug(f"var filter list: {var_list}")
@@ -205,6 +209,7 @@ def split_file_xarray(infile, outfiledir, var_list='all', is_static=False):
       #  - Everything is written out with THE SAME precision it was read in
       #  - Everything has THE SAME UNITS as it did when it was read in
       var_outfile = fre_outfile_name(os.path.basename(infile), variable)
+      print(f"var_outfile: {var_outfile}")
       var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
       data2.to_netcdf(var_out, encoding = var_encode)
     
@@ -313,6 +318,63 @@ def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
   else:
     varlist = "all"
   return(varlist)
+
+def parse_yaml_for_varlist_ppcompstyle(yamlfile, is_static, hist_source):
+  '''
+  Parses a yaml in the style of remap-pp-components. Takes 3 args:
+    yamlfile: path to yaml config file
+    is_static: is the hist_source we are working with static?
+    hist_source: short identifier for a history file (e.g. "ocean_inert_annual" or "atmos_month")
+  '''
+  with open(yamlfile,'r') as yml:
+    yml_info = yaml.safe_load(yml)
+  if is_static:
+    product = "static"
+  else:
+    product = "ts"
+  for el in yml_info['postprocess']['components']
+    varlist = get_variables(el, product, hist_source)
+    if varlist is not None:
+      break
+  if varlist is None:
+    fre_logger.error(f"error in parse_yaml_for_varlist_ppcompstle: history_file {hist_source} was not found in file {yamlfile}")
+    raise ValueError
+  return(varlist)
+
+def get_variables(comp_info, product, req_source):
+    """
+    Taken from fre-workflows/app/remap-pp-components; when that gets added
+    to fre-cli this should be an import instead
+    Written by Dana
+    Retrieve variables listed for a component; save in dictionary for use later
+    Params:
+        comp_info: dictionary of information about requested component
+        product: string; one of static, ts, or av
+          static: this filename has "static" in it and has vars without time axes
+          ts: timeseries. the vars have time series unless they are metadata vars
+          av: 
+        req_source: the short identifier for the history file ("atmos_month")
+    """
+    v = None
+    if product == "static":
+        if comp_info.get("static") is None:
+            raise ValueError(f"Product is set to static but no static sources/variables defined for {comp_info.get('type')}")
+
+        for static_info in comp_info.get("static"):
+            if static_info.get("source") == req_source:
+                if static_info.get("variables") is None:
+                    v = "all"
+                else:
+                    v = static_info.get("variables")
+    else:
+        for src_info in comp_info.get("sources"): #history_file,variables
+            if src_info.get("history_file") == req_source:
+                if src_info.get("variables") is None:
+                    v = "all"
+                else:
+                    v = src_info.get("variables")
+
+    return v
 
 #Main method invocation
 if __name__ == '__main__':
