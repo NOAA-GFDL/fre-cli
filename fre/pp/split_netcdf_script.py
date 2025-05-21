@@ -9,7 +9,6 @@
 
 import os
 from os import path
-import glob
 import subprocess
 import re
 import sys
@@ -78,7 +77,11 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #under most circumstances, this should match 1 file
   #older regex - not currently working
   #file_regex = f'*.{history_source}?(.tile?).nc'
-  file_regex = f'*.{history_source}*.*.nc'
+  #file_regex = f'*.{history_source}*.*.nc'
+  #glob.glob is NOT sufficient for this. It needs to match:
+  #  '00020101.atmos_level_cmip.tile4.nc'
+  #  '00020101.ocean_cobalt_omip_2d.nc'
+  file_regex = f'.*{history_source}(\.tile.*)?.nc'
   
   #If in sub-dir mode, process the sub-directories instead of the main one
   # and write to $outputdir/$subdir
@@ -88,7 +91,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     fre_logger.info(f"checking {num_subdirs} under {workdir}")
     files_split = 0
     for sd in subdirs: 
-      files=glob.glob(os.path.join(sd,file_regex))
+      files=[os.path.join(sd,el) for el in os.listdir(sd) if re.match(file_regex, el) is not None]
       if len(files) == 0:
         fre_logger.info(f"No input files found; skipping subdir {subdir}")
       else:
@@ -103,7 +106,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       fre_logger.error(f"error: no files found in dirs under {workdir} that match pattern {file_regex}; no splitting took place")
       raise OSError
   else:
-      files=glob.glob(os.path.join(workdir, file_regex))
+      files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
