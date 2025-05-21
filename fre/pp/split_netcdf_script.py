@@ -86,11 +86,13 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #If in sub-dir mode, process the sub-directories instead of the main one
   # and write to $outputdir/$subdir
   if use_subdirs:
-    subdirs = [el for el in os.listdir(workdir) if os.path.isdir(el)]
+    subdirs = [el for el in os.listdir(workdir) if os.path.isdir(os.path.join(workdir,el))]
     num_subdirs = len(subdirs)
     fre_logger.info(f"checking {num_subdirs} under {workdir}")
     files_split = 0
     sd_string = ",".join(subdirs)
+    print(workdir)
+    print(sd_string)
     for sd in subdirs:
       sdw = os.path.join(workdir,sd)
       files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
@@ -98,10 +100,11 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
         fre_logger.info(f"No input files found; skipping subdir {subdir}")
       else:
         output_subdir = os.path.join(os.path.abspath(outputDir), sd)
-        if not os.path.isdir(ouput_subdir):
+        if not os.path.isdir(output_subdir):
           os.mkdir(output_subdir)
         for infile in files:
-          split_file_xarray(infile, output_subdir, varlist)
+          is_static = re.match("static", infile) is not None
+          split_file_xarray(infile, output_subdir, varlist, is_static)
           files_split += 1
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
@@ -111,7 +114,8 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
       # Split the files by variable
       for infile in files:
-        split_file_xarray(infile, os.path.abspath(outputDir), varlist)
+        is_static = re.match("static", infile) is not None
+        split_file_xarray(infile, os.path.abspath(outputDir), varlist, is_static)
       if len(files) == 0:
         fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
         raise OSError
@@ -119,7 +123,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   fre_logger.info("split-netcdf-wrapper call complete")
   sys.exit(0) #check this
 
-def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
+def split_file_xarray(infile, outfiledir, var_list='all', is_static=False):
   '''
   Given a netcdf infile containing one or more data variables, 
   writes out a separate file for each data variable in the file, including the
@@ -145,12 +149,16 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
 
   dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False, decode_coords="all")
   allvars = dataset.data_vars.keys()
+  if is_static:
+    varsize = 1
+  else:
+    varsize = 2
   #0 or 1-dim vars in the dataset (probably reference vars, not diagnostics)
   #note: netcdf dimensions and xarray coords are NOT ALWAYS THE SAME THING.
   #If they were, I could get away with the following:
   #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
   #instead of this:
-  var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= 2) and v not in dataset._coord_names]
+  var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= varsize) and v not in dataset._coord_names]
   #having a variable listed as both a metadata var and a coordinate var seems to
   #lead to the weird adding a _FillValue behavior
   fre_logger.info(f"var patterns: {var_patterns}")
