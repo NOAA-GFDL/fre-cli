@@ -91,8 +91,6 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     fre_logger.info(f"checking {num_subdirs} under {workdir}")
     files_split = 0
     sd_string = ",".join(subdirs)
-    print(workdir)
-    print(sd_string)
     for sd in subdirs:
       sdw = os.path.join(workdir,sd)
       files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
@@ -114,9 +112,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
       # Split the files by variable
       for infile in files:
-        print(infile)
         is_static = re.match(".*static.nc", infile) is not None
-        print(f"is_static: {is_static}")
         split_file_xarray(infile, os.path.abspath(outputDir), varlist, is_static)
       if len(files) == 0:
         fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
@@ -176,8 +172,6 @@ def split_file_xarray(infile, outfiledir, var_list='all', is_static=False):
     return len(list(set(allmatch))) > 1
   metavars = [el for el in allvars if matchlist(el)]
   datavars = [el for el in allvars if not matchlist(el)]
-  print(f"metavars: {metavars}")
-  print(f"datavars: {datavars}")
   fre_logger.debug(f"metavars: {metavars}")
   fre_logger.debug(f"datavars: {datavars}")
   fre_logger.debug(f"var filter list: {var_list}")
@@ -209,7 +203,6 @@ def split_file_xarray(infile, outfiledir, var_list='all', is_static=False):
       #  - Everything is written out with THE SAME precision it was read in
       #  - Everything has THE SAME UNITS as it did when it was read in
       var_outfile = fre_outfile_name(os.path.basename(infile), variable)
-      print(f"var_outfile: {var_outfile}")
       var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
       data2.to_netcdf(var_out, encoding = var_encode)
     
