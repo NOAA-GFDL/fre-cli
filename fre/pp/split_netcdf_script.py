@@ -255,24 +255,28 @@ def set_var_encoding(dset, varnames):
       encode_dict[v]['units'] = dset[v].encoding['units']
   return(encode_dict)
 
+# def fre_outfile_name(infile, varname):
+#   '''
+#   Builds split var filenames the way that fre expects them
+#   (and in a way that should work for any .nc file)
+#   infile: string name of a file with a . somwehere in the filename
+#   varname: string to add to the infile
+#   This is expected to work with files formed the following way: 
+#    Fre Input format:  date.component(.tileX).nc
+#    Fre Output format: date.component.var(.tileX).nc
+#   but it should also work on any file filename.nc
+#   '''
+#   infile_comp = infile.split(".")
+#   #tiles get the varname in a slight different position
+#   if re.search("tile", infile_comp[-2]) is not None and len(infile_comp) > 2:
+#     infile_comp.insert(len(infile_comp)-2,varname)
+#   else:
+#     infile_comp.insert(len(infile_comp)-1,varname)
+#   var_outfile = ".".join(infile_comp)
+#   return(var_outfile)
+
 def fre_outfile_name(infile, varname):
-  '''
-  Builds split var filenames the way that fre expects them
-  (and in a way that should work for any .nc file)
-  infile: string name of a file with a . somwehere in the filename
-  varname: string to add to the infile
-  This is expected to work with files formed the following way: 
-   Fre Input format:  date.component(.tileX).nc
-   Fre Output format: date.component.var(.tileX).nc
-  but it should also work on any file filename.nc
-  '''
-  infile_comp = infile.split(".")
-  #tiles get the varname in a slight different position
-  if re.search("tile", infile_comp[-2]) is not None and len(infile_comp) > 2:
-    infile_comp.insert(len(infile_comp)-2,varname)
-  else:
-    infile_comp.insert(len(infile_comp)-1,varname)
-  var_outfile = ".".join(infile_comp)
+  var_outfile = re.sub(".nc", f".{varname}.nc", infile)
   return(var_outfile)
 
 def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
@@ -325,7 +329,7 @@ def parse_yaml_for_varlist_ppcompstyle(yamlfile, is_static, hist_source):
     product = "static"
   else:
     product = "ts"
-  for el in yml_info['postprocess']['components']
+  for el in yml_info['postprocess']['components']:
     varlist = get_variables(el, product, hist_source)
     if varlist is not None:
       break
