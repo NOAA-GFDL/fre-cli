@@ -276,6 +276,14 @@ def set_var_encoding(dset, varnames):
 #   return(var_outfile)
 
 def fre_outfile_name(infile, varname):
+  '''
+  Builds split  var filenames the way that fre expects them 
+  (and in a way that should work for any .nc file)
+  infile: string name of .nc file
+  varname: string to be added to input
+   Fre Input format:  date.component(.tileX).nc
+   Fre Output format: date.component(.tileX)var.nc
+  '''
   var_outfile = re.sub(".nc", f".{varname}.nc", infile)
   return(var_outfile)
 
