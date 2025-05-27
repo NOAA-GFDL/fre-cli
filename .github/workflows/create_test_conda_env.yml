@@ -8,6 +8,11 @@ on:
     branches:
       - main
 
+# cancel running jobs if theres a newer push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
@@ -20,7 +25,7 @@ jobs:
           submodules: 'recursive'
       - name: Create fre-cli environment
         run: |
-          # create env holding all deps, the env cant be explicitly activated in CI/CD        
+          # create env holding all deps, the env cant be explicitly activated in CI/CD
           conda env create -f environment.yml --name fre-cli
 
           # sets CONDA to wherever it may be on the image

@@ -16,10 +16,10 @@ fre_logger = logging.getLogger(__name__)
 
 #3rd party
 import metomi.rose.config as rose_cfg
-from netCDF4 import Dataset
+import xarray as xr
 
 ## TEMPORARILY including this hack until the yaml
-## config is read through this script instead 
+## config is read through this script instead
 non_regriddable_variables = [
     'geolon_c', 'geolat_c', 'geolon_u', 'geolat_u', 'geolon_v', 'geolat_v',
     'FA_X', 'FA_Y', 'FI_X', 'FI_Y', 'IX_TRANS', 'IY_TRANS', 'UI', 'VI', 'UO', 'VO',
@@ -67,24 +67,25 @@ def safe_rose_config_get(config, section, field):
     return None if config_dict is None else config_dict.get_value()
 
 
-def get_mosaic_file_name(grid_spec_file, mosaic_type):
-    """read string from a numpy masked array WHY"""
-    grid_spec_nc = Dataset(grid_spec_file, 'r')
-    masked_data = grid_spec_nc[mosaic_type][:].copy() # maskedArray
-    grid_spec_nc.close()
-    unmasked_data = masked_data[~masked_data.mask]
-    file_name = ''.join([ one_char.decode() for one_char in unmasked_data ])
-    return file_name
+def get_grid_dims(grid_spec: str, mosaic_file: str) -> (int, int):
 
+    """
+    Retrieves the grid sizes from the gridfiles.
+    This method retrieves the grid dimensions via grid_spec --> mosaic_file --> gridfile,
+    where mosaic_file can be either "atm_mosaic_file", "ocn_mosaic_file", or "lnd_mosaic_file".
+    This method assumes that for a multi-tile grid, the grids for each tile are of the
+    same size and will take the first gridfile to retrieve the coordinate dimensions
+    """
 
-def get_mosaic_grid_file_name(input_mosaic):
-    """get mosaic grid file name from NESTED numpy masked array WHY"""
-    input_mosaic_nc = Dataset(input_mosaic,'r')
-    masked_data = input_mosaic_nc['gridfiles'][0].copy()
-    input_mosaic_nc.close()
-    unmasked_data = masked_data[~masked_data.mask]
-    grid_file_name = ''.join([ one_char.decode() for one_char in unmasked_data ])
-    return grid_file_name
+    mosaicfile = xr.load_dataset(grid_spec)[mosaic_file].values.astype(str)
+    gridfile = xr.load_dataset(str(mosaicfile))['gridfiles'].values[0].astype(str)
+
+    grid = xr.load_dataset(str(gridfile))
+
+    nx = grid.sizes['nx']
+    ny = grid.sizes['ny']
+
+    return nx, ny
 
 
 def check_interp_method( nc_variable, interp_method):
@@ -285,7 +286,7 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
         regrid_vars      = safe_rose_config_get( rose_app_config, component, 'variables')
         output_grid_lon  = safe_rose_config_get( rose_app_config, component, 'outputGridLon')
         output_grid_lat  = safe_rose_config_get( rose_app_config, component, 'outputGridLat')
-        
+
         fre_logger.info( f'output_grid_type = {output_grid_type }\n' + \
                f'remap_file       = {remap_file       }\n' + \
                f'more_options     = {more_options     }\n' + \
@@ -297,30 +298,21 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
 
         # prepare to create input_mosaic via ncks call
         if input_realm in ['atmos', 'aerosol']:
-            mosaic_type = 'atm_mosaic_file'
+            mosaic_file = 'atm_mosaic_file'
         elif input_realm == 'ocean':
-            mosaic_type = 'ocn_mosaic_file'
+            mosaic_file = 'ocn_mosaic_file'
         elif input_realm == 'land':
-            mosaic_type = 'lnd_mosaic_file'
+            mosaic_file = 'lnd_mosaic_file'
         else:
             raise ValueError(f'input_realm={input_realm} not recognized.')
-        fre_logger.info(f'mosaic_type = {mosaic_type}')
+        fre_logger.info(f'mosaic_file = {mosaic_file}')
 
-        # this is just to get the grid_file name
-        input_mosaic = get_mosaic_file_name(grid_spec_file, mosaic_type)
-        fre_logger.info(f'grid_spec_file = {grid_spec_file}')
-        fre_logger.info(f'input_mosaic = {input_mosaic}') #DELETE
+        # get dimensions for source lat, lon
+        nx, ny = get_grid_dims(grid_spec_file, mosaic_file)
 
-        ## this is to get the tile1 filename?
-        mosaic_grid_file = get_mosaic_grid_file_name(input_mosaic)
-        fre_logger.info(f'mosaic_grid_file = {mosaic_grid_file}') #DELETE
-
-        # need source file dimenions for lat/lon
-        source_nx = str(int(Dataset(mosaic_grid_file).dimensions['nx'].size / 2 ))
-        source_ny = str(int(Dataset(mosaic_grid_file).dimensions['ny'].size / 2 ))
+        source_nx = str(nx / 2 )
+        source_ny = str(ny / 2 )
         fre_logger.info(f'source_[nx,ny] = ({source_nx},{source_ny})')
-        Dataset(mosaic_grid_file).close()
-
 
         if remap_file is not None:
             try:
