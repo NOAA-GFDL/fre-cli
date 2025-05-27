@@ -1,5 +1,5 @@
 import numpy as np
-import xarray as xr 
+import xarray as xr
 
 
 def gridspec():
@@ -30,21 +30,21 @@ def gridspec():
     #exchange components with data
     xcomponents = {"aXo": ["atmXocn_exchange_grid_file", aXo_files],
                    "aXl": ["atmXlnd_exchange_grid_file", aXl_files],
-                   "lXo": ["lndXocn_exchange_grid_file", lXo_files]                   
+                   "lXo": ["lndXocn_exchange_grid_file", lXo_files]
     }
 
     #exchange file variable
     for xcomp, [attr,thefiles]  in xcomponents.items():
         data[f"{xcomp}_file"] = xr.DataArray(thefiles, attrs={sn:attr}, dims=[f"nfile_{xcomp}"])
-        
+
     #write
     xr.Dataset(data).to_netcdf("grid_spec.nc")
-        
-        
+
+
 def mosaic():
 
     data = {}
-    
+
     #mosaic variable
     data["mosaic"] = xr.DataArray("C96_mosaic", attrs={"standard_name": "grid_mosaic_spec",
                                                        "children": "gridtiles",
@@ -110,9 +110,9 @@ def mosaic():
     )
 
     #write
-    xr.Dataset(data).to_netcdf("C96_mosaic.nc")  
+    xr.Dataset(data).to_netcdf("C96_mosaic.nc")
 
-    
+
 def grid():
 
     for i in range(1,7):
@@ -141,7 +141,7 @@ def grid():
         #y variable
         data["y"] = xr.DataArray(y, dims=["nyp", "nxp"], attrs={"standard_name": "geographic_longitude",
                                                                 "units": "degree_north"}
-                        
+
         )
 
         #area variable
@@ -150,7 +150,7 @@ def grid():
 
         #write data
         xr.Dataset(data).to_netcdf(f"C96_grid.tile{i}.nc")
-        
+
 
 def all():
 

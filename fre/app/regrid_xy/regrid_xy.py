@@ -19,7 +19,7 @@ import metomi.rose.config as rose_cfg
 import xarray as xr
 
 ## TEMPORARILY including this hack until the yaml
-## config is read through this script instead 
+## config is read through this script instead
 non_regriddable_variables = [
     'geolon_c', 'geolat_c', 'geolon_u', 'geolat_u', 'geolon_v', 'geolat_v',
     'FA_X', 'FA_Y', 'FI_X', 'FI_Y', 'IX_TRANS', 'IY_TRANS', 'UI', 'VI', 'UO', 'VO',
@@ -86,7 +86,7 @@ def get_grid_dims(grid_spec: str, mosaic_file: str) -> (int, int):
     ny = grid.sizes['ny']
 
     return nx, ny
-    
+
 
 def check_interp_method( nc_variable, interp_method):
     """print warning if optional interp_method clashes with nc file attribute field, if present"""
@@ -286,7 +286,7 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
         regrid_vars      = safe_rose_config_get( rose_app_config, component, 'variables')
         output_grid_lon  = safe_rose_config_get( rose_app_config, component, 'outputGridLon')
         output_grid_lat  = safe_rose_config_get( rose_app_config, component, 'outputGridLat')
-        
+
         fre_logger.info( f'output_grid_type = {output_grid_type }\n' + \
                f'remap_file       = {remap_file       }\n' + \
                f'more_options     = {more_options     }\n' + \
