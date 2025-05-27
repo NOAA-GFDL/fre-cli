@@ -18,7 +18,9 @@ setup(
         'cylc-rose',
         'cdo',
         'cmor',
-        'metomi-rose'
+        'metomi-rose',
+        'netcdf4',
+        'xarray'
     ],
     entry_points={
         'console_scripts': [
