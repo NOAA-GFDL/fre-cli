@@ -700,7 +700,7 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, nam
 
 def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, json_exp_config=None,
                      outdir=None, run_one_mode=False,
-                     opt_var_name=None, grid=None, grid_label=None, nom_res=None, start=None, stop=None):
+                     opt_var_name=None, grid=None, grid_label=None, nom_res=None, start=None, stop=None, calendar_type=None):
     '''
     Primary steering function for the other routines in this file, i.e essentially main.
 
@@ -726,6 +726,7 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
         nom_res: string, one-dimensional size representing approximate distance spanned by a grid cell, must be one of
                  several possibilities in the controlled vocab file, optional.
         start, stop: string, optional arguments, strings of four integers representing years (YYYY).
+        calendar_type: string, optional, representing a CF compliant calendar_type string
     Returns:
         int: 0 if successful.
     '''
@@ -743,6 +744,11 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
         update_grid_and_label(json_exp_config,
                               grid_label, grid, nom_res,
                               output_file_path = None)
+
+    # check optional grid/grid_label inputs
+    # the function checks the potential error conditions RE CF compliance.
+    if calendar_type is not None:
+        update_calendar_type(json_exp_config, calendar_type, output_file_path = None)
 
 
     # do not open, but confirm the existence of the exp-specific metadata file
