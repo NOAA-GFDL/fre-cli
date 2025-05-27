@@ -19,7 +19,6 @@ setup(
         'cdo',
         'cmor',
         'metomi-rose',
-        'netcdf4',
         'xarray'
     ],
     entry_points={
