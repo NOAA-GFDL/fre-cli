@@ -134,12 +134,12 @@ def grid():
         x, y = np.meshgrid(xvalues, yvalues)
 
         #x variable
-        data["x"] = xr.DataArray(x, dims=["nyp", "nxy"], attrs={"standard_name": "geographic_longitude",
+        data["x"] = xr.DataArray(x, dims=["nyp", "nxp"], attrs={"standard_name": "geographic_longitude",
                                                                 "units": "degree_east"}
         )
 
         #y variable
-        data["y"] = xr.DataArray(y, dims=["nyp", "nxy"], attrs={"standard_name": "geographic_longitude",
+        data["y"] = xr.DataArray(y, dims=["nyp", "nxp"], attrs={"standard_name": "geographic_longitude",
                                                                 "units": "degree_north"}
                         
         )
