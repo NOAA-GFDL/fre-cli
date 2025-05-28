@@ -73,23 +73,28 @@ TEST_AM5_YAML_PATH=f"fre/yamltools/tests/AM5_example/am5.yaml"
 TEST_CMOR_YAML_PATH=f"fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml -y '''
-    Path(
-        os.path.expandvars(
-            '/archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp'
-        ) ).mkdir(parents=True, exist_ok=True)
-    if Path('FOO_cmor.yaml').exists():
-        Path('FOO_cmor.yaml').unlink()        
-    result = runner.invoke(fre.fre, args=["-v", "-v", "cmor", "yaml", "--dry_run",
-                                              "-y", TEST_AM5_YAML_PATH,
-                                              "-e", "c96L65_am5f7b12r1_amip",
-                                              "-p", "ncrc5.intel",
-                                              "-t", "prod-openmp",
-                                              "--output", "FOO_cmor.yaml" ])
-
-    assert all ( [ Path(TEST_AM5_YAML_PATH).exists(), # input, unparsed, model-yaml file
-                   Path(TEST_CMOR_YAML_PATH).exists(), # input, unparsed, tool-yaml file
-                   Path(f'FOO_cmor.yaml').exists(), #output, merged, parsed, model+tool yaml-file
-                   result.exit_code == 0 ] )
+    gfdl_plat = platform.node()
+    #we can only write to /archive from analysis or pp
+    if gfdl_plat.startswith("pp") or gfdl_plat.startswith("an"):
+        Path(
+            os.path.expandvars(
+                '/archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp'
+            ) ).mkdir(parents=True, exist_ok=True)
+        if Path('FOO_cmor.yaml').exists():
+            Path('FOO_cmor.yaml').unlink()        
+        result = runner.invoke(fre.fre, args=["-v", "-v", "cmor", "yaml", "--dry_run",
+                                                  "-y", TEST_AM5_YAML_PATH,
+                                                  "-e", "c96L65_am5f7b12r1_amip",
+                                                  "-p", "ncrc5.intel",
+                                                  "-t", "prod-openmp",
+                                                  "--output", "FOO_cmor.yaml" ])
+    
+        assert all ( [ Path(TEST_AM5_YAML_PATH).exists(), # input, unparsed, model-yaml file
+                       Path(TEST_CMOR_YAML_PATH).exists(), # input, unparsed, tool-yaml file
+                       Path(f'FOO_cmor.yaml').exists(), #output, merged, parsed, model+tool yaml-file
+                       result.exit_code == 0 ] )
+    else:
+        pytest.skip("skipping test requiring write to /archive on unsupported platform")
 
 
 # fre cmor run
