@@ -31,17 +31,13 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     file naming conventions
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
   inputDir - directory containg netcdf files
-  outputDir - directory to which to write netcdf files. Is created if it does
-    not yet exist.
+  outputDir - directory to which to write netcdf files
   component - the 'component' element we are currently working with in the yaml
   history_source - a history_file under a 'source' under the 'component' that
     we are working with. Is used to identify the files in inputDir.
   use_subdirs - whether to recursively search through inputDir under the subdirectories.
     used when regridding.
   yamlfile - a .yml config file for fre postprocessing
-  split_all_vars - whether to split all data vars in the file into separate files
-    without parsing a yamlfile for the varlist. Skips parsing any component and 
-    yamlfile args; equivalent to passing a varlist of "all" in the yamlfile.
   '''
   
   #Verify input/output dirs exist and are dirs
@@ -49,18 +45,10 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
     raise OSError(f"error: input dir {inputDir} does not exist or is not a directory")
   if not (os.path.isdir(outputDir)):
-    if os.path.isfile(inputDir):
-      fre_logger.error(f"error: output dir {outputDir} is a file. Please specify a directory.")
-    else:
-      fre_logger.info(f"output dir {outputDir} does not exist. Creating now.")
-      try:
-        os.makedirs(outputDir)
-      except OSError as err:
-        fre_logger.error(f"error: Can't create {ouputDir}: {err}")
-  else:
-    if not os.access(outputDir, os.W_OK):
-      fre_logger.error(f"error: cannot write to output dir {outputDir}")
-
+    fre_logger.error(f"error: output dir {outputDir} does not exist or is not a directory")
+    raise OSError(f"error: output dir {outputDir} does not exist or is not a directory")
+  
+  #Find files to split
   curr_dir = os.getcwd()
   workdir = os.path.abspath(inputDir)
   
