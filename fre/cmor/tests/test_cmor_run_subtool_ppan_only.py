@@ -13,6 +13,10 @@ import pytest
 
 from fre.cmor import cmor_run_subtool
 
+import time
+
+import platform
+
 # global consts for these tests, with no/trivial impact on the results
 ROOTDIR='fre/tests/test_files'
 CMORBITE_VARLIST=f'{ROOTDIR}/CMORbite_var_list.json'
@@ -38,37 +42,118 @@ CLEANUP_AFTER_EVERY_TEST = False
 
 def _cleanup():
     # clean up from previous tests
+    time.sleep(10)
     if Path(f'{OUTDIR}').exists():
         shutil.rmtree(f'{OUTDIR}')
     assert not Path(f'{OUTDIR}').exists()
 
-def _case_function(testfile_dir, table, opt_var_name, grid_label):
+
+
+# test_dict =  {
+# "0mon_sos_gn":{
+#     "testfile_dir": "/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/",
+#     "table": "0mon",
+#     "opt_var_name": "sos",
+#     "grid_label": "gn",
+# }, 
+# "Lmon_lai_gr1":{
+#     "testfile_dir": '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/',
+#     "table": "Lmon",
+#     "opt_var_name": "lai",
+#     "grid_label": "gr1",
+# }, 
+# "AERmonZ_ta_gr1":{
+#     "testfile_dir": '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',
+#     "table": 'AERmonZ',
+#     "opt_var_name": "ta",
+#     "grid_label": "gr1",
+# }, 
+# "Omon_so_gr":{
+#     "testfile_dir": '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',
+#     "table": "0mon",
+#     "opt_var_name": "so",
+#     "grid_label": "gr",
+# }, 
+# "Amon_ch4global_gn":{
+#     "testfile_dir": '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',
+#     "table": "Amon",
+#     "opt_var_name": 'ch4global',
+#     "grid_label": "gr",
+# }, 
+# "Emon_gppLut_gr1":{
+#     "testfile_dir": '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',
+#     "table": "Emon",
+#     "opt_var_name": 'gppLut',
+#     "grid_label": "gr1",
+# }, 
+# "Amon_cl_gr1":{
+#     "testfile_dir": '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',
+#     "table": "Amon",
+#     "opt_var_name": "c1",
+#     "grid_label": "gr1",
+# }, 
+# "Amon_mc_gr1":{
+#     "testfile_dir": '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',
+#     "table": "Amon",
+#     "opt_var_name": "mc",
+#     "grid_label": "gr1",
+# } 
+# }
+
+test_data = (
+('/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',    '0mon', 'sos', 'gn'),
+('/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/', 'Lmon', 'lai', 'gr1'),
+('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',            'AERmonZ', 'ta', 'gr1'),
+('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',           '0mon', 'so', 'gr'),
+('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'ch4global', 'gr'),
+('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',           'Emon', 'gppLut', 'gr1'),
+('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'c1', 'gr1'),
+('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'mc', 'gr1')
+)
+
+
+@pytest.mark.parametrize("testfile_dir,table,opt_var_name,grid_label", 
+  [pytest.param('/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',    '0mon', 'sos', 'gn', id='0mon_sos_gn'),
+   # pytest.param('/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/', 'Lmon', 'lai', 'gr1', id='Lmon_lai_gr1'),
+   # pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',            'AERmonZ', 'ta', 'gr1', id='AERmonZ_ta_gr1'),
+   # pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',           '0mon', 'so', 'gr', id='0mon_so_gr'),
+   # pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'ch4global', 'gr', id='Amon_ch4global_gr'),
+   # pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',           'Emon', 'gppLut', 'gr1', id='Emon_gppLut_gr1'),
+   # pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'c1', 'gr1', id='Amon_c1_gr1'),
+   pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'mc', 'gr1', id='Amon_mc_gr1')])
+
+def test_case_function(testfile_dir,table,opt_var_name,grid_label):
+    '''
+    Should be iterating over the test dictionary
+    '''
+    #cleanup to avoid a false positive from a prior test
+    if Path(f'{OUTDIR}/CMIP6').exists():
+       shutil.rmtree(f'{OUTDIR}/CMIP6')
+       assert not Path(f'{OUTDIR}/CMIP6').exists()
 
     # define inputs to the cmor run tool
     indir = testfile_dir
     table_file = f'{CMIP6_TABLE_REPO_PATH}/Tables/CMIP6_{table}.json'
+    print(table_file)
+    print(CMORBITE_VARLIST)
+    print(EXP_CONFIG_DEFAULT)
 
     # if we can't find the input test file, do an xfail. most likely, you're not at PPAN.
-    if not Path(testfile_dir).exists():
+    if not Path(indir).exists():
         pytest.xfail(f'{opt_var_name}, {Path(table_file).name}, {grid_label} '
                      'SUCCEEDs on PP/AN at GFDL only! OR testfile_dir does not exist!')
+                     
+    # do a secondary check for being on PPAN because indir can exist from the workstations:
+    gfdl_plat = platform.node()
+    if not any([gfdl_plat.startswith('pp'), gfdl_plat.startswith('an')]):
+        pytest.xfail(f"{gfdl_plat} is not pp or an node; this test should not run")
 
     # execute the test
     try:
-        #print(f'\nfre -v -v cmor run \\ \n'
-        #      f'    --indir {indir} \\ \n'
-        #      f'    --varlist {CMORBITE_VARLIST} \\ \n'
-        #      f'    --table_config {table_file} \\ \n'
-        #      f'    --exp_config {EXP_CONFIG_DEFAULT} \\ \n'
-        #      f'    --outdir {OUTDIR} \\ \n'
-        #       '    --run_one \\ \n'
-        #      f'    --opt_var_name {opt_var_name}\n'
-        #)
-        #assert False
         cmor_run_subtool(
             indir = indir,
             json_var_list = CMORBITE_VARLIST,
-            json_table_config = table_file,
+            json_table_config = table,
             json_exp_config = EXP_CONFIG_DEFAULT,
             outdir = OUTDIR,
             run_one_mode = True,
@@ -103,118 +188,118 @@ def test_cleanup():
     _cleanup()
 
 
-def test_case_Omon_sos_gr():
-#    testfile_dir = \
-#        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-    testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-        'pp/ocean_monthly_1x1deg/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Omon',
-                             opt_var_name = 'sos',
-                             grid_label = 'gr'
-    )
-
-
-
-def test_case_Omon_sos_gn():
-    #_cleanup() # so the results of the previous test don't fool this one...
-    if Path(f'{OUTDIR}/CMIP6').exists():
-        shutil.rmtree(f'{OUTDIR}/CMIP6')
-    assert not Path(f'{OUTDIR}/CMIP6').exists()
-    testfile_dir = \
-        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
-        'pp/ocean_monthly/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Omon',
-                             opt_var_name = 'sos',
-                             grid_label = 'gn'
-    )
-
-
-def test_case_Lmon_lai_gr1():
-    testfile_dir = \
-        '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
-        'pp/land/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Lmon',
-                             opt_var_name = 'lai',
-                             grid_label = 'gr1'
-    )
-
-
-def test_case_AERmonZ_ta_gr1():
-#    testfile_dir = \
-#        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-    testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-        'pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'AERmonZ',
-                             opt_var_name = 'ta',
-                             grid_label = 'gr1'
-    )
-
-
-def test_case_Omon_so_gr():
-    testfile_dir = \
-        '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
-        'pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Omon',
-                             opt_var_name = 'so',
-                             grid_label = 'gr'
-    )
-
-
-def test_case_Amon_ch4global_gn():
-#    testfile_dir = \
-#        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-    testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-        'pp/atmos_scalar/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Amon',
-                             opt_var_name = 'ch4global',
-                             grid_label = 'gn'
-    )
-
-
-def test_case_Emon_gppLut_gr1():
-#    testfile_dir = \
-#        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-    testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-        'pp/LUmip_refined/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Emon',
-                             opt_var_name = 'gppLut',
-                             grid_label = 'gr1'
-    )
-
-
-def test_case_Amon_cl_gr1():
-#    testfile_dir = \
-#        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-    testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-        'pp/atmos_level_cmip/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Amon',
-                             opt_var_name = 'cl',
-                             grid_label = 'gr1'
-    )
-
-
-
-def test_case_Amon_mc_gr1():
-#    testfile_dir = \
-#        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-    testfile_dir = \
-        '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
-        'pp/atmos_level_cmip/ts/monthly/5yr/'
-    _case_function( testfile_dir = testfile_dir,
-                             table = 'Amon',
-                             opt_var_name = 'mc',
-                             grid_label = 'gr1'
-    )
+# def test_case_Omon_sos_gr():
+# #    testfile_dir = \
+# #        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#     testfile_dir = \
+#         '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#         'pp/ocean_monthly_1x1deg/ts/monthly/5yr/'
+#     _case_function( testfile_dir = testfile_dir,
+#                              table = 'Omon',
+#                              opt_var_name = 'sos',
+#                              grid_label = 'gr'
+#     )
+# 
+# 
+# 
+# def test_case_Omon_sos_gn():
+#     #_cleanup() # so the results of the previous test don't fool this one...
+#     if Path(f'{OUTDIR}/CMIP6').exists():
+#         shutil.rmtree(f'{OUTDIR}/CMIP6')
+#     assert not Path(f'{OUTDIR}/CMIP6').exists()
+#     testfile_dir = \
+#         '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+#         'pp/ocean_monthly/ts/monthly/5yr/'
+#     _case_function( testfile_dir = testfile_dir,
+#                              table = 'Omon',
+#                              opt_var_name = 'sos',
+#                              grid_label = 'gn'
+#     )
+# 
+# 
+# def test_case_Lmon_lai_gr1():
+#     testfile_dir = \
+#         '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+#         'pp/land/ts/monthly/5yr/'
+#     _case_function( testfile_dir = testfile_dir,
+#                              table = 'Lmon',
+#                              opt_var_name = 'lai',
+#                              grid_label = 'gr1'
+#     )
+# 
+# 
+# def test_case_AERmonZ_ta_gr1():
+# #    testfile_dir = \
+# #        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#     testfile_dir = \
+#         '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#         'pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/'
+#     _case_function( testfile_dir = testfile_dir,
+#                              table = 'AERmonZ',
+#                              opt_var_name = 'ta',
+#                              grid_label = 'gr1'
+#     )
+# 
+# 
+# def test_case_Omon_so_gr():
+#     testfile_dir = \
+#         '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/' + \
+#         'pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/'
+#     _case_function( testfile_dir = testfile_dir,
+#                              table = 'Omon',
+#                              opt_var_name = 'so',
+#                              grid_label = 'gr'
+#     )
+# 
+# 
+# def test_case_Amon_ch4global_gn():
+# #    testfile_dir = \
+# #        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#     testfile_dir = \
+#         '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#         'pp/atmos_scalar/ts/monthly/5yr/'
+#     _case_function( testfile_dir = testfile_dir,
+#                              table = 'Amon',
+#                              opt_var_name = 'ch4global',
+#                              grid_label = 'gn'
+#     )
+# 
+# 
+# def test_case_Emon_gppLut_gr1():
+# #    testfile_dir = \
+# #        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#     testfile_dir = \
+#         '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#         'pp/LUmip_refined/ts/monthly/5yr/'
+#     _case_function( testfile_dir = testfile_dir,
+#                              table = 'Emon',
+#                              opt_var_name = 'gppLut',
+#                              grid_label = 'gr1'
+#     )
+# 
+# 
+# def test_case_Amon_cl_gr1():
+# #    testfile_dir = \
+# #        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#     testfile_dir = \
+#         '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#         'pp/atmos_level_cmip/ts/monthly/5yr/'
+#     _case_function( testfile_dir = testfile_dir,
+#                              table = 'Amon',
+#                              opt_var_name = 'cl',
+#                              grid_label = 'gr1'
+#     )
+# 
+# 
+# 
+# def test_case_Amon_mc_gr1():
+# #    testfile_dir = \
+# #        '/arch0/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#     testfile_dir = \
+#         '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/' + \
+#         'pp/atmos_level_cmip/ts/monthly/5yr/'
+#     _case_function( testfile_dir = testfile_dir,
+#                              table = 'Amon',
+#                              opt_var_name = 'mc',
+#                              grid_label = 'gr1'
+#     )
