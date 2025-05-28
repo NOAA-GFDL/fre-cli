@@ -149,7 +149,10 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   #If you have a file of 3 or more dim vars, 2d-or-fewer vars are likely to be 
   #metadata vars; if your file is 2d vars, 1d vars are likely to be metadata.
   max_ndims = get_max_ndims(dataset)
-  if max_ndims >= 3: varsize = 2 else: varsize = 1
+  if max_ndims >= 3: 
+    varsize = 2 
+  else: 
+    varsize = 1
   #note: netcdf dimensions and xarray coords are NOT ALWAYS THE SAME THING.
   #If they were, I could get away with the following:
   #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
@@ -215,7 +218,7 @@ def get_max_ndims(dataset):
   dataset: xarray Dataset 
   '''
   allvars = dataset.data_vars.keys()
-  ndims = [dataset[v].shape for v in allvars]
+  ndims = [len(dataset[v].shape) for v in allvars]
   return max(ndims)
     
 def set_coord_encoding(dset, vcoords):
