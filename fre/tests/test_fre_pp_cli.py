@@ -145,6 +145,20 @@ def test_cli_fre_pp_status_opt_dne():
     result = runner.invoke(fre.fre, args=["pp", "status", "optionDNE"])
     assert result.exit_code == 2
 
+def test_cli_fre_pp_status_security_check(): #thank you, Utheri Wagura
+    ''' fre pp status optionDNE '''
+    result = runner.invoke(fre.fre, args=["-vv", "pp", "status",
+                                          "-e", ";cat ~/.ssh/id_rsa;",
+                                          "-p", ";touch unwanted_file.txt;",
+                                          "-t", ";echo $USER;"    ])
+    #print(result.stdout)
+    #print(result.stderr)
+    #assert False
+    #assert result.exit_code == 2
+    assert not Path('./unwanted_file.txt').exists()
+    assert result.exit_code != 0
+    assert False
+
 #-- fre pp validate
 def test_cli_fre_pp_validate():
     ''' fre pp validate '''
