@@ -1,0 +1,76 @@
+netcdf \00010101.ocean_static.wet_u {
+dimensions:
+	time = UNLIMITED ; // (1 currently)
+	yh = 10 ;
+	xq = 15 ;
+	xh = 15 ;
+	yq = 15 ;
+variables:
+	double time(time) ;
+		time:units = "days since 0001-01-01 00:00:00" ;
+		time:long_name = "time" ;
+		time:axis = "T" ;
+		time:calendar_type = "NOLEAP" ;
+		time:calendar = "noleap" ;
+	float wet_u(yh, xq) ;
+		wet_u:_FillValue = 1.e+20f ;
+		wet_u:missing_value = 1.e+20f ;
+		wet_u:long_name = "0 if land, 1 if ocean at zonal velocity (Cu) points" ;
+		wet_u:cell_methods = "time: point" ;
+		wet_u:interp_method = "none" ;
+	double xh(xh) ;
+		xh:units = "degrees_east" ;
+		xh:long_name = "h point nominal longitude" ;
+		xh:axis = "X" ;
+	double xq(xq) ;
+		xq:units = "degrees_east" ;
+		xq:long_name = "q point nominal longitude" ;
+		xq:axis = "X" ;
+	double yh(yh) ;
+		yh:units = "degrees_north" ;
+		yh:long_name = "h point nominal latitude" ;
+		yh:axis = "Y" ;
+	double yq(yq) ;
+		yq:units = "degrees_north" ;
+		yq:long_name = "q point nominal latitude" ;
+		yq:axis = "Y" ;
+
+// global attributes:
+		:title = "cm5_c96_am5f7c1r0_b06_piC_galb_noiceinit_alb" ;
+		:grid_type = "regular" ;
+		:grid_tile = "N/A" ;
+		:history = "Tue May 27 16:22:52 2025: ncks -d xh,0,14 -d yh,0,9 -d xq,0,14 -d yq,0,14 /home/cew/Code/cmip7-sprint/testfiles/input/00010101.ocean_static.nc -O /home/cew/Code/cmip7-sprint/testfiles/00010101.ocean_static.nc" ;
+		:NCO = "netCDF Operators version 5.1.9 (Homepage = http://nco.sf.net, Code = http://github.com/nco/nco, Citation = 10.1016/j.envsoft.2008.03.004)" ;
+data:
+
+ time = 0 ;
+
+ wet_u =
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ;
+
+ xh = -299.875, -299.625, -299.375, -299.125, -298.875, -298.625, -298.375, 
+    -298.125, -297.875, -297.625, -297.375, -297.125, -296.875, -296.625, 
+    -296.375 ;
+
+ xq = -300, -299.75, -299.5, -299.25, -299, -298.75, -298.5, -298.25, -298, 
+    -297.75, -297.5, -297.25, -297, -296.75, -296.5 ;
+
+ yh = -88.5208813286133, -88.4226439858398, -88.3244066430664, 
+    -88.2261693002929, -88.1279319575195, -88.029694614746, 
+    -87.9314572719726, -87.8332199291991, -87.7349825864257, -87.6367452436523 ;
+
+ yq = -88.57, -88.4717626572265, -88.3735253144531, -88.2752879716797, 
+    -88.1770506289062, -88.0788132861328, -87.9805759433593, 
+    -87.8823386005859, -87.7841012578124, -87.685863915039, 
+    -87.5876265722655, -87.4893892294921, -87.3911518867186, 
+    -87.2929145439452, -87.1946772011717 ;
+}
