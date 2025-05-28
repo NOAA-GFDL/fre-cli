@@ -145,14 +145,11 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
 
   dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False, decode_coords="all")
   allvars = dataset.data_vars.keys()
-  #look: this is a hack, but you need the is_static check here to affect
-  #the splitting unless you pass it in as a command-line opt
-  is_static = re.match(".*static.*.nc", infile) is not None
-  if is_static:
-    varsize = 1
-  else:
-    varsize = 2
-  #0 or 1-dim vars in the dataset (probably reference vars, not diagnostics)
+  
+  #If you have a file of 3 or more dim vars, 2d-or-fewer vars are likely to be 
+  #metadata vars; if your file is 2d vars, 1d vars are likely to be metadata.
+  max_ndims = get_max_ndims(dataset)
+  if max_ndims >= 3: varsize = 2 else: varsize = 1
   #note: netcdf dimensions and xarray coords are NOT ALWAYS THE SAME THING.
   #If they were, I could get away with the following:
   #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
@@ -210,7 +207,16 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
       var_outfile = fre_outfile_name(os.path.basename(infile), variable)
       var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
       data2.to_netcdf(var_out, encoding = var_encode)
-    
+
+def get_max_ndims(dataset):
+  '''
+  Gets the maximum number of dimensions of a single var in an 
+  xarray Dataset object. Excludes coord vars, which should be single-dim anyway.
+  dataset: xarray Dataset 
+  '''
+  allvars = dataset.data_vars.keys()
+  ndims = [dataset[v].shape for v in allvars]
+  return max(ndims)
     
 def set_coord_encoding(dset, vcoords):
   '''
