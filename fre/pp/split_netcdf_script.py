@@ -101,8 +101,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
         if not os.path.isdir(output_subdir):
           os.mkdir(output_subdir)
         for infile in files:
-          is_static = re.match(".*static.nc", infile) is not None
-          split_file_xarray(infile, output_subdir, varlist, is_static)
+          split_file_xarray(infile, output_subdir, varlist)
           files_split += 1
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
@@ -112,8 +111,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
       # Split the files by variable
       for infile in files:
-        is_static = re.match(".*static.nc", infile) is not None
-        split_file_xarray(infile, os.path.abspath(outputDir), varlist, is_static)
+        split_file_xarray(infile, os.path.abspath(outputDir), varlist)
       if len(files) == 0:
         fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
         raise OSError
@@ -121,7 +119,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   fre_logger.info("split-netcdf-wrapper call complete")
   sys.exit(0) #check this
 
-def split_file_xarray(infile, outfiledir, var_list='all', is_static=False):
+def split_file_xarray(infile, outfiledir, var_list='all'):
   '''
   Given a netcdf infile containing one or more data variables, 
   writes out a separate file for each data variable in the file, including the
@@ -147,6 +145,9 @@ def split_file_xarray(infile, outfiledir, var_list='all', is_static=False):
 
   dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False, decode_coords="all")
   allvars = dataset.data_vars.keys()
+  #look: this is a hack, but you need the is_static check here to affect
+  #the splitting unless you pass it in as a command-line opt
+  is_static = re.match(".*static.*.nc", infile) is not None
   if is_static:
     varsize = 1
   else:
