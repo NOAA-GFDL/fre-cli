@@ -177,18 +177,22 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   fre_logger.debug(f"datavars: {datavars}")
   fre_logger.debug(f"var filter list: {var_list}")
   
-  if var_list != "all":
+  #datavars does 2 things: keep track of which vars to write, and tell xarray
+  #which vars to drop. we need to seprate those things for the variable filtering.
+  if var_list == "all":
+    write_vars = datavars
+  else:
     if isinstance(var_list, str):
       var_list = var_list.split(",")
     var_list = list(set(var_list))
-    datavars = [el for el in datavars if el in var_list]
-  fre_logger.debug(f"intersection of datavars and var_list: {datavars}")
+    write_vars = [el for el in datavars if el in var_list]
+  fre_logger.debug(f"intersection of datavars and var_list: {write_vars}")
   
-  if len(datavars) < 0:
+  if len(write_vars) < 0:
     fre_logger.info(f"No data variables found in {infile}; no writes take place.")
   else:
     vc_encode = set_coord_encoding(dataset, dataset._coord_names)
-    for variable in datavars:
+    for variable in write_vars:
       fre_logger.info(f"splitting var {variable}")
       #drop all data vars (diagnostics) that are not the current var of interest
       #but KEEP the metadata vars

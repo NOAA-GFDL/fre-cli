@@ -19,13 +19,15 @@ runner=CliRunner()
 
 #rootdir = Path(__file__).parents[3] #get to root directory
 test_dir = osp.realpath("fre/tests/test_files/ascii_files/split_netcdf")
-casedirs = [osp.join(test_dir, el) for el in ["atmos_daily.tile3", "ocean_static"]]
+
 cases = {"ts": {"dir":"atmos_daily.tile3",
                  "nc": "00010101.atmos_daily.tile3.nc", 
                  "cdl": "00010101.atmos_daily.tile3.cdl"}, 
          "static": {"dir": "ocean_static", 
                      "nc": "00010101.ocean_static.nc", 
                      "cdl": "00010101.ocean_static.cdl"}}
+
+casedirs = [osp.join(test_dir, el) for el in [cases["ts"]["dir"], cases["static"]["dir"]]]
 
 all_ts_varlist = "all"
 some_ts_varlist = ["tasmax", "tasmin", "ps", "tasmin", "tas", "temp", "zsurf", "pv350K"]
@@ -42,12 +44,12 @@ def test_split_file_setup():
     ncgen_commands = []
     nc_files = []
     sp_stat = []
-    for testcase in cases:
-      cds = testcase["dir"]
+    for testcase in cases.keys():
+      cds = osp.join(test_dir,cases[testcase]["dir"])
       subdirs = [f.path for f in os.scandir(cds) if f.is_dir()]
       for sd in subdirs:
           #for each directory in the current dir, make a new dir with "new_" prepended
-          newdir = osp.join(test_dir1, "new_" + os.path.basename(sd))
+          newdir = osp.join(cds, "new_" + os.path.basename(sd))
           if not osp.exists(newdir):
               os.makedirs(newdir)
               print(newdir)
@@ -59,9 +61,10 @@ def test_split_file_setup():
               nc_files.append(cdl_out)
               ncgen_commands.append(cdlf_cmd)
           ncgen_commands.append(["ncgen3", "-k", "netCDF-4", "-o", 
-                                 osp.join(cds, testcase["nc"]), 
-                                 osp.join(cds, testcase["cdl"])])
+                                 osp.join(cds, cases[testcase]["nc"]), 
+                                 osp.join(cds, cases[testcase]["cdl"])])
           for ncg in ncgen_commands:
+              print(ncg)
               sp = subprocess.run(ncg, check = True, capture_output=True)
               sp_stat.append(sp.returncode)
           sp_success = [el == 0 for el in sp_stat]
@@ -69,27 +72,28 @@ def test_split_file_setup():
     assert all( [ sp_success + nc_files_exist ] )
 
 #test splitting files
-@pytest.mark.parametrize("infile,outfiledir,varlist", 
-                             [pytest.param(osp.join(casedirs[0], cases["ts"]["nc"]), 
+@pytest.mark.parametrize("workdir,infile,outfiledir,varlist", 
+                             [pytest.param(casedirs[0], cases["ts"]["nc"],
                                 "new_all_ts_varlist",  "all", 
                                 id="ts_all"), 
-                              pytest.param(osp.join(casedirs[0], cases["ts"]["nc"]), 
+                              pytest.param(casedirs[0], cases["ts"]["nc"], 
                                 "new_some_ts_varlist",
                                 ",".join(some_ts_varlist),
                                 id="ts_some"), 
-                              pytest.param(osp.join(casedirs[0], cases["ts"]["nc"]), 
+                              pytest.param(casedirs[0], cases["ts"]["nc"], 
                                 "new_none_ts_varlist", 
                                 ",".join(none_ts_varlist), id='none'), 
-                              pytest.param(osp.join(casedirs[0], cases["static"]["nc"]), 
+                              pytest.param(casedirs[1], cases["static"]["nc"], 
                                 "new_all_static_varlist",  "all", 
                                 id="static_all"), 
-                              pytest.param(osp.join(casedirs[0], cases["static"]["nc"]), 
+                              pytest.param(casedirs[1], cases["static"]["nc"], 
                                 "new_some_static_varlist",
                                 ",".join(some_static_varlist),
-                                id="static_some"])
-def test_split_file_run(infile, outfiledir, varlist):
+                                id="static_some")])
+def test_split_file_run(workdir,infile, outfiledir, varlist):
     ''' Checks that split-netcdf will run when called from the command line 
     
+        workdir: subdir all operations are relative to
         infile: netcdf file to split into single-var files
         outfiledir: directory to which to write the split netcdf files
           (new_all_ts_varlist, new_some_ts_varlist, new_none_ts_varlist)
@@ -105,21 +109,25 @@ def test_split_file_run(infile, outfiledir, varlist):
                 should produce no files
             ts: timeseries files
             static: static files'''
-    outfiledir = osp.join(test_dir1, outfiledir)
+    infile = osp.join(workdir, infile)
+    outfiledir = osp.join(workdir, outfiledir)
     split_netcdf_args = ["pp", "split-netcdf", 
                                           "--file", infile, 
                                           "--outputdir", outfiledir, 
                                           "--variables", varlist]
+    print(split_netcdf_args)
     result = runner.invoke(fre.fre, args=split_netcdf_args)
+    print(result)
     assert result.exit_code == 0
 
-@pytest.mark.parametrize("newdir,origdir", 
-                         [pytest.param("new_all_ts_varlist", "all_ts_varlist", id='ts_all'), 
-                         pytest.param("new_some_ts_varlist", "some_ts_varlist", id='ts_some'),
-                         pytest.param("new_all_static_varlist", "all_static_varlist", id='static_all'), 
-                         pytest.param("new_some_static_varlist", "some_static_varlist", id='static_some')])    
-def test_split_file_data(newdir, origdir):
+@pytest.mark.parametrize("workdir,newdir,origdir", 
+                         [pytest.param(casedirs[0],"new_all_ts_varlist", "all_ts_varlist", id='ts_all'), 
+                         pytest.param(casedirs[0],"new_some_ts_varlist", "some_ts_varlist", id='ts_some'),
+                         pytest.param(casedirs[1],"new_all_static_varlist", "all_static_varlist", id='static_all'), 
+                         pytest.param(casedirs[1],"new_some_static_varlist", "some_static_varlist", id='static_some')])    
+def test_split_file_data(workdir,newdir, origdir):
     ''' Checks that the data in the new files match the data in the old files
+        workdir: dir that all operations are relative to
         newdir: the directory containing the newly-written files
           (new_all_ts_varlist, new_some_ts_varlist)
         origdir: dir containing the old files to check against
@@ -132,8 +140,8 @@ def test_split_file_data(newdir, origdir):
             ts: timeseries files
             static: static files
                 '''
-    newdir = osp.join(test_dir1, newdir)
-    origdir = osp.join(test_dir1, origdir)
+    newdir = osp.join(workdir, newdir)
+    origdir = osp.join(workdir, origdir)
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     new_count = len(split_files)
@@ -158,11 +166,14 @@ def test_split_file_data(newdir, origdir):
 #produces different metadata on the _FillValue in each context.
 #everything else seems to be matching; discussing this at the code review.
 
-@pytest.mark.parametrize("newdir,origdir",
-                         [pytest.param("new_all_ts_varlist", "all_ts_varlist", id='all'),
-                         pytest.param("new_some_ts_varlist", "some_ts_varlist", id='some')])
-def test_split_file_metadata(newdir, origdir):
+@pytest.mark.parametrize("workdir,newdir,origdir",
+                         [pytest.param(casedirs[0],"new_all_ts_varlist", "all_ts_varlist", id='all'),
+                         pytest.param(casedirs[0],"new_some_ts_varlist", "some_ts_varlist", id='some'),
+                         pytest.param(casedirs[1],"new_all_static_varlist", "all_static_varlist", id='static_all'), 
+                         pytest.param(casedirs[1],"new_some_static_varlist", "some_static_varlist", id='static_some')])
+def test_split_file_metadata(workdir,newdir, origdir):
     ''' Checks that the metadata in the new files match the metadata in the old files 
+        workdir: dir that all operations are relative to
         newdir: the directory containing the newly-written files
           (new_all_ts_varlist, new_some_ts_varlist)
         origdir: dir containing the old files to check against
@@ -175,8 +186,8 @@ def test_split_file_metadata(newdir, origdir):
             ts: timeseries files
             static: static files
                 '''
-    newdir = osp.join(test_dir1, newdir)
-    origdir = osp.join(test_dir1, origdir)
+    newdir = osp.join(workdir, newdir)
+    origdir = osp.join(workdir, origdir)
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     new_count = len(split_files)
@@ -236,7 +247,7 @@ def test_parse_yaml(component, compdir, varlist, hist_source):
             parses the yaml, finds the varlist, but does not find a history_file
               under sources that matches the hist_source
             '''
-    yamlfile = osp.join(osp.join(test_dir1, compdir), "am5_components_varlist.yml")
+    yamlfile = osp.join(osp.join(casedirs[0], compdir), "am5_components_varlist.yml")
     if hist_source == "none":
       new_varlist = parse_yaml_for_varlist(yamlfile, component)
     else:
