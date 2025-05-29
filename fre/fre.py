@@ -64,7 +64,7 @@ def fre(verbose = 0, quiet = False, log_file = None):
     fre_logger.debug('root fre_logger level set')
 
     # check if log_file arg was used
-    if len(log_file) > 0:
+    if log_file is not None:
         fre_logger.debug('creating fre_file_handler for fre_logger')
         fre_file_handler=logging.FileHandler(log_file,
                                              mode='a',encoding='utf-8',
