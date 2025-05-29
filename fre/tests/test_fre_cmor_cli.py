@@ -4,7 +4,6 @@ from datetime import date
 from pathlib import Path
 import shutil
 import os
-import platform
 
 import pytest
 
@@ -74,9 +73,9 @@ TEST_AM5_YAML_PATH=f"fre/yamltools/tests/AM5_example/am5.yaml"
 TEST_CMOR_YAML_PATH=f"fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml -y '''
-    gfdl_plat = platform.node()
     #we can only write to /archive from analysis or pp
-    if gfdl_plat.startswith("pp") or gfdl_plat.startswith("an"):
+    #or if we have a fake /archive directory (for github-ci)
+    if os.access("/archive", os.W_OK):
         Path(
             os.path.expandvars(
                 '/archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp'

@@ -284,4 +284,4 @@ def test_git_cleanup():
     check = subprocess.run(check_cmd, 
                            shell = True, check = False)
     #first command completed, second found no file in git status
-    assert all([result.returncode == 0, check.returncode == 1])
+    assert all([restore.returncode == 0, check.returncode == 1])

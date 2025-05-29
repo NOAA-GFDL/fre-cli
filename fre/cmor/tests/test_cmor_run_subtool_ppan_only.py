@@ -97,10 +97,10 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label):
         pytest.xfail(f'{opt_var_name}, {Path(table_file).name}, {grid_label} '
                      'SUCCEEDs on PP/AN at GFDL only! OR testfile_dir does not exist!')
                      
-    # do a secondary check for being on PPAN because indir can exist from the workstations:
-    gfdl_plat = platform.node()
-    if not any([gfdl_plat.startswith('pp'), gfdl_plat.startswith('an')]):
-        pytest.xfail(f"{gfdl_plat} is not pp or an node; this test should not run")
+    # # do a secondary check for being on PPAN because indir can exist from the workstations:
+    # gfdl_plat = platform.node()
+    # if not any([gfdl_plat.startswith('pp'), gfdl_plat.startswith('an')]):
+    #     pytest.xfail(f"{gfdl_plat} is not pp or an node; this test should not run")
 
     # execute the test
     try:
@@ -136,6 +136,21 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label):
 
     if CLEANUP_AFTER_EVERY_TEST:
         _cleanup()
+        
+def test_git_cleanup():
+    '''
+    Performs a git restore on EXP_CONFIG to avoid false positives from
+    git's record of changed files. It's supposed to change as part of the test.
+    '''
+    git_cmd = f"git restore {EXP_CONFIG_DEFAULT}" 
+    restore = subprocess.run(git_cmd, 
+                  shell=True,
+                  check=False)
+    check_cmd = f"git status | grep {EXP_CONFIG_DEFAULT}"
+    check = subprocess.run(check_cmd, 
+                           shell = True, check = False)
+    #first command completed, second found no file in git status
+    assert all([restore.returncode == 0, check.returncode == 1])
 
 #### test cases
 def test_cleanup():
