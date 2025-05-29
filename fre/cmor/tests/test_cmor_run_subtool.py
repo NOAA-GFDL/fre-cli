@@ -277,8 +277,11 @@ def test_git_cleanup():
     git's record of changed files. It's supposed to change as part of the test.
     '''
     git_cmd = f"git restore {EXP_CONFIG}" 
-    subprocess.run(git_cmd, 
+    restore = subprocess.run(git_cmd, 
                   shell=True,
                   check=False)
-    #I do not know what you'd assert for this step
-    assert True
+    check_cmd = f"git status | grep {EXP_CONFIG}"
+    check = subprocess.run(check_cmd, 
+                           shell = True, check = False)
+    #first command completed, second found no file in git status
+    assert all([result.returncode == 0, check.returncode == 1])
