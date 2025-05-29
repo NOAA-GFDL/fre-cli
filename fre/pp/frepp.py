@@ -1,8 +1,8 @@
 ''' fre pp '''
 
 import click
-#import logging
-#fre_logger = logging.getLogger(__name__)
+import logging
+fre_logger = logging.getLogger(__name__)
 
 #fre tools
 from . import checkout_script
@@ -305,9 +305,9 @@ def all(experiment, platform, target, config_file, branch, time):
     """
     Execute fre pp steps in order
     """
-    #fre_logger.info('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
+    fre_logger.info('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
-    #fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
+    fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
 
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,

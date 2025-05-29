@@ -2,6 +2,7 @@
 
 import subprocess
 from . import make_workflow_name
+import logging
 fre_logger = logging.getLogger(__name__)
 
 def trigger(experiment = None, platform = None, target = None, time = None):
