@@ -19,11 +19,11 @@ except IndexError:
     version = version_unexpanded_split[0] + '.' + version_minor
 
 __version__=version
-log_level= 999
 
 
-#import logging
-## base fre_logger set here, configured within fre
-#fre_logger = logging.getLogger(__name__)
-##FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
-##MODE = 'x'
+import logging
+fre_logger=logging.getLogger(__name__)
+FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
+logging.basicConfig(level = logging.WARNING, format=FORMAT,
+                    filename = None, encoding = 'utf-8' )
+

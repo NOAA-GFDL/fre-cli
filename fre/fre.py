@@ -7,18 +7,14 @@ principal click group for main/fre allows for subgroup functions to
 be called via this script. I.e. 'fre' is the entry point
 """
 
-from . import version
+from . import version, FORMAT
 
 import click
 
 from .lazy_group import LazyGroup
 
 import logging
-
-# base fre_logger set here, configured within fre
 fre_logger = logging.getLogger(__name__)
-FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
-#MODE = 'x'
 
 @click.version_option(
     package_name = "fre-cli",
@@ -54,19 +50,34 @@ def fre(verbose = 0, quiet = False, log_file = None):
     entry point function to subgroup functions, setting global verbosity/logging formats that all
     other routines will utilize
     '''
-    fre_logger.debug('setting log level')
-    log_level = logging.WARN #default
+    log_level = logging.WARNING # default
     if verbose == 1:
-        log_level = logging.INFO #more verbose than default
+        log_level = logging.INFO # -v, more verbose than default
     elif verbose == 2:
-        log_level = logging.DEBUG #most verbose
+        log_level = logging.DEBUG # -vvmost verbose
 
     if quiet:
-        log_level = logging.ERROR #least verbose
-    logging.basicConfig(level = log_level, format = FORMAT,
-                        filename = log_file, encoding = 'utf-8')
-    fre_logger.debug('log level set')
+        log_level = logging.ERROR # least verbose
 
+    base_fre_logger=fre_logger.parent
+    base_fre_logger.setLevel(level = log_level)
+    fre_logger.debug('root fre_logger level set')
 
+    # check if log_file arg was used
+    if len(log_file) > 0:
+        fre_logger.debug('creating fre_file_handler for fre_logger')
+        fre_file_handler=logging.FileHandler(log_file,
+                                             mode='a',encoding='utf-8',
+                                             delay=False) # perhaps should revisit the delay=False bit
+
+        fre_logger.debug('setting fre_file_handler logging format:')
+        fre_log_file_formatter=logging.Formatter(fmt=FORMAT)
+        fre_file_handler.setFormatter(fre_log_file_formatter)
+
+        base_fre_logger.addHandler(fre_file_handler)
+        fre_logger.info('fre_file_handler added to base_fre_logger') # first message that will appear in the log file if used
+        
+    fre_logger.debug('click entry-point function call done.')
+    
 if __name__ == '__main__':
     fre()
