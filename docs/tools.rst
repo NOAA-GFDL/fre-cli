@@ -1,10 +1,11 @@
 .. last updated May 2025
 
+=====
+Tools
+=====
 
-=======
 ``fre``
 =======
-
 
 The ``click`` based entry point to the rest of the package at the command line for ``fre-cli``. ``fre`` has a command structure like, ``fre TOOL COMMAND``, akin to the CLI's provided by popular packages liek ``git`` and ``cylc``. This enables discovery of the tooling capability, useful for complex tools with multiple options and detailed configuration.
 
@@ -31,10 +32,6 @@ arguments
   - the text will still be seen in the terminal, and the format within the ``log_file`` is the same as what is printed to screen.
 
   
-
-=====
-Tools
-=====
 
 Tools that require arguments to run will alert user about missing arguments, and will also list the rest of the optional parameters if ``--help`` is executed. e.g.::
 
