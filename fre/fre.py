@@ -40,11 +40,12 @@ fre_logger = logging.getLogger(__name__)
         fg = 'cyan')
 )
 @click.option( '-v', '--verbose', default = 0, required = False, count = True, type = int,
-               help = "increment logging verbosity. two for logging.DEBUG, one for logging.INFO" )
+               help = "Increment logging verbosity from default (logging.WARNING) to logging.INFO. use -vv for logging.DEBUG. will be overridden by -q/--quiet" )
 @click.option( '-q', '--quiet', default = False, required = False, is_flag = True, type = bool,
-               help = "only output logging.ERROR messages, or worse." )
+               help = "Set logging verbosity from default (logging.WARNING) to logging.ERROR, printing less output to screen. overrides -v[v]/--verbose" )
 @click.option( '-l', '--log_file', default = None, required = False, type = str,
-               help = 'path to log file for all fre calls. leave as None to print to screen' )
+               help = 'Path to log file for all fre calls, the output to screen will still print with the path specified. ' + \
+                      'If the log file already exists, it is appended to.' )
 def fre(verbose = 0, quiet = False, log_file = None):
     '''
     entry point function to subgroup functions, setting global verbosity/logging formats that all
