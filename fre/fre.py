@@ -54,7 +54,7 @@ def fre(verbose = 0, quiet = False, log_file = None):
     if verbose == 1:
         log_level = logging.INFO # -v, more verbose than default
     elif verbose == 2:
-        log_level = logging.DEBUG # -vvmost verbose
+        log_level = logging.DEBUG # -vv most verbose
 
     if quiet:
         log_level = logging.ERROR # least verbose

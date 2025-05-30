@@ -1,15 +1,23 @@
-=============
-Tools
-=============
+.. last updated May 2025
 
-Notes on command-line interface
-========================================
-The “cli” in fre-cli derives from the shell “fre SUBCOMMAND COMMAND” structure inspired by git, cylc, and other modern Linux command-line tools. This enables discovery of the tooling capability, useful for complex tools with multiple options.
 
-To discover subcommands, use ``--help``, e.g.::
+=======
+``fre``
+=======
 
-  fre --help
 
+The ``click`` based entry point to the rest of the package at the command line for ``fre-cli``. ``fre`` has a command structure like, ``fre SUBCOMMAND COMMAND``, akin to the CLI's provided by popular packages liek ``git`` and ``cylc``. This enables discovery of the tooling capability, useful for complex tools with multiple options and detailed configuration.
+
+
+arguments
+~~~~~~~~~
+
+* (optional) ``--help``, help flag, print information on ``SUBCOMMAND`` options
+* (optional) ``-v[v]``, verbosity flag, up to two, incrementing ``fre``'s verbosity from the default ``logging.WARNING`` to ``logging.INFO`` with one ``-v`` and ``logging.DEBUG`` with ``-vv``
+* (optional) ``-q``, quiet flag, up to one, sets ``fre``'s verbosity from the default ``logging.WARNING`` to ``logging.ERROR``.
+* (optional) ``-l, --log_file PATH``, argument specifying a path to output ``logging`` messages at a given (or default) verbosity, the text will still be seen in the terminal, and the format within the ``log_file`` is the same as what is printed to screen.
+
+  
   fre make --help
 
   fre pp --help
@@ -21,19 +29,23 @@ the rest of the optional parameters if ``--help`` is executed. e.g.::
 
 Argument flags are not positional, can be specified in any order. Some arguments expect sub-arguments.
 
-fre app
+=====
+Tools
+=====
+
+``fre app``
 ===========
 
 .. include:: tools/app.rst
 
    
-fre catalog
+``fre catalog``
 ===============
 
 .. include:: tools/catalog.rst
 
 
-fre cmor
+``fre cmor``
 ============
 
 * See also, ``fre cmor``'s `README <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/cmor/README.md>`_
@@ -47,25 +59,25 @@ intercomparisons (MIPs) using the ``cmor`` module is, quite cleverly, referred t
 .. include:: tools/cmor.rst
 
   
-fre make
+``fre make``
 ============
 
 .. include:: tools/make.rst
   
 
-fre pp
+``fre pp``
 ==========
 
 .. include:: tools/pp.rst
 
 
-fre yamltools
+``fre yamltools``
 =================
 
 .. include:: tools/yamltools.rst
 
 
-fre list
-=================
+``fre list``
+============
 
 .. include:: tools/listtools.rst
