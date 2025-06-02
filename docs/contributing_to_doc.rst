@@ -9,9 +9,27 @@ A decent cheat-sheet for restructured-text can be found
 `here <https://gist.github.com/SMotaal/24006b13b354e6edad0c486749171a70#sections>`_
 
 
+with a fork and readthedocs (recommended)
+=========================================
+
+This approach is good for casual editing of the docs and previewing the changes, all while not eating up your personal
+github account's free CI/CD minutes. 
+
+* Make sure you HAVE a fork underneath your github profile, if not, fork the repository under the NOAA-GFDL namespace
+* Navigate to readthedocs' `log-in page <https://app.readthedocs.org/accounts/signup/>`_ and sign in with your GitHub
+  account
+* Click "Add project" and search for ``fre-cli``. If your fork doesn't automatically come up, you do not have a fork!
+  Go back to the first step in this list.
+* If your changes do not live on a branch named ``main`` (they should not, at least), configure the project to look
+  for your branch's name.
+* If perms and everything lines up right, on your next push to the aforementioned branch, the docs should build and
+  offer a preview relatively quickly. You should not have to re-configure anything to get it to work.
+
+
 local sphinx build
 ==================
 
+This is good for deep debugging of the documentation build.
 
 prereq: local conda environment and ``fre-cli``
 -----------------------------------------------
@@ -45,8 +63,8 @@ time unless the file throwing the warning was changed. To get all the (useful AN
 run, simply add ``-E`` or ``--fresh-env`` to the call to avoid using ``sphinx``\'s build-cache. 
 
 
-with a fork
-===========
+with a fork and gh-pages
+========================
 
 
 fork and poke at the settings
