@@ -9,10 +9,12 @@ familiarizing themselves with the rest of the user-targeted documentation.
 Contributing to ``fre-cli``
 ===========================
 
+
 Get a Copy of the Code
 ----------------------
 Get your own copy of the code with ``git clone --recursive git@github.com:NOAA-GFDL/fre-cli.git`` for the NOAA-GFDL fork,
 or replace with your fork's link (recommended).
+
 
 Local/Editable Installation
 ---------------------------
@@ -24,6 +26,7 @@ Development work on ``fre-cli`` should occur within within a conda environment h
 a local copy of the repository to install with ``pip`` using the ``-e/--editable`` flag on. This specific approch is
 described `here <https://noaa-gfdl.github.io/fre-cli/setup.html#create-environment-from-github-repo-clone>`_
 
+
 Testing Your Local Changes and Installation
 -------------------------------------------
 There are a myriad of different ways of testing your efforts locally during your development cycle. A few examples and
@@ -33,6 +36,7 @@ provide documentation of what they have contributed.
 All contributed code should come with a corresponding unit-test. This section is not about writing unit-tests, but does
 contain some advice towards it. This section is mostly for streamlining a new developer's approach to working with the
 code.
+
 
 Running CLI-calls
 ~~~~~~~~~~~~~~~~~
@@ -47,12 +51,14 @@ should/can often become a unit-test in one of the corresponding files in ``fre/t
 devleloper wished to introduce should become ``assert`` conditions encoded within the unit-test. Both success and failure
 conditions should ideally be tested. 
 
+
 Running the above, with no ``click``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Every ``fre TOOL COMMAND *ARGV`` approximately maps to a single function call shown in ``fre/TOOL/freTOOL.py`` at this time.
 Then, to accomplish the same thing as the previous section, but removing ``click`` and the CLI-aspect from it, and assuming
 the code being executed is in ``fre/TOOL/COMMAND.py``, in a function called named like ``FUNCTION``,
 ``python -i -c 'from fre.TOOL.COMMAND import FUNCTION; FUNCTION(**args);``.
+
 
 Writing a ``pytest`` unit-test for ``fre-cli``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -64,6 +70,7 @@ information.
 If the functionality one desires to test is removed from that of a CLI call, the test should likely be housed in the directory
 structure corresponding to the ``TOOL`` under-which the functionality lives. In that case, the usual pythonic-testing approaches,
 guidelines, documentation etc. applies.
+
 
 Adding a New Requirement to ``fre-cli``
 ---------------------------------------
@@ -80,6 +87,7 @@ responsible for verifying that the desired package is safe, well-documented, and
 also consider the cost-benefit-problem of taking the extra time to introduce new fucntionality via standard-library approaches first,
 and be prepared to defend the proposition of adding the new third-party package as a ``fre-cli`` requirement.
 
+
 How ``fre-cli`` is updated
 --------------------------
 ``fre-cli`` is published and hosted as a Conda package on the `NOAA-GFDL conda channel <https://anaconda.org/NOAA-GFDL>`_. On pushes to
@@ -90,6 +98,7 @@ step.
 
 Get desired ``logging`` verbosity
 ---------------------------------
+
 The ``logging`` module's configuration initially occurs in ``fre/__init__.py``, and gets inherited everywhere else ``logging``
 creates a ``logger`` object under the ``fre.`` namespace. If your development is being tested with a ``fre TOOL COMMAND *ARGV``
 style CLI call, it's recommended you add verbosity flags, i.e. like ``fre -vv TOOL COMMAND *ARGV``.
@@ -98,16 +107,19 @@ If your development does not fit nicely into that category, the next easiest thi
 in ``fre/__init__.py`` to have the verbosity level you'd like. It's important you adjust it back to the default verbosity level of
 ``fre-cli`` before requesting a merge of your branch/fork to the repository's trunk.
 
+
 ``logging`` practice to avoid
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 The pitfall to avoid during development is calling ``logging.basicConfig`` to re-configure the ``logging`` behavior **outside
-of ``fre/__init__.py``**. What this does is it creates another ``logging.handler`` to manage the output, but does not resolve
+of ``fre/__init__.py``\**. What this does is it creates another ``logging.handler`` to manage the output, but does not resolve
 the ambiguity to previously defined ``loggers`` of which ``handler`` should be getting used. If this secondary ``logging.basicConfig``
 call is left in the PR or fork at merge-time, it can cause oddly silent logging behavior. This can be VERY tricky to debug!
   
 
 Adding New Tools
 ================
+
 
 Checklist
 ---------
