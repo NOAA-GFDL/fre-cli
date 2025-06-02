@@ -17,6 +17,8 @@ import time
 
 import platform
 
+import subprocess
+
 # global consts for these tests, with no/trivial impact on the results
 ROOTDIR='fre/tests/test_files'
 CMORBITE_VARLIST=f'{ROOTDIR}/CMORbite_var_list.json'
