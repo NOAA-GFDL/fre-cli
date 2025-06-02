@@ -18,6 +18,7 @@ import time
 import platform
 
 import subprocess
+import os
 
 # global consts for these tests, with no/trivial impact on the results
 ROOTDIR='fre/tests/test_files'
