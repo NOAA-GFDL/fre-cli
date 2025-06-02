@@ -109,10 +109,10 @@ in ``fre/__init__.py`` to have the verbosity level you'd like. It's important yo
 
 
 ``logging`` practice to avoid
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The pitfall to avoid during development is calling ``logging.basicConfig`` to re-configure the ``logging`` behavior **outside
-of ``fre/__init__.py``\**. What this does is it creates another ``logging.handler`` to manage the output, but does not resolve
+of ``fre/__init__.py`` **. What this does is it creates another ``logging.handler`` to manage the output, but does not resolve
 the ambiguity to previously defined ``loggers`` of which ``handler`` should be getting used. If this secondary ``logging.basicConfig``
 call is left in the PR or fork at merge-time, it can cause oddly silent logging behavior. This can be VERY tricky to debug!
   
