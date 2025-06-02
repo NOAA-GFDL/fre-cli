@@ -145,7 +145,7 @@ def test_git_cleanup():
     Performs a git restore on EXP_CONFIG to avoid false positives from
     git's record of changed files. It's supposed to change as part of the test.
     '''
-    is_not_ci = os.environ.get("GITHUB_WORKSPACE") is not None
+    is_ci = os.environ.get("GITHUB_WORKSPACE") is not None
     if is_ci:
       #doesn't run happily in CI and not needed
       assert True
