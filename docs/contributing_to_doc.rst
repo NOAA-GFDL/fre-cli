@@ -32,8 +32,17 @@ from the root-directory of your local repository copy, issue the following comma
  sphinx-apidoc --output-dir docs fre/ --separate
  sphinx-build docs build
 
-then, with your preferred web browser, open up the resultant ``fre-cli/build/index.html`` to click around
-locally-built ``html`` files.
+Then, to view the result, open up the resultant ``fre-cli/build/index.html`` with your favorite web browser.
+You should be able to click around the locally built html and links should work as expected.
+
+Note, there will be a complaint regarding the ``pytest`` and ``coverage`` badges being absent. These are ``svg``
+images that are generated on-the-fly with ``genbadge`` in the CI/CD context. One can simply copy the current
+badges on the ``fre-cli`` README into the ``docs`` folder with the specific paths shown in ``sphinx``\'s complaint.
+
+Another note- ``sphinx-build`` is quite permissive, though loud. It makes accurate and numerous complaints, but often
+is able to successfully finish anyways. After the first successful build, many warnings will not be displayed a second
+time unless the file throwing the warning was changed. To get all the (useful AND useless) build output like the first
+run, simply add ``-E`` or ``--fresh-env`` to the call to avoid using ``sphinx``\'s build-cache. 
 
 
 with a fork
