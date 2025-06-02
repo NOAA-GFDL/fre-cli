@@ -86,6 +86,24 @@ How ``fre-cli`` is updated
 the ``main`` branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically be updated using the workflow
 defined in ``.github/workflows/publish_conda.yml``, which is equivalent to``.github/workflows/build_conda.yml`` with an extra ``conda publish``
 step.
+
+
+Get desired ``logging`` verbosity
+---------------------------------
+The ``logging`` module's configuration initially occurs in ``fre/__init__.py``, and gets inherited everywhere else ``logging``
+creates a ``logger`` object under the ``fre.`` namespace. If your development is being tested with a ``fre TOOL COMMAND *ARGV``
+style CLI call, it's recommended you add verbosity flags, i.e. like ``fre -vv TOOL COMMAND *ARGV``.
+
+If your development does not fit nicely into that category, the next easiest thing to do is to adjust the base ``logger`` object
+in ``fre/__init__.py`` to have the verbosity level you'd like. It's important you adjust it back to the default verbosity level of
+``fre-cli`` before requesting a merge of your branch/fork to the repository's trunk.
+
+``logging`` practice to avoid
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The pitfall to avoid during development is calling ``logging.basicConfig`` to re-configure the ``logging`` behavior **outside
+of ``fre/__init__.py``**. What this does is it creates another ``logging.handler`` to manage the output, but does not resolve
+the ambiguity to previously defined ``loggers`` of which ``handler`` should be getting used. If this secondary ``logging.basicConfig``
+call is left in the PR or fork at merge-time, it can cause oddly silent logging behavior. This can be VERY tricky to debug!
   
 
 Adding New Tools
