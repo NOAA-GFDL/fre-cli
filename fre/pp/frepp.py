@@ -131,9 +131,18 @@ def configure_yaml(yamlfile,experiment,platform,target):
 @click.option("-b", "--branch", type =str,
               required=False, default = None,
               help="fre-workflows branch/tag to clone; default is $(fre --version)")
-def checkout(experiment, platform, target, branch=None):
+@click.option("-r", "--repo", type =str,
+              required=False, default = None,
+              help="fre-workflows repository to clone from; default is https://github.com/NOAA-GFDL/fre-workflows.git")
+def checkout(experiment, platform, target, branch=None, repo=None):
     """
     Execute fre pp checkout
+    -e, -p, -t: experiment, platform, target as used elsewhere in fre pp tools
+    -b, --branch: fre-workflows branch to clone. Default is the version of the 
+      fre module you have loaded. This argument is expected to use non-default 
+      values for production work.
+    -r, --repo: 
+    --force-update: Whether to force an update of already-checked-out code 
     """
     checkout_script.checkout_template(experiment, platform, target, branch)
 
