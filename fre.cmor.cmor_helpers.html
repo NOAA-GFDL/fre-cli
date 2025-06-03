@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fre.cmor.cmor_helpers module &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css?v=5583d106" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing_to_doc.html">Contributing to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">fre.cmor.cmor_helpers module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/fre.cmor.cmor_helpers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-fre.cmor.cmor_helpers">
+<span id="fre-cmor-cmor-helpers-module"></span><h1>fre.cmor.cmor_helpers module<a class="headerlink" href="#module-fre.cmor.cmor_helpers" title="Link to this heading"></a></h1>
+<p>file holding helper functions for the cmor_mixer in this submodule</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.check_dataset_for_ocean_grid">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">check_dataset_for_ocean_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.check_dataset_for_ocean_grid" title="Link to this definition"></a></dt>
+<dd><p>checks netCDF4.Dataset ds for ocean grid origin, and throws an error if it finds one. accepts
+one argument. this function has no return.</p>
+<blockquote>
+<div><p>ds: netCDF4.Dataset object containing variables with associated dimensional information.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.create_lev_bnds">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">create_lev_bnds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bound_these</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_these</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.create_lev_bnds" title="Link to this definition"></a></dt>
+<dd><p>creates a (2, len(bound_these)) shaped array with values assigned from with_these and returns that array</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.create_tmp_dir">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">create_tmp_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_exp_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.create_tmp_dir" title="Link to this definition"></a></dt>
+<dd><p>creates a tmp_dir based on targeted output directory root. returns the name of the tmp dir.
+accepts one argument:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>outdir: string, representing the final output directory root for the cmor modules netcdf</dt><dd><p>file output. tmp_dir will be slightly different depending on the output directory
+targeted</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.find_statics_file">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">find_statics_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bronx_file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.find_statics_file" title="Link to this definition"></a></dt>
+<dd><p>given a FRE-bronx-style file path, attempt to find the corresponding statics file based on the dir structure</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.from_dis_gimme_dis">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">from_dis_gimme_dis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_dis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gimme_dis</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.from_dis_gimme_dis" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>gives you gimme_dis from from_dis. accepts two arguments, both mandatory.</dt><dd><p>from_dis: the target netCDF4.Dataset object to try reading from
+gimme_dis: what from_dis is hopefully gonna have and you’re gonna get</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.get_iso_datetime_ranges">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">get_iso_datetime_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_filenames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_daterange_arr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.get_iso_datetime_ranges" title="Link to this definition"></a></dt>
+<dd><dl>
+<dt>appends iso datetime strings found amongst filenames to iso_datetime_arr.</dt><dd><dl class="simple">
+<dt>var_filenames: non-empty list of strings representing filenames. some of which presumably</dt><dd><p>contain ranges of datetimes as strings, hopefully like ????????-????????</p>
+</dd>
+<dt>iso_daterange_arr: list of strings, empty or non-empty, representing datetime ranges found in</dt><dd><p>var_filenames entries. the object pointed to by the reference iso_dateramge_arr 
+is manipulated directly, and so need-not be returned.</p>
+</dd>
+<dt>start: string of four integers representing a year in any calendar. only YYYY format supported. </dt><dd><p>if the starting year of the data is before this, the datetime range is excluded from var_filenames</p>
+</dd>
+</dl>
+<p>start: string of four integers representing a year in any calendar. only YYYY format supported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.get_json_file_data">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">get_json_file_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.get_json_file_data" title="Link to this definition"></a></dt>
+<dd><p>returns loaded data from a json file pointed to by arg json_file_path (string, required)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.get_vertical_dimension">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">get_vertical_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_var</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.get_vertical_dimension" title="Link to this definition"></a></dt>
+<dd><p>determines the vertical dimensionality of target_var within netCDF4 Dataset ds. accepts two
+arguments and returns an object representing the vertical dimensions assoc with the target_var.</p>
+<blockquote>
+<div><p>ds: netCDF4.Dataset object containing variables with associated dimensional information.
+target_var: string, representing a variable contained within the netCDF4.Dataset ds</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.print_data_minmax">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">print_data_minmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.print_data_minmax" title="Link to this definition"></a></dt>
+<dd><p>outputs the the min/max of numpy.ma.core.MaskedArray (ds_variable) and the name/description (desc) 
+of the data to the screen if there’s a verbose flag, and just to logger otherwise</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_helpers.update_grid_and_label">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_helpers.</span></span><span class="sig-name descname"><span class="pre">update_grid_and_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_grid_label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_nom_res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_helpers.update_grid_and_label" title="Link to this definition"></a></dt>
+<dd><p>Updates the “grid_label” and “grid” fields in a specified JSON file housing exp-specific
+configuration information req’d by CMOR for re-writing data compliantly</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>json_file_path (str): Path to the input JSON file.
+new_grid_label (str): New value for the “grid_label” field.
+new_grid (str): New value for the “grid” field.
+new_nom_res (str): New value for the “nominal_resolution” field
+output_file_path (str, optional): Path to save the updated JSON file. If None, overwrites the original file.</p>
+</dd>
+<dt>Raises:</dt><dd><p>FileNotFoundError: If the input JSON file does not exist.
+KeyError: If the “grid_label” or “grid” fields are not found in the JSON file.
+json.JSONDecodeError: If the JSON file cannot be decoded.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

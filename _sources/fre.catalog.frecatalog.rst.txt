@@ -1,0 +1,7 @@
+fre.catalog.frecatalog module
+=============================
+
+.. automodule:: fre.catalog.frecatalog
+   :members:
+   :show-inheritance:
+   :undoc-members:

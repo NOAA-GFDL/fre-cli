@@ -1,0 +1,190 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fre.app.regrid_xy.regrid_xy module &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css?v=5583d106" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing_to_doc.html">Contributing to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">fre.app.regrid_xy.regrid_xy module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/fre.app.regrid_xy.regrid_xy.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-fre.app.regrid_xy.regrid_xy">
+<span id="fre-app-regrid-xy-regrid-xy-module"></span><h1>fre.app.regrid_xy.regrid_xy module<a class="headerlink" href="#module-fre.app.regrid_xy.regrid_xy" title="Link to this heading"></a></h1>
+<p>remaps scalar and/or vector fields. It is capable of remapping
+from a spherical grid onto a different one, e.g. spherical,
+or tripolar. By default, it does so using a conservative scheme.
+most valid input args to fregrid are valid in this script</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.check_interp_method">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">check_interp_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nc_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.check_interp_method" title="Link to this definition"></a></dt>
+<dd><p>print warning if optional interp_method clashes with nc file attribute field, if present</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.check_per_component_settings">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">check_per_component_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rose_app_cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.check_per_component_settings" title="Link to this definition"></a></dt>
+<dd><p>for a source file ref’d by multiple components check per-component
+settings for uniqueness. output list of bools of same length to check
+in componenet loop</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.freq_to_date_format">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">freq_to_date_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iso_freq</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.freq_to_date_format" title="Link to this definition"></a></dt>
+<dd><p>Print legacy Bronx-like date template format given a frequency (ISO 8601 duration)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.get_grid_dims">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">get_grid_dims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_spec:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mosaic_file:</span> <span class="pre">str)</span> <span class="pre">-&gt;</span> <span class="pre">(&lt;class</span> <span class="pre">'int'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'int'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.get_grid_dims" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the grid sizes from the gridfiles.
+This method retrieves the grid dimensions via grid_spec –&gt; mosaic_file –&gt; gridfile,
+where mosaic_file can be either “atm_mosaic_file”, “ocn_mosaic_file”, or “lnd_mosaic_file”.
+This method assumes that for a multi-tile grid, the grids for each tile are of the
+same size and will take the first gridfile to retrieve the coordinate dimensions</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.main">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.main" title="Link to this definition"></a></dt>
+<dd><p>steering, local test/debug</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.make_component_list">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">make_component_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.make_component_list" title="Link to this definition"></a></dt>
+<dd><p>make list of relevant component names where source file appears in sources</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.make_regrid_var_list">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">make_regrid_var_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.make_regrid_var_list" title="Link to this definition"></a></dt>
+<dd><p>create default list of variables to be regridded within target file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.regrid_xy">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">regrid_xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remap_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rose_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.regrid_xy" title="Link to this definition"></a></dt>
+<dd><p>calls fre-nctools’ fregrid to regrid netcdf files</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.safe_rose_config_get">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">safe_rose_config_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.safe_rose_config_get" title="Link to this definition"></a></dt>
+<dd><p>read optional variables from rose configuration, and don’t error on None value</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.test_import">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">test_import</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.test_import" title="Link to this definition"></a></dt>
+<dd><p>for quickly testing import within pytest</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.app.regrid_xy.regrid_xy.truncate_date">
+<span class="sig-prename descclassname"><span class="pre">fre.app.regrid_xy.regrid_xy.</span></span><span class="sig-name descname"><span class="pre">truncate_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.app.regrid_xy.regrid_xy.truncate_date" title="Link to this definition"></a></dt>
+<dd><p>truncates iso freq to iso date time</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

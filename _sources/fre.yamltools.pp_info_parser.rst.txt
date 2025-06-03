@@ -1,0 +1,7 @@
+fre.yamltools.pp\_info\_parser module
+=====================================
+
+.. automodule:: fre.yamltools.pp_info_parser
+   :members:
+   :show-inheritance:
+   :undoc-members:

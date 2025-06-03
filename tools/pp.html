@@ -1,0 +1,156 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>configure &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="../_static/fonts.css?v=5583d106" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing_to_doc.html">Contributing to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">configure</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tools/pp.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configure">
+<h1><code class="docutils literal notranslate"><span class="pre">configure</span></code><a class="headerlink" href="#configure" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Postprocessing yaml configuration</p></li>
+<li><p>Minimal Syntax: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">configure</span> <span class="pre">-y</span> <span class="pre">[user-edit</span> <span class="pre">yaml</span> <span class="pre">file]</span></code></p></li>
+<li><p>Module(s) needed: n/a</p></li>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">configure</span> <span class="pre">-y</span> <span class="pre">/home/$user/pp/ue2/user-edits/edits.yaml</span></code></p></li>
+</ul>
+</section>
+<section id="checkout">
+<h1><code class="docutils literal notranslate"><span class="pre">checkout</span></code><a class="headerlink" href="#checkout" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository</p></li>
+<li><p>Minimal Syntax: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">checkout</span> <span class="pre">-e</span> <span class="pre">[experiment</span> <span class="pre">name]</span> <span class="pre">-p</span> <span class="pre">[platform</span> <span class="pre">name]</span> <span class="pre">-t</span> <span class="pre">[target</span> <span class="pre">name]</span></code></p></li>
+<li><p>Module(s) needed: n/a</p></li>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">checkout</span> <span class="pre">-e</span> <span class="pre">c96L65_am5f4b4r0_amip</span> <span class="pre">-p</span> <span class="pre">gfdl.ncrc5-deploy</span> <span class="pre">-t</span> <span class="pre">prod-openmp</span></code></p></li>
+</ul>
+</section>
+<section id="nccheck">
+<h1><code class="docutils literal notranslate"><span class="pre">nccheck</span></code><a class="headerlink" href="#nccheck" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Verify netCDF file contains expected number of time records</p></li>
+<li><p>Minimal Syntax: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">nccheck</span> <span class="pre">-f</span> <span class="pre">[netCDF</span> <span class="pre">file</span> <span class="pre">path]</span> <span class="pre">-n</span> <span class="pre">[number</span> <span class="pre">of</span> <span class="pre">expected</span> <span class="pre">time</span> <span class="pre">records]</span></code></p></li>
+<li><p>Module(s) needed: n/a</p></li>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">nccheck</span> <span class="pre">-f</span> <span class="pre">/home/$user/some_netcdf_file</span> <span class="pre">-n</span> <span class="pre">10</span></code></p></li>
+</ul>
+</section>
+<section id="histval">
+<h1><code class="docutils literal notranslate"><span class="pre">histval</span></code><a class="headerlink" href="#histval" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Run nccheck over all files found in diag manifest</p></li>
+<li><p>Minimal Syntax: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">histval</span> <span class="pre">--history</span> <span class="pre">[path</span> <span class="pre">to</span> <span class="pre">directory</span> <span class="pre">containing</span> <span class="pre">history</span> <span class="pre">files]</span> <span class="pre">--date_string</span> <span class="pre">[date_string]</span></code></p></li>
+<li><p>Module(s) needed: n/a</p></li>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">histval</span> <span class="pre">--history</span> <span class="pre">/some_path/dir_with_history_files/</span> <span class="pre">--date_string</span> <span class="pre">00010101</span></code></p></li>
+</ul>
+</section>
+<section id="ppval">
+<h1><code class="docutils literal notranslate"><span class="pre">ppval</span></code><a class="headerlink" href="#ppval" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Run nccheck over postprocessed time-series files</p></li>
+<li><p>Minimal Syntax: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">ppval</span> <span class="pre">--path</span> <span class="pre">[path</span> <span class="pre">to</span> <span class="pre">file]</span></code></p></li>
+<li><p>Module(s) needed: n/a</p></li>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">pp</span> <span class="pre">ppval</span> <span class="pre">--path</span> <span class="pre">/some_path/example.200001-200412.nc</span></code></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

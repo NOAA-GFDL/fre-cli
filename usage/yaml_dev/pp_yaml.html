@@ -1,0 +1,188 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="../../_static/fonts.css?v=5583d106" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing_to_doc.html">Contributing to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/usage/yaml_dev/pp_yaml.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p>The post-processing yamls include information specific to experiments, such as component information. The post-processing yamls can further define more <code class="docutils literal notranslate"><span class="pre">fre_properties</span></code> that may be experiment specific. If there are any repeated reusable variables, the ones set in this yaml will overwrite those set in the model yaml.</p>
+<p><strong>Post-processing yamls</strong></p>
+<p>The post-processing yamls include pp experiment yamls, along with a settings.yaml, that can be applied to all pp yamls. Users can add however many components are needed, as well as define any experiment specific <cite>fre_properties</cite>. The pp experiment yamls can follow the structure below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">postprocess</span><span class="p">:</span>
+  <span class="n">components</span><span class="p">:</span>
+    <span class="o">-</span> <span class="nb">type</span><span class="p">:</span> <span class="s2">&quot;component name&quot;</span>                                                          <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+      <span class="n">sources</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">history_file</span><span class="p">:</span> <span class="s2">&quot;history file to include with component&quot;</span>                      <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+          <span class="n">variables</span><span class="p">:</span> <span class="s2">&quot;specific variables to postprocess associated with component&quot;</span>    <span class="p">(</span><span class="n">array</span> <span class="k">with</span> <span class="n">string</span> <span class="n">elements</span><span class="p">)</span>
+      <span class="n">xyInterp</span><span class="p">:</span> <span class="s2">&quot;lat, lon grid configuration&quot;</span>                                         <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+      <span class="n">interpMethod</span><span class="p">:</span> <span class="s2">&quot;interpolation method&quot;</span>                                            <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+      <span class="n">sourceGrid</span><span class="p">:</span> <span class="s2">&quot;input grid type&quot;</span>                                                   <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+      <span class="n">inputRealm</span><span class="p">:</span> <span class="s2">&quot;domain of component&quot;</span>                                               <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+      <span class="n">static</span><span class="p">:</span>
+        <span class="o">-</span> <span class="n">source</span><span class="p">:</span> <span class="s2">&quot;static history file to include with component&quot;</span>                     <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+          <span class="n">variables</span><span class="p">:</span> <span class="s2">&quot;specific static variables to postprocess&quot;</span>                       <span class="p">(</span><span class="n">array</span> <span class="k">with</span> <span class="n">string</span> <span class="n">elements</span><span class="p">)</span>
+        <span class="o">-</span> <span class="n">offline_diagnostic</span><span class="p">:</span> <span class="s2">&quot;path to static offline diagnostic&quot;</span>                     <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+          <span class="n">variables</span><span class="p">:</span> <span class="s2">&quot;specific static variables to postprocess&quot;</span>                       <span class="p">(</span><span class="n">array</span> <span class="k">with</span> <span class="n">string</span> <span class="n">elements</span><span class="p">)</span>
+      <span class="n">postprocess_on</span><span class="p">:</span> <span class="s2">&quot;switch to postprocess this component or not&quot;</span>                   <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Required keys include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>type</p></li>
+<li><p>sources</p></li>
+<li><p>postprocess_on</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Settings yaml</strong></p>
+<p>To define post-processing settings, a settings.yaml must also be created. This configuration file will include post-processing settings and switches and will be listed as the <strong>first</strong> yaml under the <cite>pp</cite> section of <cite>experiments</cite>.</p>
+<p>This file can follow the format below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">directories</span><span class="p">:</span>
+  <span class="n">history_dir</span><span class="p">:</span>
+  <span class="n">pp_dir</span><span class="p">:</span>
+  <span class="n">analysis_dir</span><span class="p">:</span>
+  <span class="n">ptmp_dir</span><span class="p">:</span>
+
+<span class="n">postprocess</span><span class="p">:</span>
+  <span class="n">settings</span><span class="p">:</span>
+    <span class="n">site</span><span class="p">:</span> <span class="s2">&quot;site name from file that defines parameters that can be specific to where the workflow is being run&quot;</span>        <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">history_segment</span><span class="p">:</span> <span class="s2">&quot;amount of time covered by a single history file (ISO8601 datetime)&quot;</span>                              <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">pp_start</span><span class="p">:</span> <span class="s2">&quot;start of the desired postprocessing (ISO8601 datetime)&quot;</span>                                                 <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">pp_stop</span><span class="p">:</span> <span class="s2">&quot;end of the desired postprocessing (ISO8601 datetime)&quot;</span>                                                    <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">pp_chunks</span><span class="p">:</span> <span class="s2">&quot;array of ISO8601 datetime durations, specifying the interval of simulated time per postprocessed file&quot;</span> <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">pp_grid_spec</span><span class="p">:</span> <span class="s2">&quot;path to FMS grid definition tarfile&quot;</span>                                                                <span class="p">(</span><span class="n">string</span><span class="p">)</span>
+  <span class="n">switches</span><span class="p">:</span>
+    <span class="n">do_timeavgs</span><span class="p">:</span> <span class="s2">&quot;switch to turn on/off time-average file generation&quot;</span>                                                  <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+    <span class="n">clean_work</span><span class="p">:</span> <span class="s2">&quot;switch to remove intermediate data files when they are no longer needed&quot;</span>                              <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+    <span class="n">do_refinediag</span><span class="p">:</span> <span class="s2">&quot;switch to run refine-diag script(s) on history file to generate additional diagnostics&quot;</span>            <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+    <span class="n">do_atmos_plevel_masking</span><span class="p">:</span> <span class="s2">&quot;switch to mask atmos pressure-level output above/below surface pressure/atmos top&quot;</span>       <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+    <span class="n">do_preanalysis</span><span class="p">:</span> <span class="s2">&quot;switch to run a pre-analysis script on history files&quot;</span>                                             <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+    <span class="n">do_analysis</span><span class="p">:</span> <span class="s2">&quot;switch to launch analysis scripts&quot;</span>                                                                   <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+    <span class="n">do_analysis_only</span><span class="p">:</span> <span class="s2">&quot;switch to only launch analysis scripts&quot;</span>                                                         <span class="p">(</span><span class="n">boolean</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Required keys include:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>history_dir</p></li>
+<li><p>pp_dir</p></li>
+<li><p>ptmp_dir</p></li>
+<li><p>site</p></li>
+<li><p>history_segment</p></li>
+<li><p>pp_chunks</p></li>
+<li><p>pp_start</p></li>
+<li><p>pp_stop</p></li>
+<li><p>pp_grid_spec</p></li>
+<li><p>clean_work</p></li>
+<li><p>do_timeavgs</p></li>
+<li><p>do_refinediag</p></li>
+<li><p>do_atmos_plevel_masking</p></li>
+<li><p>do_preanalysis</p></li>
+<li><p>do_analysis</p></li>
+<li><p>do_analysis_only</p></li>
+</ul>
+</div></blockquote>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,191 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>run &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="../_static/fonts.css?v=5583d106" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing_to_doc.html">Contributing to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">run</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tools/cmor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="run">
+<h1><code class="docutils literal notranslate"><span class="pre">run</span></code><a class="headerlink" href="#run" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">cmor</span> <span class="pre">run</span></code> rewrites climate model output files in a target directory in a CMIP-compliant manner
+for downstream publishing. It accepts 6 arguments, only one being optional. A brief description of each:</p>
+<section id="arguments">
+<h2>arguments<a class="headerlink" href="#arguments" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>(required) <code class="docutils literal notranslate"><span class="pre">-d,</span> <span class="pre">--indir</span> <span class="pre">TEXT</span></code>, input directory containing netCDF files to CMORize.</p>
+<ul>
+<li><p>all netCDF files within <code class="docutils literal notranslate"><span class="pre">indir</span></code> will have their filename checked for local variables
+specified in <code class="docutils literal notranslate"><span class="pre">varlist</span></code> as keys, and ISO datetime strings extracted and kept in a list
+for later iteration over target files</p></li>
+<li><p>a debugging-oriented boolean flag constant at the top of <code class="docutils literal notranslate"><span class="pre">cmor_mixer.py</span></code>, if <code class="docutils literal notranslate"><span class="pre">True</span></code>
+will process one file of all files found within <code class="docutils literal notranslate"><span class="pre">indir</span></code> and cease processing for that
+variable after succeeding on one file</p></li>
+</ul>
+</li>
+<li><p>(required) <code class="docutils literal notranslate"><span class="pre">-l,</span> <span class="pre">--varlist</span> <span class="pre">TEXT</span></code>, path to variable list dictionary.</p>
+<ul>
+<li><p>each entry in the variable list dictionary corresponds to a key/value pair</p></li>
+<li><p>the key (local variable) is used for ID’ing files within <code class="docutils literal notranslate"><span class="pre">indir</span></code> to be processed</p></li>
+<li><p>associated with the key (local variable), is the value (target variable), which should
+be the label attached to the data within the targeted file(s)</p></li>
+</ul>
+</li>
+<li><p>(required) <code class="docutils literal notranslate"><span class="pre">-r,</span> <span class="pre">--table_config</span> <span class="pre">TEXT</span></code>, path to MIP json configuration holding variable
+metadata.</p>
+<ul>
+<li><p>typically, this is to be provided by a data-request associated with the MIP and
+participating experiments</p></li>
+</ul>
+</li>
+<li><p>(required) <code class="docutils literal notranslate"><span class="pre">-p,</span> <span class="pre">--exp_config</span> <span class="pre">TEXT</span></code>, path to json configuration holding experiment/model
+metadata</p>
+<ul>
+<li><p>contains e.g. <code class="docutils literal notranslate"><span class="pre">grid_label</span></code>, and points to other important configuration files
+associated with the MIP</p></li>
+<li><p>the other configuration files are typically housing metadata associated with <code class="docutils literal notranslate"><span class="pre">coordinates</span></code>,
+<code class="docutils literal notranslate"><span class="pre">formula_terms</span></code>, and controlled-vocabulary (<code class="docutils literal notranslate"><span class="pre">CV</span></code>).</p></li>
+</ul>
+</li>
+<li><p>(required) <code class="docutils literal notranslate"><span class="pre">-o,</span> <span class="pre">--outdir</span> <span class="pre">TEXT</span></code>, path-prefix inwhich the output directory structure is created.</p>
+<ul>
+<li><p>further output-directories and structure/template information is specified specified in <code class="docutils literal notranslate"><span class="pre">exp_config</span></code></p></li>
+<li><p>in addition to the output-structure/template used, an additional directory corresponding to the
+date the CMORizing was done is created near the end of the directory tree structure</p></li>
+</ul>
+</li>
+<li><p>(optional) <code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--opt_var_name</span> <span class="pre">TEXT</span></code>, a specific variable to target for processing</p>
+<ul>
+<li><p>largely a debugging convenience functionality, this can be helpful for targeting more specific
+input files as desired.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="examples">
+<h2>examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>with a local clone of <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code>, the following call should work out-of-the-box from
+the root directory of the repository.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fre</span> <span class="n">cmor</span> <span class="n">run</span> \
+   <span class="o">-</span><span class="n">d</span> <span class="n">fre</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">test_files</span><span class="o">/</span><span class="n">ocean_sos_var_file</span> \
+   <span class="o">-</span><span class="n">l</span> <span class="n">fre</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">test_files</span><span class="o">/</span><span class="n">varlist</span> \
+   <span class="o">-</span><span class="n">r</span> <span class="n">fre</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">test_files</span><span class="o">/</span><span class="n">cmip6</span><span class="o">-</span><span class="n">cmor</span><span class="o">-</span><span class="n">tables</span><span class="o">/</span><span class="n">Tables</span><span class="o">/</span><span class="n">CMIP6_Omon</span><span class="o">.</span><span class="n">json</span> \
+   <span class="o">-</span><span class="n">p</span> <span class="n">fre</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">test_files</span><span class="o">/</span><span class="n">CMOR_input_example</span><span class="o">.</span><span class="n">json</span> \
+   <span class="o">-</span><span class="n">o</span> <span class="n">fre</span><span class="o">/</span><span class="n">tests</span><span class="o">/</span><span class="n">test_files</span><span class="o">/</span><span class="n">outdir</span>
+</pre></div>
+</div>
+</section>
+<section id="background">
+<h2>background<a class="headerlink" href="#background" title="Link to this heading"></a></h2>
+<p>The bulk of this routine is housed in <code class="docutils literal notranslate"><span class="pre">fre/cmor/cmor_mixer.py</span></code>, which is a rewritten version of
+Sergey Nikonov’s original <code class="docutils literal notranslate"><span class="pre">CMORcommander.py</span></code> script, utilized during GFDL’s CMIP6 publishing run.</p>
+<p>This code is dependent on two primary json configuration files- a MIP
+variable table and another containing experiment (i.e. model) specific metdata (e.g. grid) to append
+to the output netCDF file headers, in addition to other configuration options such as output directory
+name specification, output path templates, and specification of other json configuration files containing
+controlled-vocabulary (CV), coordinate, and formula term conventions for rewriting the output metadata.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,228 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fre.cmor.cmor_mixer module &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css?v=5583d106" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing_to_doc.html">Contributing to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">fre.cmor.cmor_mixer module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/fre.cmor.cmor_mixer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-fre.cmor.cmor_mixer">
+<span id="fre-cmor-cmor-mixer-module"></span><h1>fre.cmor.cmor_mixer module<a class="headerlink" href="#module-fre.cmor.cmor_mixer" title="Link to this heading"></a></h1>
+<p>python module housing the metadata processing routines utilizing the cmor module, in addition to
+click API entry points
+see README.md for additional information on <cite>fre cmor run</cite> (cmor_mixer.py) usage</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_mixer.cmor_run_subtool">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_mixer.</span></span><span class="sig-name descname"><span class="pre">cmor_run_subtool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_table_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_exp_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_one_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nom_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_mixer.cmor_run_subtool" title="Link to this definition"></a></dt>
+<dd><p>Primary steering function for the other routines in this file, i.e essentially main.</p>
+<dl>
+<dt>Parameters:</dt><dd><dl class="simple">
+<dt>indir: string, directory containing netCDF files. keys specified in json_var_list are local</dt><dd><p>variable names used for targeting specific files.</p>
+</dd>
+<dt>json_var_list: string, points to a json file containing directory of key/value pairs. keys are “local” names</dt><dd><p>used in the filename. values are strings representing the name of the data stored within the
+file. the key and value are often the same. making the key and value different is helpful for
+focusing on a specific file.</p>
+</dd>
+</dl>
+<p>json_table_config: string, points to a json file containing per-variable-metadata for specific MIP table.
+json_exp_config: string, points to a json file containing metadata dictionary for CMORization. this metadata</p>
+<blockquote>
+<div><p>is effectively appended to the final output file’s header.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>outdir: string, directory root that will contain the full output and directory structure generated by</dt><dd><p>the cmor module.</p>
+</dd>
+<dt>run_one_mode: bool, optional, for every variable in the list, if files are found, process one of them, then</dt><dd><p>move on. largely of interest when debugging.</p>
+</dd>
+<dt>opt_var_name: string, optional, specify a variable name to specifically process only files with that variable.</dt><dd><p>Note that this is checked against the variable name that’s usually embedded in the nc filename.</p>
+</dd>
+</dl>
+<p>– gridding section: if one is specified, the other two must be as well, or error. pass otherwise. 
+grid: string, description of grid pointed to by grid_label field, optional.
+grid_label: string, label of grid, must be one of several possibilities in controlled vocab file, optional.
+nom_res: string, one-dimensional size representing approximate distance spanned by a grid cell, must be one of</p>
+<blockquote>
+<div><p>several possibilities in the controlled vocab file, optional.</p>
+</div></blockquote>
+<p>start, stop: string, optional arguments, strings of four integers representing years (YYYY).</p>
+</dd>
+<dt>Returns:</dt><dd><p>int: 0 if successful.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_mixer.cmorize_all_variables_in_dir">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_mixer.</span></span><span class="sig-name descname"><span class="pre">cmorize_all_variables_in_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vars_to_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_datetime_range_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_of_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_exp_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mip_var_cfgs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_table_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_one_mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_mixer.cmorize_all_variables_in_dir" title="Link to this definition"></a></dt>
+<dd><p>Processes all variables in the given directory.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>vars_to_run: dictionary, local-variable:target-variable pairs to process.
+indir: string, path to directory containing netCDF files.
+iso_datetime_range_arr: list of strings, ISO datetime strings found in targeted netCDF filenames.
+name_of_set: string, representing the post-processing component (GFDL convention) of the targeted files.
+json_exp_config: string, path to experiment configuration JSON file.
+outdir: string, path to output directory root.
+mip_var_cfgs: json dictionary object, variable table read from json_table_config.
+json_table_config: string, path to table configuration JSON file.
+run_one_mode: bool, if True, process only one file per variable.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>int: 0 if <em>the last file processed</em> was successful. </dt><dd><p>1 if the last file processed was not successful. 
+-1 if we didnt even try!</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_mixer.cmorize_target_var_files">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_mixer.</span></span><span class="sig-name descname"><span class="pre">cmorize_target_var_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iso_datetime_range_arr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_of_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_exp_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mip_var_cfgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_table_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_one_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_mixer.cmorize_target_var_files" title="Link to this definition"></a></dt>
+<dd><p>processes a target directory/file
+this routine is almost entirely exposed data movement before/after calling
+rewrite_netcdf_file_var it is also the most hopelessly opaque routine in this entire dang macro.
+this badboy right here accepts… lord help us… !!!NINE!!! arguments, NINE.</p>
+<blockquote>
+<div><p>indir: string, path to target directories containing netcdf files to cmorize
+target_var: string, name of variable inside the netcdf file to cmorize
+local_var: string, value of the variable name in the filename, right before the .nc</p>
+<blockquote>
+<div><p>extension. often identical to target_var but not always.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>iso_datetime_range_arr: list of strings, each one a unique ISO datetime string found in targeted</dt><dd><p>netcdf filenames</p>
+</dd>
+<dt>name_of_set: string, representing the post-processing component (GFDL convention) of the</dt><dd><p>targeted files.</p>
+</dd>
+</dl>
+<p>json_exp_config: see cmor_run_subtool arg desc
+outdir: string, path to output directory root to move the cmor module output to, including</p>
+<blockquote>
+<div><p>the whole directory structure</p>
+</div></blockquote>
+<p>mip_var_cfgs: an opened json file object, read from json_table_config
+json_table_config: see cmor_run_subtool arg desc</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_mixer.rewrite_netcdf_file_var">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_mixer.</span></span><span class="sig-name descname"><span class="pre">rewrite_netcdf_file_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mip_var_cfgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">netcdf_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_exp_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_table_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_mixer.rewrite_netcdf_file_var" title="Link to this definition"></a></dt>
+<dd><p>Rewrite the input netcdf file containing target_var in a CMIP-compliant manner.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>mip_var_cfgs: json dictionary object, variable table read from json_table_config.
+local_var: string, variable name used for finding files locally containing target_var.
+netcdf_file: string, representing path to input netcdf file.
+target_var: string, representing the variable name attached to the data object in the netcdf file.
+json_exp_config: string, representing path to configuration file holding metadata for appending to output.
+json_table_config: string, representing path to configuration file holding variable names for a given table.</p>
+</dd>
+<dt>Returns:</dt><dd><p>filename: The name of the file returned by cmor.close.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

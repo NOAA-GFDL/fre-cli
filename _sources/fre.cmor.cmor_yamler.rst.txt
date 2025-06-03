@@ -1,0 +1,7 @@
+fre.cmor.cmor\_yamler module
+============================
+
+.. automodule:: fre.cmor.cmor_yamler
+   :members:
+   :show-inheritance:
+   :undoc-members:

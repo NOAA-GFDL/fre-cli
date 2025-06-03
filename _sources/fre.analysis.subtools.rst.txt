@@ -1,0 +1,7 @@
+fre.analysis.subtools module
+============================
+
+.. automodule:: fre.analysis.subtools
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,164 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fre.cmor.cmor_finder module &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css?v=5583d106" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing_to_doc.html">Contributing to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">fre.cmor.cmor_finder module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/fre.cmor.cmor_finder.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-fre.cmor.cmor_finder">
+<span id="fre-cmor-cmor-finder-module"></span><h1>fre.cmor.cmor_finder module<a class="headerlink" href="#module-fre.cmor.cmor_finder" title="Link to this heading"></a></h1>
+<p>fre cmor find
+This module provides tools to find and print information about variables in CMIP6 JSON configuration files.</p>
+<dl>
+<dt>Functions:</dt><dd><dl class="simple">
+<dt>print_var_content(table_config_file, var_name):</dt><dd><p>Prints information about a specific variable from a given CMIP6 JSON configuration file.</p>
+</dd>
+<dt>cmor_find_subtool(json_var_list, json_table_config_dir, opt_var_name):</dt><dd><p>Finds and prints information about variables in CMIP6 JSON configuration files located in a specified directory.</p>
+</dd>
+</dl>
+<p>make_simple_varlist(dir_targ, output_variable_list):</p>
+</dd>
+</dl>
+<p>because ian got tired of typing things like the following in bash…</p>
+<p>varname=sos; table_files=$(ls fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_*.json); for table_file in $table_files; do     echo $table_file;     cat $table_file | grep -A 10 “”$varname””; done;</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_finder.cmor_find_subtool">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_finder.</span></span><span class="sig-name descname"><span class="pre">cmor_find_subtool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_var_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_table_config_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_finder.cmor_find_subtool" title="Link to this definition"></a></dt>
+<dd><p>finds tables in the CMIP json config directory containing variable data of interest. prints it
+out to screen, intended largely as a helper tool for cli users.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_finder.make_simple_varlist">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_finder.</span></span><span class="sig-name descname"><span class="pre">make_simple_varlist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_targ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_variable_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_finder.make_simple_varlist" title="Link to this definition"></a></dt>
+<dd><p>Generates a JSON file containing a list of variables from NetCDF files in a specified directory.
+This function searches for NetCDF files in the given directory, or a subdirectory, “ts/monthly/5yr”, 
+if not already included. then extracts variable names from the filenames, and writes these variable 
+names to a JSON file.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dir_targ (str): The target directory to search for NetCDF files.
+output_variable_list (str): The path to the output JSON file where the variable list will be saved.</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+<dt>Raises:</dt><dd><p>Logs errors if no files are found in the directory or if no files match the expected pattern.
+Logs a warning if only one file is found matching the pattern.</p>
+</dd>
+<dt>Notes:</dt><dd><p>The function assumes that the filenames of the NetCDF files contain the variable name as the 
+second-to-last component when split by periods (‘.’) and a datetime string as the third-to-last component.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_finder.print_var_content">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_finder.</span></span><span class="sig-name descname"><span class="pre">print_var_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table_config_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_finder.print_var_content" title="Link to this definition"></a></dt>
+<dd><p>outputs info on one variable to the logger looks for info regarding var_name in table_config_file
+the level of the messaging is INFO, requiring the verbose flag</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

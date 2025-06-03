@@ -1,0 +1,7 @@
+fre.pp.split\_netcdf\_script module
+===================================
+
+.. automodule:: fre.pp.split_netcdf_script
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,182 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fre.cmor.cmor_yamler module &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css?v=5583d106" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="for-developers.html">For developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing_to_doc.html">Contributing to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">fre.cmor.cmor_yamler module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/fre.cmor.cmor_yamler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-fre.cmor.cmor_yamler">
+<span id="fre-cmor-cmor-yamler-module"></span><h1>fre.cmor.cmor_yamler module<a class="headerlink" href="#module-fre.cmor.cmor_yamler" title="Link to this heading"></a></h1>
+<p>this module is for ‘fre cmor yaml’ calls, driving and steering the cmor_run_subtool via a model-yaml file holding
+configuration information on e.g. target experiments</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_yamler.check_path_existence">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_yamler.</span></span><span class="sig-name descname"><span class="pre">check_path_existence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">some_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_yamler.check_path_existence" title="Link to this definition"></a></dt>
+<dd><p>simple function checking for pathlib.Path existence, raising a FileNotFoundError if needed
+Args:</p>
+<blockquote>
+<div><p>some_path (str), required, a string representing a path. can be relative or absolute</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_yamler.cmor_yaml_subtool">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_yamler.</span></span><span class="sig-name descname"><span class="pre">cmor_yaml_subtool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">platform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_one_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_yamler.cmor_yaml_subtool" title="Link to this definition"></a></dt>
+<dd><p>A routine that cmorizes targets based on configuration stored in the model yaml. The model yaml
+points to various cmor-yaml configurations. The two levels of information are combined, their fields
+are parsed to de-reference anchors and call fre’s internal yaml constructor functions.</p>
+<blockquote>
+<div><p>yamlfile (required): string or Path to a model-yaml
+exp_name (required): string representing an experiment name. it must be present in the list of</p>
+<blockquote>
+<div><p>experiments within the targeted yamlfile</p>
+</div></blockquote>
+<p>platform (required): string representing platform target (e.g. ncrc4.intel)
+target   (required): string representing compilation target (e.g. prod-openmp)
+output   (optional): string or Path representing target location for yamlfile output if desired
+opt_var_name (optional): string, specify a variable name to specifically process only filenames matching</p>
+<blockquote>
+<div><p>that variable name. I.e., this string help target local_vars, not target_vars.</p>
+</div></blockquote>
+<p>run_one_mode (optional): boolean, when True, will only process one of targeted files, then exit.
+start, stop: string, optional arguments, strings of four integers representing years (YYYY).</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_yamler.conv_mip_to_bronx_freq">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_yamler.</span></span><span class="sig-name descname"><span class="pre">conv_mip_to_bronx_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmor_table_freq</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_yamler.conv_mip_to_bronx_freq" title="Link to this definition"></a></dt>
+<dd><p>uses a look up table to convert a given frequency in a MIP table, to that same frequency under FRE-bronx convention instead
+Args:</p>
+<blockquote>
+<div><p>cmor_table_freq (str), required, a frequency string read from a MIP table, subject to a controlled vocabulary.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_yamler.get_bronx_freq_from_mip_table">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_yamler.</span></span><span class="sig-name descname"><span class="pre">get_bronx_freq_from_mip_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_table_config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_yamler.get_bronx_freq_from_mip_table" title="Link to this definition"></a></dt>
+<dd><p>checks one of the variable fields within a cmip cmor table for the frequency of the data the table describes
+takes in a path to a json cmip cmor table file, and output a string corresponding to a FREbronx style frequency
+Args:</p>
+<blockquote>
+<div><p>json_table_config (str), required, a string representing a path to a json MIP table holding metadata under variable names</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fre.cmor.cmor_yamler.iso_to_bronx_chunk">
+<span class="sig-prename descclassname"><span class="pre">fre.cmor.cmor_yamler.</span></span><span class="sig-name descname"><span class="pre">iso_to_bronx_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmor_chunk_in</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#fre.cmor.cmor_yamler.iso_to_bronx_chunk" title="Link to this definition"></a></dt>
+<dd><p>converts a string representing a datetime chunk in ISO’s convention (e.g. ‘P5Y’),
+to a string representing the same thing in FRE-bronx’s convention
+Args:</p>
+<blockquote>
+<div><p>cmor_chunk_in (str), required, ISO 8601 formatted string representing a datetime interval</p>
+</div></blockquote>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
