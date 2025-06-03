@@ -1,6 +1,9 @@
 ''' fre pp trigger '''
 
 import subprocess
+from . import make_workflow_name
+import logging
+fre_logger = logging.getLogger(__name__)
 
 def trigger(experiment = None, platform = None, target = None, time = None):
     """
@@ -11,8 +14,11 @@ def trigger(experiment = None, platform = None, target = None, time = None):
                           'currently, their values are...'
                           f'{experiment} / {platform} / {target} / {time}')
 
-    name = experiment + '__' + platform + '__' + target
-    cmd = f"cylc trigger {name}//{time}/pp-starter"
+    #name = experiment + '__' + platform + '__' + target
+    workflow_name = make_workflow_name(experiment, platform, target)
+    cmd = f"cylc trigger {workflow_name}//{time}/pp-starter"
+    fre_logger.debug('running the following command: ')
+    fre_logger.debug(cmd)
     subprocess.run(cmd, shell=True, check=True, timeout=30)
 
 

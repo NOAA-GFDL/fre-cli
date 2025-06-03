@@ -17,7 +17,7 @@ release = '1.0'
 extensions = ['sphinx.ext.autodoc']
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['fre/tests/test_files/ascii_files/*']
 
 
 

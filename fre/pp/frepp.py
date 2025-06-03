@@ -5,19 +5,19 @@ import logging
 fre_logger = logging.getLogger(__name__)
 
 #fre tools
-from fre.pp import checkout_script
-from fre.pp import configure_script_yaml
-from fre.pp import configure_script_xml
-from fre.pp import validate_script
-from fre.pp import histval_script
-from fre.pp import ppval_script
-from fre.pp import install_script
-from fre.pp import run_script
-from fre.pp import nccheck_script
-from fre.pp import trigger_script
-from fre.pp import status_script
-from fre.pp import wrapper_script
-from fre.pp import split_netcdf_script
+from . import checkout_script
+from . import configure_script_yaml
+from . import configure_script_xml
+from . import validate_script
+from . import histval_script
+from . import ppval_script
+from . import install_script
+from . import run_script
+from . import nccheck_script
+from . import trigger_script
+from . import status_script
+from . import wrapper_script
+from . import split_netcdf_script
 
 # fre pp
 @click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
@@ -219,38 +219,38 @@ def histval(history,date_string,warn):
     for all files in that directory
     """
     histval_script.validate(history,date_string,warn)
-    
+
 #fre pp split-netcdf-wrapper
 @pp_cli.command()
-@click.option('-i', '--inputdir', required=True, 
+@click.option('-i', '--inputdir', required=True,
               help='Path to a directory in which to search for netcdf files to split. Files matching the pattern in $history-source will be split.')
-@click.option('-o', '--outputdir', required=True, 
+@click.option('-o', '--outputdir', required=True,
              help='Path to a directory to which to write split netcdf files.')
-@click.option('-c', '--component', required=False, default=None, 
+@click.option('-c', '--component', required=False, default=None,
               help='component specified in yamlfile under postprocess:components. Needs to be the same component that contains the sources:history-file. Conflicts with --split-all-vars.')
 @click.option('-s', '--history-source', required=True, default=None,
               help='history-file specification under postprocess:components:type=component:sources in the fre postprocess config yamlfile. Used to match files in inputdir.')
 @click.option('-y', '--yamlfile', required=False, default=None,
               help='fre postprocessing .yml file from which to get the variable filtering list under postprocess:components:type=component:variables. Conflicts with --split-all-vars.')
-@click.option('--use-subdirs', '-u', is_flag=True, default=False, 
+@click.option('--use-subdirs', '-u', is_flag=True, default=False,
               help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
-@click.option('--split-all-vars', '-a', is_flag=True, default=False, 
+@click.option('--split-all-vars', '-a', is_flag=True, default=False,
               help="Whether to ignore other config options and split all vars in the file. Defaults to false. Conflicts with -c, -s and -y options.")
 def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars):
     ''' Splits all netcdf files matching the pattern specified by $history_source in $inputdir
-        into files with a single data variable written to $outputdir. If $yamlfile contains 
+        into files with a single data variable written to $outputdir. If $yamlfile contains
         variable filtering settings under $component, only those variables specified will
-        be split into files for $outdir. If no variables in the variable filtering match 
-        vars in the netcdf files, no files will be written to $outdir. If --use-subdirs 
+        be split into files for $outdir. If no variables in the variable filtering match
+        vars in the netcdf files, no files will be written to $outdir. If --use-subdirs
         is set, netcdf files will be searched for in subdirs under $outdir.
-        
+
         This tool is intended for use in fre-workflows and assumes files to split have
         fre-specific naming conventions. For a more general tool, look at split-netcdf.'''
-    if split_all_vars: 
+    if split_all_vars:
         none_args = [component, yamlfile]
         if any([el is not None for el in none_args]):
             fre_logger.error('''Error in split_netcdf_wrapper arg parsing: --split-all-vars was set and one or more of
-mutually exclusive options --component and --yamlfile was also set! 
+mutually exclusive options --component and --yamlfile was also set!
 Either unset --split-all-vars or parse the varlist from the yaml - do not try do do both!''')
     split_netcdf_script.split_netcdf(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars)
 
@@ -258,16 +258,16 @@ Either unset --split-all-vars or parse the varlist from the yaml - do not try do
 @pp_cli.command()
 @click.option('-f', '--file', type = str, required=True, help='path to a netcdf file')
 @click.option('-o', '--outputdir', type = str, required=True, help='path to a directory to which to write single-data-variable output files')
-@click.option('-v', '--variables', type = str, required=True, 
-              help='''Specifies which variables in $file are split and written to $outputdir. 
+@click.option('-v', '--variables', type = str, required=True,
+              help='''Specifies which variables in $file are split and written to $outputdir.
                      Either a string "all" or a comma-separated string of variable names ("tasmax,tasmin,pr")''')
 def split_netcdf(file, outputdir, variables):
     ''' Splits a single netcdf file into one netcdf file per data variable and writes
         files to $outputdir.
-        $variables is an option to filter the variables split out of $file and 
+        $variables is an option to filter the variables split out of $file and
         written to $outputdir. If set to "all" (the default), all data variables
         in $file are split and written to $outputdir; if set to a comma-separated
-        string of variable names, only the variable names in the string will be 
+        string of variable names, only the variable names in the string will be
         split and written to $outputdir. If no variable names in $variables match
         variables in $file, no files will be written to $outputdir.'''
     var_list = variables.split(",")
