@@ -115,7 +115,29 @@ The pitfall to avoid during development is calling ``logging.basicConfig`` to re
 of ``fre/__init__.py`` **. What this does is it creates another ``logging.handler`` to manage the output, but does not resolve
 the ambiguity to previously defined ``loggers`` of which ``handler`` should be getting used. If this secondary ``logging.basicConfig``
 call is left in the PR or fork at merge-time, it can cause oddly silent logging behavior. This can be VERY tricky to debug!
-  
+
+avoid ``os.chdir`` if you can
+-----------------------------
+
+Directory changing in ``python`` is not transient by-default, i.e., if when running ``fre`` the interpreter changes directories,
+then the result of a ``os.cwd()`` later in the program may be changed to an unexpected value, leading to difficult bugs.
+
+This being said, sometimes an ``os.chdir`` is hard to not want to use. If one has to use directory changing instead of managing
+directory targets explicitly as ``pathlib.Path`` instances, then one can use the following logic to safely ``chdir`` where needed
+and ``chdir`` back:
+
+.. code-block:: python
+
+ go_back_here = os.cwd()
+ try:
+   os.chdir(target_dir)
+   # DO STUFF AFTER CHDIR HERE
+ except:
+   raise Exception('some error explaining what went wrong')
+ finally:
+   os.chdir(go_back_here)
+
+
 
 Adding New Tools
 ================
