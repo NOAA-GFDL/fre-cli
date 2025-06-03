@@ -11,7 +11,7 @@ The ``click`` based entry point to the rest of the package at the command line f
 
 
 arguments
-~~~~~~~~~
+---------
 
 * (optional) ``--help``, help flag
   

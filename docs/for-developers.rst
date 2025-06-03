@@ -111,8 +111,8 @@ in ``fre/__init__.py`` to have the verbosity level you'd like. It's important yo
 ``logging`` practice to avoid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The pitfall to avoid during development is calling ``logging.basicConfig`` to re-configure the ``logging`` behavior **outside
-of ``fre/__init__.py`` **. What this does is it creates another ``logging.handler`` to manage the output, but does not resolve
+The pitfall to avoid during development is calling ``logging.basicConfig`` to re-configure the ``logging`` behavior OUTSIDE of
+``fre/__init__.py``. What this does is it creates another ``logging.handler`` to manage the output, but does not resolve
 the ambiguity to previously defined ``loggers`` of which ``handler`` should be getting used. If this secondary ``logging.basicConfig``
 call is left in the PR or fork at merge-time, it can cause oddly silent logging behavior. This can be VERY tricky to debug!
 
@@ -148,6 +148,3 @@ In the case where non-python files like templates, examples, and outputs are to 
 * For more efficiency, if there are multiple files of the same type needed, the ``MANIFEST.in`` addition can be something
   like ``recursive-include fre/fre<tool> *.fileExtension`` which would recursively include every file matching that
   ``fileExtension`` within the specified directory and its respective subdirectories.
-
-
-
