@@ -13,7 +13,7 @@ def install_analysis_package(url, name=None, library_directory=None):
 
     Args:
         url: URL to the github repository for the analysis package.
-        name: String name of the analysis-script package.
+        name: String name of the analysis-script package (not prefixed with 'freanalysis_')
         library_directory: Directory to install the package in.
     """
     # Clean up the url if necessary.
@@ -40,11 +40,11 @@ def install_analysis_package(url, name=None, library_directory=None):
                 env.create_env()
                 env.install_package(str(tmp_path / "scripts" / "core" / "analysis_scripts"))
                 env.install_package(str(tmp_path / "scripts" / "core" / "figure_tools"))
-                env.install_package(str(tmp_path / "scripts" / "user-analysis-scripts" / name))
+                env.install_package(str(tmp_path / "scripts" / "user-analysis-scripts" / "freanalysis_" + name))
             else:
                 run(["pip", "install", str(tmp_path / "scripts" / "core" / "figure_tools")],
                     check=True)
-                run(["pip", "install", str(tmp_path / "scripts" / "user-analysis-scripts" / name)],
+                run(["pip", "install", str(tmp_path / "scripts" / "user-analysis-scripts" / "freanalysis_" + name)],
                     check=True)
     else:
         if library_directory:
