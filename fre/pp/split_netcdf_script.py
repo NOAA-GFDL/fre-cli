@@ -48,7 +48,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
     raise OSError(f"error: input dir {inputDir} does not exist or is not a directory")
   if not (os.path.isdir(outputDir)):
-    if os.path.isfile(inputDir):
+    if os.path.isfile(outputDir):
       fre_logger.error(f"error: output dir {outputDir} is a file. Please specify a directory.")
     else:
       fre_logger.info(f"output dir {outputDir} does not exist. Creating now.")
