@@ -6,6 +6,7 @@ import click
 
 from .mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
+from .generate_time_averages.wrapper import generate_wrapper
 from .regrid_xy.regrid_xy import regrid_xy
 
 @click.group(help=click.style(" - app subcommands", fg=(250,154,90)))
@@ -110,6 +111,39 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     start_time = time.perf_counter()
     generate(inf, outf, pkg, var, unwgt, avg_type)
     click.echo(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
+
+@app_cli.command()
+@click.option("--cycle-point",
+              type = str,
+              required = True,
+              help = "Beginning cycle-point in ISO8601")
+@click.option("---dir",
+              type = str,
+              required = True,
+              help = "Root directory containing the shards")
+@click.option("--source",
+              type = str,
+              required = True,
+              help = "Source (history file) input file")
+@click.option("--output-interval",
+              type = str,
+              required = True,
+              help = "ISO interval of the desired climatology")
+@click.option("--input-interval",
+              type = str,
+              required = True,
+              help = "ISO interval of the input timeseries")
+@click.option("--use-subdirs",
+              type = bool,
+              is_flag = True,
+              default = False,
+              help = "If set, the directory underneath shards is regridded grid labels, then sources. If not set, the directory underneath shards are the sources.")
+def gen_time_averages_wrapper(cycle_point, dir_, source, output_interval, input_interval, use_subdirs):
+    """
+    Wrapper for climatology tool.
+    Timeaverages all variables for a desired cycle point, source, and grid.
+    """
+    generate_wrapper(cycle_point, dir_, source, output_interval, input_interval, use_subdirs)
 
 if __name__ == "__main__":
     app_cli()
