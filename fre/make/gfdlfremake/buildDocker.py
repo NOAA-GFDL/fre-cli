@@ -226,22 +226,27 @@ class container():
             - platform : The platform object
             - skip_format_transfer : skip the container format conversion to a .sif file
         """
-        containerName = self.e+"-"+self.target.gettargetName()
+        containerName = f"{self.e}-{self.target.gettargetName()}"
         containerBuild = platform["containerBuild"]
         containerRun = platform["containerRun"]
         containerOutputLocation = platform["containerOutputLocation"]
 
         self.userScript = ["#!/bin/bash\n"]
-        self.userScript.append(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName()+"\n")
+        self.userScript.append(f"{containerBuild} build -f Dockerfile -t {self.e}:{self.target.gettargetName()}\n")
 
         if not skip_format_transfer:
-            self.userScript.append("rm -f "+containerName+".tar "+containerName+".sif\n")
-            self.userScript.append(containerBuild+" save -o "+containerName+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
-            self.userScript.append(containerRun+" build --disable-cache "+containerName+".sif docker-archive://"+containerName+".tar\n")
+            # Remove any previously generated images, if they exist
+            self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
+
+            self.userScript.append(f"{containerBuild} save -o {containerName}.tar localhost/{self.e}:{self.target.gettargetName()}\n")
+            self.userScript.append(f"{containerRun} build --disable-cache {containerName}.sif docker-archive://{containerName}.tar\n")
             if containerOutputLocation != "":
                 self.userScript.append(f"mkdir -p {containerOutputLocation}")
                 self.userScript.append(f"cp {containerName}.sif {containerOutputLocation}/{containerName}.sif\n")
                 self.userScript.append(f"cp {containerName}.tar {containerOutputLocation}/{containerName}.tar\n")
+
+                # Remove it from the original location
+                self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
 
         self.userScriptFile = open("createContainer.sh","w")
         self.userScriptFile.writelines(self.userScript)
