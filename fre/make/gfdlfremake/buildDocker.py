@@ -42,7 +42,7 @@ class container():
             self.setup = ["RUN \\ \n"]
         else:
             self.setup = ["RUN "+RUNenv[0]+" \\ \n"]
-        self.setup
+
         for env in RUNenv[1:]:
             self.setup.append(" && "+env+" \\ \n")
         if self.l:
@@ -67,7 +67,9 @@ class container():
             self.secondstage = [f"FROM {self.stage2base} as final\n",
                                 f"COPY --from=builder  {self.src} {self.src}\n",
                                 f"COPY --from=builder {self.bld} {self.bld}\n",
-                                f"ENV PATH=$PATH:{self.bld}\n"]
+                                f"RUN mkdir -p /apps/bin \\ \n",
+                                f" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh \n",
+                                f"ENV PATH=$PATH:{self.bld}:/apps/bin\n"]
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """
         Brief: writes to the checkout part of the Dockerfile and sets up the compile
@@ -115,7 +117,7 @@ class container():
 
     def writeDockerfileMkmf(self, c):
         """
-        Brief: Adds components to the build part of the Dockerfile            
+        Brief: Adds components to the build part of the Dockerfile
         Param:
             - self : The dockerfile object
             - c : Component from the compile yaml
@@ -209,32 +211,37 @@ class container():
             self.d.write(" cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
         else:
             self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
-        ## Write any second stage lines here 
+        ## Write any second stage lines here
         for l in self.secondstage:
             self.d.write(l)
         self.d.write('ENTRYPOINT ["/bin/bash"]')
         self.d.close()
 
-    def createBuildScript(self,containerBuild,containerRun,containerOutputLocation):
+    def createBuildScript(self,platform, skip_format_transfer):
         """
         Brief: Writes out the build commands for the created dockerfile in a script,
                which builds the dockerfile and then converts the format to a singularity image file.
         Param:
             - self : The dockerfile object
-            - containerBuild : The tool used to build the container;
-                               docker or podman used
-            - containerRun : The container platform used with `exec` to
-                             run the container; apptainer or singularity used
+            - platform : The platform object
+            - skip_format_transfer :
         """
         containerName = self.e+"-"+self.target.gettargetName()
+        containerBuild = platform["containerBuild"]
+        containerRun = platform["containerRun"]
+        containerOutputLocation = platform["containerOutputLocation"]
+
         self.userScript = ["#!/bin/bash\n"]
         self.userScript.append(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName()+"\n")
-        self.userScript.append("rm -f "+self.e+".tar "+self.e+".sif\n")
-        self.userScript.append(containerBuild+" save -o "+containerName+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
-        self.userScript.append(containerRun+" build --disable-cache "+containerName+".sif docker-archive://"+containerName+".tar\n")
-        if containerOutputLocation != "":
-            self.userScript.append("cp " + containerName + ".sif " +  containerOutputLocation + "/" + containerName + ".sif"+"\n")
-            self.userScript.append("cp " + containerName + ".tar " +  containerOutputLocation + "/" + containerName + ".tar"+"\n")
+
+        if not skip_format_transfer:
+            self.userScript.append("rm -f "+containerName+".tar "+containerName+".sif\n")
+            self.userScript.append(containerBuild+" save -o "+containerName+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
+            self.userScript.append(containerRun+" build --disable-cache "+containerName+".sif docker-archive://"+containerName+".tar\n")
+            if containerOutputLocation != "":
+                self.userScript.append("cp " + containerName + ".sif " +  containerOutputLocation + "/" + containerName + ".sif"+"\n")
+                self.userScript.append("cp " + containerName + ".tar " +  containerOutputLocation + "/" + containerName + ".tar"+"\n")
+
         self.userScriptFile = open("createContainer.sh","w")
         self.userScriptFile.writelines(self.userScript)
         self.userScriptFile.close()

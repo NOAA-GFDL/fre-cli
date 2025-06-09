@@ -36,10 +36,8 @@ rose-suite:
     site:
     # Location for shared analysis scripts
     fre_analysis_home:
-    # ISO8601 duration of the desired post-processed output
-    pp_chunk_a:
-    # ISO8601 duration of a second desired postprocessed output
-    pp_chunk_b:
+    # Array of ISO8601 durations specifying the interval of simulated time per postprocessed output file
+    pp_chunks:
     # Components to be post-processed
     pp_components:
     # Default regridded resolution

@@ -3,6 +3,12 @@ on:
   pull_request:
     branches:
       - main
+
+# cancel running jobs if theres a newer push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +30,12 @@ jobs:
           # append the reqd channels
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
+
+          # remove any default channels
+          conda config --remove channels defaults
+
+          # just in case
+          conda config --show channels
 
           # install conda-build and conda-verify
           conda install conda-build conda-verify

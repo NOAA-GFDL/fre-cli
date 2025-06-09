@@ -9,13 +9,18 @@
 
 import os
 import json
-import shutil
+
 from pathlib import Path
-from jsonschema import validate
+from jsonschema import validate, SchemaError, ValidationError
 import yaml
 import metomi.rose.config
 
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
+
+import logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 ####################
 def yaml_load(yamlfile):
@@ -33,22 +38,31 @@ def validate_yaml(yamlfile):
     """
      Using the schema.json file, the yaml format is validated.
     """
-    # Load the yaml
-    yml = yaml_load(yamlfile)
-
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
+    logger.info(f"Using yaml schema '{schema_path}'")
     # Load the json schema: .load() (vs .loads()) reads and parses the json in one)
-    with open(schema_path,'r') as s:
-        schema = json.load(s)
+    try:
+        with open(schema_path,'r') as s:
+            schema = json.load(s)
+    except:
+        logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
+        raise
 
     # Validate yaml
     # If the yaml is not valid, the schema validation will raise errors and exit
     try:
-        validate(instance=yml,schema=schema)
-        print("\nCombined yaml VALID \n")
+        validate(instance=yamlfile,schema=schema)
+        logger.info("Combined yaml valid")
+    except SchemaError:
+        logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
+        raise
+    except ValidationError:
+        logger.error("Combined yaml is not valid. Please fix the errors and try again.")
+        raise
     except:
-        raise ValueError("\nCombined yaml NOT VALID.\n")
+        logger.error("Unclear error from validation. Please try to find the error and try again.")
+        raise
 
 ####################
 def rose_init(experiment,platform,target):
@@ -81,12 +95,14 @@ def rose_init(experiment,platform,target):
 def quote_rose_values(value):
     """
     rose-suite.conf template variables must be quoted unless they are
-    boolean, in which case do not quote them.
+    boolean or a list, in which case do not quote them.
     """
     if isinstance(value, bool):
         return f"{value}"
+    elif isinstance(value, list):
+        return f"{value}"
     else:
-        return "'" + value + "'"
+        return "'" + str(value) + "'"
 
 ####################
 def set_rose_suite(yamlfile,rose_suite):
@@ -101,6 +117,11 @@ def set_rose_suite(yamlfile,rose_suite):
         for i in pp.values():
             if not isinstance(i,list):
                 for key,value in i.items():
+                    # if pp start/stop is specified as integer, pad zeros
+                    # or else cylc validate will fail
+                    if key == 'pp_start' or key == 'pp_stop':
+                        if isinstance(value, int):
+                            value = f"{value:04}"
                     # rose-suite.conf is somewhat finicky with quoting
                     # cylc validate will reveal any complaints
                     rose_suite.set( keys = ['template variables', key.upper()],
@@ -117,7 +138,13 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
     components = yamlfile.get("postprocess").get("components")
     for i in components:
         comp = i.get('type')
-        sources = i.get('sources')
+
+        # Get sources
+        sources = []
+        for s in i.get('sources'):
+            sources.append(s.get("history_file"))
+
+        #source_str = ' '.join(sources)
         interp_method = i.get('interpMethod')
 
         # set remap items
@@ -134,6 +161,14 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
 
         # set regrid items
         if i.get("xyInterp") is not None:
+            sources = []
+            for s in i.get("sources"):
+                sources.append(s.get("history_file"))
+            # Add static sources to sources list if defined
+            if i.get("static") is not None:
+                for s in i.get("static"):
+                    sources.append(s.get("source"))
+
             rose_regrid.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
             rose_regrid.set(keys=[f'{comp}', 'inputRealm'], value=f'{i.get("inputRealm")}')
             rose_regrid.set(keys=[f'{comp}', 'inputGrid'], value=f'{i.get("sourceGrid")}')
@@ -152,6 +187,8 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     directory. The pp.yaml is also copied to the
     cylc-src directory.
     """
+    logger.info('Starting')
+
     if None in [yamlfile, experiment, platform, target]:
         raise ValueError( 'yamlfile, experiment, platform, and target must all not be None.'
                           'currently, their values are...'
@@ -165,40 +202,44 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
 
     # Combine model, experiment, and analysis yamls
-    comb = cy.init_pp_yaml(yml,e,p,t)
-    full_combined = cy.get_combined_ppyaml(comb)
+    cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
+    outfile = os.path.join(cylc_dir, f"{e}.yaml")
+
+    full_yamldict = cy.consolidate_yamls(yamlfile = yml,
+                                         experiment = e,
+                                         platform = p,
+                                         target = t,
+                                         use = "pp",
+                                         output = outfile)
 
     # Validate yaml
-    validate_yaml(full_combined)
-    # Load the combined yaml
-    comb_pp_yaml = yaml_load(full_combined)
+    validate_yaml(full_yamldict)
 
     ## PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items
-    set_rose_suite(comb_pp_yaml,rose_suite)
+    set_rose_suite(full_yamldict,rose_suite) ####comb_pp_yaml,rose_suite)
 
     # Set regrid and remap rose app items
-    set_rose_apps(comb_pp_yaml,rose_regrid,rose_remap)
+    set_rose_apps(full_yamldict,rose_regrid,rose_remap) ####comb_pp_yaml,rose_regrid,rose_remap)
 
-    # write output files
-    print("Writing output files...")
-    cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
-    outfile = os.path.join(cylc_dir, f"{e}.yaml")
-    shutil.copyfile(full_combined, outfile)
-    print("  " + outfile)
+    # Write output files
+    logger.info("Writing output files...")
+    logger.info("  " + outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
     outfile = os.path.join(cylc_dir, "rose-suite.conf")
     dumper(rose_suite, outfile)
-    print("  " + outfile)
+    logger.info("  " + outfile)
 
     outfile = os.path.join(cylc_dir, "app", "regrid-xy", "rose-app.conf")
     dumper(rose_regrid, outfile)
-    print("  " + outfile)
+    logger.info("  " + outfile)
 
     outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
     dumper(rose_remap, outfile)
-    print("  " + outfile)
+    logger.info("  " + outfile)
+
+    logger.info('Finished')
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':

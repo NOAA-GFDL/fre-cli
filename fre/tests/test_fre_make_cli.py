@@ -25,7 +25,7 @@ def test_cli_fre_make_opt_dne():
     assert result.exit_code == 2
 
 def test_cli_fre_make_create_checkout_baremetal():
-    ''' fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t debug'''
+    ''' fre make checkout -y am5.yaml -p ncrc5.intel23 -t debug'''
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_baremetal"
 
     # Set paths and click options
@@ -44,8 +44,10 @@ def test_cli_fre_make_create_checkout_baremetal():
     old_home = os.environ["HOME"]
     os.environ["HOME"]=str(Path(OUT_PATH))
 
-    # run create-checkout
-    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target])
+    # run checkout
+    result = runner.invoke(fre.fre, args = [ "make", "checkout-script", 
+                                             "-y", f"{yamlfile}/null_model.yaml",
+                                             "-p", platform, "-t", target  ])
 
     os.environ["HOME"] = old_home
 
@@ -56,8 +58,8 @@ def test_cli_fre_make_create_checkout_baremetal():
                  os.access(Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh"), os.X_OK)])
 
 def test_cli_fre_make_create_checkout_baremetal_npc():
-    ''' fre make create-checkout -y am5.yaml -p ncrc5.intel23 -t debug -npc'''
-    TEST_DIR = Path("fre/tests")
+    ''' fre make checkout -y null_model.yaml -p ncrc5.intel23 -t debug -npc'''
+
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_baremetal_npc"
 
     # Set paths and click options
@@ -76,8 +78,10 @@ def test_cli_fre_make_create_checkout_baremetal_npc():
     old_home = os.environ["HOME"]
     os.environ["HOME"]=str(Path(OUT_PATH))
 
-    # run create-checkout
-    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target, "-npc"])
+    # run checkout
+    result = runner.invoke(fre.fre, args = [ "make", "checkout-script",
+                                             "-y", f"{yamlfile}/null_model.yaml",
+                                             "-p", platform, "-t", target, "-npc"  ])
 
     os.environ["HOME"] = old_home
 
@@ -88,8 +92,8 @@ def test_cli_fre_make_create_checkout_baremetal_npc():
                  os.access(Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh"), os.X_OK)])
 
 def test_cli_fre_make_create_checkout_container():
-    ''' fre make create-checkout -y null_model.yaml -p hpcme.2023 -t debug'''
-    TEST_DIR = Path("fre/tests")
+    ''' fre make checkout -y null_model.yaml -p hpcme.2023 -t debug'''
+
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_container"
 
     # Set paths and click options
@@ -108,8 +112,11 @@ def test_cli_fre_make_create_checkout_container():
     old_home = os.environ["HOME"]
     os.environ["HOME"]=str(Path(OUT_PATH))
 
-    # run create-checkout
-    result = runner.invoke(fre.fre, args=["make", "create-checkout", "-y", f"{yamlfile}/null_model.yaml", "-p", platform, "-t", target])
+    # run checkout
+    result = runner.invoke(fre.fre, args=["make", "checkout-script",
+                                          "-y", f"{yamlfile}/null_model.yaml",
+                                          "-p", platform,
+                                          "-t", target])
 
     os.environ["HOME"] = old_home
 
@@ -117,7 +124,7 @@ def test_cli_fre_make_create_checkout_container():
     # os.access - checks is file has specific access mode, os.X_OK - checks executable permission
     assert all ([result.exit_code == 0,
                  Path(f"tmp/{platform}/checkout.sh").exists(),
-                 os.access(Path(f"tmp/{platform}/checkout.sh"), os.X_OK) == False ])
+                 not os.access(Path(f"tmp/{platform}/checkout.sh"), os.X_OK) ])
 
 def test_cli_fre_make_create_checkout_cleanup():
     ''' make sure the checked out code doesnt stick around to mess up another pytest call '''

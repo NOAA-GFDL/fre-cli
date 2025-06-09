@@ -1,0 +1,47 @@
+# WARNING this file is for testing and examples only.
+# WARNING it is not for production/deployment use.
+grids:
+
+# gm is the only grid label that has no variants. 
+  - gm: &gm
+      grid_label: "gm"
+      grid_desc: "global mean data"
+      nom_res: "5000 km"
+
+# native grid_labels are not permitted to have an integer in them
+  - gn: &gn
+      grid_label: "gn"
+      grid_desc: "reported data on native grid"
+      nom_res: "1 km"
+
+  - gr: &gr
+      grid_label: "gr"
+      grid_desc: "reported data regridded to preferred target grid"
+      nom_res: "10 km"
+
+  - gr1: &gr1
+      grid_label: "gr1"
+      grid_desc: "reported data regridded to non-preferred target grid different from gr"
+      nom_res: "25 km"
+
+  - gr2: &gr2
+      grid_label: "gr2"
+      grid_desc: "reported data regridded to non-preferred target grid different from gr, gr1"
+      nom_res: "100 km"
+    
+  - gr3: &gr3
+      grid_label: "gr3"
+      grid_desc: "reported data regridded to non-preferred target grid different from gr, gr1, gr2"
+      nom_res: "250 km"
+
+## uncomment me, if another gr label is required.
+#  - grid_label: "gr4"
+#    grid_desc: "reported data is regridded to target grid different from gr1, gr2, gr3"
+#    nom_res: "1000 km"
+
+
+## if even further gr labels required, copy/paste and edit contents. the max integer is 9
+## the contents must obey the MIP's controlled vocabulary.
+## for data in Greenlandic and Antarctic regrions, add 'a' or 'g' to the end of the grid_label
+## for data that's been zonally averaged, add 'z' to the end of the grid label.
+## no grid label can have more than one of 'a', 'g', or 'z' appended to the end 

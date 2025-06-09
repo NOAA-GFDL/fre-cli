@@ -43,6 +43,10 @@ class fretarget:
             else:
                 self.openmp = False
 
+            ## Check if lto is given to turn on link time optimization
+            if target == "lto":
+                self.makeline_add = self.makeline_add + "USE_LTO=on "
+
         ## Check to make sure only one of the prod, debug, repro are used
         errormsg = "You can only list one mutually exclusive target, but your target '"+self.target+"' lists more than one of the following targets: \n debug \n prod \n repro"
         if self.debug:

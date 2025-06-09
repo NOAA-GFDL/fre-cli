@@ -3,10 +3,13 @@ TODO doc-string
 '''
 
 import os
+import logging
+fre_logger = logging.getLogger(__name__)
+
 from pathlib import Path
 
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
-import fre.yamltools.combine_yamls as cy
+import fre.yamltools.combine_yamls_script as cy
 
 def makefile_create(yamlfile, platform, target):
     """
@@ -21,17 +24,21 @@ def makefile_create(yamlfile, platform, target):
     yml = yamlfile
     name = yamlfile.split(".")[0]
 
-    combined = Path(f"combined-{name}.yaml")
+    #    combined = Path(f"combined-{name}.yaml")
 
-    ## If combined yaml exists, note message of its existence
-    ## If combined yaml does not exist, combine model, compile, and platform yamls
-    full_combined = cy.combined_compile_existcheck(combined, yml, platform, target)
+    # Combine model, compile, and platform yamls
+    full_combined = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=name,
+                                         platform=platform,
+                                         target=target,
+                                         use="compile",
+                                         output=None)
 
     ## Get the variables in the model yaml
-    freVars = varsfre.frevars(full_combined)
+    fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file and parse as fremakeYaml
-    modelYaml = yamlfre.freyaml(full_combined, freVars)
+    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
     fremakeBuildList = []
@@ -45,12 +52,13 @@ def makefile_create(yamlfile, platform, target):
                 raise ValueError (f"{platformName} does not exist in platforms.yaml")
 
             platform=modelYaml.platforms.getPlatformFromName(platformName)
-  ## Make the bldDir based on the modelRoot, the platform, and the target
+            ## Make the bldDir based on the modelRoot, the platform, and the target
             srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
             if platform["container"] is False:
                 baremetalRun = True
-                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/" + platformName + "-" + targetObject.gettargetName() + "/exec"
+                bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
+                         f'{platformName}-{targetObject.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
                 ## Create the Makefile
                 freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
@@ -59,10 +67,13 @@ def makefile_create(yamlfile, platform, target):
                                              bldDir = bldDir,
                                              mkTemplatePath = platform["mkTemplate"])
                 # Loop through components and send the component name, requires, and overrides for the Makefile
-                for c in fremakeYaml['src']:
+                for c in fremakeYaml['src']: 
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
-                print("\nMakefile created at " + bldDir + "/Makefile" + "\n") # was click.echo
+                former_log_level = fre_logger.level
+                fre_logger.setLevel(logging.INFO)
+                fre_logger.info("\nMakefile created at " + bldDir + "/Makefile" + "\n")
+                fre_logger.setLevel(former_log_level)
             else:
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "./tmp/"+platformName
@@ -77,7 +88,10 @@ def makefile_create(yamlfile, platform, target):
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
-                print("\nMakefile created at " + tmpDir + "/Makefile" + "\n") # was click.echo
+                former_log_level = fre_logger.level
+                fre_logger.setLevel(logging.INFO)
+                fre_logger.info("\nMakefile created at " + tmpDir + "/Makefile" + "\n")
+                fre_logger.setLevel(former_log_level)
 
 if __name__ == "__main__":
     makefile_create()
