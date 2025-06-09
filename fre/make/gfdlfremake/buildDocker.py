@@ -239,8 +239,9 @@ class container():
             self.userScript.append(containerBuild+" save -o "+containerName+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
             self.userScript.append(containerRun+" build --disable-cache "+containerName+".sif docker-archive://"+containerName+".tar\n")
             if containerOutputLocation != "":
-                self.userScript.append("cp " + containerName + ".sif " +  containerOutputLocation + "/" + containerName + ".sif"+"\n")
-                self.userScript.append("cp " + containerName + ".tar " +  containerOutputLocation + "/" + containerName + ".tar"+"\n")
+                self.userScript.append(f"mkdir -p {containerOutputLocation}")
+                self.userScript.append(f"cp {containerName}.sif {containerOutputLocation}/{containerName}.sif\n")
+                self.userScript.append(f"cp {containerName}.tar {containerOutputLocation}/{containerName}.tar\n")
 
         self.userScriptFile = open("createContainer.sh","w")
         self.userScriptFile.writelines(self.userScript)
