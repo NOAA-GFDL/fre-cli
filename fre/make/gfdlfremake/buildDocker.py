@@ -217,14 +217,14 @@ class container():
         self.d.write('ENTRYPOINT ["/bin/bash"]')
         self.d.close()
 
-    def createBuildScript(self,platform, skip_format_transfer):
+    def createBuildScript(self, platform, skip_format_transfer):
         """
         Brief: Writes out the build commands for the created dockerfile in a script,
                which builds the dockerfile and then converts the format to a singularity image file.
         Param:
             - self : The dockerfile object
             - platform : The platform object
-            - skip_format_transfer :
+            - skip_format_transfer : skip the container format conversion to a .sif file
         """
         containerName = self.e+"-"+self.target.gettargetName()
         containerBuild = platform["containerBuild"]
