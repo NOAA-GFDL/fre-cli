@@ -132,7 +132,7 @@ class makefile():
             fh.write("include $(MK_TEMPLATE)"+"\n")
 
             # Write the main experiment compile
-            fh.write(self.e+".x: "+libstring+"\n")
+            fh.write("fms_"+self.e+".x: "+libstring+"\n")
             fh.write("\t$(LD) $^ $(LDFLAGS) -o $@ $(STATIC_LIBS)"+"\n")
 
         # Write the link line script with user-provided libraries
