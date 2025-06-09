@@ -1,5 +1,6 @@
 .. NEEDS UPDATING #TODO
 
+For more complete information on the ``catalogbuilder`` tool, please see its offical `documentation <https://noaa-gfdl.github.io/CatalogBuilder/>`_.
 
 ``builder``
 -----------
