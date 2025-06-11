@@ -85,14 +85,14 @@ def test_run_fremake_container_build():
     assert Path("null_model_full-debug.sif").exists()
 
 @pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
-def test_run_fremake_container_build():
+def test_run_fremake_container_build_specified_out():
     ''' checks that the image was copied to the correct specified output location'''
     os.environ["TEST_BUILD_DIR"] = CONTAINER_BUILD_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM_2, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=True, verbose=VERBOSE)
     assert Path(
-        f"{CONTAINER_BUILD_TEST_PATH}/null_model_full-debug.sif").exists()
+        f"{CONTAINER_BUILD_TEST_PATH}/fremake_canopy/test/null_model_full-debug.sif").exists()
 
 @pytest.mark.skipif(not has_podman, reason="missing podman")
 def test_run_fremake_container_build_notransfer():
