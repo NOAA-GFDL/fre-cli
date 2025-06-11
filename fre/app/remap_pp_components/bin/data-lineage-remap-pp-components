@@ -1,0 +1,232 @@
+#!/bin/bash
+set -euo pipefail
+set -x
+
+#
+# Remap variables from one convention (i.e. history) to another (i.e. PP components)
+#
+
+source $(dirname ${BASH_SOURCE[0]})/../shared/shared.sh
+
+shopt -s extglob
+
+# To read the Rose config file
+if [[ -z ${CYLC_TASK_WORK_DIR:-} ]]; then
+    config="rose config --file $(dirname ${BASH_SOURCE[0]})/../rose-app-run.conf"
+else
+    config="rose config --file $CYLC_TASK_WORK_DIR/rose-app-run.conf"
+fi
+
+echo Arguments:
+echo "    input dir: $inputDir"
+echo "    output dir: $outputDir"
+echo "    ensemble member: ${ens_mem:=}"
+echo "    begin: $begin"
+echo "    current chunk: $currentChunk"
+echo "    components: ${components:=}"
+echo "    product: $product"
+echo "    dirTSWorkaround: ${dirTSWorkaround:=}"
+echo Utilities:
+type $COPY_TOOL
+
+# Verify input directory exists and is a directory
+if [[ ! -d $inputDir ]]; then
+    err "Error: Input directory '${inputDir}' does not exist or isn't a directory"
+    exit 1
+fi
+
+# Verify output directory exists and is a directory
+if [[ ! -d $outputDir ]]; then
+    err "Error: Output directory '${outputDir}' does not exist or isn't a directory"
+    exit 1
+fi
+
+# Setup PYTHONPATH and io lists for the data lineage tool
+if [[ "$EPMT_DATA_LINEAGE" -eq 1 ]]; then
+    export PYTHONPATH=$CYLC_SUITE_DEF_PATH:$PYTHONPATH
+    export input_file_list=
+    export output_file_list=
+    echo "Set PYTHONPATH and created i/o lists"
+fi
+
+cd $inputDir
+
+# example output structure
+# native/land_month/P1M/P4Y/land_month.198201-198512.snow.nc
+# GRID/COMP/FREQ/CHUNK/COMP.DATES.VAR.nc
+
+for key in $($config --keys | grep -v command | grep -v env); do
+    compOut=${key%.*}
+    # if $components is set, it is a space-separated list of acceptable components
+    if [[ -n $components ]] && ! [[ " $components " =~ " $compOut " ]]; then
+        continue
+    fi
+    echo "Processing component '$compOut' ($key)"
+
+    vars=$($config --default=all $key variables)
+
+    if [[ "$EPMT_DATA_LINEAGE" -eq 1 ]]; then
+        epmt annotate EPMT_DATA_LINEAGE_OUT_PATH="$outputDir/$compOut/"
+        echo "[DATA LINEAGE] Annotated $outputDir$compOut/ to EPMT_DATA_LINEAGE_OUT_PATH"
+    fi
+
+    for grid in $($config --default=* $key grid); do
+        if [[ $ens_mem ]]; then
+            newdir=$grid/$ens_mem  #ens_%(ens)02d
+            # To save save, the data_lineage_in/out_dir variables are not enclosed in individual if 
+            # statements. However, the vars are only ever used inside the if statement on line 187.
+            data_lineage_in_dir=$newdir
+            pushd $newdir || continue
+        else
+            if [[ "$EPMT_DATA_LINEAGE" -eq 1 ]]; then
+            data_lineage_in_dir=$grid
+            fi
+            pushd $grid || continue 
+        fi
+
+        for source in $($config --default=* $key sources); do
+            cd $source || continue
+
+            for freq in $($config --default=* $key freq); do
+                cd $freq || continue
+
+                for chunk in $($config --default=* $key chunk); do
+                    if [[ $chunk != $currentChunk ]]; then
+                        continue
+                    fi
+                    cd $chunk || continue
+
+                    if [[ $ens_mem ]]; then
+                        if [[ $dirTSWorkaround ]]; then
+                            dir=$outputDir/$compOut/ts/$ens_mem/$freq/$chunk
+                            data_lineage_out_dir=ts/$ens_mem/$freq/$chunk 
+                        else
+                            dir=$outputDir/$compOut/$ens_mem/$freq/$chunk
+                            data_lineage_out_dir=$ens_mem/$freq/$chunk
+                        fi
+                    else
+                        if [[ $dirTSWorkaround ]]; then
+                            dir=$outputDir/$compOut/ts/$freq/$chunk
+                            data_lineage_out_dir=ts/$freq/$chunk
+                        else
+                            dir=$outputDir/$compOut/$freq/$chunk
+                            data_lineage_out_dir=$freq/$chunk
+                        fi
+                    fi
+                    mkdir -p $dir
+
+                    # create the bronx-style symlinks for TS only
+                    if [[ $dirTSWorkaround ]]; then
+                        freq_legacy=$(freq_to_legacy $freq)
+                        chunk_legacy=$(chunk_to_legacy $chunk)
+                        if [[ $chunk_legacy == error ]]; then
+                            err Skipping legacy directory for chunk $chunk
+                        else
+                            if [[ $ens_mem ]]; then 
+                                pushd $outputDir/$compOut/ts/$ens_mem
+                            else
+                                pushd $outputDir/$compOut/ts
+                            fi 
+
+                            mkdir -p $freq_legacy
+                            cd $freq_legacy
+                            if [[ ! -e $chunk_legacy ]]; then
+                                ln -s ../$freq/$chunk $chunk_legacy
+                            fi
+                            popd
+                        fi
+                    fi
+
+                    if [[ $freq == P0Y ]]; then
+                        if [[ $vars == all ]]; then
+                            files=$source.*?(.tile?).nc
+                        else
+                            for var in $vars; do
+                                files="$files $source.$var?(.tile?).nc"
+                            done
+                        fi
+                    else
+                        if [[ $product == "ts" ]]; then
+                            date1=$(truncate_date $begin $freq)
+                        elif [[ $product == "av" ]]; then
+                            date1=$(truncate_date $begin P1Y)
+                        else
+                            err "Product not set to ts or av"
+                            exit 2
+                        fi
+                        if [[ $vars == all ]]; then
+                            files=$source.$date1-*.*?(.tile?).nc
+                        else
+                            files=""
+                            for var in $vars; do
+                                files="$files $source.$date1-*.$var?(.tile?).nc"
+                            done
+                        fi
+                        # unfortunate workaround needed for timeaverages which
+                        # have only one year (i.e. YYYY, not YYYY-YYYY) in cases if chunksize=P1Y
+                        if [[ $product == "av" && $currentChunk == "P1Y" ]]; then
+                            files=$source.$date1.*?(.tile?).nc
+                        fi
+                    fi
+
+                    if ! ls $files; then
+                        err "No input files found; was looking for '$files' in $(pwd)"
+                        exit 1
+                    fi
+
+                    for file in $files; do
+
+                        newfile=$compOut.${file#*.}
+                        if [[ -f $dir/$newfile ]]; then
+                            rm -f $dir/$newfile
+                        fi
+                        ln $file $dir/$newfile || $COPY_TOOL $file $dir/$newfile
+
+                        if [[ "$EPMT_DATA_LINEAGE" -eq 1 ]]; then
+
+                            hash_val=$(/home/Cole.Harvey/.conda/envs/bloom-filter-env/bin/python \
+                            -m data_lineage.bloomfilter.HashGen $(pwd)/$file)
+                            export input_file_list="${input_file_list}$data_lineage_in_dir/$source/$freq/$chunk/$file $hash_val,"
+                            echo "[DATA LINEAGE] Added $data_lineage_in_dir/$source/$freq/$chunk/$file to     input list with hash_val: $hash_val"
+
+                            hash_val=$(/home/Cole.Harvey/.conda/envs/bloom-filter-env/bin/python \
+                            -m data_lineage.bloomfilter.HashGen $dir/$newfile)
+                            export output_file_list="${output_file_list}$data_lineage_out_dir/$newfile $hash_val,"
+                            echo "[DATA LINEAGE] Added $data_lineage_out_dir/$newfile to output list with hash_val: $hash_val"
+                        fi
+                    done
+
+                    cd ..
+                done
+                cd ..
+            done
+            cd ..
+        done
+        popd
+    done
+done
+
+if [[ "$EPMT_DATA_LINEAGE" -eq 1 ]]; then
+
+    epmt annotate EPMT_DATA_LINEAGE_IN_PATH="$inputDir/"
+    echo "[DATA LINEAGE] Annotated $inputDir/ to EPMT_DATA_LINEAGE_IN_PATH"
+
+    # Annotate to EPMT
+    if [ -n "$input_file_list" ]; then
+        compressed_bytes=$(/home/Cole.Harvey/.conda/envs/bloom-filter-env/bin/python \
+        -m data_lineage.bloomfilter.StringCompression "${input_file_list}")
+        epmt -v annotate EPMT_DATA_LINEAGE_IN="${compressed_bytes%*,}"
+        echo "[DATA LINEAGE] Annotated input files to EPMT_LINEAGE_IN"
+    fi
+
+    if [ -n "$output_file_list" ]; then
+        compressed_bytes=$(/home/Cole.Harvey/.conda/envs/bloom-filter-env/bin/python \
+        -m data_lineage.bloomfilter.StringCompression "${output_file_list}")
+        epmt -v annotate EPMT_DATA_LINEAGE_OUT="${compressed_bytes%*,}"
+        echo "[DATA LINEAGE] Annotated output files to EPMT_LINEAGE_OUT"
+    fi
+fi
+
+
+echo Natural end of the component remapping
+exit 0

@@ -1,0 +1,50 @@
+postprocess:
+  components:
+    - type: "atmos"
+      sources:
+        - history_file: "atmos_month"
+      sourceGrid: "cubedsphere"
+      xyInterp: "180, 288"
+      interpMethod: "conserve_order2"
+      inputRealm: "atmos"
+      static: 
+      - source: "atmos_static_cmip"
+      postprocess_on: False
+    - type: "atmos_scalar"
+      sources:
+        - history_file: "atmos_scalar"
+      inputRealm: "atmos"
+      static:
+        - source: "atmos_static_scalar"
+      postprocess_on: True
+
+    # component used to test variable filtering for history files
+    - type: "atmos_scalar_test_vars"
+      sources:
+        - history_file: "atmos_scalar"
+          variables: ["co2mass"]
+      inputRealm: "atmos"
+      static:
+        - source: "atmos_static_scalar"
+          variables: ["bk"]
+      postprocess_on: True
+
+    # component used to test variable filtering failure for history file (variable incorrect)
+    - type: "atmos_scalar_test_vars_fail"
+      sources:
+        - history_file: "atmos_scalar"
+          variables: ["no_var"]
+      inputRealm: "atmos"
+      static:
+        - source: "atmos_static_scalar"
+      postprocess_on: True
+
+    # component used to test variable filtering failure for statics (phalf file not defined)
+    - type: "atmos_scalar_static_test_vars_fail"
+      sources:
+        - history_file: "atmos_scalar"
+      inputRealm: "atmos"
+      static:
+        - source: "atmos_static_scalar"
+          variables: ["bk", "no_var"]
+      postprocess_on: True
