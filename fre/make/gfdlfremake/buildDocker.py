@@ -241,7 +241,7 @@ class container():
             self.userScript.append(f"{containerBuild} save -o {containerName}.tar localhost/{self.e}:{self.target.gettargetName()}\n")
             self.userScript.append(f"{containerRun} build --disable-cache {containerName}.sif docker-archive://{containerName}.tar\n")
             if containerOutputLocation != "":
-                self.userScript.append(f"mkdir -p {containerOutputLocation}")
+                self.userScript.append(f"mkdir -p {containerOutputLocation}\n")
                 self.userScript.append(f"cp {containerName}.sif {containerOutputLocation}/{containerName}.sif\n")
                 self.userScript.append(f"cp {containerName}.tar {containerOutputLocation}/{containerName}.tar\n")
 
