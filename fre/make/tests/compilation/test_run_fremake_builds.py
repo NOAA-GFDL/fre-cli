@@ -19,7 +19,8 @@ YAMLDIR = "fre/make/tests/null_example"
 YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
 PLATFORM = [ "ci.gnu" ]
-CONTAINER_PLATFORM = ["hpcmini.2025", "hpcmini.2025.Specify.Location"]
+CONTAINER_PLATFORM = ["hpcmini.2025"]
+CONTAINER_PLATFORM_2 = ["hpcmini.2025.Specify.Location"]
 TARGET = ["debug"]
 EXPERIMENT = "null_model_full"
 VERBOSE = False
@@ -78,7 +79,7 @@ def test_run_fremake_multijob_compile():
 @pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
 def test_run_fremake_container_build():
     ''' checks image creation for the container build'''
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM[0], TARGET,
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=True, verbose=VERBOSE)
     assert Path("null_model_full-debug.sif").exists()
@@ -87,7 +88,7 @@ def test_run_fremake_container_build():
 def test_run_fremake_container_build():
     ''' checks that the image was copied to the correct specified output location'''
     os.environ["TEST_BUILD_DIR"] = CONTAINER_BUILD_TEST_PATH
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM[1], TARGET,
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM_2, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=True, verbose=VERBOSE)
     assert Path(
@@ -98,7 +99,7 @@ def test_run_fremake_container_build_notransfer():
     ''' checks image creation with the .sif transfer turned off '''
     if Path("createContainer.sh").exists():
         os.remove("createContainer.sh")
-    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM[0], TARGET,
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         parallel=False, jobs=1, no_parallel_checkout=True,
         no_format_transfer=True, execute=True, verbose=VERBOSE)
 
