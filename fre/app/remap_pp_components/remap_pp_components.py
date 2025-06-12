@@ -224,7 +224,9 @@ def get_variables(comp_info, product, req_source):
     """
     if product == "static":
         if comp_info.get("static") is None:
-            raise ValueError(f"Product is set to static but no static sources/variables defined for {comp_info.get('type')}")
+            raise ValueError("Product is set to static but no static "
+                             "sources/variables defined for "
+                             f"{comp_info.get('type')}")
 
         for static_info in comp_info.get("static"):
             if static_info.get("source") == req_source:
@@ -367,7 +369,7 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
             yaml_components = comp_info.get("type")
 
             # Check that pp_components defined matches those in the yaml file
-            logger.debug(f"Is {comp} in {yaml_components}?")
+            logger.debug("Is %s in %s?", comp, yaml_components)
             if comp in yaml_components:
                 logger.debug('Yes')
             else:
@@ -419,7 +421,9 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                     else:
                         source_dir = os.path.join(input_dir, g, s)
                     if not os.path.exists(source_dir) and product == "av":
-                        logger.info("Source directory '%s' does not exist, but this could be expected, so skipping.", source_dir)
+                        logger.info("Source directory '%s' does not exist, "
+                                    "but this could be expected, so skipping.",
+                                    source_dir)
                         continue
                     os.chdir(source_dir)
 
@@ -479,7 +483,13 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                                                  current_chunk = current_chunk,
                                                  begin = begin_date)
 
-                            logger.info(f"{len(files)} files found for component '{comp}', source '{s}', product '{product}', grid '{g}', chunk '{c}', variables '{v}': {files}")
+                            logger.info("%d files found for component '%s', "
+                                        "source '%s', "
+                                        "product '%s', "
+                                        "grid '%s', "
+                                        "chunk '%s', "
+                                        "variables '%s': %s",
+                                        len(files), comp, s, product, g, c, v, files)
 
                             if not files:
                                 if ens_mem is not None:
@@ -533,7 +543,9 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                             if offline_srcs is not None:
                                 for src_file in offline_srcs:
                                     if not Path(src_file).exists():
-                                        raise ValueError(f"Offline diagnostic file defined but {src_file} does not exist or cannot be found!")
+                                        raise ValueError("Offline diagnostic file defined but "
+                                                         f"{src_file} does not exist or cannot "
+                                                         "be found!")
 
                                     offline_link = ["ln",
                                                     "-s",
