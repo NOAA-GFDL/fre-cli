@@ -3,13 +3,13 @@ import subprocess
 import shutil
 from pathlib import Path
 import pytest
-from fre.app.remap_pp_components.remap_pp_components import remap
+import fre.app.remap_pp_components.remap_pp_components as rmp
 
-
-TEST_DIR = Path("fre/app/remap_pp_components/tests")
+CWD = os.getcwd()
+TEST_DIR = Path(f"{CWD}/fre/app/remap_pp_components/tests")
 
 ## Path to test data
-DATA_DIR = Path("fre/app/remap_pp_components/tests/test-data")
+DATA_DIR = Path(f"{CWD}/fre/app/remap_pp_components/tests/test-data")
 DATA_FILE_CDL = Path("atmos_scalar.198001-198412.co2mass.cdl") # CDL file to generate nc file from ncgen
 DATA_FILE_NC = Path("atmos_scalar.198001-198412.co2mass.nc")   # Create NC file name to test remap functionality
 
@@ -52,15 +52,15 @@ STATIC_CHUNK = "P0Y"
 STATIC_SRC = "atmos_static_scalar"
 
 # environment variables
-os.environ['inputDir'] = REMAP_IN
-os.environ['outputDir'] = REMAP_OUT
-os.environ['currentChunk'] = "P5Y"
-os.environ['components'] = COMPOUT
-os.environ['begin'] = "19800101T0000Z"
-os.environ['product'] = PRODUCT
-os.environ['dirTSWorkaround'] = "1"
-os.environ['COPY_TOOL'] = COPY_TOOL
-os.environ['yaml_config'] = str(YAML_EX)
+#os.environ['inputDir'] = REMAP_IN
+#os.environ['outputDir'] = REMAP_OUT
+#os.environ['currentChunk'] = "P5Y"
+#os.environ['components'] = COMPOUT
+#os.environ['begin'] = "19800101T0000Z"
+#os.environ['product'] = PRODUCT
+#os.environ['dirTSWorkaround'] = "1"
+#os.environ['COPY_TOOL'] = COPY_TOOL
+#os.environ['yaml_config'] = str(YAML_EX)
 
 # Set up input directory (location previously made in flow.cylc workflow)
 ncgen_native_out = Path(REMAP_IN) / NATIVE_GRID / COMPOUT / FREQ / CHUNK
@@ -155,7 +155,16 @@ def test_remap_pp_components(capfd):
     """
     # run script
     try:
-        remap()
+        rmp.remap_pp_components(input_dir=REMAP_IN,
+                                output_dir=REMAP_OUT,
+                                begin_date="19800101T0000Z",
+                                current_chunk="P5Y",
+                                product=PRODUCT,
+                                components=COMPOUT,
+                                copy_tool=COPY_TOOL,
+                                yaml_config=str(YAML_EX),
+                                ts_workaround="1",
+                                ens_mem="")
     except:
         assert False
 
@@ -180,10 +189,10 @@ def test_remap_pp_components_with_ensmem(capfd, monkeypatch):
     ncgen_ens_out = Path(remap_ens_in) / NATIVE_GRID / "ens_01" / COMPOUT / FREQ / CHUNK
     remap_ens_out = f"{TEST_OUTDIR}/remap-ens-output"
 
-    # Specify environment variables for just this test
-    monkeypatch.setenv('inputDir', remap_ens_in)
-    monkeypatch.setenv('outputDir', remap_ens_out)
-    monkeypatch.setenv('ens_mem', "ens_01") #ens_mem now defined
+#    # Specify environment variables for just this test
+#    monkeypatch.setenv('inputDir', remap_ens_in)
+#    monkeypatch.setenv('outputDir', remap_ens_out)
+#    monkeypatch.setenv('ens_mem', "ens_01") #ens_mem now defined
 
     # Create ensemble locations
     Path(ncgen_ens_out).mkdir(parents=True,exist_ok=True)
@@ -194,15 +203,24 @@ def test_remap_pp_components_with_ensmem(capfd, monkeypatch):
 
     # run script
     try:
-        remap()
+        rmp.remap_pp_components(input_dir=remap_ens_in,
+                                output_dir=remap_ens_out,
+                                begin_date="19800101T0000Z",
+                                current_chunk="P5Y",
+                                product=PRODUCT,
+                                components=COMPOUT,
+                                copy_tool=COPY_TOOL,
+                                yaml_config=str(YAML_EX),
+                                ts_workaround="1",
+                                ens_mem="ens_01")
     except:
         assert False
 
     # Check for
     # 1. creation of output directory structre,
     # 2. link to nc file in output location
-    assert all([Path(f"{remap_ens_out}/{COMPOUT}/{PRODUCT}/{os.getenv('ens_mem')}/monthly/5yr").exists(),
-                Path(f"{remap_ens_out}/{COMPOUT}/{PRODUCT}/{os.getenv('ens_mem')}/monthly/5yr/{DATA_FILE_NC}").exists()])
+    assert all([Path(f"{remap_ens_out}/{COMPOUT}/{PRODUCT}/ens_01/monthly/5yr").exists(),
+                Path(f"{remap_ens_out}/{COMPOUT}/{PRODUCT}/ens_01/monthly/5yr/{DATA_FILE_NC}").exists()])
     out, err = capfd.readouterr()
 
 @pytest.mark.xfail
@@ -212,11 +230,20 @@ def test_remap_pp_components_product_failure(capfd, monkeypatch):
     the remap-pp-components script when the product is ill-defined.
     (not ts or av)
     """
-    # Specify environment variables for just this test
-    monkeypatch.setenv('product', "not-ts-or-av")
+#    # Specify environment variables for just this test
+#    monkeypatch.setenv('product', "not-ts-or-av")
 
     # run script
-    remap()
+    rmp.remap_pp_components(input_dir=REMAP_IN,
+                            output_dir=REMAP_OUT,
+                            begin_date="19800101T0000Z",
+                            current_chunk="P5Y",
+                            product="not-ts-or-av",
+                            components=COMPOUT,
+                            copy_tool=COPY_TOOL,
+                            yaml_config=str(YAML_EX),
+                            ts_workaround="1",
+                            ens_mem="")
 
 @pytest.mark.xfail
 def test_remap_pp_components_begin_date_failure(capfd, monkeypatch):
@@ -225,36 +252,55 @@ def test_remap_pp_components_begin_date_failure(capfd, monkeypatch):
     the remap-pp-components script when the begin variable is
     ill-defined.
     """
-    # Specify environment variables for just this test
-    monkeypatch.setenv('begin', "123456789T0000Z")
+#    # Specify environment variables for just this test
+#    monkeypatch.setenv('begin', "123456789T0000Z")
 
     # run script
-    remap()
+    rmp.remap_pp_components(input_dir=REMAP_IN,
+                            output_dir=REMAP_OUT,
+                            begin_date="123456789T0000Z",
+                            current_chunk="P5Y",
+                            product=PRODUCT,
+                            components=COMPOUT,
+                            copy_tool=COPY_TOOL,
+                            yaml_config=str(YAML_EX),
+                            ts_workaround="1",
+                            ens_mem="")
 
 ## STATIC SOURCE REMAPPING ##
 def test_remap_pp_components_statics(capfd, monkeypatch):
     """
     Test static sources are remapped to output location correctly
     """
-    # Specify environment variables for just this test
-    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
-    monkeypatch.setenv('currentChunk', "P0Y")
-    monkeypatch.setenv('product', "static") 
-    monkeypatch.setenv('dirTSWorkaround', "")
+#    # Specify environment variables for just this test
+#    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
+#    monkeypatch.setenv('currentChunk', "P0Y")
+#    monkeypatch.setenv('product', "static") 
+#    monkeypatch.setenv('dirTSWorkaround', "")
 
-    Path(os.getenv("outputDir")).mkdir(parents=True,exist_ok=True)
+    remap_static_out = f"{REMAP_OUT}/static"
+    Path(remap_static_out).mkdir(parents=True,exist_ok=True)
 
     # run script
     try:
-        remap()
+        rmp.remap_pp_components(input_dir=REMAP_IN,
+                                output_dir=remap_static_out,
+                                begin_date="19800101T0000Z",
+                                current_chunk="P0Y",
+                                product="static",
+                                components=COMPOUT,
+                                copy_tool=COPY_TOOL,
+                                yaml_config=str(YAML_EX),
+                                ts_workaround="",
+                                ens_mem="")
     except:
         assert False
 
     # Check for
     # 1. creation of output directory structre,
     # 2. link to nc file in output location
-    assert all([Path(f"{os.getenv('outputDir')}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
-                Path(f"{os.getenv('outputDir')}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_FILE_NC}").exists()])
+    assert all([Path(f"{remap_static_out}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
+                Path(f"{remap_static_out}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_FILE_NC}").exists()])
     out, err = capfd.readouterr()
 
 @pytest.mark.skip(reason="Offline file will not be in same place for everyone here - figure out how to test")
@@ -326,12 +372,21 @@ def test_remap_variable_filtering(capfd, monkeypatch):
         shutil.rmtree(REMAP_OUT)
         Path(REMAP_OUT).mkdir(parents=True,exist_ok=True)
 
-    # Specify environment variables for just this test
-    monkeypatch.setenv('components', "atmos_scalar_test_vars")
+#    # Specify environment variables for just this test
+#    monkeypatch.setenv('components', "atmos_scalar_test_vars")
 
     # run script
     try:
-        remap()
+        rmp.remap_pp_components(input_dir=REMAP_IN,
+                                output_dir=REMAP_OUT,
+                                begin_date="19800101T0000Z",
+                                current_chunk="P5Y",
+                                product=PRODUCT,
+                                components="atmos_scalar_test_vars",
+                                copy_tool=COPY_TOOL,
+                                yaml_config=str(YAML_EX),
+                                ts_workaround="1",
+                                ens_mem="")
     except:
         assert False
 
@@ -348,26 +403,36 @@ def test_remap_static_variable_filtering(capfd, monkeypatch):
     - same file should be found as in static remap test,
       but component, defined specifies variable bk
     """
-    # Specify environment variables for just this test
-    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
-    monkeypatch.setenv('currentChunk', "P0Y")
-    monkeypatch.setenv('product', "static")
-    monkeypatch.setenv('dirTSWorkaround', "")
-    monkeypatch.setenv('components', "atmos_scalar_test_vars")
+#    # Specify environment variables for just this test
+#    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
+#    monkeypatch.setenv('currentChunk', "P0Y")
+#    monkeypatch.setenv('product', "static")
+#    monkeypatch.setenv('dirTSWorkaround', "")
+#    monkeypatch.setenv('components', "atmos_scalar_test_vars")
 
-    Path(os.getenv("outputDir")).mkdir(parents=True,exist_ok=True)
+    remap_static_out = f"{REMAP_OUT}/static"
+    Path(remap_static_out).mkdir(parents=True,exist_ok=True)
 
     # run script
     try:
-        remap()
+        rmp.remap_pp_components(input_dir=REMAP_IN,
+                                output_dir=remap_static_out,
+                                begin_date="19800101T0000Z",
+                                current_chunk="P0Y",
+                                product="static",
+                                components="atmos_scalar_test_vars",
+                                copy_tool=COPY_TOOL,
+                                yaml_config=str(YAML_EX),
+                                ts_workaround="",
+                                ens_mem="")
     except:
         assert False
 
     # Check for
     # 1. creation of output directory structre,
     # 2. link to nc file in output location
-    assert all([Path(f"{os.getenv('outputDir')}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
-                Path(f"{os.getenv('outputDir')}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_FILE_NC}").exists()])
+    assert all([Path(f"{remap_static_out}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
+                Path(f"{remap_static_out}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_FILE_NC}").exists()])
     out, err = capfd.readouterr()
  
 @pytest.mark.xfail
@@ -376,29 +441,49 @@ def test_remap_variable_filtering_fail(capfd, monkeypatch):
     Test failure of variable filtering capabilties when
     variable does not exist; variable = no_var
     """
-    # Specify environment variables for just this test
-    monkeypatch.setenv('components', "atmos_scalar_test_vars_fail")
+#    # Specify environment variables for just this test
+#    monkeypatch.setenv('components', "atmos_scalar_test_vars_fail")
 
     # run script
-    remap()
+    rmp.remap_pp_components(input_dir=REMAP_IN,
+                            output_dir=REMAP_OUT,
+                            begin_date="19800101T0000Z",
+                            current_chunk="P5Y",
+                            product=PRODUCT,
+                            components="atmos_scalar_test_vars_fail",
+                            copy_tool=COPY_TOOL,
+                            yaml_config=str(YAML_EX),
+                            ts_workaround="1",
+                            ens_mem="")
 
 @pytest.mark.xfail
+##this one is passing but should be failing?
 def test_remap_static_variable_filtering_fail(capfd, monkeypatch):
     """
     Test failure of variable filtering capabilties for statics
     when variable does not exist; variables = bk, no_var
     """
-    # Specify environment variables for just this test
-    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
-    monkeypatch.setenv('currentChunk', "P0Y")
-    monkeypatch.setenv('product', "static")
-    monkeypatch.setenv('dirTSWorkaround', "")
-    monkeypatch.setenv('components', "atmos_scalar_static_test_vars_fail")
+#    # Specify environment variables for just this test
+#    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
+#    monkeypatch.setenv('currentChunk', "P0Y")
+#    monkeypatch.setenv('product', "static")
+#    monkeypatch.setenv('dirTSWorkaround', "")
+#    monkeypatch.setenv('components', "atmos_scalar_static_test_vars_fail")
 
     # run script
-    remap()
+    rmp.remap_pp_components(input_dir=REMAP_IN,
+                            output_dir=f"{REMAP_OUT}/static",
+                            begin_date="19800101T0000Z",
+                            current_chunk="P0Y",
+                            product="static",
+                            components="atmos_scalar_static_test_vars_fail",
+                            copy_tool=COPY_TOOL,
+                            yaml_config=str(YAML_EX),
+                            ts_workaround="",
+                            ens_mem="")
 
 #to-do:
+# - mulitple components
 # - figure out test for offline diagnostics
 # - test for when product = "av"
 # - test grid = regrid-xy

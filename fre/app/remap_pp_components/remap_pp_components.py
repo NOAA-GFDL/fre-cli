@@ -406,7 +406,6 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
 
             for g in grid:
                 if ens_mem is not None:
-                    ah1
                     newdir = f"{input_dir}/{g}/{ens_mem}"
                     os.chdir(newdir)
                 else:
