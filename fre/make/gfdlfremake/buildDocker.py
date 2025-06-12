@@ -217,23 +217,37 @@ class container():
         self.d.write('ENTRYPOINT ["/bin/bash"]')
         self.d.close()
 
-    def createBuildScript(self,containerBuild,containerRun, skip_format_transfer):
+    def createBuildScript(self, platform, skip_format_transfer):
         """
         Brief: Writes out the build commands for the created dockerfile in a script,
                which builds the dockerfile and then converts the format to a singularity image file.
         Param:
             - self : The dockerfile object
-            - containerBuild : The tool used to build the container;
-                               docker or podman used
-            - containerRun : The container platform used with `exec` to
-                             run the container; apptainer or singularity used
+            - platform : The platform object
+            - skip_format_transfer : skip the container format conversion to a .sif file
         """
+        containerName = f"{self.e}-{self.target.gettargetName()}"
+        containerBuild = platform["containerBuild"]
+        containerRun = platform["containerRun"]
+        containerOutputLocation = platform["containerOutputLocation"]
+
         self.userScript = ["#!/bin/bash\n"]
-        self.userScript.append(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName()+"\n")
+        self.userScript.append(f"{containerBuild} build -f Dockerfile -t {self.e}:{self.target.gettargetName()}\n")
+
         if not skip_format_transfer:
-            self.userScript.append("rm -f "+self.e+"-"+self.target.gettargetName()+".tar "+self.e+"-"+self.target.gettargetName()+".sif\n")
-            self.userScript.append(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
-            self.userScript.append(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar\n")
+            # Remove any previously generated images, if they exist
+            self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
+
+            self.userScript.append(f"{containerBuild} save -o {containerName}.tar localhost/{self.e}:{self.target.gettargetName()}\n")
+            self.userScript.append(f"{containerRun} build --disable-cache {containerName}.sif docker-archive://{containerName}.tar\n")
+            if containerOutputLocation != "":
+                self.userScript.append(f"mkdir -p {containerOutputLocation}\n")
+                self.userScript.append(f"cp {containerName}.sif {containerOutputLocation}/{containerName}.sif\n")
+                self.userScript.append(f"cp {containerName}.tar {containerOutputLocation}/{containerName}.tar\n")
+
+                # Remove it from the original location
+                self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
+
         self.userScriptFile = open("createContainer.sh","w")
         self.userScriptFile.writelines(self.userScript)
         self.userScriptFile.close()
