@@ -20,58 +20,68 @@ share a horizontal and vertical grid.
 
 Each history tarfile, again, is date-stamped with the date of the beginning of the segment, in YYYYMMDD format.
 For example, for a 5-year experiment with 6-month segments, there will be 10 history files containing the
-raw model output. Each history tarfile contains a segment's worth of time (in this case 6 months).::
+raw model output. Each history tarfile contains a segment's worth of time (in this case 6 months).
 
-  19790101.nc.tar  19800101.nc.tar  19810101.nc.tar  19820101.nc.tar  19830101.nc.tar
-  19790701.nc.tar  19800701.nc.tar  19810701.nc.tar  19820701.nc.tar  19830701.nc.tar
+.. code-block:: console
+
+ 19790101.nc.tar  19800101.nc.tar  19810101.nc.tar  19820101.nc.tar  19830101.nc.tar
+ 19790701.nc.tar  19800701.nc.tar  19810701.nc.tar  19820701.nc.tar  19830701.nc.tar
 
 Each history file within the history tarfiles are also similarly date-stamped. Atmosphere and land history files
 are on the native cubed-sphere grid, which have 6 tiles that represent the global domain. Ocean, ice, and
 global scalar output have just one file that covers the global domain.
 
 For example, if the diagnostic manager were configured to save atmospheric and ocean annual and monthly history files,
-the 19790101.nc.tar tarfile might contain::
+the 19790101.nc.tar tarfile might contain
 
-  tar -tf 19790101.nc.tar | sort
+.. code-block:: console
 
-  ./19790101.atmos_month.tile1.nc
-  ./19790101.atmos_month.tile2.nc
-  ./19790101.atmos_month.tile3.nc
-  ./19790101.atmos_month.tile4.nc
-  ./19790101.atmos_month.tile5.nc
-  ./19790101.atmos_month.tile6.nc
-  ./19790101.atmos_annual.tile1.nc
-  ./19790101.atmos_annual.tile2.nc
-  ./19790101.atmos_annual.tile3.nc
-  ./19790101.atmos_annual.tile4.nc
-  ./19790101.atmos_annual.tile5.nc
-  ./19790101.atmos_annual.tile6.nc
-  ./19790101.ocean_month.nc
-  ./19790101.ocean_annual.nc
+ tar -tf 19790101.nc.tar | sort
+
+ ./19790101.atmos_month.tile1.nc
+ ./19790101.atmos_month.tile2.nc
+ ./19790101.atmos_month.tile3.nc
+ ./19790101.atmos_month.tile4.nc
+ ./19790101.atmos_month.tile5.nc
+ ./19790101.atmos_month.tile6.nc
+ ./19790101.atmos_annual.tile1.nc
+ ./19790101.atmos_annual.tile2.nc
+ ./19790101.atmos_annual.tile3.nc
+ ./19790101.atmos_annual.tile4.nc
+ ./19790101.atmos_annual.tile5.nc
+ ./19790101.atmos_annual.tile6.nc
+ ./19790101.ocean_month.nc
+ ./19790101.ocean_annual.nc
 
 The name of the history file, while often predictably named, are arbitrary labels within the Diagnostic Manager configuration
 (diag yamls). Each history file is a CF-standard NetCDF file that can be inspected with common NetCDF tools such as the NCO or CDO tools, or even ``ncdump``.
 
 Required configuration
 
-1. Set the history directory in your postprocessing yaml::
+1. Set the history directory in your postprocessing yaml
 
-  directories:
-    history: /arch5/am5/am5/am5f7c1r0/c96L65_am5f7c1r0_amip/gfdl.ncrc5-deploy-prod-openmp/history
+.. code-block:: console
 
-2. Set the segment size as an ISO8601 duration (e.g. P1Y is "one year")::
+ directories:
+   history: /arch5/am5/am5/am5f7c1r0/c96L65_am5f7c1r0_amip/gfdl.ncrc5-deploy-prod-openmp/history
 
-  postprocess:
-    settings:
-      history_segment: P1Y
+2. Set the segment size as an ISO8601 duration (e.g. P1Y is "one year")
 
-3. Set the date range to postprocess as ISO8601 dates::
+.. code-block:: console
 
-  postprocess:
-    settings:
-      pp_start: 1979-01-01T0000Z
+ postprocess:
+   settings:
+     history_segment: P1Y
 
-      pp_stop: 2020-01-01T0000Z
+3. Set the date range to postprocess as ISO8601 dates
+
+.. code-block:: console
+
+ postprocess:
+   settings:
+     pp_start: 1979-01-01T0000Z
+
+     pp_stop: 2020-01-01T0000Z
 
 Postprocess components
 ----------------------
@@ -82,16 +92,18 @@ Postprocessed files within a "component" share a horizontal grid; which can be t
 
 Required configuration
 
-4. Define the atmos and ocean postprocess components::
+4. Define the atmos and ocean postprocess components
+   
+.. code-block:: console
 
-  postprocess:
-    components:
-      - type: atmos
+ postprocess:
+   components:
+     - type: atmos
 
-        sources: [atmos_month, atmos_annual]
-      - type: ocean
+       sources: [atmos_month, atmos_annual]
+     - type: ocean
 
-        sources: [ocean_month, ocean_annual]
+       sources: [ocean_month, ocean_annual]
 
 XY-regridding
 -------------
@@ -100,35 +112,37 @@ desired output grid, interpolation method, input grid type, and path to your FMS
 
 Optional configuration (i.e. if xy-regridding is desired)
 
-5. Regrid the atmos and ocean components to a 1x1 degree grid::
+5. Regrid the atmos and ocean components to a 1x1 degree grid
 
-  directories:
-    pp_grid_spec: /archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar
+.. code-block:: console
 
-  postprocess:
-    components:
-      - type: atmos
+ directories:
+   pp_grid_spec: /archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar
 
-        sources: [atmos_month, atmos_annual]
+ postprocess:
+   components:
+     - type: atmos
 
-        sourceGrid: cubedsphere
+       sources: [atmos_month, atmos_annual]
 
-        inputRealm: atmos
+       sourceGrid: cubedsphere
 
-        xyInterp: [180, 360]
+       inputRealm: atmos
 
-        interpMethod: conserve_order2
-      - type: ocean
+       xyInterp: [180, 360]
 
-        sources: [ocean_month, ocean_annual]
+       interpMethod: conserve_order2
+     - type: ocean
 
-        sourceGrid: tripolar
+       sources: [ocean_month, ocean_annual]
 
-        inputRealm: ocean
+       sourceGrid: tripolar
 
-        xyInterp: [180, 360]
+       inputRealm: ocean
 
-        interpMethod: conserve_order1
+       xyInterp: [180, 360]
+
+       interpMethod: conserve_order1
 
 Timeseries
 ----------
