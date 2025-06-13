@@ -1,0 +1,30 @@
+fre.app.generate\_time\_averages package
+========================================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.app.generate_time_averages.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.app.generate_time_averages.cdoTimeAverager
+   fre.app.generate_time_averages.frenctoolsTimeAverager
+   fre.app.generate_time_averages.frepytoolsTimeAverager
+   fre.app.generate_time_averages.generate_time_averages
+   fre.app.generate_time_averages.timeAverager
+
+Module contents
+---------------
+
+.. automodule:: fre.app.generate_time_averages
+   :members:
+   :show-inheritance:
+   :undoc-members:

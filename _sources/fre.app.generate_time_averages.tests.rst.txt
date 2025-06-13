@@ -1,0 +1,18 @@
+fre.app.generate\_time\_averages.tests package
+==============================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.app.generate_time_averages.tests.test_generate_time_averages
+
+Module contents
+---------------
+
+.. automodule:: fre.app.generate_time_averages.tests
+   :members:
+   :show-inheritance:
+   :undoc-members:

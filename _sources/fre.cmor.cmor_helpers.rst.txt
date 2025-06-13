@@ -1,0 +1,7 @@
+fre.cmor.cmor\_helpers module
+=============================
+
+.. automodule:: fre.cmor.cmor_helpers
+   :members:
+   :show-inheritance:
+   :undoc-members:

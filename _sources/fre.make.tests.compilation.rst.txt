@@ -1,0 +1,18 @@
+fre.make.tests.compilation package
+==================================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.make.tests.compilation.test_run_fremake_builds
+
+Module contents
+---------------
+
+.. automodule:: fre.make.tests.compilation
+   :members:
+   :show-inheritance:
+   :undoc-members:

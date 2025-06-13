@@ -1,0 +1,7 @@
+fre.make.tests.test\_create\_dockerfile module
+==============================================
+
+.. automodule:: fre.make.tests.test_create_dockerfile
+   :members:
+   :show-inheritance:
+   :undoc-members:

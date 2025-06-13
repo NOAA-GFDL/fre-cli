@@ -1,0 +1,7 @@
+fre.make.create\_docker\_script module
+======================================
+
+.. automodule:: fre.make.create_docker_script
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,37 @@
+fre package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.analysis
+   fre.app
+   fre.catalog
+   fre.check
+   fre.cmor
+   fre.list_
+   fre.make
+   fre.pp
+   fre.run
+   fre.tests
+   fre.yamltools
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.fre
+   fre.lazy_group
+
+Module contents
+---------------
+
+.. automodule:: fre
+   :members:
+   :show-inheritance:
+   :undoc-members:

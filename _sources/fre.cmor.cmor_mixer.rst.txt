@@ -1,0 +1,7 @@
+fre.cmor.cmor\_mixer module
+===========================
+
+.. automodule:: fre.cmor.cmor_mixer
+   :members:
+   :show-inheritance:
+   :undoc-members:

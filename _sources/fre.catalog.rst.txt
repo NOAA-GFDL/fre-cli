@@ -1,0 +1,26 @@
+fre.catalog package
+===================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.catalog.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.catalog.frecatalog
+
+Module contents
+---------------
+
+.. automodule:: fre.catalog
+   :members:
+   :show-inheritance:
+   :undoc-members:

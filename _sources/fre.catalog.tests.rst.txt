@@ -1,0 +1,18 @@
+fre.catalog.tests package
+=========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.catalog.tests.test_fre_catalog
+
+Module contents
+---------------
+
+.. automodule:: fre.catalog.tests
+   :members:
+   :show-inheritance:
+   :undoc-members:

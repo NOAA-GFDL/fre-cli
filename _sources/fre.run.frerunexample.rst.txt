@@ -1,0 +1,7 @@
+fre.run.frerunexample module
+============================
+
+.. automodule:: fre.run.frerunexample
+   :members:
+   :show-inheritance:
+   :undoc-members:

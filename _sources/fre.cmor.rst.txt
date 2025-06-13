@@ -1,0 +1,30 @@
+fre.cmor package
+================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.cmor.tests
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.cmor.cmor_finder
+   fre.cmor.cmor_helpers
+   fre.cmor.cmor_mixer
+   fre.cmor.cmor_yamler
+   fre.cmor.frecmor
+
+Module contents
+---------------
+
+.. automodule:: fre.cmor
+   :members:
+   :show-inheritance:
+   :undoc-members:

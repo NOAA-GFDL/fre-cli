@@ -1,0 +1,7 @@
+fre.pp.configure\_script\_xml module
+====================================
+
+.. automodule:: fre.pp.configure_script_xml
+   :members:
+   :show-inheritance:
+   :undoc-members:

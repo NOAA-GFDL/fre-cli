@@ -1,0 +1,7 @@
+fre.yamltools.tests.test\_combine\_yamls module
+===============================================
+
+.. automodule:: fre.yamltools.tests.test_combine_yamls
+   :members:
+   :show-inheritance:
+   :undoc-members:

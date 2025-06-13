@@ -1,0 +1,422 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The name of the experiment",
+      "type": "string"
+    },
+    "platform": {
+      "description": "The platforms listed in the command",
+      "type": "string"
+    },
+    "target": {
+      "description": "The targets listed in the command",
+      "type": "string"
+    },
+    "directories": {
+      "description": "FRE shared directories",
+      "$ref": "#/$defs/dirs"
+    },
+    "postprocess": {
+      "description": "FRE post-processing information",
+      "$ref": "#/$defs/pp"
+    },
+    "analysis": {
+      "description": "FRE analysis information",
+      "$ref": "#/$defs/Analysis"
+    }
+  },
+  "required": [
+    "name",
+    "platform",
+    "target",
+    "directories",
+    "postprocess"
+  ],
+  "additionalProperties": true,
+  "$defs": {
+    "dirs": {
+      "type": "object",
+      "properties": {
+        "history_dir": {
+          "description": "Directory path to raw model output.",
+          "type": "string"
+        },
+        "pp_dir": {
+          "description": "Directory path to post-processing output.",
+          "type": "string"
+        },
+        "ptmp_dir": {
+          "description": "Directory to use for history file cache.",
+          "type": "string"
+        },
+        "analysis_dir": {
+          "description": "Directory path to analysis scripts.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "history_dir",
+        "pp_dir",
+        "ptmp_dir"
+      ],
+      "additionalProperties": false
+    },
+    "pp": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "type:": "object",
+          "properties": {
+            "history_segment": {
+              "description": "Amount of time covered by a single history file (ISO8601 datetime)",
+              "type": "string",
+              "pattern": "^P[0-9]+[M|Y]$"
+            },
+            "site": {
+              "description": "Site name from file that defines parameters that can be specific to where the workflow is being run.",
+              "type": "string"
+            },
+            "pp_chunks": {
+              "description": "Array of chunk sizes to create",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "description": "ISO8601 duration string representing the length, in units of model time, of postprocessed files",
+                "type": "string",
+                "pattern": "^P[0-9]+[M|Y]$"
+              }
+            },
+            "pp_start": {
+              "description": "Start of the desired postprocessing (ISO8601 datetime).",
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string",
+                  "pattern": "(^[0-9]{4}$)|(^[0-9]{8}T[0-9]{4}Z$)"
+                }
+              ]
+            },
+            "pp_stop": {
+              "description": "End of the desired postprocessing (ISO8601 datetime).",
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string",
+                  "pattern": "(^[0-9]{4}$)|(^[0-9]{8}T[0-9]{4}Z$)"
+                }
+              ]
+            },
+            "pp_grid_spec": {
+              "description": "Path to FMS grid definition tarfile.",
+              "type": "string"
+            },
+            "refinediag_scripts": {
+              "description": "Path(s) to FMS grid definition tarfile.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "preanalysis_script": {
+              "description": "Filepath to the user script.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "history_segment",
+            "site",
+            "pp_chunks",
+            "pp_start",
+            "pp_stop",
+            "pp_grid_spec"
+          ],
+          "additionalProperties": false
+        },
+        "switches": {
+          "type": "object",
+          "properties": {
+            "clean_work": {
+              "description": "Switch to remove intermediate data files when they are no longer needed.",
+              "type": "boolean"
+            },
+            "do_timeavgs": {
+              "description": "Switch to turn on/off time-average file generation.",
+              "type": "boolean"
+            },
+            "do_refinediag": {
+              "description": "Switch to run refine-diag script(s) on history file to generate additional diagnostics.",
+              "type": "boolean"
+            },
+            "do_atmos_plevel_masking": {
+              "description": "Switch to mask atmos pressure-level output above/below surface pressure/atmos top.",
+              "type": "boolean"
+            },
+            "do_preanalysis": {
+              "description": "Switch to run a pre-analysis script on history files",
+              "type": "boolean"
+            },
+            "do_analysis": {
+              "description": "Switch to launch analysis scripts",
+              "type": "boolean"
+            },
+            "do_analysis_only": {
+              "description": "Switch to only launch analysis scripts",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "clean_work",
+            "do_timeavgs",
+            "do_refinediag",
+            "do_atmos_plevel_masking",
+            "do_preanalysis",
+            "do_analysis",
+            "do_analysis_only"
+          ],
+          "additionalProperties": false
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "description": "Component name",
+                "type": "string"
+              },
+              "sources": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                                  "history_file": {
+                                    "description": "History files to include in this component",
+                                    "type": "string"
+                                  },
+                                  "variables": {
+                                    "type": "array",
+                                    "items": {"type": "string"}
+                                  }
+                                },
+                  "additionalProperties": false
+                },
+                "required": ["history_file"]
+              },
+              "sourceGrid": {
+                "description": "Input grid type.",
+                "type": "string"
+              },
+              "xyInterp": {
+                "description": "Lat, lon grid configuration.",
+                "type": "string"
+              },
+              "interpMethod": {
+                "description": "The interpolation method. Required if regridding.",
+                "type": "string",
+                "enum": [
+                  "conserve_order1",
+                  "conserve_order2",
+                  "bilinear"
+                ]
+              },
+              "inputRealm": {
+                "description": "Domain of component.",
+                "type": "string"
+              },
+              "climatology": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "frequency": {
+                      "description": "Monthly or annual climatology ('yr' or 'mon')",
+                      "type": "string",
+                      "enum": [
+                        "yr",
+                        "mon"
+                      ]
+                    },
+                    "interval_years": {
+                      "description": "Climatology interval in years",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frequency",
+                    "interval_years"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "static": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "variables": {
+                      "description": "Variables included in sources",
+                      "type": "array",
+                      "items": {"type": "string"}
+                    }
+                  },
+                  "unevaluatedProperties": false,
+                  "oneOf": [ {"type": "object",
+                              "properties": {
+                                "source": {
+                                  "description": "History files to include in this component",
+                                  "type": "string"
+                                }
+                              },
+                              "required": ["source"]
+                             },
+                             {"type": "object",
+                              "properties": {
+                                "offline_source": {
+                                  "description": "Path to static offline diagnostic",
+                                  "type": "string"
+                                }
+                              },
+                              "required": ["offline_source"]
+                             }
+                           ]
+                },
+                "additionalProperties": false
+              },
+              "postprocess_on": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "type",
+              "sources",
+              "postprocess_on"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "components",
+        "settings",
+        "switches"
+      ],
+      "additionalProperties": false
+    },
+    "Analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "type:": "object",
+          "properties": {
+            "legacy": {
+              "type": "object",
+              "properties": {
+                "script": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "script"
+              ],
+              "additionalProperties": false
+            },
+            "required": {
+              "type": "object",
+              "properties": {
+                "data_frequency": {
+                  "description": "https://github.com/NOAA-GFDL/CMIP6_CVs/blob/main/CMIP6_frequency.json",
+                  "type": "string",
+                  "enum": [
+                    "yr",
+                    "mon",
+                    "day",
+                    "6hr",
+                    "3hr",
+                    "1hr"
+                  ]
+                },
+                "date_range": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "minItems": 2,
+                  "maxItems": 2,
+                  "uniqueItems": false
+                }
+              },
+              "required": [
+                "data_frequency",
+                "date_range"
+              ],
+              "additionalProperties": false
+            },
+            "workflow": {
+              "type": "object",
+              "properties": {
+                "components": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                },
+                "script_type": {
+                  "description": "Whether the script is to process each chunk independently, cumulatively, or run only once after all chunks are ready",
+                  "type": "string",
+                  "enum": [
+                    "independent",
+                    "cumulative",
+                    "one-shot"
+                  ]
+                },
+                "product": {
+                  "type": "string",
+                  "enum": [
+                    "ts",
+                    "av"
+                  ]
+                },
+                "chunk_size": {
+                  "description": "ISO8601 duration string representing the chunk size to use as input for this script",
+                  "type": "string",
+                  "pattern": "^P[0-9]+[M|Y]$"
+                },
+                "analysis_on": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "components",
+                "script_type",
+                "product",
+                "chunk_size",
+                "analysis_on"
+              ]
+            }
+          },
+          "required": [
+            "required",
+            "workflow"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+fre.pp.tests.test\_rose\_quoting module
+=======================================
+
+.. automodule:: fre.pp.tests.test_rose_quoting
+   :members:
+   :show-inheritance:
+   :undoc-members:
