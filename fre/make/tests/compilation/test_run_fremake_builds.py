@@ -20,6 +20,7 @@ YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
 PLATFORM = [ "ci.gnu" ]
 CONTAINER_PLATFORM = ["hpcmini.2025"]
+CONTAINER_PLATFORM_2 = ["hpcmini.2025.Specify.Location"]
 TARGET = ["debug"]
 EXPERIMENT = "null_model_full"
 VERBOSE = False
@@ -30,8 +31,10 @@ VERBOSE = False
 currPath=os.getcwd()
 SERIAL_TEST_PATH=f"{currPath}/fre/make/tests/compilation/serial_build"
 MULTIJOB_TEST_PATH=f"{currPath}/fre/make/tests/compilation/multijob_build"
+CONTAINER_BUILD_TEST_PATH=f"{currPath}/fre/make/tests/compilation/container"
 Path(SERIAL_TEST_PATH).mkdir(parents=True,exist_ok=True)
 Path(MULTIJOB_TEST_PATH).mkdir(parents=True,exist_ok=True)
+Path(CONTAINER_BUILD_TEST_PATH).mkdir(parents=True,exist_ok=True)
 
 # check if we have required programs installed on our current system
 retstat, version = subprocess.getstatusoutput('gcc --version')
@@ -80,6 +83,16 @@ def test_run_fremake_container_build():
         parallel=False, jobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=True, verbose=VERBOSE)
     assert Path("null_model_full-debug.sif").exists()
+
+@pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
+def test_run_fremake_container_build_specified_out():
+    ''' checks that the image was copied to the correct specified output location'''
+    os.environ["TEST_BUILD_DIR"] = CONTAINER_BUILD_TEST_PATH
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM_2, TARGET,
+        parallel=False, jobs=1, no_parallel_checkout=True,
+        no_format_transfer=False, execute=True, verbose=VERBOSE)
+    assert Path(
+        f"{CONTAINER_BUILD_TEST_PATH}/fremake_canopy/test/null_model_full-debug.sif").exists()
 
 @pytest.mark.skipif(not has_podman, reason="missing podman")
 def test_run_fremake_container_build_notransfer():
