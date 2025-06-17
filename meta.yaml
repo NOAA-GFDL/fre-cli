@@ -35,6 +35,7 @@ requirements:
     - conda-forge::cylc-rose
     - conda-forge::cmor>=3.10.0
     - conda-forge::cdo>=2.0.0
+    - conda-forge::jinja2=3.0.*
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
     - conda-forge::nccmp
