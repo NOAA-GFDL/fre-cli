@@ -457,7 +457,6 @@ def test_remap_variable_filtering_fail(capfd, monkeypatch):
                             ens_mem="")
 
 @pytest.mark.xfail
-##this one is passing but should be failing?
 def test_remap_static_variable_filtering_fail(capfd, monkeypatch):
     """
     Test failure of variable filtering capabilties for statics
@@ -482,6 +481,7 @@ def test_remap_static_variable_filtering_fail(capfd, monkeypatch):
                             ts_workaround="",
                             ens_mem="")
 
+    os.chdir(CWD)
 #to-do:
 # - mulitple components
 # - figure out test for offline diagnostics
