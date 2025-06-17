@@ -3,7 +3,7 @@
     files for the workflow from the pp yaml.
 """
 
-## TO-DO:
+# TO-DO:
 # - condition where there are multiple pp yamls
 # - validation here or in combined-yamls tools
 
@@ -23,17 +23,21 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 ####################
+
+
 def yaml_load(yamlfile):
     """
     Load the given yaml.
     """
     # Load the main yaml
-    with open(yamlfile,'r') as f:
-        y=yaml.safe_load(f)
+    with open(yamlfile, 'r') as f:
+        y = yaml.safe_load(f)
 
     return y
 
-######VALIDATE#####
+###### VALIDATE#####
+
+
 def validate_yaml(yamlfile):
     """
      Using the schema.json file, the yaml format is validated.
@@ -43,16 +47,16 @@ def validate_yaml(yamlfile):
     logger.info(f"Using yaml schema '{schema_path}'")
     # Load the json schema: .load() (vs .loads()) reads and parses the json in one)
     try:
-        with open(schema_path,'r') as s:
+        with open(schema_path, 'r') as s:
             schema = json.load(s)
-    except:
+    except BaseException:
         logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
         raise
 
     # Validate yaml
     # If the yaml is not valid, the schema validation will raise errors and exit
     try:
-        validate(instance=yamlfile,schema=schema)
+        validate(instance=yamlfile, schema=schema)
         logger.info("Combined yaml valid")
     except SchemaError:
         logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
@@ -60,21 +64,23 @@ def validate_yaml(yamlfile):
     except ValidationError:
         logger.error("Combined yaml is not valid. Please fix the errors and try again.")
         raise
-    except:
+    except BaseException:
         logger.error("Unclear error from validation. Please try to find the error and try again.")
         raise
 
 ####################
-def rose_init(experiment,platform,target):
+
+
+def rose_init(experiment, platform, target):
     """
     Initialize the rose suite and app configurations.
     """
     # initialize rose suite config
     rose_suite = metomi.rose.config.ConfigNode()
     # disagreeable; these should be optional
-    rose_suite.set(keys=['template variables', 'DO_ANALYSIS_ONLY'],  value='False')
-    rose_suite.set(keys=['template variables', 'DO_MDTF'],  value='False')
-    rose_suite.set(keys=['template variables', 'PP_DEFAULT_XYINTERP'],  value='0,0')
+    rose_suite.set(keys=['template variables', 'DO_ANALYSIS_ONLY'], value='False')
+    rose_suite.set(keys=['template variables', 'DO_MDTF'], value='False')
+    rose_suite.set(keys=['template variables', 'PP_DEFAULT_XYINTERP'], value='0,0')
 
     # set some rose suite vars
     rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{experiment}"')
@@ -89,9 +95,11 @@ def rose_init(experiment,platform,target):
     rose_remap = metomi.rose.config.ConfigNode()
     rose_remap.set(keys=['command', 'default'], value='remap-pp-components')
 
-    return(rose_suite,rose_regrid,rose_remap)
+    return (rose_suite, rose_regrid, rose_remap)
 
 ####################
+
+
 def quote_rose_values(value):
     """
     rose-suite.conf template variables must be quoted unless they are
@@ -105,18 +113,20 @@ def quote_rose_values(value):
         return "'" + str(value) + "'"
 
 ####################
-def set_rose_suite(yamlfile,rose_suite):
+
+
+def set_rose_suite(yamlfile, rose_suite):
     """
     Set items in the rose suite configuration.
     """
-    pp=yamlfile.get("postprocess")
-    dirs=yamlfile.get("directories")
+    pp = yamlfile.get("postprocess")
+    dirs = yamlfile.get("directories")
 
     # set rose-suite items
     if pp is not None:
         for i in pp.values():
-            if not isinstance(i,list):
-                for key,value in i.items():
+            if not isinstance(i, list):
+                for key, value in i.items():
                     # if pp start/stop is specified as integer, pad zeros
                     # or else cylc validate will fail
                     if key == 'pp_start' or key == 'pp_stop':
@@ -124,14 +134,16 @@ def set_rose_suite(yamlfile,rose_suite):
                             value = f"{value:04}"
                     # rose-suite.conf is somewhat finicky with quoting
                     # cylc validate will reveal any complaints
-                    rose_suite.set( keys = ['template variables', key.upper()],
-                                    value = quote_rose_values(value) )
+                    rose_suite.set(keys=['template variables', key.upper()],
+                                   value=quote_rose_values(value))
     if dirs is not None:
-        for key,value in dirs.items():
+        for key, value in dirs.items():
             rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
 
 ####################
-def set_rose_apps(yamlfile,rose_regrid,rose_remap):
+
+
+def set_rose_apps(yamlfile, rose_regrid, rose_remap):
     """
     Set items in the regrid and remap rose app configurations.
     """
@@ -144,7 +156,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
         for s in i.get('sources'):
             sources.append(s.get("history_file"))
 
-        #source_str = ' '.join(sources)
+        # source_str = ' '.join(sources)
         interp_method = i.get('interpMethod')
 
         # set remap items
@@ -180,7 +192,9 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
                             value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
 ####################
-def yaml_info(yamlfile = None, experiment = None, platform = None, target = None):
+
+
+def yaml_info(yamlfile=None, experiment=None, platform=None, target=None):
     """
     Using a valid pp.yaml, the rose-app and rose-suite
     configuration files are created in the cylc-src
@@ -190,37 +204,37 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     logger.info('Starting')
 
     if None in [yamlfile, experiment, platform, target]:
-        raise ValueError( 'yamlfile, experiment, platform, and target must all not be None.'
-                          'currently, their values are...'
-                          f'{yamlfile} / {experiment} / {platform} / {target}')
+        raise ValueError('yamlfile, experiment, platform, and target must all not be None.'
+                         'currently, their values are...'
+                         f'{yamlfile} / {experiment} / {platform} / {target}')
     e = experiment
     p = platform
     t = target
     yml = yamlfile
 
     # Initialize the rose configurations
-    rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
+    rose_suite, rose_regrid, rose_remap = rose_init(e, p, t)
 
     # Combine model, experiment, and analysis yamls
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
 
-    full_yamldict = cy.consolidate_yamls(yamlfile = yml,
-                                         experiment = e,
-                                         platform = p,
-                                         target = t,
-                                         use = "pp",
-                                         output = outfile)
+    full_yamldict = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=e,
+                                         platform=p,
+                                         target=t,
+                                         use="pp",
+                                         output=outfile)
 
     # Validate yaml
     validate_yaml(full_yamldict)
 
-    ## PARSE COMBINED YAML TO CREATE CONFIGS
+    # PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items
-    set_rose_suite(full_yamldict,rose_suite) ####comb_pp_yaml,rose_suite)
+    set_rose_suite(full_yamldict, rose_suite)  # comb_pp_yaml,rose_suite)
 
     # Set regrid and remap rose app items
-    set_rose_apps(full_yamldict,rose_regrid,rose_remap) ####comb_pp_yaml,rose_regrid,rose_remap)
+    set_rose_apps(full_yamldict, rose_regrid, rose_remap)  # comb_pp_yaml,rose_regrid,rose_remap)
 
     # Write output files
     logger.info("Writing output files...")
@@ -240,6 +254,7 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     logger.info("  " + outfile)
 
     logger.info('Finished')
+
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':

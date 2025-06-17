@@ -1,11 +1,12 @@
 '''
-    \date 2023
+    \\date 2023
     \author Tom Robinson
-    \email thomas.robinson@noaa.gov
-    \description
+    \\email thomas.robinson@noaa.gov
+    \\description
 '''
 
 import os
+
 
 class container():
     """
@@ -23,15 +24,16 @@ class container():
         - stage2base: The base for the second stage. Empty
                       string if there is no second stage
     """
-    def __init__(self,base,exp,libs,RUNenv,target,mkTemplate,stage2base):
+
+    def __init__(self, base, exp, libs, RUNenv, target, mkTemplate, stage2base):
         """
         Initialize variables and write to the dockerfile
         """
         self.base = base
         self.e = exp
         self.l = libs
-        self.src = "/apps/"+self.e+"/src"
-        self.bld = "/apps/"+self.e+"/exec"
+        self.src = "/apps/" + self.e + "/src"
+        self.bld = "/apps/" + self.e + "/exec"
         self.mkmf = True
         self.target = target
         self.template = mkTemplate
@@ -41,26 +43,26 @@ class container():
         if RUNenv == "":
             self.setup = ["RUN \\ \n"]
         else:
-            self.setup = ["RUN "+RUNenv[0]+" \\ \n"]
+            self.setup = ["RUN " + RUNenv[0] + " \\ \n"]
 
         for env in RUNenv[1:]:
-            self.setup.append(" && "+env+" \\ \n")
+            self.setup.append(" && " + env + " \\ \n")
         if self.l:
             for l in self.l:
-                self.setup.append(" && spack load "+l+" \\ \n")
+                self.setup.append(" && spack load " + l + " \\ \n")
 
         # Clone and copy mkmf through Dockerfile
-        self.mkmfclone=["RUN cd /apps \\ \n",
-                       " && git clone --recursive https://github.com/NOAA-GFDL/mkmf \\ \n",
-                       " && cp mkmf/bin/* /usr/local/bin \n"]
+        self.mkmfclone = ["RUN cd /apps \\ \n",
+                          " && git clone --recursive https://github.com/NOAA-GFDL/mkmf \\ \n",
+                          " && cp mkmf/bin/* /usr/local/bin \n"]
 
         # Set bld_dir, src_dir, mkmf_template
-        self.bldsetup=["RUN bld_dir="+self.bld+" \\ \n",
-                       " && src_dir="+self.src+" \\ \n",
-                       " && mkmf_template="+self.template+ " \\ \n"]
-        self.d=open("Dockerfile","w")
-        self.d.writelines("FROM "+self.base+" as builder\n")
-        ## Set up the second stage build list of lines to add
+        self.bldsetup = ["RUN bld_dir=" + self.bld + " \\ \n",
+                         " && src_dir=" + self.src + " \\ \n",
+                         " && mkmf_template=" + self.template + " \\ \n"]
+        self.d = open("Dockerfile", "w")
+        self.d.writelines("FROM " + self.base + " as builder\n")
+        # Set up the second stage build list of lines to add
         if self.stage2base == "":
             self.secondstage = ["\n"]
         else:
@@ -68,8 +70,9 @@ class container():
                                 f"COPY --from=builder  {self.src} {self.src}\n",
                                 f"COPY --from=builder {self.bld} {self.bld}\n",
                                 f"RUN mkdir -p /apps/bin \\ \n",
-                                f" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh \n",
+                                f" && ln -sf " + self.bld + "/execrunscript.sh " + "/apps/bin/execrunscript.sh \n",
                                 f"ENV PATH=$PATH:{self.bld}:/apps/bin\n"]
+
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """
         Brief: writes to the checkout part of the Dockerfile and sets up the compile
@@ -78,15 +81,15 @@ class container():
             - cScriptName : The name of the checkout script in the container
             - cOnDisk : The relative path to the checkout script on disk
         """
-        self.checkoutPath = self.src+"/"+ cScriptName
-        self.d.write("COPY " + cOnDisk +" "+ self.checkoutPath  +" \n")
-        self.d.write("RUN chmod 744 "+self.src+"/checkout.sh \n")
+        self.checkoutPath = self.src + "/" + cScriptName
+        self.d.write("COPY " + cOnDisk + " " + self.checkoutPath + " \n")
+        self.d.write("RUN chmod 744 " + self.src + "/checkout.sh \n")
         self.d.writelines(self.setup)
         # Check if there is a RUNenv.  If there is not, then do not use the &&
         if self.setup == ["RUN \\ \n"]:
-            self.d.write(self.src+"/checkout.sh \n")
+            self.d.write(self.src + "/checkout.sh \n")
         else:
-            self.d.write(" && "+self.src+"/checkout.sh \n")
+            self.d.write(" && " + self.src + "/checkout.sh \n")
         # Clone mkmf
         self.d.writelines(self.mkmfclone)
 
@@ -100,20 +103,20 @@ class container():
         """
         # Set up the bldDir
         # If no additional libraries defined
-        if self.l == None:
-            self.bldCreate=["RUN mkdir -p "+self.bld+" \n",
-                            "COPY "+ makefileOnDiskPath  +" "+self.bld+"/Makefile \n"]
+        if self.l is None:
+            self.bldCreate = ["RUN mkdir -p " + self.bld + " \n",
+                              "COPY " + makefileOnDiskPath + " " + self.bld + "/Makefile \n"]
             self.d.writelines(self.bldCreate)
         # If additional libraries defined
-        if self.l != None:
-            self.bldCreate=["RUN mkdir -p "+self.bld+" \n",
-                            "COPY "+ makefileOnDiskPath  +" "+self.bld+"/Makefile \n",
-                            "RUN chmod +rw "+self.bld+"/Makefile \n",
-                            "COPY "+ linklineonDiskPath +" "+self.bld+"/linkline.sh \n",
-                            "RUN chmod 744 "+self.bld+"/linkline.sh \n"]
+        if self.l is not None:
+            self.bldCreate = ["RUN mkdir -p " + self.bld + " \n",
+                              "COPY " + makefileOnDiskPath + " " + self.bld + "/Makefile \n",
+                              "RUN chmod +rw " + self.bld + "/Makefile \n",
+                              "COPY " + linklineonDiskPath + " " + self.bld + "/linkline.sh \n",
+                              "RUN chmod 744 " + self.bld + "/linkline.sh \n"]
             self.d.writelines(self.bldCreate)
             self.d.writelines(self.setup)
-            self.d.write(" && "+self.bld+"/linkline.sh \n")
+            self.d.write(" && " + self.bld + "/linkline.sh \n")
 
     def writeDockerfileMkmf(self, c):
         """
@@ -129,35 +132,84 @@ class container():
         comp = c["component"]
 
         # Make the component directory
-        self.d.write(" && mkdir -p $bld_dir/"+comp+" \\ \n")
+        self.d.write(" && mkdir -p $bld_dir/" + comp + " \\ \n")
 
         # Get the paths needed for compiling
         pstring = ""
         for paths in c["paths"]:
-            pstring = pstring+"$src_dir/"+paths+" "
+            pstring = pstring + "$src_dir/" + paths + " "
 
         # Run list_paths
-        self.d.write(" && list_paths -l -o $bld_dir/"+comp+"/pathnames_"+comp+" "+pstring+" \\ \n")
-        self.d.write(" && cd $bld_dir/"+comp+" \\ \n")
+        self.d.write(" && list_paths -l -o $bld_dir/" + comp + "/pathnames_" + comp + " " + pstring + " \\ \n")
+        self.d.write(" && cd $bld_dir/" + comp + " \\ \n")
 
         # Create the mkmf line
-        if c["requires"] == [] and c["doF90Cpp"]: # If this lib doesnt have any code dependencies and it requires the preprocessor (no -o and yes --use-cpp)
-            self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template --use-cpp -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
-        elif c["requires"] == []: # If this lib doesnt have any code dependencies (no -o)
-            self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
-        else: #Has requirements
-            #Set up the requirements as a string to inclue after the -o
+        if c["requires"] == [
+        ] and c["doF90Cpp"]:  # If this lib doesnt have any code dependencies and it requires the preprocessor (no -o and yes --use-cpp)
+            self.d.write(
+                " && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib" +
+                comp +
+                ".a -t $mkmf_template --use-cpp -c \"" +
+                c["cppdefs"] +
+                "\" " +
+                c["otherFlags"] +
+                " $bld_dir/" +
+                comp +
+                "/pathnames_" +
+                comp +
+                " \n")
+        elif c["requires"] == []:  # If this lib doesnt have any code dependencies (no -o)
+            self.d.write(
+                " && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib" +
+                comp +
+                ".a -t $mkmf_template -c \"" +
+                c["cppdefs"] +
+                "\" " +
+                c["otherFlags"] +
+                " $bld_dir/" +
+                comp +
+                "/pathnames_" +
+                comp +
+                " \n")
+        else:  # Has requirements
+            # Set up the requirements as a string to inclue after the -o
             reqstring = ""
             for r in c["requires"]:
-                reqstring = reqstring+"-I$bld_dir/"+r+" "
+                reqstring = reqstring + "-I$bld_dir/" + r + " "
 
-            #Figure out if we need the preprocessor
+            # Figure out if we need the preprocessor
             if c["doF90Cpp"]:
-                self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template --use-cpp -c \""+c["cppdefs"]+"\" -o \""+reqstring+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+                self.d.write(
+                    " && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib" +
+                    comp +
+                    ".a -t $mkmf_template --use-cpp -c \"" +
+                    c["cppdefs"] +
+                    "\" -o \"" +
+                    reqstring +
+                    "\" " +
+                    c["otherFlags"] +
+                    " $bld_dir/" +
+                    comp +
+                    "/pathnames_" +
+                    comp +
+                    " \n")
             else:
-                self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template -c \""+c["cppdefs"]+"\" -o \""+reqstring+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+                self.d.write(
+                    " && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib" +
+                    comp +
+                    ".a -t $mkmf_template -c \"" +
+                    c["cppdefs"] +
+                    "\" -o \"" +
+                    reqstring +
+                    "\" " +
+                    c["otherFlags"] +
+                    " $bld_dir/" +
+                    comp +
+                    "/pathnames_" +
+                    comp +
+                    " \n")
 
-    def writeRunscript(self,RUNenv,containerRun,runOnDisk):
+    def writeRunscript(self, RUNenv, containerRun, runOnDisk):
         """
         Brief: Writes a runscript to set up spack loads/environment
                in order to run the executable in the container;
@@ -171,47 +223,47 @@ class container():
                              or singularity used
             - runOnDisk : The path to the run script on the local disk
         """
-        #create runscript in tmp - create spack environment, install necessary packages,
+        # create runscript in tmp - create spack environment, install necessary packages,
         if isinstance(RUNenv, list):
             self.createscript = ["#!/bin/bash \n",
                                  "export BACKUP_LD_LIBRARY_PATH=$LD_LIBRARY_PATH\n",
                                  "# Set up spack loads\n",
-                                 RUNenv[0]+"\n"]
-            #create directory if not present
+                                 RUNenv[0] + "\n"]
+            # create directory if not present
             os.makedirs(os.path.dirname(runOnDisk), exist_ok=True)
             # write file
-            with open(runOnDisk,"w") as f:
+            with open(runOnDisk, "w") as f:
                 f.writelines(self.createscript)
                 f.write("# Load spack packages\n")
                 for env in RUNenv[1:]:
-                    f.write(env+"\n")
+                    f.write(env + "\n")
                 if self.l:
                     for l in self.l:
-                        self.spackloads = "spack load "+l+"\n"
+                        self.spackloads = "spack load " + l + "\n"
                         f.write(self.spackloads)
                 f.write("export LD_LIBRARY_PATH=$BACKUP_LD_LIBRARY_PATH:$LD_LIBRARY_PATH\n")
         else:
             self.createscript = ["#!/bin/bash \n"]
-            with open(runOnDisk,"w") as f:
+            with open(runOnDisk, "w") as f:
                 f.writelines(self.createscript)
-        with open(runOnDisk,"a") as f:
+        with open(runOnDisk, "a") as f:
             f.write("# Run executable\n")
-            f.write(self.bld+"/"+self.e+".x\n")
-        #copy runscript into container in dockerfile
-        self.d.write("COPY "+runOnDisk+" "+self.bld+"/execrunscript.sh\n")
-        #make runscript executable
-        self.d.write("RUN chmod 744 "+self.bld+"/execrunscript.sh\n")
-        #link runscript to more general location (for frerun container usage)
-        self.d.write("RUN mkdir -p /apps/bin \ \n")
-        self.d.write(" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh \n")
-        #finish the dockerfile
+            f.write(self.bld + "/" + self.e + ".x\n")
+        # copy runscript into container in dockerfile
+        self.d.write("COPY " + runOnDisk + " " + self.bld + "/execrunscript.sh\n")
+        # make runscript executable
+        self.d.write("RUN chmod 744 " + self.bld + "/execrunscript.sh\n")
+        # link runscript to more general location (for frerun container usage)
+        self.d.write("RUN mkdir -p /apps/bin \\ \n")
+        self.d.write(" && ln -sf " + self.bld + "/execrunscript.sh " + "/apps/bin/execrunscript.sh \n")
+        # finish the dockerfile
         self.d.writelines(self.setup)
         # Check if there is a RUNenv.  If there is not, then do not use the &&
         if self.setup == ["RUN \\ \n"]:
-            self.d.write(" cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
+            self.d.write(" cd " + self.bld + " && make -j 4 " + self.target.getmakeline_add() + "\n")
         else:
-            self.d.write(" && cd "+self.bld+" && make -j 4 "+self.target.getmakeline_add()+"\n")
-        ## Write any second stage lines here
+            self.d.write(" && cd " + self.bld + " && make -j 4 " + self.target.getmakeline_add() + "\n")
+        # Write any second stage lines here
         for l in self.secondstage:
             self.d.write(l)
         self.d.write('ENTRYPOINT ["/bin/bash"]')
@@ -238,8 +290,10 @@ class container():
             # Remove any previously generated images, if they exist
             self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
 
-            self.userScript.append(f"{containerBuild} save -o {containerName}.tar localhost/{self.e}:{self.target.gettargetName()}\n")
-            self.userScript.append(f"{containerRun} build --disable-cache {containerName}.sif docker-archive://{containerName}.tar\n")
+            self.userScript.append(
+                f"{containerBuild} save -o {containerName}.tar localhost/{self.e}:{self.target.gettargetName()}\n")
+            self.userScript.append(
+                f"{containerRun} build --disable-cache {containerName}.sif docker-archive://{containerName}.tar\n")
             if containerOutputLocation != "":
                 self.userScript.append(f"mkdir -p {containerOutputLocation}\n")
                 self.userScript.append(f"cp {containerName}.sif {containerOutputLocation}/{containerName}.sif\n")
@@ -248,9 +302,8 @@ class container():
                 # Remove it from the original location
                 self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
 
-        self.userScriptFile = open("createContainer.sh","w")
+        self.userScriptFile = open("createContainer.sh", "w")
         self.userScriptFile.writelines(self.userScript)
         self.userScriptFile.close()
         os.chmod("createContainer.sh", 0o744)
-        self.userScriptPath = os.getcwd()+"/createContainer.sh"
-
+        self.userScriptPath = os.getcwd() + "/createContainer.sh"

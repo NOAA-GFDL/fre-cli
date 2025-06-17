@@ -1,22 +1,21 @@
 ''' fre analysis '''
 
 # a third party package
+from .subtools import install_analysis_package, list_plugins, run_analysis, \
+    uninstall_analysis_package
 import click
 import logging
 fre_logger = logging.getLogger(__name__)
 
-## a diff gfdl package
-#from analysis_scripts import available_plugins
+# a diff gfdl package
+# from analysis_scripts import available_plugins
 
 # this package
-from .subtools import install_analysis_package, list_plugins, run_analysis, \
-                      uninstall_analysis_package
 
 
 @click.group(help=click.style(" - analysis subcommands", fg=(250, 154, 90)))
 def analysis_cli():
     """Entry point to fre analysis click commands."""
-
 
 
 @analysis_cli.command()

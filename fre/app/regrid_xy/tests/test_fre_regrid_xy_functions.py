@@ -1,6 +1,7 @@
 import fre.app.regrid_xy.regrid_xy
 from . import write_input_files
 
+
 def test_get_grid_dims():
 
     write_input_files.all()
@@ -10,5 +11,5 @@ def test_get_grid_dims():
 
     nx, ny = fre.app.regrid_xy.regrid_xy.get_grid_dims(grid_spec, mosaic_type)
 
-    assert nx==360
-    assert ny==90
+    assert nx == 360
+    assert ny == 90

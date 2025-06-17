@@ -13,6 +13,7 @@ from .cmor_mixer import cmor_run_subtool
 
 fre_logger = logging.getLogger(__name__)
 
+
 def check_path_existence(some_path):
     '''
     simple function checking for pathlib.Path existence, raising a FileNotFoundError if needed
@@ -20,7 +21,8 @@ def check_path_existence(some_path):
         some_path (str), required, a string representing a path. can be relative or absolute
     '''
     if not Path(some_path).exists():
-        raise FileNotFoundError('does not exist:  {}'.format(some_path)) # uncovered
+        raise FileNotFoundError('does not exist:  {}'.format(some_path))  # uncovered
+
 
 def iso_to_bronx_chunk(cmor_chunk_in):
     '''
@@ -33,38 +35,40 @@ def iso_to_bronx_chunk(cmor_chunk_in):
     if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
         bronx_chunk = f'{cmor_chunk_in[1:-1]}yr'
     else:
-        raise ValueError('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py') #uncovered
+        raise ValueError('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py')  # uncovered
     fre_logger.debug('bronx_chunk = %s', bronx_chunk)
     return bronx_chunk
+
 
 def conv_mip_to_bronx_freq(cmor_table_freq):
     '''
     uses a look up table to convert a given frequency in a MIP table, to that same frequency under FRE-bronx convention instead
     Args:
-        cmor_table_freq (str), required, a frequency string read from a MIP table, subject to a controlled vocabulary. 
+        cmor_table_freq (str), required, a frequency string read from a MIP table, subject to a controlled vocabulary.
     '''
     cmor_to_bronx_dict = {
-        "1hr"    : "1hr",
-        "1hrCM"  : None,
-        "1hrPt"  : None,
-        "3hr"    : "3hr",
-        "3hrPt"  : None,
-        "6hr"    : "6hr",
-        "6hrPt"  : None,
-        "day"    : "daily",
-        "dec"    : None,
-        "fx"     : None,
-        "mon"    : "monthly",
-        "monC"   : None,
-        "monPt"  : None,
+        "1hr": "1hr",
+        "1hrCM": None,
+        "1hrPt": None,
+        "3hr": "3hr",
+        "3hrPt": None,
+        "6hr": "6hr",
+        "6hrPt": None,
+        "day": "daily",
+        "dec": None,
+        "fx": None,
+        "mon": "monthly",
+        "monC": None,
+        "monPt": None,
         "subhrPt": None,
-        "yr"     : "annual",
-        "yrPt"   : None
+        "yr": "annual",
+        "yrPt": None
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
     if bronx_freq is None:
-        raise KeyError(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent') #uncovered
+        raise KeyError(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent')  # uncovered
     return bronx_freq
+
 
 def get_bronx_freq_from_mip_table(json_table_config):
     '''
@@ -80,11 +84,12 @@ def get_bronx_freq_from_mip_table(json_table_config):
             try:
                 table_freq = table_config_data['variable_entry'][var_entry]['frequency']
                 break
-            except Exception as exc: #uncovered
+            except Exception as exc:  # uncovered
                 raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
                                'ALWAYS have frequency info under the variable entry!! EXIT! BAD!') from exc
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
+
 
 def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, output=None, opt_var_name=None,
                       run_one_mode=False, dry_run_mode=False, start=None, stop=None):
@@ -113,8 +118,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                        experiment=exp_name, platform=platform, target=target,
                                        use="cmor", output=output)['cmor']
     fre_logger.debug('consolidate_yamls produced the following dictionary of cmor-settings from yamls: \n%s',
-                     pprint.pformat(cmor_yaml_dict) )
-
+                     pprint.pformat(cmor_yaml_dict))
 
     # ---------------------------------------------------
     # inbetween-logic to form args ----------------------
@@ -122,32 +126,32 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
 
     # target input pp directory
     pp_dir = os.path.expandvars(
-        cmor_yaml_dict['directories']['pp_dir'] )
+        cmor_yaml_dict['directories']['pp_dir'])
     fre_logger.info('pp_dir = %s', pp_dir)
     check_path_existence(pp_dir)
 
     # directory holding mip table config inputs
     cmip_cmor_table_dir = os.path.expandvars(
-        cmor_yaml_dict['directories']['table_dir'] )
+        cmor_yaml_dict['directories']['table_dir'])
     fre_logger.info('cmip_cmor_table_dir = %s', cmip_cmor_table_dir)
     check_path_existence(cmip_cmor_table_dir)
 
     # final directory housing whole CMOR dir structure at the end of it all
     cmorized_outdir = os.path.expandvars(
-        cmor_yaml_dict['directories']['outdir'] )
+        cmor_yaml_dict['directories']['outdir'])
     fre_logger.info('cmorized_outdir = %s', cmorized_outdir)
     if not Path(cmorized_outdir).exists():
         try:
             fre_logger.info('cmorized_outdir does not exist.')
             fre_logger.info('attempt to create it...')
             Path(cmorized_outdir).mkdir(exist_ok=False, parents=True)
-        except Exception as exc: #uncovered
+        except Exception as exc:  # uncovered
             raise OSError(
                 f'could not create cmorized_outdir = {cmorized_outdir} for some reason!') from exc
 
     # path to metadata header to be appended to output netcdf file
     json_exp_config = os.path.expandvars(
-        cmor_yaml_dict['exp_json'] )
+        cmor_yaml_dict['exp_json'])
     fre_logger.info('json_exp_config = %s', json_exp_config)
     check_path_existence(json_exp_config)
 
@@ -187,7 +191,6 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         json_table_config = f'{cmip_cmor_table_dir}/{mip_era}_{table_name}.json'
         fre_logger.info('json_table_config = %s', json_table_config)
         check_path_existence(json_table_config)
-
 
         # frequency of data ---- revisit/TODO
         # if freq is None:
@@ -232,19 +235,19 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
             if not dry_run_mode:
-                cmor_run_subtool( #uncovered
-                    indir = indir ,
-                    json_var_list = json_var_list ,
-                    json_table_config = json_table_config ,
-                    json_exp_config = json_exp_config ,
-                    outdir = cmorized_outdir ,
-                    run_one_mode = run_one_mode ,
-                    opt_var_name = opt_var_name ,
-                    grid = grid_desc ,
-                    grid_label = grid_label ,
-                    nom_res = nom_res ,
-                    start = start,
-                    stop = stop
+                cmor_run_subtool(  # uncovered
+                    indir=indir,
+                    json_var_list=json_var_list,
+                    json_table_config=json_table_config,
+                    json_exp_config=json_exp_config,
+                    outdir=cmorized_outdir,
+                    run_one_mode=run_one_mode,
+                    opt_var_name=opt_var_name,
+                    grid=grid_desc,
+                    grid_label=grid_label,
+                    nom_res=nom_res,
+                    start=start,
+                    stop=stop
                 )
             else:
                 fre_logger.debug('--DRY RUN CALL---\n'
@@ -261,7 +264,5 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                  f'    nom_res = {nom_res} ,\n'
                                  f'    start = {start} ,\n'
                                  f'    stop = {stop}\n'
-                                  ')\n'
+                                 ')\n'
                                  )
-
-

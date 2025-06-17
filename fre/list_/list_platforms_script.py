@@ -2,27 +2,26 @@
 Script combines the model yaml with exp, platform, and target to list experiment information.
 """
 
+import fre.yamltools.combine_yamls as cy
+from fre.yamltools.helpers import yaml_load
+from jsonschema import validate, ValidationError, SchemaError
+import json
+from fre.yamltools import *
+from pathlib import Path
 import logging
 fre_logger = logging.getLogger(__name__)
 
-from pathlib import Path
 
 # this brings in the yaml module with the join_constructor
 # this is defined in the __init__
-from fre.yamltools import *
 
-import json
-from jsonschema import validate, ValidationError, SchemaError
-
-from fre.yamltools.helpers import yaml_load
-
-import fre.yamltools.combine_yamls as cy
 
 # To look into: ignore undefined alias error msg for listing?
 # Found this somewhere but don't fully understand yet
-#class NoAliasDumper(yaml.SafeDumper):
+# class NoAliasDumper(yaml.SafeDumper):
 #    def ignore_aliases(self, data):
 #        return True
+
 
 def quick_combine(yml, platform, target):
     """
@@ -30,10 +29,11 @@ def quick_combine(yml, platform, target):
     This is done to avoid an "undefined alias" error
     """
     # Combine model / experiment
-    comb = cy.init_compile_yaml(yml,platform,target)
+    comb = cy.init_compile_yaml(yml, platform, target)
     comb.combine_model()
     comb.combine_platforms()
     comb.clean_yaml()
+
 
 def remove(combined):
     """
@@ -44,6 +44,7 @@ def remove(combined):
         fre_logger.info(f"Intermediate combined yaml {combined} removed.")
     else:
         raise ValueError(f"{combined} could not be found to remove.")
+
 
 def validate_yaml(loaded_yaml):
     """
@@ -60,8 +61,9 @@ def validate_yaml(loaded_yaml):
         validate(instance=loaded_yaml, schema=schema)
         fre_logger.info("... Intermediate combined yaml VALID.")
         return True
-    except:
+    except BaseException:
         raise ValueError("\n... Intermediate combined yaml NOT VALID.")
+
 
 def list_platforms_subtool(yamlfile):
     """
@@ -76,7 +78,7 @@ def list_platforms_subtool(yamlfile):
     yamlpath = Path(yamlfile).parent
 
     # Combine model / experiment
-    quick_combine(yamlfile,p,t)
+    quick_combine(yamlfile, p, t)
 
     # Print experiment names
     yml = yaml_load(f"{yamlpath}/{combined}")

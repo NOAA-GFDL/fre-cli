@@ -11,15 +11,16 @@ import shutil
 TEST_DIR = str(Path("fre/make/tests"))
 YAMLFILE = str(Path(f"{TEST_DIR}/null_example/null_model.yaml"))
 
-#set platform and target
+# set platform and target
 PLATFORM = ["ci.gnu"]
 TARGET = ["debug"]
 
-#set output directory
+# set output directory
 # Set home for ~/cylc-src location in script
-#run checkout command
+# run checkout command
 OUT = f"{TEST_DIR}/checkout_out"
 os.environ["TEST_BUILD_DIR"] = OUT
+
 
 def test_nullyaml_exists():
     """
@@ -27,26 +28,29 @@ def test_nullyaml_exists():
     """
     assert Path(f"{YAMLFILE}").exists()
 
+
 def test_nullyaml_filled():
     """
     Make sure null.yaml is not an empty file
     """
     sum(1 for _ in open(f'{YAMLFILE}')) > 1
 
+
 def test_checkout_script_exists():
     """
     Make sure checkout file exists
     """
-    os.environ["TEST_BUILD_DIR"] = OUT # env vars seem to be carrying over from other tests, need to set it again
+    os.environ["TEST_BUILD_DIR"] = OUT  # env vars seem to be carrying over from other tests, need to set it again
     shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
     create_checkout_script.checkout_create(YAMLFILE,
                                            PLATFORM,
                                            TARGET,
-                                           no_parallel_checkout = False,
-                                           jobs = False, execute = False,
-                                           verbose = False)
-    #assert result.exit_code == 0
+                                           no_parallel_checkout=False,
+                                           jobs=False, execute=False,
+                                           verbose=False)
+    # assert result.exit_code == 0
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
+
 
 def test_checkout_verbose():
     """
@@ -55,10 +59,11 @@ def test_checkout_verbose():
     create_checkout_script.checkout_create(YAMLFILE,
                                            PLATFORM,
                                            TARGET,
-                                           no_parallel_checkout = False,
-                                           jobs = False,
-                                           execute = False,
-                                           verbose = True)
+                                           no_parallel_checkout=False,
+                                           jobs=False,
+                                           execute=False,
+                                           verbose=True)
+
 
 def test_checkout_execute():
     """
@@ -68,10 +73,11 @@ def test_checkout_execute():
     create_checkout_script.checkout_create(YAMLFILE,
                                            PLATFORM,
                                            TARGET,
-                                           no_parallel_checkout = False,
-                                           jobs = 2,
-                                           execute = True,
-                                           verbose = False)
+                                           no_parallel_checkout=False,
+                                           jobs=2,
+                                           execute=True,
+                                           verbose=False)
+
 
 def test_checkout_no_parallel_checkout():
     """
@@ -80,7 +86,7 @@ def test_checkout_no_parallel_checkout():
     create_checkout_script.checkout_create(YAMLFILE,
                                            PLATFORM,
                                            TARGET,
-                                           no_parallel_checkout = True,
-                                           jobs = False,
-                                           execute = False,
-                                           verbose = False)
+                                           no_parallel_checkout=True,
+                                           jobs=False,
+                                           execute=False,
+                                           verbose=False)

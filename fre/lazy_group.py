@@ -6,8 +6,10 @@ see https://click.palletsprojects.com/en/8.1.x/complex/
 import importlib
 import click
 
+
 class LazyGroup(click.Group):
     ''' class defining lazygroup command/subcommand loading '''
+
     def __init__(self, *args, lazy_subcommands=None, **kwargs):
         super().__init__(*args, **kwargs)
         # lazy_subcommands is a map of the form:

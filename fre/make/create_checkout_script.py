@@ -11,6 +11,7 @@ from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 # set up logging
 fre_logger = logging.getLogger(__name__)
 
+
 def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
     """
     Create the checkout script for bare-metal or container build
@@ -23,21 +24,21 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     pcheck = no_parallel_checkout
 
     if isinstance(jobs, bool) and execute:
-        raise ValueError ('jobs must be defined as number if --execute flag is True')
+        raise ValueError('jobs must be defined as number if --execute flag is True')
     if pcheck:
         pc = ""
     else:
         pc = " &"
 
     if verbose:
-        fre_logger.setLevel(level = logging.DEBUG)
+        fre_logger.setLevel(level=logging.DEBUG)
     else:
-        fre_logger.setLevel(level = logging.INFO)
+        fre_logger.setLevel(level=logging.INFO)
 
-    src_dir="src"
-    baremetal_run = False # This is needed if there are no bare metal runs
+    src_dir = "src"
+    baremetal_run = False  # This is needed if there are no bare metal runs
 
-    ## Split and store the platforms and targets in a list
+    # Split and store the platforms and targets in a list
     plist = platform
     tlist = target
 
@@ -49,26 +50,26 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                                          use="compile",
                                          output=None)
 
-    ## Get the variables in the model yaml
+    # Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
-    model_yaml = yamlfre.freyaml(full_combined,fre_vars)
+    # Open the yaml file, validate the yaml, and parse as fremake_yaml
+    model_yaml = yamlfre.freyaml(full_combined, fre_vars)
     fremake_yaml = model_yaml.getCompileYaml()
 
-    ## Error checking the targets
+    # Error checking the targets
     for target_name in tlist:
         target = targetfre.fretarget(target_name)
 
-    ## Loop through the platforms specified on the command line
-    ## If the platform is a baremetal platform, write the checkout script and run it once
-    ## This should be done separately and serially because bare metal platforms should all be using
-    ## the same source code.
+    # Loop through the platforms specified on the command line
+    # If the platform is a baremetal platform, write the checkout script and run it once
+    # This should be done separately and serially because bare metal platforms should all be using
+    # the same source code.
     for platform_name in plist:
         if model_yaml.platforms.hasPlatform(platform_name):
             pass
         else:
-            raise ValueError (platform_name + " does not exist in platforms.yaml")
+            raise ValueError(platform_name + " does not exist in platforms.yaml")
 
         platform = model_yaml.platforms.getPlatformFromName(platform_name)
 
@@ -79,13 +80,13 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             if not os.path.exists(src_dir):
                 os.system("mkdir -p " + src_dir)
             # if the checkout script does not exist, it is created
-            if not os.path.exists(src_dir+"/checkout.sh"):
-                fre_checkout = checkout.checkout("checkout.sh",src_dir)
-                fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
-                fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
+            if not os.path.exists(src_dir + "/checkout.sh"):
+                fre_checkout = checkout.checkout("checkout.sh", src_dir)
+                fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(), jobs, pc)
+                fre_checkout.finish(model_yaml.compile.getCompileYaml(), pc)
                 # Make checkout script executable
-                os.chmod(src_dir+"/checkout.sh", 0o744)
-                fre_logger.info("\nCheckout script created in %s/checkout.sh \n", src_dir )
+                os.chmod(src_dir + "/checkout.sh", 0o744)
+                fre_logger.info("\nCheckout script created in %s/checkout.sh \n", src_dir)
 
                 # Run the checkout script
                 if run:
@@ -98,10 +99,10 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
                                 src_dir)
                 if run:
                     try:
-                        subprocess.run(args=[src_dir+"/checkout.sh"], check=True)
-                    except:
-                        raise OSError("\nThere was an error with the checkout script "+src_dir+"/checkout.sh.",
-                                      "\nTry removing test folder: "+platform["modelRoot"] +"\n")
+                        subprocess.run(args=[src_dir + "/checkout.sh"], check=True)
+                    except BaseException:
+                        raise OSError("\nThere was an error with the checkout script " + src_dir + "/checkout.sh.",
+                                      "\nTry removing test folder: " + platform["modelRoot"] + "\n")
 
                 else:
                     return
@@ -109,12 +110,13 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
         else:
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
             bld_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/exec"
-            tmp_dir = "tmp/"+platform_name
-            pc = "" #Set this way because containers do not support the parallel checkout
+            tmp_dir = "tmp/" + platform_name
+            pc = ""  # Set this way because containers do not support the parallel checkout
             fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
-            fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
-            fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
+            fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(), jobs, pc)
+            fre_checkout.finish(model_yaml.compile.getCompileYaml(), pc)
             fre_logger.info("\nCheckout script created at %s/checkout.sh \n", tmp_dir)
+
 
 if __name__ == "__main__":
     checkout_create()

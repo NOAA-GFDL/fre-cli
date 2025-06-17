@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 import subprocess
 
+
 def install_subtool(experiment, platform, target):
     """
     Install the Cylc workflow definition located in
@@ -20,7 +21,7 @@ def install_subtool(experiment, platform, target):
     install_dir = Path(os.path.expanduser("~/cylc-run"), name)
     if os.path.isdir(install_dir):
         # must convert from bytes to string for proper comparison
-        installed_def = subprocess.run(["cylc", "config", name],capture_output=True).stdout.decode('utf-8')
+        installed_def = subprocess.run(["cylc", "config", name], capture_output=True).stdout.decode('utf-8')
         go_back_here = os.getcwd()
         os.chdir(source_dir)
         source_def = subprocess.run(['cylc', 'config', '.'], capture_output=True).stdout.decode('utf-8')

@@ -55,7 +55,6 @@ def mask_atmos_plevel_subtool(infile, outfile, psfile):
         print(f"No variables modified, so not writing output file {outfile}")
 
 
-
 def preprocess(ds):
     """add needs_atmos_masking attribute if var ends with _unmsk"""
     for var in list(ds.variables):
@@ -91,7 +90,7 @@ def mask_field_above_surface_pressure(ds, var, ds_ps):
     return masked
 
 
-def pressure_coordinate(ds, varname):#, verbose=False):
+def pressure_coordinate(ds, varname):  # , verbose=False):
     """check if dataArray has pressure coordinate fitting requirements
     and return it"""
 
@@ -122,16 +121,15 @@ def write_dataset(ds, template, outfile):
     ds.to_netcdf(outfile, unlimited_dims="time")
 
 
-
 def set_netcdf_encoding(ds, pressure_vars):
     """set preferred options for netcdf encoding"""
     all_vars = list(ds.variables)
     encoding = {}
-    #for var in do_not_encode_vars + pressure_vars: #what was here in first place
-    for var in pressure_vars: #remove unused variable
+    # for var in do_not_encode_vars + pressure_vars: #what was here in first place
+    for var in pressure_vars:  # remove unused variable
         if var in all_vars:
-            encoding.update( { var :
-                               { '_FillValue':None} } )
+            encoding.update({var:
+                             {'_FillValue': None}})
     return encoding
 
 

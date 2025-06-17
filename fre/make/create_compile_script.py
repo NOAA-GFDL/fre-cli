@@ -1,15 +1,14 @@
 '''
 TODO: make docstring
 '''
+import fre.yamltools.combine_yamls_script as cy
+from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
+from multiprocessing.dummy import Pool
+from pathlib import Path
 import os
 import logging
 fre_logger = logging.getLogger(__name__)
 
-from pathlib import Path
-from multiprocessing.dummy import Pool
-
-from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
-import fre.yamltools.combine_yamls_script as cy
 
 def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
     # Define variables
@@ -27,7 +26,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     checkoutScriptName = "checkout.sh"
     baremetalRun = False  # This is needed if there are no bare metal runs
 
-    ## Split and store the platforms and targets in a list
+    # Split and store the platforms and targets in a list
     plist = platform
     tlist = target
 
@@ -42,19 +41,19 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                                          use="compile",
                                          output=None)
 
-    ## Get the variables in the model yaml
+    # Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    # Open the yaml file, validate the yaml, and parse as fremake_yaml
     modelYaml = yamlfre.freyaml(full_combined, fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
-    ## Error checking the targets
+    # Error checking the targets
     for targetName in tlist:
         target = targetfre.fretarget(targetName)
 
     fremakeBuildList = []
-    ## Loop through platforms and targets
+    # Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
             target = targetfre.fretarget(targetName)
@@ -62,9 +61,9 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                 raise ValueError(f"{platformName} does not exist in platforms.yaml")
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
-            ## Make the bldDir based on the modelRoot, the platform, and the target
+            # Make the bldDir based on the modelRoot, the platform, and the target
             srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
-            ## Check for type of build
+            # Check for type of build
             if platform["container"] is False:
                 baremetalRun = True
                 bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
@@ -74,14 +73,14 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                 # if its not, prepend the template name with the mkmf submodule directory
                 if "/" not in platform["mkTemplate"]:
                     topdir = Path(__file__).resolve().parents[2]
-                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
+                    templatePath = str(topdir) + "/mkmf/templates/" + platform["mkTemplate"]
                     if not Path(templatePath).exists():
-                        raise ValueError (
+                        raise ValueError(
                             "Error with mkmf template. Created path from given file name: "
                             f"{templatePath} does not exist.")
                 else:
                     templatePath = platform["mkTemplate"]
-                ## Create a list of compile scripts to run in parallel
+                # Create a list of compile scripts to run in parallel
                 fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],
                                                              mkTemplatePath=platform["mkTemplate"],
                                                              srcDir=srcDir,
@@ -102,6 +101,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
             pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)  # process data_inputs iterable with pool
     else:
         return
+
 
 if __name__ == "__main__":
     compile_create()
