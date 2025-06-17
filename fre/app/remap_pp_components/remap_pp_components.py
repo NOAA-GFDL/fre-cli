@@ -189,7 +189,10 @@ def search_files(product,var,source,freq,current_chunk,begin):
             files.extend(f)
         else:
             for v in var:
+                logger.info("var: %s", v)
                 f = glob.glob(f"{source}.{v}*.nc")
+                if not f: #if glob returns empty list
+                    raise ValueError("Variable {v} could not be found or does not exist.")
                 files.extend(f)
     else:
         if product == "ts":
@@ -207,8 +210,9 @@ def search_files(product,var,source,freq,current_chunk,begin):
             for v in var:
                 logger.info("var: %s", v)
                 f = glob.glob(f"{source}.{date}-*.{v}*.nc")
+                if not f: #if glob returns empty list
+                    raise ValueError("Variable {v} could not be found or does not exist.")
                 files.extend(f)
-
         if product == "av" and current_chunk == "P1Y":
             f = glob.glob(f"{source}.{date}.*.nc")
             files.extend(f)

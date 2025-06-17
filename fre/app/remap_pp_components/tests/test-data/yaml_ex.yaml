@@ -33,7 +33,7 @@ postprocess:
     - type: "atmos_scalar_test_vars_fail"
       sources:
         - history_file: "atmos_scalar"
-          variables: ["no_var"]
+          variables: ["co2mass", "bk", "no_var"]
       inputRealm: "atmos"
       static:
         - source: "atmos_static_scalar"
