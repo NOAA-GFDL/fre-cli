@@ -2,7 +2,8 @@ class fretarget:
     """
     Class: Stores information about the target
     """
-    def __init__(self,t):
+
+    def __init__(self, t):
         """
         Brief: Sets up information about the target and handles errors
         Note: The default target is prod
@@ -10,10 +11,10 @@ class fretarget:
             - self the fretarget object
             - t The target string
         """
-        self.target = t # The target string
+        self.target = t  # The target string
 
         ## Split the target string
-        targ = self.target.split('-')
+        targ = self.target.split("-")
         self.makeline_add = ""
         self.debug = False
         self.repro = False
@@ -48,7 +49,11 @@ class fretarget:
                 self.makeline_add = self.makeline_add + "USE_LTO=on "
 
         ## Check to make sure only one of the prod, debug, repro are used
-        errormsg = "You can only list one mutually exclusive target, but your target '"+self.target+"' lists more than one of the following targets: \n debug \n prod \n repro"
+        errormsg = (
+            "You can only list one mutually exclusive target, but your target '"
+            + self.target
+            + "' lists more than one of the following targets: \n debug \n prod \n repro"
+        )
         if self.debug:
             try:
                 if self.repro or self.prod == True:
@@ -64,7 +69,9 @@ class fretarget:
         else:
             try:
                 if self.prod == False:
-                    raise ValueError("Your target '"+self.target+"' needs to include one of the following: prod, repro, debug")
+                    raise ValueError(
+                        "Your target '" + self.target + "' needs to include one of the following: prod, repro, debug"
+                    )
             except ValueError:
                 raise
 

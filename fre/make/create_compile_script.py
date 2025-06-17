@@ -1,8 +1,10 @@
-'''
+"""
 TODO: make docstring
-'''
+"""
+
 import os
 import logging
+
 fre_logger = logging.getLogger(__name__)
 
 from pathlib import Path
@@ -10,6 +12,7 @@ from multiprocessing.dummy import Pool
 
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls_script as cy
+
 
 def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
     # Define variables
@@ -35,12 +38,9 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     # combined = Path(f"combined-{name}.yaml")
 
     # Combine model, compile, and platform yamls
-    full_combined = cy.consolidate_yamls(yamlfile=yml,
-                                         experiment=name,
-                                         platform=platform,
-                                         target=target,
-                                         use="compile",
-                                         output=None)
+    full_combined = cy.consolidate_yamls(
+        yamlfile=yml, experiment=name, platform=platform, target=target, use="compile", output=None
+    )
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
@@ -67,30 +67,35 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
             ## Check for type of build
             if platform["container"] is False:
                 baremetalRun = True
-                bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
-                         f'{platformName}-{target.gettargetName()}/exec'
+                bldDir = (
+                    f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/'
+                    + f"{platformName}-{target.gettargetName()}/exec"
+                )
                 os.system("mkdir -p " + bldDir)
                 # check if mkTemplate has a / indicating it is a path
                 # if its not, prepend the template name with the mkmf submodule directory
                 if "/" not in platform["mkTemplate"]:
                     topdir = Path(__file__).resolve().parents[2]
-                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
+                    templatePath = str(topdir) + "/mkmf/templates/" + platform["mkTemplate"]
                     if not Path(templatePath).exists():
-                        raise ValueError (
+                        raise ValueError(
                             "Error with mkmf template. Created path from given file name: "
-                            f"{templatePath} does not exist.")
+                            f"{templatePath} does not exist."
+                        )
                 else:
                     templatePath = platform["mkTemplate"]
                 ## Create a list of compile scripts to run in parallel
-                fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],
-                                                             mkTemplatePath=platform["mkTemplate"],
-                                                             srcDir=srcDir,
-                                                             bldDir=bldDir,
-                                                             target=target,
-                                                             modules=platform["modules"],
-                                                             modulesInit=platform["modulesInit"],
-                                                             jobs=jobs)
-                for c in fremakeYaml['src']:
+                fremakeBuild = buildBaremetal.buildBaremetal(
+                    exp=fremakeYaml["experiment"],
+                    mkTemplatePath=platform["mkTemplate"],
+                    srcDir=srcDir,
+                    bldDir=bldDir,
+                    target=target,
+                    modules=platform["modules"],
+                    modulesInit=platform["modulesInit"],
+                    jobs=jobs,
+                )
+                for c in fremakeYaml["src"]:
                     fremakeBuild.writeBuildComponents(c)
                 fremakeBuild.writeScript()
                 fremakeBuildList.append(fremakeBuild)
@@ -102,6 +107,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
             pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)  # process data_inputs iterable with pool
     else:
         return
+
 
 if __name__ == "__main__":
     compile_create()

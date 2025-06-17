@@ -20,36 +20,37 @@ from fre.pp.run_script import pp_run_subtool
 from fre.pp.trigger_script import trigger
 from fre.pp.status_script import status_subtool
 
-def run_all_fre_pp_steps(experiment = None, platform = None, target = None, config_file = None, branch = None, time = None):
-    '''
+
+def run_all_fre_pp_steps(experiment=None, platform=None, target=None, config_file=None, branch=None, time=None):
+    """
     Wrapper script for calling a FRE2 pp experiment with the canopy-style
     infrastructure and fre-cli
-    '''
-    print('(run_all_fre_pp_steps) config_file path resolving...')
+    """
+    print("(run_all_fre_pp_steps) config_file path resolving...")
     config_file = os.path.abspath(config_file)
-    print(f'            config_file={config_file}')
+    print(f"            config_file={config_file}")
 
-    print('(run_all_fre_pp_steps) calling checkout_template')
+    print("(run_all_fre_pp_steps) calling checkout_template")
     checkout_template(experiment, platform, target, branch)
 
-    print('(run_all_fre_pp_steps) calling yaml_info')
+    print("(run_all_fre_pp_steps) calling yaml_info")
     yaml_info(config_file, experiment, platform, target)
 
-    print('(run_all_fre_pp_steps) calling install_subtool')
+    print("(run_all_fre_pp_steps) calling install_subtool")
     install_subtool(experiment, platform, target)
 
-    print('(run_all_fre_pp_steps) calling pp_run_subtool')
+    print("(run_all_fre_pp_steps) calling pp_run_subtool")
     pp_run_subtool(experiment, platform, target)
 
     if time is not None:
-        print('(run_all_fre_pp_steps) calling trigger')
+        print("(run_all_fre_pp_steps) calling trigger")
         trigger(experiment, platform, target, time)
 
-    print('(run_all_fre_pp_steps) calling status_subtool')
+    print("(run_all_fre_pp_steps) calling status_subtool")
     status_subtool(experiment, platform, target)
 
-    print('(run_all_fre_pp_steps) done.')
+    print("(run_all_fre_pp_steps) done.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_all_fre_pp_steps()

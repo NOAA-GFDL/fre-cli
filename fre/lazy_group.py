@@ -1,13 +1,15 @@
-'''
+"""
 for lazy-style loading of commands and subcommands while using click
 see https://click.palletsprojects.com/en/8.1.x/complex/
-'''
+"""
 
 import importlib
 import click
 
+
 class LazyGroup(click.Group):
-    ''' class defining lazygroup command/subcommand loading '''
+    """class defining lazygroup command/subcommand loading"""
+
     def __init__(self, *args, lazy_subcommands=None, **kwargs):
         super().__init__(*args, **kwargs)
         # lazy_subcommands is a map of the form:
@@ -36,8 +38,5 @@ class LazyGroup(click.Group):
         cmd_object = getattr(mod, cmd_object_name)
         # check the result to make debugging easier
         if not isinstance(cmd_object, click.BaseCommand):
-            raise ValueError(
-                f"Lazy loading of {import_path} failed by returning "
-                "a non-command object"
-            )
+            raise ValueError(f"Lazy loading of {import_path} failed by returning a non-command object")
         return cmd_object

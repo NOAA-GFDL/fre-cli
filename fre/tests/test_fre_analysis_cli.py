@@ -1,8 +1,8 @@
 """Test fre analysis cli."""
+
 from click.testing import CliRunner
 
 from fre import fre
-
 
 runner = CliRunner()
 
@@ -33,7 +33,14 @@ def test_cli_fre_analysis_install_missing_url():
 
 def test_cli_fre_analysis_install_unknown_argument():
     """Using an unknown argument with fre analysis install."""
-    result = runner.invoke(fre.fre, args=["analysis", "install", "bad-arg",])
+    result = runner.invoke(
+        fre.fre,
+        args=[
+            "analysis",
+            "install",
+            "bad-arg",
+        ],
+    )
     assert result.exit_code == 2
 
 
@@ -64,23 +71,48 @@ def test_cli_fre_analysis_run_missing_output_directory():
 
 def test_cli_fre_analysis_run_missing_output_yaml():
     """Missing the fre analysis run --output-yaml argument."""
-    args = ["analysis", "run", "--name", "name", "--catalog", "catalog",
-            "--output-directory", "dir",]
+    args = [
+        "analysis",
+        "run",
+        "--name",
+        "name",
+        "--catalog",
+        "catalog",
+        "--output-directory",
+        "dir",
+    ]
     result = runner.invoke(fre.fre, args=args)
     assert result.exit_code == 2
 
 
 def test_cli_fre_analysis_run_missing_experiment_yaml():
     """Missing the fre analysis run --experiment-yaml argument."""
-    args = ["analysis", "run", "--name", "name", "--catalog", "catalog",
-            "--output-directory", "dir", "--output-yaml", "yaml"]
+    args = [
+        "analysis",
+        "run",
+        "--name",
+        "name",
+        "--catalog",
+        "catalog",
+        "--output-directory",
+        "dir",
+        "--output-yaml",
+        "yaml",
+    ]
     result = runner.invoke(fre.fre, args=args)
     assert result.exit_code == 2
 
 
 def test_cli_fre_analysis_run_unknown_argument():
     """Using an unknown argument with fre analysis run."""
-    result = runner.invoke(fre.fre, args=["analysis", "run", "bad-arg",])
+    result = runner.invoke(
+        fre.fre,
+        args=[
+            "analysis",
+            "run",
+            "bad-arg",
+        ],
+    )
     assert result.exit_code == 2
 
 
@@ -98,5 +130,12 @@ def test_cli_fre_analysis_uninstall_missing_name():
 
 def test_cli_fre_analysis_uninstall_unknown_argument():
     """Using an unknown argument with fre analysis uninstall."""
-    result = runner.invoke(fre.fre, args=["analysis", "uninstall", "bad-arg",])
+    result = runner.invoke(
+        fre.fre,
+        args=[
+            "analysis",
+            "uninstall",
+            "bad-arg",
+        ],
+    )
     assert result.exit_code == 2

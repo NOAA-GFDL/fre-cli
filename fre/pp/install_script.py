@@ -1,8 +1,9 @@
-''' fre pp install '''
+"""fre pp install"""
 
 from pathlib import Path
 import os
 import subprocess
+
 
 def install_subtool(experiment, platform, target):
     """
@@ -12,7 +13,7 @@ def install_subtool(experiment, platform, target):
     ~/cylc-run/<experiment>__<platform>__<target>
     """
 
-    name = experiment + '__' + platform + '__' + target
+    name = experiment + "__" + platform + "__" + target
     # if the cylc-run directory already exists,
     # then check whether the cylc expanded definition (cylc config)
     # is identical. If the same, good. If not, bad.
@@ -20,15 +21,17 @@ def install_subtool(experiment, platform, target):
     install_dir = Path(os.path.expanduser("~/cylc-run"), name)
     if os.path.isdir(install_dir):
         # must convert from bytes to string for proper comparison
-        installed_def = subprocess.run(["cylc", "config", name],capture_output=True).stdout.decode('utf-8')
+        installed_def = subprocess.run(["cylc", "config", name], capture_output=True).stdout.decode("utf-8")
         go_back_here = os.getcwd()
         os.chdir(source_dir)
-        source_def = subprocess.run(['cylc', 'config', '.'], capture_output=True).stdout.decode('utf-8')
+        source_def = subprocess.run(["cylc", "config", "."], capture_output=True).stdout.decode("utf-8")
         if installed_def == source_def:
             print(f"NOTE: Workflow '{install_dir}' already installed, and the definition is unchanged")
         else:
-            print(f"ERROR: Please remove installed workflow with 'cylc clean {name}'"
-                  " or move the workflow run directory '{install_dir}'")
+            print(
+                f"ERROR: Please remove installed workflow with 'cylc clean {name}'"
+                " or move the workflow run directory '{install_dir}'"
+            )
             raise Exception(f"ERROR: Workflow '{install_dir}' already installed, and the definition has changed!")
     else:
         print(f"NOTE: About to install workflow into ~/cylc-run/{name}")

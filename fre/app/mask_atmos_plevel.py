@@ -1,10 +1,10 @@
-'''
+"""
 This script contains the refineDiags that produce data at the same
 frequency as the input data (no reduction) such as surface albedo,
 masking fields,...
 It can accept any file and will only compute refineDiags in fields
 are present.
-'''
+"""
 
 import os
 import netCDF4 as nc
@@ -12,7 +12,7 @@ import xarray as xr
 
 
 def mask_atmos_plevel_subtool(infile, outfile, psfile):
-    ''' click entry point to fre cmor mask-atmos-plevel'''
+    """click entry point to fre cmor mask-atmos-plevel"""
 
     # Error if outfile exists
     if os.path.exists(outfile):
@@ -41,8 +41,8 @@ def mask_atmos_plevel_subtool(infile, outfile, psfile):
 
     # Process all variables with attribute "needs_atmos_masking = True"
     for var in list(ds_in.variables):
-        if 'needs_atmos_masking' in ds_in[var].attrs:
-            del ds_in[var].attrs['needs_atmos_masking']
+        if "needs_atmos_masking" in ds_in[var].attrs:
+            del ds_in[var].attrs["needs_atmos_masking"]
             ds_out[var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
         else:
             continue
@@ -55,12 +55,11 @@ def mask_atmos_plevel_subtool(infile, outfile, psfile):
         print(f"No variables modified, so not writing output file {outfile}")
 
 
-
 def preprocess(ds):
     """add needs_atmos_masking attribute if var ends with _unmsk"""
     for var in list(ds.variables):
-        if var.endswith('_unmsk'):
-            ds[var].attrs['needs_atmos_masking'] = True
+        if var.endswith("_unmsk"):
+            ds[var].attrs["needs_atmos_masking"] = True
     return ds
 
 
@@ -80,8 +79,8 @@ def mask_field_above_surface_pressure(ds, var, ds_ps):
     attrs = ds[var].attrs.copy()
 
     # add the missing values back
-    attrs['missing_value'] = 1.0e20
-    attrs['_FillValue'] = 1.0e20
+    attrs["missing_value"] = 1.0e20
+    attrs["_FillValue"] = 1.0e20
     masked.attrs = attrs
 
     # transpose dims like the original array
@@ -91,7 +90,7 @@ def mask_field_above_surface_pressure(ds, var, ds_ps):
     return masked
 
 
-def pressure_coordinate(ds, varname):#, verbose=False):
+def pressure_coordinate(ds, varname):  # , verbose=False):
     """check if dataArray has pressure coordinate fitting requirements
     and return it"""
 
@@ -122,16 +121,14 @@ def write_dataset(ds, template, outfile):
     ds.to_netcdf(outfile, unlimited_dims="time")
 
 
-
 def set_netcdf_encoding(ds, pressure_vars):
     """set preferred options for netcdf encoding"""
     all_vars = list(ds.variables)
     encoding = {}
-    #for var in do_not_encode_vars + pressure_vars: #what was here in first place
-    for var in pressure_vars: #remove unused variable
+    # for var in do_not_encode_vars + pressure_vars: #what was here in first place
+    for var in pressure_vars:  # remove unused variable
         if var in all_vars:
-            encoding.update( { var :
-                               { '_FillValue':None} } )
+            encoding.update({var: {"_FillValue": None}})
     return encoding
 
 

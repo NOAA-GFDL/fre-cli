@@ -1,6 +1,7 @@
 """
 Test configure_script_yaml
 """
+
 import os
 import shutil
 from pathlib import Path
@@ -15,11 +16,13 @@ TARGET = "prod-openmp"
 TEST_DIR = Path("fre/pp/tests")
 TEST_YAML = Path("AM5_example/am5.yaml")
 
+
 def test_combinedyaml_exists():
     """
     Make sure combined yaml file exists
     """
     assert Path(f"{TEST_DIR}/{TEST_YAML}").exists()
+
 
 def test_configure_script():
     """
@@ -33,7 +36,7 @@ def test_configure_script():
 
     # Set output directory
     OUT_DIR = Path(f"{os.getenv('HOME')}/cylc-src/{EXPERIMENT}__{PLATFORM}__{TARGET}")
-    Path(OUT_DIR).mkdir(parents = True, exist_ok = True)
+    Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
 
     # Define combined yaml
     model_yaml = str(Path(f"{TEST_DIR}/{TEST_YAML}"))
@@ -44,10 +47,15 @@ def test_configure_script():
     os.environ["HOME"] = old_home
 
     # Check for configuration creation and final combined yaml
-    assert all([ Path(f"{OUT_DIR}/{EXPERIMENT}.yaml").exists(),
-                 Path(f"{OUT_DIR}/rose-suite.conf").exists(),
-                 Path(f"{OUT_DIR}/app/regrid-xy/rose-app.conf").exists(),
-                 Path(f"{OUT_DIR}/app/remap-pp-components/rose-app.conf").exists() ])
+    assert all(
+        [
+            Path(f"{OUT_DIR}/{EXPERIMENT}.yaml").exists(),
+            Path(f"{OUT_DIR}/rose-suite.conf").exists(),
+            Path(f"{OUT_DIR}/app/regrid-xy/rose-app.conf").exists(),
+            Path(f"{OUT_DIR}/app/remap-pp-components/rose-app.conf").exists(),
+        ]
+    )
+
 
 def test_cleanup():
     shutil.rmtree(f"{TEST_DIR}/configure_yaml_out")

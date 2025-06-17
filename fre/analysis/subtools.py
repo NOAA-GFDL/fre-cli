@@ -1,4 +1,4 @@
-""" holds subtool commands and related modules for 'fre analysis'  routines"""
+"""holds subtool commands and related modules for 'fre analysis'  routines"""
 
 from pathlib import Path
 from subprocess import run
@@ -42,10 +42,8 @@ def install_analysis_package(url, name=None, library_directory=None):
                 env.install_package(str(tmp_path / "scripts" / "core" / "figure_tools"))
                 env.install_package(str(tmp_path / "scripts" / "user-analysis-scripts" / name))
             else:
-                run(["pip", "install", str(tmp_path / "scripts" / "core" / "figure_tools")],
-                    check=True)
-                run(["pip", "install", str(tmp_path / "scripts" / "user-analysis-scripts" / name)],
-                    check=True)
+                run(["pip", "install", str(tmp_path / "scripts" / "core" / "figure_tools")], check=True)
+                run(["pip", "install", str(tmp_path / "scripts" / "user-analysis-scripts" / name)], check=True)
     else:
         if library_directory:
             env = VirtualEnvManager(library_directory)
@@ -72,8 +70,7 @@ def list_plugins(library_directory=None):
         return available_plugins()
 
 
-def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
-                 library_directory=None):
+def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml, library_directory=None):
     """Runs the analysis script and writes the paths to the created figures to a yaml file.
 
     Args:
@@ -99,8 +96,7 @@ def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
     # Run the analysis.
     if library_directory:
         env = VirtualEnvManager(library_directory)
-        figure_paths = env.run_analysis_plugin(name, catalog, output_directory,
-                                               config=configuration)
+        figure_paths = env.run_analysis_plugin(name, catalog, output_directory, config=configuration)
     else:
         figure_paths = run_plugin(name, catalog, output_directory, config=configuration)
 

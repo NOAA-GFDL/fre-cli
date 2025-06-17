@@ -4,6 +4,7 @@ authored by Bennett.Chang@noaa.gov | bcc2761
 NOAA | GFDL
 """
 
+
 def check_test_function(uppercase=None):
     """Execute fre list testfunction2."""
     statement = "testingtestingtestingtesting"
@@ -11,5 +12,6 @@ def check_test_function(uppercase=None):
         statement = statement.upper()
     print(statement)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     check_test_function()
