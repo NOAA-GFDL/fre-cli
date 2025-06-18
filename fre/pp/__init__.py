@@ -18,7 +18,7 @@ def make_workflow_name(experiment= None,
                           name.split(' ')
                               )
                       ).split(';')
-                  ) #security
+                  ) # user-input sanitation, prevents some malicious cmds from being executed with privileges
 
 
 

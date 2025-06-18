@@ -18,11 +18,11 @@ or replace with your fork's link (recommended).
 
 Local/Editable Installation
 ---------------------------
-Developers can test local changes by running a ``pip install [-e] .`` inside of the root directory after activaiting a
+Developers can test local changes by running a ``pip install [-e] .`` inside of the root directory after activating a
 virtual environment with ``python>=3.11.*`` and all requirements. This installs the ``fre-cli`` package locally with
 any local changes.
 
-Development work on ``fre-cli`` should occur within within a conda environment housing ``fre-cli``'s requirements, and
+Development work on ``fre-cli`` should occur within a conda environment housing ``fre-cli``'s requirements, and
 a local copy of the repository to install with ``pip`` using the ``-e/--editable`` flag on. This specific approch is
 described `here <https://noaa-gfdl.github.io/fre-cli/setup.html#create-environment-from-github-repo-clone>`_
 
@@ -40,9 +40,9 @@ code.
 
 Running CLI-calls
 ~~~~~~~~~~~~~~~~~
-Many efforts will involve focused efforts that are isolated to a specific ``fre TOOL COMMAND *ARGV``, where ``*ARGV`` stands
+Most development cycles will involve focused efforts isolated to a specific ``fre TOOL COMMAND *ARGV``, where ``*ARGV`` stands
 in for a shell-style argument vector (e.g. ``-e FOO -p BAR -t BAZ``, a common pattern in ``fre-cli``). Likely, the code one
-is working on here is housed somewhere *approximately* like ``fre/TOOL/COMMAND.py`` (*gernerally*, this is not a law), with
+is working on here is housed somewhere *approximately* like ``fre/TOOL/COMMAND.py`` (*generally*, this is not a law), with
 the ``click`` CLI entry-point under ``fre/TOOL/freTOOL.py``.
 
 Here, the developer usually uses the ``fre TOOL COMMAND *ARGV`` call as a test, focused on seeing the changes they are
@@ -84,7 +84,7 @@ channel, which requires stronger quality control.
 
 In general, the requirement being added is created by a third-party. As such, before adding a new requirement, the developer is
 responsible for verifying that the desired package is safe, well-documented, and actively-maintained as necessary. The developer should
-also consider the cost-benefit-problem of taking the extra time to introduce new fucntionality via standard-library approaches first,
+also consider the cost-benefit-problem of taking the extra time to introduce new functionality via standard-library approaches first,
 and be prepared to defend the proposition of adding the new third-party package as a ``fre-cli`` requirement.
 
 
