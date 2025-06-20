@@ -236,23 +236,18 @@ class container():
         platform_tag = self.target.gettargetName().lower()
 
         self.userScript = ["#!/bin/bash\n"]
-        self.userScript.append(f"{containerBuild} build -f Dockerfile",
-                               f"-t {registry_tag}:{platform_tag}\n")
+        self.userScript.append(f"{containerBuild} build -f Dockerfile -t {registry_tag}:{platform_tag}\n")
 
         if not skip_format_transfer:
             # Remove any previously generated images, if they exist
             self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
 
-            self.userScript.append(f"{containerBuild} save -o {containerName}.tar",
-                                   f"localhost/{registry_tag}:{platform_tag}\n")
-            self.userScript.append(f"{containerRun} build --disable-cache",
-                                   f"{containerName}.sif docker-archive://{containerName}.tar\n")
+            self.userScript.append(f"{containerBuild} save -o {containerName}.tar localhost/{registry_tag}:{platform_tag}\n")
+            self.userScript.append(f"{containerRun} build --disable-cache {containerName}.sif docker-archive://{containerName}.tar\n")
             if containerOutputLocation != "":
                 self.userScript.append(f"mkdir -p {containerOutputLocation}\n")
-                self.userScript.append(f"cp {containerName}.sif",
-                                       f"{containerOutputLocation}/{containerName}.sif\n")
-                self.userScript.append(f"cp {containerName}.tar",
-                                       f"{containerOutputLocation}/{containerName}.tar\n")
+                self.userScript.append(f"cp {containerName}.sif {containerOutputLocation}/{containerName}.sif\n")
+                self.userScript.append(f"cp {containerName}.tar {containerOutputLocation}/{containerName}.tar\n")
 
                 # Remove it from the original location
                 self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
