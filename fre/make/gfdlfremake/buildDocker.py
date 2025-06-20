@@ -1,8 +1,7 @@
 '''
-    \date 2023
-    \author Tom Robinson
-    \email thomas.robinson@noaa.gov
-    \description
+    \\date 2023
+    \\author Tom Robinson
+    \\email thomas.robinson@noaa.gov
 '''
 
 import os
@@ -67,8 +66,8 @@ class container():
             self.secondstage = [f"FROM {self.stage2base} as final\n",
                                 f"COPY --from=builder  {self.src} {self.src}\n",
                                 f"COPY --from=builder {self.bld} {self.bld}\n",
-                                f"RUN mkdir -p /apps/bin \\ \n",
-                                f" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh \n",
+                                "RUN mkdir -p /apps/bin \\ \n",
+                                " && ln -sf {self.bld}/execrunscript.sh /apps/bin/execrunscript.sh \n",
                                 f"ENV PATH=$PATH:{self.bld}:/apps/bin\n"]
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """
@@ -100,12 +99,12 @@ class container():
         """
         # Set up the bldDir
         # If no additional libraries defined
-        if self.l == None:
+        if self.l is None:
             self.bldCreate=["RUN mkdir -p "+self.bld+" \n",
                             "COPY "+ makefileOnDiskPath  +" "+self.bld+"/Makefile \n"]
             self.d.writelines(self.bldCreate)
         # If additional libraries defined
-        if self.l != None:
+        if self.l is not None:
             self.bldCreate=["RUN mkdir -p "+self.bld+" \n",
                             "COPY "+ makefileOnDiskPath  +" "+self.bld+"/Makefile \n",
                             "RUN chmod +rw "+self.bld+"/Makefile \n",
@@ -141,7 +140,9 @@ class container():
         self.d.write(" && cd $bld_dir/"+comp+" \\ \n")
 
         # Create the mkmf line
-        if c["requires"] == [] and c["doF90Cpp"]: # If this lib doesnt have any code dependencies and it requires the preprocessor (no -o and yes --use-cpp)
+        # If this lib doesnt have any code dependencies and it
+        # requires the preprocessor (no -o and yes --use-cpp)
+        if c["requires"] == [] and c["doF90Cpp"]:
             self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template --use-cpp -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
         elif c["requires"] == []: # If this lib doesnt have any code dependencies (no -o)
             self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
@@ -235,18 +236,23 @@ class container():
         registry_tag = self.e.lower()
         platform_tag = self.target.gettargetName().lower()
 
-        self.userScript.append(f"{containerBuild} build -f Dockerfile -t {registry_tag}:{platform_tag}\n")
+        self.userScript.append(f"{containerBuild} build -f Dockerfile",
+                               f"-t {registry_tag}:{platform_tag}\n")
 
         if not skip_format_transfer:
             # Remove any previously generated images, if they exist
             self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
 
-            self.userScript.append(f"{containerBuild} save -o {containerName}.tar localhost/{registry_tag}:{platform_tag}\n")
-            self.userScript.append(f"{containerRun} build --disable-cache {containerName}.sif docker-archive://{containerName}.tar\n")
+            self.userScript.append(f"{containerBuild} save -o {containerName}.tar",
+                                   f"localhost/{registry_tag}:{platform_tag}\n")
+            self.userScript.append(f"{containerRun} build --disable-cache",
+                                   f"{containerName}.sif docker-archive://{containerName}.tar\n")
             if containerOutputLocation != "":
                 self.userScript.append(f"mkdir -p {containerOutputLocation}\n")
-                self.userScript.append(f"cp {containerName}.sif {containerOutputLocation}/{containerName}.sif\n")
-                self.userScript.append(f"cp {containerName}.tar {containerOutputLocation}/{containerName}.tar\n")
+                self.userScript.append(f"cp {containerName}.sif",
+                                       f"{containerOutputLocation}/{containerName}.sif\n")
+                self.userScript.append(f"cp {containerName}.tar",
+                                       f"{containerOutputLocation}/{containerName}.tar\n")
 
                 # Remove it from the original location
                 self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
@@ -256,4 +262,3 @@ class container():
         self.userScriptFile.close()
         os.chmod("createContainer.sh", 0o744)
         self.userScriptPath = os.getcwd()+"/createContainer.sh"
-
