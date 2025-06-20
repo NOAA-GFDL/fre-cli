@@ -232,13 +232,16 @@ class container():
         containerOutputLocation = platform["containerOutputLocation"]
 
         self.userScript = ["#!/bin/bash\n"]
-        self.userScript.append(f"{containerBuild} build -f Dockerfile -t {self.e}:{self.target.gettargetName()}\n")
+        registry_tag = self.e.lower()
+        platform_tag = self.target.gettargetName().lower()
+
+        self.userScript.append(f"{containerBuild} build -f Dockerfile -t {registry_tag}:{platform_tag}\n")
 
         if not skip_format_transfer:
             # Remove any previously generated images, if they exist
             self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
 
-            self.userScript.append(f"{containerBuild} save -o {containerName}.tar localhost/{self.e}:{self.target.gettargetName()}\n")
+            self.userScript.append(f"{containerBuild} save -o {containerName}.tar localhost/{registry_tag}:{platform_tag}\n")
             self.userScript.append(f"{containerRun} build --disable-cache {containerName}.sif docker-archive://{containerName}.tar\n")
             if containerOutputLocation != "":
                 self.userScript.append(f"mkdir -p {containerOutputLocation}\n")
