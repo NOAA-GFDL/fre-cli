@@ -231,11 +231,11 @@ class container():
         containerBuild = platform["containerBuild"]
         containerRun = platform["containerRun"]
         containerOutputLocation = platform["containerOutputLocation"]
-
-        self.userScript = ["#!/bin/bash\n"]
+        # Container tag must be all lowercase
         registry_tag = self.e.lower()
         platform_tag = self.target.gettargetName().lower()
 
+        self.userScript = ["#!/bin/bash\n"]
         self.userScript.append(f"{containerBuild} build -f Dockerfile",
                                f"-t {registry_tag}:{platform_tag}\n")
 
