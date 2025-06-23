@@ -67,7 +67,7 @@ class container():
                                 f"COPY --from=builder  {self.src} {self.src}\n",
                                 f"COPY --from=builder {self.bld} {self.bld}\n",
                                 "RUN mkdir -p /apps/bin \\ \n",
-                                " && ln -sf {self.bld}/execrunscript.sh /apps/bin/execrunscript.sh \n",
+                                f" && ln -sf {self.bld}/execrunscript.sh /apps/bin/execrunscript.sh \n",
                                 f"ENV PATH=$PATH:{self.bld}:/apps/bin\n"]
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """
