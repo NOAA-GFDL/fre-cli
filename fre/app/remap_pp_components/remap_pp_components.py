@@ -11,6 +11,7 @@ import glob
 from pathlib import Path
 import logging
 import yaml
+from fre.app import helpers
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -219,7 +220,7 @@ def search_files(product,var,source,freq,current_chunk,begin):
 
     return files
 
-def get_variables(comp_info, product, req_source):
+def get_varlist(comp_info, product, req_source, src_vars):
     """
     Retrieve variables listed for a component; save in dictionary for use later
     Params:
@@ -228,29 +229,15 @@ def get_variables(comp_info, product, req_source):
     """
     if product == "static":
         if comp_info.get("static") is None:
-            raise ValueError("Product is set to static but no static "
-                             "sources/variables defined for "
-                             f"{comp_info.get('type')}")
+            raise ValueError(f"Product is set to static but no static sources/variables defined for {comp_info.get('type')}")
 
-        for static_info in comp_info.get("static"):
-            if static_info.get("source") == req_source:
-                if static_info.get("variables") is None:
-                    v = "all"
-                else:
-                    v = static_info.get("variables")
-
-#            if static_info.get("offline_source") is not None:
-#                if static_info.get("variables") is None:
-#                    v = "all"
-#                else:
-#                    v = static_info.get("variables")
-    else:
-        for src_info in comp_info.get("sources"): #history_file,variables
-            if src_info.get("history_file") == req_source:
-                if src_info.get("variables") is None:
-                    v = "all"
-                else:
-                    v = src_info.get("variables")
+    ## Dictionary of variables associated with pp component source name are retrieved through Jinjafilter get_variables.py
+    # 1. Loop through each element in dictionary passed
+    # 2. match pp component source name with the requested source being assessed
+    # 3. Save variables associated with that pp component
+    for src_name in src_vars.keys():
+        if req_source == src_name:
+            v = src_vars[req_source]
 
     return v
 
@@ -365,6 +352,10 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
     # loop through components to be post processed
     # list of components
     comps = components.split()
+
+    # Save dictionary of variables associated with each post=processed component
+    src_vars_dict = helpers.get_variables(yml_info, comps)
+
     for comp in comps:
         comp = comp.strip('""')
 
@@ -478,7 +469,7 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
 
                             ## VARIABLE INFORMATION for requested source
                             # Note: variable filtering not done for offline static diagnostics
-                            v = get_variables(comp_info, product, s)
+                            v = get_varlist(comp_info, product, s, src_vars_dict)
 
                             files = search_files(product = product,
                                                  var = v,

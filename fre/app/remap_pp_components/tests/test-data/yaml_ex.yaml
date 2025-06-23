@@ -39,7 +39,7 @@ postprocess:
         - source: "atmos_static_scalar"
       postprocess_on: True
 
-    # component used to test variable filtering failure for statics (phalf file not defined)
+    # component used to test variable filtering failure for statics
     - type: "atmos_scalar_static_test_vars_fail"
       sources:
         - history_file: "atmos_scalar"

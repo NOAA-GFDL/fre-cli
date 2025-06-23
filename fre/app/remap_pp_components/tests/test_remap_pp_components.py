@@ -61,6 +61,7 @@ STATIC_SRC = "atmos_static_scalar"
 #os.environ['dirTSWorkaround'] = "1"
 #os.environ['COPY_TOOL'] = COPY_TOOL
 #os.environ['yaml_config'] = str(YAML_EX)
+#os.environ['src_vars_dict'] = "{'atmos_scalar': 'all', 'atmos_static_scalar': 'all'}"
 
 # Set up input directory (location previously made in flow.cylc workflow)
 ncgen_native_out = Path(REMAP_IN) / NATIVE_GRID / COMPOUT / FREQ / CHUNK
@@ -481,7 +482,6 @@ def test_remap_static_variable_filtering_fail(capfd, monkeypatch):
                             ts_workaround="",
                             ens_mem="")
 
-    os.chdir(CWD)
 #to-do:
 # - mulitple components
 # - figure out test for offline diagnostics
