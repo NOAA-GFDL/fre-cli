@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import yaml
+from contextlib import contextmanager
 
 # set up logging
 import logging
@@ -55,3 +56,20 @@ def get_variables(yml, pp_comp):
 
 ## TEST ##
 #print(get_variables("/home/Dana.Singh/fre/get-vars-jinjafilter/Jinja2Filters/yaml_ex.yaml", "atmos_scalar atmos_scalar_test_vars atmos_scalar_test_vars_fail atmos_scalar_static_test_vars_fail"))
+
+@contextmanager
+def change_directory(new_path):
+    """
+    Temporarily change the directory
+    """
+    # get current working directory
+    original_path = os.getcwd()
+
+    # change into path passed
+    os.chdir(new_path)
+
+    # 
+    try:
+        yield
+    finally:
+        os.chdir(original_path)
