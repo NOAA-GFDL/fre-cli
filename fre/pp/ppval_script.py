@@ -5,7 +5,7 @@ import logging
 import re
 import cftime
 import netCDF4
-from fre.pp import nccheck_script as ncc
+from . import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
 

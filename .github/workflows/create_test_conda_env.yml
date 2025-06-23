@@ -77,11 +77,11 @@ jobs:
           pip install --upgrade sphinx-rtd-theme
 
           # have sphinx build the docs
-          sphinx-apidoc --output-dir docs fre/ --separate
-          sphinx-build docs build
+          sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
+          sphinx-build -E docs build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           publish_branch: gh-pages
