@@ -15,7 +15,7 @@ from fre.app import helpers
 
 fre_logger = logging.getLogger(__name__)
 
-def verify_dirs(in_dir,out_dir):
+def verify_dirs(in_dir, out_dir):
     """
     Verify that the input and output directories exists and are directories
     Params:
@@ -35,7 +35,7 @@ def verify_dirs(in_dir,out_dir):
     else:
         raise ValueError(f"Error: Output directory {out_dir} is not a valid directory")
 
-def create_dir(out_dir,comp,freq,chunk,ens,dir_ts):
+def create_dir(out_dir, comp, freq, chunk, ens, dir_ts):
     """
     Create the output directory structure
     Params:
@@ -49,12 +49,12 @@ def create_dir(out_dir,comp,freq,chunk,ens,dir_ts):
 
     # Define dir
     if ens is not None:
-        if dir_ts is not None:
+        if dir_ts is True:
             dirs = f"{comp}/ts/{ens}/{freq}/{chunk}"
         else:
             dirs = f"{comp}/{ens}/{freq}/{chunk}"
     else:
-        if dir_ts is not None:
+        if dir_ts is True:
             dirs = f"{comp}/ts/{freq}/{chunk}"
         else:
             dirs = f"{comp}/{freq}/{chunk}"
@@ -170,7 +170,7 @@ def truncate_date(date, freq):
 
     return date
 
-def search_files(product,var,source,freq,current_chunk,begin):
+def search_files(product, var, source, freq, current_chunk, begin):
     """
     Pattern match and search for the correct files in the chunk directory
     Params:
@@ -312,11 +312,8 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
     fre_logger.info("    product: %s", product)
     fre_logger.info("    copy tool: %s", copy_tool)
     fre_logger.info("    yaml config: %s", yaml_config)
-    if not ts_workaround: ## if ts_workaround is an empty string
-        ts_workaround = None
-        fre_logger.info("    dirTSWorkaround: None")
-    else:
-        fre_logger.info("    dirTSWorkaround: %s", ts_workaround)
+    fre_logger.info("    dirTSWorkaround: %s", ts_workaround
+
     if not ens_mem:  ## if ens_mem is an empty string
         ens_mem = None
         fre_logger.info("    ens_mem: None")

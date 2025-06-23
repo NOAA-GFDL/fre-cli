@@ -31,29 +31,31 @@ def app_cli():
               help = "Current chunk to post-process",
               required = True)
 @click.option("-p", "--product",
-              type = str,
+              type = click.Choice(['ts', 'av', 'static']),
               help = " Variable to define time-series, time-averaging or static",
               required = True)
-@click.option("-ppc", "--components",
+@click.option("-ppc", "--pp-components",
               type = str,
               help = "Components to be post-processed",
               required = True)
 @click.option("-cp", "--copy-tool",
-              type = str,
-              help = "Tool to use for copying files",
+              type = click.Choice(['gcp','cp']),
+              help = "Tool to use for copying files; gcp can be used in on gfdl systems where gcp is available",
               required = False)
 @click.option("-y", "--yaml-config",
               type = str,
-              help = "Yaml configuration",
+              help = "Path of yaml configuration file",
               required =  True)
 @click.option("-em", "--ens-mem",
               type = str,
-              help = "Ensemble member number",
+              help = "Ensemble member number as XX",
               required = False)
 @click.option("-tsw", "--ts-workaround",
-              type = str,
-              help = "Time series workaround variable",
+              type = click.Choice(['True','False']),
+              default = None,
+              help = "Time series workaround variable; if defined ",
               required = False)
+
 def remap(input_dir, output_dir, begin_date, current_chunk,
           product, components, copy_tool, yaml_config,
           ts_workaround, ens_mem):
