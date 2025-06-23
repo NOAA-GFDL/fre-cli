@@ -14,6 +14,22 @@ from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls_script as cy
 
 def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer):
+    """Create the dockerfile and container build script for a container build
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform
+    :type platform: str
+    :param target: Predefined FRE targets
+    :type target: str
+    :param execute: Use this to run the created checkout script
+    :type execute: flag
+    :param skip_format_transfer: Skip the container format conversion to a .sif file.
+    :type execute: flag
+
+    .. note:: For building a container on GAEA, users need to put in a helpdesk ticket for podman access.
+    """
+
     srcDir="src"
     checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs

@@ -12,8 +12,24 @@ from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 fre_logger = logging.getLogger(__name__)
 
 def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
-    """
-    Create the checkout script for bare-metal or container build
+    """Create the checkout script for bare-metal or container build
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform
+    :type platform: str
+    :param target: Predefined FRE targets
+    :type target: str
+    :param no_parallel_checkout: 
+    :type no_parallel_checkout: 
+    :param jobs: Number of jobs to run simultaneously
+    :type jobs: int
+    :param execute: Use this to run the created checkout script
+    :type execute: flag
+    :param verbose: Get verbose messages
+    :type verbose: flag
+
+    .. note:: For a bare-metal build, the default is parallel checkouts. For a container build, the default is non-parallel checkouts.
     """
     # Define variables
     yml = yamlfile

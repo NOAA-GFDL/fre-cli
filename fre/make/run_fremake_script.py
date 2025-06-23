@@ -20,9 +20,28 @@ from .gfdlfremake import (
     makefilefre, buildDocker, buildBaremetal )
 
 def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
-    ''' 
-    run fremake
-    '''
+    """ Run fremake
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform
+    :type platform: str
+    :param target: Predefined FRE targets
+    :type target: str
+    :param parallel: Number of concurrent model compiles (default 1)
+    :type parallel: str
+    :param jobs: Number of jobs to run simultaneously
+    :type jobs: int
+    :param no_parallel_checkout: Use this option if you do not want a parallel checkout
+    :type no_parallel_checkout: flag
+    :param no_format_transfer: Skip the container format conversion to a .sif file
+    :type no_format_transfer: flag
+    :param execute: Use this to run the created checkout script
+    :type execute: flag
+    :param verbose: Get verbose messages
+    :type verbose: flag
+
+    """
     yml = yamlfile
     name = yamlfile.split(".")[0]
     nparallel = parallel

@@ -12,6 +12,25 @@ from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls_script as cy
 
 def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
+    """Create the compile script for bare-metal build
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform
+    :type platform: str
+    :param target: Predefined FRE targets
+    :type target: str
+    :param jobs: Number of jobs to run simultaneously
+    :type jobs: int
+    :param parallel: Number of concurrent model compiles (default 1)
+    :type target: int
+    :param execute: Use this to run the created checkout script
+    :type execute: flag
+    :param verbose: Get verbose messages
+    :type verbose: flag
+
+    """
+
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]

@@ -8,10 +8,10 @@ from fre.make import run_fremake_script
 YAMLFILE_OPT_HELP = """Experiment yaml compile FILE
 """
 EXPERIMENT_OPT_HELP = """Name of experiment"""
-PLATFORM_OPT_HELP = """Hardware and software FRE platform space separated list of STRING(s).
+PLATFORM_OPT_HELP = """Hardware and software FRE platform string.
 This sets platform-specific data and instructions
 """
-TARGET_OPT_HELP   = """a space separated list of STRING(s) that defines compilation settings and
+TARGET_OPT_HELP   = """String that defines compilation settings and
 linkage directives for experiments. Predefined targets refer to groups of directives that exist in
 the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod',
 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive

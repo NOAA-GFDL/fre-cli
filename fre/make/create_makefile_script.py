@@ -12,8 +12,16 @@ from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 import fre.yamltools.combine_yamls_script as cy
 
 def makefile_create(yamlfile, platform, target):
-    """
-    Create the makefile
+    """Create the makefile
+    
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform
+    :type platform: str
+    :param target: Predefined FRE targets
+    :type target: str
+
+    .. note::
     """
     srcDir="src"
     checkoutScriptName = "checkout.sh"
