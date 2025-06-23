@@ -4,7 +4,7 @@ Script parses combined yaml dictionary to list components that will be post-proc
 from pathlib import Path
 import logging
 from fre.yamltools import combine_yamls_script as cy
-from fre.yamltools import *
+from fre.yamltools import helpers
 
 fre_logger = logging.getLogger(__name__)
 

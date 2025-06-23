@@ -37,7 +37,7 @@ def test_exp_list(caplog):
         assert record.levelname == "INFO"
 
 # Test validation
-@pytest.mark.skip(reason='cannot validate with current schema at the moment')
+@pytest.mark.skip(reason='cannot validate with current schema at the moment. Current schemas include final "combined" schema to validate compile and pp information. Both of these "clean" the final yaml information for only what is needed. This final combined yaml info does not include the "experiments" section, which is the section being read and parsed for information')
 def test_yamlvalidate():
     ''' test yaml is being validated '''
     yamlfilepath = Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
