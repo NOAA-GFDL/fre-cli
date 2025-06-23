@@ -7,7 +7,7 @@ Tools
 ``fre``
 =======
 
-The ``click`` based entry point to the rest of the package at the command line for ``fre-cli``. ``fre`` has a command structure like, ``fre TOOL COMMAND``, akin to the CLI's provided by popular packages liek ``git`` and ``cylc``. This enables discovery of the tooling capability, useful for complex tools with multiple options and detailed configuration.
+The ``click`` based entry point to the rest of the package at the command line for ``fre-cli``. ``fre`` has a command structure like, ``fre TOOL COMMAND``, akin to the CLI's provided by popular packages like ``git`` and ``cylc``. This enables discovery of the tooling capability, useful for complex tools with multiple options and detailed configurations.
 
 
 arguments
