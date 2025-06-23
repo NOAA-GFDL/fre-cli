@@ -13,9 +13,7 @@ import logging
 import yaml
 from fre.app import helpers
 
-logging.basicConfig()
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+fre_logger = logging.getLogger(__name__)
 
 def verify_dirs(in_dir,out_dir):
     """
@@ -27,13 +25,13 @@ def verify_dirs(in_dir,out_dir):
 
     # Verify input directory exists and is a directory
     if Path(in_dir).is_dir():
-        logger.info("Input directory is a valid directory")
+        fre_logger.info("Input directory is a valid directory")
     else:
         raise ValueError(f"Error: Input directory {in_dir} is not a valid directory")
 
     # Verify output directory exists and is a directory
     if Path(out_dir).is_dir():
-        logger.info("Output directory is a valid directory")
+        fre_logger.info("Output directory is a valid directory")
     else:
         raise ValueError(f"Error: Output directory {out_dir} is not a valid directory")
 
@@ -155,13 +153,13 @@ def truncate_date(date, freq):
     """
 
     form = freq_to_date_format(freq)
-    logger.info("truncatedateformat: %s", form)
+    fre_logger.info("truncatedateformat: %s", form)
     output = subprocess.Popen(["cylc", "cycle-point", "--template", form, date],
                               stdout=subprocess.PIPE)
 
     bytedate = output.communicate()[0]
     date=str(bytedate.decode())
-    logger.info("truncatedate: %s", date)
+    fre_logger.info("truncatedate: %s", date)
 
     #remove trailing newline
     date=date[:(len(date)-1)]
@@ -190,7 +188,7 @@ def search_files(product,var,source,freq,current_chunk,begin):
             files.extend(f)
         else:
             for v in var:
-                logger.info("var: %s", v)
+                fre_logger.info("var: %s", v)
                 f = glob.glob(f"{source}.{v}*.nc")
                 if not f: #if glob returns empty list
                     raise ValueError("Variable {v} could not be found or does not exist.")
@@ -198,7 +196,7 @@ def search_files(product,var,source,freq,current_chunk,begin):
     else:
         if product == "ts":
             date = truncate_date(begin, freq)
-            logger.info("date: %s", date)
+            fre_logger.info("date: %s", date)
         elif product == "av":
             date = truncate_date(begin, "P1Y")
         else:
@@ -209,7 +207,7 @@ def search_files(product,var,source,freq,current_chunk,begin):
             files.extend(f)
         else:
             for v in var:
-                logger.info("var: %s", v)
+                fre_logger.info("var: %s", v)
                 f = glob.glob(f"{source}.{date}-*.{v}*.nc")
                 if not f: #if glob returns empty list
                     raise ValueError("Variable {v} could not be found or does not exist.")
@@ -304,38 +302,26 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
         yaml_config: yaml configuration file
     """
 
-#    # Set variables
-#    input_dir         = os.getenv('inputDir')
-#    output_dir        = os.getenv('outputDir')
-#    begin             = os.getenv('begin')
-#    current_chunk     = os.getenv('currentChunk')
-#    components        = os.getenv('components')
-#    yaml_config       = os.getenv('yaml_config')
-#    product           = os.getenv('product')
-#    dir_ts_workaround = os.getenv('dirTSWorkaround')
-#    ens_mem           = os.getenv('ens_mem')
-
-    logger.info("Arguments:")
-    logger.info("    input dir: %s", input_dir)
-    logger.info("    output dir: %s", output_dir)
-    logger.info("    begin: %s", begin_date)
-    logger.info("    current chunk: %s", current_chunk)
-    logger.info("    components: %s", components)
-    logger.info("    product: %s", product)
-    logger.info("    copy tool: %s", copy_tool)
-    logger.info("    yaml config: %s", yaml_config)
-#    if ts_workaround is not "None":
+    # List variables
+    fre_logger.info("Arguments:")
+    fre_logger.info("    input dir: %s", input_dir)
+    fre_logger.info("    output dir: %s", output_dir)
+    fre_logger.info("    begin: %s", begin_date)
+    fre_logger.info("    current chunk: %s", current_chunk)
+    fre_logger.info("    components: %s", components)
+    fre_logger.info("    product: %s", product)
+    fre_logger.info("    copy tool: %s", copy_tool)
+    fre_logger.info("    yaml config: %s", yaml_config)
     if not ts_workaround: ## if ts_workaround is an empty string
         ts_workaround = None
-        logger.info("    dirTSWorkaround: None")
+        fre_logger.info("    dirTSWorkaround: None")
     else:
-        logger.info("    dirTSWorkaround: %s", ts_workaround)
-#    if ens_mem is not "None":
+        fre_logger.info("    dirTSWorkaround: %s", ts_workaround)
     if not ens_mem:  ## if ens_mem is an empty string
         ens_mem = None
-        logger.info("    ens_mem: None")
+        fre_logger.info("    ens_mem: None")
     else:
-        logger.info("    ens_mem: %s", ens_mem)
+        fre_logger.info("    ens_mem: %s", ens_mem)
 
     # Path to yaml configuration
     exp_dir = Path(__file__).resolve().parents[3]
@@ -365,23 +351,23 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                 yaml_components = comp_info.get("type")
 
                 # Check that pp_components defined matches those in the yaml file
-                logger.debug("Is %s in %s?", comp, yaml_components)
+                fre_logger.debug("Is %s in %s?", comp, yaml_components)
                 if comp in yaml_components:
-                    logger.debug('Yes')
+                    fre_logger.debug('Yes')
                 else:
-                    logger.warning("WARNING: component %s does not exist in yaml config", comp)
+                    fre_logger.warning("WARNING: component %s does not exist in yaml config", comp)
                     continue
 
                 # Continue if not looking at correct information for requested component
                 if comp != comp_info.get("type"):
-                    logger.warning("Info not associated with component, %s, requested", comp)
+                    fre_logger.warning("Info not associated with component, %s, requested", comp)
                     continue
 
                 offline_srcs=[]
                 #if static but no static defined, skip
                 if product == "static":
                     if comp_info.get("static") is None:
-                        logger.warning('Product set to "static" but no static source requested defined')
+                        fre_logger.warning('Product set to "static" but no static source requested defined')
                         continue
 
                     # Save list of offline sources (if defined) for later
@@ -417,7 +403,7 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                         else:
                             source_dir = os.path.join(input_dir, g, s)
                         if not os.path.exists(source_dir) and product == "av":
-                            logger.info("Source directory '%s' does not exist, "
+                            fre_logger.info("Source directory '%s' does not exist, "
                                         "but this could be expected, so skipping.",
                                         source_dir)
                             continue
@@ -460,7 +446,7 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                                                       ens = ens_mem,
                                                       dir_ts = ts_workaround)
 
-                                logger.info("directory created: %s", dirs)
+                                fre_logger.info("directory created: %s", dirs)
 
                                 # Search for files in chunk directory
                                 if ens_mem is not None:
@@ -479,7 +465,7 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                                                      current_chunk = current_chunk,
                                                      begin = begin_date)
 
-                                logger.info("%d files found for component '%s', "
+                                fre_logger.info("%d files found for component '%s', "
                                             "source '%s', "
                                             "product '%s', "
                                             "grid '%s', "
@@ -505,7 +491,7 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                                     output_file = os.path.join(output_dir, dirs, newfile2)
                                     if os.path.exists(output_file):
                                         os.remove(output_file)
-                                    logger.info("NEWFILE2: %s", newfile2)
+                                    fre_logger.info("NEWFILE2: %s", newfile2)
                                     # Symlink or copy the file for the specified
                                     # component in the output directory
                                     if ens_mem is not None:
@@ -557,7 +543,4 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                                                             f"{output_dir}/{dirs}"]
                                             subprocess.run( offline_copy, check = False )
 
-    logger.info("Component remapping complete")
-
-#if __name__ == '__main__':
-#    remap()
+    fre_logger.info("Component remapping complete")

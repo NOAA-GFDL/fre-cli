@@ -5,7 +5,6 @@ from contextlib import contextmanager
 
 # set up logging
 import logging
-logging.basicConfig(level=logging.INFO)
 fre_logger = logging.getLogger(__name__)
 
 def get_variables(yml, pp_comp):
