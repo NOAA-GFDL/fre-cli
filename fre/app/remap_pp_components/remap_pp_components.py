@@ -312,7 +312,7 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
     fre_logger.info("    product: %s", product)
     fre_logger.info("    copy tool: %s", copy_tool)
     fre_logger.info("    yaml config: %s", yaml_config)
-    fre_logger.info("    dirTSWorkaround: %s", ts_workaround
+    fre_logger.info("    dirTSWorkaround: %s", ts_workaround)
 
     if not ens_mem:  ## if ens_mem is an empty string
         ens_mem = None

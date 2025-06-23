@@ -164,7 +164,7 @@ def test_remap_pp_components(capfd):
                                 components=COMPOUT,
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
-                                ts_workaround="1",
+                                ts_workaround=True,
                                 ens_mem="")
     except:
         assert False
@@ -212,7 +212,7 @@ def test_remap_pp_components_with_ensmem(capfd, monkeypatch):
                                 components=COMPOUT,
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
-                                ts_workaround="1",
+                                ts_workaround=True,
                                 ens_mem="ens_01")
     except:
         assert False
@@ -243,7 +243,7 @@ def test_remap_pp_components_product_failure(capfd, monkeypatch):
                             components=COMPOUT,
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
-                            ts_workaround="1",
+                            ts_workaround=True,
                             ens_mem="")
 
 @pytest.mark.xfail
@@ -265,7 +265,7 @@ def test_remap_pp_components_begin_date_failure(capfd, monkeypatch):
                             components=COMPOUT,
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
-                            ts_workaround="1",
+                            ts_workaround=True,
                             ens_mem="")
 
 ## STATIC SOURCE REMAPPING ##
@@ -292,7 +292,7 @@ def test_remap_pp_components_statics(capfd, monkeypatch):
                                 components=COMPOUT,
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
-                                ts_workaround="",
+                                ts_workaround=False,
                                 ens_mem="")
     except:
         assert False
@@ -386,7 +386,7 @@ def test_remap_variable_filtering(capfd, monkeypatch):
                                 components="atmos_scalar_test_vars",
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
-                                ts_workaround="1",
+                                ts_workaround=True,
                                 ens_mem="")
     except:
         assert False
@@ -424,7 +424,7 @@ def test_remap_static_variable_filtering(capfd, monkeypatch):
                                 components="atmos_scalar_test_vars",
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
-                                ts_workaround="",
+                                ts_workaround=False,
                                 ens_mem="")
     except:
         assert False
@@ -454,7 +454,7 @@ def test_remap_variable_filtering_fail(capfd, monkeypatch):
                             components="atmos_scalar_test_vars_fail",
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
-                            ts_workaround="1",
+                            ts_workaround=True,
                             ens_mem="")
 
 @pytest.mark.xfail
@@ -479,7 +479,7 @@ def test_remap_static_variable_filtering_fail(capfd, monkeypatch):
                             components="atmos_scalar_static_test_vars_fail",
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
-                            ts_workaround="",
+                            ts_workaround=False,
                             ens_mem="")
 
 #to-do:
