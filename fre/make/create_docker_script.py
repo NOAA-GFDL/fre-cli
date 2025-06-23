@@ -79,8 +79,7 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
             currDir = os.getcwd()
 
             # create build script for container
-            dockerBuild.createBuildScript(
-                    platform["containerBuild"], platform["containerRun"], skip_format_transfer)
+            dockerBuild.createBuildScript(platform, skip_format_transfer)
 
             former_log_level = fre_logger.level
             fre_logger.setLevel(logging.INFO)                

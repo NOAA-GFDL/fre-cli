@@ -26,6 +26,15 @@ platforms:
      containerRun: "apptainer" 
      containerBase: "ghcr.io/rem1776/hpc-mini:alpine3gcc14.2"
      mkTemplate: "linux-ubuntu-xenial-gnu.mk"
+   - name: hpcmini.2025.Specify.Location
+     compiler: gnu
+     modelRoot: /apps
+     container: True
+     containerBuild: "podman"
+     containerRun: "apptainer"
+     containerBase: "ghcr.io/rem1776/hpc-mini:alpine3gcc14.2"
+     mkTemplate: "linux-ubuntu-xenial-gnu.mk"
+     containerOutputLocation: ${TEST_BUILD_DIR}/fremake_canopy/test
    - name: con.twostep
      compiler: intel
      RUNenv: [". /spack/share/spack/setup-env.sh", "spack load libyaml", "spack load netcdf-fortran@4.5.4", "spack load hdf5@1.14.0"]
