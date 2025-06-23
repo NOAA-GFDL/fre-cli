@@ -14,10 +14,10 @@ def get_variables(yml, pp_comp):
     pp components from the yaml
 
     Arguments:
-        yamlfile (str): Loaded yaml file
+        yamlfile (str): Already loaded yaml file
         pp_components (str): Space separated list of active pp components
     """
-#    fre_logger.debug(f"Yaml file: {yamlfile}")
+    fre_logger.debug(f"Yaml file information: {yamlfile}")
     fre_logger.debug(f"PP components: {pp_comp}")
 
 #    pp_comp = pp_components.split()
@@ -54,21 +54,28 @@ def get_variables(yml, pp_comp):
 
     return src_vars
 
-## TEST ##
+## TEST get_variables ##
 #print(get_variables("/home/Dana.Singh/fre/get-vars-jinjafilter/Jinja2Filters/yaml_ex.yaml", "atmos_scalar atmos_scalar_test_vars atmos_scalar_test_vars_fail atmos_scalar_static_test_vars_fail"))
 
+## NOTE: For python 3.11 - this might be available already as contextlib.chdir()
+## Re-asses if our own contextmanager function is needed here
 @contextmanager
 def change_directory(new_path):
     """
     Temporarily change the directory
     """
-    # get current working directory
+    ## Get current working directory
     original_path = os.getcwd()
 
-    # change into path passed
+    ## Change into path passed
     os.chdir(new_path)
 
-    # 
+    ## Execute code within the 'with' block when using this function 
+    ## ('with change_directories(path):'), then go back to the original
+    ## directory 
+    # 'yield': used to create generators (special types of iterators that allow
+    #                                     for lazy value production; produces
+    #                                     values at time of iteration)
     try:
         yield
     finally:
