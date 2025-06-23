@@ -14,15 +14,11 @@ def get_variables(yml, pp_comp):
     pp components from the yaml
 
     Arguments:
-        yamlfile (str): Already loaded yaml file
-        pp_components (str): Space separated list of active pp components
+        yml (str): Already loaded yaml file
+        pp_comp (str): Space separated list of active pp components
     """
-    fre_logger.debug(f"Yaml file information: {yamlfile}")
+    fre_logger.debug(f"Yaml file information: {yml}")
     fre_logger.debug(f"PP components: {pp_comp}")
-
-#    pp_comp = pp_components.split()
-#    with open(yamlfile) as file_:
-#        yml = yaml.safe_load(file_)
 
     src_vars={}
     for component_info in yml["postprocess"]["components"]:

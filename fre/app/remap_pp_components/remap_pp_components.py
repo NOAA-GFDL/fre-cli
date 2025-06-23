@@ -140,7 +140,7 @@ def freq_to_date_format(iso_freq):
     elif (iso_freq[:2]=='PT') and (iso_freq[-1:]=='H'):
         return 'CCYYMMDDThh'
     else:
-        return f'ERROR: Unknown Frequency {iso_freq}'
+        raise ValueError(f'ERROR: Unknown Frequency {iso_freq}')
 
 def truncate_date(date, freq):
     """
@@ -231,7 +231,8 @@ def get_varlist(comp_info, product, req_source, src_vars):
         if comp_info.get("static") is None:
             raise ValueError(f"Product is set to static but no static sources/variables defined for {comp_info.get('type')}")
 
-    ## Dictionary of variables associated with pp component source name are retrieved through Jinjafilter get_variables.py
+    ## Dictionary of variables associated with pp component source name
+    ## are retrieved through Jinjafilter get_variables.py
     # 1. Loop through each element in dictionary passed
     # 2. match pp component source name with the requested source being assessed
     # 3. Save variables associated with that pp component
