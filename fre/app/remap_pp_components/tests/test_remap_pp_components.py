@@ -51,18 +51,6 @@ STATIC_FREQ = "P0Y"
 STATIC_CHUNK = "P0Y"
 STATIC_SRC = "atmos_static_scalar"
 
-# environment variables
-#os.environ['inputDir'] = REMAP_IN
-#os.environ['outputDir'] = REMAP_OUT
-#os.environ['currentChunk'] = "P5Y"
-#os.environ['components'] = COMPOUT
-#os.environ['begin'] = "19800101T0000Z"
-#os.environ['product'] = PRODUCT
-#os.environ['dirTSWorkaround'] = "1"
-#os.environ['COPY_TOOL'] = COPY_TOOL
-#os.environ['yaml_config'] = str(YAML_EX)
-#os.environ['src_vars_dict'] = "{'atmos_scalar': 'all', 'atmos_static_scalar': 'all'}"
-
 # Set up input directory (location previously made in flow.cylc workflow)
 ncgen_native_out = Path(REMAP_IN) / NATIVE_GRID / COMPOUT / FREQ / CHUNK
 ncgen_static_out = Path(REMAP_IN) / NATIVE_GRID / STATIC_SRC / STATIC_FREQ / STATIC_CHUNK
@@ -176,11 +164,11 @@ def test_remap_pp_components(capfd):
                 Path(f"{REMAP_OUT}/{COMPOUT}/{PRODUCT}/monthly/5yr/{DATA_FILE_NC}").exists()])
     out, err = capfd.readouterr()
 
-## Pytest utilizes mokeypatch fixture which can help set/delete attributes, environments, etc.
+## Pytest can utilize monkeypatch fixture, if needed, which can help set/delete attributes, environments, etc.
 ## monkeypatch.setenv() used to set/reset specific envrionment variables in each test, 
 ## without resetting them for all tests or the proceeding test (i.e. - wouldn't effect 
 ## other test's envrionment variables defined)
-def test_remap_pp_components_with_ensmem(capfd, monkeypatch):
+def test_remap_pp_components_with_ensmem(capfd):
     """
     Checks for success of remapping a file with rose app config using
     the remap-pp-components script when ens_mem is defined.
@@ -189,11 +177,6 @@ def test_remap_pp_components_with_ensmem(capfd, monkeypatch):
     remap_ens_in = f"{TEST_OUTDIR}/ncgen-ens-output"
     ncgen_ens_out = Path(remap_ens_in) / NATIVE_GRID / "ens_01" / COMPOUT / FREQ / CHUNK
     remap_ens_out = f"{TEST_OUTDIR}/remap-ens-output"
-
-#    # Specify environment variables for just this test
-#    monkeypatch.setenv('inputDir', remap_ens_in)
-#    monkeypatch.setenv('outputDir', remap_ens_out)
-#    monkeypatch.setenv('ens_mem', "ens_01") #ens_mem now defined
 
     # Create ensemble locations
     Path(ncgen_ens_out).mkdir(parents=True,exist_ok=True)
@@ -225,15 +208,12 @@ def test_remap_pp_components_with_ensmem(capfd, monkeypatch):
     out, err = capfd.readouterr()
 
 @pytest.mark.xfail
-def test_remap_pp_components_product_failure(capfd, monkeypatch):
+def test_remap_pp_components_product_failure(capfd):
     """
     Checks for failure of remapping a file with rose app using
     the remap-pp-components script when the product is ill-defined.
     (not ts or av)
     """
-#    # Specify environment variables for just this test
-#    monkeypatch.setenv('product', "not-ts-or-av")
-
     # run script
     rmp.remap_pp_components(input_dir=REMAP_IN,
                             output_dir=REMAP_OUT,
@@ -247,15 +227,12 @@ def test_remap_pp_components_product_failure(capfd, monkeypatch):
                             ens_mem="")
 
 @pytest.mark.xfail
-def test_remap_pp_components_begin_date_failure(capfd, monkeypatch):
+def test_remap_pp_components_begin_date_failure(capfd):
     """
     Checks for failure of remapping a file with rose app using
     the remap-pp-components script when the begin variable is
     ill-defined.
     """
-#    # Specify environment variables for just this test
-#    monkeypatch.setenv('begin', "123456789T0000Z")
-
     # run script
     rmp.remap_pp_components(input_dir=REMAP_IN,
                             output_dir=REMAP_OUT,
@@ -269,16 +246,10 @@ def test_remap_pp_components_begin_date_failure(capfd, monkeypatch):
                             ens_mem="")
 
 ## STATIC SOURCE REMAPPING ##
-def test_remap_pp_components_statics(capfd, monkeypatch):
+def test_remap_pp_components_statics(capfd):
     """
     Test static sources are remapped to output location correctly
     """
-#    # Specify environment variables for just this test
-#    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
-#    monkeypatch.setenv('currentChunk', "P0Y")
-#    monkeypatch.setenv('product', "static") 
-#    monkeypatch.setenv('dirTSWorkaround', "")
-
     remap_static_out = f"{REMAP_OUT}/static"
     Path(remap_static_out).mkdir(parents=True,exist_ok=True)
 
@@ -309,11 +280,11 @@ def test_remap_offline_diagnostics(capfd, monkeypatch):
     """
     Test offline diagnostic file remapped to output location correctly
     """
-    # Specify environment variables for just this test
-    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
-    monkeypatch.setenv('currentChunk', "P0Y")
-    monkeypatch.setenv('product', "static")
-    monkeypatch.setenv('dirTSWorkaround', "")
+#    # Specify environment variables for just this test
+#    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
+#    monkeypatch.setenv('currentChunk', "P0Y")
+#    monkeypatch.setenv('product', "static")
+#    monkeypatch.setenv('dirTSWorkaround', "")
 
     assert Path(f"{os.getenv('outputDir')}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/empty.nc").exists()
 
@@ -362,7 +333,7 @@ def test_nccmp_ncgen_remap_statics(capfd):
     out, err = capfd.readouterr()
 
 ## VARIABLE FILTERING TESTS ##
-def test_remap_variable_filtering(capfd, monkeypatch):
+def test_remap_variable_filtering(capfd):
     """
     Test variable filtering capabilties
     - same file should be found as in first regular remap test,
@@ -372,9 +343,6 @@ def test_remap_variable_filtering(capfd, monkeypatch):
     if Path(REMAP_OUT).exists():
         shutil.rmtree(REMAP_OUT)
         Path(REMAP_OUT).mkdir(parents=True,exist_ok=True)
-
-#    # Specify environment variables for just this test
-#    monkeypatch.setenv('components', "atmos_scalar_test_vars")
 
     # run script
     try:
@@ -398,19 +366,12 @@ def test_remap_variable_filtering(capfd, monkeypatch):
                 Path(f"{REMAP_OUT}/atmos_scalar_test_vars/{PRODUCT}/monthly/5yr/{DATA_FILE_NC}").exists()])
     out, err = capfd.readouterr()
 
-def test_remap_static_variable_filtering(capfd, monkeypatch):
+def test_remap_static_variable_filtering(capfd):
     """
     Test variable filtering capabilties
     - same file should be found as in static remap test,
       but component, defined specifies variable bk
     """
-#    # Specify environment variables for just this test
-#    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
-#    monkeypatch.setenv('currentChunk', "P0Y")
-#    monkeypatch.setenv('product', "static")
-#    monkeypatch.setenv('dirTSWorkaround', "")
-#    monkeypatch.setenv('components', "atmos_scalar_test_vars")
-
     remap_static_out = f"{REMAP_OUT}/static"
     Path(remap_static_out).mkdir(parents=True,exist_ok=True)
 
@@ -437,14 +398,11 @@ def test_remap_static_variable_filtering(capfd, monkeypatch):
     out, err = capfd.readouterr()
  
 @pytest.mark.xfail
-def test_remap_variable_filtering_fail(capfd, monkeypatch):
+def test_remap_variable_filtering_fail(capfd):
     """
     Test failure of variable filtering capabilties when
     variable does not exist; variable = no_var
     """
-#    # Specify environment variables for just this test
-#    monkeypatch.setenv('components', "atmos_scalar_test_vars_fail")
-
     # run script
     rmp.remap_pp_components(input_dir=REMAP_IN,
                             output_dir=REMAP_OUT,
@@ -458,18 +416,11 @@ def test_remap_variable_filtering_fail(capfd, monkeypatch):
                             ens_mem="")
 
 @pytest.mark.xfail
-def test_remap_static_variable_filtering_fail(capfd, monkeypatch):
+def test_remap_static_variable_filtering_fail(capfd):
     """
     Test failure of variable filtering capabilties for statics
     when variable does not exist; variables = bk, no_var
     """
-#    # Specify environment variables for just this test
-#    monkeypatch.setenv('outputDir', f"{REMAP_OUT}/static")
-#    monkeypatch.setenv('currentChunk', "P0Y")
-#    monkeypatch.setenv('product', "static")
-#    monkeypatch.setenv('dirTSWorkaround', "")
-#    monkeypatch.setenv('components', "atmos_scalar_static_test_vars_fail")
-
     # run script
     rmp.remap_pp_components(input_dir=REMAP_IN,
                             output_dir=f"{REMAP_OUT}/static",
