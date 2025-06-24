@@ -23,7 +23,7 @@ jobs:
       - name: Add mkmf to GITHUB_PATH
         run: |
           # add mkmf to GITHUB_PATH
-          echo $PWD/mkmf/bin >> $GITHUB_PATH
+          echo $PWD/fre/mkmf/bin >> $GITHUB_PATH
 
       - name: Run Conda to Build
         run: |
