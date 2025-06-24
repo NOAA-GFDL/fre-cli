@@ -30,14 +30,23 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   Intended to work with data structured for fre-workflows and fre-workflows
     file naming conventions
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
-  inputDir - directory containg netcdf files
-  outputDir - directory to which to write netcdf files
-  component - the 'component' element we are currently working with in the yaml
-  history_source - a history_file under a 'source' under the 'component' that
+  :param inputDir: directory containg netcdf files
+  :type inputDir: string
+  :param outputDir: directory to which to write netcdf files
+  :type outputDir: string
+  :param component: the 'component' element we are currently working with in the yaml
+  :type component: string
+  :param history_source: a history_file under a 'source' under the 'component' that
     we are working with. Is used to identify the files in inputDir.
-  use_subdirs - whether to recursively search through inputDir under the subdirectories.
+  :type history_source: string
+  :param use_subdirs: whether to recursively search through inputDir under the subdirectories.
     used when regridding.
-  yamlfile - a .yml config file for fre postprocessing
+  :type use_subdirs: boolean
+  :param yamlfile: - a .yml config file for fre postprocessing
+  :type yamlfile: string
+  :param split_all_vars: Whether to skip parsing the yamlfile and split all 
+    available vars in the file. Defaults to False.
+  :type split_all_vars: boolean
   '''
   
   #Verify input/output dirs exist and are dirs
