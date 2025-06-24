@@ -3,7 +3,7 @@ import subprocess
 import shutil
 from pathlib import Path
 import pytest
-import fre.app.remap_pp_components.remap_pp_components_orig as rmp
+import fre.app.remap_pp_components.remap_pp_components as rmp
 
 CWD = os.getcwd()
 TEST_DIR = Path(f"{CWD}/fre/app/remap_pp_components/tests")
