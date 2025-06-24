@@ -1,9 +1,7 @@
-#!/usr/bin/env python
 """
-Description: Remap/move components that will be
-             post-processed from one convention,
-             such as history files, to an
-             updated output directory structure
+Remap/move components that will be post-processed
+from one convention, such as history files, to an
+updated output directory structure
 """
 import os
 import subprocess
@@ -44,9 +42,9 @@ def create_dir(out_dir, comp, freq, chunk, ens, dir_ts):
     :param comp: component that will be post-processed
     :type comp: str
     :param freq: frequency
-    :type freq: -------------------------
+    :type freq: str
     :param chunk: chunk
-    :type chunk: ------------------
+    :type chunk: str
     :param ens: ensemble member
     :type ens: str
     :param dir_ts: directory time series workaround
@@ -75,7 +73,7 @@ def freq_to_legacy(iso_dura):
     """Print Bronx-style frequency given an ISO8601 duration
     
     :param iso_dura: frequency
-    :type ise_dura: -------------------------------
+    :type ise_dura: ISO str format
     """
 
     if iso_dura=='P1Y':
@@ -113,7 +111,7 @@ def chunk_to_legacy(iso_dura):
     """Print Bronx-style frequency given an ISO8601 duration
 
     :param iso_dura: chunk
-    :type iso_dura:
+    :type iso_dura: str 
     """
 
     if iso_dura[0]=='P':
@@ -132,7 +130,7 @@ def freq_to_date_format(iso_freq):
     """Print legacy Bronx-like date template format given a frequency (ISO 8601 duration)
 
     :param iso_freq: frequency
-    :type iso_freq: ----------------------------
+    :type iso_freq: str
     """
 
     if iso_freq=='P1Y':
@@ -154,9 +152,9 @@ def truncate_date(date, freq):
         - Output using cylc (shared.sh calls in job logs): '19790101', '198001', '1979010100'
 
     :param date: date to begin post-processing
-    :type date: ----------------------------------
+    :type date: ISO string format
     :param freq: frequency
-    :type freq: ----------------------------------
+    :type freq: str
     """
 
     form = freq_to_date_format(freq)
@@ -181,15 +179,15 @@ def search_files(product, var, source, freq, current_chunk, begin):
     """Pattern match and search for the correct files in the chunk directory
 
     :param var: variables
-    :type var: ----------------------
+    :type var: list of strings
     :param source: source history files for post-processed component
-    :type source: ------------------
+    :type source: str
     :param begin: date to begin post-processing
-    :type begin: ------------------------
+    :type begin: ISO string format
     :param current_chunk: current chunk to post-process
-    :type current_chunk: -----------------------
+    :type current_chunk: str
     :param freq: frequency
-    :type freq: ---------------------------
+    :type freq: str
     """
     files = []
     # with glob - files found as list
@@ -233,9 +231,9 @@ def get_varlist(comp_info, product, req_source, src_vars):
     """Retrieve variables listed for a component; save in dictionary for use later
 
     :param comp_info: dictionary of information about requested component
-    :type comp_info: --------------------
+    :type comp_info: dict
     :param product: static, ts, or av
-    : type product: ----------------------
+    : type product: str
     """
     if product == "static":
         if comp_info.get("static") is None:
@@ -256,9 +254,9 @@ def get_sources(comp_info, product):
     """Retrieve source name for a component
 
     :param comp_info: dictionary of information about requested component
-    :type comp_info: ----------------------------
+    :type comp_info: dict
     :param product: static, ts, or av
-    :type product: ---------------
+    :type product: str
     """
     sources = []
     if "static" in product:
@@ -275,7 +273,7 @@ def get_freq(comp_info):
     """Return the frequency
 
     :param comp_info: dictionary of information about requested component
-    :type comp_info: dict -----------------------------
+    :type comp_info: dict
     """
     if "freq" not in comp_info.keys():
         freq = glob.glob("*")
@@ -288,7 +286,7 @@ def get_chunk(comp_info):
     """Return the chunk size
 
     :param comp_info: dictionary of information about requested component
-    :type comp_info: -------------------------------------
+    :type comp_info: dict
     """
     if "chunk" not in comp_info.keys():
         chunk = glob.glob("*")
@@ -307,13 +305,13 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
     :param output_dir: output directory
     :type output_dir: str
     :param begin: date to begin post-processing
-    :type begin: -----------------
+    :type begin: ISO string format
     :param current_chunk: current chunk to post-process
-    :type current_chunk: ---------------------------------
+    :type current_chunk: str
     :param components: space separated string of components that will be post-processed
     :type components: str
     :param product: variable to define time series or time averaging
-    :type product: ----------------
+    :type product: str
     :param ts_workaround: time series workaround
     :type ts_workaround: boolean
     :param ens_mem: ensemble member number
