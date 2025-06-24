@@ -294,7 +294,7 @@ def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
         output_dir: output directory
         begin: date to begin post-processing
         current_chunk: current chunk to post-process
-        components: components that will be post-processed
+        components: space separated string of components that will be post-processed
         product: variable to define time series or time averaging
         ts_workaround: time series workaround
         ens_mem: ensemble member number
