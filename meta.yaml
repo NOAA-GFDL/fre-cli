@@ -12,7 +12,7 @@ source:
 build:
   script:
     - {{ PYTHON }} -m pip install . -vv
-    - PATH=${PATH}:./mkmf/bin 
+    - PATH=${PATH}:./fre/mkmf/bin 
   number: 1
   noarch: python
 
@@ -51,7 +51,7 @@ test:
   source_files:
     - fre/
   files:
-    - mkmf/templates/linux-ubuntu-xenial-gnu.mk
+    - fre/mkmf/templates/linux-ubuntu-xenial-gnu.mk
     - pytest.ini
     - coveragerc
   imports:
