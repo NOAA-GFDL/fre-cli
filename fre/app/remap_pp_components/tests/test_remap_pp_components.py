@@ -89,14 +89,12 @@ def test_create_ncfile_with_ncgen_cdl(capfd):
     file for the rewrite remap tests.
     Test checks for success of ncgen command.
     """
-    print(f"NCGEN OUTPUT DIRECTORY: {ncgen_native_out}")
+    #print(f"NCGEN OUTPUT DIRECTORY: {ncgen_native_out}")
 
     # NCGEN command: ncgen -o [outputfile] [inputfile]
     ex = [ "ncgen", "-k", "64-bit offset",
            "-o", Path(ncgen_native_out) / DATA_FILE_NC,
            DATA_DIR / DATA_FILE_CDL ]
-
-    print (ex)
 
     # Run ncgen command
     sp = subprocess.run( ex, check = False )
@@ -116,14 +114,12 @@ def test_create_static_ncfile_with_ncgen_cdl(capfd):
     file for the rewrite remap tests.
     Test checks for success of ncgen command.
     """
-    print(f"NCGEN OUTPUT DIRECTORY: {ncgen_static_out}")
+    #print(f"NCGEN OUTPUT DIRECTORY: {ncgen_static_out}")
 
     # NCGEN command: ncgen -o [outputfile] [inputfile]
     ex = [ "ncgen", "-k", "64-bit offset",
            "-o", Path(ncgen_static_out) / STATIC_DATA_FILE_NC,
            DATA_DIR / STATIC_DATA_FILE_CDL ]
-
-    print (ex)
 
     # Run ncgen command
     sp = subprocess.run( ex, check = False )
