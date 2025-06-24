@@ -3,7 +3,7 @@ import subprocess
 import shutil
 from pathlib import Path
 import pytest
-import fre.app.remap_pp_components.remap_pp_components as rmp
+import fre.app.remap_pp_components.remap_pp_components_orig as rmp
 
 CWD = os.getcwd()
 TEST_DIR = Path(f"{CWD}/fre/app/remap_pp_components/tests")
@@ -433,6 +433,34 @@ def test_remap_static_variable_filtering_fail(capfd):
                             ts_workaround=False,
                             ens_mem="")
 
+def test_remap_chdir(capfd):
+    """
+    Test that original directory is the same as final directory.
+    The remap tool changes into input_dir, source dir, etc., but
+    we need to make sure the the final_dir is the fre-cli root
+    for testing purposes (and that remap does not leave us 
+    somewhere we don't want to be)
+    """
+    # directory before running remap
+    original_dir = Path.cwd()
+
+    # run remap which should be changing into the input_dir, etc.
+    rmp.remap_pp_components(input_dir=REMAP_IN,
+                            output_dir=REMAP_OUT,
+                            begin_date="19800101T0000Z",
+                            current_chunk="P5Y",
+                            product=PRODUCT,
+                            components=COMPOUT,
+                            copy_tool=COPY_TOOL,
+                            yaml_config=str(YAML_EX),
+                            ts_workaround=True,
+                            ens_mem="") 
+
+    # directory after remap has completed
+    final_dir = Path.cwd()
+
+    assert all([original_dir == final_dir])
+    
 #to-do:
 # - mulitple components
 # - figure out test for offline diagnostics
