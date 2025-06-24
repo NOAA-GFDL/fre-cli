@@ -111,16 +111,19 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   fre_logger.info("split-netcdf-wrapper call complete")
   sys.exit(0) #check this
 
-def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
+def split_file_xarray(infile, outfiledir, var_list='all'):
   '''
   Given a netcdf infile containing one or more data variables, 
   writes out a separate file for each data variable in the file, including the
   variable name in the filename. 
   if var_list if specified, only the vars in var_list are written to file; 
   if no vars in the file match the vars in var_list, no files are written.
-  infile: input netcdf file
-  outfiledir: writeable directory to which to write netcdf files
-  var_list: python list of string variable names or a string "all"
+  :param infile: input netcdf file
+  :type infile: string
+  :param outfiledir: writeable directory to which to write netcdf files
+  :type outfiledir: string
+  :param var_list: python list of string variable names or a string "all"
+  :type var_list: list of strings
   '''
   if not os.path.isdir(outfiledir):
     fre_logger.info("creating output directory")
@@ -152,7 +155,7 @@ def split_file_xarray(infile, outfiledir, var_list='all', verbose=False):
   def matchlist(xstr):
     ''' checks a string for matches in a list of patterns
         xstr: string to search for matches 
-        var_exclude: list of patterns defined in line 144'''
+        var_exclude: list of patterns defined in line 139'''
     allmatch = [re.search(el, xstr)for el in var_exclude]
     #If there's at least one match in the var_exclude list (average_bnds is OK)
     return len(list(set(allmatch))) > 1
@@ -199,12 +202,11 @@ def set_coord_encoding(dset, vcoords):
   as expected
   we need the list of all vars (varnames) because that's how you get coords
   for the metadata vars (i.e. nv or bnds for time_bnds)
-  dset: xarray dataset object
-  varname: name (string) of data variable we intend to write to file
-  varnames: list of all variables (string) in the dataset; needed to get
-    names of all coordinate variables since coordinate status is defined
-    only in relation with a variable
-  Note: this code removes _FillValue from coordinates. CF-compliant files do not
+  :param dset: xarray dataset object to query for info
+  :type dset: xarray dataset object
+  :param vcoords: list of coordinate variables to write to file
+  :type vcoords: list of strings
+  ..note:: This code removes _FillValue from coordinates. CF-compliant files do not
   have _FillValue on coordinates, and xarray does not have a good way to get
   _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
   when coordinates *have* a _FillValue gets you wrong metadata, and bad metadata
@@ -227,8 +229,10 @@ def set_var_encoding(dset, varnames):
   as expected
   mostly addressed to time_bnds, because xarray can drop the units attribute:
     https://github.com/pydata/xarray/issues/8368
-  dset: xarray dataset object
-  varnames: list of variables (strings) that will be written to file
+  :param dset: xarray dataset object to query for info
+  :type dset: xarray dataset object
+  :param varnames: list of variables that will be written to file
+  :type varnames: list of strings
   '''
   fre_logger.debug(f"getting var encode settings")
   encode_dict = {}
@@ -245,12 +249,14 @@ def fre_outfile_name(infile, varname):
   '''
   Builds split var filenames the way that fre expects them
   (and in a way that should work for any .nc file)
-  infile: string name of a file with a . somwehere in the filename
-  varname: string to add to the infile
   This is expected to work with files formed the following way: 
    Fre Input format:  date.component(.tileX).nc
    Fre Output format: date.component.var(.tileX).nc
   but it should also work on any file filename.nc
+  :param infile: name of a file with a . somwehere in the filename
+  :type infile: string
+  :param varname: string to add to the infile
+  :type varname: string
   '''
   infile_comp = infile.split(".")
   #tiles get the varname in a slight different position
