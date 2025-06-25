@@ -36,14 +36,14 @@ jobs:
           conda install conda-build conda-verify
 
           # conda build
-          conda build --package-format tar.bz2 --output-folder /app/fre-cli-tarball .
+          conda build --package-format tar.bz2 --output-folder src/fre-cli-tarball .
 
       - name: upload fre-cli tarball
         uses: actions/upload-artifact@v4
         with:
-          name: fre-cli-upload-TEST
-          path: /app/fre-cli-tarball/noarch/fre-cli-2025.03-py_1.tar.gz
-
+          name: fre-cli-tarball-upload
+          path: src/fre-cli-tarball/noarch/fre-cli-2025.03-py_1.tar.gz
+          if-no-files-found: error
 #  test:
 #    runs-on: ubuntu-latest
 #    needs: build
