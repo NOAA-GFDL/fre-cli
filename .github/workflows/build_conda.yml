@@ -36,4 +36,4 @@ jobs:
           conda install conda-build conda-verify
 
           # conda build
-          conda build .
+          conda build --output .
