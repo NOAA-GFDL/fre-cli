@@ -18,12 +18,13 @@ def get_variables(yml, pp_comp):
     """
     fre_logger.debug(f"Yaml file information: {yml}")
     fre_logger.debug(f"PP components: {pp_comp}")
+    ppc_list = pp_comp.split()
 
     src_vars={}
     for component_info in yml["postprocess"]["components"]:
         # if component in yaml not an active pp component, skip
-        if component_info.get("type") not in pp_comp:
-            fre_logger.info(f'{component_info.get("type")} not in list of pp components: {pp_comp}')
+        if component_info.get("type") not in ppc_list:
+            fre_logger.info(f'{component_info.get("type")} not in list of pp components: {ppc_list}')
             continue
 
         # non-static
@@ -48,9 +49,6 @@ def get_variables(yml, pp_comp):
         ##offline statics won't use variables filtering ... yet?
 
     return src_vars
-
-## TEST get_variables ##
-#print(get_variables("/home/Dana.Singh/fre/get-vars-jinjafilter/Jinja2Filters/yaml_ex.yaml", "atmos_scalar atmos_scalar_test_vars atmos_scalar_test_vars_fail atmos_scalar_static_test_vars_fail"))
 
 ## NOTE: For python 3.11 - this might be available already as contextlib.chdir()
 ## Re-asses if our own contextmanager function is needed here
