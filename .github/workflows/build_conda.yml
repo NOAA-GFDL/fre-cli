@@ -36,6 +36,7 @@ jobs:
           conda install conda-build conda-verify
 
           # conda build
+          mkdir /app/fre-cli-tarball
           conda build --package-format tar.bz2 --output-folder /app/fre-cli-tarball .
 
   upload:
@@ -45,7 +46,7 @@ jobs:
       run:
         working-directory: /app
     steps:
-      - name: upload fre-cli tarball
+      - name: Upload fre-cli tarball
         uses: actions/upload-artifact@v4
         with:
           name: fre-cli-tarball-upload
@@ -53,16 +54,16 @@ jobs:
           if-no-files-found: error
 #  test:
 #    runs-on: ubuntu-latest
-#    needs: build
+#    needs: upload
 #    steps:
-#      - name: download and extract tarball
+#      - name: Download and extract tarball
 #        uses: actions/download-artifact@v4
 #        with:
-#          name: fre-cli-upload-TEST
+#          name: fre-cli-tarball-download
 #          path: /app/fre-cli-extract
 #      
-#      - name: test fre-cli tarball
-#        uses:
+#      - name: Test fre-cli tarball
+#        uses: 
 #        run: |
 #          cd /app/fre-cli
 #
