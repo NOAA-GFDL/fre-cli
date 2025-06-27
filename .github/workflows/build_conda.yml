@@ -45,5 +45,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: fre-cli-tarball
-          path: /app/fre-cli-tarball/noarch/fre-cli-2025.03-py_1.tar.gz
+          path: /app/fre-cli-tarball/noarch/fre-cli-2025.03-py_1.tar.bz2
           if-no-files-found: error
