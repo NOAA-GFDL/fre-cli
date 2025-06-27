@@ -36,7 +36,7 @@ jobs:
           conda install conda-build conda-verify
 
           # conda build
-          mkdir -p /app/fre-cli-tarball
+#          mkdir -p /app/fre-cli-tarball
           conda build .
 
 ## TO-DO: work this out
