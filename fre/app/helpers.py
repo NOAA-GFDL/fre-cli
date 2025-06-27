@@ -8,23 +8,21 @@ import logging
 fre_logger = logging.getLogger(__name__)
 
 def get_variables(yml, pp_comp):
-    """
-    Retrieve any variables specified with active
-    pp components from the yaml
+    """Retrieve any variables specified with active pp components from the yaml
 
-    Arguments:
-        yml (str): Already loaded yaml file
-        pp_comp (str): Space separated list of active pp components
+    :param yml: Already loaded yaml file
+    :type yml: str
+    :param pp_comp: List of active pp components
+    :type pp_comp: str
     """
     fre_logger.debug(f"Yaml file information: {yml}")
     fre_logger.debug(f"PP components: {pp_comp}")
-    ppc_list = pp_comp.split()
 
     src_vars={}
     for component_info in yml["postprocess"]["components"]:
         # if component in yaml not an active pp component, skip
-        if component_info.get("type") not in ppc_list:
-            fre_logger.info(f'{component_info.get("type")} not in list of pp components: {ppc_list}')
+        if component_info.get("type") not in pp_comp:
+            fre_logger.info(f'{component_info.get("type")} not in list of pp components: {pp_comp}')
             continue
 
         # non-static
@@ -54,8 +52,10 @@ def get_variables(yml, pp_comp):
 ## Re-asses if our own contextmanager function is needed here
 @contextmanager
 def change_directory(new_path):
-    """
-    Temporarily change the directory
+    """Temporarily change the directory
+
+    :param new_path: Path to change into
+    :type new_path: str
     """
     ## Get current working directory
     original_path = os.getcwd()

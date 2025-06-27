@@ -12,25 +12,23 @@ DIR_CHANGE = Path("fre/app/remap_pp_components")
 
 def test_get_variables():
     """
+    Test dictionary output with {source name: [variables]}
+    from given pp component. 
     """
     # Load the yaml config
     with open(YAML_EX,'r') as f:
         yml=yaml.safe_load(f)
 
-#    expected_dict = {'atmos_scalar': ['co2mass'], 'atmos_static_scalar': ['bk'], 'atmos_scalar': ['co2mass', 'bk', 'no_var'], 'atmos_static_scalar': 'all', 'atmos_scalar': 'all', 'atmos_static_scalar': ['bk', 'no_var']}
+    expected_dict = {'atmos_scalar_test_vars': ['co2mass'], 'atmos_static_scalar_test_vars': ['bk'], 'atmos_scalar_test_vars_fail': ['co2mass', 'bk', 'no_var'], 'atmos_scalar_static_test_vars_fail2': 'all', 'atmos_static_scalar_test_vars_fail': ['bk', 'no_var']}
 
-#{'atmos_month': 'all', 'atmos_static_cmip': 'all', 'atmos_scalar': 'all', 'atmos_static_scalar': ['bk', 'no_var']}
-
-
-    components = "atmos_scalar_test_vars atmos_scalar_test_vars_fail atmos_scalar_static_test_vars_fail"
-   #test no matching substrings, just string component itself
+    components = ["atmos_scalar_test_vars", "atmos_scalar_test_vars_fail", "atmos_scalar_static_test_vars_fail"]
 
     out = helpers.get_variables(yml = yml,
                                 pp_comp = components)
 
     print(f"out: {out}")
-    assert all([len(out) !=0])#,
-#                out == expected_dict])
+    assert all([len(out) !=0,
+                out == expected_dict])
 
 def test_change_directory():
     """
