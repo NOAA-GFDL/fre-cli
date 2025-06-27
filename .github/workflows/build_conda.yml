@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload fre-cli tarball
         uses: actions/upload-artifact@v4
-        working-directory: /app
+        working-directory: ./app
         with:
           name: fre-cli-tarball-upload
           path: /app/fre-cli-tarball/noarch/fre-cli-2025.03-py_1.tar.gz
