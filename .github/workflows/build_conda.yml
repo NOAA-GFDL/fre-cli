@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
-#    defaults:
-#      run:
-#        working-directory: /app
+    defaults:
+      run:
+        working-directory: /app
     steps:
       - name: Checkout Files
         uses: actions/checkout@v4
