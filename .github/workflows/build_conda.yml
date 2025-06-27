@@ -38,6 +38,7 @@ jobs:
           # conda build
           mkdir -p /app/fre-cli-tarball
           conda build --package-format tar.bz2 --output-folder /app/fre-cli-tarball .
+          ls /app/fre-cli-tarball
 
 ## TO-DO: work this out
       - name: Upload fre-cli tarball
