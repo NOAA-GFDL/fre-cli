@@ -14,9 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
-    defaults:
-      run:
-        working-directory: /app
     steps:
       - name: Checkout Files
         uses: actions/checkout@v4
@@ -44,6 +41,7 @@ jobs:
 
       - name: Upload fre-cli tarball
         uses: actions/upload-artifact@v4
+        working-directory: /app
         with:
           name: fre-cli-tarball-upload
           path: /app/fre-cli-tarball/noarch/fre-cli-2025.03-py_1.tar.gz
