@@ -8,7 +8,7 @@ Maintainers should consult this section for detailed and specific information re
 New Release Versioning Procedure
 --------------------------------
 
-1. Double-check that git submodules `gfdl_msd_schemas` and `mkmf` reflects the latest state of the upstream repositories. If not, determine whether the update should be included in this FRE release. If so, tag the upstream repository and commit the submodule update in fre-cli.
+1. Verify that git submodules `gfdl_msd_schemas` and `mkmf` reflect the latest state of the upstream repositories. If not, consult the manager of the upstream repository and determine whether the update should be included in this FRE release. If so, ask the sub-project maintainer to tag the upstream repository, and then commit the submodule update in fre-cli.
 
 2. Update the package release number (i.e. reported by `fre --version`) in your PR branch before merging to `main`
    a. edit `version` in setup.py
