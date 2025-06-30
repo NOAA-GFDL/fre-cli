@@ -20,6 +20,20 @@ FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 def checkout_template(experiment = None, platform = None, target = None, branch = None):
     """
     Checkout the workflow template files from the repo
+    
+    _summary_
+
+    :param experiment: name of post processing experiment
+    :type experiment: str, default None
+    :param platform: which platform to use
+    :type c: str, default None
+    :param target: name of target (prod, debug, open-mp, repro)
+    :type target: str, default None
+    :param branch: which git branch to pull from
+    :type branch: str, default None
+    :raises OSError: why checkout script was not able to be created
+    :return: directory with checkout script
+    :rtype: dir
     """
 
     ## Chdir back to here before we exit this routine
@@ -79,7 +93,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         else:
             fre_logger.info(
                 f"ERROR: checkout exists ('{directory}/{workflow_name}') and does not match '{git_clone_branch_arg}'")
-            fre_logger.info(
+            fre_logger.info( 
                 f"ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
             os.chdir(go_back_here)
             raise ValueError('neither tag nor branch matches the git clone branch arg') #exit(1)
