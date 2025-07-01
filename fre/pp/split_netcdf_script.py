@@ -254,7 +254,7 @@ def set_var_encoding(dset, varnames):
   '''
   Gets the encoding settings needed for xarray to write out the variables
   as expected
-  mostly addressed to time_bnds, because xarray can drop the units attribute:
+  mostly addressed to time_bnds, because xarray can drop the units attribute:::
     https://github.com/pydata/xarray/issues/8368
   :param dset: xarray dataset object to query for info
   :type dset: xarray dataset object
@@ -276,7 +276,7 @@ def fre_outfile_name(infile, varname):
   '''
   Builds split  var filenames the way that fre expects them 
   (and in a way that should work for any .nc file)
-  This is expected to work with files formed the following way: 
+  This is expected to work with files formed the following way::: 
    Fre Input format:  date.component(.tileX).nc
    Fre Output format: date.component.var(.tileX).nc
   but it should also work on any file filename.nc
