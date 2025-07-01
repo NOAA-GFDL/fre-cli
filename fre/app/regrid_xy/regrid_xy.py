@@ -9,7 +9,7 @@ import subprocess
 import shutil
 import os
 from pathlib import Path
-from typing import Type
+from typing import Type, List
 import ast
 import logging
 fre_logger = logging.getLogger(__name__)
@@ -88,11 +88,11 @@ def get_grid_dims(grid_spec: str, mosaic_file: str) -> (int, int):
     return nx, ny
 
 
-def check_interp_method(dataset: Type[xr.Dataset], interp_method: str):
+def check_interp_method(dataset: Type[xr.Dataset], regrid_vars: List[str], interp_method: str):
 
     """print warning if optional interp_method clashes with nc file attribute field, if present"""
     
-    for variable in dataset:
+    for variable in regrid_vars:
         if 'interp_method' in dataset[variable].attrs:
             this_interp_method = dataset[variable].attrs['interp_method']
             if this_interp_method != interp_method:
@@ -150,7 +150,7 @@ def make_regrid_var_list(target_file: str, interp_method: str = None):
     regrid_vars = [variable for variable in dataset if len(dataset[variable].sizes)>1]
 
     #check variable interp_method attribute to regrid interp_method
-    if interp_method is not None: check_interp_method(dataset, interp_method)
+    if interp_method is not None: check_interp_method(dataset, regrid_vars, interp_method)
 
     return regrid_vars
 
