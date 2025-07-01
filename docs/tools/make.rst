@@ -1,5 +1,5 @@
 ``checkout``
--------------
+------------
 
 ``fre make checkout [options]``
    - Purpose: Creates the checkout script and can check out source code (with execute option)
@@ -22,7 +22,7 @@
         - `-t, --target [target] (required)`
 
 ``compile``
--------------
+-----------
 
 ``fre make compile [options]``
    - Purpose: Creates the compile script and compiles the model (with execute option)
@@ -35,7 +35,7 @@
         - `-e, --execute`
 
 ``dockerfile``
--------------
+--------------
 
 ``fre make dockerfile [options]``
    - Purpose: Creates the dockerfile and creates the container (with execute option)
@@ -46,7 +46,7 @@
         - `-t, --target [target] (required)`
 
 ``all``
--------------
+-------
 
 ``fre make all [options]``
    - Purpose: Create the checkout script, Makefile, compile script, and dockerfile (platform dependent) for the compilation of the model

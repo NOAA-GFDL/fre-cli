@@ -9,7 +9,6 @@
 
 import os
 from os import path
-import glob
 import subprocess
 import re
 import sys
@@ -54,10 +53,12 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
     raise OSError(f"error: input dir {inputDir} does not exist or is not a directory")
   if not (os.path.isdir(outputDir)):
-    fre_logger.error(f"error: output dir {outputDir} does not exist or is not a directory")
-    raise OSError(f"error: output dir {outputDir} does not exist or is not a directory")
-  
-  #Find files to split
+    if os.path.isfile(outputDir):
+      fre_logger.error(f"error: output dir {outputDir} is a file. Please specify a directory.")
+  else:
+    if not os.access(outputDir, os.W_OK):
+      fre_logger.error(f"error: cannot write to output dir {outputDir}")
+
   curr_dir = os.getcwd()
   workdir = os.path.abspath(inputDir)
   
@@ -75,32 +76,38 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #under most circumstances, this should match 1 file
   #older regex - not currently working
   #file_regex = f'*.{history_source}?(.tile?).nc'
-  file_regex = f'*.{history_source}*.*.nc'
+  #file_regex = f'*.{history_source}*.*.nc'
+  #glob.glob is NOT sufficient for this. It needs to match:
+  #  '00020101.atmos_level_cmip.tile4.nc'
+  #  '00020101.ocean_cobalt_omip_2d.nc'
+  file_regex = f'.*{history_source}(\.tile.*)?.nc'
   
   #If in sub-dir mode, process the sub-directories instead of the main one
   # and write to $outputdir/$subdir
   if use_subdirs:
-    subdirs = [el for el in os.listdir(workdir) if os.path.isdir(el)]
+    subdirs = [el for el in os.listdir(workdir) if os.path.isdir(os.path.join(workdir,el))]
     num_subdirs = len(subdirs)
     fre_logger.info(f"checking {num_subdirs} under {workdir}")
     files_split = 0
-    for sd in subdirs: 
-      files=glob.glob(os.path.join(sd,file_regex))
+    sd_string = ",".join(subdirs)
+    for sd in subdirs:
+      sdw = os.path.join(workdir,sd)
+      files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
       if len(files) == 0:
         fre_logger.info(f"No input files found; skipping subdir {subdir}")
       else:
-        output_subdir = os.path.join(os.path.abspath(outputDir)/sd)
-        if not os.path.isdir(ouput_subdir):
+        output_subdir = os.path.join(os.path.abspath(outputDir), sd)
+        if not os.path.isdir(output_subdir):
           os.mkdir(output_subdir)
         for infile in files:
           split_file_xarray(infile, output_subdir, varlist)
           files_split += 1
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
-      fre_logger.error(f"error: no files found in dirs under {workdir} that match pattern {file_regex}; no splitting took place")
+      fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir} that match pattern {file_regex}; no splitting took place")
       raise OSError
   else:
-      files=glob.glob(os.path.join(workdir, file_regex))
+      files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
@@ -140,12 +147,19 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
 
   dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False, decode_coords="all")
   allvars = dataset.data_vars.keys()
-  #0 or 1-dim vars in the dataset (probably reference vars, not diagnostics)
+  
+  #If you have a file of 3 or more dim vars, 2d-or-fewer vars are likely to be 
+  #metadata vars; if your file is 2d vars, 1d vars are likely to be metadata.
+  max_ndims = get_max_ndims(dataset)
+  if max_ndims >= 3: 
+    varsize = 2 
+  else: 
+    varsize = 1
   #note: netcdf dimensions and xarray coords are NOT ALWAYS THE SAME THING.
   #If they were, I could get away with the following:
   #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
   #instead of this:
-  var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= 1) and v not in dataset._coord_names]
+  var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= varsize) and v not in dataset._coord_names]
   #having a variable listed as both a metadata var and a coordinate var seems to
   #lead to the weird adding a _FillValue behavior
   fre_logger.info(f"var patterns: {var_patterns}")
@@ -165,18 +179,22 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   fre_logger.debug(f"datavars: {datavars}")
   fre_logger.debug(f"var filter list: {var_list}")
   
-  if var_list != "all":
+  #datavars does 2 things: keep track of which vars to write, and tell xarray
+  #which vars to drop. we need to seprate those things for the variable filtering.
+  if var_list == "all":
+    write_vars = datavars
+  else:
     if isinstance(var_list, str):
       var_list = var_list.split(",")
     var_list = list(set(var_list))
-    datavars = [el for el in datavars if el in var_list]
-  fre_logger.debug(f"intersection of datavars and var_list: {datavars}")
+    write_vars = [el for el in datavars if el in var_list]
+  fre_logger.debug(f"intersection of datavars and var_list: {write_vars}")
   
-  if len(datavars) < 0:
+  if len(write_vars) < 0:
     fre_logger.info(f"No data variables found in {infile}; no writes take place.")
   else:
     vc_encode = set_coord_encoding(dataset, dataset._coord_names)
-    for variable in datavars:
+    for variable in write_vars:
       fre_logger.info(f"splitting var {variable}")
       #drop all data vars (diagnostics) that are not the current var of interest
       #but KEEP the metadata vars
@@ -194,7 +212,16 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
       var_outfile = fre_outfile_name(os.path.basename(infile), variable)
       var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
       data2.to_netcdf(var_out, encoding = var_encode)
-    
+
+def get_max_ndims(dataset):
+  '''
+  Gets the maximum number of dimensions of a single var in an 
+  xarray Dataset object. Excludes coord vars, which should be single-dim anyway.
+  dataset: xarray Dataset 
+  '''
+  allvars = dataset.data_vars.keys()
+  ndims = [len(dataset[v].shape) for v in allvars]
+  return max(ndims)
     
 def set_coord_encoding(dset, vcoords):
   '''
@@ -247,7 +274,7 @@ def set_var_encoding(dset, varnames):
 
 def fre_outfile_name(infile, varname):
   '''
-  Builds split var filenames the way that fre expects them
+  Builds split  var filenames the way that fre expects them 
   (and in a way that should work for any .nc file)
   This is expected to work with files formed the following way: 
    Fre Input format:  date.component(.tileX).nc
@@ -258,13 +285,7 @@ def fre_outfile_name(infile, varname):
   :param varname: string to add to the infile
   :type varname: string
   '''
-  infile_comp = infile.split(".")
-  #tiles get the varname in a slight different position
-  if re.search("tile", infile_comp[-2]) is not None and len(infile_comp) > 2:
-    infile_comp.insert(len(infile_comp)-2,varname)
-  else:
-    infile_comp.insert(len(infile_comp)-1,varname)
-  var_outfile = ".".join(infile_comp)
+  var_outfile = re.sub(".nc", f".{varname}.nc", infile)
   return(var_outfile)
 
 def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
@@ -303,6 +324,63 @@ def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
   else:
     varlist = "all"
   return(varlist)
+
+def parse_yaml_for_varlist_ppcompstyle(yamlfile, is_static, hist_source):
+  '''
+  Parses a yaml in the style of remap-pp-components. Takes 3 args:
+    yamlfile: path to yaml config file
+    is_static: is the hist_source we are working with static?
+    hist_source: short identifier for a history file (e.g. "ocean_inert_annual" or "atmos_month")
+  '''
+  with open(yamlfile,'r') as yml:
+    yml_info = yaml.safe_load(yml)
+  if is_static:
+    product = "static"
+  else:
+    product = "ts"
+  for el in yml_info['postprocess']['components']:
+    varlist = get_variables(el, product, hist_source)
+    if varlist is not None:
+      break
+  if varlist is None:
+    fre_logger.error(f"error in parse_yaml_for_varlist_ppcompstle: history_file {hist_source} was not found in file {yamlfile}")
+    raise ValueError
+  return(varlist)
+
+def get_variables(comp_info, product, req_source):
+    """
+    Taken from fre-workflows/app/remap-pp-components; when that gets added
+    to fre-cli this should be an import instead
+    Written by Dana
+    Retrieve variables listed for a component; save in dictionary for use later
+    Params:
+        comp_info: dictionary of information about requested component
+        product: string; one of static, ts, or av
+          static: this filename has "static" in it and has vars without time axes
+          ts: timeseries. the vars have time series unless they are metadata vars
+          av: 
+        req_source: the short identifier for the history file ("atmos_month")
+    """
+    v = None
+    if product == "static":
+        if comp_info.get("static") is None:
+            raise ValueError(f"Product is set to static but no static sources/variables defined for {comp_info.get('type')}")
+
+        for static_info in comp_info.get("static"):
+            if static_info.get("source") == req_source:
+                if static_info.get("variables") is None:
+                    v = "all"
+                else:
+                    v = static_info.get("variables")
+    else:
+        for src_info in comp_info.get("sources"): #history_file,variables
+            if src_info.get("history_file") == req_source:
+                if src_info.get("variables") is None:
+                    v = "all"
+                else:
+                    v = src_info.get("variables")
+
+    return v
 
 #Main method invocation
 if __name__ == '__main__':
