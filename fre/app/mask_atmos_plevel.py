@@ -6,8 +6,18 @@ import logging
 fre_logger = logging.getLogger(__name__)
 fre_logger.setLevel(logging.DEBUG)
 
-def mask_atmos_plevel_subtool(infile, outfile, psfile):
-    ''' click entry point to fre cmor mask-atmos-plevel'''
+def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str):
+    """Mask pressure-level diagnostic output below land surface_
+
+    :param infile: _Input NetCDF file containing pressure-level output to be masked_
+    :type infile: str
+    :param psfile: _Input NetCDF file containing surface pressure 'ps'_
+    :type psfile: str
+    : param outfile: _Output NetCDF file containing masked output_
+    :type outfile: str
+
+    .. note:: Input variables must have an attribute `pressure_mask` set to `False`. Output variables have the attribute set to `True`.
+    """
 
     # Error if outfile exists
     if os.path.exists(outfile):
@@ -20,7 +30,7 @@ def mask_atmos_plevel_subtool(infile, outfile, psfile):
 
     # Exit with message if "ps" not available
     if "ps" not in list(ds_ps.variables):
-        raise ValueError(f"ERROR: File {infile} does not contain surface pressure. exit.")
+        raise ValueError(f"ERROR: Surface pressure file '{psfile}' does not contain surface pressure.")
 
     # Open input dataset
     if not os.path.exists(infile):

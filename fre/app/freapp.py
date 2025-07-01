@@ -71,9 +71,9 @@ def regrid( input_dir, output_dir, begin, tmp_dir,
 @click.option("-p", "--psfile", # surface pressure... ps? TODO
               help = "Input NetCDF file containing surface pressure (ps)",
               required = True)
-def mask_atmos_plevel(infile, outfile, psfile):
-    """Mask out pressure level diagnostic output below land surface"""
-    mask_atmos_plevel_subtool(infile, outfile, psfile)
+def mask_atmos_plevel(infile, psfile, outfile):
+    """Mask pressure-level diagnostic output below land surface"""
+    mask_atmos_plevel_subtool(infile, psfile, outfile)
 
 
 @app_cli.command()
