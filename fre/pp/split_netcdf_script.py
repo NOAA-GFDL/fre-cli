@@ -29,14 +29,23 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   Intended to work with data structured for fre-workflows and fre-workflows
     file naming conventions
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
-  inputDir - directory containg netcdf files
-  outputDir - directory to which to write netcdf files
-  component - the 'component' element we are currently working with in the yaml
-  history_source - a history_file under a 'source' under the 'component' that
+  :param inputDir: directory containg netcdf files
+  :type inputDir: string
+  :param outputDir: directory to which to write netcdf files
+  :type outputDir: string
+  :param component: the 'component' element we are currently working with in the yaml
+  :type component: string
+  :param history_source: a history_file under a 'source' under the 'component' that
     we are working with. Is used to identify the files in inputDir.
-  use_subdirs - whether to recursively search through inputDir under the subdirectories.
+  :type history_source: string
+  :param use_subdirs: whether to recursively search through inputDir under the subdirectories.
     used when regridding.
-  yamlfile - a .yml config file for fre postprocessing
+  :type use_subdirs: boolean
+  :param yamlfile: - a .yml config file for fre postprocessing
+  :type yamlfile: string
+  :param split_all_vars: Whether to skip parsing the yamlfile and split all 
+    available vars in the file. Defaults to False.
+  :type split_all_vars: boolean
   '''
   
   #Verify input/output dirs exist and are dirs
@@ -116,9 +125,12 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   variable name in the filename. 
   if var_list if specified, only the vars in var_list are written to file; 
   if no vars in the file match the vars in var_list, no files are written.
-  infile: input netcdf file
-  outfiledir: writeable directory to which to write netcdf files
-  var_list: python list of string variable names or a string "all"
+  :param infile: input netcdf file
+  :type infile: string
+  :param outfiledir: writeable directory to which to write netcdf files
+  :type outfiledir: string
+  :param var_list: python list of string variable names or a string "all"
+  :type var_list: list of strings
   '''
   if not os.path.isdir(outfiledir):
     fre_logger.info("creating output directory")
@@ -157,7 +169,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   def matchlist(xstr):
     ''' checks a string for matches in a list of patterns
         xstr: string to search for matches 
-        var_exclude: list of patterns defined in line 144'''
+        var_exclude: list of patterns defined in line 139'''
     allmatch = [re.search(el, xstr)for el in var_exclude]
     #If there's at least one match in the var_exclude list (average_bnds is OK)
     return len(list(set(allmatch))) > 1
@@ -217,12 +229,11 @@ def set_coord_encoding(dset, vcoords):
   as expected
   we need the list of all vars (varnames) because that's how you get coords
   for the metadata vars (i.e. nv or bnds for time_bnds)
-  dset: xarray dataset object
-  varname: name (string) of data variable we intend to write to file
-  varnames: list of all variables (string) in the dataset; needed to get
-    names of all coordinate variables since coordinate status is defined
-    only in relation with a variable
-  Note: this code removes _FillValue from coordinates. CF-compliant files do not
+  :param dset: xarray dataset object to query for info
+  :type dset: xarray dataset object
+  :param vcoords: list of coordinate variables to write to file
+  :type vcoords: list of strings
+  ..note:: This code removes _FillValue from coordinates. CF-compliant files do not
   have _FillValue on coordinates, and xarray does not have a good way to get
   _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
   when coordinates *have* a _FillValue gets you wrong metadata, and bad metadata
@@ -245,8 +256,10 @@ def set_var_encoding(dset, varnames):
   as expected
   mostly addressed to time_bnds, because xarray can drop the units attribute:
     https://github.com/pydata/xarray/issues/8368
-  dset: xarray dataset object
-  varnames: list of variables (strings) that will be written to file
+  :param dset: xarray dataset object to query for info
+  :type dset: xarray dataset object
+  :param varnames: list of variables that will be written to file
+  :type varnames: list of strings
   '''
   fre_logger.debug(f"getting var encode settings")
   encode_dict = {}
@@ -263,10 +276,14 @@ def fre_outfile_name(infile, varname):
   '''
   Builds split  var filenames the way that fre expects them 
   (and in a way that should work for any .nc file)
-  infile: string name of .nc file
-  varname: string to be added to input
+  This is expected to work with files formed the following way: 
    Fre Input format:  date.component(.tileX).nc
-   Fre Output format: date.component(.tileX)var.nc
+   Fre Output format: date.component.var(.tileX).nc
+  but it should also work on any file filename.nc
+  :param infile: name of a file with a . somwehere in the filename
+  :type infile: string
+  :param varname: string to add to the infile
+  :type varname: string
   '''
   var_outfile = re.sub(".nc", f".{varname}.nc", infile)
   return(var_outfile)
