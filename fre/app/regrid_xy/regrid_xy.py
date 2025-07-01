@@ -24,8 +24,8 @@ non_regriddable_variables = [
     'geolon_c', 'geolat_c', 'geolon_u', 'geolat_u', 'geolon_v', 'geolat_v',
     'FA_X', 'FA_Y', 'FI_X', 'FI_Y', 'IX_TRANS', 'IY_TRANS', 'UI', 'VI', 'UO', 'VO',
     'wet_c', 'wet_v', 'wet_u', 'dxCu', 'dyCu', 'dxCv', 'dyCv', 'Coriolis',
-    'areacello_cu', 'areacello_cv', 'areacello_bu'
-]
+    'areacello_cu', 'areacello_cv', 'areacello_bu', 'average_T1','average_T2',
+    'average_DT','time_bnds']
 
 def truncate_date(date, freq):
     """ truncates iso freq to iso date time """
@@ -88,15 +88,6 @@ def get_grid_dims(grid_spec: str, mosaic_file: str) -> (int, int):
     return nx, ny
 
 
-def check_interp_method( nc_variable, interp_method):
-    """print warning if optional interp_method clashes with nc file attribute field, if present"""
-    attr_list=nc_variable.ncattrs()
-    if 'interp_method' not in attr_list:
-        pass
-    elif nc_variable.interp_method != interp_method:
-        fre_logger.info(f"WARNING: variable '{nc_variable.name}' has attribute interp_method '{nc_variable.interp_method}'")
-
-
 def check_per_component_settings(component_list, rose_app_cfg):
     """for a source file ref'd by multiple components check per-component
     settings for uniqueness. output list of bools of same length to check
@@ -115,7 +106,6 @@ def check_per_component_settings(component_list, rose_app_cfg):
     if len(do_regridding) != len(component_list) :
         raise ValueError('problem with checking per-component settings for uniqueness')
     return do_regridding
-
 
 
 
@@ -142,22 +132,20 @@ def make_component_list(config, source):
 
 def make_regrid_var_list(target_file, interp_method = None):
     """create default list of variables to be regridded within target file."""
-    fin = Dataset(target_file,'r')
-    all_fin_vars = fin.variables
-    regrid_vars = []
-    for var_name in all_fin_vars:
-        if var_name in ['average_T1','average_T2',
-                        'average_DT','time_bnds' ]:
-            continue
-        if var_name in non_regriddable_variables:
-            continue
-        if len(all_fin_vars[var_name].shape) < 2 :
-            continue
-        regrid_vars.append(var_name)
-        if interp_method is not None:
-            check_interp_method( all_fin_vars[var_name] , interp_method)
 
-    fin.close()
+    #load data file
+    dataset = xr.load_dataset(target_file).drop_vars(non_regriddable_variables, errors="ignore")
+
+    #list of variables to regrid, only multi-dimensional data will be regridded
+    regrid_vars = [variable for variable in dataset if len(dataset[variable].sizes)>1]
+
+    #check interp_method
+    for variable in regrid_vars:
+        if 'interp_method' in dataset[variable].attrs:
+            this_interp_method = dataset[variable].attrs['interp_method']
+            if this_interp_method != interp_method:
+                fre_logger.info(f"WARNING: variable '{variable}' has attribute interp_method '{this_interp_method}'")
+
     return regrid_vars
 
 
