@@ -4,7 +4,6 @@ import xarray as xr
 
 import logging
 fre_logger = logging.getLogger(__name__)
-fre_logger.setLevel(logging.DEBUG)
 
 def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str):
     """Mask pressure-level diagnostic output below land surface_
