@@ -3,24 +3,25 @@ import numpy as np
 import xarray as xr
 
 import fre.app.regrid_xy.regrid_xy
-from . import write_input_files
+from . import write_gridfiles
 
-def test_get_grid_dims():
+def test_get_source_info():
 
-    write_input_files.all()
+    write_gridfiles.all()
 
     grid_spec = "grid_spec.nc"
     mosaic_type = "atm_mosaic_file"
 
-    nx, ny = fre.app.regrid_xy.regrid_xy.get_grid_dims(grid_spec, mosaic_type)
+    input_mosaic, nx, ny = fre.app.regrid_xy.regrid_xy.get_source_info(grid_spec, mosaic_type)
 
-    assert nx==360
-    assert ny==90
+    assert input_mosaic == "test_mosaic.nc"
+    assert nx == 180 
+    assert ny == 90
 
     #will be more streamlined with the testing project
     os.remove(grid_spec)
-    os.remove("C96_mosaic.nc")
-    for i in range(1,7): os.remove(f"C96_grid.tile{i}.nc")
+    os.remove("test_mosaic.nc")
+    for i in range(1,7): os.remove(f"test_grid.tile{i}.nc")
 
 
 def test_regrid_var_list():

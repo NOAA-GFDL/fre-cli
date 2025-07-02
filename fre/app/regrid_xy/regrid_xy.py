@@ -67,11 +67,11 @@ def safe_rose_config_get(config, section, field):
     return None if config_dict is None else config_dict.get_value()
 
 
-def get_grid_dims(grid_spec: str, mosaic_file: str) -> (int, int):
+def get_source_info(grid_spec: str, mosaic_file: str) -> (int, int):
 
     """
-    Retrieves the grid sizes from the gridfiles.
-    This method retrieves the grid dimensions via grid_spec --> mosaic_file --> gridfile,
+    Retrieves the input_mosaic file and grid sizes from the gridfiles specified in grid_spec.
+    For grid sizes, this method retrieves the dimensions via grid_spec --> mosaic_file --> gridfile,
     where mosaic_file can be either "atm_mosaic_file", "ocn_mosaic_file", or "lnd_mosaic_file".
     This method assumes that for a multi-tile grid, the grids for each tile are of the
     same size and will take the first gridfile to retrieve the coordinate dimensions
@@ -82,10 +82,10 @@ def get_grid_dims(grid_spec: str, mosaic_file: str) -> (int, int):
 
     grid = xr.load_dataset(str(gridfile))
 
-    nx = grid.sizes['nx']
-    ny = grid.sizes['ny']
+    nx = grid.sizes['nx']//2
+    ny = grid.sizes['ny']//2
 
-    return nx, ny
+    return mosaicfile, nx, ny
 
 
 def check_interp_method(dataset: Type[xr.Dataset], regrid_vars: List[str], interp_method: str):
@@ -288,8 +288,6 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
                f'output_grid_lat  = {output_grid_lat  }\n' + \
                f'regrid_vars      = {regrid_vars      }\n'     )
 
-
-
         # prepare to create input_mosaic via ncks call
         if input_realm in ['atmos', 'aerosol']:
             mosaic_file = 'atm_mosaic_file'
@@ -301,11 +299,11 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
             raise ValueError(f'input_realm={input_realm} not recognized.')
         fre_logger.info(f'mosaic_file = {mosaic_file}')
 
-        # get dimensions for source lat, lon
-        nx, ny = get_grid_dims(grid_spec_file, mosaic_file)
-
-        source_nx = str(nx / 2 )
-        source_ny = str(ny / 2 )
+        #get input mosaic and grid sizes
+        input_mosaic, source_nx, source_ny = get_source_info(grid_spec_file, mosaic_file)
+        
+        fre_logger.info(f'grid_spec_file = {grid_spec_file}')
+        fre_logger.info(f'input_mosaic = {input_mosaic}') #DELETE        
         fre_logger.info(f'source_[nx,ny] = ({source_nx},{source_ny})')
 
         if remap_file is not None:
@@ -331,8 +329,6 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
             else:
                 fre_logger.info(f'NOTE: Will generate remap file and cache to {remap_cache_file}')
 
-
-
         # if no variables in config, find the interesting ones to regrid
         if regrid_vars is None:
             regrid_vars=make_regrid_var_list( target_file , interp_method)
@@ -342,8 +338,6 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
             raise ValueError('make_regrid_var_list found no vars to regrid. and no vars given. exit')
         fre_logger.info(f'regridding {len(regrid_vars)} variables: {regrid_vars}')
         regrid_vars_str=','.join(regrid_vars) # fregrid needs comma-demarcated list of vars
-
-
 
         # massage input file argument to fregrid.
         input_file = target_file.replace('.tile1.nc','') \
