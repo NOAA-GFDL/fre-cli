@@ -6,6 +6,7 @@ import logging
 from fre.yamltools import pp_info_parser as ppip
 from fre.yamltools import helpers
 from fre.yamltools import combine_yamls_script as cy
+import yaml 
 
 fre_logger = logging.getLogger(__name__)
 
@@ -19,7 +20,8 @@ def list_experiments_subtool(yamlfile):
 
     # Combine model
     yamldict = ppip.InitPPYaml(yamlfile, exp, platform, target)
-    (yaml_info, yml_dict) = yamldict.combine_model()
+    yaml_str = yamldict.combine_model()
+    yaml_dict = yaml.load(yaml_str, Loader = yaml.Loader)
 
 ## COULD HAVE been one way to validate but section we'd want to parse was cleaned in final/"combined" yaml information
 ## Currently not a way to validate model yaml information because we only have schemas for the final "combined" compile or pp information (both of which remove the "experiments" section I believe
@@ -47,7 +49,7 @@ def list_experiments_subtool(yamlfile):
 
     # log the experiment names, which should show up on screen for sure
     fre_logger.info("Post-processing experiments available:")
-    for i in yml_dict.get("experiments"):
+    for i in yaml_dict.get("experiments"):
         fre_logger.info(f'   - {i.get("name")}')
     fre_logger.info("\n")
 
