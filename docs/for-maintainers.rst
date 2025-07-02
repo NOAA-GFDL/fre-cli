@@ -26,4 +26,4 @@ New Release Versioning Procedure
 
 5. Create corresponding tag in [fre-workflows](https://github.com/NOAA-GFDL/fre-workflows/tags)
 
-5. Observe new conda package deployed to [noaa-gfdl channel](https://anaconda.org/NOAA-GFDL/fre-cli)
+6. Observe new conda package deployed to [noaa-gfdl channel](https://anaconda.org/NOAA-GFDL/fre-cli)
