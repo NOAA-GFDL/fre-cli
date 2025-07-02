@@ -1,0 +1,24 @@
+fre.pp.tests package
+====================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.pp.tests.test_configure_script_yaml
+   fre.pp.tests.test_fre_pp_init
+   fre.pp.tests.test_histval_script
+   fre.pp.tests.test_nccheck_script
+   fre.pp.tests.test_ppval_script
+   fre.pp.tests.test_rose_quoting
+   fre.pp.tests.test_split_netcdf
+
+Module contents
+---------------
+
+.. automodule:: fre.pp.tests
+   :members:
+   :show-inheritance:
+   :undoc-members:

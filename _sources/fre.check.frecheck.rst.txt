@@ -1,0 +1,7 @@
+fre.check.frecheck module
+=========================
+
+.. automodule:: fre.check.frecheck
+   :members:
+   :show-inheritance:
+   :undoc-members:

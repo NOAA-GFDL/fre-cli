@@ -1,0 +1,7 @@
+fre.pp.tests.test\_fre\_pp\_init module
+=======================================
+
+.. automodule:: fre.pp.tests.test_fre_pp_init
+   :members:
+   :show-inheritance:
+   :undoc-members:

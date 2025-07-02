@@ -1,0 +1,7 @@
+fre.make.fremake module
+=======================
+
+.. automodule:: fre.make.fremake
+   :members:
+   :show-inheritance:
+   :undoc-members:

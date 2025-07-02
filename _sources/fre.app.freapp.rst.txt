@@ -1,0 +1,7 @@
+fre.app.freapp module
+=====================
+
+.. automodule:: fre.app.freapp
+   :members:
+   :show-inheritance:
+   :undoc-members:

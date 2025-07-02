@@ -1,0 +1,7 @@
+fre.pp.install\_script module
+=============================
+
+.. automodule:: fre.pp.install_script
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,7 @@
+fre.analysis.tests.test\_subtools module
+========================================
+
+.. automodule:: fre.analysis.tests.test_subtools
+   :members:
+   :show-inheritance:
+   :undoc-members:

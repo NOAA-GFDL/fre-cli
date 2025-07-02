@@ -1,0 +1,19 @@
+fre.yamltools.tests package
+===========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   fre.yamltools.tests.test_combine_yamls
+   fre.yamltools.tests.test_combine_yamls_script
+
+Module contents
+---------------
+
+.. automodule:: fre.yamltools.tests
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,7 @@
+fre.cmor.cmor\_finder module
+============================
+
+.. automodule:: fre.cmor.cmor_finder
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,7 @@
+fre.app.generate\_time\_averages.cdoTimeAverager module
+=======================================================
+
+.. automodule:: fre.app.generate_time_averages.cdoTimeAverager
+   :members:
+   :show-inheritance:
+   :undoc-members:

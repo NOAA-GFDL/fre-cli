@@ -1,0 +1,25 @@
+# local reusable variable overrides
+fre_properties: 
+  - &custom_interp "180,360"
+
+postprocess:
+  # main pp instructions
+  components:
+    - type: "atmos_cmip-TEST"
+      sources:
+        - history_file: "atmos_month_cmip"
+        - history_file: "atmos_8xdaily_cmip"
+        - history_file: "atmos_daily_cmip"
+      sourceGrid: "cubedsphere"
+      xyInterp: *custom_interp
+      interpMethod: "conserve_order2"
+      inputRealm: 'atmos'
+      postprocess_on: False
+    - type: "atmos-TEST"
+      sources:
+        - history_file: "atmos_month"
+      sourceGrid: "cubedsphere"
+      xyInterp: *PP_XYINTERP96
+      interpMethod: "conserve_order2"
+      inputRealm: 'atmos'
+      postprocess_on: False

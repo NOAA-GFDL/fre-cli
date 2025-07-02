@@ -1,0 +1,7 @@
+fre.app.generate\_time\_averages.frenctoolsTimeAverager module
+==============================================================
+
+.. automodule:: fre.app.generate_time_averages.frenctoolsTimeAverager
+   :members:
+   :show-inheritance:
+   :undoc-members:

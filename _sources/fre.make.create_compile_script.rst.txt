@@ -1,0 +1,7 @@
+fre.make.create\_compile\_script module
+=======================================
+
+.. automodule:: fre.make.create_compile_script
+   :members:
+   :show-inheritance:
+   :undoc-members:

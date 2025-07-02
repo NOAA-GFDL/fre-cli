@@ -1,0 +1,7 @@
+fre.run.frerun module
+=====================
+
+.. automodule:: fre.run.frerun
+   :members:
+   :show-inheritance:
+   :undoc-members:

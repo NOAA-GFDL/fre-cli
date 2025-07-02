@@ -1,0 +1,263 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For developers &mdash; Fre-Cli 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a6a68382" />
+      <link rel="stylesheet" type="text/css" href="_static/fonts.css?v=5583d106" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="For maintainers" href="for-maintainers.html" />
+    <link rel="prev" title="API" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Fre-Cli
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="what-is-fre.html">What is FRE?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools.html">Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="container.html">Post-Processing Container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">For developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-to-fre-cli">Contributing to <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#get-a-copy-of-the-code">Get a Copy of the Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-editable-installation">Local/Editable Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-your-local-changes-and-installation">Testing Your Local Changes and Installation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#running-cli-calls">Running CLI-calls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#running-the-above-with-no-click">Running the above, with no <code class="docutils literal notranslate"><span class="pre">click</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#writing-a-pytest-unit-test-for-fre-cli">Writing a <code class="docutils literal notranslate"><span class="pre">pytest</span></code> unit-test for <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-a-new-requirement-to-fre-cli">Adding a New Requirement to <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-fre-cli-is-updated">How <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> is updated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-desired-logging-verbosity">Get desired <code class="docutils literal notranslate"><span class="pre">logging</span></code> verbosity</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#logging-practice-to-avoid"><code class="docutils literal notranslate"><span class="pre">logging</span></code> practice to avoid</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#avoid-os-chdir-if-you-can">avoid <code class="docutils literal notranslate"><span class="pre">os.chdir</span></code> if you can</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manifest-in"><code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="for-maintainers.html">For maintainers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing_to_doc.html">Contributing to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="badges.html">Badges</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Fre-Cli</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">For developers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/for-developers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="for-developers">
+<h1>For developers<a class="headerlink" href="#for-developers" title="Link to this heading"></a></h1>
+<p>Developers should consult this section for detailed and specific information relevant to development/maintenance efforts, AFTER
+familiarizing themselves with the rest of the user-targeted documentation.</p>
+<section id="contributing-to-fre-cli">
+<h2>Contributing to <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code><a class="headerlink" href="#contributing-to-fre-cli" title="Link to this heading"></a></h2>
+<section id="get-a-copy-of-the-code">
+<h3>Get a Copy of the Code<a class="headerlink" href="#get-a-copy-of-the-code" title="Link to this heading"></a></h3>
+<p>Get your own copy of the code with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">--recursive</span> <span class="pre">git&#64;github.com:NOAA-GFDL/fre-cli.git</span></code> for the NOAA-GFDL fork,
+or replace with your fork’s link (recommended).</p>
+</section>
+<section id="local-editable-installation">
+<h3>Local/Editable Installation<a class="headerlink" href="#local-editable-installation" title="Link to this heading"></a></h3>
+<p>Developers can test local changes by running a <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">[-e]</span> <span class="pre">.</span></code> inside of the root directory after activating a
+virtual environment with <code class="docutils literal notranslate"><span class="pre">python&gt;=3.11.*</span></code> and all requirements. This installs the <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> package locally with
+any local changes.</p>
+<p>Development work on <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> should occur within a conda environment housing <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code>’s requirements, and
+a local copy of the repository to install with <code class="docutils literal notranslate"><span class="pre">pip</span></code> using the <code class="docutils literal notranslate"><span class="pre">-e/--editable</span></code> flag on. This specific approch is
+described <a class="reference external" href="https://noaa-gfdl.github.io/fre-cli/setup.html#create-environment-from-github-repo-clone">here</a></p>
+</section>
+<section id="testing-your-local-changes-and-installation">
+<h3>Testing Your Local Changes and Installation<a class="headerlink" href="#testing-your-local-changes-and-installation" title="Link to this heading"></a></h3>
+<p>There are a myriad of different ways of testing your efforts locally during your development cycle. A few examples and
+<code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> specific recommendations are described here, but contributors are welcome to be creative so-long as they
+provide documentation of what they have contributed.</p>
+<p>All contributed code should come with a corresponding unit-test. This section is not about writing unit-tests, but does
+contain some advice towards it. This section is mostly for streamlining a new developer’s approach to working with the
+code.</p>
+<section id="running-cli-calls">
+<h4>Running CLI-calls<a class="headerlink" href="#running-cli-calls" title="Link to this heading"></a></h4>
+<p>Most development cycles will involve focused efforts isolated to a specific <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">TOOL</span> <span class="pre">COMMAND</span> <span class="pre">*ARGV</span></code>, where <code class="docutils literal notranslate"><span class="pre">*ARGV</span></code> stands
+in for a shell-style argument vector (e.g. <code class="docutils literal notranslate"><span class="pre">-e</span> <span class="pre">FOO</span> <span class="pre">-p</span> <span class="pre">BAR</span> <span class="pre">-t</span> <span class="pre">BAZ</span></code>, a common pattern in <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code>). Likely, the code one
+is working on here is housed somewhere <em>approximately</em> like <code class="docutils literal notranslate"><span class="pre">fre/TOOL/COMMAND.py</span></code> (<em>generally</em>, this is not a law), with
+the <code class="docutils literal notranslate"><span class="pre">click</span></code> CLI entry-point under <code class="docutils literal notranslate"><span class="pre">fre/TOOL/freTOOL.py</span></code>.</p>
+<p>Here, the developer usually uses the <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">TOOL</span> <span class="pre">COMMAND</span> <span class="pre">*ARGV</span></code> call as a test, focused on seeing the changes they are
+introducing, and develop the code until they see the result they are looking for. The specific <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">TOOL</span> <span class="pre">COMMAND</span> <span class="pre">*ARGV</span></code>
+should/can often become a unit-test in one of the corresponding files in <code class="docutils literal notranslate"><span class="pre">fre/tests</span></code>. The sought-after changes the
+devleloper wished to introduce should become <code class="docutils literal notranslate"><span class="pre">assert</span></code> conditions encoded within the unit-test. Both success and failure
+conditions should ideally be tested.</p>
+</section>
+<section id="running-the-above-with-no-click">
+<h4>Running the above, with no <code class="docutils literal notranslate"><span class="pre">click</span></code><a class="headerlink" href="#running-the-above-with-no-click" title="Link to this heading"></a></h4>
+<p>Every <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">TOOL</span> <span class="pre">COMMAND</span> <span class="pre">*ARGV</span></code> approximately maps to a single function call shown in <code class="docutils literal notranslate"><span class="pre">fre/TOOL/freTOOL.py</span></code> at this time.
+Then, to accomplish the same thing as the previous section, but removing <code class="docutils literal notranslate"><span class="pre">click</span></code> and the CLI-aspect from it, and assuming
+the code being executed is in <code class="docutils literal notranslate"><span class="pre">fre/TOOL/COMMAND.py</span></code>, in a function called named like <code class="docutils literal notranslate"><span class="pre">FUNCTION</span></code>,
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-i</span> <span class="pre">-c</span> <span class="pre">'from</span> <span class="pre">fre.TOOL.COMMAND</span> <span class="pre">import</span> <span class="pre">FUNCTION;</span> <span class="pre">FUNCTION(**args);</span></code>.</p>
+</section>
+<section id="writing-a-pytest-unit-test-for-fre-cli">
+<h4>Writing a <code class="docutils literal notranslate"><span class="pre">pytest</span></code> unit-test for <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code><a class="headerlink" href="#writing-a-pytest-unit-test-for-fre-cli" title="Link to this heading"></a></h4>
+<p>If the functionality one desires to test is that of CLI call, the tests should use the <code class="docutils literal notranslate"><span class="pre">CliRunner</span></code> approach shown in
+<code class="docutils literal notranslate"><span class="pre">fre/tests</span></code>. <code class="docutils literal notranslate"><span class="pre">click</span></code> based CLI calls should NOT be tested with <code class="docutils literal notranslate"><span class="pre">subprocess.run</span></code> ever within <code class="docutils literal notranslate"><span class="pre">pytest</span></code>. See
+<code class="docutils literal notranslate"><span class="pre">click</span></code>’s <a class="reference external" href="https://click.palletsprojects.com/en/stable/testing/#testing-click-applications">documentation</a> for more
+information.</p>
+<p>If the functionality one desires to test is removed from that of a CLI call, the test should likely be housed in the directory
+structure corresponding to the <code class="docutils literal notranslate"><span class="pre">TOOL</span></code> under-which the functionality lives. In that case, the usual pythonic-testing approaches,
+guidelines, documentation etc. applies.</p>
+</section>
+</section>
+<section id="adding-a-new-requirement-to-fre-cli">
+<h3>Adding a New Requirement to <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code><a class="headerlink" href="#adding-a-new-requirement-to-fre-cli" title="Link to this heading"></a></h3>
+<p>Currently, all required packages are <code class="docutils literal notranslate"><span class="pre">conda</span></code> packages listed in <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code>, and also, equivalently in <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code>.
+<code class="docutils literal notranslate"><span class="pre">conda</span></code> packages that have a corresponding <code class="docutils literal notranslate"><span class="pre">pip</span></code> package should list the <code class="docutils literal notranslate"><span class="pre">pip</span></code> package as a python requirement in <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>.</p>
+<p>Pure <code class="docutils literal notranslate"><span class="pre">pip</span></code> packages cannot be listed currently as a requirement for <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code>. This is because only <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> can list
+<code class="docutils literal notranslate"><span class="pre">pip</span></code> packages as requirements. But, only <code class="docutils literal notranslate"><span class="pre">meta.yaml</span></code> can be used as a the <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">build</span></code> target. New dependencies for <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code>
+MUST have a <code class="docutils literal notranslate"><span class="pre">conda</span></code> package available through a non-proprietary <code class="docutils literal notranslate"><span class="pre">conda</span></code> channel, but preferable the open-source <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code>
+channel, which requires stronger quality control.</p>
+<p>In general, the requirement being added is created by a third-party. As such, before adding a new requirement, the developer is
+responsible for verifying that the desired package is safe, well-documented, and actively-maintained as necessary. The developer should
+also consider the cost-benefit-problem of taking the extra time to introduce new functionality via standard-library approaches first,
+and be prepared to defend the proposition of adding the new third-party package as a <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> requirement.</p>
+</section>
+<section id="how-fre-cli-is-updated">
+<h3>How <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> is updated<a class="headerlink" href="#how-fre-cli-is-updated" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> is published and hosted as a Conda package on the <a class="reference external" href="https://anaconda.org/NOAA-GFDL">NOAA-GFDL conda channel</a>. On pushes to
+the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch, the package located at <a class="reference external" href="https://anaconda.org/NOAA-GFDL/fre-cli">https://anaconda.org/NOAA-GFDL/fre-cli</a> will automatically be updated using the workflow
+defined in <code class="docutils literal notranslate"><span class="pre">.github/workflows/publish_conda.yml</span></code>, which is equivalent to``.github/workflows/build_conda.yml`` with an extra <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">publish</span></code>
+step.</p>
+</section>
+<section id="get-desired-logging-verbosity">
+<h3>Get desired <code class="docutils literal notranslate"><span class="pre">logging</span></code> verbosity<a class="headerlink" href="#get-desired-logging-verbosity" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">logging</span></code> module’s configuration initially occurs in <code class="docutils literal notranslate"><span class="pre">fre/__init__.py</span></code>, and gets inherited everywhere else <code class="docutils literal notranslate"><span class="pre">logging</span></code>
+creates a <code class="docutils literal notranslate"><span class="pre">logger</span></code> object under the <code class="docutils literal notranslate"><span class="pre">fre.</span></code> namespace. If your development is being tested with a <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">TOOL</span> <span class="pre">COMMAND</span> <span class="pre">*ARGV</span></code>
+style CLI call, it’s recommended you add verbosity flags, i.e. like <code class="docutils literal notranslate"><span class="pre">fre</span> <span class="pre">-vv</span> <span class="pre">TOOL</span> <span class="pre">COMMAND</span> <span class="pre">*ARGV</span></code>.</p>
+<p>If your development does not fit nicely into that category, the next easiest thing to do is to adjust the base <code class="docutils literal notranslate"><span class="pre">logger</span></code> object
+in <code class="docutils literal notranslate"><span class="pre">fre/__init__.py</span></code> to have the verbosity level you’d like. It’s important you adjust it back to the default verbosity level of
+<code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> before requesting a merge of your branch/fork to the repository’s trunk.</p>
+<section id="logging-practice-to-avoid">
+<h4><code class="docutils literal notranslate"><span class="pre">logging</span></code> practice to avoid<a class="headerlink" href="#logging-practice-to-avoid" title="Link to this heading"></a></h4>
+<p>The pitfall to avoid during development is calling <code class="docutils literal notranslate"><span class="pre">logging.basicConfig</span></code> to re-configure the <code class="docutils literal notranslate"><span class="pre">logging</span></code> behavior OUTSIDE of
+<code class="docutils literal notranslate"><span class="pre">fre/__init__.py</span></code>. What this does is it creates another <code class="docutils literal notranslate"><span class="pre">logging.handler</span></code> to manage the output, but does not resolve
+the ambiguity to previously defined <code class="docutils literal notranslate"><span class="pre">loggers</span></code> of which <code class="docutils literal notranslate"><span class="pre">handler</span></code> should be getting used. If this secondary <code class="docutils literal notranslate"><span class="pre">logging.basicConfig</span></code>
+call is left in the PR or fork at merge-time, it can cause oddly silent logging behavior. This can be VERY tricky to debug!</p>
+</section>
+</section>
+<section id="avoid-os-chdir-if-you-can">
+<h3>avoid <code class="docutils literal notranslate"><span class="pre">os.chdir</span></code> if you can<a class="headerlink" href="#avoid-os-chdir-if-you-can" title="Link to this heading"></a></h3>
+<p>Directory changing in <code class="docutils literal notranslate"><span class="pre">python</span></code> is not transient by-default, i.e., if when running <code class="docutils literal notranslate"><span class="pre">fre</span></code> the interpreter changes directories,
+then the result of a <code class="docutils literal notranslate"><span class="pre">os.cwd()</span></code> later in the program may be changed to an unexpected value, leading to difficult bugs.</p>
+<p>This being said, sometimes an <code class="docutils literal notranslate"><span class="pre">os.chdir</span></code> is hard to not want to use. If one has to use directory changing instead of managing
+directory targets explicitly as <code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code> instances, then one can use the following logic to safely <code class="docutils literal notranslate"><span class="pre">chdir</span></code> where needed
+and <code class="docutils literal notranslate"><span class="pre">chdir</span></code> back:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">go_back_here</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+  <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">target_dir</span><span class="p">)</span>
+  <span class="c1"># DO STUFF AFTER CHDIR HERE</span>
+<span class="k">except</span><span class="p">:</span>
+  <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;some error explaining what went wrong&#39;</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+  <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">go_back_here</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="manifest-in">
+<h3><code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code><a class="headerlink" href="#manifest-in" title="Link to this heading"></a></h3>
+<p>In the case where non-python files like templates, examples, and outputs are to be included in the <code class="docutils literal notranslate"><span class="pre">fre-cli</span></code> package,
+<code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> can provide the solution. Ensure that the file exists within the correct folder, and add a line to the
+<code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> file saying something like <code class="docutils literal notranslate"><span class="pre">include</span> <span class="pre">fre/fre&lt;tool&gt;/fileName.fileExtension</span></code></p>
+<ul class="simple">
+<li><p>For more efficiency, if there are multiple files of the same type needed, the <code class="docutils literal notranslate"><span class="pre">MANIFEST.in</span></code> addition can be something
+like <code class="docutils literal notranslate"><span class="pre">recursive-include</span> <span class="pre">fre/fre&lt;tool&gt;</span> <span class="pre">*.fileExtension</span></code> which would recursively include every file matching that
+<code class="docutils literal notranslate"><span class="pre">fileExtension</span></code> within the specified directory and its respective subdirectories.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.html" class="btn btn-neutral float-left" title="API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="for-maintainers.html" class="btn btn-neutral float-right" title="For maintainers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bennett Chang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

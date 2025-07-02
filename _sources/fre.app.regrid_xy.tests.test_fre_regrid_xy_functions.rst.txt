@@ -1,0 +1,7 @@
+fre.app.regrid\_xy.tests.test\_fre\_regrid\_xy\_functions module
+================================================================
+
+.. automodule:: fre.app.regrid_xy.tests.test_fre_regrid_xy_functions
+   :members:
+   :show-inheritance:
+   :undoc-members:
