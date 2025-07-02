@@ -9,12 +9,12 @@ def generate_time_average(infile = None, outfile = None,
     if __debug__:
         fre_logger.info(locals()) #input argument details
     exitstatus=1
-        
+
     myavger=None
 
     #Use cdo to merge multiple files if present
-    merged = False                            
-    if type(infile).__name__=='list' and len(infile)> 1:   #multiple files case. Generates one combined file                           
+    merged = False
+    if type(infile).__name__=='list' and len(infile)> 1:   #multiple files case. Generates one combined file
         from cdo import Cdo
         _cdo=Cdo()
         merged_file = "merged_output.nc"
@@ -24,7 +24,7 @@ def generate_time_average(infile = None, outfile = None,
         merged = True
 
 
-                            
+
     if   pkg == 'cdo'            :
         from .cdoTimeAverager import cdoTimeAverager
         myavger=cdoTimeAverager(pkg = pkg, var=var,
@@ -59,7 +59,7 @@ def generate_time_average(infile = None, outfile = None,
     #remove new file if merged created from multiple infiles
     if merged:   #if multiple files where used, the merged version is now removed
         import os
-        os.remove(merged_file)                            
+        os.remove(merged_file)
     return exitstatus
 
 def generate(inf = None, outf = None,

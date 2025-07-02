@@ -48,16 +48,15 @@ def app_cli():
               type = str,
               help = "`gridSpec` / `grid_spec` (env var) file containing mosaic for regridding",
               required = True)
-@click.option("-xy", "--def_xy_interp",
+@click.option("--rose_config",
               type = str,
-              help = "`defaultxyInterp` / `def_xy_interp` (env var) default lat/lon resolution " + \
-                     "for output regridding. (change me? TODO)",
+              help = "Path to Rose app configuration (to be removed soon)",
               required = True)
 def regrid( input_dir, output_dir, begin, tmp_dir,
-            remap_dir, source, grid_spec, def_xy_interp ):
+            remap_dir, source, grid_spec, rose_config ):
     ''' regrid target netcdf file '''
     regrid_xy( input_dir, output_dir, begin, tmp_dir,
-               remap_dir, source, grid_spec, def_xy_interp )
+               remap_dir, source, grid_spec, rose_config )
 
 @app_cli.command()
 @click.option("-i", "--infile",

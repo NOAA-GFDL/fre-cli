@@ -1,31 +1,63 @@
 cmor:
 
-  # -------------------------------------------------------------------------------------  
-  # these fields are for global directory configuration
-  directories:
-    <<: *shared_directories
-    table_dir: &table_dir
-      "/home/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir"
-    outdir:
-      '/work/Ian.Laflotte/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
-
-  # -------------------------------------------------------------------------------------
   # these fields are for global configuration that isn't a directory
+  # -------------------------------------------------------------------------------------
+  start:
+    *CMOR_START
+  stop:
+    *CMOR_STOP
+    
   mip_era: 
     'CMIP6'
   exp_json:
     '/home/Ian.Laflotte/Working/fre-cli/fre/tests/test_files/CMOR_input_example.json'
-#      !join [*table_dir, '/', "bar_exp_config.json"]
 
+  # these fields are for global directory configuration
+  # -------------------------------------------------------------------------------------  
+  directories:
+    <<: *shared_directories
+    table_dir: &table_dir
+      "/home/$USER/local_cmor_config_dir"
+    outdir:
+      '/work/$USER/Working/fre-cli/local_cmor_config_dir/FOO_TEMP_OUT_TEST'
 
-  # these fields are for configuration that changes by cmor-table-target
+  # these fields are for configuration that changes by cmor-table-target, or by-component
+  # -------------------------------------------------------------------------------------
   table_targets:
+
+# -----------------------------------------------------------------------------------
+#    - table_name: 'CFmon'
+#      variable_list:
+#        !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-CFmon.lst"]
+#      freq: #optional, if not specified we try to figure it out from the MIP table entries
+#      gridding: #optional, a grids.yaml is necessary to specify grid info this way
+#        <<: *gn
+#      gridding: #optional, no yaml necessary, all three must be non-empty, checked against CV by CMOR
+#          grid_label: "gn"
+#          grid_desc: "native gridding ex description"
+#          nom_res: "1000 km" 
+#
+#        
+#      target_components:
+#        - component_name: 'aerosol_cmip'
+#          data_series_type: 'ts'
+#          chunk: *PP_CHUNK_A                  
+#          
+#        - component_name: 'atmos_level_cmip'
+#          data_series_type: 'ts'
+#          chunk: *PP_CHUNK_A                  
+#          
+#        - component_name: 'tracer_level'
+#          data_series_type: 'ts'
+#          chunk: *PP_CHUNK_A                          
+
     # -----------------------------------------------------------------------------------
     - table_name: 'Amon' 
-      freq: 
-      grid_label: 
       variable_list:
         !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-Amon.lst"]
+      freq:
+      gridding:
+        <<: *gr1
         
       target_components:
         - component_name: 'atmos_cmip'
@@ -37,35 +69,41 @@ cmor:
           chunk: *PP_CHUNK_A                  
           
     # -----------------------------------------------------------------------------------
-    - table_name: 'AERmon'
-      freq: 
-      grid_label: 
-      variable_list:
-        !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-AERmon.lst"]
-        
-      target_components:
-        - component_name: 'aerosol_cmip'
-          data_series_type: 'ts'
-          chunk: *PP_CHUNK_A                  
+#    - table_name: 'AERmon'
+#      variable_list:
+#        !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-AERmon.lst"]
+#      freq: 
+#      gridding:
+#          grid_label: "gr"
+#          grid_desc: "regridded to ex description"
+#          nom_res: "10000 km" 
+#        
+#      target_components:
+#        - component_name: 'aerosol_cmip'
+#          data_series_type: 'ts'
+#          chunk: *PP_CHUNK_A                  
 
-    # -----------------------------------------------------------------------------------
-    - table_name: 'CFmon'
-      freq: 
-      grid_label: 
-      variable_list:
-        !join [*table_dir, '/', "GFDL-ESM4_amip_CMOR-CFmon.lst"]
-        
-      target_components:
-        - component_name: 'aerosol_cmip'
-          data_series_type: 'ts'
-          chunk: *PP_CHUNK_A                  
-          
-        - component_name: 'atmos_level_cmip'
-          data_series_type: 'ts'
-          chunk: *PP_CHUNK_A                  
-          
-        - component_name: 'tracer_level'
-          data_series_type: 'ts'
-          chunk: *PP_CHUNK_A                  
-        
 
+
+
+
+
+
+
+
+
+#    # ----------------------------------------------------------------------------------- 
+#    - table_name: 'EXAMPLEmonZ' # table name, must correspond to a JSON MIP table config that exists to be read by CMOR
+#      variable_list: # required, path to a dictionary of variables, helps also to target input files
+#        !join [*table_dir, '/', "variables_to_cmorize_in_this_table.lst"]
+#      freq: #optional, if not specified we try to figure it out from the MIP table entries
+#      gridding: #optional, if specified is applied to all taget components within this table
+#        - grid_label: "gn" # must be one of the options specified in MIP controlled vocab
+#          grid_desc: "native gridding ex description" # helpful description, largely not restricted
+#          nom_res: "10000 km" # must be one of the options specified in MIP controlled vocab
+#        
+#      target_components:
+#        - component_name: 'some_component_name_1' # arbitrary name representing a collection of diagnostics
+#          data_series_type: 'ts' # effectively, two possibilities as i understand it, ts and av. comes from FREBronx
+#          chunk: *PP_CHUNK_A # ISO duration representing calendar time covered by one input file
+   

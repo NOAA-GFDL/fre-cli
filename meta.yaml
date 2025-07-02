@@ -12,6 +12,9 @@ source:
 build:
   script:
     - {{ PYTHON }} -m pip install . -vv
+    - cp fre/mkmf/bin/mkmf $PREFIX/bin
+    - cp fre/mkmf/bin/list_paths $PREFIX/bin
+    - cp fre/mkmf/bin/git-version-string $PREFIX/bin
   number: 1
   noarch: python
 
@@ -21,38 +24,38 @@ channels:
 
 requirements:
   host:
-    - python==3.10
+    - python=3.11.*
     - pip
   run:
-    - python==3.10
+    - python=3.11.*
     - pip
-    - click
-    - pyyaml
-    - pylint
-    - jsonschema
+    - noaa-gfdl::analysis_scripts
     - noaa-gfdl::catalogbuilder
     - noaa-gfdl::fre-nctools
-    - noaa-gfdl::analysis_scripts
-    - conda-forge::nccmp
+    - conda-forge::cftime
+    - conda-forge::click<8.2
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
+    - conda-forge::cmor>=3.10.0
+    - conda-forge::cdo>=2.0.0
+    - conda-forge::jinja2=3.0.*
+    - conda-forge::jsonschema
     - conda-forge::metomi-rose
-    - conda-forge::cmor>=3.9.0
+    - conda-forge::nccmp
+    - conda-forge::pylint
     - conda-forge::pytest
     - conda-forge::pytest-cov
     - conda-forge::python-cdo
-    - conda-forge::cdo>=2.0.0
+    - conda-forge::pyyaml
+    - conda-forge::xarray
 
 test:
-  requires:
-    - pip
-    - pylint
-    - pytest
-    - pytest-cov
   source_files:
     - fre/
   files:
-    - mkmf/templates/linux-ubuntu-xenial-gnu.mk
+    - fre/mkmf/templates/*
+    - pytest.ini
+    - coveragerc
   imports:
     - fre
     - fre.app
@@ -67,7 +70,7 @@ test:
   commands:
     - pylint --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     # run pytest but ignore any tests that require compilation
-    - coverage run -m pytest --ignore=fre/make/tests/compilation --config-file=fre/pytest.ini --cov-report term-missing --cov-config=fre/coveragerc --cov=fre fre/ 
+    - coverage run -m pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation --config-file=pytest.ini --cov-report term-missing --cov-config=coveragerc --cov=fre fre/ 
     - fre --help
     - fre app --help
     - fre catalog --help
@@ -82,7 +85,7 @@ test:
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
-  license: LGPL-3.0
+  license: Apache2.0
   license_file: LICENSE.md
   summary: Command line interface for FMS Runtime Environment (FRE) workflow commands
   author: Bennett Chang, Dana Singh, Chris Blanton

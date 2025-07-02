@@ -132,7 +132,9 @@ cylc gui --ip=`hostname -f` --port=`jhp 1` --no-browser
 
 ## **PP Wrapper Usage**
 
-Here
+```
+fre pp all -e EXPNAME -p PLATFORM -t TARGET
+```
 
 ### **PP Wrapper Decision Tree**
 ![pp_wrapper_decsiontree](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/d3eaa237-1e29-4922-9d83-8d9d11925c54)

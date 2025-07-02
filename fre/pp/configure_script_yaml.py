@@ -18,9 +18,7 @@ import metomi.rose.config
 import fre.yamltools.combine_yamls_script as cy
 
 import logging
-logging.basicConfig()
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+fre_logger = logging.getLogger(__name__)
 
 ####################
 def yaml_load(yamlfile):
@@ -40,28 +38,28 @@ def validate_yaml(yamlfile):
     """
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
-    logger.info(f"Using yaml schema '{schema_path}'")
+    fre_logger.info(f"Using yaml schema '{schema_path}'")
     # Load the json schema: .load() (vs .loads()) reads and parses the json in one)
     try:
         with open(schema_path,'r') as s:
             schema = json.load(s)
     except:
-        logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
+        fre_logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
         raise
 
     # Validate yaml
     # If the yaml is not valid, the schema validation will raise errors and exit
     try:
         validate(instance=yamlfile,schema=schema)
-        logger.info("Combined yaml valid")
+        fre_logger.info("Combined yaml valid")
     except SchemaError:
-        logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
+        fre_logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
         raise
     except ValidationError:
-        logger.error("Combined yaml is not valid. Please fix the errors and try again.")
+        fre_logger.error("Combined yaml is not valid. Please fix the errors and try again.")
         raise
     except:
-        logger.error("Unclear error from validation. Please try to find the error and try again.")
+        fre_logger.error("Unclear error from validation. Please try to find the error and try again.")
         raise
 
 ####################
@@ -95,9 +93,11 @@ def rose_init(experiment,platform,target):
 def quote_rose_values(value):
     """
     rose-suite.conf template variables must be quoted unless they are
-    boolean, in which case do not quote them.
+    boolean or a list, in which case do not quote them.
     """
     if isinstance(value, bool):
+        return f"{value}"
+    elif isinstance(value, list):
         return f"{value}"
     else:
         return "'" + str(value) + "'"
@@ -162,7 +162,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
             sources = []
             for s in i.get("sources"):
                 sources.append(s.get("history_file"))
-            # Add static sources to sources list if defined 
+            # Add static sources to sources list if defined
             if i.get("static") is not None:
                 for s in i.get("static"):
                     sources.append(s.get("source"))
@@ -185,7 +185,7 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     directory. The pp.yaml is also copied to the
     cylc-src directory.
     """
-    logger.info('Starting')
+    fre_logger.info('Starting')
 
     if None in [yamlfile, experiment, platform, target]:
         raise ValueError( 'yamlfile, experiment, platform, and target must all not be None.'
@@ -204,9 +204,7 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
 
     full_yamldict = cy.consolidate_yamls(yamlfile = yml,
-                                         experiment = e,
-                                         platform = p,
-                                         target = t,
+                                         experiment = e, platform = p, target = t,
                                          use = "pp",
                                          output = outfile)
 
@@ -221,23 +219,23 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     set_rose_apps(full_yamldict,rose_regrid,rose_remap) ####comb_pp_yaml,rose_regrid,rose_remap)
 
     # Write output files
-    logger.info("Writing output files...")
-    logger.info("  " + outfile)
+    fre_logger.info("Writing output files...")
+    fre_logger.info("  " + outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
     outfile = os.path.join(cylc_dir, "rose-suite.conf")
     dumper(rose_suite, outfile)
-    logger.info("  " + outfile)
+    fre_logger.info("  " + outfile)
 
     outfile = os.path.join(cylc_dir, "app", "regrid-xy", "rose-app.conf")
     dumper(rose_regrid, outfile)
-    logger.info("  " + outfile)
+    fre_logger.info("  " + outfile)
 
     outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
     dumper(rose_remap, outfile)
-    logger.info("  " + outfile)
+    fre_logger.info("  " + outfile)
 
-    logger.info('Finished')
+    fre_logger.info('Finished')
 
 # Use parseyaml function to parse created edits.yaml
 if __name__ == '__main__':

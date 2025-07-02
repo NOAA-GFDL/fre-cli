@@ -1,15 +1,21 @@
-''' This script will locate all diag_manifest files in a provided directory containing history files then run the nccheck script to validate the number of timesteps in each file'''
+''' 
+This script will locate all diag_manifest files in a provided directory containing 
+history files then run the nccheck script to validate the number of timesteps in each file
+'''
 
 import os
 import logging
 import yaml
-from fre.pp import nccheck_script as ncc
+from . import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
 
 
 def validate(history,date_string,warn):
-    """ Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found in the diag_manifest file(s) """
+    """ 
+    Compares the number of timesteps in each netCDF (.nc) file to the number of expected 
+    timesteps as found in the diag_manifest file(s) 
+    """
 
     # Mega manifest sounds cool... it'll just be all of the data from the diag_manifests combined in list form
     mega_manifest=[]
@@ -34,8 +40,10 @@ def validate(history,date_string,warn):
     # Make sure we found atleast one diag_manifest
     if diag_count < 1:
         if not warn:
-            raise FileNotFoundError(f" No diag_manifest files were found in {history}. History files cannot be validated.")
-        fre_logger.warning(f" Warning: No diag_manifest files were found in {history}. History files cannot be validated.")
+            raise FileNotFoundError(
+                f" No diag_manifest files were found in {history}. History files cannot be validated.")
+        fre_logger.warning(
+            f" Warning: No diag_manifest files were found in {history}. History files cannot be validated.")
         return 0
 
     # Go through the mega manifest, get expected timelevels and number of tiles, then add to dictionary
@@ -60,14 +68,15 @@ def validate(history,date_string,warn):
                            f"{history}",
                            f"{date_string}.{filename}.nc")
 
-            result = ncc.check(filepath,info[filename][0])
-
-            if result==1:
+            try:
+                ncc.check(filepath,info[filename][0])
+            except ValueError:
                 fre_logger.error(f" Timesteps found in {filepath} differ from expectation in diag manifest")
                 mismatches.append(filepath)
 
     #Error Handling
     if len(mismatches)!=0:
+        fre_logger.error("Unexpected number of timesteps found")
         raise ValueError(
               "\n" + str(len(mismatches)) + 
               " file(s) contain(s) an unexpected number of timesteps:\n" + 

@@ -1,8 +1,7 @@
 '''
-    \date 2023
-    \author Tom Robinson
-    \email thomas.robinson@noaa.gov
-    \description
+    \\date 2023
+    \\author Tom Robinson
+    \\email thomas.robinson@noaa.gov
 '''
 
 import os
@@ -67,8 +66,8 @@ class container():
             self.secondstage = [f"FROM {self.stage2base} as final\n",
                                 f"COPY --from=builder  {self.src} {self.src}\n",
                                 f"COPY --from=builder {self.bld} {self.bld}\n",
-                                f"RUN mkdir -p /apps/bin \\ \n",
-                                f" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh \n",
+                                "RUN mkdir -p /apps/bin \\ \n",
+                                f" && ln -sf {self.bld}/execrunscript.sh /apps/bin/execrunscript.sh \n",
                                 f"ENV PATH=$PATH:{self.bld}:/apps/bin\n"]
     def writeDockerfileCheckout(self, cScriptName, cOnDisk):
         """
@@ -100,12 +99,12 @@ class container():
         """
         # Set up the bldDir
         # If no additional libraries defined
-        if self.l == None:
+        if self.l is None:
             self.bldCreate=["RUN mkdir -p "+self.bld+" \n",
                             "COPY "+ makefileOnDiskPath  +" "+self.bld+"/Makefile \n"]
             self.d.writelines(self.bldCreate)
         # If additional libraries defined
-        if self.l != None:
+        if self.l is not None:
             self.bldCreate=["RUN mkdir -p "+self.bld+" \n",
                             "COPY "+ makefileOnDiskPath  +" "+self.bld+"/Makefile \n",
                             "RUN chmod +rw "+self.bld+"/Makefile \n",
@@ -141,7 +140,9 @@ class container():
         self.d.write(" && cd $bld_dir/"+comp+" \\ \n")
 
         # Create the mkmf line
-        if c["requires"] == [] and c["doF90Cpp"]: # If this lib doesnt have any code dependencies and it requires the preprocessor (no -o and yes --use-cpp)
+        # If this lib doesnt have any code dependencies and it
+        # requires the preprocessor (no -o and yes --use-cpp)
+        if c["requires"] == [] and c["doF90Cpp"]:
             self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template --use-cpp -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
         elif c["requires"] == []: # If this lib doesnt have any code dependencies (no -o)
             self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
@@ -217,26 +218,42 @@ class container():
         self.d.write('ENTRYPOINT ["/bin/bash"]')
         self.d.close()
 
-    def createBuildScript(self,containerBuild,containerRun, skip_format_transfer):
+    def createBuildScript(self, platform, skip_format_transfer):
         """
         Brief: Writes out the build commands for the created dockerfile in a script,
                which builds the dockerfile and then converts the format to a singularity image file.
         Param:
             - self : The dockerfile object
-            - containerBuild : The tool used to build the container;
-                               docker or podman used
-            - containerRun : The container platform used with `exec` to
-                             run the container; apptainer or singularity used
+            - platform : The platform object
+            - skip_format_transfer : skip the container format conversion to a .sif file
         """
+        containerName = f"{self.e}-{self.target.gettargetName()}"
+        containerBuild = platform["containerBuild"]
+        containerRun = platform["containerRun"]
+        containerOutputLocation = platform["containerOutputLocation"]
+        # Container tag must be all lowercase
+        registry_tag = self.e.lower()
+        platform_tag = self.target.gettargetName().lower()
+
         self.userScript = ["#!/bin/bash\n"]
-        self.userScript.append(containerBuild+" build -f Dockerfile -t "+self.e+":"+self.target.gettargetName()+"\n")
+        self.userScript.append(f"{containerBuild} build -f Dockerfile -t {registry_tag}:{platform_tag}\n")
+
         if not skip_format_transfer:
-            self.userScript.append("rm -f "+self.e+"-"+self.target.gettargetName()+".tar "+self.e+"-"+self.target.gettargetName()+".sif\n")
-            self.userScript.append(containerBuild+" save -o "+self.e+"-"+self.target.gettargetName()+".tar localhost/"+self.e+":"+self.target.gettargetName()+"\n")
-            self.userScript.append(containerRun+" build --disable-cache "+self.e+"-"+self.target.gettargetName()+".sif docker-archive://"+self.e+"-"+self.target.gettargetName()+".tar\n")
+            # Remove any previously generated images, if they exist
+            self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
+
+            self.userScript.append(f"{containerBuild} save -o {containerName}.tar localhost/{registry_tag}:{platform_tag}\n")
+            self.userScript.append(f"{containerRun} build --disable-cache {containerName}.sif docker-archive://{containerName}.tar\n")
+            if containerOutputLocation != "":
+                self.userScript.append(f"mkdir -p {containerOutputLocation}\n")
+                self.userScript.append(f"cp {containerName}.sif {containerOutputLocation}/{containerName}.sif\n")
+                self.userScript.append(f"cp {containerName}.tar {containerOutputLocation}/{containerName}.tar\n")
+
+                # Remove it from the original location
+                self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
+
         self.userScriptFile = open("createContainer.sh","w")
         self.userScriptFile.writelines(self.userScript)
         self.userScriptFile.close()
         os.chmod("createContainer.sh", 0o744)
         self.userScriptPath = os.getcwd()+"/createContainer.sh"
-

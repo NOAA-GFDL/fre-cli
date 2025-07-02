@@ -3,21 +3,24 @@ channels:
   - conda-forge
   - noaa-gfdl
 dependencies:
-  - python==3.10
+  - python=3.11.*
   - pip
-  - click
-  - pyyaml
-  - pylint
-  - jsonschema
-  - noaa-gfdl::fre-nctools
-  - noaa-gfdl::catalogbuilder
   - noaa-gfdl::analysis_scripts
-  - conda-forge::nccmp
+  - noaa-gfdl::catalogbuilder
+  - noaa-gfdl::fre-nctools
+  - conda-forge::cftime
+  - conda-forge::click<8.2
   - conda-forge::cylc-flow>=8.2.0
   - conda-forge::cylc-rose
+  - conda-forge::cmor>=3.10.0
+  - conda-forge::cdo>=2.0.0
+  - conda-forge::jinja2=3.0.*
+  - conda-forge::jsonschema
   - conda-forge::metomi-rose
-  - conda-forge::cmor>=3.9.0
+  - conda-forge::nccmp
+  - conda-forge::pylint
   - conda-forge::pytest
   - conda-forge::pytest-cov
   - conda-forge::python-cdo
-  - conda-forge::cdo>=2.0.0
+  - conda-forge::pyyaml
+  - conda-forge::xarray

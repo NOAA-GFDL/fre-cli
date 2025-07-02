@@ -49,8 +49,7 @@ This file can follow the format below:
        history_segment: "amount of time covered by a single history file (ISO8601 datetime)"                              (string)
        pp_start: "start of the desired postprocessing (ISO8601 datetime)"                                                 (string)
        pp_stop: "end of the desired postprocessing (ISO8601 datetime)"                                                    (string)
-       pp_chunk_a: "amount of time covered by a single postprocessed file (ISO8601 datetime)"                             (string)
-       pp_chunk_b: "secondary chunk size for postprocessed files, if desired (ISO8601 datetime). Divisble by pp_chunk_a"  (string)
+       pp_chunks: "array of ISO8601 datetime durations, specifying the interval of simulated time per postprocessed file" (string)
        pp_grid_spec: "path to FMS grid definition tarfile"                                                                (string)
      switches:
        do_timeavgs: "switch to turn on/off time-average file generation"                                                  (boolean)
@@ -68,7 +67,7 @@ Required keys include:
     - ptmp_dir
     - site
     - history_segment
-    - pp_chunk_a
+    - pp_chunks
     - pp_start
     - pp_stop
     - pp_grid_spec

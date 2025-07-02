@@ -18,6 +18,8 @@ fre_logger = logging.getLogger(__name__)
 import metomi.rose.config
 import metomi.isodatetime.parsers
 
+from . import make_workflow_name
+
 #############################################
 
 LOGGING_FORMAT = '%(asctime)s  %(levelname)s: %(message)s'
@@ -546,22 +548,13 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
     # Process all of the found PP chunks into the rose-suite configuration
     fre_logger.info("Setting PP chunks...")
 
-    sorted_chunks = list(chunks)
-    sorted_chunks.sort(key=duration_to_seconds, reverse=False)
-
     if len(chunks) == 0:
         raise ValueError('no chunks found! exit.')
 
+    sorted_chunks = list(chunks)
+    sorted_chunks.sort(key=duration_to_seconds, reverse=False)
     fre_logger.info("  Chunks found: %s", ', '.join(sorted_chunks))
-    if len(chunks) == 1:
-        rose_suite.set(['template variables', 'PP_CHUNK_A'],
-                       f"'{sorted_chunks[0]}'")
-    else:
-        rose_suite.set(['template variables', 'PP_CHUNK_A'],
-                       f"'{sorted_chunks[0]}'")
-        rose_suite.set(['template variables', 'PP_CHUNK_B'],
-                       f"'{sorted_chunks[1]}'")
-    fre_logger.info("  Chunks used: %s", ', '.join(sorted_chunks[0:2]) )
+    rose_suite.set(['template variables', 'PP_CHUNKS'], f"{sorted_chunks}")
 
     # Write out the final configurations.
     fre_logger.info("Writing output files...")
@@ -598,11 +591,11 @@ def _convert(xml, platform, target, experiment, do_analysis=False, historydir=No
         fre_logger.setLevel( level = logging.WARNING )
 
     # Set the name of the directory
-    name = f"{experiment}__{platform}__{target}"
+    workflow_name = make_workflow_name(experiment,platform,target)
 
     # Create the directory if it doesn't exist
     cylc_dir = os.path.expanduser("~/cylc-src")
-    new_dir = os.path.join(cylc_dir, name)
+    new_dir = os.path.join(cylc_dir, workflow_name)
     os.makedirs(new_dir, exist_ok=True)
 
     # Change the current working directory

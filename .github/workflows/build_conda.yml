@@ -3,6 +3,12 @@ on:
   pull_request:
     branches:
       - main
+
+# cancel running jobs if theres a newer push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,19 +20,28 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Add mkmf to GITHUB_PATH
-        run: |
-          # add mkmf to GITHUB_PATH
-          echo $PWD/mkmf/bin >> $GITHUB_PATH
-
       - name: Run Conda to Build
         run: |
           # append the reqd channels
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
 
+          # remove any default channels
+          conda config --remove channels defaults
+
+          # just in case
+          conda config --show channels
+
           # install conda-build and conda-verify
           conda install conda-build conda-verify
 
           # conda build
-          conda build .
+          mkdir -p /app/fre-cli-tarball
+          conda build --package-format tar.bz2 --output-folder /app/fre-cli-tarball .
+
+      - name: Upload fre-cli tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: fre-cli-tarball
+          path: /app/fre-cli-tarball/noarch/fre-cli-*.tar.bz2
+          if-no-files-found: error

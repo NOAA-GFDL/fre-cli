@@ -2,6 +2,7 @@
 import pathlib as pl
 import pytest
 import subprocess
+import os
 
 def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=None, unwgt=None):
     ''' test-harness function, called by other test functions. '''
@@ -185,7 +186,7 @@ def test_compare_fre_cli_to_fre_nctools():
 '''
 @pytest.mark.skip(reason='test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_fre_cli_to_cdo():
-    ''' compares fre_cli pkg answer to cdo pkg answer '''    
+    ''' compares fre_cli pkg answer to cdo pkg answer '''
     import numpy as np
     import netCDF4 as nc
     fre_pytools_inf=nc.Dataset(str_fre_pytools_inf,'r')
@@ -289,7 +290,7 @@ base_file_names=['ocean_1x1.000101-000212.tos','ocean_1x1.000301-000412.tos']
 for base_file_name in base_file_names:
     ncgen_input = (time_avg_file_dir + base_file_name+".cdl")
     ncgen_output = (time_avg_file_dir + base_file_name+".nc")
-    
+
     if pl.Path(ncgen_output).exists():
         pl.Path(ncgen_output).unlink()
     assert pl.Path(ncgen_input).exists()
@@ -332,7 +333,7 @@ def test_cdo_time_unwgt_avgs_two_files():
         infile  = two_test_file_names,
         outfile = (time_avg_file_dir+'timmean_unwgt_'+two_out_file_name),
         pkg='cdo',avg_type='all',unwgt=True )
-  
+
 #### cdo avgs, weighted, all/seasonal/monthly ------------------------
 def test_cdo_time_avgs_two_files():
     ''' generates a weighted time averaged file using cdo '''
@@ -396,39 +397,74 @@ def test_fre_cli_time_unwgt_avgs_stddevs_two_files():
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'frepytools_unwgt_stddev_'+two_out_file_name),
         pkg='fre-python-tools',avg_type='all',  unwgt=True )
+
+def test_fre_cli_app_gen_time_avg_cleanup():
+    ''' Removes all .nc files in fre/app/generate_time_averages/tests/test_data/ '''
+    nc_files = [os.path.join(time_avg_file_dir, el) for el in os.listdir(time_avg_file_dir)
+                 if el.endswith(".nc")]
+    nc_files = [pl.Path(el) for el in nc_files]
+    for nc in nc_files:
+        pl.Path.unlink(nc)
+    nc_remove = [not pl.Path(el).exists() for el in nc_files]
+    assert all(nc_remove)
+
 '''
 To be implemnted when fre-nctools has been updated. these options currently work locally if a user has fre-nctools in their conda env.
 ## fre-nctools avgs+stddevs, weighted+unweighted, all ------------------------
 def test_fre_nctool_time_avgs():
-    # generates a time averaged file using fre_nctools's version 
-    # weighted average, no std deviation 
+    # generates a time averaged file using fre_nctools's version
+    # weighted average, no std deviation
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_timavg_'+two_out_file_name),
         pkg='fre-nctools',avg_type='all', unwgt=False )
 
 def test_fre_nctools_time_unwgt_avgs():
-    # generates a time averaged file using fre_nctools's version 
-    # weighted average, no std deviation 
+    # generates a time averaged file using fre_nctools's version
+    # weighted average, no std deviation
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_unwgt_timavg_'+two_out_file_name),
         pkg='fre-nctools',avg_type='all', unwgt=True )
 
 def test_fre_nctool_time_avgs_stddevs():
-    # generates a time averaged file using fre_nctool's version 
-    # weighted average, no std deviation 
+    # generates a time averaged file using fre_nctool's version
+    # weighted average, no std deviation
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_stddev_'+two_out_file_name),
         pkg='fre-nctools',avg_type='all',  unwgt=False )
 
 def test_fre_nctool_time_unwgt_avgs_stddevs():
-    # generates a time averaged file using fre_nctool's version 
-    # weighted average, no std deviation 
+    # generates a time averaged file using fre_nctool's version
+    # weighted average, no std deviation
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
         outfile = (time_avg_file_dir+'fre_nctools_unwgt_stddev_'+two_out_file_name),
         pkg='fre-nctools',avg_type='all',  unwgt=True )
 
+# This set of tests is for the monthly frenctools option
+def test_fre_nctools_all():
+    # tests run of frenctools climatology with all flag
+    assert run_avgtype_pkg_calculations(
+        infile  = (time_avg_file_dir+test_file_name),
+        outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
+        pkg='fre-nctools',avg_type='all', unwgt=False )
+    
+def test_fre_nctools_month():
+    # tests run of frenctools climatology with month flag
+    assert run_avgtype_pkg_calculations(
+        infile  = (time_avg_file_dir+test_file_name),
+        outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
+        pkg='fre-nctools',avg_type='month', unwgt=False )
+        
+def test_path_frenctools_month():
+    #tests if files are being generated in the right spot for frenctools monthly climatology
+    run_avgtype_pkg_calculations(
+        infile  = (time_avg_file_dir+test_file_name),
+        outfile = (time_avg_file_dir+'frepytools_timavg_'+test_file_name),
+        pkg='fre-nctools',avg_type='month', unwgt=False )
+    assert pl.Path(time_avg_file_dir+'../monthly_output_files/April_out.nc').exists()
 '''
+
+
