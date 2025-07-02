@@ -5,15 +5,20 @@ import xarray as xr
 import logging
 fre_logger = logging.getLogger(__name__)
 
-def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str):
-    """Mask pressure-level diagnostic output below land surface_
+def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
+    """_Mask pressure-level diagnostic output below land surface_
 
     :param infile: _Input NetCDF file containing pressure-level output to be masked_
     :type infile: str
     :param psfile: _Input NetCDF file containing surface pressure 'ps'_
     :type psfile: str
-    : param outfile: _Output NetCDF file containing masked output_
+    :param outfile: _Output NetCDF file containing masked output_
     :type outfile: str
+    :raises FileExistsError: _Output file already exists_
+    :raises FileNotFoundError: _Pressure input file does not exist_
+    :raises ValueError: _Pressure input file does not contain ps
+    :raises FileNotFound: _Input file does not exist_
+    :rtype: _None_
 
     .. note:: Input variables must have an attribute `pressure_mask` set to `False`. Output variables have the attribute set to `True`.
     """
@@ -59,8 +64,19 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str):
         fre_logger.debug(f"No variables modified, so not writing output file '{outfile}'")
 
 
-def mask_field_above_surface_pressure(ds, var, ds_ps):
-    """mask data with pressure larger than surface pressure"""
+def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Dataset) -> xr.Dataset:
+    """_Mask data with pressure larger than surface pressure_
+    :param ds: _Input dataset to be masked_
+    :type infile: xarray.Dataset
+    :param var: _Input variable to be masked_
+    :type var: str
+    :return:_Output masked dataset_
+    :rtype: _xrray.Dataset_
+
+    .. note:: Missing values are set to 1.0e20.
+    """
+
+    # retrieve the pressure coordinate name
     plev = pressure_coordinate(ds, var)
 
     # broadcast pressure coordinate and surface pressure to
@@ -86,22 +102,39 @@ def mask_field_above_surface_pressure(ds, var, ds_ps):
     return masked
 
 
-def pressure_coordinate(ds, varname):#, verbose=False):
-    """check if dataArray has pressure coordinate fitting requirements
-    and return it"""
+def pressure_coordinate(ds: xr.Dataset, varname: str):
+    """_Check if dataArray has pressure coordinate fitting requirements
+    and return it_
+    :param ds: _Input dataset to inspect_
+    :type ds: xarray.Dataset
+    :param var: _Input variable name to inspect_
+    :type var: str
+    :return: _Pressure coordinate variable_
+    :rtype _Unknwon_
+
+    .. warning:: Returns None if no pressure coordinate variable can be found
+    """
 
     pressure_coord = None
+
     for dim in list(ds[varname].dims):
         if dim in list(ds.variables):  # dim needs to have values in file
             if ds[dim].attrs["long_name"] == "pressure":
                 pressure_coord = ds[dim]
             elif ("coordinates" in ds.attrs) and (ds[dim].attrs["units"] == "Pa"):
                 pressure_coord = ds[dim]
+
     return pressure_coord
 
 
-def write_dataset(ds, template, outfile):
-    """prepare the dataset and dump into netcdf file"""
+def write_dataset(ds: xr.Dataset, template: xr.Dataset, outfile: str) -> None:
+    """_Prepare the dataset and write output NetCDF file_
+    :param ds: _Input dataset to write to disk
+    :type infile: xarray.Dataset
+    :param template: _Remainder dataset to also write to disk
+    :type template: xarray.Dataset
+    :rtype: _None_
+    """
 
     # copy global attributes
     ds.attrs = template.attrs.copy()
@@ -113,27 +146,6 @@ def write_dataset(ds, template, outfile):
             continue
         ds[var] = template[var]
         ds[var].attrs = template[var].attrs.copy()
+
     # write to file
     ds.to_netcdf(outfile, unlimited_dims="time")
-
-
-
-def set_netcdf_encoding(ds, pressure_vars):
-    """set preferred options for netcdf encoding"""
-    all_vars = list(ds.variables)
-    encoding = {}
-    #for var in do_not_encode_vars + pressure_vars: #what was here in first place
-    for var in pressure_vars: #remove unused variable
-        if var in all_vars:
-            encoding.update( { var :
-                               { '_FillValue':None} } )
-    return encoding
-
-
-def post_write(filename, var_with_bounds, bounds_variables):
-    """fix a posteriori attributes that xarray.to_netcdf
-    did not do properly using low level netcdf lib"""
-    f = nc.Dataset(filename, "a")
-    for var, bndvar in zip(var_with_bounds, bounds_variables):
-        f.variables[var].setncattr("bounds", bndvar)
-    f.close()
