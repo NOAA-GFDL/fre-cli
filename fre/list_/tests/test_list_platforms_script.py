@@ -5,6 +5,7 @@ import pytest
 from pathlib import Path
 import yaml
 from fre.list_ import list_platforms_script
+from fre.yamltools import combine_yamls_script as cy
 from fre.yamltools import helpers
 
 # SET-UP
@@ -31,7 +32,7 @@ def test_platformyaml_exists():
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/platforms.yaml").exists()
 
 # Test whole tool 
-def test_platforms_list(caplog):
+def test_platforms_list_correct(caplog):
     ''' test list platforms '''
     list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
@@ -64,5 +65,39 @@ def test_yamlvalidate(caplog):
 
     for record in caplog.records:
         record.levelname == "INFO"
+
+def test_yamlcontent_valid():
+    ''' Test that yaml dictionary content is valid '''
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+
+    # Combine model / experiment
+    yml_dict = cy.consolidate_yamls(yamlfile = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}",
+                                    experiment = EXP_NAME,
+                                    platform = PLATFORM,
+                                    target = TARGET,
+                                    use = "compile",
+                                    output = None)
+
+    # compare combined yaml info with some information that's supposed to be parsed
+    expected_platform_info_1 = {'name': 'ncrc5.intel23',
+                                'compiler': 'intel',
+                                'modulesInit': [' module use -a /ncrc/home2/fms/local/modulefiles \n', 'source $MODULESHOME/init/sh \n'],
+                                'modules': ['intel-classic/2023.2.0', 'fre/bronx-21', 'cray-hdf5/1.12.2.11', 'cray-netcdf/4.9.0.11'],
+                                'mkTemplate': '/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/intel-classic.mk',
+                                'modelRoot': '${HOME}/fremake_canopy/test'}
+    expected_platform_info_2 = {'name': 'hpcme.2023',
+                                'compiler': 'intel',
+                                'RUNenv': ['. /spack/share/spack/setup-env.sh', 'spack load libyaml', 'spack load netcdf-fortran@4.5.4', 'spack load hdf5@1.14.0'],
+                                'modelRoot': '/apps',
+                                'container': True,
+                                'containerBuild': 'podman',
+                                'containerRun': 'apptainer',
+                                'containerBase': 'docker.io/ecpe4s/noaa-intel-prototype:2023.09.25',
+                                'mkTemplate': '/apps/mkmf/templates/hpcme-intel21.mk'}
+
+    for key,value in yml_dict.items():
+        if key == "platforms":
+            assert expected_platform_info_1 in value
+            assert expected_platform_info_2 in value
 
 #def test_not_valid_yaml():
