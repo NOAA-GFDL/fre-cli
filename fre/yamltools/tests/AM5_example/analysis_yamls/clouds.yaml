@@ -5,7 +5,7 @@ analysis:
       date_range: [*ANA_AMIP_START, *ANA_AMIP_END]
     workflow:
       components: ["atmos-test"]
-      cumulative: False
+      script_type: 'independent'
       product: 'ts'
-      script_frequency: *PP_AMIP_CHUNK96
+      chunk_size: *PP_AMIP_CHUNK96
       analysis_on: True

@@ -50,6 +50,7 @@ class platforms ():
                 p["containerBase"] = ""
                 p["container2step"] = False
                 p["container2base"] = ""
+                p["containerOutputLocation"] = ""
             if p["container"]:
                 ## Check the container builder
                 try:
@@ -95,6 +96,12 @@ class platforms ():
                     raise Exception("You must specify the program used to run the container (containerRun) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerRun"] != "apptainer" and p["containerRun"] != "singularity":
                     raise ValueError("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n")
+
+                ## Get the path to where the output model container will be located
+                try:
+                    p["containerOutputLocation"]
+                except:
+                    p["containerOutputLocation"] = ""
             else:
                 ## Find the location of the mkmf template
                 try:

@@ -1,0 +1,91 @@
+definitions:
+  - regrid-c1: &regrid-c1
+      xyInterp: "180,288"
+      interpMethod: "conserve_order1"
+      inputRealm: 'atmos'
+      sourceGrid: 'cubedsphere'
+  - regrid-c1: &regrid-c2
+      xyInterp: "180,288"
+      interpMethod: "conserve_order2"
+      inputRealm: 'atmos'
+      sourceGrid: 'cubedsphere'
+  - regrid-c1: &regrid-land
+      xyInterp: "180,288"
+      interpMethod: "conserve_order1"
+      inputRealm: 'land'
+      sourceGrid: 'cubedsphere'
+
+postprocess:
+  components:
+    - type: 'atmos'
+      sources:
+        - history_file: "atmos_4xdaily"
+        - history_file: "atmos_8xdaily"
+        - history_file: "atmos_daily"
+        - history_file: "atmos_month"
+      <<: *regrid-c2
+      postprocess_on: True
+    - type: 'atmos_cmip'
+      sources:
+        - history_file: "atmos_8xdaily_cmip"
+        - history_file: "atmos_daily_cmip"
+        - history_file: "atmos_month_cmip"
+      <<: *regrid-c2
+      postprocess_on: True
+    - type: 'atmos_scalar'
+      sources:
+        - history_file: "atmos_global_cmip"
+        - history_file: "atmos_scalar"
+      postprocess_on: True
+    - type: 'atmos_diurnal'
+      sources:
+        - history_file: "atmos_diurnal"
+      <<: *regrid-c2
+      postprocess_on: True
+    - type: 'aerosol'
+      sources:
+        - history_file: "aerosol_month_cmip"
+      <<: *regrid-c2
+      postprocess_on: True
+    - type: 'atmos_level'
+      sources:
+        - history_file: "atmos_level_cmip"
+      <<: *regrid-c2
+      postprocess_on: True
+    - type: 'atmos_month_aer'
+      sources:
+        - history_file: "atmos_month_aer"
+      <<: *regrid-c1
+      postprocess_on: True
+    - type: 'tracer_level'
+      sources:
+        - history_file: "atmos_tracer"
+      <<: *regrid-c2
+      postprocess_on: True
+    - type: 'land'
+      sources:
+        - history_file: "land_month"
+      <<: *regrid-land
+      postprocess_on: True
+    - type: 'land_cmip'
+      sources:
+        - history_file: "land_daily_cmip"
+        - history_file: "land_month_cmip"
+      <<: *regrid-land
+      postprocess_on: True
+    - type: 'land_inst'
+      sources:
+        - history_file: "land_month_inst"
+      <<: *regrid-land
+      postprocess_on: True
+    - type: 'river'
+      sources:
+        - history_file: "river_daily"
+        - history_file: "river_month"
+      <<: *regrid-land
+      postprocess_on: True
+    - type: 'river_inst'
+      sources:
+        - history_file: "river_month_inst"
+      <<: *regrid-land
+      postprocess_on: True

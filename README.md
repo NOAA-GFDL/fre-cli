@@ -103,23 +103,6 @@ Method 1 for finalizing contributions.
     conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli
 ```
 
-
-## New Release Versioning Procedure 
-
-- [ ] 1. Update the package release number (i.e. reported by `fre --version`) in your PR branch before merging to `main`
-  - [ ] edit `version` in setup.py
-  - [ ] edit two version mentions in fre/tests/test_fre_cli.py
-
-- [ ] 2. Create tag in fre-cli (this repository) and associated github release
-  - [ ] locally this can be done with `git tag -a <release>` and `git push --tags`
-  - [ ] [observe the tagged release here](https://github.com/NOAA-GFDL/fre-cli/releases)
-
-- [ ] 3. Create corresponding tag in [fre-workflows](https://github.com/NOAA-GFDL/fre-workflows/tags)
-
-- [ ] 4. Observe new conda package deployed to [noaa-gfdl channel](https://anaconda.org/NOAA-GFDL/fre-cli)
-
-
-
 ## GFDL deployment notes
 Presently, all PRs accepted for merging to `main` trigger a conda-package deployment to the 
 [`noaa-gfdl` channel](https://anaconda.org/NOAA-GFDL/fre-cli), with the latest package version. 
@@ -171,3 +154,7 @@ You can always check the specific version, down to the patch-release space, with
 $ ] fre --version
 fre, version 2025.NN.PP
 ```
+
+# Disclaimer
+The United States Department of Commerce (DOC) GitHub project code is provided on an 'as is' basis and the user assumes responsibility for its use. DOC has relinquished control of the information and no longer has responsibility to protect the integrity, confidentiality, or availability of the information. Any claims against the Department of Commerce stemming from the use of its GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.
+

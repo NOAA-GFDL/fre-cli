@@ -2,9 +2,9 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='fre-cli',
-    version='2025.02',
+    version='2025.04',
     description='Command Line Interface for FRE commands',
-    author='MSD Workflow Team, Bennett Chang, Dana Singh, Chris Blanton',
+    author='MSD Workflow Team',
     author_email='oar.gfdl.workflow@noaa.gov',
     packages=find_namespace_packages(),
     include_package_data=True,
@@ -17,7 +17,9 @@ setup(
         'cylc-flow',
         'cylc-rose',
         'cdo',
-        'metomi-rose'
+        'cmor',
+        'metomi-rose',
+        'xarray'
     ],
     entry_points={
         'console_scripts': [

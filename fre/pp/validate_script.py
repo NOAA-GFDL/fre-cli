@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+from . import make_workflow_name
 
 def validate_subtool(experiment = None, platform = None, target = None):
     """
@@ -14,19 +15,32 @@ def validate_subtool(experiment = None, platform = None, target = None):
                           f'{experiment} / {platform} / {target}')
 
     go_back_here = os.getcwd()
-    directory = os.path.expanduser('~/cylc-src/' + experiment + '__' + platform + '__' + target)
+    directory = os.path.expanduser(
+        '~/cylc-src/' + make_workflow_name(experiment, platform, target) )
 
-    # Change the current working directory
-    os.chdir(directory)
+    try:
+        # Change the current working directory
+        os.chdir(directory)
+        
+        # Run the Rose validation macros
+        cmd = "rose macro --validate"
+        subprocess.run(cmd, shell=True, check=True)
+    except:
+        raise Exception('rose macro --validate exited non-zero')
+    finally:
+        os.chdir(go_back_here)
 
-    # Run the Rose validation macros
-    cmd = "rose macro --validate"
-    subprocess.run(cmd, shell=True, check=True)
+    try:
+        # Change the current working directory
+        os.chdir(directory)
 
-    # Validate the Cylc configuration
-    cmd = "cylc validate ."
-    subprocess.run(cmd, shell=True, check=True)
-    os.chdir(go_back_here)
+        # Validate the Cylc configuration
+        cmd = "cylc validate ."
+        subprocess.run(cmd, shell=True, check=True)
+    except:
+        raise Exception('cylc validate . exited non-zero')
+    finally:
+        os.chdir(go_back_here)
 
 if __name__ == "__main__":
     validate_subtool()

@@ -45,20 +45,26 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
         filename: The name of the file returned by cmor.close.
     '''
     fre_logger.info("input data:")
-    fre_logger.info("    local_var   =  %s", local_var)
+    fre_logger.info("     local_var = %s", local_var)
     fre_logger.info("    target_var = %s", target_var)
 
     # open the input file
     fre_logger.info("opening %s", netcdf_file)
     ds = nc.Dataset(netcdf_file, 'r+')
 
-    # ocean grids are not implemented yet.
+    # CMORizing ocean grids are implemented only for scalar quantities valued
+    # at the central T/h-point of the grid cell.
+    # https://en.wikipedia.org/wiki/Arakawa_grids heavily consulted for this work.
+    # we also need to do:
+    # - ice tripolar cases
+    # - vector cases (quantities valued on edges in B/C/D for ocean and ice)
+    # - probably others that i cannot currently fathom but will bump into.
     fre_logger.info('checking input netcdf file for oceangrid condition')
     uses_ocean_grid = check_dataset_for_ocean_grid(ds)
     if uses_ocean_grid:
-        fre_logger.info(
-            'OH BOY you have a file on the native tripolar grid...\n'
-            '... this is gonna be fun!'
+        fre_logger.warning(
+            'cmor_mixer suspects this is ocean data, being reported on \n'
+            ' native tripolar grid. i may treat this differently than other files!'
         )
 
     # try to read what coordinate(s) we're going to be expecting for the variable
@@ -70,7 +76,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
             '    expected_mip_coord_dims = %s\n',
             expected_mip_coord_dims
         )
-    except Exception as exc:
+    except Exception as exc: #uncovered
         fre_logger.warning(
             'could not get expected coordinate dimensions for %s. '
             '   in mip_var_cfgs file %s. \n exc = %s',
@@ -114,7 +120,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     lev_bnds = None
     if vert_dim != 0:
         if vert_dim.lower() not in ACCEPTED_VERT_DIMS:
-            raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported')
+            raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported') #uncovered
         lev = ds[vert_dim]
         if vert_dim.lower() != "landuse":
             lev_units = ds[vert_dim].units
@@ -130,7 +136,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
             fre_logger.info('netcdf_file is %s', netcdf_file)
             statics_file_path = find_statics_file(prev_path)
             fre_logger.info('statics_file_path is %s', statics_file_path)
-        except Exception as exc:
+        except Exception as exc: #uncovered
             fre_logger.warning(
                 'an ocean statics file is needed, but it could not be found.\n'
                 '   moving on and doing my best, but I am probably going to break'
@@ -228,10 +234,18 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
         print_data_minmax(xq, "xq")
         fre_logger.info('')
 
-        if any([yh_dim == (len(yq) - 1), xh_dim == (len(xq) - 1)]):
-            raise ValueError(
-                'the number of h-point lat/lon coordinates is inconsistent with the number of'
-                'q-point lat/lon coordinates! i.e. ( hpoint_dim != qpoint_dim+1 )'
+        xq_dim = len(xq)
+        yq_dim = len(yq)
+
+        if any( [yh_dim != (yq_dim - 1),
+                 xh_dim != (xq_dim - 1)]):
+            raise ValueError( #uncovered
+                'the number of h-point lat/lon coordinates is inconsistent with the number of\n'
+                'q-point lat/lon coordinates! i.e. ( hpoint_dim != qpoint_dim-1 )\n'
+                f'yh_dim = {yh_dim}\n'
+                f'xh_dim = {xh_dim}\n'
+                f'yq_dim = {yq_dim}\n'
+                f'xq_dim = {xq_dim}'
             )
 
         # create h-point bounds from the q-point lat lons
@@ -292,7 +306,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     else:
         fre_logger.info('assigning cmor_y')
         if lat_bnds is None:
-            cmor_y = cmor.axis("latitude", coord_vals=lat[:], units="degrees_N")
+            cmor_y = cmor.axis("latitude", coord_vals=lat[:], units="degrees_N") #uncovered
         else:
             cmor_y = cmor.axis("latitude", coord_vals=lat[:], cell_bounds=lat_bnds, units="degrees_N")
         fre_logger.info('DONE assigning cmor_y')
@@ -307,7 +321,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     else:
         fre_logger.info('assigning cmor_x')
         if lon_bnds is None:
-            cmor_x = cmor.axis("longitude", coord_vals=lon[:], units="degrees_E")
+            cmor_x = cmor.axis("longitude", coord_vals=lon[:], units="degrees_E") #uncovered
         else:
             cmor_x = cmor.axis("longitude", coord_vals=lon[:], cell_bounds=lon_bnds, units="degrees_E")
         fre_logger.info('DONE assigning cmor_x')
@@ -336,7 +350,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
         fre_logger.info('assigning cmor_time using time_bnds...')
         cmor_time = cmor.axis("time", coord_vals=time_coords,
                               cell_bounds=time_bnds, units=time_coord_units)
-    except ValueError as exc:
+    except ValueError as exc: #uncovered
         fre_logger.info(
             "cmor_time = cmor.axis('time', \n"
             "    coord_vals = %s, units = %s)",
@@ -379,7 +393,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                                coord_vals=lev[:],
                                units=lev_units,
                                cell_bounds=lev_bnds)
-            
+
         elif vert_dim in ALT_HYBRID_SIGMA_COORDS:
             # find the ps file nearby
             ps_file = netcdf_file.replace(f'.{target_var}.nc', '.ps.nc')
@@ -475,27 +489,38 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     positive = mip_var_cfgs["variable_entry"][target_var]["positive"]
     fre_logger.info("positive = %s", positive)
 
+    fre_logger.info('cmor.variable call: for target_var = %s ',target_var)
     cmor_var = cmor.variable(target_var, units, axes, positive=positive)
-    
+    fre_logger.info('DONE cmor.variable call: for target_var = %s ',target_var)
+
     # Write the output to disk
+    fre_logger.info("cmor.write call: for var data into cmor_var")
     cmor.write(cmor_var, var)
+    fre_logger.info("DONE cmor.write call: for var data into cmor_var")
     if save_ps:
         if any([ips is None, ps is None]):
-            fre_logger.warning('ps or ips is None!, but save_ps is True!\n'
+            fre_logger.warning('ps or ips is None!, but save_ps is True!\n' #uncovered
                                'ps = %s, ips = %s\n'
                                'skipping ps writing!', ps, ips)
         else:
+            fre_logger.info("cmor.write call: for interp-pressure data (ips)")
             cmor.write(ips, ps, store_with=cmor_var)
-            cmor.close(ips, file_name=True, preserve=False)
+            fre_logger.info("DONE cmor.write call: for interp-pressure data (ips)")
+
+    fre_logger.info("cmor.close call: for cmor_var")
     filename = cmor.close(cmor_var, file_name=True, preserve=False)
+    fre_logger.info("DONE cmor.close call: for cmor_var")
     fre_logger.info("returned by cmor.close: filename = %s", filename)
+    fre_logger.info('closing netcdf4 dataset... ds')
     ds.close()
+    fre_logger.info('tearing-down the cmor module instance')
+    cmor.close()
 
     fre_logger.info('-------------------------- END rewrite_netcdf_file_var call -----\n\n')
     return filename
 
 def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
-                             iso_datetime_arr=None, name_of_set=None,
+                             iso_datetime_range_arr=None, name_of_set=None,
                              json_exp_config=None, outdir=None,
                              mip_var_cfgs=None, json_table_config=None, run_one_mode=False):
     ''' processes a target directory/file
@@ -506,7 +531,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
         target_var: string, name of variable inside the netcdf file to cmorize
         local_var: string, value of the variable name in the filename, right before the .nc
                    extension. often identical to target_var but not always.
-        iso_datetime_arr: list of strings, each one a unique ISO datetime string found in targeted
+        iso_datetime_range_arr: list of strings, each one a unique ISO datetime string found in targeted
                           netcdf filenames
         name_of_set: string, representing the post-processing component (GFDL convention) of the
                      targeted files.
@@ -527,12 +552,12 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
 
     # loop over sets of dates, each one pointing to a file
     nc_fls = {}
-    for i, iso_datetime in enumerate(iso_datetime_arr):
+    for i, iso_datetime in enumerate(iso_datetime_range_arr):
         # why is nc_fls a filled list/array/object thingy here? see above line
         nc_fls[i] = f"{indir}/{name_of_set}.{iso_datetime}.{local_var}.nc"
         fre_logger.info("input file = %s", nc_fls[i])
         if not Path(nc_fls[i]).exists():
-            fre_logger.warning("input file(s) not found. Moving on.")
+            fre_logger.warning("input file(s) not found. Moving on.") #uncovered
             continue
 
         # create a copy of the input file with local var name into the work directory
@@ -553,13 +578,13 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
         make_cmor_write_here = tmp_dir
         # make sure we know where we are writing, or else!
         if not Path(make_cmor_write_here).exists():
-            raise ValueError(f'\ntmp_dir = \n{tmp_dir}\ncannot be found/created/resolved!')
+            raise ValueError(f'\ntmp_dir = \n{tmp_dir}\ncannot be found/created/resolved!') #uncovered
 
         gotta_go_back_here = os.getcwd()
         try:
             fre_logger.warning("changing directory to: \n%s", make_cmor_write_here)
             os.chdir(make_cmor_write_here)
-        except Exception as exc:
+        except Exception as exc: #uncovered
             raise OSError(f'(cmorize_target_var_files) could not chdir to {make_cmor_write_here}') from exc
 
         fre_logger.info("calling rewrite_netcdf_file_var")
@@ -570,11 +595,13 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
                                                       target_var,
                                                       json_exp_config,
                                                       json_table_config, nc_fls[i])
-        except Exception as exc:
-            raise Exception('(cmorize_target_var_files) problem with rewrite_netcdf_file_var. exc=\n'
-                            'exiting and executing finally block.') from exc
+        except Exception as exc: #uncovered
+            raise Exception(
+                'problem with rewrite_netcdf_file_var. '
+                f'exc={exc}\n'
+                'exiting and executing finally block.') from exc
         finally:  # should always execute, errors or not!
-            fre_logger.warning('changing directory to: \n%s', gotta_go_back_here)
+            fre_logger.warning('finally, changing directory to: \n%s', gotta_go_back_here)
             os.chdir(gotta_go_back_here)
 
         # now that CMOR has rewritten things... we can take our post-rewriting actions
@@ -602,7 +629,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
         filename_no_nc = filename[:filename.rfind(".nc")]
         chunk_str = filename_no_nc[-6:]
         if not chunk_str.isdigit():
-            fre_logger.warning('chunk_str is not a digit: chunk_str = %s', chunk_str)
+            fre_logger.warning('chunk_str is not a digit: chunk_str = %s', chunk_str) #uncovered
             filename_corr = f"{filename[:filename.rfind('.nc')]}_{iso_datetime}.nc"
             mv_cmd = f"mv {filename} {filename_corr}"
             fre_logger.warning("moving files, strange chunkstr logic...\n%s", mv_cmd)
@@ -621,7 +648,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
             fre_logger.warning('done processing one file!!!')
             break
 
-def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_set, json_exp_config,
+def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, name_of_set, json_exp_config,
                                  outdir, mip_var_cfgs, json_table_config, run_one_mode):
     '''
     Processes all variables in the given directory.
@@ -629,7 +656,7 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
     Parameters:
         vars_to_run: dictionary, local-variable:target-variable pairs to process.
         indir: string, path to directory containing netCDF files.
-        iso_datetime_arr: list of strings, ISO datetime strings found in targeted netCDF filenames.
+        iso_datetime_range_arr: list of strings, ISO datetime strings found in targeted netCDF filenames.
         name_of_set: string, representing the post-processing component (GFDL convention) of the targeted files.
         json_exp_config: string, path to experiment configuration JSON file.
         outdir: string, path to output directory root.
@@ -638,9 +665,13 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
         run_one_mode: bool, if True, process only one file per variable.
 
     Returns:
-        int: 0 if successful.
+        int: 0 if *the last file processed* was successful. 
+             1 if the last file processed was not successful. 
+             -1 if we didnt even try!
+
     '''
     # loop over local-variable:target-variable pairs in vars_to_run
+    return_status = -1
     for local_var in vars_to_run:
         # if the target-variable is "good", get the name of the data inside the netcdf file.
         target_var = vars_to_run[local_var]  # often equiv to local_var but not necessarily.
@@ -651,10 +682,12 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
 
         fre_logger.info('........beginning CMORization for %s/%s..........', local_var, target_var)
         try:
-            cmorize_target_var_files(indir, target_var, local_var, iso_datetime_arr,
+            cmorize_target_var_files(indir, target_var, local_var, iso_datetime_range_arr,
                                      name_of_set, json_exp_config, outdir,
                                      mip_var_cfgs, json_table_config, run_one_mode)
-        except Exception as exc:
+            return_status = 0
+        except Exception as exc: #uncovered
+            return_status = 1
             fre_logger.warning('!!!EXCEPTION CAUGHT!!!   !!!READ THE NEXT LINE!!!')
             fre_logger.warning('exc=%s', exc)
             fre_logger.warning('COULD NOT PROCESS: %s/%s...moving on', local_var, target_var)
@@ -663,10 +696,11 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_arr, name_of_s
         if run_one_mode:  # TEMP DELETEME TODO
             fre_logger.warning('run_one_mode is True. breaking vars_to_run loop')
             break
-    return 0
+    return return_status
 
 def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, json_exp_config=None,
-                     outdir=None, run_one_mode=False, opt_var_name=None):
+                     outdir=None, run_one_mode=False,
+                     opt_var_name=None, grid=None, grid_label=None, nom_res=None, start=None, stop=None):
     '''
     Primary steering function for the other routines in this file, i.e essentially main.
 
@@ -686,21 +720,36 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
                       move on. largely of interest when debugging.
         opt_var_name: string, optional, specify a variable name to specifically process only files with that variable.
                       Note that this is checked against the variable name that's usually embedded in the nc filename.
-
+        -- gridding section: if one is specified, the other two must be as well, or error. pass otherwise. 
+        grid: string, description of grid pointed to by grid_label field, optional.
+        grid_label: string, label of grid, must be one of several possibilities in controlled vocab file, optional.
+        nom_res: string, one-dimensional size representing approximate distance spanned by a grid cell, must be one of
+                 several possibilities in the controlled vocab file, optional.
+        start, stop: string, optional arguments, strings of four integers representing years (YYYY).
     Returns:
         int: 0 if successful.
     '''
     # check req'd inputs
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
-        raise ValueError('all input arguments except opt_var_name are required!\n'
+        raise ValueError('all input arguments except opt_var_name are required!\n' #uncovered
                          '[indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
                          '[%s, %s, %s, %s, %s]', indir, json_var_list, json_table_config, json_exp_config, outdir)
+
+    # check optional grid/grid_label inputs
+    # the function checks the potential error conditions
+    if any( [ grid_label is not None,
+              grid is not None,
+              nom_res is not None ] ):
+        update_grid_and_label(json_exp_config,
+                              grid_label, grid, nom_res,
+                              output_file_path = None)
+
 
     # do not open, but confirm the existence of the exp-specific metadata file
     if Path(json_exp_config).exists():
         json_exp_config = str(Path(json_exp_config).resolve())
     else:
-        raise FileNotFoundError('ERROR: json_exp_config file cannot be opened.\n'
+        raise FileNotFoundError('ERROR: json_exp_config file cannot be opened.\n' #uncovered
                                 'json_exp_config = %s', json_exp_config)
 
     # open CMOR table config file - need it here for checking the TABLE's variable list
@@ -720,7 +769,7 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
             vars_to_run[opt_var_name] = opt_var_name
             break
         elif var_list[local_var] not in mip_var_cfgs["variable_entry"]:
-            fre_logger.warning('skipping local_var = %s /\n'
+            fre_logger.warning('skipping local_var = %s /\n' #uncovered
                                'target_var = %s\n'
                                'target_var not found in CMOR variable group', local_var, var_list[local_var])
             continue
@@ -731,11 +780,11 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
 
     # make sure there's stuff to run, otherwise, exit
     if len(vars_to_run) < 1:
-        raise ValueError('runnable variable list is of length 0'
+        raise ValueError('runnable variable list is of length 0' #uncovered
                          'this means no variables in input variable list are in'
                          'the mip table configuration, so there\'s nothing to process!')
     elif all([opt_var_name is not None, opt_var_name not in list(vars_to_run.keys())]):
-        raise ValueError('opt_var_name is not None! (== %s)'
+        raise ValueError('opt_var_name is not None! (== %s)' #uncovered
                          '... but the variable is not contained in the target mip table'
                          '... there\'s nothing to process, exit', opt_var_name)
 
@@ -747,22 +796,22 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
     indir_filenames = glob.glob(f'{indir}/*.nc')
     indir_filenames.sort()
     if len(indir_filenames) == 0:
-        raise ValueError('no files in input target directory = indir = \n%s', indir)
-    fre_logger.debug('found filenames = \n%s', indir_filenames)
+        raise ValueError('no files in input target directory = indir = \n%s', indir) #uncovered
+    fre_logger.debug('found %s filenames', len(indir_filenames))
 
-    # make list of iso-datetimes here
-    iso_datetime_arr = []
-    get_iso_datetimes(indir_filenames, iso_datetime_arr)
-    fre_logger.info('found iso datetimes = \n%s', iso_datetime_arr)
-
-    # name_of_set == component label...
-    # which is not relevant for CMOR/CMIP... or is it?
+    # name_of_set == component label
     name_of_set = Path(indir_filenames[0]).name.split(".")[0]
     fre_logger.info('setting name_of_set = %s', name_of_set)
 
+    # make list of iso-datetimes here
+    iso_datetime_range_arr = []
+    get_iso_datetime_ranges(indir_filenames, iso_datetime_range_arr, start, stop) 
+    fre_logger.info('\nfound iso datetimes = %s', iso_datetime_range_arr)
+    #assert False
+    
     # no longer needed.
     del indir_filenames
 
-    return cmorize_all_variables_in_dir(vars_to_run,
-                                        indir, iso_datetime_arr, name_of_set, json_exp_config,
-                                        outdir, mip_var_cfgs, json_table_config, run_one_mode)
+    return cmorize_all_variables_in_dir( vars_to_run,
+                                         indir, iso_datetime_range_arr, name_of_set, json_exp_config,
+                                         outdir, mip_var_cfgs, json_table_config, run_one_mode        )

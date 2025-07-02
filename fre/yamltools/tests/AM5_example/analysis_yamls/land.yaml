@@ -5,7 +5,7 @@ analysis:
       date_range: [*ANA_AMIP_START, *ANA_AMIP_END]
     workflow:
       components: ["land-test"]
-      cumulative: False
+      script_type: 'one-shot'
       product: 'ts'
-      script_frequency: 'R1'
+      chunk_size: *PP_AMIP_CHUNK96
       analysis_on: True

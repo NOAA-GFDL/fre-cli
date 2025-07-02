@@ -1,5 +1,5 @@
 [submodule "mkmf"]
-	path = mkmf
+	path = fre/mkmf
 	url = https://github.com/NOAA-GFDL/mkmf
 [submodule "fre/gfdl_msd_schemas"]
 	path = fre/gfdl_msd_schemas

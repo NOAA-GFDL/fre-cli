@@ -13,13 +13,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Add mkmf to PATH
-        run: |
-          echo $PWD/mkmf/bin >> $GITHUB_PATH
+
       - name: Run Conda to Build and Publish
         run: |
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
+          conda config --remove channels defaults
+          conda config --show channels
           conda install conda-build anaconda-client conda-verify
           export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
           conda config --set anaconda_upload yes
