@@ -77,10 +77,10 @@ def get_source_info(grid_spec: str, mosaic_file: str) -> (int, int):
     same size and will take the first gridfile to retrieve the coordinate dimensions
     """
 
-    mosaicfile = xr.load_dataset(grid_spec)[mosaic_file].values.astype(str)
-    gridfile = xr.load_dataset(str(mosaicfile))['gridfiles'].values[0].astype(str)
+    mosaicfile = str(xr.load_dataset(grid_spec)[mosaic_file].values.astype(str))
+    gridfile = str(xr.load_dataset(mosaicfile)['gridfiles'].values[0].astype(str))
 
-    grid = xr.load_dataset(str(gridfile))
+    grid = xr.load_dataset(gridfile)
 
     nx = grid.sizes['nx']//2
     ny = grid.sizes['ny']//2
