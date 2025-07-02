@@ -5,6 +5,8 @@ import pytest
 from pathlib import Path
 import yaml
 from fre.list_ import list_platforms_script
+from fre.yamltools import combine_yamls_script as cy
+from fre.yamltools import helpers
 
 # SET-UP
 TEST_DIR = Path("fre/make/tests")
@@ -14,6 +16,7 @@ TARGET = "None"
 YAMLFILE = "null_model.yaml"
 BADYAMLFILE = "null_model_bad.yaml"
 EXP_NAME = YAMLFILE.split(".")[0]
+VAL_SCHEMA = Path("fre/gfdl_msd_schemas/FRE/fre_make.json")
 
 # yaml file checks
 def test_modelyaml_exists():
@@ -28,7 +31,8 @@ def test_platformyaml_exists():
     '''test if platforms yaml exists'''
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/platforms.yaml").exists()
 
-def test_platforms_list(caplog):
+# Test whole tool 
+def test_platforms_list_correct(caplog):
     ''' test list platforms '''
     list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
@@ -45,50 +49,55 @@ def test_platforms_list(caplog):
     for record in caplog.records:
         record.levelname == "INFO"
 
-
-def test_nocombinedyaml():
-    ''' test intermediate combined yaml was cleaned '''
-    assert not Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()
-
-# Test individual functions operating correctly: combine and clean
-def test_correct_combine():
-    ''' test that combined yaml includes necesary keys '''
-    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
-
-    # Combine model / experiment
-    list_platforms_script.quick_combine(yamlfile_path,PLATFORM,TARGET)
-    assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()
-
-    comb_yamlfile = f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml"
-    with open(comb_yamlfile, 'r') as yf:
-        y = yaml.load(yf,Loader=yaml.Loader)
-
-    req_keys = ["name","platform","target","platforms"]
-    for k in req_keys:
-        assert k in y.keys()
-
+# Test validation
 def test_yamlvalidate(caplog):
     ''' test yaml is being validated '''
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Combine model / experiment
-    list_platforms_script.quick_combine(yamlfile_path,PLATFORM,TARGET)
-    assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()
+    list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
-    comb_yamlfile = f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml"
-    with open(comb_yamlfile, 'r') as yf:
-        y = yaml.load(yf,Loader=yaml.Loader)
+    validate = ["Validating YAML information...",
+                "     YAML dictionary VALID."]
 
-    # Validate and capture output
-    assert list_platforms_script.validate_yaml(y)
-    #assert "Intermediate combined yaml VALID" in caplog.text
+    for i in validate:
+        assert i in caplog.text
 
+    for record in caplog.records:
+        record.levelname == "INFO"
+
+def test_yamlcontent_valid():
+    ''' Test that yaml dictionary content is valid '''
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+
+    # Combine model / experiment
+    yml_dict = cy.consolidate_yamls(yamlfile = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}",
+                                    experiment = EXP_NAME,
+                                    platform = PLATFORM,
+                                    target = TARGET,
+                                    use = "compile",
+                                    output = None)
+
+    # compare combined yaml info with some information that's supposed to be parsed
+    expected_platform_info_1 = {'name': 'ncrc5.intel23',
+                                'compiler': 'intel',
+                                'modulesInit': [' module use -a /ncrc/home2/fms/local/modulefiles \n', 'source $MODULESHOME/init/sh \n'],
+                                'modules': ['intel-classic/2023.2.0', 'fre/bronx-21', 'cray-hdf5/1.12.2.11', 'cray-netcdf/4.9.0.11'],
+                                'mkTemplate': '/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/intel-classic.mk',
+                                'modelRoot': '${HOME}/fremake_canopy/test'}
+    expected_platform_info_2 = {'name': 'hpcme.2023',
+                                'compiler': 'intel',
+                                'RUNenv': ['. /spack/share/spack/setup-env.sh', 'spack load libyaml', 'spack load netcdf-fortran@4.5.4', 'spack load hdf5@1.14.0'],
+                                'modelRoot': '/apps',
+                                'container': True,
+                                'containerBuild': 'podman',
+                                'containerRun': 'apptainer',
+                                'containerBase': 'docker.io/ecpe4s/noaa-intel-prototype:2023.09.25',
+                                'mkTemplate': '/apps/mkmf/templates/hpcme-intel21.mk'}
+
+    for key,value in yml_dict.items():
+        if key == "platforms":
+            assert expected_platform_info_1 in value
+            assert expected_platform_info_2 in value
 
 #def test_not_valid_yaml():
-
-def test_yamlremove():
-   ''' test intermediate combined yaml removed '''
-   # Remove combined yaml file
-   list_platforms_script.remove(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml")
-
-   assert not Path(f"{TEST_DIR}/{NM_EXAMPLE}/combined-{EXP_NAME}.yaml").exists()
