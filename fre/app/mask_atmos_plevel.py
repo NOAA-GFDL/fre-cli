@@ -44,17 +44,18 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
     ds_out = xr.Dataset()
 
     # The trigger for atmos masking is a variable attribute "pressure_mask = False".
-    # In practice though, we are checking that the 'pressure_mask' attribute exists,
-    # AND the attribute resolves to a Boolean False.
     # After the masking is done, change the attribute to True.
+    # Note: these are string types called True and False, not boolean types.
     for var in list(ds_in.variables):
-        if 'pressure_mask' in ds_in[var].attrs and not ds_in[var].attrs['pressure_mask']:
-            ds_out[var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
-            ds_out[var].attrs['pressure_mask'] = True
-            fre_logger.info(f"Finished processing '{var}' and set 'pressure_mask' to True")
+        if 'pressure_mask' in ds_in[var].attrs:
+            if ds_in[var].attrs['pressure_mask'].lower() == 'false':
+                ds_out[var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
+                ds_out[var].attrs['pressure_mask'] = "True"
+                fre_logger.info(f"Finished processing '{var}' and set 'pressure_mask' to True")
+            else:
+                fre_logger.debug(f"Not processing '{var}' (because 'pressure_mask' is not False)")
         else:
-            fre_logger.debug(f"Not processing '{var}' (because it does not have 'pressure_mask' set to False)")
-            continue
+                fre_logger.debug(f"Not processing '{var}' (because it does not have 'pressure_mask'")
 
     # Write the output file if anything was done
     if ds_out.variables:
