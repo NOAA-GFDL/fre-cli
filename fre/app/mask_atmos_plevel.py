@@ -77,7 +77,7 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
     .. note:: Missing values are set to 1.0e20.
     """
 
-    # retrieve the pressure coordinate name
+    # retrieve the pressure coordinate variable
     plev = pressure_coordinate(ds, var)
 
     # broadcast pressure coordinate and surface pressure to
@@ -103,7 +103,7 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
     return masked
 
 
-def pressure_coordinate(ds: xr.Dataset, varname: str):
+def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
     """_Check if dataArray has pressure coordinate fitting requirements
     and return it_
     :param ds: _Input dataset to inspect_
@@ -111,7 +111,7 @@ def pressure_coordinate(ds: xr.Dataset, varname: str):
     :param var: _Input variable name to inspect_
     :type var: str
     :return: _Pressure coordinate variable_
-    :rtype _Unknwon_
+    :rtype _xarray.DataArray_
 
     .. warning:: Returns None if no pressure coordinate variable can be found
     """
