@@ -301,7 +301,7 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
 
         #get input mosaic and grid sizes
         input_mosaic, source_nx, source_ny = get_source_info(grid_spec_file, mosaic_file)
-        
+
         fre_logger.info(f'grid_spec_file = {grid_spec_file}')
         fre_logger.info(f'input_mosaic = {input_mosaic}') #DELETE        
         fre_logger.info(f'source_[nx,ny] = ({source_nx},{source_ny})')
