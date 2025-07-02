@@ -21,7 +21,6 @@ def list_experiments_subtool(yamlfile):
     yamldict = ppip.InitPPYaml(yamlfile, exp, platform, target)
     (yaml_info, yml_dict) = yamldict.combine_model()
 
-<<<<<<< HEAD
 ## COULD HAVE been one way to validate but section we'd want to parse was cleaned in final/"combined" yaml information
 ## Currently not a way to validate model yaml information because we only have schemas for the final "combined" compile or pp information (both of which remove the "experiments" section I believe
 #    exp = yamlfile.split("/")[-1].split(".")[0]
