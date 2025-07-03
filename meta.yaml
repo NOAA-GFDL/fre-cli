@@ -68,7 +68,6 @@ test:
     - fre.run
     - fre.yamltools
   commands:
-    - pylint --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code and will kill the workflow. guarding against this now."
     # run pytest but ignore any tests that require compilation
     - coverage run -m pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation --config-file=pytest.ini --cov-report term-missing --cov-config=coveragerc --cov=fre fre/ 
     - fre --help
@@ -81,6 +80,11 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
+    #run pylint and exit with status of 1 if pylint score less than pylint threshold
+    - PYLINT_THOLD=7.20
+    - pylint_score=$(pylint --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ | grep "Your code has been rated" | sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p')
+    - is_1=$(bc -l <<< "$pylint_score < $PYLINT_THOLD")
+    - if [ $is_1 == 1 ]; then echo "Pylint scored $pylint_score, which is below pylint threshold of $PYLINT_THOLD"; exit 1; fi
 
 
 about:
