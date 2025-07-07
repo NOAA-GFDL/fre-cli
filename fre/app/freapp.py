@@ -53,15 +53,15 @@ def app_cli():
 @click.option("-tsw", "--ts-workaround",
               type = click.Choice(['True','False']),
               default = None,
-              help = "Time series workaround variable; if defined ",
+              help = "Time series workaround variable",
               required = False)
 
 def remap(input_dir, output_dir, begin_date, current_chunk,
-          product, components, copy_tool, yaml_config,
+          product, pp_components, copy_tool, yaml_config,
           ts_workaround, ens_mem):
     ''' Remap netcdf files to an updated output directory structure '''
     remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
-                        product, components, copy_tool, yaml_config,
+                        product, pp_components, copy_tool, yaml_config,
                         ts_workaround, ens_mem)
 
 @app_cli.command()
