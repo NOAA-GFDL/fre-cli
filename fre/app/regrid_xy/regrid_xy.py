@@ -9,8 +9,8 @@ import subprocess
 import shutil
 import os
 from pathlib import Path
+from typing import Type, List
 import ast
-
 import logging
 fre_logger = logging.getLogger(__name__)
 
@@ -24,8 +24,8 @@ non_regriddable_variables = [
     'geolon_c', 'geolat_c', 'geolon_u', 'geolat_u', 'geolon_v', 'geolat_v',
     'FA_X', 'FA_Y', 'FI_X', 'FI_Y', 'IX_TRANS', 'IY_TRANS', 'UI', 'VI', 'UO', 'VO',
     'wet_c', 'wet_v', 'wet_u', 'dxCu', 'dyCu', 'dxCv', 'dyCv', 'Coriolis',
-    'areacello_cu', 'areacello_cv', 'areacello_bu'
-]
+    'areacello_cu', 'areacello_cv', 'areacello_bu', 'average_T1','average_T2',
+    'average_DT','time_bnds']
 
 def truncate_date(date, freq):
     """ truncates iso freq to iso date time """
@@ -67,34 +67,36 @@ def safe_rose_config_get(config, section, field):
     return None if config_dict is None else config_dict.get_value()
 
 
-def get_grid_dims(grid_spec: str, mosaic_file: str) -> (int, int):
+def get_source_info(grid_spec: str, mosaic_file: str) -> (int, int):
 
     """
-    Retrieves the grid sizes from the gridfiles.
-    This method retrieves the grid dimensions via grid_spec --> mosaic_file --> gridfile,
+    Retrieves the input_mosaic file and grid sizes from the gridfiles specified in grid_spec.
+    For grid sizes, this method retrieves the dimensions via grid_spec --> mosaic_file --> gridfile,
     where mosaic_file can be either "atm_mosaic_file", "ocn_mosaic_file", or "lnd_mosaic_file".
     This method assumes that for a multi-tile grid, the grids for each tile are of the
     same size and will take the first gridfile to retrieve the coordinate dimensions
     """
 
-    mosaicfile = xr.load_dataset(grid_spec)[mosaic_file].values.astype(str)
-    gridfile = xr.load_dataset(str(mosaicfile))['gridfiles'].values[0].astype(str)
+    mosaicfile = str(xr.load_dataset(grid_spec)[mosaic_file].values.astype(str))
+    gridfile = str(xr.load_dataset(mosaicfile)['gridfiles'].values[0].astype(str))
 
-    grid = xr.load_dataset(str(gridfile))
+    grid = xr.load_dataset(gridfile)
 
-    nx = grid.sizes['nx']
-    ny = grid.sizes['ny']
+    nx = grid.sizes['nx']//2
+    ny = grid.sizes['ny']//2
 
-    return nx, ny
+    return mosaicfile, nx, ny
 
 
-def check_interp_method( nc_variable, interp_method):
+def check_interp_method(dataset: Type[xr.Dataset], regrid_vars: List[str], interp_method: str):
+
     """print warning if optional interp_method clashes with nc file attribute field, if present"""
-    attr_list=nc_variable.ncattrs()
-    if 'interp_method' not in attr_list:
-        pass
-    elif nc_variable.interp_method != interp_method:
-        fre_logger.info(f"WARNING: variable '{nc_variable.name}' has attribute interp_method '{nc_variable.interp_method}'")
+    
+    for variable in regrid_vars:
+        if 'interp_method' in dataset[variable].attrs:
+            this_interp_method = dataset[variable].attrs['interp_method']
+            if this_interp_method != interp_method:
+                fre_logger.info(f"WARNING: variable '{variable}' has attribute interp_method '{this_interp_method}'")
 
 
 def check_per_component_settings(component_list, rose_app_cfg):
@@ -115,8 +117,6 @@ def check_per_component_settings(component_list, rose_app_cfg):
     if len(do_regridding) != len(component_list) :
         raise ValueError('problem with checking per-component settings for uniqueness')
     return do_regridding
-
-
 
 
 def make_component_list(config, source):
@@ -140,24 +140,18 @@ def make_component_list(config, source):
     return comp_list
 
 
-def make_regrid_var_list(target_file, interp_method = None):
+def make_regrid_var_list(target_file: str, interp_method: str = None):
     """create default list of variables to be regridded within target file."""
-    fin = Dataset(target_file,'r')
-    all_fin_vars = fin.variables
-    regrid_vars = []
-    for var_name in all_fin_vars:
-        if var_name in ['average_T1','average_T2',
-                        'average_DT','time_bnds' ]:
-            continue
-        if var_name in non_regriddable_variables:
-            continue
-        if len(all_fin_vars[var_name].shape) < 2 :
-            continue
-        regrid_vars.append(var_name)
-        if interp_method is not None:
-            check_interp_method( all_fin_vars[var_name] , interp_method)
 
-    fin.close()
+    #load data file
+    dataset = xr.load_dataset(target_file).drop_vars(non_regriddable_variables, errors="ignore")
+
+    #list of variables to regrid, only multi-dimensional data will be regridded
+    regrid_vars = [variable for variable in dataset if len(dataset[variable].sizes)>1]
+
+    #check variable interp_method attribute to regrid interp_method
+    if interp_method is not None: check_interp_method(dataset, regrid_vars, interp_method)
+
     return regrid_vars
 
 
@@ -294,8 +288,6 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
                f'output_grid_lat  = {output_grid_lat  }\n' + \
                f'regrid_vars      = {regrid_vars      }\n'     )
 
-
-
         # prepare to create input_mosaic via ncks call
         if input_realm in ['atmos', 'aerosol']:
             mosaic_file = 'atm_mosaic_file'
@@ -307,11 +299,11 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
             raise ValueError(f'input_realm={input_realm} not recognized.')
         fre_logger.info(f'mosaic_file = {mosaic_file}')
 
-        # get dimensions for source lat, lon
-        nx, ny = get_grid_dims(grid_spec_file, mosaic_file)
+        #get input mosaic and grid sizes
+        input_mosaic, source_nx, source_ny = get_source_info(grid_spec_file, mosaic_file)
 
-        source_nx = str(nx / 2 )
-        source_ny = str(ny / 2 )
+        fre_logger.info(f'grid_spec_file = {grid_spec_file}')
+        fre_logger.info(f'input_mosaic = {input_mosaic}') #DELETE        
         fre_logger.info(f'source_[nx,ny] = ({source_nx},{source_ny})')
 
         if remap_file is not None:
@@ -337,8 +329,6 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
             else:
                 fre_logger.info(f'NOTE: Will generate remap file and cache to {remap_cache_file}')
 
-
-
         # if no variables in config, find the interesting ones to regrid
         if regrid_vars is None:
             regrid_vars=make_regrid_var_list( target_file , interp_method)
@@ -348,8 +338,6 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
             raise ValueError('make_regrid_var_list found no vars to regrid. and no vars given. exit')
         fre_logger.info(f'regridding {len(regrid_vars)} variables: {regrid_vars}')
         regrid_vars_str=','.join(regrid_vars) # fregrid needs comma-demarcated list of vars
-
-
 
         # massage input file argument to fregrid.
         input_file = target_file.replace('.tile1.nc','') \

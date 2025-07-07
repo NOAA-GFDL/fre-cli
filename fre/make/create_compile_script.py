@@ -73,7 +73,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                 # check if mkTemplate has a / indicating it is a path
                 # if its not, prepend the template name with the mkmf submodule directory
                 if "/" not in platform["mkTemplate"]:
-                    topdir = Path(__file__).resolve().parents[2]
+                    topdir = Path(__file__).resolve().parents[1]
                     templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
                     if not Path(templatePath).exists():
                         raise ValueError (
