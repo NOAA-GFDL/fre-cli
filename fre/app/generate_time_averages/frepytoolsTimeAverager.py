@@ -14,8 +14,19 @@ class frepytoolsTimeAverager(timeAverager):
     '''
 
     def generate_timavg(self, infile=None, outfile=None):
-        ''' frepytools approach in a python-native manner.
-        deliberately avoids pre-packaged routines. '''
+
+        """
+        frepytools approach in a python-native manner.
+        deliberately avoids pre-packaged routines.
+
+        :param self: 
+        :param infile: path to history file, or list of paths
+        :type infile: str, list
+        :param outfile: path to where output file should be stored
+        :type outfile: str
+        :param self: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month') 
+        :type self: str, defaults to 'all'. Inherted from generate_time_averages.py
+        """
         assert self.pkg=="fre-python-tools"
         if __debug__:
             print(locals()) #input argument details
