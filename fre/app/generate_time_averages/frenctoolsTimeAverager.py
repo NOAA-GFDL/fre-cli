@@ -17,7 +17,17 @@ class frenctoolsTimeAverager(timeAverager):
     '''
 
     def generate_timavg(self, infile=None, outfile=None):
-        ''' use fre-nctool's CLI timavg.csh with subprocess call '''
+        """
+        use fre-nctool's CLI timavg.csh with subprocess call
+
+        :param self: 
+        :param infile: path to history file, or list of paths
+        :type infile: str, list
+        :param outfile: path to where output file should be stored
+        :type outfile: str
+        :param self: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month') 
+        :type self: str, defaults to 'all'. Inherted from generate_time_averages.py
+        """
         assert self.pkg=="fre-nctools"
         if __debug__:
             fre_logger.debug(locals()) #input argument details
