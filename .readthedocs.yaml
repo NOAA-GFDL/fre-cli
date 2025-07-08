@@ -9,13 +9,16 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.11"
-
-conda:
-  environment: environment.yml
+  jobs:
+    pre_create_environment:
+      - conda update --yes --quiet --name=base --channel=defaults conda
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
   configuration: docs/conf.py
+
+conda:
+  environment: environment.yml
 
 # Optionally, but recommended,
 # declare the Python requirements required to build your documentation
