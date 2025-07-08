@@ -4,11 +4,11 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 
-# this is for document building in readthedocs only.
-import sys
-from pathlib import Path
-sys.path.insert( 0,
-                 str(Path('..').resolve()) )
+## this is for document building in readthedocs only.
+#import sys
+#from pathlib import Path
+#sys.path.insert( 0,
+#                 str(Path('.').resolve()) )
 
 
 # -- Project information -----------------------------------------------------
@@ -22,7 +22,8 @@ release = '1.0'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.apidoc']
 
 #templates_path = ['_templates']
 exclude_patterns = ['fre/tests/test_files/ascii_files/*']
@@ -35,4 +36,3 @@ exclude_patterns = ['fre/tests/test_files/ascii_files/*']
 html_theme = 'renku'
 #html_theme = 'sphinx_rtd_theme'
 #html_static_path = ['_static']
-
