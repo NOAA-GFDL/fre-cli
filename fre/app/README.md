@@ -1,3 +1,6 @@
+# fre app - Loose standalone tools
+
+# mask-atmos-plevel: Mask pressure-level diagnostic output below land surface
 Quickstart:
 
 First, obtain an input file that has a pressure coordinate variable and
