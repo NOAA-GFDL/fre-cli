@@ -21,6 +21,9 @@ setup(
         'metomi-rose',
         'xarray'
     ],
+    extras_requires={
+        "docs": ["sphinx","renku-spinx-theme","sphinx-rtd-theme"]
+    },
     entry_points={
         'console_scripts': [
             'fre = fre.fre:fre',
