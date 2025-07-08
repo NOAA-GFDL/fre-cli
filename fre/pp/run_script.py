@@ -18,7 +18,10 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
 
     # Check to see if the workflow is already running
     name = experiment + '__' + platform + '__' + target
-    result = subprocess.run(['cylc', 'scan', '--name', f"^{name}$"], capture_output=True).stdout.decode('utf-8')
+    first_cmd = f'cylc scan --name ^{name}$'
+    fre_logger.debug('running the following command: ')
+    fre_logger.debug(first_cmd)
+    result = subprocess.run( first_cmd, capture_output = True ).stdout.decode('utf-8')
     if len(result):
         fre_logger.info("Workflow already running!")
         return

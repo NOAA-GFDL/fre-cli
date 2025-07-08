@@ -13,12 +13,12 @@ Author: Carolyn.Whitlock
 import os
 
 # Import from the local packages
-from fre.pp.checkout_script import checkout_template
-from fre.pp.configure_script_yaml import yaml_info
-from fre.pp.install_script import install_subtool
-from fre.pp.run_script import pp_run_subtool
-from fre.pp.trigger_script import trigger
-from fre.pp.status_script import status_subtool
+from .checkout_script import checkout_template
+from .configure_script_yaml import yaml_info
+from .install_script import install_subtool
+from .run_script import pp_run_subtool
+from .trigger_script import trigger
+from .status_script import status_subtool
 
 def run_all_fre_pp_steps(experiment = None, platform = None, target = None, config_file = None, branch = None, time = None):
     '''

@@ -8,6 +8,11 @@ on:
     branches:
       - main
 
+# cancel running jobs if theres a newer push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
@@ -20,7 +25,7 @@ jobs:
           submodules: 'recursive'
       - name: Create fre-cli environment
         run: |
-          # create env holding all deps, the env cant be explicitly activated in CI/CD        
+          # create env holding all deps, the env cant be explicitly activated in CI/CD
           conda env create -f environment.yml --name fre-cli
 
           # sets CONDA to wherever it may be on the image
@@ -28,7 +33,6 @@ jobs:
 
           # add conda env's executables and mkmf to github's PATH equiv.
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-          echo $PWD/mkmf/bin >> $GITHUB_PATH
 
           # use *conda environment's pip* to install fre-cli, called w/ full path as module for explicitness
           $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
@@ -72,11 +76,11 @@ jobs:
           pip install --upgrade sphinx-rtd-theme
 
           # have sphinx build the docs
-          sphinx-apidoc --output-dir docs fre/ --separate
-          sphinx-build docs build
+          sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
+          sphinx-build -E docs build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           publish_branch: gh-pages

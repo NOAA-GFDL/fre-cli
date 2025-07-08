@@ -5,7 +5,7 @@ import logging
 import re
 import cftime
 import netCDF4
-from fre.pp import nccheck_script as ncc
+from . import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
 
@@ -116,27 +116,27 @@ def validate(filepath):
         # We would rather not check filepaths but it's necessary for sub-daily files
         # Path elements contains the directories from the filepath.. we use this to determine frequency/chunk_size in sub-daily files
         path_elements = os.path.abspath(filepath).split('/')
-        expected_frequencies  = ['6hr', '3hr', '1hr', '30min']
+        expected_frequencies  = ['6hr', 'PT6H', '3hr', 'PT3H', '1hr', 'PT1H', '30min', 'PT30M', 'PT0.5H']
 
         # 4x Daily
-        if '6hr' in path_elements:
+        if 'PT6H' in path_elements or '6hr' in path_elements:
             enot = getenot(date_start,date_end,'4xdaily',cal)
 
         # 8x Daily
-        if '3hr' in path_elements:
+        if 'PT3H' in path_elements or '3hr' in path_elements:
             enot = getenot(date_start,date_end,'8xdaily',cal)
 
         # HOURLY
-        if '1hr' in path_elements:
+        if 'PT1H' in path_elements or '1hr' in path_elements:
             enot = getenot(date_start,date_end,'hourly',cal)
 
         # 30 MINUTE
-        if '30min' in path_elements:
+        if 'PT30M' in path_elements or 'PT0.5H' in path_elements or '30min' in path_elements:
             enot = getenot(date_start,date_end,'30minute',cal)
 
         # If none of the expected frequencies are found in filepath, raise ValueError
         if all(freq not in path_elements for freq in expected_frequencies):
-            raise ValueError(f" Cannot determine frequency from {filepath}. Sub-daily files must at minimum be placed in a directory corresponding to data frequency: '6hr', '3hr', '1hr', '30min'")
+            raise ValueError(f" Cannot determine frequency from {filepath}. Sub-daily files must at minimum be placed in a directory corresponding to data frequency: '6hr, 'PT6H', '3hr, 'PT3H', '1hr, 'PT1H', '30min, 'PT30M, 'PT0.5H'")
 
     try:
         ncc.check(filepath, enot)
