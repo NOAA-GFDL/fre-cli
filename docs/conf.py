@@ -3,6 +3,14 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+
+# this is for document building in readthedocs only.
+import sys
+from pathlib import Path
+sys.path.insert( 0,
+                 str(Path('..').resolve()) )
+
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -16,7 +24,7 @@ release = '1.0'
 
 extensions = ['sphinx.ext.autodoc']
 
-templates_path = ['_templates']
+#templates_path = ['_templates']
 exclude_patterns = ['fre/tests/test_files/ascii_files/*']
 
 
@@ -26,12 +34,5 @@ exclude_patterns = ['fre/tests/test_files/ascii_files/*']
 
 html_theme = 'renku'
 #html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+#html_static_path = ['_static']
 
-# this is for document building in readthedocs only.
-import sys
-from pathlib import Path
-sys.path.insert( 0, str(
-                         Path(
-                             '..',
-                             'fre').resolve() ))
