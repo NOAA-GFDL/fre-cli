@@ -8,6 +8,11 @@ Contributing to Documentation
 A decent cheat-sheet for restructured-text can be found 
 `here <https://gist.github.com/SMotaal/24006b13b354e6edad0c486749171a70#sections>`_
 
+with a PR to NOAA-GFDL/fre-cli (recommended)
+============================================
+
+
+
 
 with a fork and readthedocs (recommended)
 =========================================
