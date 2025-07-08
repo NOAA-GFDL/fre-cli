@@ -22,7 +22,9 @@ setup(
         'xarray'
     ],
     extras_requires={
-        "docs": ["sphinx","renku-spinx-theme","sphinx-rtd-theme"]
+        "docs": ["sphinx==8.2.3",
+                 "renku-spinx-theme==0.5.0",
+                 "sphinx-rtd-theme==3.0.2"]
     },
     entry_points={
         'console_scripts': [
