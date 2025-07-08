@@ -25,9 +25,11 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   '''
   Given a directory of netcdf files, splits those netcdf files into separate
   files for each data variable and copies the data variable files of interest
-  to the output directory
-  Intended to work with data structured for fre-workflows and fre-workflows file naming conventions:::
+  to the output directory::
+  
+  Intended to work with data structured for fre-workflows and fre-workflows file naming conventions
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
+    
   :param inputDir: directory containg netcdf files
   :type inputDir: string
   :param outputDir: directory to which to write netcdf files
@@ -249,9 +251,11 @@ def set_coord_encoding(dset, vcoords):
 def set_var_encoding(dset, varnames):
   '''
   Gets the encoding settings needed for xarray to write out the variables
-  as expected
-  mostly addressed to time_bnds, because xarray can drop the units attribute:::
+  as expected::
+  
+  mostly addressed to time_bnds, because xarray can drop the units attribute
     https://github.com/pydata/xarray/issues/8368
+    
   :param dset: xarray dataset object to query for info
   :type dset: xarray dataset object
   :param varnames: list of variables that will be written to file
@@ -271,11 +275,13 @@ def set_var_encoding(dset, varnames):
 def fre_outfile_name(infile, varname):
   '''
   Builds split  var filenames the way that fre expects them 
-  (and in a way that should work for any .nc file)
-  This is expected to work with files formed the following way::: 
-   Fre Input format:  date.component(.tileX).nc
-   Fre Output format: date.component.var(.tileX).nc
-  but it should also work on any file filename.nc
+  (and in a way that should work for any .nc file)::
+  
+   This is expected to work with files formed the following way
+    Fre Input format:  date.component(.tileX).nc
+    Fre Output format: date.component.var(.tileX).nc
+   but it should also work on any file filename.nc
+  
   :param infile: name of a file with a . somwehere in the filename
   :type infile: string
   :param varname: string to add to the infile
@@ -345,16 +351,16 @@ def parse_yaml_for_varlist_ppcompstyle(yamlfile, is_static, hist_source):
 def get_variables(comp_info, product, req_source):
     """
     Taken from fre-workflows/app/remap-pp-components; when that gets added
-    to fre-cli this should be an import instead
-    Written by Dana
-    Retrieve variables listed for a component; save in dictionary for use later
-    Params:
-        comp_info: dictionary of information about requested component
-        product: string; one of static, ts, or av
-          static: this filename has "static" in it and has vars without time axes
-          ts: timeseries. the vars have time series unless they are metadata vars
-          av: 
-        req_source: the short identifier for the history file ("atmos_month")
+    to fre-cli this should be an import instead:::
+     Written by Dana
+     Retrieve variables listed for a component; save in dictionary for use later
+     Params:
+         comp_info: dictionary of information about requested component
+         product: string; one of static, ts, or av
+           static: this filename has "static" in it and has vars without time axes
+           ts: timeseries. the vars have time series unless they are metadata vars
+           av: 
+         req_source: the short identifier for the history file ("atmos_month")
     """
     v = None
     if product == "static":

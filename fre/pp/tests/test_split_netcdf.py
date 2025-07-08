@@ -93,13 +93,15 @@ def test_split_file_setup():
 def test_split_file_run(workdir,infile, outfiledir, varlist):
     ''' Checks that split-netcdf will run when called from the command line 
     
-        workdir: subdir all operations are relative to
-        infile: netcdf file to split into single-var files
-        outfiledir: directory to which to write the split netcdf files
-          (new_all_ts_varlist, new_some_ts_varlist, new_none_ts_varlist)
-        varlist: comma-separated string specifying which variables to write 
-          ("all", some_ts_varlist, none_ts_varlist)
-        
+    :param workdir: subdir all operations are relative to
+    :type workdir: string
+    :param infile: netcdf file to split into single-var files
+    :type infile: string
+    :param outfiledir: directory to which to write the split netcdf files (new_all_ts_varlist, new_some_ts_varlist, new_none_ts_varlist)
+    :type outfiledir: string
+    :param varlist: comma-separated string specifying which variables to write ("all", some_ts_varlist, none_ts_varlist)
+    :type varlist: string
+    :type origdir: string ::
         Parameters for the 3 tests are based off of the list of variables to filter
             on plus the type of file:
             all: "all", the default, processes all variables in the input
@@ -127,11 +129,12 @@ def test_split_file_run(workdir,infile, outfiledir, varlist):
                          pytest.param(casedirs[1],"new_some_static_varlist", "some_static_varlist", id='static_some')])    
 def test_split_file_data(workdir,newdir, origdir):
     ''' Checks that the data in the new files match the data in the old files
-        workdir: dir that all operations are relative to
-        newdir: the directory containing the newly-written files
-          (new_all_ts_varlist, new_some_ts_varlist)
-        origdir: dir containing the old files to check against
-          (all_ts_varlist, some_ts_varlist)
+    :param workdir: dir that all operations are relative to
+    :type workdir: string
+    :param newdir: the directory containing the newly-written files (new_all_ts_varlist, new_some_ts_varlist)
+    :type newdir: string
+    :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
+    :type origdir: string ::
         Parameters for the tests differ based off the variable list from test_split_file_run
           and the type of file being split:
             all: "all", the default, processes all variables in the input
@@ -173,11 +176,12 @@ def test_split_file_data(workdir,newdir, origdir):
                          pytest.param(casedirs[1],"new_some_static_varlist", "some_static_varlist", id='static_some')])
 def test_split_file_metadata(workdir,newdir, origdir):
     ''' Checks that the metadata in the new files match the metadata in the old files 
-        workdir: dir that all operations are relative to
-        newdir: the directory containing the newly-written files
-          (new_all_ts_varlist, new_some_ts_varlist)
-        origdir: dir containing the old files to check against
-          (all_ts_varlist, some_ts_varlist)
+    :param workdir: dir that all operations are relative to
+    :type workdir: string
+    :param newdir: the directory containing the newly-written files (new_all_ts_varlist, new_some_ts_varlist)
+    :type newdir: string
+    :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
+    :type origdir: string ::
         Parameters for the tests differ based off the variable list from test_split_file_run
           and the type of file being split:
             all: "all", the default, processes all variables in the input
@@ -234,12 +238,13 @@ def test_split_file_cleanup():
                              pytest.param("atmos", "all_ts_varlist", "all", 
                                           "atmos_diurnal", marks=pytest.mark.xfail)])
 def test_parse_yaml(component, compdir, varlist, hist_source):
-    ''' Tests parsing yaml for the variable_list we need for splitting 
-        component: string corresponding to a component in the yaml
-        compdir: directory in which to look for the yaml (all use same filename)
-        varlist: list of variables expected to match what we get from the yaml
-        hist_source: optional, string corresponding to a hist_source that should be under the component in the yaml
-        
+    ''' Tests parsing yaml for the variable_list we need for splitting
+    note: I am not putting that much work into getting this formatted right; it's getting rewritten shortly once another pull request is complete
+    :param component: string corresponding to a component in the yaml
+    :param compdir: directory in which to look for the yaml (all use same filename)
+    :param varlist: list of variables expected to match what we get from the yaml
+    :param hist_source: optional, string corresponding to a hist_source that should be under the component in the yaml::
+    
         Parameters for the tests are based off of the following: 
             parses the yaml, does not find a varlist, gets the right default
             parses the yaml, finds a varlist and it matches the orig results
