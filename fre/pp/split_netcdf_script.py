@@ -26,8 +26,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   Given a directory of netcdf files, splits those netcdf files into separate
   files for each data variable and copies the data variable files of interest
   to the output directory
-  Intended to work with data structured for fre-workflows and fre-workflows
-    file naming conventions
+  Intended to work with data structured for fre-workflows and fre-workflows file naming conventions:::
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
   :param inputDir: directory containg netcdf files
   :type inputDir: string
@@ -35,16 +34,13 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   :type outputDir: string
   :param component: the 'component' element we are currently working with in the yaml
   :type component: string
-  :param history_source: a history_file under a 'source' under the 'component' that
-    we are working with. Is used to identify the files in inputDir.
+  :param history_source: a history_file under a 'source' under the 'component' that we are working with. Is used to identify the files in inputDir.
   :type history_source: string
-  :param use_subdirs: whether to recursively search through inputDir under the subdirectories.
-    used when regridding.
+  :param use_subdirs: whether to recursively search through inputDir under the subdirectories. Used when regridding.
   :type use_subdirs: boolean
   :param yamlfile: - a .yml config file for fre postprocessing
   :type yamlfile: string
-  :param split_all_vars: Whether to skip parsing the yamlfile and split all 
-    available vars in the file. Defaults to False.
+  :param split_all_vars: Whether to skip parsing the yamlfile and split all available vars in the file. Defaults to False.
   :type split_all_vars: boolean
   '''
   
@@ -215,9 +211,9 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
 
 def get_max_ndims(dataset):
   '''
-  Gets the maximum number of dimensions of a single var in an 
-  xarray Dataset object. Excludes coord vars, which should be single-dim anyway.
-  dataset: xarray Dataset 
+  Gets the maximum number of dimensions of a single var in an xarray Dataset object. Excludes coord vars, which should be single-dim anyway.
+  :param dataset: xarray Dataset you want to query 
+  :type dataset: xarray Dataset
   '''
   allvars = dataset.data_vars.keys()
   ndims = [len(dataset[v].shape) for v in allvars]
@@ -295,8 +291,7 @@ def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
   and returns "all" if no such list is found
   yamlfile: .yml file used for fre pp configuration
   yamlcomp: string, one of the components in the yamlfile
-  hist_source: string, optional, allows you to check that the hist_source
-    is under the specified component
+  hist_source: string, optional, allows you to check that the hist_source is under the specified component
   '''
   with open(yamlfile,'r') as yml:
     yml_info = yaml.safe_load(yml)
