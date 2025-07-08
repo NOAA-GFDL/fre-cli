@@ -6,19 +6,19 @@ import logging
 fre_logger = logging.getLogger(__name__)
 
 def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
-    """_Mask pressure-level diagnostic output below land surface_
+    """Mask pressure-level diagnostic output below land surface
 
-    :param infile: _Input NetCDF file containing pressure-level output to be masked_
+    :param infile: Input NetCDF file containing pressure-level output to be masked
     :type infile: str
-    :param psfile: _Input NetCDF file containing surface pressure 'ps'_
+    :param psfile: Input NetCDF file containing surface pressure 'ps'
     :type psfile: str
-    :param outfile: _Output NetCDF file containing masked output_
+    :param outfile: Output NetCDF file containing masked output
     :type outfile: str
-    :raises FileExistsError: _Output file already exists_
-    :raises FileNotFoundError: _Pressure input file does not exist_
-    :raises ValueError: _Pressure input file does not contain ps
-    :raises FileNotFound: _Input file does not exist_
-    :rtype: _None_
+    :raises FileExistsError: Output file already exists
+    :raises FileNotFoundError: Pressure input file does not exist
+    :raises ValueError: Pressure input file does not contain ps
+    :raises FileNotFound: Input file does not exist
+    :rtype: None
 
     .. note:: Input variables must have an attribute `pressure_mask` set to `False`. Output variables have the attribute set to `True`.
     """
@@ -66,13 +66,13 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
 
 
 def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Dataset) -> xr.Dataset:
-    """_Mask data with pressure larger than surface pressure_
-    :param ds: _Input dataset to be masked_
+    """Mask data with pressure larger than surface pressure
+    :param ds: Input dataset to be masked
     :type infile: xarray.Dataset
-    :param var: _Input variable to be masked_
+    :param var: Input variable to be masked
     :type var: str
-    :return:_Output masked dataset_
-    :rtype: _xrray.Dataset_
+    :return:Output masked dataset
+    :rtype: xrray.Dataset
 
     .. note:: Missing values are set to 1.0e20.
     """
@@ -104,14 +104,14 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
 
 
 def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
-    """_Check if dataArray has pressure coordinate fitting requirements
-    and return it_
-    :param ds: _Input dataset to inspect_
+    """Check if dataArray has pressure coordinate fitting requirements
+    and return it
+    :param ds: Input dataset to inspect
     :type ds: xarray.Dataset
-    :param var: _Input variable name to inspect_
+    :param var: Input variable name to inspect
     :type var: str
-    :return: _Pressure coordinate variable_
-    :rtype _xarray.DataArray_
+    :return: Pressure coordinate variable
+    :rtype xarray.DataArray
 
     .. warning:: Returns None if no pressure coordinate variable can be found
     """
@@ -129,12 +129,12 @@ def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
 
 
 def write_dataset(ds: xr.Dataset, template: xr.Dataset, outfile: str) -> None:
-    """_Prepare the dataset and write output NetCDF file_
-    :param ds: _Input dataset to write to disk
+    """Prepare the dataset and write output NetCDF file
+    :param ds: Input dataset to write to disk
     :type infile: xarray.Dataset
-    :param template: _Remainder dataset to also write to disk
+    :param template: Remainder dataset to also write to disk
     :type template: xarray.Dataset
-    :rtype: _None_
+    :rtype: None
     """
 
     # copy global attributes
