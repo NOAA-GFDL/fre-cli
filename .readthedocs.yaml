@@ -10,6 +10,9 @@ build:
   tools:
     python: "3.11"
 
+conda:
+  environment: environment.yml
+
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
   configuration: docs/conf.py
@@ -20,3 +23,5 @@ sphinx:
 python:
   install:
   - requirements: docs/requirements.txt
+  - method: pip
+    path: .
