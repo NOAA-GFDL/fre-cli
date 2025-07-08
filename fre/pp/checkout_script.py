@@ -24,7 +24,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     :param experiment: name of post processing experiment
     :type experiment: str, default None
     :param platform: which platform to use
-    :type c: str, default None
+    :type platform: str, default None
     :param target: name of target (prod, debug, open-mp, repro)
     :type target: str, default None
     :param branch: which git branch to pull from
