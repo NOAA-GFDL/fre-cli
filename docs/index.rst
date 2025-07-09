@@ -21,7 +21,6 @@ Welcome to ``fre-cli``'s documentation!
    container
    api
    for-developers
-   for-maintainers
    contributing_to_doc
    badges
 
