@@ -20,12 +20,10 @@ CI/CD minutes, and making PR reviews incredibly easy for documentation changes.
   you cannot open a PR!
 * Once the PR is opened, a ``readthedocs`` workflow will be run, even if that PR is in draft mode. To confirm it is
   running, or did run, open your PR in a web browser, scroll to the bottom to find the latests workflow runs under
-"checks", and click the ``readthedocs`` workflow.
-* after clicking, you should see a URL like
-  ``https://noaa-gfdl--<PR_NUMBER>.org.readthedocs.build/projects/fre-cli/en/<PR_NUMBER>/``,
-  where ``<PR_NUMBER>`` is the PR number (e.g. these doc updates were added in
-  `530 <https://github.com/NOAA-GFDL/fre-cli/pull/530>`_).
-  If the doc build is successful, you should see the usual ``fre-cli`` documentation page. If unsuccessful, you should
+  "checks", and click the ``readthedocs`` workflow.
+* after clicking, you should see a URL like ``https://noaa-gfdl--<PR_NUMBER>.org.readthedocs.build/projects/fre-cli/en/<PR_NUMBER>/``,
+  where ``<PR_NUMBER>`` is the PR number, for examples, these doc updates were added in PR `530 <https://github.com/NOAA-GFDL/fre-cli/pull/530>`_ .
+* If the doc build is successful, you should see the usual ``fre-cli`` documentation page. If unsuccessful, you should
   see a ``404`` error.
 * To review documentation differences, play with the "Show diff" checkbox, which gives an explicit visual difference
   highlight right on the built webpage
@@ -94,7 +92,7 @@ This is likely to be deprecated, see sections above mentioning ``readthedocs``.
 fork and poke at the settings
 -----------------------------
 
-* Fork ``fre-cli`` on github	 
+* Fork ``fre-cli`` on github 
 * On github, navigate to your ``fre-cli`` fork, and click “settings”
 * In “settings”, click “pages”
 * In “pages”, under “build and deployment”, make sure “source” is set to “Deploy from a branch”
