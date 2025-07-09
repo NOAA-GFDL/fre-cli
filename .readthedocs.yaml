@@ -12,6 +12,8 @@ build:
   jobs:
     pre_create_environment:
       - conda update --yes --quiet --name=base --channel=conda-forge conda
+    pre_build:
+      - sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
 
 sphinx:
   configuration: docs/conf.py
