@@ -1,12 +1,12 @@
 name: create_test_conda_env
 
-#on:
-#  pull_request:
-#    branches:
-#      - main
-#  push:
-#    branches:
-#      - main
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
 
 # cancel running jobs if theres a newer push
 concurrency:
@@ -72,8 +72,9 @@ jobs:
       - name: Install Sphinx and Build Documentation
         run: |
           # pip install sphinx and themes, upgrade theme
-          pip install sphinx renku-sphinx-theme sphinx-rtd-theme
-          pip install --upgrade sphinx-rtd-theme
+          pip install .[docs]
+#          pip install sphinx renku-sphinx-theme sphinx-rtd-theme
+#          pip install --upgrade sphinx-rtd-theme
 
           # have sphinx build the docs
           sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
