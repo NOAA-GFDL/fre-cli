@@ -3,7 +3,7 @@ For developers
 ==============
 
 Developers should consult this section for detailed and specific information relevant to development/maintenance efforts, AFTER
-familiarizing themselves with the rest of the user-targeted documentation. 
+familiarizing themselves with the rest of the user-targeted documentation. Some material in this section is earmarked as specific to maintainig the code repository (see the section :ref:`repository-maintenance`
 
 
 Contributing to ``fre-cli``
@@ -24,7 +24,7 @@ any local changes.
 
 Development work on ``fre-cli`` should occur within a conda environment housing ``fre-cli``'s requirements, and
 a local copy of the repository to install with ``pip`` using the ``-e/--editable`` flag on. This specific approch is
-described `here <https://noaa-gfdl.github.io/fre-cli/setup.html#create-environment-from-github-repo-clone>`_
+described in our `setup doc <https://noaa-gfdl.github.io/fre-cli/setup.html#create-environment-from-github-repo-clone>`_
 
 
 Testing Your Local Changes and Installation
@@ -64,7 +64,7 @@ Writing a ``pytest`` unit-test for ``fre-cli``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If the functionality one desires to test is that of CLI call, the tests should use the ``CliRunner`` approach shown in
 ``fre/tests``. ``click`` based CLI calls should NOT be tested with ``subprocess.run`` ever within ``pytest``. See
-``click``'s `documentation <https://click.palletsprojects.com/en/stable/testing/#testing-click-applications>`_ for more
+`click's documentation <https://click.palletsprojects.com/en/stable/testing/#testing-click-applications>`_ for more
 information.
 
 If the functionality one desires to test is removed from that of a CLI call, the test should likely be housed in the directory
@@ -90,7 +90,7 @@ and be prepared to defend the proposition of adding the new third-party package 
 
 How ``fre-cli`` is updated
 --------------------------
-``fre-cli`` is published and hosted as a Conda package on the `NOAA-GFDL conda channel <https://anaconda.org/NOAA-GFDL>`_. On pushes to
+``fre-cli`` is published and hosted as a Conda package on the NOAA-GFDL `conda channel <https://anaconda.org/NOAA-GFDL>`_. On pushes to
 the ``main`` branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically be updated using the workflow
 defined in ``.github/workflows/publish_conda.yml``, which is equivalent to``.github/workflows/build_conda.yml`` with an extra ``conda publish``
 step.
@@ -148,3 +148,10 @@ In the case where non-python files like templates, examples, and outputs are to 
 * For more efficiency, if there are multiple files of the same type needed, the ``MANIFEST.in`` addition can be something
   like ``recursive-include fre/fre<tool> *.fileExtension`` which would recursively include every file matching that
   ``fileExtension`` within the specified directory and its respective subdirectories.
+
+.. _repository-maintenace:
+
+repository maintenance
+======================
+
+.. include:: for-maintainers.rst
