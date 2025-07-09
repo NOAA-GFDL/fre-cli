@@ -28,6 +28,5 @@ Welcome to ``fre-cli``'s documentation!
 Indices
 =======
 
-* :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

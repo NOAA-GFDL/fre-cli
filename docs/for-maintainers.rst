@@ -1,6 +1,6 @@
-==============
+===============
 For maintainers
-==============
+===============
 
 Maintainers should consult this section for detailed and specific information relevant to maintaining github repositories, releasing, and deployments.
 
