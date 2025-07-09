@@ -3,21 +3,14 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-
-## this is for document building in readthedocs only.
-#import sys
-#from pathlib import Path
-#sys.path.insert( 0,
-#                 str(Path('.').resolve()) )
-
-
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Fre-Cli'
-copyright = '2024, Bennett Chang'
-author = 'Bennett Chang'
-release = '1.0'
+project = 'fre-cli'
+copyright = '2024, NOAA-GFDL MSD Workflow Team'
+author = 'NOAA-GFDL MSD Workflow Team'
+# special thank you to Bennett Chang for intializing the fre-cli repository
+release = '2025.04'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
