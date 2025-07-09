@@ -73,8 +73,6 @@ jobs:
         run: |
           # pip install sphinx and themes, upgrade theme
           pip install .[docs]
-          # pip install sphinx renku-sphinx-theme sphinx-rtd-theme
-          # pip install --upgrade sphinx-rtd-theme
 
           # have sphinx build the docs
           sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
