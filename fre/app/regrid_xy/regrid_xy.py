@@ -28,7 +28,14 @@ non_regriddable_variables = [
     'average_DT','time_bnds']
 
 def truncate_date(date, freq):
-    """ truncates iso freq to iso date time """
+    """
+    truncates iso freq to iso date time
+    
+    :param date:
+    :type date:
+    :param freq:
+    :type freq:
+    """
     format_=freq_to_date_format(freq)
 
     output = subprocess.Popen(["cylc", "cycle-point", "--template", format_, date],
@@ -45,7 +52,15 @@ def truncate_date(date, freq):
     return date
 
 def freq_to_date_format(iso_freq):
-    """Print legacy Bronx-like date template format given a frequency (ISO 8601 duration)"""
+    """
+    Print legacy Bronx-like date template format given a frequency (ISO 8601 duration)
+    
+    :param iso_freq: frequency (ISO 8601 duration)
+    :type iso_freq:
+    :raises ValueError: iso_freq is an unknown frequency
+    :return: legacy Bronx-like date template format
+    :rtype: string
+    """
 
     if iso_freq=='P1Y':
         return 'CCYY'
@@ -62,7 +77,18 @@ def test_import():
     return 1
 
 def safe_rose_config_get(config, section, field):
-    """read optional variables from rose configuration, and don't error on None value"""
+    """
+    read optional variables from rose configuration, and don't error on None value
+    
+    :param config:
+    :type config:
+    :param section:
+    :type section:
+    :param field:
+    :type field:
+    :return: 
+    :rtype: 
+    """
     config_dict = config.get( [section,field] )
     return None if config_dict is None else config_dict.get_value()
 
@@ -75,6 +101,13 @@ def get_source_info(grid_spec: str, mosaic_file: str) -> (int, int):
     where mosaic_file can be either "atm_mosaic_file", "ocn_mosaic_file", or "lnd_mosaic_file".
     This method assumes that for a multi-tile grid, the grids for each tile are of the
     same size and will take the first gridfile to retrieve the coordinate dimensions
+
+    :param grid_spec:
+    :type grid_spec: str
+    :param mosaic_file:
+    :type mosaic_file: str
+    :return: a tuple of mosaicfile, nx, and ny
+    :rtype:
     """
 
     mosaicfile = str(xr.load_dataset(grid_spec)[mosaic_file].values.astype(str))
@@ -90,7 +123,16 @@ def get_source_info(grid_spec: str, mosaic_file: str) -> (int, int):
 
 def check_interp_method(dataset: Type[xr.Dataset], regrid_vars: List[str], interp_method: str):
 
-    """print warning if optional interp_method clashes with nc file attribute field, if present"""
+    """
+    print warning if optional interp_method clashes with nc file attribute field, if present
+    
+    :param dataset:
+    :type dataset: xr.Dataset
+    :param regrid_vars:
+    :type regrid_vars: List(str)
+    :param interp_method:
+    :type interp_method: str
+    """
     
     for variable in regrid_vars:
         if 'interp_method' in dataset[variable].attrs:
@@ -100,9 +142,19 @@ def check_interp_method(dataset: Type[xr.Dataset], regrid_vars: List[str], inter
 
 
 def check_per_component_settings(component_list, rose_app_cfg):
-    """for a source file ref'd by multiple components check per-component
+    """
+    for a source file ref'd by multiple components check per-component
     settings for uniqueness. output list of bools of same length to check
-    in componenet loop"""
+    in componenet loop
+    
+    :param component_list:
+    :type component_list:
+    :param rose_app_cfg:
+    :type rose_app_cfg:
+    :raises ValueError: if there is a problem with checking per-component settings for uniqueness
+    :return: 
+    :rtype:
+    """
     do_regridding = [True] #first component will always be run
     curr_out_grid_type_list = [safe_rose_config_get( \
                                                rose_app_cfg, component_list[0], 'outputGridType')]
@@ -120,7 +172,14 @@ def check_per_component_settings(component_list, rose_app_cfg):
 
 
 def make_component_list(config, source):
-    """make list of relevant component names where source file appears in sources"""
+    """
+    make list of relevant component names where source file appears in sources
+    
+    :param config:
+    :type config:
+    :param source:
+    :type source:
+    """
     comp_list=[] #will not contain env, or command
     for keys, sub_node in config.walk():
         # only target the keys
@@ -141,7 +200,16 @@ def make_component_list(config, source):
 
 
 def make_regrid_var_list(target_file: str, interp_method: str = None):
-    """create default list of variables to be regridded within target file."""
+    """
+    create default list of variables to be regridded within target file.
+    
+    :param target_file:
+    :type target_file: str
+    :param interp_method:
+    :type interp_method: str, defaults to None
+    :return:
+    :rtype:
+    """
 
     #load data file
     dataset = xr.load_dataset(target_file).drop_vars(non_regriddable_variables, errors="ignore")
@@ -159,6 +227,46 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
               grid_spec, rose_config):
     """
     calls fre-nctools' fregrid to regrid netcdf files
+
+    :param input_dir:
+    :type input_dir:
+    :param output_dir:
+    :type output_dir:
+    :param begin:
+    :type begin:
+    :param tmp_dir:
+    :type tmp_dir:
+    :param remap_dir:
+    :type remap_dir:
+    :param source:
+    :type source:
+    :param grid_spec:
+    :type grid_spec:
+    :param rose_config:
+    :type rose_config:
+    :raises Exception: a mandatory input argument is not present in the config_name
+    :raises OSError: if any of the following:
+
+            - input_dir does not exist
+            - tmp_dir does not exist
+            - output_dir does not exist and/or could not be created
+            - work_dir does not exist and/or could not be created
+            - remap_dir could not be created
+            - grid_spec could not be copied
+            - regrid_xy target does not exist
+            - remap_file could not be copied to local dir
+    :raises ValueError: if:
+
+            - grid_spec_file cannot be determined from grid_spec
+            - component list empty- source file not found in any source file list!
+            - at least one of the following are None: 
+                - input_grid
+                - input_realm
+                - interp_method
+            - input_realm not recognized
+            - make_regrid_var_list found no vars to regrid. and no vars given.
+    :return: 0
+    :rtype: int
     """
 
     # mandatory arguments- code exits if any of these are not present
