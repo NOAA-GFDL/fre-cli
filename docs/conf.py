@@ -14,18 +14,9 @@ release = '2025.04'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
-extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.apidoc']
-
-templates_path = ['_templates']
+extensions = ['sphinx.ext.autodoc']
 exclude_patterns = ['fre/tests/test_files/ascii_files/*']
-
-
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
 html_theme = 'renku'
-#html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
