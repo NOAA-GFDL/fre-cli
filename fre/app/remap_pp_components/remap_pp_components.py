@@ -13,8 +13,9 @@ from fre.app import helpers
 
 fre_logger = logging.getLogger(__name__)
 
-def verify_dirs(in_dir, out_dir):
-    """Verify that the input and output directories exists and are directories
+def verify_dirs(in_dir: str, out_dir: str):
+    """
+    Verify that the input and output directories exists and are directories
 
     :param output_dir: output directory
     :type output_dir: str
@@ -34,8 +35,9 @@ def verify_dirs(in_dir, out_dir):
     else:
         raise ValueError(f"Error: Output directory {out_dir} is not a valid directory")
 
-def create_dir(out_dir, comp, freq, chunk, ens, dir_ts):
-    """Create the output directory structure
+def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: bool):
+    """
+    Create the output directory structure
 
     :param out_dir: output directory
     :type out_dir: str
@@ -49,6 +51,8 @@ def create_dir(out_dir, comp, freq, chunk, ens, dir_ts):
     :type ens: str
     :param dir_ts: directory time series workaround
     :type dir_ts: boolean
+    :return: output directory sturcture
+    :rtype: str
     """
 
     # Define dir
@@ -69,11 +73,14 @@ def create_dir(out_dir, comp, freq, chunk, ens, dir_ts):
 
     return dirs
 
-def freq_to_legacy(iso_dura):
-    """Print Bronx-style frequency given an ISO8601 duration
+def freq_to_legacy(iso_dura: str):
+    """
+    Print Bronx-style frequency given an ISO8601 duration
     
     :param iso_dura: frequency
     :type ise_dura: ISO str format
+    :return: bronx-style frequency
+    :rtype: str
     """
 
     if iso_dura=='P1Y':
@@ -107,11 +114,14 @@ def freq_to_legacy(iso_dura):
 
     return freq_legacy
 
-def chunk_to_legacy(iso_dura):
-    """Print Bronx-style frequency given an ISO8601 duration
+def chunk_to_legacy(iso_dura: str):
+    """
+    Print Bronx-style frequency given an ISO8601 duration
 
     :param iso_dura: chunk
-    :type iso_dura: str 
+    :type iso_dura: str
+    :return: bronx-style frequency
+    :rtype: str 
     """
 
     if iso_dura[0]=='P':
@@ -126,11 +136,14 @@ def chunk_to_legacy(iso_dura):
 
     return brx_freq
 
-def freq_to_date_format(iso_freq):
-    """Print legacy Bronx-like date template format given a frequency (ISO 8601 duration)
+def freq_to_date_format(iso_freq: str):
+    """
+    Print legacy Bronx-like date template format given a frequency (ISO 8601 duration)
 
     :param iso_freq: frequency
     :type iso_freq: str
+    :return: legacy bronx-like date template
+    :rtype: str
     """
 
     if iso_freq=='P1Y':
@@ -144,8 +157,9 @@ def freq_to_date_format(iso_freq):
     else:
         raise ValueError(f'ERROR: Unknown Frequency {iso_freq}')
 
-def truncate_date(date, freq):
-    """Print a date string to a truncated precision.
+def truncate_date(date: str, freq: str):
+    """
+    Print a date string to a truncated precision.
         - Accepts a date and frequency
         - Outputs a date string with suitably reduced precision
         - Test cases: '19790101T0000Z P1D', '19800101T0000Z P1M', '19790101T0000Z PT0.5H'
@@ -155,6 +169,8 @@ def truncate_date(date, freq):
     :type date: ISO string format
     :param freq: frequency
     :type freq: str
+    :return: trucated date string 
+    :rtype: str
     """
 
     form = freq_to_date_format(freq)
@@ -175,9 +191,12 @@ def truncate_date(date, freq):
 
     return date
 
-def search_files(product, var, source, freq, current_chunk, begin):
-    """Pattern match and search for the correct files in the chunk directory
+def search_files(product: str, var: list, source: str, freq: str, current_chunk: str, begin: str):
+    """
+    Pattern match and search for the correct files in the chunk directory
 
+    :param product: ts, av or static
+    :type product: str
     :param var: variables
     :type var: list of strings
     :param source: source history files for post-processed component
@@ -188,6 +207,8 @@ def search_files(product, var, source, freq, current_chunk, begin):
     :type current_chunk: str
     :param freq: frequency
     :type freq: str
+    :return: list of files found
+    :rtype: array
     """
     files = []
     # with glob - files found as list
@@ -227,13 +248,20 @@ def search_files(product, var, source, freq, current_chunk, begin):
 
     return files
 
-def get_varlist(comp_info, product, req_source, src_vars):
-    """Retrieve variables listed for a component; save in dictionary for use later
+def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict):
+    """
+    Retrieve variables listed for a component; save in dictionary for use later
 
     :param comp_info: dictionary of information about requested component
     :type comp_info: dict
     :param product: static, ts, or av
-    : type product: str
+    :type product: str
+    :param req_source: source being looped over
+    :type req_source: str
+    :param src_vars: dictionary of variables asociated with source name
+    :type src_vars: dict
+    :return: list of variables associated with source name
+    :rtype: array
     """
     if product == "static":
         if comp_info.get("static") is None:
@@ -250,13 +278,16 @@ def get_varlist(comp_info, product, req_source, src_vars):
 
     return v
 
-def get_sources(comp_info, product):
-    """Retrieve source name for a component
+def get_sources(comp_info: dict, product: str):
+    """
+    Retrieve source name for a component
 
     :param comp_info: dictionary of information about requested component
     :type comp_info: dict
     :param product: static, ts, or av
     :type product: str
+    :return: list of sources associated with a pp component
+    :rtype: array
     """
     sources = []
     if "static" in product:
@@ -269,11 +300,14 @@ def get_sources(comp_info, product):
 
     return sources
 
-def get_freq(comp_info):
-    """Return the frequency
+def get_freq(comp_info: dict):
+    """
+    Return the frequency
 
     :param comp_info: dictionary of information about requested component
     :type comp_info: dict
+    :return: list of frequencies
+    :rtype: array
     """
     if "freq" not in comp_info.keys():
         freq = glob.glob("*")
@@ -282,11 +316,14 @@ def get_freq(comp_info):
 
     return freq
 
-def get_chunk(comp_info):
-    """Return the chunk size
+def get_chunk(comp_info: dict):
+    """
+    Return the chunk size
 
     :param comp_info: dictionary of information about requested component
     :type comp_info: dict
+    :return: list of chunk sizes
+    :rtype: array 
     """
     if "chunk" not in comp_info.keys():
         chunk = glob.glob("*")
@@ -295,10 +332,11 @@ def get_chunk(comp_info):
 
     return chunk
 ##################################### MAIN FUNCTION #####################################
-def remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
-                        product, components, copy_tool, yaml_config,
-                        ts_workaround, ens_mem):
-    """Remap netcdf files to an updated output directory structure
+def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, current_chunk: str,
+                        product: str, components: str, copy_tool: str, yaml_config: str,
+                        ts_workaround: bool, ens_mem: str):
+    """
+    Remap netcdf files to an updated output directory structure
 
     :param input_dir: input directory
     :type input_dir: str
