@@ -1,5 +1,4 @@
-.. last updated early Nov 2024.
-   could use some refinement
+.. last updated early Jul 9 2025.
 
 =============================
 Contributing to Documentation
@@ -8,16 +7,38 @@ Contributing to Documentation
 A decent cheat-sheet for restructured-text can be found 
 `here <https://gist.github.com/SMotaal/24006b13b354e6edad0c486749171a70#sections>`_
 
+with a PR to NOAA-GFDL/fre-cli (recommended)
+============================================
 
-with a fork and readthedocs (recommended)
-=========================================
+This approach is the easiest, most-automated we have to offer open-source contributors. It is completely appropriate
+for casual editing of the docs and previewing the changes, all while not eating up your personal github account's free
+CI/CD minutes, and making PR reviews incredibly easy for documentation changes.
 
-This approach is good for casual editing of the docs and previewing the changes, all while not eating up your personal
-github account's free CI/CD minutes. 
+* you DO NOT NEED a ``readthedocs.org`` account.
+* Make a branch, either with ``NOAA-GFDL/fre-cli`` as the remote, or your own fork.
+* Edit a file any non-zero amount, commit that change to your branch, and push. If the branch is idential to ``main``,
+  you cannot open a PR!
+* Once the PR is opened, a ``readthedocs`` workflow will be run, even if that PR is in draft mode. To confirm it is
+  running, or did run, open your PR in a web browser, scroll to the bottom to find the latests workflow runs under
+  "checks", and click the ``readthedocs`` workflow.
+* after clicking, you should see a URL like ``https://noaa-gfdl--<PR_NUMBER>.org.readthedocs.build/projects/fre-cli/en/<PR_NUMBER>/``,
+  where ``<PR_NUMBER>`` is the PR number, for examples, these doc updates were added in PR `530 <https://github.com/NOAA-GFDL/fre-cli/pull/530>`_ .
+* If the doc build is successful, you should see the usual ``fre-cli`` documentation page. If unsuccessful, you should
+  see a ``404`` error.
+* To review documentation differences, play with the "Show diff" checkbox, which gives an explicit visual difference
+  highlight right on the built webpage
+
+
+with a fork and your own readthedocs account
+============================================
+
+This approach is good for playing with configuration of the workflow and not making a lot of noise on the main repository
+with one's development. If you want to experiment more freely and not send notifications to every maintainer of ``fre-cli``,
+this is for you. It also won't use your own github account minutes.
 
 * Make sure you HAVE a fork underneath your github profile, if not, fork the repository under the NOAA-GFDL namespace
 * Navigate to readthedocs' `log-in page <https://app.readthedocs.org/accounts/signup/>`_ and sign in with your GitHub
-  account
+  account. This effectively creates a ``readthedocs.org`` account for you, attached to your ``github`` account. 
 * Click "Add project" and search for ``fre-cli``. If your fork doesn't automatically come up, you do not have a fork!
   Go back to the first step in this list.
 * If your changes do not live on a branch named ``main`` (they should not, at least), configure the project to look
@@ -45,8 +66,7 @@ from the root-directory of your local repository copy, issue the following comma
 
 .. code-block:: console
 
- pip install sphinx renku-sphinx-theme sphinx-rtd-theme
- pip install --upgrade sphinx-rtd-theme
+ pip install .[docs]
  sphinx-apidoc --output-dir docs fre/ --separate
  sphinx-build docs build
 
@@ -66,11 +86,13 @@ run, simply add ``-E`` or ``--fresh-env`` to the call to avoid using ``sphinx``\
 with a fork and gh-pages
 ========================
 
+This is likely to be deprecated, see sections above mentioning ``readthedocs``.
+
 
 fork and poke at the settings
 -----------------------------
 
-* Fork ``fre-cli`` on github	 
+* Fork ``fre-cli`` on github 
 * On github, navigate to your ``fre-cli`` fork, and click “settings”
 * In “settings”, click “pages”
 * In “pages”, under “build and deployment”, make sure “source” is set to “Deploy from a branch”

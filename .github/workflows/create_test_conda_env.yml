@@ -64,6 +64,12 @@ jobs:
           name: code-coverage-report
           path: coverage.xml
 
+      - name: Archive badges
+        uses: actions/upload-artifact@v4
+        with:
+          name: badges
+          path: docs/*_badge.svg
+
       - name: Run pylint in fre-cli environment
         run: |
           # run pylint, ignored modules avoid warnings arising from code internal to those modules
@@ -72,8 +78,7 @@ jobs:
       - name: Install Sphinx and Build Documentation
         run: |
           # pip install sphinx and themes, upgrade theme
-          pip install sphinx renku-sphinx-theme sphinx-rtd-theme
-          pip install --upgrade sphinx-rtd-theme
+          pip install .[docs]
 
           # have sphinx build the docs
           sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
