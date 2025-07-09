@@ -1,4 +1,4 @@
-># Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -167,11 +167,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-
-
-
-
-
 ##### GOTTA CLEAN THIS UP
 
 # files pulled/created via testing
@@ -197,5 +192,6 @@ rose-app-run.conf
 .vscode/*
 .vscode
 fre/tests/test_files/CMOR_input_example.json
+
 fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_*
 docs/fre.*
