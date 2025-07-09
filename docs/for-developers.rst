@@ -2,8 +2,9 @@
 For developers
 ==============
 
-Developers should consult this section for detailed and specific information relevant to development/maintenance efforts, AFTER
-familiarizing themselves with the rest of the user-targeted documentation. Some material in this section is earmarked as specific to maintainig the code repository (see the section :ref:`repository-maintenance`
+Developers should consult this section for detailed and specific information relevant to development/maintenance efforts,
+AFTER familiarizing themselves with the rest of the user-targeted documentation. Some material in this section is
+earmarked as specific to maintaining the code repository (see :ref:`repository-maintenance`).
 
 
 Contributing to ``fre-cli``
@@ -24,7 +25,7 @@ any local changes.
 
 Development work on ``fre-cli`` should occur within a conda environment housing ``fre-cli``'s requirements, and
 a local copy of the repository to install with ``pip`` using the ``-e/--editable`` flag on. This specific approch is
-described in our `setup doc <https://noaa-gfdl.github.io/fre-cli/setup.html#create-environment-from-github-repo-clone>`_
+described in :ref:`setup`.
 
 
 Testing Your Local Changes and Installation
@@ -40,10 +41,10 @@ code.
 
 Running CLI-calls
 ~~~~~~~~~~~~~~~~~
-Most development cycles will involve focused efforts isolated to a specific ``fre TOOL COMMAND *ARGV``, where ``*ARGV`` stands
-in for a shell-style argument vector (e.g. ``-e FOO -p BAR -t BAZ``, a common pattern in ``fre-cli``). Likely, the code one
-is working on here is housed somewhere *approximately* like ``fre/TOOL/COMMAND.py`` (*generally*, this is not a law), with
-the ``click`` CLI entry-point under ``fre/TOOL/freTOOL.py``.
+Most development cycles will involve focused efforts isolated to a specific ``fre TOOL COMMAND *ARGV``, where ``*ARGV``
+stands in for a shell-style argument vector (e.g. ``-e FOO -p BAR -t BAZ``, a common pattern in ``fre-cli``). Likely, the
+code one is working on here is housed somewhere *approximately* like ``fre/TOOL/COMMAND.py`` (*generally*, this is not a
+law), with the ``click`` CLI entry-point under ``fre/TOOL/freTOOL.py``.
 
 Here, the developer usually uses the ``fre TOOL COMMAND *ARGV`` call as a test, focused on seeing the changes they are
 introducing, and develop the code until they see the result they are looking for. The specific ``fre TOOL COMMAND *ARGV``
@@ -68,19 +69,20 @@ If the functionality one desires to test is that of CLI call, the tests should u
 information.
 
 If the functionality one desires to test is removed from that of a CLI call, the test should likely be housed in the directory
-structure corresponding to the ``TOOL`` under-which the functionality lives. In that case, the usual pythonic-testing approaches,
-guidelines, documentation etc. applies.
+structure corresponding to the ``TOOL`` under-which the functionality lives. In that case, the usual pythonic-testing
+approaches, guidelines, documentation etc. applies.
 
 
 Adding a New Requirement to ``fre-cli``
 ---------------------------------------
 Currently, all required packages are ``conda`` packages listed in ``environment.yml``, and also, equivalently in ``meta.yaml``.
-``conda`` packages that have a corresponding ``pip`` package should list the ``pip`` package as a python requirement in ``setup.py``.
+``conda`` packages that have a corresponding ``pip`` package should list the ``pip`` package as a python requirement in
+``setup.py``.
 
-Pure ``pip`` packages cannot be listed currently as a requirement for ``fre-cli``. This is because only ``environment.yml`` can list
-``pip`` packages as requirements. But, only ``meta.yaml`` can be used as a the ``conda build`` target. New dependencies for ``fre-cli``
-MUST have a ``conda`` package available through a non-proprietary ``conda`` channel, but preferable the open-source ``conda-forge``
-channel, which requires stronger quality control.
+Pure ``pip`` packages cannot be listed currently as a requirement for ``fre-cli``. This is because only ``environment.yml`` can
+list ``pip`` packages as requirements. But, only ``meta.yaml`` can be used as a the ``conda build`` target. New dependencies
+for ``fre-cli`` MUST have a ``conda`` package available through a non-proprietary ``conda`` channel, but preferable the
+open-source ``conda-forge`` channel, which requires stronger quality control.
 
 In general, the requirement being added is created by a third-party. As such, before adding a new requirement, the developer is
 responsible for verifying that the desired package is safe, well-documented, and actively-maintained as necessary. The developer should
@@ -90,10 +92,10 @@ and be prepared to defend the proposition of adding the new third-party package 
 
 How ``fre-cli`` is updated
 --------------------------
-``fre-cli`` is published and hosted as a Conda package on the NOAA-GFDL `conda channel <https://anaconda.org/NOAA-GFDL>`_. On pushes to
-the ``main`` branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically be updated using the workflow
-defined in ``.github/workflows/publish_conda.yml``, which is equivalent to``.github/workflows/build_conda.yml`` with an extra ``conda publish``
-step.
+``fre-cli`` is published and hosted as a Conda package on the NOAA-GFDL `conda channel <https://anaconda.org/NOAA-GFDL>`_. On
+pushes to the ``main`` branch, the package located at https://anaconda.org/NOAA-GFDL/fre-cli will automatically be updated using
+the workflow defined in ``.github/workflows/publish_conda.yml``, which is equivalent to ``.github/workflows/build_conda.yml``
+with an extra ``conda publish`` step.
 
 
 Get desired ``logging`` verbosity
@@ -149,7 +151,7 @@ In the case where non-python files like templates, examples, and outputs are to 
   like ``recursive-include fre/fre<tool> *.fileExtension`` which would recursively include every file matching that
   ``fileExtension`` within the specified directory and its respective subdirectories.
 
-.. _repository-maintenace:
+.. _repository-maintenance:
 
 repository maintenance
 ======================
