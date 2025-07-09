@@ -21,10 +21,10 @@ setup(
         'metomi-rose',
         'xarray'
     ],
-    extras_requires={
-        "docs": ["sphinx==8.2.3",
-                 "renku-spinx-theme==0.5.0",
-                 "sphinx-rtd-theme==3.0.2"]
+    extras_require={
+        "docs": ["sphinx",
+                 "renku-sphinx-theme",
+                 "sphinx-rtd-theme"]
     },
     entry_points={
         'console_scripts': [
