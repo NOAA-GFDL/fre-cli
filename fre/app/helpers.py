@@ -13,7 +13,7 @@ def get_variables(yml, pp_comp):
     :param yml: Already loaded yaml file
     :type yml: str
     :param pp_comp: List of active pp components
-    :type pp_comp: str
+    :type pp_comp: list of strings
     """
     fre_logger.debug(f"Yaml file information: {yml}")
     fre_logger.debug(f"PP components: {pp_comp}")

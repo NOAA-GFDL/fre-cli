@@ -19,7 +19,13 @@ def test_get_variables():
     with open(YAML_EX,'r') as f:
         yml=yaml.safe_load(f)
 
-    expected_dict = {'atmos_scalar_test_vars': ['co2mass'], 'atmos_static_scalar_test_vars': ['bk'], 'atmos_scalar_test_vars_fail': ['co2mass', 'bk', 'no_var'], 'atmos_scalar_static_test_vars_fail2': 'all', 'atmos_static_scalar_test_vars_fail': ['bk', 'no_var']}
+    expected_dict = {
+                     'atmos_scalar_test_vars': ['co2mass'],
+                     'atmos_static_scalar_test_vars': ['bk'],
+                     'atmos_scalar_test_vars_fail': ['co2mass', 'bk', 'no_var'],
+                     'atmos_scalar_static_test_vars_fail2': 'all',
+                     'atmos_static_scalar_test_vars_fail': ['bk', 'no_var']
+                    }
 
     components = ["atmos_scalar_test_vars", "atmos_scalar_test_vars_fail", "atmos_scalar_static_test_vars_fail"]
 

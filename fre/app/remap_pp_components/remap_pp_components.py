@@ -331,7 +331,7 @@ def get_chunk(comp_info: dict):
         chunk = comp_info.get("chunk")
 
     return chunk
-##################################### MAIN FUNCTION #####################################
+
 def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, current_chunk: str,
                         product: str, components: str, copy_tool: str, yaml_config: str,
                         ts_workaround: bool, ens_mem: str):
