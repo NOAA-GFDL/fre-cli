@@ -34,7 +34,7 @@ def app_cli():
               type = click.Choice(['ts', 'av', 'static']),
               help = " Variable to define time-series, time-averaging or static",
               required = True)
-@click.option("-ppc", "--pp-components",
+@click.option("-ppc", "--pp-component",
               type = str,
               help = "Space separated string of components to be post-processed",
               required = True)
@@ -57,11 +57,11 @@ def app_cli():
               required = False)
 
 def remap(input_dir, output_dir, begin_date, current_chunk,
-          product, pp_components, copy_tool, yaml_config,
+          product, pp_component, copy_tool, yaml_config,
           ts_workaround, ens_mem):
     ''' Remap netcdf files to an updated output directory structure '''
     remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
-                        product, pp_components, copy_tool, yaml_config,
+                        product, pp_component, copy_tool, yaml_config,
                         ts_workaround, ens_mem)
 
 @app_cli.command()

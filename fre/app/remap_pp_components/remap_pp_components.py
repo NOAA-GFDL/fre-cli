@@ -27,13 +27,13 @@ def verify_dirs(in_dir: str, out_dir: str):
     if Path(in_dir).is_dir():
         fre_logger.info("Input directory is a valid directory")
     else:
-        raise ValueError(f"Error: Input directory {in_dir} is not a valid directory")
+        raise ValueError(f"Error: Input directory {in_dir} does not exist or is not a valid directory")
 
     # Verify output directory exists and is a directory
     if Path(out_dir).is_dir():
         fre_logger.info("Output directory is a valid directory")
     else:
-        raise ValueError(f"Error: Output directory {out_dir} is not a valid directory")
+        raise ValueError(f"Error: Output directory {out_dir} does not exist or is not a valid directory")
 
 def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: bool):
     """
@@ -390,19 +390,10 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
 
     # Start in input directory)
     with helpers.change_directory(input_dir):
-
-        # loop through components to be post processed
-        # list of components
-#        print(components)
-#        ah
-#        comps = components.split()
-
         # Save dictionary of variables associated with each post=processed component
         src_vars_dict = helpers.get_variables(yml_info, component)
 
-#        for comp in comps:
         comp = component.strip('""')
-
         # Make sure component/source is in the yaml configuration file
         for comp_info in yml_info["postprocess"]["components"]:
             yaml_components = comp_info.get("type")
