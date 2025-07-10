@@ -78,14 +78,14 @@ jobs:
 
       - name: cache pytest badge
         uses: actions/cache/save@v4
-        id: cache
+        id: cache_pytest
         with:
           path: docs/pytest_badge.svg
           key: ${{ runner.os }}-pytest_badge
 
       - name: cache coverage badge
         uses: actions/cache/save@v4
-        id: cache
+        id: cache_coverage
         with:
           path: docs/cov_badge.svg
           key: ${{ runner.os }}-cov_badge
