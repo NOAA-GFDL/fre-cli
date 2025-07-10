@@ -58,11 +58,11 @@ jobs:
 #          # genbadge tests
 #          genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
 
-#      - name: Archive code coverage results
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: code-coverage-report
-#          path: coverage.xml
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: coverage.xml
 
       - name: Archive pytest badge
         uses: actions/upload-artifact@v4
@@ -76,19 +76,13 @@ jobs:
           name: cov_badge
           path: docs/cov_badge.svg
 
-      - name: cache pytest badge
-        uses: actions/cache/save@v4
-        id: cache_pytest
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          path: docs/pytest_badge.svg
-          key: ${{ runner.os }}-pytest_badge
-
-      - name: cache coverage badge
-        uses: actions/cache/save@v4
-        id: cache_coverage
-        with:
-          path: docs/cov_badge.svg
-          key: ${{ runner.os }}-cov_badge
+          verbose: true
+          files: ./coverage.xml
+          flags: unittests
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Run pylint in fre-cli environment
         run: |
