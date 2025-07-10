@@ -64,11 +64,17 @@ jobs:
           name: code-coverage-report
           path: coverage.xml
 
-      - name: Archive badges
+      - name: Archive pytest badge
         uses: actions/upload-artifact@v4
         with:
-          name: badges
-          path: docs/*_badge.svg
+          name: pytest_badge
+          path: docs/pytest_badge.svg
+
+      - name: Archive coverage badge
+        uses: actions/upload-artifact@v4
+        with:
+          name: cov_badge
+          path: docs/cov_badge.svg
 
       - name: Run pylint in fre-cli environment
         run: |
