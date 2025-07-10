@@ -12,16 +12,16 @@ def get_variables(yml, pp_comp):
 
     :param yml: Already loaded yaml file
     :type yml: str
-    :param pp_comp: List of active pp components
-    :type pp_comp: list of strings
+    :param pp_comp: Active pp component
+    :type pp_comp: str
     """
     fre_logger.debug(f"Yaml file information: {yml}")
-    fre_logger.debug(f"PP components: {pp_comp}")
+    fre_logger.debug(f"PP component: {pp_comp}")
 
     src_vars={}
     for component_info in yml["postprocess"]["components"]:
         # if component in yaml not an active pp component, skip
-        if component_info.get("type") not in pp_comp:
+        if component_info.get("type") != pp_comp:
             fre_logger.info(f'{component_info.get("type")} not in list of pp components: {pp_comp}')
             continue
 

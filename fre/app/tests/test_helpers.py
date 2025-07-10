@@ -19,22 +19,26 @@ def test_get_variables():
     with open(YAML_EX,'r') as f:
         yml=yaml.safe_load(f)
 
-    expected_dict = {
-                     'atmos_scalar_test_vars': ['co2mass'],
-                     'atmos_static_scalar_test_vars': ['bk'],
-                     'atmos_scalar_test_vars_fail': ['co2mass', 'bk', 'no_var'],
-                     'atmos_scalar_static_test_vars_fail2': 'all',
-                     'atmos_static_scalar_test_vars_fail': ['bk', 'no_var']
-                    }
+    expected_dicts = [{'atmos_scalar_test_vars': ['co2mass'],
+                      'atmos_static_scalar_test_vars': ['bk']},
+
+                      {'atmos_scalar_test_vars_fail': ['co2mass', 'bk', 'no_var']},
+
+                      {'atmos_scalar_static_test_vars_fail2': 'all',
+                      'atmos_static_scalar_test_vars_fail': ['bk', 'no_var']}]
 
     components = ["atmos_scalar_test_vars", "atmos_scalar_test_vars_fail", "atmos_scalar_static_test_vars_fail"]
 
-    out = helpers.get_variables(yml = yml,
-                                pp_comp = components)
+    out1 = helpers.get_variables(yml = yml, pp_comp = components[0])
+    out2 = helpers.get_variables(yml = yml, pp_comp = components[1])
+    out3 = helpers.get_variables(yml = yml, pp_comp = components[2])
 
-    print(f"out: {out}")
-    assert all([len(out) !=0,
-                out == expected_dict])
+    assert all([len(out1) !=0,
+                len(out2) !=0,
+                len(out3) !=0,
+                out1 == expected_dicts[0],
+                out2 == expected_dicts[1],
+                out3 == expected_dicts[2]])
 
 def test_change_directory():
     """

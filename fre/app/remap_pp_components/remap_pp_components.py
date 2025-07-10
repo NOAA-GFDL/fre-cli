@@ -333,7 +333,7 @@ def get_chunk(comp_info: dict):
     return chunk
 
 def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, current_chunk: str,
-                        product: str, components: str, copy_tool: str, yaml_config: str,
+                        product: str, component: str, copy_tool: str, yaml_config: str,
                         ts_workaround: bool, ens_mem: str):
     """
     Remap netcdf files to an updated output directory structure
@@ -346,8 +346,8 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
     :type begin: ISO string format
     :param current_chunk: current chunk to post-process
     :type current_chunk: str
-    :param components: space separated string of components that will be post-processed
-    :type components: str
+    :param component: component that will be post-processed
+    :type component: str
     :param product: variable to define time series or time averaging
     :type product: str
     :param ts_workaround: time series workaround
@@ -366,7 +366,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
     fre_logger.info("    output dir: %s", output_dir)
     fre_logger.info("    begin: %s", begin_date)
     fre_logger.info("    current chunk: %s", current_chunk)
-    fre_logger.info("    components: %s", components)
+    fre_logger.info("    component: %s", component)
     fre_logger.info("    product: %s", product)
     fre_logger.info("    copy tool: %s", copy_tool)
     fre_logger.info("    yaml config: %s", yaml_config)
@@ -393,134 +393,136 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
 
         # loop through components to be post processed
         # list of components
-        comps = components.split()
+#        print(components)
+#        ah
+#        comps = components.split()
 
         # Save dictionary of variables associated with each post=processed component
-        src_vars_dict = helpers.get_variables(yml_info, comps)
+        src_vars_dict = helpers.get_variables(yml_info, component)
 
-        for comp in comps:
-            comp = comp.strip('""')
+#        for comp in comps:
+        comp = component.strip('""')
 
-            # Make sure component/source is in the yaml configuration file
-            for comp_info in yml_info["postprocess"]["components"]:
-                yaml_components = comp_info.get("type")
+        # Make sure component/source is in the yaml configuration file
+        for comp_info in yml_info["postprocess"]["components"]:
+            yaml_components = comp_info.get("type")
 
-                # Check that pp_components defined matches those in the yaml file
-                fre_logger.debug("Is %s in %s?", comp, yaml_components)
-                if comp in yaml_components:
-                    fre_logger.debug('Yes')
-                else:
-                    fre_logger.warning("WARNING: component %s does not exist in yaml config", comp)
+            # Check that pp_components defined matches those in the yaml file
+            fre_logger.debug("Is %s in %s?", comp, yaml_components)
+            if comp in yaml_components:
+                fre_logger.debug('Yes')
+            else:
+                fre_logger.warning("WARNING: component %s does not exist in yaml config", comp)
+                continue
+
+            # Continue if not looking at correct information for requested component
+            if comp != comp_info.get("type"):
+                fre_logger.warning("Info not associated with component, %s, requested", comp)
+                continue
+
+            offline_srcs=[]
+            #if static but no static defined, skip
+            if product == "static":
+                if comp_info.get("static") is None:
+                    fre_logger.warning('Product set to "static" but no static source requested defined')
                     continue
 
-                # Continue if not looking at correct information for requested component
-                if comp != comp_info.get("type"):
-                    fre_logger.warning("Info not associated with component, %s, requested", comp)
-                    continue
-
-                offline_srcs=[]
-                #if static but no static defined, skip
-                if product == "static":
-                    if comp_info.get("static") is None:
-                        fre_logger.warning('Product set to "static" but no static source requested defined')
+                # Save list of offline sources (if defined) for later
+                for static_info in comp_info.get("static"):
+                    if static_info.get("offline_source") is None:
                         continue
 
-                    # Save list of offline sources (if defined) for later
-                    for static_info in comp_info.get("static"):
-                        if static_info.get("offline_source") is None:
-                            continue
+                    offline_srcs.append(static_info.get("offline_source"))
 
-                        offline_srcs.append(static_info.get("offline_source"))
+            ## Loop through grid
+            # Set grid type if component has xyInterp defined or not
+            grid = []
+            if "xyInterp" not in comp_info.keys():
+                grid.append("native")
+            else:
+                interp = comp_info.get("xyInterp").split(",")
+                interp = '_'.join(interp)
+                interp_method = comp_info.get("interpMethod")
+                grid.append(f"regrid-xy/{interp}.{interp_method}")
 
-                ## Loop through grid
-                # Set grid type if component has xyInterp defined or not
-                grid = []
-                if "xyInterp" not in comp_info.keys():
-                    grid.append("native")
+            for g in grid:
+                if ens_mem is not None:
+                    newdir = f"{input_dir}/{g}/{ens_mem}"
+                    os.chdir(newdir)
                 else:
-                    interp = comp_info.get("xyInterp").split(",")
-                    interp = '_'.join(interp)
-                    interp_method = comp_info.get("interpMethod")
-                    grid.append(f"regrid-xy/{interp}.{interp_method}")
+                    os.chdir(f"{input_dir}/{g}")
 
-                for g in grid:
+                ## Loop through sources
+                sources = get_sources(comp_info, product)
+                for s in sources:
                     if ens_mem is not None:
-                        newdir = f"{input_dir}/{g}/{ens_mem}"
-                        os.chdir(newdir)
+                        source_dir = os.path.join(input_dir, g, ens_mem, s)
                     else:
-                        os.chdir(f"{input_dir}/{g}")
-
-                    ## Loop through sources
-                    sources = get_sources(comp_info, product)
-                    for s in sources:
-                        if ens_mem is not None:
-                            source_dir = os.path.join(input_dir, g, ens_mem, s)
-                        else:
-                            source_dir = os.path.join(input_dir, g, s)
-                        if not os.path.exists(source_dir) and product == "av":
-                            fre_logger.info("Source directory '%s' does not exist, "
+                        source_dir = os.path.join(input_dir, g, s)
+                    if not os.path.exists(source_dir) and product == "av":
+                        fre_logger.info("Source directory '%s' does not exist, "
                                         "but this could be expected, so skipping.",
-                                        source_dir)
-                            continue
-                        os.chdir(source_dir)
+                                         source_dir)
+                        continue
+                    os.chdir(source_dir)
 
-                        ## Loop through freq
-                        freq = get_freq(comp_info) ###might have to be a list
+                    ## Loop through freq
+                    freq = get_freq(comp_info) ###might have to be a list
 
-                        for f in freq:
+                    for f in freq:
+                        if ens_mem is not None:
+                            os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}")
+                        else:
+                            os.chdir(f"{input_dir}/{g}/{s}/{f}")
+
+                        ## Loop through chunk
+                        chunk = get_chunk(comp_info)  ## might have to be a list ...
+                        for c in chunk:
+                            if c != current_chunk:
+                                continue
                             if ens_mem is not None:
-                                os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}")
+                                os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
                             else:
-                                os.chdir(f"{input_dir}/{g}/{s}/{f}")
+                                os.chdir(f"{input_dir}/{g}/{s}/{f}/{c}")
 
-                            ## Loop through chunk
-                            chunk = get_chunk(comp_info)  ## might have to be a list ...
-                            for c in chunk:
-                                if c != current_chunk:
-                                    continue
-                                if ens_mem is not None:
-                                    os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
-                                else:
-                                    os.chdir(f"{input_dir}/{g}/{s}/{f}/{c}")
+                            # Create directory
+                            # ts output is written to final location, av is not.
+                            # so convert the ts only to bronx-style
+                            if product == "ts":
+                                dirs = create_dir(out_dir = output_dir,
+                                                  comp = comp,
+                                                  freq = freq_to_legacy(f),
+                                                  chunk = chunk_to_legacy(c),
+                                                  ens = ens_mem,
+                                                  dir_ts = ts_workaround)
+                            else:
+                                dirs = create_dir(out_dir = output_dir,
+                                                  comp = comp,
+                                                  freq = f,
+                                                  chunk = c,
+                                                  ens = ens_mem,
+                                                  dir_ts = ts_workaround)
 
-                                # Create directory
-                                # ts output is written to final location, av is not.
-                                # so convert the ts only to bronx-style
-                                if product == "ts":
-                                    dirs = create_dir(out_dir = output_dir,
-                                                      comp = comp,
-                                                      freq = freq_to_legacy(f),
-                                                      chunk = chunk_to_legacy(c),
-                                                      ens = ens_mem,
-                                                      dir_ts = ts_workaround)
-                                else:
-                                    dirs = create_dir(out_dir = output_dir,
-                                                      comp = comp,
-                                                      freq = f,
-                                                      chunk = c,
-                                                      ens = ens_mem,
-                                                      dir_ts = ts_workaround)
+                            fre_logger.info("directory created: %s", dirs)
 
-                                fre_logger.info("directory created: %s", dirs)
+                            # Search for files in chunk directory
+                            if ens_mem is not None:
+                                os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
+                            else:
+                                os.chdir(f"{input_dir}/{g}/{s}/{f}/{c}")
 
-                                # Search for files in chunk directory
-                                if ens_mem is not None:
-                                    os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
-                                else:
-                                    os.chdir(f"{input_dir}/{g}/{s}/{f}/{c}")
+                            ## VARIABLE INFORMATION for requested source
+                            # Note: variable filtering not done for offline static diagnostics
+                            v = get_varlist(comp_info, product, s, src_vars_dict)
 
-                                ## VARIABLE INFORMATION for requested source
-                                # Note: variable filtering not done for offline static diagnostics
-                                v = get_varlist(comp_info, product, s, src_vars_dict)
+                            files = search_files(product = product,
+                                                 var = v,
+                                                 source = s,
+                                                 freq = f,
+                                                 current_chunk = current_chunk,
+                                                 begin = begin_date)
 
-                                files = search_files(product = product,
-                                                     var = v,
-                                                     source = s,
-                                                     freq = f,
-                                                     current_chunk = current_chunk,
-                                                     begin = begin_date)
-
-                                fre_logger.info("%d files found for component '%s', "
+                            fre_logger.info("%d files found for component '%s', "
                                             "source '%s', "
                                             "product '%s', "
                                             "grid '%s', "
@@ -528,74 +530,74 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                                             "variables '%s': %s",
                                             len(files), comp, s, product, g, c, v, files)
 
-                                if not files:
-                                    if ens_mem is not None:
-                                        raise ValueError("\nError: No input files found in",
-                                                        f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
-                                    else:
-                                        raise ValueError("\nError: No input files found in",
-                                                        f"{input_dir}/{g}/{s}/{f}/{c}")
+                            if not files:
+                                if ens_mem is not None:
+                                    raise ValueError("\nError: No input files found in",
+                                                     f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
+                                else:
+                                    raise ValueError("\nError: No input files found in",
+                                                     f"{input_dir}/{g}/{s}/{f}/{c}")
 
-                                os.chdir(output_dir)
+                            os.chdir(output_dir)
 
-                                for file in files:
-                                    newfile1 = file.split(".",1)[1]
-                                    newfile2 = f"{s}.{newfile1}"
-                                    # If file exists, remove it
-                                    # (would exist if workflow was run previously)
-                                    output_file = os.path.join(output_dir, dirs, newfile2)
-                                    if os.path.exists(output_file):
-                                        os.remove(output_file)
-                                    fre_logger.info("NEWFILE2: %s", newfile2)
-                                    # Symlink or copy the file for the specified
-                                    # component in the output directory
-                                    if ens_mem is not None:
-                                        link = ["ln",
-                                                f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}/{file}",
-                                                f"{output_dir}/{dirs}/{newfile2}"]
-                                    else:
-                                        link = ["ln",
+                            for file in files:
+                                newfile1 = file.split(".",1)[1]
+                                newfile2 = f"{s}.{newfile1}"
+                                # If file exists, remove it
+                                # (would exist if workflow was run previously)
+                                output_file = os.path.join(output_dir, dirs, newfile2)
+                                if os.path.exists(output_file):
+                                    os.remove(output_file)
+                                fre_logger.info("NEWFILE2: %s", newfile2)
+                                # Symlink or copy the file for the specified
+                                # component in the output directory
+                                if ens_mem is not None:
+                                    link = ["ln",
+                                            f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}/{file}",
+                                            f"{output_dir}/{dirs}/{newfile2}"]
+                                else:
+                                    link = ["ln",
+                                            f"{input_dir}/{g}/{s}/{f}/{c}/{file}",
+                                            f"{output_dir}/{dirs}/{newfile2}"]
+
+                                run = subprocess.run( link, check = False )
+                                ret = run.returncode
+
+                                if ret != 0:
+                                    if ens_mem is None:
+                                        copy = [f"{copy_tool}",
                                                 f"{input_dir}/{g}/{s}/{f}/{c}/{file}",
-                                                f"{output_dir}/{dirs}/{newfile2}"]
+                                                f"{output_dir}/{dirs}/{newfile2}" ]
+                                        subprocess.run( copy, check = False )
+                                    else:
+                                        copy = [f"{copy_tool}",
+                                                f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}/{file}",
+                                                f"{output_dir}/{dirs}/{newfile2}" ]
+                                        subprocess.run( copy, check = False )
 
-                                    run = subprocess.run( link, check = False )
-                                    ret = run.returncode
+                            # Symlink or copy the offline diagnostic file for the
+                            # specified component in the output directory.
+                            # Offline diagnostic files will then be in the same
+                            # location as other static files to be combined.
+                            if offline_srcs is not None:
+                                for src_file in offline_srcs:
+                                    if not Path(src_file).exists():
+                                        raise ValueError("Offline diagnostic file defined but "
+                                                         f"{src_file} does not exist or cannot "
+                                                         "be found!")
 
-                                    if ret != 0:
-                                        if ens_mem is None:
-                                            copy = [f"{copy_tool}",
-                                                    f"{input_dir}/{g}/{s}/{f}/{c}/{file}",
-                                                    f"{output_dir}/{dirs}/{newfile2}" ]
-                                            subprocess.run( copy, check = False )
-                                        else:
-                                            copy = [f"{copy_tool}",
-                                                    f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}/{file}",
-                                                    f"{output_dir}/{dirs}/{newfile2}" ]
-                                            subprocess.run( copy, check = False )
+                                    offline_link = ["ln",
+                                                    "-s",
+                                                    f"{src_file}",
+                                                    f"{output_dir}/{dirs}"]
+                                    offline_link_run = subprocess.run( offline_link, check = False )
+                                    offline_link_ret = offline_link_run.returncode
 
-                                # Symlink or copy the offline diagnostic file for the
-                                # specified component in the output directory.
-                                # Offline diagnostic files will then be in the same
-                                # location as other static files to be combined.
-                                if offline_srcs is not None:
-                                    for src_file in offline_srcs:
-                                        if not Path(src_file).exists():
-                                            raise ValueError("Offline diagnostic file defined but "
-                                                             f"{src_file} does not exist or cannot "
-                                                             "be found!")
-
-                                        offline_link = ["ln",
-                                                        "-s",
+                                    if offline_link_ret != 0:
+                                        #raise ValueError("copy failed")
+                                        offline_copy = ["{copy_tool}",
                                                         f"{src_file}",
                                                         f"{output_dir}/{dirs}"]
-                                        offline_link_run = subprocess.run( offline_link, check = False )
-                                        offline_link_ret = offline_link_run.returncode
-
-                                        if offline_link_ret != 0:
-                                            #raise ValueError("copy failed")
-                                            offline_copy = ["{copy_tool}",
-                                                            f"{src_file}",
-                                                            f"{output_dir}/{dirs}"]
-                                            subprocess.run( offline_copy, check = False )
+                                        subprocess.run( offline_copy, check = False )
 
     fre_logger.info("Component remapping complete")
