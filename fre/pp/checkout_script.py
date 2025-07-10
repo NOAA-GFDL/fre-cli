@@ -19,19 +19,17 @@ FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 
 def checkout_template(experiment = None, platform = None, target = None, branch = None):
     """
-    Checkout the workflow template files from the repo
+    Create a directory and checkout the workflow template files from the repo
 
-    :param experiment: name of post processing experiment
-    :type experiment: str, default None
-    :param platform: which platform to use
-    :type platform: str, default None
-    :param target: name of target (prod, debug, open-mp, repro)
-    :type target: str, default None
-    :param branch: which git branch to pull from
-    :type branch: str, default None
+    :param experiment: name of post processing experiment, default None
+    :type experiment: str
+    :param platform: which platform to use, default None
+    :type platform: str
+    :param target: name of target (prod, debug, open-mp, repro), default None
+    :type target: str
+    :param branch: which git branch to pull from, default None
+    :type branch: str
     :raises OSError: why checkout script was not able to be created
-    :return: directory with checkout script
-    :rtype: dir
     """
 
     ## Chdir back to here before we exit this routine
