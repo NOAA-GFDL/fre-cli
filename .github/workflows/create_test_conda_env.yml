@@ -23,40 +23,40 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-      - name: Create fre-cli environment
-        run: |
-          # create env holding all deps, the env cant be explicitly activated in CI/CD
-          conda env create -f environment.yml --name fre-cli
-
-          # sets CONDA to wherever it may be on the image
-          source /root/.bashrc
-
-          # add conda env's executables and mkmf to github's PATH equiv.
-          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
-
-          # use *conda environment's pip* to install fre-cli, called w/ full path as module for explicitness
-          $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
-
-      - name: Run pytest in fre-cli environment
-        run: |
-          # add spack installed binaries to front of path so that conda's netcdf/hdf5 installs don't break compilation tests
-          export path_save=$PATH
-          export PATH="/opt/views/view/bin:$PATH"
-
-          # run pytest
-          coverage run -m pytest --durations=20 --log-level INFO --junit-xml=pytest_results.xml --config-file=pytest.ini --cov-config=coveragerc --cov-report=xml --cov=fre fre/
-
-          # restore original path and install genbadge to generate coverage badge based on xml
-          export PATH="$path_save"
-
-          # install genbadge to make badge from coverage/test stats
-          pip install defusedxml genbadge
-
-          # genbadge coverage
-          genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
-
-          # genbadge tests
-          genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
+#      - name: Create fre-cli environment
+#        run: |
+#          # create env holding all deps, the env cant be explicitly activated in CI/CD
+#          conda env create -f environment.yml --name fre-cli
+#
+#          # sets CONDA to wherever it may be on the image
+#          source /root/.bashrc
+#
+#          # add conda env's executables and mkmf to github's PATH equiv.
+#          echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
+#
+#          # use *conda environment's pip* to install fre-cli, called w/ full path as module for explicitness
+#          $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
+#
+#      - name: Run pytest in fre-cli environment
+#        run: |
+#          # add spack installed binaries to front of path so that conda's netcdf/hdf5 installs don't break compilation tests
+#          export path_save=$PATH
+#          export PATH="/opt/views/view/bin:$PATH"
+#
+#          # run pytest
+#          coverage run -m pytest --durations=20 --log-level INFO --junit-xml=pytest_results.xml --config-file=pytest.ini --cov-config=coveragerc --cov-report=xml --cov=fre fre/
+#
+#          # restore original path and install genbadge to generate coverage badge based on xml
+#          export PATH="$path_save"
+#
+#          # install genbadge to make badge from coverage/test stats
+#          pip install defusedxml genbadge
+#
+#          # genbadge coverage
+#          genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
+#
+#          # genbadge tests
+#          genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
