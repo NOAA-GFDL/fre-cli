@@ -74,21 +74,3 @@ jobs:
         run: |
           # run pylint, ignored modules avoid warnings arising from code internal to those modules
           pylint --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
-
-      - name: Install Sphinx and Build Documentation
-        run: |
-          # pip install sphinx and themes, upgrade theme
-          pip install .[docs]
-
-          # have sphinx build the docs
-          sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
-          sphinx-build -E docs build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        if: ${{ github.ref == 'refs/heads/main' }}
-        with:
-          publish_branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/
-          force_orphan: true
