@@ -6,6 +6,7 @@ import click
 
 from .mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
+from .generate_time_averages.wrapper import generate_wrapper
 from .regrid_xy.regrid_xy import regrid_xy
 
 @click.group(help=click.style(" - app subcommands", fg=(250,154,90)))
@@ -110,6 +111,43 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     start_time = time.perf_counter()
     generate(inf, outf, pkg, var, unwgt, avg_type)
     click.echo(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
+
+@app_cli.command()
+@click.option("--cycle-point",
+              type = str,
+              required = True,
+              help = "Beginning cycle-point in ISO8601")
+@click.option("--dir",
+              type = str,
+              required = True,
+              help = "Root directory containing the shards")
+@click.option("--sources",
+              type = str,
+              required = True,
+              help = "Sources (history file) input file, comma-separated")
+@click.option("--output-interval",
+              type = str,
+              required = True,
+              help = "ISO interval of the desired climatology")
+@click.option("--input-interval",
+              type = str,
+              required = True,
+              help = "ISO interval of the input timeseries")
+@click.option("--grid",
+              type = str,
+              required = True,
+              help = "Grid label corresponding to the shards directory (e.g. 'native' and 'regrid-xy/180_288.conserve_order2'")
+@click.option("--frequency",
+              type = str,
+              required = True,
+              help = "Frequency of desired climatology: 'mon' or 'yr'")
+def gen_time_averages_wrapper(cycle_point, dir, sources, output_interval, input_interval, grid, frequency):
+    """
+    Wrapper for climatology tool.
+    Timeaverages all variables for a desired cycle point, source, and grid.
+    """
+    sources_list = sources.split(',')
+    generate_wrapper(cycle_point, dir, sources_list, output_interval, input_interval, grid, frequency)
 
 if __name__ == "__main__":
     app_cli()
