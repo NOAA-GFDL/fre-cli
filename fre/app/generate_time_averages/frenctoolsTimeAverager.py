@@ -21,9 +21,9 @@ class frenctoolsTimeAverager(timeAverager):
         use fre-nctool's CLI timavg.csh with subprocess call
 
         :param self: This is an instance of the class frenctoolsTimeAverager
-        :param infile: path to history file, or list of paths
+        :param infile: path to history file, or list of paths, default is None
         :type infile: str, list
-        :param outfile: path to where output file should be stored
+        :param outfile: path to where output file should be stored, default is None
         :type outfile: str
         :return: 1 if timavg.csh command is not properly executed, and 0 if function has a clean exit
         :rtype: int
