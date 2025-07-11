@@ -20,13 +20,18 @@ class frenctoolsTimeAverager(timeAverager):
         """
         use fre-nctool's CLI timavg.csh with subprocess call
 
-        :param self: 
+        :param self: This is an instance of the class frenctoolsTimeAverager
         :param infile: path to history file, or list of paths
         :type infile: str, list
         :param outfile: path to where output file should be stored
         :type outfile: str
-        :param self: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month') 
-        :type self: str, defaults to 'all'. Inherted from generate_time_averages.py
+        :return: 1 if timavg.csh command is not properly executed, and 0 if function has a clean exit
+        :rtype: int
+        :raises ValueError:
+            - instance variable self.avg_type not supported
+            - No infile specified
+            - Cannot find timavg.csh (likely the user is not in an environment with frenctools installed)
+            - timavgcsh command is not properly executed
         """
         assert self.pkg=="fre-nctools"
         if __debug__:
