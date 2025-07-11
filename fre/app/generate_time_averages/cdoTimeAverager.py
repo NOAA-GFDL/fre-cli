@@ -12,13 +12,11 @@ class cdoTimeAverager(timeAverager):
         """
         use cdo package routines via python bindings        
 
-        :param self: 
+        :param self: This is an instance of the class cdoTimeAverager
         :param infile: path to history file, or list of paths
         :type infile: str, list
         :param outfile: path to where output file should be stored
         :type outfile: str
-        :param self: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month') 
-        :type self: str, defaults to 'all'. Inherted from generate_time_averages.py
         """
         assert self.pkg=="cdo"
         if __debug__:
