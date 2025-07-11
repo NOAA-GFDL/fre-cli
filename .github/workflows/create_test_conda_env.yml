@@ -63,12 +63,6 @@ jobs:
           flags: unittests
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Archive pytest results
-        uses: actions/upload-artifact@v4
-        with:
-          name: pytest-results
-          path: pytest_results.xml
-
       - name: Archive pylint results
         uses: actions/upload-artifact@v4
         with:
