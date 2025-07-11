@@ -77,8 +77,6 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           verbose: true
-          files: ./coverage.xml
+          files: coverage.xml
           flags: unittests
           token: ${{ secrets.CODECOV_TOKEN }}
-
-
