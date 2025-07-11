@@ -14,12 +14,12 @@ def generate_time_average(infile = None, outfile = None,
     :type outfile: str
     :param pkg: which package to use to calculate climatology (cdo, fre-nctools, fre-python-tools)
     :type pkg: str
-    :param var: not currently supported
-    :type var: defaults to none
-    :param unwgt: wether or not to weight the data
-    :type unwgt: True or False, default false
-    :param avg_type: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month') 
-    :type avg_type: str, defaults to 'all'
+    :param var: not currently supported, defaults to none
+    :type var: str
+    :param unwgt: wether or not to weight the data, default false
+    :type unwgt: bool
+    :param avg_type: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month'), defaults to 'all'
+    :type avg_type: str
     """
     if __debug__:
         fre_logger.info(locals()) #input argument details
