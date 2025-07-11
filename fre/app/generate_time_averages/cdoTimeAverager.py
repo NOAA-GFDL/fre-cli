@@ -17,6 +17,8 @@ class cdoTimeAverager(timeAverager):
         :type infile: str, list
         :param outfile: path to where output file should be stored
         :type outfile: str
+        :return: 1 if the instance variable self.avg_typ is unsupported, 0 if function has a clean exit
+        :rtype: int
         """
         assert self.pkg=="cdo"
         if __debug__:
