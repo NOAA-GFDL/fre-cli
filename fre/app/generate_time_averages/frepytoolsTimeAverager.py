@@ -19,13 +19,13 @@ class frepytoolsTimeAverager(timeAverager):
         frepytools approach in a python-native manner.
         deliberately avoids pre-packaged routines.
 
-        :param self: 
+        :param self: This is an instance of the class frepytoolsTimeAverager
         :param infile: path to history file, or list of paths
         :type infile: str, list
         :param outfile: path to where output file should be stored
         :type outfile: str
-        :param self: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month') 
-        :type self: str, defaults to 'all'. Inherted from generate_time_averages.py
+        :return: 1 if timavg.csh command is not properly executed, and 0 if function has a clean exit
+        :rtype: int
         """
         assert self.pkg=="fre-python-tools"
         if __debug__:
