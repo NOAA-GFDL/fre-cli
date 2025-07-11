@@ -45,7 +45,7 @@ jobs:
           export PATH="/opt/views/view/bin:$PATH"
 
           # run pytest
-          pytest --durations=20 --log-level INFO --cov-report=xml --cov=fre fre/
+          pytest --durations=20 --log-level INFO --cov-report=xml --cov-config=coveragerc --cov=fre fre/
 
           # restore original path and install genbadge to generate coverage badge based on xml
           export PATH="$path_save"

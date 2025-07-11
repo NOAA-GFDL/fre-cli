@@ -54,8 +54,6 @@ test:
     - fre/
   files:
     - fre/mkmf/templates/*
-    - pytest.ini
-    - coveragerc
   imports:
     - fre
     - fre.app
