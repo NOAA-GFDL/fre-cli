@@ -20,6 +20,8 @@ def generate_time_average(infile = None, outfile = None,
     :type unwgt: bool
     :param avg_type: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month'), defaults to 'all'
     :type avg_type: str
+    :return: error message if requested package unkown, otherwise returns climatology
+    :rtype: int
     """
     if __debug__:
         fre_logger.info(locals()) #input argument details
