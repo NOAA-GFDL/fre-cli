@@ -1,9 +1,10 @@
 ''' fre pp run '''
+import subprocess
+import time
 import logging
 fre_logger = logging.getLogger(__name__)
 
-import subprocess
-import time
+from . import make_workflow_name
 
 def pp_run_subtool(experiment = None, platform = None, target = None,
                    pause = False, no_wait = False):
@@ -17,11 +18,11 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
                           f'{experiment} / {platform} / {target}')
 
     # Check to see if the workflow is already running
-    name = experiment + '__' + platform + '__' + target
+    name = make_workflow_name(experiment, platform, target)
     first_cmd = f'cylc scan --name ^{name}$'
     fre_logger.debug('running the following command: ')
     fre_logger.debug(first_cmd)
-    result = subprocess.run( first_cmd, capture_output = True ).stdout.decode('utf-8')
+    result = subprocess.run(['cylc', 'scan', '--name', f"^{name}$"], capture_output = True ).stdout.decode('utf-8')
     if len(result):
         fre_logger.info("Workflow already running!")
         return

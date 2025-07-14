@@ -9,7 +9,17 @@ class cdoTimeAverager(timeAverager):
     '''
 
     def generate_timavg(self, infile=None, outfile=None):
-        ''' use cdo package routines via python bindings '''
+        """
+        use cdo package routines via python bindings        
+
+        :param self: This is an instance of the class cdoTimeAverager
+        :param infile: path to history file, or list of paths, default is None
+        :type infile: str, list
+        :param outfile: path to where output file should be stored, default is None
+        :type outfile: str
+        :return: 1 if the instance variable self.avg_typ is unsupported, 0 if function has a clean exit
+        :rtype: int
+        """
         assert self.pkg=="cdo"
         if __debug__:
             print(locals()) #input argument details
