@@ -3,21 +3,15 @@
 
 ## Quickstart
 ```
-# Navigate into fre make test directories
-cd fre/make/tests/null_example
-
 # List post-processing experiments defined in model yaml
-fre list exps -y null_model.yaml
+fre list exps -y fre/make/tests/null_example/null_model.yaml
 
 # List platforms available in platforms yaml
-fre list platforms -y null_model.yaml
+fre list platforms -y fre/make/tests/null_example/null_model.yaml
 
 ##########
-# Navogate into pp test directory
-cd ../../../pp/tests/AM5_example/
-
 # List components that will be post-processed
-fre list pp-components -y am5.yaml -e c96L65_am5f7b12r1_amip
+fre list pp-components -y fre/pp/tests/AM5_example/am5.yaml -e c96L65_am5f7b12r1_amip
 ```
 
 ## Subtools
