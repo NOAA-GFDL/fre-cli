@@ -23,6 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+
       - name: Create fre-cli environment
         run: |
           # create env holding all deps, the env cant be explicitly activated in CI/CD
@@ -44,46 +45,32 @@ jobs:
           export PATH="/opt/views/view/bin:$PATH"
 
           # run pytest
-          coverage run -m pytest --durations=20 --log-level INFO --junit-xml=pytest_results.xml --config-file=pytest.ini --cov-config=coveragerc --cov-report=xml --cov=fre fre/
+          pytest --durations=20 --log-level INFO --cov-report=xml --cov-config=coveragerc --cov=fre fre/
 
           # restore original path and install genbadge to generate coverage badge based on xml
           export PATH="$path_save"
 
-          # install genbadge to make badge from coverage/test stats
-          pip install defusedxml genbadge
-
-          # genbadge coverage
-          genbadge coverage -v -i coverage.xml -o docs/cov_badge.svg
-
-          # genbadge tests
-          genbadge tests -v -i pytest_results.xml -o docs/pytest_badge.svg
-
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-coverage-report
-          path: coverage.xml
-
       - name: Run pylint in fre-cli environment
         run: |
           # run pylint, ignored modules avoid warnings arising from code internal to those modules
-          pylint --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/ || echo "pylint returned non-zero exit code. preventing workflow from dying with this echo."
+          pylint --fail-under 0.1 --output pylint_results.txt --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
 
-      - name: Install Sphinx and Build Documentation
-        run: |
-          # pip install sphinx and themes, upgrade theme
-          pip install sphinx renku-sphinx-theme sphinx-rtd-theme
-          pip install --upgrade sphinx-rtd-theme
-
-          # have sphinx build the docs
-          sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
-          sphinx-build -E docs build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        if: ${{ github.ref == 'refs/heads/main' }}
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
         with:
-          publish_branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/
-          force_orphan: true
+          verbose: true
+          files: coverage.xml
+          flags: unittests
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Archive pylint results
+        uses: actions/upload-artifact@v4
+        with:
+          name: pylint-results
+          path: pylint_results.txt
+
+      - name: Archive coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-results
+          path: coverage.xml
