@@ -7,11 +7,11 @@ from contextlib import contextmanager
 import logging
 fre_logger = logging.getLogger(__name__)
 
-def get_variables(yml: str, pp_comp: str) -> dict:
+def get_variables(yml: dict, pp_comp: str) -> dict:
     """Retrieve any variables specified with active pp components from the yaml
 
-    :param yml: Already loaded yaml file
-    :type yml: str
+    :param yml: loaded yaml file
+    :type yml: dict
     :param pp_comp: Active pp component
     :type pp_comp: str
     :raises ValueError: if the active pp component is not found in the yaml configuration
