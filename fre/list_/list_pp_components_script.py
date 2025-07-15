@@ -8,17 +8,22 @@ from fre.yamltools import helpers
 
 fre_logger = logging.getLogger(__name__)
 
-def list_ppcomps_subtool(yamlfile, experiment):
+def list_ppcomps_subtool(yamlfile: str, experiment: str):
     """
     List the components to be post-processed
+
+    :param yamlfile: path to the yaml configuration file
+    :type yamlfile: str
+    :param experiment: experiment name
+    :type experiment: str
     """
     # set logger level to INFO
     former_log_level = fre_logger.level
     fre_logger.setLevel(logging.INFO)
 
     exp = experiment
-    platform = "None"
-    target = "None"
+    platform = None
+    target = None
 
     # Combine model / experiment
     yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,

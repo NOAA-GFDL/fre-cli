@@ -9,17 +9,20 @@ from fre.yamltools import helpers
 
 fre_logger = logging.getLogger(__name__)
 
-def list_platforms_subtool(yamlfile):
+def list_platforms_subtool(yamlfile: str):
     """
     List the platforms available
+
+    :param yamlfile: path to the yaml configuration file
+    :type yamlfile: str
     """
     # set logger level to INFO
     former_log_level = fre_logger.level
     fre_logger.setLevel(logging.INFO)
 
     exp = yamlfile.split("/")[-1].split(".")[0]
-    platform = "None"
-    target = "None"
+    platform = None
+    target = None
 
     # Combine model / experiment
     yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
