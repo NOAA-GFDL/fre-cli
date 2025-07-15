@@ -6,17 +6,19 @@ from pathlib import Path
 import yaml
 from fre.list_ import list_platforms_script
 from fre.yamltools import combine_yamls_script as cy
-from fre.yamltools import helpers
 
 # SET-UP
 TEST_DIR = Path("fre/make/tests")
 NM_EXAMPLE = Path("null_example")
-PLATFORM = "None"
-TARGET = "None"
+PLATFORM = None
+TARGET = None
 YAMLFILE = "null_model.yaml"
-BADYAMLFILE = "null_model_bad.yaml"
 EXP_NAME = YAMLFILE.split(".")[0]
 VAL_SCHEMA = Path("fre/gfdl_msd_schemas/FRE/fre_make.json")
+
+# Bad yaml example
+BADYAMLFILE_PATH = f"{TEST_DIR}/{NM_EXAMPLE}/wrong_model/wrong_null_model.yaml"
+
 
 # yaml file checks
 def test_modelyaml_exists():
@@ -51,7 +53,7 @@ def test_platforms_list_correct(caplog):
 
 # Test validation
 def test_yamlvalidate(caplog):
-    ''' test yaml is being validated '''
+    ''' Test yaml is being validated and is actually valid'''
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Combine model / experiment
@@ -66,8 +68,8 @@ def test_yamlvalidate(caplog):
     for record in caplog.records:
         record.levelname == "INFO"
 
-def test_yamlcontent_valid():
-    ''' Test that yaml dictionary content is valid '''
+def test_check_expected_yamlcontent():
+    ''' Test that expected yaml information is included in dictionary content '''
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Combine model / experiment
@@ -100,4 +102,17 @@ def test_yamlcontent_valid():
             assert expected_platform_info_1 in value
             assert expected_platform_info_2 in value
 
-#def test_not_valid_yaml():
+@pytest.mark.xfail
+def test_not_valid_yaml():
+    ''' Test correct output when yaml is invalid '''
+    # Combine model / experiment
+    list_platforms_script.list_platforms_subtool(f"{BADYAMLFILE_PATH}")
+
+    validate = ["Validating YAML information...",
+                "     YAML dictionary NOT VALID."]
+
+    for i in validate:
+        assert i in caplog.text
+
+    for record in caplog.records:
+        record.levelname == "INFO"

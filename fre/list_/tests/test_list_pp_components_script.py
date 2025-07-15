@@ -60,8 +60,8 @@ def test_yamlvalidate(caplog):
     for record in caplog.records:
         record.levelname == "INFO"
 
-def test_yamlcontent_valid():
-    ''' Test that yaml dictionary content is valid '''
+def test_check_expected_yamlcontent():
+    ''' Test that expected yaml information is included in dictionary content '''
     yamlfile_path = f"{TEST_DIR}/{AM5_EXAMPLE}/{MODEL_YAMLFILE}"
 
     # Combine model / experiment
