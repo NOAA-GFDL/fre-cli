@@ -1,0 +1,37 @@
+# codecov yaml configuration validation: https://api.codecov.io/validate
+
+# https://docs.codecov.com/docs/codecovyml-reference
+#codecov:
+#  token: "<some token here>"
+#  bot: "codecov-io"
+#  ci:
+#    - "travis.org"
+#  strict_yaml_branch: "yaml-config"
+#  max_report_age: 24
+#  disable_default_path_fixes: no
+#  require_ci_to_pass: yes
+#  notify:
+#    after_n_builds: 2
+#    wait_for_ci: yes
+
+#coverage:
+#  precision: 2
+#  round: down
+#  range: "70...100"
+#  notify:
+#    # notification blocks. See: https://docs.codecov.io/docs/codecovyml-reference#section-coverage-notify
+#  status:
+#    project:
+#    patch:
+#    changes:
+
+# https://docs.codecov.io/docs/ignoring-paths
+#ignore:
+#  - "path/to/folder"  # ignore folders and all its contents
+#  - "test_*.rb"       # wildcards accepted
+#  - "**/*.py"         # glob accepted
+
+# https://docs.codecov.io/docs/pull-request-comments
+comment:
+  layout: "diff, flags, condensed_files"
+  behavior: default
