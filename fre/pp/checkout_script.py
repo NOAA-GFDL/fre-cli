@@ -30,6 +30,9 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     :param branch: which git branch to pull from, default None
     :type branch: str
     :raises OSError: why checkout script was not able to be created
+    :raises ValueError: 
+        -if experiment or platform or target is None
+        -if branch argument cannot be found as a branch or tag
     """
 
     ## Chdir back to here before we exit this routine
