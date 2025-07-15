@@ -5,7 +5,24 @@ fre_logger = logging.getLogger(__name__)
 def generate_time_average(infile = None, outfile = None,
                           pkg = None, var = None, unwgt = False,
                           avg_type = None):
-    ''' steering function to various averaging functions above'''
+    """
+    steering function to various averaging functions above
+    
+    :param infile: path to history file, or list of paths
+    :type infile: str, list
+    :param outfile: path to where output file should be stored
+    :type outfile: str
+    :param pkg: which package to use to calculate climatology (cdo, fre-nctools, fre-python-tools)
+    :type pkg: str
+    :param var: not currently supported, defaults to none
+    :type var: str
+    :param unwgt: wether or not to weight the data, default false
+    :type unwgt: bool
+    :param avg_type: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month'), defaults to 'all'
+    :type avg_type: str
+    :return: error message if requested package unkown, otherwise returns climatology
+    :rtype: int
+    """
     if __debug__:
         fre_logger.info(locals()) #input argument details
     exitstatus=1
