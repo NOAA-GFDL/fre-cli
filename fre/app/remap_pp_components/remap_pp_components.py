@@ -9,6 +9,7 @@ import glob
 from pathlib import Path
 import logging
 import yaml
+from typing import List
 from fre.app import helpers
 
 fre_logger = logging.getLogger(__name__)
@@ -21,6 +22,10 @@ def verify_dirs(in_dir: str, out_dir: str):
     :type output_dir: str
     :param input_dir: input directory
     :type input_dir: str
+    :raises ValueError:
+        - input directory invalid
+        - output directory invalid
+
     """
 
     # Verify input directory exists and is a directory
@@ -35,7 +40,7 @@ def verify_dirs(in_dir: str, out_dir: str):
     else:
         raise ValueError(f"Error: Output directory {out_dir} does not exist or is not a valid directory")
 
-def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: bool):
+def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: bool) -> str:
     """
     Create the output directory structure
 
@@ -73,12 +78,13 @@ def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: b
 
     return dirs
 
-def freq_to_legacy(iso_dura: str):
+def freq_to_legacy(iso_dura: str) -> str:
     """
     Print Bronx-style frequency given an ISO8601 duration
     
     :param iso_dura: frequency
     :type ise_dura: ISO str format
+    :raises ValueError: if ISO duration can not be converted to Bronx-style frequency
     :return: bronx-style frequency
     :rtype: str
     """
@@ -114,7 +120,7 @@ def freq_to_legacy(iso_dura: str):
 
     return freq_legacy
 
-def chunk_to_legacy(iso_dura: str):
+def chunk_to_legacy(iso_dura: str) -> str:
     """
     Print Bronx-style frequency given an ISO8601 duration
 
@@ -136,12 +142,13 @@ def chunk_to_legacy(iso_dura: str):
 
     return brx_freq
 
-def freq_to_date_format(iso_freq: str):
+def freq_to_date_format(iso_freq: str) -> str:
     """
     Print legacy Bronx-like date template format given a frequency (ISO 8601 duration)
 
     :param iso_freq: frequency
     :type iso_freq: str
+    :raises ValueError: if there is an unknown frequency
     :return: legacy bronx-like date template
     :rtype: str
     """
@@ -157,7 +164,7 @@ def freq_to_date_format(iso_freq: str):
     else:
         raise ValueError(f'ERROR: Unknown Frequency {iso_freq}')
 
-def truncate_date(date: str, freq: str):
+def truncate_date(date: str, freq: str) -> str:
     """
     Print a date string to a truncated precision.
         - Accepts a date and frequency
@@ -191,7 +198,7 @@ def truncate_date(date: str, freq: str):
 
     return date
 
-def search_files(product: str, var: list, source: str, freq: str, current_chunk: str, begin: str):
+def search_files(product: str, var: list, source: str, freq: str, current_chunk: str, begin: str) -> List[str]:
     """
     Pattern match and search for the correct files in the chunk directory
 
@@ -207,6 +214,9 @@ def search_files(product: str, var: list, source: str, freq: str, current_chunk:
     :type current_chunk: str
     :param freq: frequency
     :type freq: str
+    :raises ValueError:
+        - if specified variable can not be found
+        - if product is not ts or av when frequency is not 0
     :return: list of files found
     :rtype: array
     """
@@ -248,7 +258,7 @@ def search_files(product: str, var: list, source: str, freq: str, current_chunk:
 
     return files
 
-def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict):
+def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict) -> List[str]:
     """
     Retrieve variables listed for a component; save in dictionary for use later
 
@@ -260,8 +270,9 @@ def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict):
     :type req_source: str
     :param src_vars: dictionary of variables asociated with source name
     :type src_vars: dict
+    :raises ValueError: if there are no static sources, but the product is set to static
     :return: list of variables associated with source name
-    :rtype: array
+    :rtype: list
     """
     if product == "static":
         if comp_info.get("static") is None:
@@ -278,7 +289,7 @@ def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict):
 
     return v
 
-def get_sources(comp_info: dict, product: str):
+def get_sources(comp_info: dict, product: str) -> List[str]:
     """
     Retrieve source name for a component
 
@@ -287,7 +298,7 @@ def get_sources(comp_info: dict, product: str):
     :param product: static, ts, or av
     :type product: str
     :return: list of sources associated with a pp component
-    :rtype: array
+    :rtype: list
     """
     sources = []
     if "static" in product:
@@ -300,14 +311,14 @@ def get_sources(comp_info: dict, product: str):
 
     return sources
 
-def get_freq(comp_info: dict):
+def get_freq(comp_info: dict) -> List[str]:
     """
     Return the frequency
 
     :param comp_info: dictionary of information about requested component
     :type comp_info: dict
     :return: list of frequencies
-    :rtype: array
+    :rtype: list
     """
     if "freq" not in comp_info.keys():
         freq = glob.glob("*")
@@ -316,14 +327,14 @@ def get_freq(comp_info: dict):
 
     return freq
 
-def get_chunk(comp_info: dict):
+def get_chunk(comp_info: dict) -> List[str]:
     """
     Return the chunk size
 
     :param comp_info: dictionary of information about requested component
     :type comp_info: dict
     :return: list of chunk sizes
-    :rtype: array 
+    :rtype: list 
     """
     if "chunk" not in comp_info.keys():
         chunk = glob.glob("*")
@@ -358,6 +369,9 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
     :type copy_tool: str
     :param yaml_config: yaml configuration file
     :type yaml_config: str
+    :raises ValueError:
+        - if no input files are found
+        - if no offine diagnostic file is found
     """
 
     # List variables

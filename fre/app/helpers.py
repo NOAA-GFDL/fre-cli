@@ -7,13 +7,18 @@ from contextlib import contextmanager
 import logging
 fre_logger = logging.getLogger(__name__)
 
-def get_variables(yml, pp_comp):
+def get_variables(yml: str, pp_comp: str) -> dict:
     """Retrieve any variables specified with active pp components from the yaml
 
     :param yml: Already loaded yaml file
     :type yml: str
     :param pp_comp: Active pp component
     :type pp_comp: str
+    :raises ValueError: if the active pp component is not found in the yaml configuration
+    :return: dictionary of {source name: [variables]}
+        - the values are a list of specified variables
+        - if no variables specified, the value will be 'all'
+    :rtype: dict
     """
     fre_logger.debug(f"Yaml file information: {yml}")
     fre_logger.debug(f"PP component: {pp_comp}")
@@ -22,7 +27,8 @@ def get_variables(yml, pp_comp):
     for component_info in yml["postprocess"]["components"]:
         # if component in yaml not an active pp component, skip
         if component_info.get("type") != pp_comp:
-            fre_logger.info(f'{component_info.get("type")} not in list of pp components: {pp_comp}')
+            fre_logger.info(f'Component, {component_info.get("type")}, in pp yaml config does
+                              not match active pp component: {pp_comp}')
             continue
 
         # non-static
@@ -46,12 +52,17 @@ def get_variables(yml, pp_comp):
 
         ##offline statics won't use variables filtering ... yet?
 
+    # If the dictionary is empty (no overlap of pp components and components 
+    # in pp yaml) --> error
+    if not src_vars:
+        raise ValueError(f"PP component, {pp_comp}, not found in pp yaml configuration!")
+
     return src_vars
 
 ## NOTE: For python 3.11 - this might be available already as contextlib.chdir()
 ## Re-asses if our own contextmanager function is needed here
 @contextmanager
-def change_directory(new_path):
+def change_directory(new_path: str):
     """Temporarily change the directory
 
     :param new_path: Path to change into

@@ -14,5 +14,5 @@ omit =
     fre/run/*
     fre/yamltools/tests/*
     fre/tests/*
-	fre/gfdl_msd_schemas/*
-	fre/mkmf/*
+    fre/gfdl_msd_schemas/*
+    fre/mkmf/*
