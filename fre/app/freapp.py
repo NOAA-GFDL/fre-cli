@@ -36,7 +36,7 @@ def app_cli():
               required = True)
 @click.option("-ppc", "--pp-component",
               type = str,
-              help = "Space separated string of components to be post-processed",
+              help = "Component to be post-processed",
               required = True)
 @click.option("-cp", "--copy-tool",
               type = click.Choice(['gcp','cp']),
