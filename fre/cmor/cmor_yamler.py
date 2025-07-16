@@ -87,7 +87,7 @@ def get_bronx_freq_from_mip_table(json_table_config):
     return bronx_freq
 
 def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, output=None, opt_var_name=None,
-                      run_one_mode=False, dry_run_mode=False, start=None, stop=None):
+                      run_one_mode=False, dry_run_mode=False, start=None, stop=None, calendar_type=None):
     '''
     A routine that cmorizes targets based on configuration stored in the model yaml. The model yaml
     points to various cmor-yaml configurations. The two levels of information are combined, their fields
@@ -100,7 +100,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         output   (optional): string or Path representing target location for yamlfile output if desired
         opt_var_name (optional): string, specify a variable name to specifically process only filenames matching
                                  that variable name. I.e., this string help target local_vars, not target_vars.
-
+        calendar_type (optional): string representing a CF compliant calendar type name. if None, use whats in json
         run_one_mode (optional): boolean, when True, will only process one of targeted files, then exit.
         start, stop: string, optional arguments, strings of four integers representing years (YYYY).
     '''
@@ -171,6 +171,13 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         except KeyError:
             fre_logger.warning(
                 'no stop year for fre.cmor given anywhere, will end with latest datetime found in filenames!')
+    if calendar_type is None:
+        try:
+            yaml_calendar_type = cmor_yaml_dict['calendar_type']
+            calendar_type = yaml_calendar_type
+        except KeyError:
+            fre_logger.warning(
+                'no calendar_type for fre.cmor given anywhere, will use what is in %s', json_exp_config)
 
     # ---------------------------------------------------
     # showtime ------------------------------------------
@@ -228,24 +235,10 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             fre_logger.info('indir = %s', indir)
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
-            if not dry_run_mode:
-                cmor_run_subtool( #uncovered
-                    indir = indir ,
-                    json_var_list = json_var_list ,
-                    json_table_config = json_table_config ,
-                    json_exp_config = json_exp_config ,
-                    outdir = cmorized_outdir ,
-                    run_one_mode = run_one_mode ,
-                    opt_var_name = opt_var_name ,
-                    grid = grid_desc ,
-                    grid_label = grid_label ,
-                    nom_res = nom_res ,
-                    start = start,
-                    stop = stop
-                )
-            else:
-                fre_logger.debug('--DRY RUN CALL---\n'
-                                 'cmor_run_subtool(\n'
+            
+            if dry_run_mode:
+                fre_logger.info(  '--DRY RUN CALL---\n'
+                                  'cmor_run_subtool(\n'
                                  f'    indir = {indir} ,\n'
                                  f'    json_var_list = {json_var_list} ,\n'
                                  f'    json_table_config = {json_table_config} ,\n'
@@ -257,8 +250,23 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                  f'    grid_label = {grid_label} ,\n'
                                  f'    nom_res = {nom_res} ,\n'
                                  f'    start = {start} ,\n'
-                                 f'    stop = {stop}\n'
-                                  ')\n'
-                                 )
+                                 f'    stop = {stop} ,\n'
+                                 f'    calendar_type={calendar_type} '
+                                  ')\n' )
+                continue
+            cmor_run_subtool( #uncovered
+                indir = indir ,
+                json_var_list = json_var_list ,
+                json_table_config = json_table_config ,
+                json_exp_config = json_exp_config ,
+                outdir = cmorized_outdir ,
+                run_one_mode = run_one_mode ,
+                opt_var_name = opt_var_name ,
+                grid = grid_desc ,
+                grid_label = grid_label ,
+                nom_res = nom_res ,
+                start = start,
+                stop = stop
+            )
 
 
