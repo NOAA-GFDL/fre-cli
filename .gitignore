@@ -170,9 +170,11 @@ cython_debug/
 .vscode/*
 .vscode
 
+# autogen'd by doc build
+docs/fre.*
+docs/modules.rst
 
 ##### GOTTA CLEAN THIS UP
-
 # files pulled/created via testing
 Dockerfile
 createContainer.sh
@@ -181,8 +183,6 @@ fregrid_remap_file_288_by_180.nc
 rose-app-run.conf
 tmp/
 
-docs/fre.*
-docs/modules.rst
 
 fre/app/generate_time_averages/tests/time_avg_test_files/
 fre/app/regrid_xy/tests/*/
