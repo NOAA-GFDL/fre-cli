@@ -10,7 +10,7 @@
 <!-- [![codecov](https://codecov.io/gh/NOAA-GFDL/fre-cli/branch/ghpages.deprecation/graph/badge.svg?token=iGb0wEuWs1)](https://codecov.io/gh/NOAA-GFDL/fre-cli) -->
 [![codecov](https://codecov.io/gh/NOAA-GFDL/fre-cli/graph/badge.svg?token=iGb0wEuWs1)](https://codecov.io/gh/NOAA-GFDL/fre-cli)
 
-* [Documentation](https://noaa-gfdl.github.io/fre-cli/index.html)
+[Fre-cli Documentation](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/index.html) is hosted on Read the Docs
 
 `fre-cli` is the Flexible Runtime Environment (`FRE`) command-line interface (`CLI`). `fre-cli` aims to gives users intuitive and 
 easy-to-understand access to both newly developed, and legacy `FRE` tools via a `click`-driven CLI, delivered as a `conda` package.
