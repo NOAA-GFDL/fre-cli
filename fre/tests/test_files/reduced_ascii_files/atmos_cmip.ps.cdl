@@ -1,0 +1,120 @@
+netcdf atmos_cmip.ps {
+dimensions:
+	bnds = 2 ;
+	lat = 10 ;
+	lon = 10 ;
+	time = UNLIMITED ; // (1 currently)
+variables:
+	double bnds(bnds) ;
+		bnds:long_name = "vertex number" ;
+	double lat(lat) ;
+		lat:long_name = "latitude" ;
+		lat:units = "degrees_N" ;
+		lat:axis = "Y" ;
+		lat:bounds = "lat_bnds" ;
+	double lat_bnds(lat, bnds) ;
+		lat_bnds:long_name = "latitude bounds" ;
+		lat_bnds:units = "degrees_N" ;
+		lat_bnds:axis = "Y" ;
+	double lon(lon) ;
+		lon:long_name = "longitude" ;
+		lon:units = "degrees_E" ;
+		lon:axis = "X" ;
+		lon:bounds = "lon_bnds" ;
+	double lon_bnds(lon, bnds) ;
+		lon_bnds:long_name = "longitude bounds" ;
+		lon_bnds:units = "degrees_E" ;
+		lon_bnds:axis = "X" ;
+	float ps(time, lat, lon) ;
+		ps:_FillValue = 1.e+20f ;
+		ps:missing_value = 1.e+20f ;
+		ps:units = "Pa" ;
+		ps:long_name = "Surface Air Pressure" ;
+		ps:cell_methods = "time: mean" ;
+		ps:cell_measures = "area: area" ;
+		ps:standard_name = "surface_air_pressure" ;
+		ps:interp_method = "conserve_order2" ;
+	double time(time) ;
+		time:units = "days since 1979-01-01 00:00:00" ;
+		time:long_name = "time" ;
+		time:axis = "T" ;
+		time:calendar_type = "JULIAN" ;
+		time:calendar = "julian" ;
+		time:bounds = "time_bnds" ;
+	double time_bnds(time, bnds) ;
+		time_bnds:units = "days since 1979-01-01 00:00:00" ;
+		time_bnds:long_name = "time axis boundaries" ;
+
+// global attributes:
+		:title = "c96L65_am5f9d7r0_amip" ;
+		:associated_files = "area: 20050101.grid_spec.nc" ;
+		:grid_type = "regular" ;
+		:grid_tile = "N/A" ;
+		:code_release_version = "2024.05" ;
+		:git_hash = "5d306c05d9fe755cab04eedc8fd3de0d3c8355a0" ;
+		:creationtime = "Thu Jun 26 22:27:29 2025" ;
+		:hostname = "pp208" ;
+		:history = "Tue Jul  1 23:48:29 2025: ncks -d lat,10,19 -d lon,10,19 -d time,0,0 atmos_cmip.200501-200512.ps.nc atmos_cmip.ps.nc\n",
+			"fregrid --standard_dimension --input_mosaic C96_mosaic.nc --input_file 20050101.atmos_month_cmip --interp_method conserve_order2 --remap_file .fregrid_remap_file_288_by_180.nc --nlon 288 --nlat 180 --scalar_field tas,ts,psl,ps,uas,height10m,vas,sfcWind,hurs,height2m,huss,pr,prsn,prc,evspsbl,tauu,tauv,hfls,hfss,rlds,rlus,rsds,rsus,rsdscs,rsuscs,rldscs,rsdt,rsut,rlut,rlutcs,rsutcs,prw,clt,clwvi,clivi,rtmt,ccb,cct,ci,sci,ta_unmsk,ua_unmsk,va_unmsk,hus_unmsk,hur_unmsk,wap_unmsk,zg_unmsk,ap,b,ap_bnds,b_bnds,lev_bnds,utendnogw,utendogw,time_bnds --output_file out.nc" ;
+		:external_variables = "area" ;
+		:NCO = "netCDF Operators version 5.2.4 (Homepage = http://nco.sf.net, Code = http://github.com/nco/nco, Citation = 10.1016/j.envsoft.2008.03.004)" ;
+data:
+
+ bnds = 1, 2 ;
+
+ lat = -79.5, -78.5, -77.5, -76.5, -75.5, -74.5, -73.5, -72.5, -71.5, -70.5 ;
+
+ lat_bnds =
+  -80, -79,
+  -79, -78,
+  -78, -77,
+  -77, -76,
+  -76, -75,
+  -75, -74,
+  -74, -73,
+  -73, -72,
+  -72, -71,
+  -71, -70 ;
+
+ lon = 13.125, 14.375, 15.625, 16.875, 18.125, 19.375, 20.625, 21.875, 
+    23.125, 24.375 ;
+
+ lon_bnds =
+  12.5, 13.75,
+  13.75, 15,
+  15, 16.25,
+  16.25, 17.5,
+  17.5, 18.75,
+  18.75, 20,
+  20, 21.25,
+  21.25, 22.5,
+  22.5, 23.75,
+  23.75, 25 ;
+
+ ps =
+  67847.9, 67458.55, 67115.11, 66772.38, 66440.77, 66162.93, 65888.8, 
+    65593.45, 65293.23, 65006.54,
+  66789.57, 66383.48, 65977.97, 65632.27, 65374.4, 65085.55, 64794.48, 
+    64546.18, 64306.85, 64072.05,
+  65794.71, 65444.7, 65107.8, 64790.14, 64463.39, 64191.8, 63949.74, 
+    63687.01, 63413.01, 63075.07,
+  64688.98, 64443.55, 64179.7, 63914.74, 63673.48, 63415.69, 63151.54, 
+    62794.23, 62480.69, 62263.7,
+  63798.53, 63496.58, 63344.81, 63203.22, 63014.45, 62753.95, 62468.75, 
+    62362.88, 62199.16, 62083.03,
+  63515.2, 63463.61, 63428.72, 63393.71, 63206.12, 63193.48, 63082.28, 
+    62763.41, 62952.35, 63084.93,
+  64913.63, 65123.55, 65464.87, 65532.16, 65917.46, 65988.91, 65975.77, 
+    65935.88, 65677.37, 65275.5,
+  70025.15, 70817.16, 71348.82, 72221.68, 73337.95, 73954.92, 74331.36, 
+    74508.41, 74387.87, 74351.83,
+  82315.85, 82231.86, 82861.79, 84103.49, 84763.34, 86469.48, 87334.98, 
+    87688.62, 88297.25, 88394.98,
+  95432.23, 95202.2, 95110.34, 95021.3, 95720.12, 96707.44, 96973.3, 
+    96866.34, 97190.98, 97556.36 ;
+
+ time = 9512.5 ;
+
+ time_bnds =
+  9497, 9528 ;
+}
