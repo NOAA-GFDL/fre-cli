@@ -45,7 +45,7 @@ CLEANUP_AFTER_EVERY_TEST = False
 
 def _cleanup():
     # clean up from previous tests
-    time.sleep(60)
+    time.sleep(60) # busy disk issue? possible non-closing netcdf file problem in code
     print(OUTDIR)
     if Path(f'{OUTDIR}').exists():
         try:
@@ -55,28 +55,16 @@ def _cleanup():
             shutil.rmtree(f'{OUTDIR}')
     assert not Path(f'{OUTDIR}').exists()
 
-
-test_data = (
-('/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',    'Omon', 'sos', 'gn'),
-('/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/', 'Lmon', 'lai', 'gr1'),
-('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',            'AERmonZ', 'ta', 'gr1'),
-('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',           'Omon', 'so', 'gr'),
-('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'ch4global', 'gr'),
-('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',           'Emon', 'gppLut', 'gr1'),
-('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'c1', 'gr1'),
-('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'mc', 'gr1')
-)
-
-
-@pytest.mark.parametrize("testfile_dir,table,opt_var_name,grid_label", 
-  [pytest.param('/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',    'Omon', 'sos', 'gn', id='Omon_sos_gn'),
-   pytest.param('/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/', 'Lmon', 'lai', 'gr1', id='Lmon_lai_gr1'),
-   pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/',            'AERmonZ', 'ta', 'gr1', id='AERmonZ_ta_gr1'),
-   pytest.param('/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/',           'Omon', 'so', 'gr', id='Omon_so_gr'),
-   pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',        'Amon', 'ch4global', 'gr', id='Amon_ch4global_gr'),
-   pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',           'Emon', 'gppLut', 'gr1', id='Emon_gppLut_gr1'),
-   pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'cl', 'gr1', id='Amon_cl_gr1'),
-   pytest.param('/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',        'Amon', 'mc', 'gr1', id='Amon_mc_gr1')])
+@pytest.mark.parametrize(                                                                                                       "testfile_dir,table,opt_var_name,grid_label",
+  [ pytest.param( '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/',       'Lmon',    'lai',       'gr1', id='Lmon_lai_gr1' ),
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/',      'AERmonZ', 'ta',        'gr1', id='AERmonZ_ta_gr1' ),
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',                  'Amon',    'ch4global', 'gr',  id='Amon_ch4global_gr' ),
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',                 'Emon',    'gppLut',    'gr1', id='Emon_gppLut_gr1' ),
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              'Amon',    'cl',        'gr1', id='Amon_cl_gr1' ),
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              'Amon',    'mc',        'gr1', id='Amon_mc_gr1' ),
+    pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',          'Omon',    'sos',       'gn',  id='Omon_sos_gn' ),
+    pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/', 'Omon',    'so',        'gr',  id='Omon_so_gr' )
+  ] )
 
 def test_case_function(testfile_dir,table,opt_var_name,grid_label):
     '''
