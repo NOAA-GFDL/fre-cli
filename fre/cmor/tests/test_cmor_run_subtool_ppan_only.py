@@ -56,14 +56,7 @@ def _cleanup():
     assert not Path(f'{OUTDIR}').exists()
 
 @pytest.mark.parametrize( "testfile_dir,table,opt_var_name,grid_label,start,calendar",
-  [ pytest.param( '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/',       
-                  'Lmon',    'lai',       'gr1','0001','360_day', id='Lmon_lai_gr1' ), # SMALL ENOUGH: THERES A CDL FILE NOW!
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/',      
-                  'AERmonZ', 'ta',        'gr1','1850','360_day', id='AERmonZ_ta_gr1' ), # SMALL:  THERES A CDL FILE NOW!
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',                  
-                  'Amon',    'ch4global', 'gr', '1850','360_day', id='Amon_ch4global_gr' ), # SMALL: THERES A CDL FILE TO MAKE SMALLER NOW!
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',                 
-                  'Emon',    'gppLut',    'gr1','1850','360_day', id='Emon_gppLut_gr1' ), # SMALL ENOUGH: THERES A CDL FILE TO MAKE SMALLER NOW! 
+  [
     pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
                   'Amon',    'cl',        'gr1','1850','noleap', id='Amon_cl_gr1' ), #LARGE
     pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
