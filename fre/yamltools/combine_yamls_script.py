@@ -109,7 +109,7 @@ def get_combined_compileyaml(comb, output=None):
 
     return cleaned_yaml
 
-def get_combined_ppyaml(comb, output=None):
+def get_combined_ppyaml(comb):
     """
     Combine the model, experiment, and analysis yamls
     Arguments:
@@ -140,7 +140,10 @@ def get_combined_ppyaml(comb, output=None):
     except Exception as exc:
         raise ValueError("ERR: Could not merge multiple pp and analysis information together.") from exc
 
-    return full_combined
+    # Clean the yaml
+    cleaned_yaml = helpers.clean_yaml(full_combined)
+
+    return cleaned_yaml
 
 def get_combined_analysisyaml(comb2, output=None):
     try:
@@ -170,7 +173,7 @@ def get_combined_analysisyaml(comb2, output=None):
 
     return full_combined
 
-def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
+def consolidate_yamls(yamlfile, experiment, platform, target, use, output=None):
     """
     Depending on `use` argument passed, either create the final
     combined yaml for compilation or post-processing
@@ -192,12 +195,8 @@ def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
         # Create analysis yaml instance
         combined2 = aip.InitAnalysisYaml(yamlfile, experiment, platform, target)
  
-        if output is None:
-            yml_dict = get_combined_ppyaml(combined)
-            yml_dict2 = get_combined_analysisyaml(combined2, output)
-        else:
-            yml_dict = get_combined_ppyaml(combined, output)
-            yml_dict2 = get_combined_analysisyaml(combined2, output)
+        yml_dict = get_combined_ppyaml(combined)
+        yml_dict2 = get_combined_analysisyaml(combined2, output)
 
         for key in yml_dict2:
             if key != "postprocess":
@@ -211,12 +210,9 @@ def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
                 else:
                     yml_dict2['postprocess']["components"] = yml_dict['postprocess']["components"]
 
-        # Clean the yaml
-        cleaned_yaml = helpers.clean_yaml(yml_dict2)
-
         # OUTPUT IF NEEDED
         if output is not None:
-            output_yaml(cleaned_yaml, output)
+            output_yaml(yml_dict2, output)
         else:
             fre_logger.info("Combined yaml information saved as dictionary")
 
