@@ -35,7 +35,13 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
         fre_logger.info('\n... CMORYaml.combine_model succeeded.\n')
     except Exception as exc:
         raise ValueError("CMORYaml.combine_model failed") from exc
-
+##########
+    try:
+        # Merge model into combined file
+        yaml_content = CMORYaml.get_settings_yaml(yaml_content)
+    except Exception as exc:
+        raise ValueError("ERR: Could not merge setting information.") from exc
+##########
     # Merge cmor experiment yamls into combined file, calls experiment_check
     try:
         fre_logger.info('\n\ncalling CMORYaml.combine_experiment(), for comb_cmor_updated_list \n'
