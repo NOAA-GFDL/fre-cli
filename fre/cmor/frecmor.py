@@ -175,8 +175,11 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
 @click.option('--stop', type=str, default=None,
               help = STOP_YEAR_HELP,
               required = False)
+@click.option('--calendar', type=str, default=None,
+              help = 'calendar type, e.g. 360_day, noleap, gregorian... etc',
+              required = False)
 def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
-        grid_label, grid_desc, nom_res, start, stop):
+        grid_label, grid_desc, nom_res, start, stop, calendar):
     # pylint: disable=unused-argument
     """
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
@@ -193,7 +196,8 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         grid_label = grid_label,
         nom_res = nom_res,
         start = start,
-        stop = stop
+        stop = stop,
+        calendar_type = calendar
     )
 
 @cmor_cli.command()
