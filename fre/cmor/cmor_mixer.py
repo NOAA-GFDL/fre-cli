@@ -27,6 +27,12 @@ NON_HYBRID_SIGMA_COORDS = ["landuse", "plev39", "plev30", "plev19", "plev8", "he
 ALT_HYBRID_SIGMA_COORDS = ["level", "lev", "levhalf"]
 DEPTH_COORDS = ["z_l"]
 
+CMOR_NC_FILE_ACTION=cmor.CMOR_REPLACE#.CMOR_APPEND#.CMOR_PRESERVE#
+CMOR_VERBOSITY=cmor.CMOR_NORMAL#.CMOR_QUIET#
+CMOR_EXIT_CTL=cmor.CMOR_NORMAL#.CMOR_EXIT_ON_WARNING#.CMOR_EXIT_ON_MAJOR#
+CMOR_MK_SUBDIRS=1
+CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
+
 def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                             target_var=None, json_exp_config=None, json_table_config=None,
                             prev_path=None):
@@ -273,10 +279,11 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     # now we set up the cmor module object
     # initialize CMOR
     cmor.setup(
-        netcdf_file_action=cmor.CMOR_APPEND,
-        set_verbosity=cmor.CMOR_QUIET,
-        exit_control=cmor.CMOR_EXIT_ON_MAJOR,
-        create_subdirectories=1
+        netcdf_file_action=CMOR_NC_FILE_ACTION,
+        set_verbosity=CMOR_VERBOSITY,
+        exit_control=CMOR_EXIT_CTL,
+        create_subdirectories=CMOR_MK_SUBDIRS,
+        logfile=CMOR_LOG
     )
 
     # read experiment configuration file
@@ -339,6 +346,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
 
     # setup cmor time axis if relevant
     cmor_time = None
+    ntimes_passed = None
     fre_logger.info('assigning cmor_time')
     try:
         fre_logger.info(
@@ -350,6 +358,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
         fre_logger.info('assigning cmor_time using time_bnds...')
         cmor_time = cmor.axis("time", coord_vals=time_coords,
                               cell_bounds=time_bnds, units=time_coord_units)
+        ntimes_passed=len(time_coords)
     except ValueError as exc: #uncovered heyyyyyy... codecov bot, overhere!
         fre_logger.info(
             "cmor_time = cmor.axis('time', \n"
@@ -358,6 +367,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
         )
         fre_logger.info('assigning cmor_time WITHOUT time_bnds...')
         cmor_time = cmor.axis("time", coord_vals=time_coords, units=time_coord_units)
+        ntimes_passed=len(time_coords)
     fre_logger.info('DONE assigning cmor_time')
 
     # other vertical-axis-relevant initializations
@@ -398,8 +408,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
             # find the ps file nearby
             ps_file = netcdf_file.replace(f'.{target_var}.nc', '.ps.nc')
             ds_ps = nc.Dataset(ps_file)
-            ps = ds_ps['ps'][:].copy()
-            ds_ps.close()
+            ps = from_dis_gimme_dis(ds_ps, 'ps')
 
             # assign lev_half specifics
             if vert_dim == "levhalf":
@@ -457,6 +466,8 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                                axis_ids=axis_ids,
                                units="Pa")
             save_ps = True
+
+            
         fre_logger.info('DONE assigning cmor_z')
 
     axes = []
@@ -504,7 +515,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                                'skipping ps writing!', ps, ips)
         else:
             fre_logger.info("cmor.write call: for interp-pressure data (ips)")
-            cmor.write(ips, ps, store_with=cmor_var)
+            cmor.write(ips, ps, store_with=cmor_var, ntimes_passed=ntimes_passed)
             fre_logger.info("DONE cmor.write call: for interp-pressure data (ips)")
 
     fre_logger.info("cmor.close call: for cmor_var")
