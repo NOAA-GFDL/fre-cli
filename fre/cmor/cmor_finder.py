@@ -34,7 +34,7 @@ DO_NOT_PRINT_LIST = [
     'valid_min', 'valid_max'
 ]
 
-def print_var_content(table_config_file, var_name): #uncovered
+def print_var_content(table_config_file, var_name): #uncovered heyyyyyy... codecov bot, overhere!
     ''' outputs info on one variable to the logger looks for info regarding var_name in table_config_file
     the level of the messaging is INFO, requiring the verbose flag
     '''
@@ -45,7 +45,7 @@ def print_var_content(table_config_file, var_name): #uncovered
 
     var_content = proj_table_vars.get("variable_entry", {}).get(var_name)
     if var_content is None:
-        fre_logger.warning('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
+        fre_logger.debug('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
         return
 
     table_name = None
@@ -66,7 +66,7 @@ def print_var_content(table_config_file, var_name): #uncovered
         fre_logger.info('    %s: %s', content, var_content[content])
     fre_logger.info('\n')
 
-def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_name=None): #uncovered
+def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_name=None): #uncovered heyyyyyy... codecov bot, overhere!
     '''
     finds tables in the CMIP json config directory containing variable data of interest. prints it
     out to screen, intended largely as a helper tool for cli users.
@@ -116,7 +116,8 @@ def make_simple_varlist(dir_targ, output_variable_list):
         output_variable_list (str): The path to the output JSON file where the variable list will be saved.
 
     Returns:
-        None
+        a list, minimum one element, of strings representing variables in a target directory, encoded as a dictionary 
+        of key/value pairs that are equal to each other
 
     Raises:
         Logs errors if no files are found in the directory or if no files match the expected pattern.
@@ -128,7 +129,7 @@ def make_simple_varlist(dir_targ, output_variable_list):
     """
     one_file = next(glob.iglob(os.path.join(dir_targ, "*.nc")), None)
     if not one_file:
-        fre_logger.error("No files found in the directory.") #uncovered
+        fre_logger.error("No files found in the directory.") #uncovered heyyyyyy... codecov bot, overhere!
         return
 
     one_datetime = os.path.basename(one_file).split('.')[-3]
@@ -138,16 +139,22 @@ def make_simple_varlist(dir_targ, output_variable_list):
 
     # Check if any files were found
     if not files:
-        fre_logger.error("No files found matching the pattern.") #uncovered
+        fre_logger.error("No files found matching the pattern.") #uncovered heyyyyyy... codecov bot, overhere!
         return
     elif len(files) == 1:
-        fre_logger.warning("Warning: Only one file found matching the pattern.") #uncovered
+        fre_logger.warning("Warning: Only one file found matching the pattern.") #uncovered heyyyyyy... codecov bot, overhere!
     else:
         fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
 
     # Create a dictionary of variable names extracted from the filenames
-    var_list = {os.path.basename(file).split('.')[-2]: os.path.basename(file).split('.')[-2] for file in files}
+    var_list = {
+        os.path.basename(file).split('.')[-2] : os.path.basename(file).split('.')[-2] for file in files}
 
     # Write the variable list to the output JSON file
-    with open(output_variable_list, 'w') as f:
-        json.dump(var_list, f, indent=4)
+    if output_variable_list is not None:
+        try:
+            with open(output_variable_list, 'w') as f:
+                json.dump(var_list, f, indent=4)
+        except:
+            raise OSError('output variable list cannot be written')
+    return var_list

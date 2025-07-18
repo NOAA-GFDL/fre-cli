@@ -94,7 +94,9 @@ def test_run_fremake_container_build_specified_out():
     assert Path(
         f"{CONTAINER_BUILD_TEST_PATH}/fremake_canopy/test/null_model_full-debug.sif").exists()
 
-@pytest.mark.skipif(not has_podman, reason="missing podman")
+## THIS CONDITION SEEMS INSUFFICIENT ON PPAN
+#@pytest.mark.skipif(not has_podman, reason="missing podman")
+@pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
 def test_run_fremake_container_build_notransfer():
     ''' checks image creation with the .sif transfer turned off '''
     if Path("createContainer.sh").exists():

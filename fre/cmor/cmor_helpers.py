@@ -19,7 +19,7 @@ def print_data_minmax(ds_variable=None, desc=None):
     try:
         fre_logger.info('info for \n desc = %s \n %s', desc, type(ds_variable))
         fre_logger.info('%s < %s < %s', ds_variable.min(), desc, ds_variable.max())
-    except: #uncovered
+    except: #uncovered heyyyyyy... codecov bot, overhere!
         fre_logger.warning('could not print min/max entries for desc = %s', desc)
         pass
     return
@@ -51,7 +51,7 @@ def find_statics_file(bronx_file_path):
     if Path(statics_file).exists():
         return statics_file
     else:
-        fre_logger.warning('could not find the statics file! returning None') #uncovered
+        fre_logger.warning('could not find the statics file! returning None') #uncovered heyyyyyy... codecov bot, overhere!
         return None
 
 def create_lev_bnds(bound_these=None, with_these=None):
@@ -60,7 +60,7 @@ def create_lev_bnds(bound_these=None, with_these=None):
     '''
     the_bnds = None
     if len(with_these) != (len(bound_these) + 1):
-        raise ValueError('failed creating bnds on-the-fly :-(') #uncovered
+        raise ValueError('failed creating bnds on-the-fly :-(') #uncovered heyyyyyy... codecov bot, overhere!
     fre_logger.debug('bound_these = \n%s', bound_these)
     fre_logger.debug('with_these = \n%s', with_these)
 
@@ -99,7 +99,7 @@ def get_iso_datetime_ranges(var_filenames, iso_daterange_arr=None, start=None,st
     
     if iso_daterange_arr is None:
         raise ValueError(
-            'this function requires the list one desires to fill with datetime ranges from filenames') #uncovered
+            'this function requires the list one desires to fill with datetime ranges from filenames') #uncovered heyyyyyy... codecov bot, overhere!
     
     for filename in var_filenames:
         fre_logger.debug('filename = %s', filename)
@@ -123,7 +123,7 @@ def get_iso_datetime_ranges(var_filenames, iso_daterange_arr=None, start=None,st
     #fre_logger.debug('Available dates: %s', iso_daterange_arr)
 
     if len(iso_daterange_arr) < 1:
-        raise ValueError('iso_daterange_arr has length 0! i need to find at least one datetime range!') #uncovered
+        raise ValueError('iso_daterange_arr has length 0! i need to find at least one datetime range!') #uncovered heyyyyyy... codecov bot, overhere!
 
 def check_dataset_for_ocean_grid(ds):
     '''
@@ -183,7 +183,7 @@ def create_tmp_dir(outdir, json_exp_config=None):
         with open(json_exp_config, "r", encoding="utf-8") as table_config_file:
             try:
                 outdir_from_exp_config = json.load(table_config_file)["outpath"]
-            except: #uncovered
+            except: #uncovered heyyyyyy... codecov bot, overhere!
                 fre_logger.warning(
                     'could not read outdir from json_exp_config. the cmor module will throw a toothless warning')
 
@@ -194,7 +194,7 @@ def create_tmp_dir(outdir, json_exp_config=None):
             fre_logger.info('attempting to create %s dir in tmp_dir targ', outdir_from_exp_config)
             try:
                 os.makedirs(tmp_dir+'/'+outdir_from_exp_config, exist_ok=True)
-            except: #uncovered
+            except: #uncovered heyyyyyy... codecov bot, overhere!
                 fre_logger.info('attempting to create %s dir in tmp_dir targ did not work', outdir_from_exp_config)
                 fre_logger.info('... attempt to avoid a toothless cmor warning failed... moving on')
                 pass
@@ -210,7 +210,7 @@ def get_json_file_data(json_file_path=None):
     try:
         with open(json_file_path, "r", encoding="utf-8") as json_config_file:
             return json.load(json_config_file)
-    except Exception as exc: #uncovered
+    except Exception as exc: #uncovered heyyyyyy... codecov bot, overhere!
         raise FileNotFoundError(
             'ERROR: json_file_path file cannot be opened.\n'
             '       json_file_path = {}'.format(json_file_path)
@@ -238,7 +238,7 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res,
     if None in [new_grid_label, new_grid, new_nom_res]:
         fre_logger.error(
             'grid/grid_label/nom_res updating requested for exp_config file, but one of them is None\n'
-            'bailing...!') #uncovered
+            'bailing...!') #uncovered heyyyyyy... codecov bot, overhere!
         raise ValueError
 
 
@@ -270,9 +270,66 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res,
             fre_logger.info('Original "nominal_resolution": %s', data["nominal_resolution"])
             data["nominal_resolution"] = new_nom_res
             fre_logger.info('Updated "nominal_resolution": %s', data["nominal_resolution"])
-        except KeyError as e: #uncovered
+        except KeyError as e: #uncovered heyyyyyy... codecov bot, overhere!
             fre_logger.error("Failed to update 'nominal_resolution': %s", e)
             raise KeyError("Error while updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from e
+
+        # Determine the file path for saving
+        output_file_path = output_file_path or json_file_path
+
+        # Save the updated JSON back to the file
+        with open(output_file_path, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4)
+
+        fre_logger.info('Successfully updated fields and saved to %s', output_file_path)
+
+    except FileNotFoundError:
+        fre_logger.error("The file '%s' does not exist.", json_file_path)
+        raise
+    except json.JSONDecodeError:
+        fre_logger.error("Failed to decode JSON from the file '%s'.", json_file_path)
+        raise
+    except Exception as e:
+        fre_logger.error("An unexpected error occurred: %s", e)
+        raise
+
+
+
+def update_calendar_type(json_file_path, new_calendar_type, output_file_path=None):
+    """
+    Updates the "calendar" fields in a specified JSON file housing exp-specific
+    configuration information req'd by CMOR for re-writing data compliantly
+
+    Args:
+        json_file_path (str): Path to the input JSON file.
+        new_calendar_type (str): New value for the "calendar" field
+        output_file_path (str, optional): Path to save the updated JSON file. If None, overwrites the original file.
+
+    Raises:
+        FileNotFoundError: If the input JSON file does not exist.
+        KeyError: If the "calendar" field is not found in the JSON file.
+        ValueError: if the input "new_calendar_type" is None
+        json.JSONDecodeError: If the JSON file cannot be decoded.
+    """
+    if new_calendar_type is None:
+        fre_logger.error(
+            'calendar_type updating requested for exp_config file, but one of them is None\n'
+            'bailing...!') #uncovered heyyyyyy... codecov bot, overhere!
+        raise ValueError
+
+    try:
+        # Open and load the JSON file
+        with open(json_file_path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        # Update the "calendar" field
+        try:
+            fre_logger.info('Original "calendar": %s', data["calendar"])
+            data["calendar"] = new_calendar_type
+            fre_logger.info('Updated "calendar": %s', data["calendar"])
+        except KeyError as e:
+            fre_logger.error("Failed to update 'calendar': %s", e)
+            raise KeyError("Error while updating 'calendar'. Ensure the field exists and is modifiable.") from e
 
         # Determine the file path for saving
         output_file_path = output_file_path or json_file_path
