@@ -55,18 +55,26 @@ def _cleanup():
             shutil.rmtree(f'{OUTDIR}')
     assert not Path(f'{OUTDIR}').exists()
 
-@pytest.mark.parametrize(                                                                                                       "testfile_dir,table,opt_var_name,grid_label",
-  [ pytest.param( '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/',       'Lmon',    'lai',       'gr1', id='Lmon_lai_gr1' ),
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/',      'AERmonZ', 'ta',        'gr1', id='AERmonZ_ta_gr1' ),
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',                  'Amon',    'ch4global', 'gr',  id='Amon_ch4global_gr' ),
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',                 'Emon',    'gppLut',    'gr1', id='Emon_gppLut_gr1' ),
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              'Amon',    'cl',        'gr1', id='Amon_cl_gr1' ),
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              'Amon',    'mc',        'gr1', id='Amon_mc_gr1' ),
-    pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',          'Omon',    'sos',       'gn',  id='Omon_sos_gn' ),
-    pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/', 'Omon',    'so',        'gr',  id='Omon_so_gr' )
+@pytest.mark.parametrize( "testfile_dir,table,opt_var_name,grid_label,start,calendar",
+  [ pytest.param( '/archive/Eric.Stofferahn/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/',       
+                  'Lmon',    'lai',       'gr1','0001','360_day', id='Lmon_lai_gr1' ), # SMALL ENOUGH: THERES A CDL FILE NOW!
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_plev39_cmip/ts/monthly/5yr/zonavg/',      
+                  'AERmonZ', 'ta',        'gr1','1850','360_day', id='AERmonZ_ta_gr1' ), # SMALL:  THERES A CDL FILE NOW!
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',                  
+                  'Amon',    'ch4global', 'gr', '1850','360_day', id='Amon_ch4global_gr' ), # SMALL: THERES A CDL FILE TO MAKE SMALLER NOW!
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',                 
+                  'Emon',    'gppLut',    'gr1','1850','360_day', id='Emon_gppLut_gr1' ), # SMALL ENOUGH: THERES A CDL FILE TO MAKE SMALLER NOW! 
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
+                  'Amon',    'cl',        'gr1','1850','noleap', id='Amon_cl_gr1' ), #LARGE
+    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
+                  'Amon',    'mc',        'gr1','1850','noleap', id='Amon_mc_gr1' ), #LARGE
+    pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/', 
+                  'Omon',    'so',        'gr', '0001','360_day', id='Omon_so_gr' ), #LARGE
+    pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',          
+                  'Omon',    'sos',       'gn', '0001','360_day', id='Omon_sos_gn' ) #LARGE
   ] )
 
-def test_case_function(testfile_dir,table,opt_var_name,grid_label):
+def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar):
     '''
     Should be iterating over the test dictionary
     '''
@@ -95,6 +103,23 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label):
 
     # execute the test
     try:
+        # Debug, please keep. -Ian
+        #print( 
+        #f'fre -vv cmor run \\\n'
+        #f'    -d {indir} \\\n'
+        #f'    -l {CMORBITE_VARLIST} \\\n'
+        #f'    -r {table_file} \\\n'
+        #f'    -p {EXP_CONFIG_DEFAULT} \\\n'
+        #f'    -o {OUTDIR} \\\n'
+        #f'    --run_one \\\n'
+        #f'    -v {opt_var_name} \\\n'
+        #f'    --grid_desc \'FOO_PLACEHOLDER\' \\\n'
+        #f'    -g {grid_label} \\\n'
+        #f'    --nom_res \'10000 km\' \\\n'
+        #f'    --start {start} \\\n'
+        #f'    --calendar {calendar}\n'
+        #f'')
+        #assert False
         cmor_run_subtool(
             indir = indir,
             json_var_list = CMORBITE_VARLIST,
@@ -105,7 +130,9 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label):
             opt_var_name = opt_var_name,
             grid = 'FOO_PLACEHOLDER',
             grid_label = grid_label,
-            nom_res = '10000 km' # placeholder
+            nom_res = '10000 km' ,# placeholder
+            start = start,
+            calendar_type=calendar
         )
         some_return = 0
     except Exception as exc:
@@ -149,5 +176,5 @@ def test_git_cleanup():
       assert all([restore.returncode == 0, check.returncode == 1])
 
 #### test cases
-def test_cleanup():
-    _cleanup()
+#def test_cleanup():
+#    _cleanup()
