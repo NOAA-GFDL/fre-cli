@@ -99,7 +99,7 @@ def get_combined_compileyaml(comb, output=None):
         raise ValueError("ERR: Could not merge platform yaml information.") from exc
 
     # Clean the yaml
-    cleaned_yaml = helpers.clean_yaml(yaml_content)
+    cleaned_yaml = helpers.clean_yaml(loaded_yaml)
 
     # OUTPUT IF NEEDED
     if output is not None:
@@ -127,10 +127,10 @@ def get_combined_ppyaml(comb, output=None):
         raise ValueError("ERR: Could not merge setting information.") from exc
 
     try:
-        # Merge analysis yamls, if defined, into combined file
+        # Merge pp yamls, if defined, into combined file
         comb_pp_updated_list = comb.combine_yamls(yaml_content_str)
     except Exception as exc:
-        raise ValueError("ERR: Could not merge analysis yaml information") from exc
+        raise ValueError("ERR: Could not merge pp yaml information") from exc
 
     try:
         # Merge model/pp and model/analysis yamls if more than 1 is defined

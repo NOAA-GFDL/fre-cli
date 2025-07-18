@@ -115,7 +115,7 @@ class InitPPYaml(MergeYamlInfo):
                     exp_content = eyp.read()
 
                 exp_info_i = yaml_content_str + exp_content
-                pp_yamls.append(exp_content_i)
+                pp_yamls.append(exp_info_i)
 
         return pp_yamls
 
