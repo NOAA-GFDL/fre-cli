@@ -34,7 +34,7 @@ DO_NOT_PRINT_LIST = [
     'valid_min', 'valid_max'
 ]
 
-def print_var_content(table_config_file, var_name): #uncovered
+def print_var_content(table_config_file, var_name): #uncovered heyyyyyy... codecov bot, overhere!
     ''' outputs info on one variable to the logger looks for info regarding var_name in table_config_file
     the level of the messaging is INFO, requiring the verbose flag
     '''
@@ -66,7 +66,7 @@ def print_var_content(table_config_file, var_name): #uncovered
         fre_logger.info('    %s: %s', content, var_content[content])
     fre_logger.info('\n')
 
-def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_name=None): #uncovered
+def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_name=None): #uncovered heyyyyyy... codecov bot, overhere!
     '''
     finds tables in the CMIP json config directory containing variable data of interest. prints it
     out to screen, intended largely as a helper tool for cli users.
@@ -129,7 +129,7 @@ def make_simple_varlist(dir_targ, output_variable_list):
     """
     one_file = next(glob.iglob(os.path.join(dir_targ, "*.nc")), None)
     if not one_file:
-        fre_logger.error("No files found in the directory.") #uncovered
+        fre_logger.error("No files found in the directory.") #uncovered heyyyyyy... codecov bot, overhere!
         return
 
     one_datetime = os.path.basename(one_file).split('.')[-3]
@@ -139,10 +139,10 @@ def make_simple_varlist(dir_targ, output_variable_list):
 
     # Check if any files were found
     if not files:
-        fre_logger.error("No files found matching the pattern.") #uncovered
+        fre_logger.error("No files found matching the pattern.") #uncovered heyyyyyy... codecov bot, overhere!
         return
     elif len(files) == 1:
-        fre_logger.warning("Warning: Only one file found matching the pattern.") #uncovered
+        fre_logger.warning("Warning: Only one file found matching the pattern.") #uncovered heyyyyyy... codecov bot, overhere!
     else:
         fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
 
