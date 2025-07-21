@@ -41,7 +41,7 @@ CMOR_CREATES_DIR_BASE = \
 # i.e., it fills in FOO/BAR/BAZ style values, and what they are currently is totally irrelevant
 EXP_CONFIG_DEFAULT=f'{ROOTDIR}/CMOR_input_example.json' # this likely is not sufficient
 
-CLEANUP_AFTER_EVERY_TEST = False
+CLEANUP_AFTER_EVERY_TEST = True
 
 def _cleanup():
     # clean up from previous tests
@@ -176,28 +176,28 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar
                   Path(cmor_output_dir).exists(),
                   Path(cmor_output_file).exists() ] )
 
-    #if CLEANUP_AFTER_EVERY_TEST:
-    #    _cleanup()
+    if CLEANUP_AFTER_EVERY_TEST:
+        _cleanup()
         
-#def test_git_cleanup():
-#    '''
-#    Performs a git restore on EXP_CONFIG to avoid false positives from
-#    git's record of changed files. It's supposed to change as part of the test.
-#    '''
-#    is_ci = os.environ.get("GITHUB_WORKSPACE") is not None
-#    if is_ci:
-#      #doesn't run happily in CI and not needed
-#      assert True
-#    else:
-#      git_cmd = f"git restore {EXP_CONFIG_DEFAULT}" 
-#      restore = subprocess.run(git_cmd, 
-#                    shell=True,
-#                    check=False)
-#      check_cmd = f"git status | grep {EXP_CONFIG_DEFAULT}"
-#      check = subprocess.run(check_cmd, 
-#                             shell = True, check = False)
-#      #first command completed, second found no file in git status
-#      assert all([restore.returncode == 0, check.returncode == 1])
+def test_git_cleanup():
+    '''
+    Performs a git restore on EXP_CONFIG to avoid false positives from
+    git's record of changed files. It's supposed to change as part of the test.
+    '''
+    is_ci = os.environ.get("GITHUB_WORKSPACE") is not None
+    if is_ci:
+      #doesn't run happily in CI and not needed
+      assert True
+    else:
+      git_cmd = f"git restore {EXP_CONFIG_DEFAULT}" 
+      restore = subprocess.run(git_cmd, 
+                    shell=True,
+                    check=False)
+      check_cmd = f"git status | grep {EXP_CONFIG_DEFAULT}"
+      check = subprocess.run(check_cmd, 
+                             shell = True, check = False)
+      #first command completed, second found no file in git status
+      assert all([restore.returncode == 0, check.returncode == 1])
 
 #### test cases
 #def test_cleanup():
