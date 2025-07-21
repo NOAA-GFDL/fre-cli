@@ -63,11 +63,11 @@ def _cleanup():
     pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_scalar/ts/monthly/5yr/',                  
                   'Amon',    'ch4global', 'gr', '1850','360_day', id='Amon_ch4global_gr' ), 
     pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/LUmip_refined/ts/monthly/5yr/',                 
-                  'Emon',    'gppLut',    'gr1','1850','360_day', id='Emon_gppLut_gr1' )#, 
-##    pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
-##                  'Amon',    'cl',        'gr1','1850','noleap', id='Amon_cl_gr1' ), #LARGE
-##    pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
-##                  'Amon',    'mc',        'gr1','1850','noleap', id='Amon_mc_gr1' ), #LARGE
+                  'Emon',    'gppLut',    'gr1','1850','360_day', id='Emon_gppLut_gr1' ), 
+    pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
+                  'Amon',    'cl',        'gr1','1850','noleap', id='Amon_cl_gr1' ), 
+    pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
+                  'Amon',    'mc',        'gr1','1850','noleap', id='Amon_mc_gr1' )#, 
 ##    pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/', 
 ##                  'Omon',    'so',        'gr', '0001','360_day', id='Omon_so_gr' ), #LARGE
 ##    pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',          
@@ -103,8 +103,8 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar
 
     # execute the test
     try:
-        cdl_input_files=glob.glob(indir+'*.cdl')
-        assert len(cdl_input_files)==1
+        cdl_input_files=glob.glob(indir+'*.'+opt_var_name+'.cdl')
+        assert len(cdl_input_files)>=1
 
         cdl_input_file=cdl_input_files[0]
         assert Path(cdl_input_file).exists()
@@ -115,6 +115,15 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar
         subprocess.run(['ncgen3','-k','netCDF-4','-o', nc_input_file, cdl_input_file],
                        check=True)
         assert Path(nc_input_file).exists()
+
+        # exception: these files need a ps file to be around, so extra ncgen step for these:
+        if opt_var_name in [ 'cl', 'mc' ]:# and not Path(cdl_input_file.replace( opt_var_name+'.cdl', 'ps.cdl')).exists():
+            cdl_input_ps_file = cdl_input_file.replace( opt_var_name+'.cdl', 'ps.cdl')
+            assert Path(cdl_input_ps_file).exists()
+            nc_input_ps_file  = cdl_input_ps_file.replace('.cdl','.nc')
+            subprocess.run(['ncgen3','-k','netCDF-4','-o', nc_input_ps_file, cdl_input_ps_file],
+                           check=True)            
+            assert Path(nc_input_ps_file).exists()
 
         ##assert False
         ## Debug, please keep. -Ian

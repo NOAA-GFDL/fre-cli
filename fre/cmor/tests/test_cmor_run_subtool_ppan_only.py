@@ -57,10 +57,6 @@ def _cleanup():
 
 @pytest.mark.parametrize( "testfile_dir,table,opt_var_name,grid_label,start,calendar",
   [
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
-                  'Amon',    'cl',        'gr1','1850','noleap', id='Amon_cl_gr1' ), #LARGE
-    pytest.param( '/archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
-                  'Amon',    'mc',        'gr1','1850','noleap', id='Amon_mc_gr1' ), #LARGE
     pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/', 
                   'Omon',    'so',        'gr', '0001','360_day', id='Omon_so_gr' ), #LARGE
     pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',          
