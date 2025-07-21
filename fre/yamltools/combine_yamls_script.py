@@ -177,7 +177,10 @@ def get_combined_analysisyaml(comb2, output=None):
     except Exception as exc:
         raise ValueError("ERR: Could not merge multiple pp and analysis information together.") from exc
 
-    return full_combined
+    # Clean the yaml
+    cleaned_yaml = helpers.clean_yaml(full_combined)
+
+    return cleaned_yaml
 
 def consolidate_yamls(yamlfile, experiment, platform, target, use, output=None):
     """
