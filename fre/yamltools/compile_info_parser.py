@@ -25,6 +25,7 @@ class InitCompileYaml():
         """
         Process to combine yamls applicable to compilation
         """
+        print(os.getcwd())
         self.yml = yamlfile
         #self.name = yamlfile.split(".")[0]
         self.namenopath = self.yml.split("/")[-1].split(".")[0]

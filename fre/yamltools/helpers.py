@@ -34,7 +34,7 @@ def output_yaml(cleaned_yaml, output):
                 default_flow_style = False,
                 sort_keys = False ) )
 
-def validate_yaml(yaml, schema_path,):
+def validate_yaml(yaml, schema_path):
     """
     Validate yaml information
     """

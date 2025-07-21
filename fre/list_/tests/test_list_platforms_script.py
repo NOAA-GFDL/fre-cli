@@ -68,7 +68,7 @@ def test_yamlvalidate(caplog):
     for record in caplog.records:
         record.levelname == "INFO"
 
-def test_not_valid_yaml(caplog):
+def test_not_valid_yaml():
     ''' Test the correct output matches the ValueError raised when yaml is invalid '''
     # Combine model / experiment
     with pytest.raises(ValueError, match="YAML dictionary NOT VALID."):
