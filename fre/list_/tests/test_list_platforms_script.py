@@ -68,17 +68,8 @@ def test_yamlvalidate(caplog):
     for record in caplog.records:
         record.levelname == "INFO"
 
-@pytest.mark.xfail
-def test_not_valid_yaml():
-    ''' Test correct output when yaml is invalid '''
+def test_not_valid_yaml(caplog):
+    ''' Test the correct output matches the ValueError raised when yaml is invalid '''
     # Combine model / experiment
-    list_platforms_script.list_platforms_subtool(f"{BADYAMLFILE_PATH}")
-
-    validate = ["Validating YAML information...",
-                "     YAML dictionary NOT VALID."]
-
-    for i in validate:
-        assert i in caplog.text
-
-    for record in caplog.records:
-        record.levelname == "INFO"
+    with pytest.raises(ValueError, match="YAML dictionary NOT VALID."):
+        list_platforms_script.list_platforms_subtool(f"{BADYAMLFILE_PATH}")
