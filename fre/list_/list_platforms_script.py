@@ -41,7 +41,7 @@ def list_platforms_subtool(yamlfile: str):
 
     fre_logger.info("Platforms available:")
     for i in yml_dict.get("platforms"):
-        fre_logger.info(f'    - {i.get("name")}')
+        fre_logger.info('    - %s', i.get("name"))
     fre_logger.info("\n")
 
     fre_logger.setLevel(former_log_level)

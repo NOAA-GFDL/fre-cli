@@ -45,7 +45,7 @@ def list_ppcomps_subtool(yamlfile: str, experiment: str):
     fre_logger.info("Components to be post-processed:")
     for i in yml_dict["postprocess"]["components"]:
         if i.get("postprocess_on"):
-            fre_logger.info(f'   - {i.get("type")}')
+            fre_logger.info('   - %s', i.get("type"))
     fre_logger.info("\n")
 
     # set logger back to normal level
