@@ -1,6 +1,8 @@
 """
-Script combines the model yaml with exp, platform, and target to list experiment information.
+Script combines the model yaml with experiment, platform, and target 
+information to list experiment information.
 """
+
 import logging
 import yaml
 

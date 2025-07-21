@@ -1,5 +1,6 @@
 """
-Script combines the model yaml with exp, platform, and target to list experiment information.
+Script combines the model yaml with the compile and platofrms yaml.
+Merged yaml dictionary is parsed to list experiment information.
 """
 
 from pathlib import Path

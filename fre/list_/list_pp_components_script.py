@@ -1,6 +1,8 @@
 """
-Script parses combined yaml dictionary to list components that will be post-processed
+Script combined model yaml with the settings and post-processing yamls.
+Merged yaml dictionary is parsed to list components that will be post-processed
 """
+
 from pathlib import Path
 import logging
 from fre.yamltools import combine_yamls_script as cy

@@ -22,20 +22,20 @@ BADYAMLFILE_PATH = f"{TEST_DIR}/{NM_EXAMPLE}/wrong_model/wrong_null_model.yaml"
 
 # yaml file checks
 def test_modelyaml_exists():
-    '''test if model yaml exists'''
+    ''' Test model yaml exists '''
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}").exists()
 
 def test_compileyaml_exists():
-    '''test if compile yaml exists'''
+    ''' Test compile yaml exists '''
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/compile.yaml").exists()
 
 def test_platformyaml_exists():
-    '''test if platforms yaml exists'''
+    ''' Test platforms yaml exists '''
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/platforms.yaml").exists()
 
 # Test whole tool 
 def test_platforms_list_correct(caplog):
-    ''' test list platforms '''
+    ''' Test fre list platforms subtool '''
     list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
     # check the logging output
