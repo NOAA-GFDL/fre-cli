@@ -197,6 +197,5 @@ fre/tests/test_files/ocean_sos_var_file/*.nc
 fre/tests/test_files/outdirfre/
 fre/tests/test_files/outdir/
 fre/tests/test_files/CMOR_input_example.json
-
-
+*.nc
 
