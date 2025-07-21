@@ -1,60 +1,60 @@
 netcdf land.000101-000512.lai {
 dimensions:
-	bnds = 2 ;
-	time = UNLIMITED ; // (60 currently)
-	lat = 2 ;
-	lon = 2 ;
+    bnds = 2 ;
+    time = UNLIMITED ; // (60 currently)
+    lat = 2 ;
+    lon = 2 ;
 variables:
-	double bnds(bnds) ;
-		bnds:long_name = "vertex number" ;
-	float lai(time, lat, lon) ;
-		lai:_FillValue = -1.f ;
-		lai:missing_value = -1.f ;
-		lai:units = "m2/m2" ;
-		lai:long_name = "leaf area index" ;
-		lai:cell_methods = "area: mean time: mean" ;
-		lai:cell_measures = "area: soil_area" ;
-		lai:interp_method = "conserve_order1" ;
-	double lat(lat) ;
-		lat:long_name = "latitude" ;
-		lat:units = "degrees_N" ;
-		lat:axis = "Y" ;
-		lat:bounds = "lat_bnds" ;
-	double lat_bnds(lat, bnds) ;
-		lat_bnds:long_name = "latitude bounds" ;
-		lat_bnds:units = "degrees_N" ;
-		lat_bnds:axis = "Y" ;
-	double lon(lon) ;
-		lon:long_name = "longitude" ;
-		lon:units = "degrees_E" ;
-		lon:axis = "X" ;
-		lon:bounds = "lon_bnds" ;
-	double lon_bnds(lon, bnds) ;
-		lon_bnds:long_name = "longitude bounds" ;
-		lon_bnds:units = "degrees_E" ;
-		lon_bnds:axis = "X" ;
-	double time(time) ;
-		time:units = "days since 0001-01-01 00:00:00" ;
-		time:long_name = "time" ;
-		time:axis = "T" ;
-		time:calendar_type = "NOLEAP" ;
-		time:calendar = "noleap" ;
-		time:bounds = "time_bnds" ;
-	double time_bnds(time, bnds) ;
-		time_bnds:units = "days since 0001-01-01 00:00:00" ;
-		time_bnds:long_name = "time axis boundaries" ;
+    double bnds(bnds) ;
+        bnds:long_name = "vertex number" ;
+    float lai(time, lat, lon) ;
+        lai:_FillValue = -1.f ;
+        lai:missing_value = -1.f ;
+        lai:units = "m2/m2" ;
+        lai:long_name = "leaf area index" ;
+        lai:cell_methods = "area: mean time: mean" ;
+        lai:cell_measures = "area: soil_area" ;
+        lai:interp_method = "conserve_order1" ;
+    double lat(lat) ;
+        lat:long_name = "latitude" ;
+        lat:units = "degrees_N" ;
+        lat:axis = "Y" ;
+        lat:bounds = "lat_bnds" ;
+    double lat_bnds(lat, bnds) ;
+        lat_bnds:long_name = "latitude bounds" ;
+        lat_bnds:units = "degrees_N" ;
+        lat_bnds:axis = "Y" ;
+    double lon(lon) ;
+        lon:long_name = "longitude" ;
+        lon:units = "degrees_E" ;
+        lon:axis = "X" ;
+        lon:bounds = "lon_bnds" ;
+    double lon_bnds(lon, bnds) ;
+        lon_bnds:long_name = "longitude bounds" ;
+        lon_bnds:units = "degrees_E" ;
+        lon_bnds:axis = "X" ;
+    double time(time) ;
+        time:units = "days since 0001-01-01 00:00:00" ;
+        time:long_name = "time" ;
+        time:axis = "T" ;
+        time:calendar_type = "NOLEAP" ;
+        time:calendar = "noleap" ;
+        time:bounds = "time_bnds" ;
+    double time_bnds(time, bnds) ;
+        time_bnds:units = "days since 0001-01-01 00:00:00" ;
+        time_bnds:long_name = "time axis boundaries" ;
 
 // global attributes:
-		:title = "ESM4.5v01_om5b04_piC" ;
-		:associated_files = "lake_area: 00050101.land_static.nc glac_area: 00050101.land_static.nc soil_area: 00050101.land_static.nc land_area: 00050101.land_static.nc" ;
-		:grid_type = "regular" ;
-		:grid_tile = "N/A" ;
-		:code_release_version = "2024.02" ;
-		:git_hash = "b86d27037f755a82c586e55073dd575245c144b1" ;
-		:creationtime = "Thu Jul 25 14:31:46 2024" ;
-		:hostname = "pp307" ;
-		:history = "fregrid --standard_dimension --input_mosaic C96_mosaic.nc --input_file 00050101.land_month --interp_method conserve_order1 --remap_file .fregrid_remap_file_288_by_180.nc --nlon 288 --nlat 180 --scalar_field (**please see the field list in this file**) --weight_file 00050101.land_static --weight_field land_frac --output_file out.nc" ;
-		:external_variables = "soil_area" ;
+        :title = "ESM4.5v01_om5b04_piC" ;
+        :associated_files = "lake_area: 00050101.land_static.nc glac_area: 00050101.land_static.nc soil_area: 00050101.land_static.nc land_area: 00050101.land_static.nc" ;
+        :grid_type = "regular" ;
+        :grid_tile = "N/A" ;
+        :code_release_version = "2024.02" ;
+        :git_hash = "b86d27037f755a82c586e55073dd575245c144b1" ;
+        :creationtime = "Thu Jul 25 14:31:46 2024" ;
+        :hostname = "pp307" ;
+        :history = "fregrid --standard_dimension --input_mosaic C96_mosaic.nc --input_file 00050101.land_month --interp_method conserve_order1 --remap_file .fregrid_remap_file_288_by_180.nc --nlon 288 --nlat 180 --scalar_field (**please see the field list in this file**) --weight_file 00050101.land_static --weight_field land_frac --output_file out.nc" ;
+        :external_variables = "soil_area" ;
 data:
 
  bnds = 1, 2 ;
@@ -95,7 +95,7 @@ data:
     0.0002842809, 0.0607904, 0.2689194, 0.2739885, 0.3429663, 0.4690287, 
     0.4658433, 0.5943975, 0.8174095, 0.6366743, 0.6379606, 0.7003256, 
     0.6130756, 0.4093378, 0.2349773, 0.1486003, 0.1363347, 0.2084315, 
-    0.05512743, 0.0225515, 0.05266139, 0.1297704, 0.4009209, 0.79048,	
+    0.05512743, 0.0225515, 0.05266139, 0.1297704, 0.4009209, 0.79048,
     0.0002842809, 0.0607904, 0.2689194, 0.2739885, 0.3429663, 0.4690287, 
     0.4658433, 0.5943975, 0.8174095, 0.6366743, 0.6379606, 0.7003256, 
     0.6130756, 0.4093378, 0.2349773, 0.1486003, 0.1363347, 0.2084315, 
