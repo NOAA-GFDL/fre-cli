@@ -62,8 +62,10 @@ def conv_mip_to_bronx_freq(cmor_table_freq):
         "yrPt"   : None
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
-    if bronx_freq is None and cmor_table_freq != 'fx':
-        raise KeyError(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent') #uncovered heyyyyyy... codecov bot, overhere!
+    if bronx_freq is None:
+        fre_logger.warning(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent') #uncovered heyyyyyy... codecov bot, overhere!
+    if cmor_table_freq not in cmor_to_bronx_dict.keys():# and cmor_table_freq != 'fx':
+        raise KeyError(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency')
     return bronx_freq
 
 def get_bronx_freq_from_mip_table(json_table_config):

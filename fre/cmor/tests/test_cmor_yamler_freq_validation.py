@@ -7,18 +7,20 @@ def test_conv_mip_to_bronx_freq_valid_frequencies():
     """
     # Test cases from the mapping dictionary
     test_cases = [
-        ("1hr", "hourly"),
-        ("1hrCM", "hourly"),
-        ("1hrPt", "hourly"),
-        ("3hr", "3hourly"),
-        ("3hrPt", "3hourly"),
-        ("6hr", "6hourly"),
-        ("6hrPt", "6hourly"),
+        ("1hr", "1hr"),
+        ("1hrCM", None),
+        ("1hrPt", None),
+        ("3hr", "3hr"),
+        ("3hrPt", None),
+        ("6hr", "6hr"),
+        ("6hrPt", None),
         ("day", "daily"),
+        ("dec", None),
+        ("fx", None),
         ("mon", "monthly"),
-        ("monC", "monthly"),
-        ("monPt", "monthly"),
-        ("subhrPt", "subhourly"),
+        ("monC", None),
+        ("monPt", None),
+        ("subhrPt", None),
         ("yr", "annual"),
         ("yrPt", None)  # Should return None according to mapping
     ]
@@ -49,7 +51,7 @@ def test_conv_mip_to_bronx_freq_invalid_frequency():
     
     for invalid_freq in invalid_frequencies:
         # Act & Assert
-        with pytest.raises(KeyError, match=f"MIP table frequency = {invalid_freq} does not have a FRE-bronx equivalent"):
+        with pytest.raises(KeyError, match=f'MIP table frequency = "{invalid_freq}" is not a valid MIP frequency'):
             conv_mip_to_bronx_freq(invalid_freq)
 
 def test_conv_mip_to_bronx_freq_edge_cases():
