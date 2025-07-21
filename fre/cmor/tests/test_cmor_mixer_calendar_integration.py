@@ -48,85 +48,106 @@ def mock_json_table_config(tmp_path):
     return str(table_file)
 
 @patch('fre.cmor.cmor_mixer.update_calendar_type')
-@patch('fre.cmor.cmor_mixer.update_grid_and_label')
+#@patch('fre.cmor.cmor_mixer.update_grid_and_label')
 @patch('fre.cmor.cmor_mixer.cmorize_all_variables_in_dir')
-@patch('fre.cmor.cmor_mixer.get_json_file_data')
+#@patch('fre.cmor.cmor_mixer.get_json_file_data')
 @patch('fre.cmor.cmor_mixer.glob.glob')
-@patch('fre.cmor.cmor_mixer.Path')
-def test_cmor_run_subtool_with_calendar_type(
-    mock_path, mock_glob, mock_get_json, mock_cmorize_all, 
-    mock_update_grid, mock_update_calendar, 
-    mock_json_exp_config, mock_json_var_list, mock_json_table_config, tmp_path
-):
+#@patch('fre.cmor.cmor_mixer.Path')
+def test_cmor_run_w_cal_type( #mock_path,
+                              mock_glob,
+                              #mock_get_json,
+                              mock_cmorize_all_variables_in_dir, 
+                              #mock_update_grid,
+                              #mock_update_calendar_type,
+                              update_calendar_type,
+                              mock_json_exp_config,
+                              mock_json_var_list,
+                              mock_json_table_config,
+                              tmp_path):
     """
     Test that cmor_run_subtool calls update_calendar_type when calendar_type is provided.
     """
     # Arrange
-    mock_path.return_value.exists.return_value = True
-    mock_path.return_value.resolve.return_value = mock_json_exp_config
+    #mock_path.return_value.exists.return_value = True
+    #mock_path.return_value.resolve.return_value = mock_json_exp_config
     mock_glob.return_value = [str(tmp_path / "test.nc")]
     
-    # Mock get_json_file_data to return table config
-    mock_get_json.return_value = {
-        "variable_entry": {
-            "temp": {"frequency": "mon"},
-            "salt": {"frequency": "mon"}
-        }
-    }
+    ## Mock get_json_file_data to return table config
+    #mock_get_json.return_value = {
+    #    "variable_entry": {
+    #        "temp": {"frequency": "mon"},
+    #        "salt": {"frequency": "mon"}
+    #    }
+    #}    
     
     # Mock cmorize_all_variables_in_dir to return success
-    mock_cmorize_all.return_value = 0
+    mock_cmorize_all_variables_in_dir.return_value = 0
     
     indir = str(tmp_path)
     outdir = str(tmp_path / "output")
     calendar_type = "noleap"
-    
+
     # Act
     cmor_run_subtool(
-        indir=indir, json_var_list=mock_json_var_list, 
-        json_table_config=mock_json_table_config, json_exp_config=mock_json_exp_config,
-        outdir=outdir, calendar_type=calendar_type
+        indir = indir,
+        json_var_list = mock_json_var_list, 
+        json_table_config = mock_json_table_config,
+        json_exp_config = mock_json_exp_config,
+        outdir = outdir,
+        calendar_type = calendar_type
     )
+
+    ## Assert
+    update_calendar_type.assert_called_once_with(mock_json_exp_config, calendar_type, output_file_path=None)
     
-    # Assert
-    mock_update_calendar.assert_called_once_with(mock_json_exp_config, calendar_type, output_file_path=None)
+
+    
 
 @patch('fre.cmor.cmor_mixer.update_calendar_type')
-@patch('fre.cmor.cmor_mixer.update_grid_and_label')
+#@patch('fre.cmor.cmor_mixer.update_grid_and_label')
 @patch('fre.cmor.cmor_mixer.cmorize_all_variables_in_dir')
-@patch('fre.cmor.cmor_mixer.get_json_file_data')
+#@patch('fre.cmor.cmor_mixer.get_json_file_data')
 @patch('fre.cmor.cmor_mixer.glob.glob')
-@patch('fre.cmor.cmor_mixer.Path')
-def test_cmor_run_subtool_without_calendar_type(
-    mock_path, mock_glob, mock_get_json, mock_cmorize_all, 
-    mock_update_grid, mock_update_calendar, 
-    mock_json_exp_config, mock_json_var_list, mock_json_table_config, tmp_path
-):
+#@patch('fre.cmor.cmor_mixer.Path')
+def test_cmor_run_no_cal_type( #mock_path,
+                               mock_glob,
+                               #mock_get_json,
+                               mock_cmorize_all_variables_in_dir, 
+                               #mock_update_grid,
+                               mock_update_calendar, 
+                               mock_json_exp_config,
+                               mock_json_var_list,
+                               mock_json_table_config,
+                               tmp_path):
     """
     Test that cmor_run_subtool does not call update_calendar_type when calendar_type is None.
     """
     # Arrange
-    mock_path.return_value.exists.return_value = True
-    mock_path.return_value.resolve.return_value = mock_json_exp_config
+    #mock_path.return_value.exists.return_value = True
+    #mock_path.return_value.resolve.return_value = mock_json_exp_config
     mock_glob.return_value = [str(tmp_path / "test.nc")]
     
-    mock_get_json.return_value = {
-        "variable_entry": {
-            "temp": {"frequency": "mon"},
-            "salt": {"frequency": "mon"}
-        }
-    }
+    #mock_get_json.return_value = {
+    #    "variable_entry": {
+    #        "temp": {"frequency": "mon"},
+    #        "salt": {"frequency": "mon"}
+    #    }
+    #}
     
-    mock_cmorize_all.return_value = 0
+    mock_cmorize_all_variables_in_dir.return_value = 0
     
     indir = str(tmp_path)
     outdir = str(tmp_path / "output")
+    calendar_type = None
     
     # Act - calendar_type is None (default)
     cmor_run_subtool(
-        indir=indir, json_var_list=mock_json_var_list, 
-        json_table_config=mock_json_table_config, json_exp_config=mock_json_exp_config,
-        outdir=outdir
+        indir=indir,
+        json_var_list=mock_json_var_list, 
+        json_table_config=mock_json_table_config,
+        json_exp_config=mock_json_exp_config,
+        outdir=outdir,
+        calendar_type = None
     )
     
     # Assert

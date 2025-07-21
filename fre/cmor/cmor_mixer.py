@@ -82,7 +82,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
             '    expected_mip_coord_dims = %s\n',
             expected_mip_coord_dims
         )
-    except Exception as exc: #uncovered heyyyyyy... codecov bot, overhere!
+    except Exception as exc: 
         fre_logger.warning(
             'could not get expected coordinate dimensions for %s. '
             '   in mip_var_cfgs file %s. \n exc = %s',
@@ -126,7 +126,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     lev_bnds = None
     if vert_dim != 0:
         if vert_dim.lower() not in ACCEPTED_VERT_DIMS:
-            raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported') #uncovered heyyyyyy... codecov bot, overhere!
+            raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported') 
         lev = ds[vert_dim]
         if vert_dim.lower() != "landuse":
             lev_units = ds[vert_dim].units
@@ -142,7 +142,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
             fre_logger.info('netcdf_file is %s', netcdf_file)
             statics_file_path = find_statics_file(prev_path)
             fre_logger.info('statics_file_path is %s', statics_file_path)
-        except Exception as exc: #uncovered heyyyyyy... codecov bot, overhere!
+        except Exception as exc: 
             fre_logger.warning(
                 'an ocean statics file is needed, but it could not be found.\n'
                 '   moving on and doing my best, but I am probably going to break'
@@ -245,7 +245,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
 
         if any( [yh_dim != (yq_dim - 1),
                  xh_dim != (xq_dim - 1)]):
-            raise ValueError( #uncovered heyyyyyy... codecov bot, overhere!
+            raise ValueError( 
                 'the number of h-point lat/lon coordinates is inconsistent with the number of\n'
                 'q-point lat/lon coordinates! i.e. ( hpoint_dim != qpoint_dim-1 )\n'
                 f'yh_dim = {yh_dim}\n'
@@ -313,7 +313,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     else:
         fre_logger.info('assigning cmor_y')
         if lat_bnds is None:
-            cmor_y = cmor.axis("latitude", coord_vals=lat[:], units="degrees_N") #uncovered heyyyyyy... codecov bot, overhere!
+            cmor_y = cmor.axis("latitude", coord_vals=lat[:], units="degrees_N") 
         else:
             cmor_y = cmor.axis("latitude", coord_vals=lat[:], cell_bounds=lat_bnds, units="degrees_N")
         fre_logger.info('DONE assigning cmor_y')
@@ -328,7 +328,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     else:
         fre_logger.info('assigning cmor_x')
         if lon_bnds is None:
-            cmor_x = cmor.axis("longitude", coord_vals=lon[:], units="degrees_E") #uncovered heyyyyyy... codecov bot, overhere!
+            cmor_x = cmor.axis("longitude", coord_vals=lon[:], units="degrees_E") 
         else:
             cmor_x = cmor.axis("longitude", coord_vals=lon[:], cell_bounds=lon_bnds, units="degrees_E")
         fre_logger.info('DONE assigning cmor_x')
@@ -359,7 +359,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
         cmor_time = cmor.axis("time", coord_vals=time_coords,
                               cell_bounds=time_bnds, units=time_coord_units)
         ntimes_passed=len(time_coords)
-    except ValueError as exc: #uncovered heyyyyyy... codecov bot, overhere!
+    except ValueError as exc: 
         fre_logger.info(
             "cmor_time = cmor.axis('time', \n"
             "    coord_vals = %s, units = %s)",
@@ -510,7 +510,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     fre_logger.info("DONE cmor.write call: for var data into cmor_var")
     if save_ps:
         if any([ips is None, ps is None]):
-            fre_logger.warning('ps or ips is None!, but save_ps is True!\n' #uncovered heyyyyyy... codecov bot, overhere!
+            fre_logger.warning('ps or ips is None!, but save_ps is True!\n' 
                                'ps = %s, ips = %s\n'
                                'skipping ps writing!', ps, ips)
         else:
@@ -568,7 +568,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
         nc_fls[i] = f"{indir}/{name_of_set}.{iso_datetime}.{local_var}.nc"
         fre_logger.info("input file = %s", nc_fls[i])
         if not Path(nc_fls[i]).exists():
-            fre_logger.warning("input file(s) not found. Moving on.") #uncovered heyyyyyy... codecov bot, overhere!
+            fre_logger.warning("input file(s) not found. Moving on.") 
             continue
 
         # create a copy of the input file with local var name into the work directory
@@ -589,13 +589,13 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
         make_cmor_write_here = tmp_dir
         # make sure we know where we are writing, or else!
         if not Path(make_cmor_write_here).exists():
-            raise ValueError(f'\ntmp_dir = \n{tmp_dir}\ncannot be found/created/resolved!') #uncovered heyyyyyy... codecov bot, overhere!
+            raise ValueError(f'\ntmp_dir = \n{tmp_dir}\ncannot be found/created/resolved!') 
 
         gotta_go_back_here = os.getcwd()
         try:
             fre_logger.warning("changing directory to: \n%s", make_cmor_write_here)
             os.chdir(make_cmor_write_here)
-        except Exception as exc: #uncovered heyyyyyy... codecov bot, overhere!
+        except Exception as exc: 
             raise OSError(f'(cmorize_target_var_files) could not chdir to {make_cmor_write_here}') from exc
 
         fre_logger.info("calling rewrite_netcdf_file_var")
@@ -606,7 +606,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
                                                       target_var,
                                                       json_exp_config,
                                                       json_table_config, nc_fls[i])
-        except Exception as exc: #uncovered heyyyyyy... codecov bot, overhere!
+        except Exception as exc: 
             raise Exception(
                 'problem with rewrite_netcdf_file_var. '
                 f'exc={exc}\n'
@@ -640,7 +640,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
         filename_no_nc = filename[:filename.rfind(".nc")]
         chunk_str = filename_no_nc[-6:]
         if not chunk_str.isdigit():
-            fre_logger.warning('chunk_str is not a digit: chunk_str = %s', chunk_str) #uncovered heyyyyyy... codecov bot, overhere!
+            fre_logger.warning('chunk_str is not a digit: chunk_str = %s', chunk_str) 
             filename_corr = f"{filename[:filename.rfind('.nc')]}_{iso_datetime}.nc"
             mv_cmd = f"mv {filename} {filename_corr}"
             fre_logger.warning("moving files, strange chunkstr logic...\n%s", mv_cmd)
@@ -697,7 +697,7 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, nam
                                      name_of_set, json_exp_config, outdir,
                                      mip_var_cfgs, json_table_config, run_one_mode)
             return_status = 0
-        except Exception as exc: #uncovered heyyyyyy... codecov bot, overhere!
+        except Exception as exc: 
             return_status = 1
             fre_logger.warning('!!!EXCEPTION CAUGHT!!!   !!!READ THE NEXT LINE!!!')
             fre_logger.warning('exc=%s', exc)
@@ -743,7 +743,7 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
     '''
     # check req'd inputs
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
-        raise ValueError('all input arguments except opt_var_name are required!\n' #uncovered heyyyyyy... codecov bot, overhere!
+        raise ValueError('all input arguments except opt_var_name are required!\n' 
                          '[indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
                          '[%s, %s, %s, %s, %s]', indir, json_var_list, json_table_config, json_exp_config, outdir)
 
@@ -761,23 +761,27 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
     if calendar_type is not None:
         update_calendar_type(json_exp_config, calendar_type, output_file_path = None)
 
+    #return
+
 
     # do not open, but confirm the existence of the exp-specific metadata file
     if Path(json_exp_config).exists():
         json_exp_config = str(Path(json_exp_config).resolve())
     else:
-        raise FileNotFoundError('ERROR: json_exp_config file cannot be opened.\n' #uncovered heyyyyyy... codecov bot, overhere!
+        raise FileNotFoundError('ERROR: json_exp_config file cannot be opened.\n' 
                                 'json_exp_config = %s', json_exp_config)
 
     # open CMOR table config file - need it here for checking the TABLE's variable list
     json_table_config = str(Path(json_table_config).resolve())
     fre_logger.info('loading json_table_config = \n%s', json_table_config)
     mip_var_cfgs = get_json_file_data(json_table_config)
-
+    fre_logger.debug('mip_var_cfgs is = \n %s',mip_var_cfgs)
+    
     # open input variable list, generally created by the user
     json_var_list = str(Path(json_var_list).resolve())
     fre_logger.info('loading json_var_list = \n%s', json_var_list)
     var_list = get_json_file_data(json_var_list)
+    fre_logger.debug('var_list is = \n %s', var_list)
 
     # here, make a list of variables in the table, compare to var_list data.
     vars_to_run = {}
@@ -786,7 +790,7 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
             vars_to_run[opt_var_name] = opt_var_name
             break
         elif var_list[local_var] not in mip_var_cfgs["variable_entry"]:
-            fre_logger.warning('skipping local_var = %s /\n' #uncovered heyyyyyy... codecov bot, overhere!
+            fre_logger.warning('skipping local_var = %s /\n' 
                                'target_var = %s\n'
                                'target_var not found in CMOR variable group', local_var, var_list[local_var])
             continue
@@ -797,11 +801,11 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
 
     # make sure there's stuff to run, otherwise, exit
     if len(vars_to_run) < 1:
-        raise ValueError('runnable variable list is of length 0' #uncovered heyyyyyy... codecov bot, overhere!
+        raise ValueError('runnable variable list is of length 0' 
                          'this means no variables in input variable list are in'
                          'the mip table configuration, so there\'s nothing to process!')
     elif all([opt_var_name is not None, opt_var_name not in list(vars_to_run.keys())]):
-        raise ValueError('opt_var_name is not None! (== %s)' #uncovered heyyyyyy... codecov bot, overhere!
+        raise ValueError('opt_var_name is not None! (== %s)' 
                          '... but the variable is not contained in the target mip table'
                          '... there\'s nothing to process, exit', opt_var_name)
 
@@ -813,7 +817,7 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
     indir_filenames = glob.glob(f'{indir}/*.nc')
     indir_filenames.sort()
     if len(indir_filenames) == 0:
-        raise ValueError('no files in input target directory = indir = \n%s', indir) #uncovered heyyyyyy... codecov bot, overhere!
+        raise ValueError('no files in input target directory = indir = \n%s', indir) 
     fre_logger.debug('found %s filenames', len(indir_filenames))
 
     # name_of_set == component label
