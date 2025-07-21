@@ -57,8 +57,6 @@ def _cleanup():
 
 @pytest.mark.parametrize( "testfile_dir,table,opt_var_name,grid_label,start,calendar",
   [
-    pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/', 
-                  'Omon',    'so',        'gr', '0001','360_day', id='Omon_so_gr' ), #LARGE
     pytest.param( '/archive/ejs/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',          
                   'Omon',    'sos',       'gn', '0001','360_day', id='Omon_sos_gn' ) #LARGE
   ] )
@@ -93,22 +91,22 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar
     # execute the test
     try:
         # Debug, please keep. -Ian
-        #print( 
-        #f'fre -vv cmor run \\\n'
-        #f'    -d {indir} \\\n'
-        #f'    -l {CMORBITE_VARLIST} \\\n'
-        #f'    -r {table_file} \\\n'
-        #f'    -p {EXP_CONFIG_DEFAULT} \\\n'
-        #f'    -o {OUTDIR} \\\n'
-        #f'    --run_one \\\n'
-        #f'    -v {opt_var_name} \\\n'
-        #f'    --grid_desc \'FOO_PLACEHOLDER\' \\\n'
-        #f'    -g {grid_label} \\\n'
-        #f'    --nom_res \'10000 km\' \\\n'
-        #f'    --start {start} \\\n'
-        #f'    --calendar {calendar}\n'
-        #f'')
-        #assert False
+        print( 
+        f'fre -vv cmor run \\\n'
+        f'    -d {indir} \\\n'
+        f'    -l {CMORBITE_VARLIST} \\\n'
+        f'    -r {table_file} \\\n'
+        f'    -p {EXP_CONFIG_DEFAULT} \\\n'
+        f'    -o {OUTDIR} \\\n'
+        f'    --run_one \\\n'
+        f'    -v {opt_var_name} \\\n'
+        f'    --grid_desc \'FOO_PLACEHOLDER\' \\\n'
+        f'    -g {grid_label} \\\n'
+        f'    --nom_res \'10000 km\' \\\n'
+        f'    --start {start} \\\n'
+        f'    --calendar {calendar}\n'
+        f'')
+        assert False
         cmor_run_subtool(
             indir = indir,
             json_var_list = CMORBITE_VARLIST,
