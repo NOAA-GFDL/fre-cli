@@ -112,7 +112,7 @@ def test_make_simple_varlist_invalid_output_path(temp_netcdf_dir):
     invalid_output_path = "/nonexistent_directory/varlist.json"
     
     # Act & Assert
-    with pytest.raises(OSError, match="output variable list cannot be written"):
+    with pytest.raises(OSError, match="output variable list created but cannot be written"):
         make_simple_varlist(str(temp_netcdf_dir), invalid_output_path)
 
 def test_make_simple_varlist_no_matching_pattern(tmp_path):

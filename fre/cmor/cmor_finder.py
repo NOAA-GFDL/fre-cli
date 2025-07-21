@@ -127,15 +127,28 @@ def make_simple_varlist(dir_targ, output_variable_list):
         The function assumes that the filenames of the NetCDF files contain the variable name as the 
         second-to-last component when split by periods ('.') and a datetime string as the third-to-last component.
     """
-    one_file = next(glob.iglob(os.path.join(dir_targ, "*.nc")), None)
+    # if the variable is in the filename, it's likely delimeted by another period.
+    one_file = next(glob.iglob(os.path.join(dir_targ, "*.*.nc")), None)
     if not one_file:
         fre_logger.error("No files found in the directory.") #uncovered heyyyyyy... codecov bot, overhere!
-        return
+        return None
 
-    one_datetime = os.path.basename(one_file).split('.')[-3]
+    one_datetime = None
+    search_pattern = None
+    try:
+        one_datetime = os.path.basename(one_file).split('.')[-3]
+    except IndexError as e:
+        fre_logger.warning(f'{e}')
+        fre_logger.warning('WARNING: could not find a datetime in netcdf filenames. moving on and doing the best i can.')
+        pass
 
+    if one_datetime is None:
+        search_pattern = f"*nc"
+    else:
+        search_pattern = f"*{one_datetime}*.nc"
+        
     # Find all files in the directory that match the datetime component
-    files = glob.glob(os.path.join(dir_targ, f"*{one_datetime}*.nc"))
+    files = glob.glob(os.path.join(dir_targ, search_pattern))
 
     # Check if any files were found
     if not files:
@@ -147,14 +160,20 @@ def make_simple_varlist(dir_targ, output_variable_list):
         fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
 
     # Create a dictionary of variable names extracted from the filenames
-    var_list = {
-        os.path.basename(file).split('.')[-2] : os.path.basename(file).split('.')[-2] for file in files}
-
+    try:
+        var_list = {
+            os.path.basename(file).split('.')[-2] : os.path.basename(file).split('.')[-2] for file in files}
+    except Exception as exc:
+        fre_logger.error(f'{exc}')
+        fre_logger.error('ERROR: no matching pattern, or not enough info in the filenames'
+                         ' i am expecting FRE-bronx like filenames!')
+        return None
+        
     # Write the variable list to the output JSON file
     if output_variable_list is not None:
         try:
             with open(output_variable_list, 'w') as f:
                 json.dump(var_list, f, indent=4)
         except:
-            raise OSError('output variable list cannot be written')
+            raise OSError('output variable list created but cannot be written')
     return var_list
