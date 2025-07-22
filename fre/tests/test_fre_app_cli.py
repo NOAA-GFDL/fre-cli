@@ -117,3 +117,23 @@ def test_cli_fre_app_regrid_test_case_1(capfd):
     result = runner.invoke(fre.fre, args=args_list )
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
+
+# fre app remap
+def test_cli_fre_app_remap(capfd):
+    """ fre app remap """
+    result = runner.invoke(fre.fre, args=["app", "remap"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_remap_help(capfd):
+    """ fre app remap --help """
+    result = runner.invoke(fre.fre, args=["app", "remap", "--help"])
+    assert result.exit_code == 0
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_remap_opt_dne(capfd):
+    """ fre app remap optionDNE """
+    result = runner.invoke(fre.fre, args=["app", "remap", "optionDNE"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+

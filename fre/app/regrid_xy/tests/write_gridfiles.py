@@ -8,8 +8,8 @@ def gridspec():
     data = {}
 
     #dictionary with components and data
-    components = {"atm": ["atmosphere", "C96_mosaic"],
-                  "lnd": ["land", "C96_mosaic"],
+    components = {"atm": ["atmosphere", "test_mosaic"],
+                  "lnd": ["land", "test_mosaic"],
                   "ocn": ["ocean", "ocn_mosaic"],
                   "ocn_topog": ["notused", "ocean_topog"]
     }
@@ -23,9 +23,9 @@ def gridspec():
         data[f"{comp}_mosaic"] = xr.DataArray(fname, attrs={sn: f"{compp} mosaic name"})
 
     #exchange files
-    aXo_files = ["C96_mosaic_tile1Xocean_mosaic_tile1.nc"] * 6
-    aXl_files = [f"C96_mosaic_tile1XC96_mosaic_tile{i}.nc" for i in range(1,7)]
-    lXo_files = ["C96_mosaic_tile1Xocean_mosaic_tile1.nc"] * 6
+    aXo_files = ["test_mosaic_tile1Xocean_mosaic_tile1.nc"] * 6
+    aXl_files = [f"test_mosaic_tile1Xtest_mosaic_tile{i}.nc" for i in range(1,7)]
+    lXo_files = ["test_mosaic_tile1Xocean_mosaic_tile1.nc"] * 6
 
     #exchange components with data
     xcomponents = {"aXo": ["atmXocn_exchange_grid_file", aXo_files],
@@ -46,7 +46,7 @@ def mosaic():
     data = {}
 
     #mosaic variable
-    data["mosaic"] = xr.DataArray("C96_mosaic", attrs={"standard_name": "grid_mosaic_spec",
+    data["mosaic"] = xr.DataArray("test_mosaic", attrs={"standard_name": "grid_mosaic_spec",
                                                        "children": "gridtiles",
                                                        "contact_regions": "contacts",
                                                        "grid_descriptor": ""}
@@ -56,7 +56,7 @@ def mosaic():
     data["gridlocation"] = xr.DataArray("./", attrs={"standard_name": "grid_file_location"})
 
     #gridfiles variable
-    gridfiles_list = [f"C96_grid.tile{i}.nc" for i in range(1,7)]
+    gridfiles_list = [f"test_grid.tile{i}.nc" for i in range(1,7)]
     data["gridfiles"] = xr.DataArray(gridfiles_list, dims=["ntiles"])
 
     #gridtiles variable
@@ -64,18 +64,18 @@ def mosaic():
     data["gridtiles"] = xr.DataArray(gridtiles_list, dims=["ntiles"])
 
     #contacts variable
-    contactslist = ["C96_mosaic:tile1::C96_mosaic:tile2",
-                    "C96_mosaic:tile1::C96_mosaic:tile3",
-                    "C96_mosaic:tile1::C96_mosaic:tile5",
-                    "C96_mosaic:tile1::C96_mosaic:tile6",
-                    "C96_mosaic:tile2::C96_mosaic:tile3",
-                    "C96_mosaic:tile2::C96_mosaic:tile4",
-                    "C96_mosaic:tile2::C96_mosaic:tile6",
-                    "C96_mosaic:tile3::C96_mosaic:tile4",
-                    "C96_mosaic:tile3::C96_mosaic:tile5",
-                    "C96_mosaic:tile4::C96_mosaic:tile5",
-                    "C96_mosaic:tile4::C96_mosaic:tile6",
-                    "C96_mosaic:tile5::C96_mosaic:tile6"
+    contactslist = ["test_mosaic:tile1::test_mosaic:tile2",
+                    "test_mosaic:tile1::test_mosaic:tile3",
+                    "test_mosaic:tile1::test_mosaic:tile5",
+                    "test_mosaic:tile1::test_mosaic:tile6",
+                    "test_mosaic:tile2::test_mosaic:tile3",
+                    "test_mosaic:tile2::test_mosaic:tile4",
+                    "test_mosaic:tile2::test_mosaic:tile6",
+                    "test_mosaic:tile3::test_mosaic:tile4",
+                    "test_mosaic:tile3::test_mosaic:tile5",
+                    "test_mosaic:tile4::test_mosaic:tile5",
+                    "test_mosaic:tile4::test_mosaic:tile6",
+                    "test_mosaic:tile5::test_mosaic:tile6"
     ]
 
     #contacts variable
@@ -110,7 +110,7 @@ def mosaic():
     )
 
     #write
-    xr.Dataset(data).to_netcdf("C96_mosaic.nc")
+    xr.Dataset(data).to_netcdf("test_mosaic.nc")
 
 
 def grid():
@@ -145,11 +145,11 @@ def grid():
         )
 
         #area variable
-        area_values = np.zeros((90,360), dtype=np.float64)
+        area_values = np.zeros((180,360), dtype=np.float64)
         data["area"] = xr.DataArray(area_values, dims=["ny", "nx"])
 
         #write data
-        xr.Dataset(data).to_netcdf(f"C96_grid.tile{i}.nc")
+        xr.Dataset(data).to_netcdf(f"test_grid.tile{i}.nc")
 
 
 def all():

@@ -1,14 +1,18 @@
 [run]
 omit =
-    fre/check/*
-    fre/run/*
-    fre/tests/*
     fre/analysis/tests/*
     fre/app/generate_time_averages/tests/*
     fre/app/regrid_xy/tests/*
+    fre/app/remap_pp_components/tests/*
+    fre/app/tests/*
     fre/catalog/tests/*
+    fre/check/*
     fre/cmor/tests/*
     fre/list_/tests/*
     fre/make/tests/*
     fre/pp/tests/*
+    fre/run/*
     fre/yamltools/tests/*
+    fre/tests/*
+    fre/gfdl_msd_schemas/*
+    fre/mkmf/*

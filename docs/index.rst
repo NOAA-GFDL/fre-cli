@@ -22,11 +22,9 @@ Welcome to ``fre-cli``'s documentation!
    api
    for-developers
    contributing_to_doc
-   badges
 
 Indices
 =======
 
-* :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
