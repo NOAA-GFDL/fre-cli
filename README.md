@@ -4,11 +4,13 @@
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/version.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
 [![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_relative_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
-[![CI](https://github.com/NOAA-GFDL/fre-cli/workflows/publish_conda/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions?query=workflow%3Apublish_conda+branch%3Amain++)
-![Coverage Badge](https://noaa-gfdl.github.io/fre-cli/_images/cov_badge.svg)
-![Pytest Badge](https://noaa-gfdl.github.io/fre-cli/_images/pytest_badge.svg)
 
-* [Documentation](https://noaa-gfdl.github.io/fre-cli/index.html)
+[![CI](https://github.com/NOAA-GFDL/fre-cli/workflows/publish_conda/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions?query=workflow%3Apublish_conda+branch%3Amain++)
+[![readthedocs](https://app.readthedocs.org/projects/noaa-gfdl-fre-cli/badge/?version=latest&style=flat)](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/)
+<!-- [![codecov](https://codecov.io/gh/NOAA-GFDL/fre-cli/branch/ghpages.deprecation/graph/badge.svg?token=iGb0wEuWs1)](https://codecov.io/gh/NOAA-GFDL/fre-cli) -->
+[![codecov](https://codecov.io/gh/NOAA-GFDL/fre-cli/graph/badge.svg?token=iGb0wEuWs1)](https://codecov.io/gh/NOAA-GFDL/fre-cli)
+
+[Fre-cli Documentation](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/index.html) is hosted on `readthedocs`
 
 `fre-cli` is the Flexible Runtime Environment (`FRE`) command-line interface (`CLI`). `fre-cli` aims to gives users intuitive and 
 easy-to-understand access to both newly developed, and legacy `FRE` tools via a `click`-driven CLI, delivered as a `conda` package.
@@ -102,23 +104,6 @@ Method 1 for finalizing contributions.
     module load miniforge
     conda activate /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli
 ```
-
-
-## New Release Versioning Procedure 
-
-- [ ] 1. Update the package release number (i.e. reported by `fre --version`) in your PR branch before merging to `main`
-  - [ ] edit `version` in setup.py
-  - [ ] edit two version mentions in fre/tests/test_fre_cli.py
-
-- [ ] 2. Create tag in fre-cli (this repository) and associated github release
-  - [ ] locally this can be done with `git tag -a <release>` and `git push --tags`
-  - [ ] [observe the tagged release here](https://github.com/NOAA-GFDL/fre-cli/releases)
-
-- [ ] 3. Create corresponding tag in [fre-workflows](https://github.com/NOAA-GFDL/fre-workflows/tags)
-
-- [ ] 4. Observe new conda package deployed to [noaa-gfdl channel](https://anaconda.org/NOAA-GFDL/fre-cli)
-
-
 
 ## GFDL deployment notes
 Presently, all PRs accepted for merging to `main` trigger a conda-package deployment to the 
