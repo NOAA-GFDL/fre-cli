@@ -41,17 +41,17 @@ CMOR_CREATES_DIR_BASE = \
 # i.e., it fills in FOO/BAR/BAZ style values, and what they are currently is totally irrelevant
 EXP_CONFIG_DEFAULT=f'{ROOTDIR}/CMOR_input_example.json' # this likely is not sufficient
 
-CLEANUP_AFTER_EVERY_TEST = True
+CLEANUP_AFTER_EVERY_TEST = False
 
 def _cleanup():
     # clean up from previous tests
-    time.sleep(60) # busy disk issue? possible non-closing netcdf file problem in code
+    #time.sleep(60) # busy disk issue? possible non-closing netcdf file problem in code
     print(OUTDIR)
     if Path(f'{OUTDIR}').exists():
         try:
             shutil.rmtree(f'{OUTDIR}')
         except:
-            time.sleep(60)
+            #time.sleep(60)
             shutil.rmtree(f'{OUTDIR}')
     assert not Path(f'{OUTDIR}').exists()
 
@@ -69,23 +69,15 @@ def _cleanup():
     pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/cm6/ESM4/DECK/ESM4_historical_D1/gfdl.ncrc4-intel16-prod-openmp/pp/atmos_level_cmip/ts/monthly/5yr/',              
                   'Amon',    'mc',        'gr1','1850','noleap', id='Amon_mc_gr1' ), 
     pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly_z_1x1deg/ts/monthly/5yr/', 
-                  'Omon',    'so',        'gr', '0001','360_day', id='Omon_so_gr' )#,
-##    pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',          
-##                  'Omon',    'sos',       'gn', '0001','360_day', id='Omon_sos_gn' ) #LARGE
+                  'Omon',    'so',        'gr', '0001','360_day', id='Omon_so_gr' ),
+    pytest.param( 'fre/tests/test_files/ascii_files/mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/',          
+                  'Omon',    'sos',       'gn', '0001','360_day', id='Omon_sos_gn' )
   ] )
 
 def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar):
     '''
     Should be iterating over the test dictionary
     '''
-    # #cleanup to avoid a false positive from a prior test
-    # if Path(f'{OUTDIR}/CMIP6').exists():
-    #     try:
-    #         shutil.rmtree(f'{OUTDIR}/CMIP6')
-    #         assert not Path(f'{OUTDIR}/CMIP6').exists()
-    #     except Exception as exc:
-    #         raise Exception(f'exception caught: exc=\n{exc}') from exc
-            
 
     # define inputs to the cmor run tool
     indir = testfile_dir
@@ -96,11 +88,6 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar
         pytest.xfail(f'{opt_var_name}, {Path(table_file).name}, {grid_label} '
                      'SUCCEEDs on PP/AN at GFDL only! OR testfile_dir does not exist!')
                      
-    # # do a secondary check for being on PPAN because indir can exist from the workstations:
-    # gfdl_plat = platform.node()
-    # if not any([gfdl_plat.startswith('pp'), gfdl_plat.startswith('an')]):
-    #     pytest.xfail(f"{gfdl_plat} is not pp or an node; this test should not run")
-
     # execute the test
     try:
         cdl_input_files=glob.glob(indir+'*.'+opt_var_name+'.cdl')
@@ -120,10 +107,24 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar
         if opt_var_name in [ 'cl', 'mc' ]:# and not Path(cdl_input_file.replace( opt_var_name+'.cdl', 'ps.cdl')).exists():
             cdl_input_ps_file = cdl_input_file.replace( opt_var_name+'.cdl', 'ps.cdl')
             assert Path(cdl_input_ps_file).exists()
+            
             nc_input_ps_file  = cdl_input_ps_file.replace('.cdl','.nc')
+            if Path(nc_input_ps_file).exists():
+                Path(nc_input_ps_file).unlink()
             subprocess.run(['ncgen3','-k','netCDF-4','-o', nc_input_ps_file, cdl_input_ps_file],
                            check=True)            
             assert Path(nc_input_ps_file).exists()
+            
+        elif opt_var_name == 'sos':
+            cdl_ocn_statics_file=testfile_dir.replace('ts/monthly/5yr/','ocean_monthly.static.cdl')
+            assert Path(cdl_ocn_statics_file).exists()
+            
+            nc_ocn_statics_file=cdl_ocn_statics_file.replace('.cdl','.nc')
+            if Path(nc_ocn_statics_file).exists():
+                Path(nc_ocn_statics_file).unlink()
+            subprocess.run(['ncgen3','-k','netCDF-4','-o', nc_ocn_statics_file, cdl_ocn_statics_file],
+                           check=True)            
+            assert Path(nc_ocn_statics_file).exists()                        
 
         ##assert False
         ## Debug, please keep. -Ian
@@ -166,10 +167,7 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar
     cmor_output_dir = f'{OUTDIR}/{CMOR_CREATES_DIR_BASE}/{table}/{opt_var_name}/{grid_label}/v{YYYYMMDD}'
     cmor_output_file_glob = f'{cmor_output_dir}/' + \
         f'{opt_var_name}_{table}_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_??????-??????.nc'
-    #print(f'cmor_output_file_glob  = {cmor_output_file_glob}')
     cmor_output_file = glob.glob( cmor_output_file_glob )[0]
-    #print(f'cmor_output_file  = {cmor_output_file}')
-    #assert False
 
     # success criteria
     assert all( [ some_return == 0,
@@ -198,7 +196,3 @@ def test_git_cleanup():
                              shell = True, check = False)
       #first command completed, second found no file in git status
       assert all([restore.returncode == 0, check.returncode == 1])
-
-#### test cases
-#def test_cleanup():
-#    _cleanup()

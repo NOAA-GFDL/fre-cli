@@ -47,11 +47,16 @@ def find_statics_file(bronx_file_path):
         bronx_file_path_elem.pop()
         num_elem = num_elem-1
     statics_path = '/'.join(bronx_file_path_elem)
-    statics_file = glob.glob(statics_path+'/*static*.nc')[0]
-    if Path(statics_file).exists():
+    fre_logger.debug('going to glob the following path for a statics file: \n%s\n',statics_path)
+    fre_logger.debug('the call is going to be:')
+    fre_logger.debug(f"\n glob.glob({statics_path+'/*static*.nc'})  \n")
+    statics_file_glob = glob.glob(statics_path+'/*static*.nc')
+    fre_logger.debug('the output glob looks like: %s', statics_file_glob)
+    statics_file = statics_file_glob[0]
+    if Path(statics_file).exists() or statics_file is None:
         return statics_file
     else:
-        fre_logger.warning('could not find the statics file! returning None') #uncovered heyyyyyy... codecov bot, overhere!
+        fre_logger.warning('could not find the statics file! returning None') 
         return None
 
 def create_lev_bnds(bound_these=None, with_these=None):

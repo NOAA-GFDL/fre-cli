@@ -28,7 +28,7 @@ ALT_HYBRID_SIGMA_COORDS = ["level", "lev", "levhalf"]
 DEPTH_COORDS = ["z_l"]
 
 CMOR_NC_FILE_ACTION=cmor.CMOR_REPLACE#.CMOR_APPEND#.CMOR_PRESERVE#
-CMOR_VERBOSITY=cmor.CMOR_NORMAL#.CMOR_QUIET#
+CMOR_VERBOSITY=cmor.CMOR_QUIET#.CMOR_NORMAL#
 CMOR_EXIT_CTL=cmor.CMOR_NORMAL#.CMOR_EXIT_ON_WARNING#.CMOR_EXIT_ON_MAJOR#
 CMOR_MK_SUBDIRS=1
 CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
@@ -144,12 +144,15 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
             fre_logger.info('statics_file_path is %s', statics_file_path)
         except Exception as exc: 
             fre_logger.warning(
+                f'exc = {exc}\n'
                 'an ocean statics file is needed, but it could not be found.\n'
                 '   moving on and doing my best, but I am probably going to break'
             )
-            raise Exception('EXITING BC STATICS') from exc
+            raise FileNotFoundError('statics file not found.') from exc
+        
 
         fre_logger.info("statics file found.")
+        
         statics_file_name = Path(statics_file_path).name
         put_statics_file_here = str(Path(netcdf_file).parent)
         shutil.copy(statics_file_path, put_statics_file_here)
@@ -521,6 +524,7 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     fre_logger.info("cmor.close call: for cmor_var")
     filename = cmor.close(cmor_var, file_name=True, preserve=False)
     fre_logger.info("DONE cmor.close call: for cmor_var")
+    filename = str( Path(filename).resolve() )
     fre_logger.info("returned by cmor.close: filename = %s", filename)
     fre_logger.info('closing netcdf4 dataset... ds')
     ds.close()
@@ -566,10 +570,14 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
     for i, iso_datetime in enumerate(iso_datetime_range_arr):
         # why is nc_fls a filled list/array/object thingy here? see above line
         nc_fls[i] = f"{indir}/{name_of_set}.{iso_datetime}.{local_var}.nc"
+        
         fre_logger.info("input file = %s", nc_fls[i])
         if not Path(nc_fls[i]).exists():
             fre_logger.warning("input file(s) not found. Moving on.") 
             continue
+
+        if not Path(nc_fls[i]).is_absolute():
+            nc_fls[i]=str(Path(nc_fls[i]).resolve())
 
         # create a copy of the input file with local var name into the work directory
         nc_file_work = f"{tmp_dir}{name_of_set}.{iso_datetime}.{local_var}.nc"
@@ -605,7 +613,8 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
                                                       nc_file_work,
                                                       target_var,
                                                       json_exp_config,
-                                                      json_table_config, nc_fls[i])
+                                                      json_table_config,
+                                                      prev_path=nc_fls[i] )
         except Exception as exc: 
             raise Exception(
                 'problem with rewrite_netcdf_file_var. '
@@ -616,22 +625,25 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
             os.chdir(gotta_go_back_here)
 
         # now that CMOR has rewritten things... we can take our post-rewriting actions
-        # the final output filename will be...
-        fre_logger.info('local_file_name = %s', local_file_name)
-        filename = f"{outdir}/{local_file_name}"
-        fre_logger.info("filename = %s", filename)
+        # first, remove /tmp/ from the output path.
+        if not Path(local_file_name).is_absolute():
+            raise Exception('UGH')
 
+        fre_logger.info('local_file_name = %s', local_file_name)
+        filename = local_file_name.replace('/tmp/','/')
+        fre_logger.info("filename = %s", filename)
+        
         # the final output file directory will be...
         filedir = Path(filename).parent
-        fre_logger.info("filedir = %s", filedir)
+        fre_logger.info("FINAL OUTPUT FILE DIR WILL BE filedir = %s", filedir)
         try:
-            fre_logger.info('attempting to create filedir=%s', filedir)
+            fre_logger.info('ATTEMPTING TO CREATE filedir=%s', filedir)
             os.makedirs(filedir)
         except FileExistsError:
             fre_logger.warning('directory %s already exists!', filedir)
 
-        # hmm.... this is making issues for pytest
-        mv_cmd = f"mv {tmp_dir}/{local_file_name} {filedir}"
+        # 
+        mv_cmd = f"mv {local_file_name} {filedir}"
         fre_logger.info("moving files...\n%s", mv_cmd)
         subprocess.run(mv_cmd, shell=True, check=True)
 
@@ -775,7 +787,7 @@ def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, jso
     json_table_config = str(Path(json_table_config).resolve())
     fre_logger.info('loading json_table_config = \n%s', json_table_config)
     mip_var_cfgs = get_json_file_data(json_table_config)
-    fre_logger.debug('mip_var_cfgs is = \n %s',mip_var_cfgs)
+    fre_logger.debug('keys of mip_var_cfgs["variable_entry"] is = \n %s',mip_var_cfgs["variable_entry"].keys())
     
     # open input variable list, generally created by the user
     json_var_list = str(Path(json_var_list).resolve())
