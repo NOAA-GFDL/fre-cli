@@ -4,7 +4,7 @@ import time
 
 import click
 
-from .mask_atmos_plevel import mask_atmos_plevel_subtool
+from .mask_atmos_plevel.mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
 from .regrid_xy.regrid_xy import regrid_xy
 
