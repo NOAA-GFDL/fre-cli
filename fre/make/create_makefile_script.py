@@ -93,5 +93,3 @@ def makefile_create(yamlfile, platform, target):
                 fre_logger.info("\nMakefile created at " + tmpDir + "/Makefile" + "\n")
                 fre_logger.setLevel(former_log_level)
 
-if __name__ == "__main__":
-    makefile_create()

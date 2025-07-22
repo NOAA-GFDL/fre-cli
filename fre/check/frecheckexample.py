@@ -15,5 +15,3 @@ def check_test_function(uppercase=None):
         statement = statement.upper()
     print(statement)
 
-if __name__ == '__main__':
-    check_test_function()

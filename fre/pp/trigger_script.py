@@ -22,5 +22,3 @@ def trigger(experiment = None, platform = None, target = None, time = None):
     subprocess.run(cmd, shell=True, check=True, timeout=30)
 
 
-if __name__ == "__main__":
-    trigger()

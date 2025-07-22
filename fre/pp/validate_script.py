@@ -42,5 +42,3 @@ def validate_subtool(experiment = None, platform = None, target = None):
     finally:
         os.chdir(go_back_here)
 
-if __name__ == "__main__":
-    validate_subtool()

@@ -667,7 +667,4 @@ def _convert(xml, platform, target, experiment, do_analysis=False, historydir=No
         finally:
             fre_logger.info("Validation step complete!")
 
-##############################################
 
-if __name__ == '__main__':
-    convert()

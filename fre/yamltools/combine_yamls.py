@@ -494,6 +494,3 @@ def _consolidate_yamls(yamlfile, experiment, platform, target, use):
     '''
     return consolidate_yamls(yamlfile, experiment, platform, target, use)
 
-# Use parseyaml function to parse created edits.yaml
-if __name__ == '__main__':
-    consolidate_yamls()

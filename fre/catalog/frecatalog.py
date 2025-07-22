@@ -60,5 +60,3 @@ def merge(context, input, output):
     """ - Merge two or more more catalogs into one """
     context.invoke(combine_cats.combine_cats, inputfiles=input, output_path=output)
 
-if __name__ == "__main__":
-    catalog_cli()

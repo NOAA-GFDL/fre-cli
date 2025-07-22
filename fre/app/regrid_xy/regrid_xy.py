@@ -402,5 +402,3 @@ def main():
     """steering, local test/debug"""
     return regrid_xy()
 
-if __name__=='__main__':
-    main()

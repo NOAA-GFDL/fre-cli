@@ -76,11 +76,6 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start
         ValueError: If the yamlfile is not provided.
     """
 
-
-    # if opt_var_name specified, forget the list.
-    if yamlfile is None:
-        raise ValueError('I need a yamlfile!!!') #uncovered
-
     cmor_yaml_subtool(
         yamlfile = yamlfile,
         exp_name = experiment,
@@ -208,7 +203,3 @@ def varlist(dir_targ, output_variable_list):
     Create a simple variable list from netCDF files in the target directory.
     """
     make_simple_varlist(dir_targ, output_variable_list)
-
-
-if __name__ == "__main__":
-    cmor_cli()

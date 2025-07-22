@@ -92,5 +92,3 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
             if run:
                 subprocess.run(args=[dockerBuild.userScriptPath], check=True)
 
-if __name__ == "__main__":
-    dockerfile_create()

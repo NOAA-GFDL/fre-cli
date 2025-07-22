@@ -92,8 +92,3 @@ def generate(inf = None, outf = None,
     else:
         fre_logger.info('time averaging finished successfully')
 
-if __name__ == '__main__':
-    import time
-    start_time=time.perf_counter()
-    generate(inf, outf, pkg, var, unwgt, avg_type)
-    fre_logger.info(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')

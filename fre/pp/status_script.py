@@ -27,5 +27,3 @@ def status_subtool(experiment = None, platform = None, target = None):
     except:
         raise Exception('FAILED: subprocess call to- cylc workflow-state {name}')
 
-if __name__ == "__main__":
-    status_subtool()
