@@ -19,7 +19,8 @@ setup(
         'cdo',
         'cmor',
         'metomi-rose',
-        'xarray'
+        'xarray',
+        'netCDF4'
     ],
     extras_require={
         "docs": ["sphinx",

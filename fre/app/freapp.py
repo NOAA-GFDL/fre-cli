@@ -4,7 +4,7 @@ import time
 
 import click
 
-from .mask_atmos_plevel import mask_atmos_plevel_subtool
+from .mask_atmos_plevel.mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
 from .regrid_xy.regrid_xy import regrid_xy
 from .remap_pp_components.remap_pp_components import remap_pp_components
@@ -119,12 +119,13 @@ def regrid( input_dir, output_dir, begin, tmp_dir,
               type = str,
               help = "Output file",
               required = True)
-@click.option("-p", "--psfile", # surface pressure... ps? TODO
+@click.option("-p", "--psfile",
               help = "Input NetCDF file containing surface pressure (ps)",
+              type = str,
               required = True)
-def mask_atmos_plevel(infile, outfile, psfile):
-    """Mask out pressure level diagnostic output below land surface"""
-    mask_atmos_plevel_subtool(infile, outfile, psfile)
+def mask_atmos_plevel(infile, psfile, outfile):
+    """Mask pressure-level diagnostic output below land surface"""
+    mask_atmos_plevel_subtool(infile, psfile, outfile)
 
 
 @app_cli.command()
