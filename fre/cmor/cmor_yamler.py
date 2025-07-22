@@ -20,7 +20,7 @@ def check_path_existence(some_path):
         some_path (str), required, a string representing a path. can be relative or absolute
     '''
     if not Path(some_path).exists():
-        raise FileNotFoundError('does not exist:  {}'.format(some_path)) #uncovered heyyyyyy... codecov bot, overhere!
+        raise FileNotFoundError('does not exist:  {}'.format(some_path)) # uncovered
 
 def iso_to_bronx_chunk(cmor_chunk_in):
     '''
@@ -33,7 +33,7 @@ def iso_to_bronx_chunk(cmor_chunk_in):
     if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
         bronx_chunk = f'{cmor_chunk_in[1:-1]}yr'
     else:
-        raise ValueError('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py') #uncovered heyyyyyy... codecov bot, overhere!
+        raise ValueError('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py') #uncovered
     fre_logger.debug('bronx_chunk = %s', bronx_chunk)
     return bronx_chunk
 
@@ -63,8 +63,8 @@ def conv_mip_to_bronx_freq(cmor_table_freq):
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
     if bronx_freq is None:
-        fre_logger.warning(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent') #uncovered heyyyyyy... codecov bot, overhere!
-    if cmor_table_freq not in cmor_to_bronx_dict.keys():# and cmor_table_freq != 'fx':
+        fre_logger.warning(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent')
+    if cmor_table_freq not in cmor_to_bronx_dict.keys():
         raise KeyError(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency')
     return bronx_freq
 
@@ -82,7 +82,7 @@ def get_bronx_freq_from_mip_table(json_table_config):
             try:
                 table_freq = table_config_data['variable_entry'][var_entry]['frequency']
                 break
-            except Exception as exc: #uncovered heyyyyyy... codecov bot, overhere!
+            except Exception as exc: #uncovered
                 raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
                                'have frequency info under the variable entry!') from exc
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
@@ -143,7 +143,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             fre_logger.info('cmorized_outdir does not exist.')
             fre_logger.info('attempt to create it...')
             Path(cmorized_outdir).mkdir(exist_ok=False, parents=True)
-        except Exception as exc: #uncovered heyyyyyy... codecov bot, overhere!
+        except Exception as exc: #uncovered
             raise OSError(
                 f'could not create cmorized_outdir = {cmorized_outdir} for some reason!') from exc
 
@@ -256,7 +256,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                  f'    calendar_type={calendar_type} '
                                   ')\n' )
                 continue
-            cmor_run_subtool( #uncovered heyyyyyy... codecov bot, overhere!
+            cmor_run_subtool( #uncovered
                 indir = indir ,
                 json_var_list = json_var_list ,
                 json_table_config = json_table_config ,
