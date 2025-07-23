@@ -15,5 +15,3 @@ def function(uppercase):
     check_test_function(uppercase)
     raise NotImplementedError('fre check has not been implemented yet!')
 
-if __name__ == "__main__":
-    check_cli()

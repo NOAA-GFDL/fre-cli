@@ -76,11 +76,6 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start
         ValueError: If the yamlfile is not provided.
     """
 
-
-    # if opt_var_name specified, forget the list.
-    if yamlfile is None:
-        raise ValueError('I need a yamlfile!!!') #uncovered
-
     cmor_yaml_subtool(
         yamlfile = yamlfile,
         exp_name = experiment,
@@ -175,8 +170,11 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
 @click.option('--stop', type=str, default=None,
               help = STOP_YEAR_HELP,
               required = False)
+@click.option('--calendar', type=str, default=None,
+              help = 'calendar type, e.g. 360_day, noleap, gregorian... etc',
+              required = False)
 def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
-        grid_label, grid_desc, nom_res, start, stop):
+        grid_label, grid_desc, nom_res, start, stop, calendar):
     # pylint: disable=unused-argument
     """
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
@@ -193,7 +191,8 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         grid_label = grid_label,
         nom_res = nom_res,
         start = start,
-        stop = stop
+        stop = stop,
+        calendar_type = calendar
     )
 
 @cmor_cli.command()
@@ -204,7 +203,3 @@ def varlist(dir_targ, output_variable_list):
     Create a simple variable list from netCDF files in the target directory.
     """
     make_simple_varlist(dir_targ, output_variable_list)
-
-
-if __name__ == "__main__":
-    cmor_cli()

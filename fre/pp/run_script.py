@@ -51,6 +51,3 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
         raise Exception('Cylc scheduler was started without error but is not running after 30 seconds')
 
     fre_logger.info(result)
-
-if __name__ == "__main__":
-    pp_run_subtool()

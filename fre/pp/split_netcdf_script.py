@@ -365,6 +365,3 @@ def get_variables(comp_info, product, req_source):
 
     return v
 
-#Main method invocation
-if __name__ == '__main__':
-    split_file_xarray(sys.argv[1], sys.argv[2])

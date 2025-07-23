@@ -1,8 +1,5 @@
 ''' fre lister '''
 
-#import logging
-#fre_logger = logging.getLogger(__name__)
-
 import click
 from fre.list_ import list_experiments_script
 from fre.list_ import list_platforms_script
@@ -47,5 +44,3 @@ def pp_components(yamlfile, experiment):
     """ - List components to be ppst-processed for a defined experiment"""
     list_pp_components_script.list_ppcomps_subtool(yamlfile, experiment)
 
-if __name__ == "__main__":
-    list_cli()

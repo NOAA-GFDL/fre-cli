@@ -67,6 +67,3 @@ def uninstall(name, library_directory):
     """Uninstall an analysis package."""
     uninstall_analysis_package(name, library_directory)
 
-
-if __name__ == "__main__":
-    analysis_cli()
