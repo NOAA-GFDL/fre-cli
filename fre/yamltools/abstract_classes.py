@@ -30,23 +30,15 @@ class MergeYamlInfo(ABC):
     def merge_multiple_yamls(self):
         pass 
 
-#class AnalysisYamls():
+class MergeCompileYamls():
 #    @abstractmethod
 #    def combine_model():
 #        pass
 #
 #    @abstractmethod
-#    def combine_settings():
+#    def combine_compile():
 #        pass
 #
 #    @abstractmethod
-#    def combine_analysis():
-#        pass
-#
-#    @abstractmethod
-#    def merge_multiple_yamls():
-#        pass
-#
-#    @abstractmethod
-#    def clean_yaml():
+#    def combine_platforms():
 #        pass
