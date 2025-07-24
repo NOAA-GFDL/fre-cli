@@ -25,10 +25,11 @@ class buildBaremetal():
         - mkTemplatePath : The template used by mkmf to compile the model
         - srcDir : The source directory
         - bldDir : The build directory
-        - modules : The list of modules to load before compilation
-        - modulesInit : A list of commands with new line characters to initialize modules
+#        - modules : The list of modules to load before compilation
+#        - modulesInit : A list of commands with new line characters to initialize modules
     """
-    def __init__(self,exp,mkTemplatePath,srcDir,bldDir,target,modules,modulesInit,jobs):
+#    def __init__(self,exp,mkTemplatePath,srcDir,bldDir,target,modules,modulesInit,jobs):
+    def __init__(self,exp,mkTemplatePath,srcDir,bldDir,target,env_setup,jobs):
         """
         Initialize variables and set-up the compile script.
         """
@@ -39,18 +40,24 @@ class buildBaremetal():
         self.make = "make --jobs="+str(jobs)+" "+target.getmakeline_add() #make line
         self.mkmf = True
         self.template = mkTemplatePath
-        self.modules = ""
-        for m in modules:
-            self.modules = f"{self.modules} {m}"
+#        self.modules = ""
+#        self.env = ""
+#        for m in modules:
+#            self.modules = f"{self.modules} {m}"
+#        for setup in env_setup:
+#            self.env = f"{self.env} {setup}"
 
         ## Set up the top portion of the compile script
         self.setup=[   "#!/bin/sh -fx \n",
                        f"bld_dir={self.bld}/ \n",
                        f"src_dir={self.src}/ \n",
                        f"mkmf_template={self.template} \n"]
-        if self.modules != "":
-            self.setup.extend(modulesInit) #extend - this is a list
-            self.setup.append(f"module load {self.modules} \n") # Append -this is a single string
+#        if self.modules != "":
+#            self.setup.extend(modulesInit) #extend - this is a list
+#            self.setup.append(f"module load {self.modules} \n") # Append -this is a single string
+        if env_setup != "":
+            for setup in env_setup:
+                self.setup.append(f"{setup} \n")
 
         ## Create the build directory
         os.system(f"mkdir -p {self.bld}")

@@ -24,15 +24,19 @@ class platforms ():
             except:
                 raise Exception("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n")
             ## Check for modules to load
+#            try:
+#                p["modules"]
+#            except:
+#                p["modules"]=[""]
+#            ## Check for modulesInit to set up the modules environment
+#            try:
+#                p["modulesInit"]
+#            except:
+#                p["modulesInit"]=[""]
             try:
-                p["modules"]
+                p["env_setup"]
             except:
-                p["modules"]=[""]
-            ## Check for modulesInit to set up the modules environment
-            try:
-                p["modulesInit"]
-            except:
-                p["modulesInit"]=[""]
+                p["env_setup"]=[""]
             ## Get the root for the build
             try:
                 p["modelRoot"]
