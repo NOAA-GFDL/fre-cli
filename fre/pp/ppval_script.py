@@ -10,11 +10,26 @@ from . import nccheck_script as ncc
 fre_logger = logging.getLogger(__name__)
 
 # Get estimated number of timesteps
-def getenot(date_start,date_end,chunk_type,cal):
-
+def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
+'''
+    This function returns an estimated number of timesteps using elapsed time and data frequency.
+    
+    Ex: 3 years worth of data with monthly frequency would be estimated to have 36 timesteps (3 years * 12 months)
+        
+    :param date_start: Starting time of data chunk
+    :type date_start: str
+    :param date_end: Ending time of data chunk
+    :type date_end: str
+    :param chunk_type: Frequency of data chunk
+    :type chunk_type: str
+    :param cal: Calandar type used for data
+    :type cal: str
+    :return: Estimated number of timesteps
+    :rtype: int
+'''
     #Chunk type is the frequency of the data chunk
     #enot = estimated number of timesteps
-    #start/stop are cf datetime objects representing the start and end time of the data chunk
+    #start/end are cf datetime objects representing the start and end time of the data chunk
     #diff represents the time difference between start and stop
     if chunk_type == 'yearly':
         enot = int(date_end[1]) - int(date_start[1])+ 1
@@ -55,8 +70,13 @@ def getenot(date_start,date_end,chunk_type,cal):
     return enot
 
 # Filepath is the path to the time-series file to be checked
-def validate(filepath):
-    """ Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found the filename. """
+def validate(filepath: str):
+    """ Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found the filename.
+ 
+    :param filepath: Path to time-series file to be checked
+    :type filepath: str
+    :return: Returns 0 unless an exception is raised or timesteps differ from expectation
+    :rtype: int """
 
 
     import re
