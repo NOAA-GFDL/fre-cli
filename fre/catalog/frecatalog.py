@@ -43,13 +43,17 @@ def build(context, input_path = None, output_path = None, config = None, filter_
 @catalog_cli.command()
 @click.argument('json_path', nargs = 1 , required = True)
 @click.argument('json_template_path', nargs = 1 , required = False)
+@click.option('--vocab', is_flag=True, default = False,
+              help="Validates catalog vocabulary")
+@click.option('-pg','--proper_generation', is_flag=True, default = False,
+              help="Ensures that catalog has been 'properly generated' (No empty columns, reflects template)")
 @click.option('-tf', '--test-failure', is_flag=True, default = False,
               help="Errors are only printed. Program will not exit.")
 @click.pass_context
-def validate(context, json_path, json_template_path, test_failure):
+def validate(context, json_path, json_template_path, vocab, proper_generation, test_failure):
     # pylint: disable=unused-argument
-    """ - Validate a catalog against catalog schema """
-    context.forward(compval.main)
+    """ - Validate catalogs against controlled vocabulary (CV) as provided by particular JSON schemas per vocabulary type OR Validate a catalog against catalog schema template """
+    context.forward(compval.compval)
 
 @catalog_cli.command()
 @click.option('--input', required = True, multiple = True,
