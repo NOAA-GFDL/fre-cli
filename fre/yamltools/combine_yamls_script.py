@@ -1,32 +1,29 @@
 '''
  script that combines the model yaml with the compile, platform, and experiment yamls.
 '''
-import os
 import logging
-
-# this boots yaml with !join- see __init__
-from . import *
-from .helpers import output_yaml
+from typing import Optional
 
 from fre.yamltools.info_parsers import cmor_info_parser as cmip
 from fre.yamltools.info_parsers import compile_info_parser as cip
 from fre.yamltools.info_parsers import pp_info_parser as ppip
 from fre.yamltools.info_parsers import analysis_info_parser as aip
-from . import helpers
-from typing import Optional
-import pprint
+from fre.yamltools.helpers import output_yaml
+
+# this boots yaml with !join- see __init__
+from . import *
+
+#import pprint
 
 fre_logger = logging.getLogger(__name__)
 
 ## Functions to combine the yaml files ##
-def get_combined_cmoryaml(CMORYaml, experiment: str, output: Optional[str]=None):
+def get_combined_cmoryaml(CMORYaml, output: Optional[str]=None):
     """
     Combine the model, experiment, and cmor yamls
 
     :param CMORYaml: combined cmor-yaml object
     :type CMORYaml: 
-    :param experiment: Name of post-processing experiment
-    :type experiment: str
     :param output: Path representing target output file to write yamlfile to
     :type output: str
     """
@@ -40,13 +37,12 @@ def get_combined_cmoryaml(CMORYaml, experiment: str, output: Optional[str]=None)
         fre_logger.info('\n... CMORYaml.combine_model succeeded.\n')
     except Exception as exc:
         raise ValueError("CMORYaml.combine_model failed") from exc
-##########
+    # Merge settings information into combined file
     try:
         # Merge model into combined file
         yaml_content = CMORYaml.get_settings_yaml(yaml_content)
     except Exception as exc:
         raise ValueError("ERR: Could not merge setting information.") from exc
-##########
     # Merge cmor experiment yamls into combined file, calls experiment_check
     try:
         fre_logger.info('\n\ncalling CMORYaml.combine_experiment(), for comb_cmor_updated_list \n'
@@ -82,7 +78,7 @@ def get_combined_cmoryaml(CMORYaml, experiment: str, output: Optional[str]=None)
     # OUTPUT IF NEEDED
     if output is not None:
         output_yaml( cleaned_yaml, output )
-        fre_logger.info(f"Combined cmor-yaml information saved to {output}")
+        fre_logger.info("Combined cmor-yaml information saved to %s", output)
 
     return cleaned_yaml
 
@@ -127,7 +123,7 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, us
         yml_dict = ppcombined.combine()
         yml_dict2 = analysiscombined.combine()
 
-        for key in yml_dict2:
+        for key in yml_dict2.items():
             if key != "postprocess":
                 continue
             if key not in yml_dict:

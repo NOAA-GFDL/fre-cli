@@ -22,10 +22,13 @@ def get_compile_paths(full_path,loaded_yml):
     """
     for key,value in loaded_yml.items():
         if key == "build":
+            if (value.get("platformYaml") or value.get("compileYaml")) is None:
+                raise ValueError("Compile or platform yaml not defined")
+
             py_path = os.path.join(full_path,value.get("platformYaml"))
             cy_path = os.path.join(full_path,value.get("compileYaml"))
 
-    return (py_path, cy_path)
+            return (py_path, cy_path)
 
 ## COMPILE CLASS ##
 class InitCompileYaml(MergeCompileYamls):

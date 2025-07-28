@@ -1,18 +1,19 @@
+'''
+analysis yaml class
+'''
 import os
 import logging
-fre_logger = logging.getLogger(__name__)
-from pathlib import Path
 #import pprint
 
-# this boots yaml with !join- see __init__
-import os
-import logging
-fre_logger = logging.getLogger(__name__)
-from pathlib import Path
-import pprint
 from fre.yamltools.helpers import experiment_check, clean_yaml
 from fre.yamltools.abstract_classes import MergePPANYamls
+
 import yaml
+
+# this boots yaml with !join- see __init__
+from . import *
+
+fre_logger = logging.getLogger(__name__)
 
 class InitAnalysisYaml(MergePPANYamls):
     """
@@ -64,7 +65,7 @@ class InitAnalysisYaml(MergePPANYamls):
         # Return the combined string and loaded yaml
         former_log_level = fre_logger.level
         fre_logger.setLevel(logging.INFO)
-        fre_logger.info(f"   model yaml: {self.yml}")
+        fre_logger.info("   model yaml: %s", self.yml)
         fre_logger.setLevel(former_log_level)
 
         return yaml_content_str
@@ -90,7 +91,7 @@ class InitAnalysisYaml(MergePPANYamls):
 
         yaml_content_str += settings_content
         return yaml_content_str
- 
+
     def combine_yamls(self,yaml_content_str):
         """
         Combine analysis yamls with the defined combined.yaml
@@ -103,13 +104,13 @@ class InitAnalysisYaml(MergePPANYamls):
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
-        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yml)
+        _ ,ay_path = experiment_check(self.mainyaml_dir,self.name,yml)
 
         analysis_yamls = []
         analysis_yamls.append(yaml_content_str)
 
         ## COMBINE EXPERIMENT YAML INFO
-        # If no analysis yaml defined, move on silently. 
+        # If no analysis yaml defined, move on silently.
         if ay_path is None:
             pass
 
@@ -147,7 +148,7 @@ class InitAnalysisYaml(MergePPANYamls):
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
-        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yml)
+        _ ,ay_path = experiment_check(self.mainyaml_dir,self.name,yml)
 
         result = {}
         # If more than one analysis yaml is listed, update dictionary with content from 1st yaml
@@ -159,8 +160,7 @@ class InitAnalysisYaml(MergePPANYamls):
 
             for i in analysis_list[2:]:
                 yf = yaml.load(i, Loader=yaml.Loader)
-                for key in result:
-
+                for key in result.items():
                     if key not in yf:
                         continue
                     if isinstance(result[key],dict) and isinstance(yf[key],dict):
@@ -171,12 +171,12 @@ class InitAnalysisYaml(MergePPANYamls):
             fre_logger.setLevel(logging.INFO)
             for i in ay_path:
                 analysis = str(i).rsplit('/', maxsplit=1)[-1]
-                fre_logger.info(f"   analysis yaml: {analysis}")
+                fre_logger.info("   analysis yaml: %s", analysis)
             fre_logger.setLevel(former_log_level)
 
         return result
 
-    def combine(self): 
+    def combine(self):
         """
         :return:
         :rtype: str
@@ -208,7 +208,7 @@ class InitAnalysisYaml(MergePPANYamls):
 
         try:
             cleaned_yaml = clean_yaml(full_combined)
-        except:
-            raise ValueError("NO CLEAN")
+        except Exception as exc:
+            raise ValueError("NO CLEAN") from exc
 
         return cleaned_yaml

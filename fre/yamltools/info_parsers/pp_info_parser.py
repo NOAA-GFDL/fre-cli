@@ -1,20 +1,20 @@
 '''
 post-processing yaml class
 '''
-
 import os
 import logging
-fre_logger = logging.getLogger(__name__)
-from pathlib import Path
-import pprint
+#import pprint
+
 from fre.yamltools.helpers import experiment_check, clean_yaml
 from fre.yamltools.abstract_classes import MergePPANYamls
-from fre.yamltools.val_yml_structures import ModelYmlStructure
+#from fre.yamltools.val_yml_structures import ModelYmlStructure
 
-import yaml 
+import yaml
 
 # this boots yaml with !join- see __init__
 from . import *
+
+fre_logger = logging.getLogger(__name__)
 
 ## PP CLASS ##
 class InitPPYaml(MergePPANYamls):
@@ -38,11 +38,12 @@ class InitPPYaml(MergePPANYamls):
 
         # Create combined pp yaml
         former_log_level = fre_logger.level
-        fre_logger.setLevel(logging.INFO)        
+        fre_logger.setLevel(logging.INFO)
         fre_logger.info("Combining yaml files into one dictionary: ")
         fre_logger.setLevel(former_log_level)
 
-        val1 = ModelYmlStructure(self.yml).validate()
+        # Validate required keys are included in model yaml config
+        #val1 = ModelYmlStructure(self.yml).validate()
 
     def combine_model(self):
         """
@@ -65,8 +66,8 @@ class InitPPYaml(MergePPANYamls):
 
         # Return the combined string and loaded yaml
         former_log_level = fre_logger.level
-        fre_logger.setLevel(logging.INFO)      
-        fre_logger.info(f"   model yaml: {self.yml}")
+        fre_logger.setLevel(logging.INFO)
+        fre_logger.info("   model yaml: %s", self.yml)
         fre_logger.setLevel(former_log_level)
 
         return yaml_content_str
@@ -80,7 +81,6 @@ class InitPPYaml(MergePPANYamls):
         :rtype: str
         """
         my = yaml.load(yaml_content_str, Loader=yaml.Loader)
-    
         for i in my.get("experiments"):
             if self.name != i.get("name"):
                 continue
@@ -94,7 +94,7 @@ class InitPPYaml(MergePPANYamls):
         # Return the combined string and loaded yaml
         former_log_level = fre_logger.level
         fre_logger.setLevel(logging.INFO)
-        fre_logger.info(f"   settings yaml: {settings}")
+        fre_logger.info("   settings yaml: %s", settings)
         fre_logger.setLevel(former_log_level)
 
         return yaml_content_str
@@ -112,7 +112,7 @@ class InitPPYaml(MergePPANYamls):
         # Experiment Check
         # Load string as yaml
         yml=yaml.load(yaml_content_str,  Loader=yaml.Loader)
-        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yml)
+        ey_path, _ = experiment_check(self.mainyaml_dir,self.name,yml)
 
         pp_yamls = []
         pp_yamls.append(yaml_content_str)
@@ -120,13 +120,14 @@ class InitPPYaml(MergePPANYamls):
         # If only 1 pp yaml defined, combine with model yaml
         if ey_path is None:
             raise ValueError('if ey_path is None, then pp_yamls will be an empty list. Exit!')
-        
+
         elif len(ey_path) == 1:
             #expyaml_path = os.path.join(mainyaml_dir, i)
             with open(ey_path[0],'r') as eyp:
                 exp_content = eyp.read()
             exp_info = yaml_content_str + exp_content
             pp_yamls.append(exp_info)
+
         # If more than 1 pp yaml listed
         # (Must be done for aliases defined)
         elif len(ey_path) > 1:
@@ -153,7 +154,7 @@ class InitPPYaml(MergePPANYamls):
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
-        (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yml)
+        ey_path, _ = experiment_check(self.mainyaml_dir,self.name,yml)
 
         result = {}
         # If more than one post-processing yaml is listed, update
@@ -167,8 +168,9 @@ class InitPPYaml(MergePPANYamls):
 
             for i in pp_list[1:]:
                 yf = yaml.load(i, Loader=yaml.Loader)
-                for key in result:
-                    # Only concerned with merging component information in "postprocess" sections across yamls
+                for key in result.items():
+                    # Only concerned with merging component information
+                    # in "postprocess" sections across yamls
                     if key != "postprocess":
                         continue
                     if key not in yf:
@@ -187,12 +189,12 @@ class InitPPYaml(MergePPANYamls):
 
         if ey_path is not None:
             former_log_level = fre_logger.level
-            fre_logger.setLevel(logging.INFO)    
+            fre_logger.setLevel(logging.INFO)
             for i in ey_path:
                 exp = str(i).rsplit('/', maxsplit=1)[-1]
-                fre_logger.info(f"   experiment yaml: {exp}")
+                fre_logger.info("   experiment yaml: %s", exp)
             fre_logger.setLevel(former_log_level)
-                
+
         return result
 
     def combine(self):
@@ -229,7 +231,7 @@ class InitPPYaml(MergePPANYamls):
 
         try:
             cleaned_yaml = clean_yaml(full_combined)
-        except:
-            raise ValueError("The final YAML was not cleaned.")
+        except Exception as exc:
+            raise ValueError("The final YAML was not cleaned.") from exc
 
         return cleaned_yaml
