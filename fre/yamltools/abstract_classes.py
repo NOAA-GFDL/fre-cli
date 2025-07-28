@@ -69,7 +69,7 @@ class MergeCompileYamls(ABC):
         """
         pass
 
-#class ValidateYamls(ABC):
+class ValidateYamls(ABC):
 #    @abstractmethod
 #    def validate_keys():
 #        pass
@@ -78,6 +78,6 @@ class MergeCompileYamls(ABC):
 #    def validate_values():
 #        pass
 #
-#    @abstractmethod
-#    def validate():
-#        pass
+    @abstractmethod
+    def validate():
+        pass
