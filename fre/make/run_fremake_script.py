@@ -149,8 +149,6 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                                                              srcDir = srcDir,
                                                              bldDir = bldDir,
                                                              target = target,
-                                                             #modules = platform["modules"],
-                                                             #modulesInit = platform["modulesInit"],
                                                              env_setup = platform["env_setup"],
                                                              jobs = jobs)
 

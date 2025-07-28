@@ -23,16 +23,7 @@ class platforms ():
                 p["compiler"]
             except:
                 raise Exception("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n")
-            ## Check for modules to load
-#            try:
-#                p["modules"]
-#            except:
-#                p["modules"]=[""]
-#            ## Check for modulesInit to set up the modules environment
-#            try:
-#                p["modulesInit"]
-#            except:
-#                p["modulesInit"]=[""]
+            ## Check for list of commands that include modules to initialize, load, and unload
             try:
                 p["env_setup"]
             except:

@@ -1,8 +1,6 @@
 platforms:
    - name: ncrc5.intel23
      compiler: intel
-#     modulesInit: [" module use -a /ncrc/home2/fms/local/modulefiles \n","source $MODULESHOME/init/sh \n"]
-#     modules: [!join [*INTEL, "/2023.2.0"],"fre/bronx-21",cray-hdf5/1.12.2.11, cray-netcdf/4.9.0.11]
      env_setup: ["module use -a /ncrc/home2/fms/local/modulefiles",
                  "source $MODULESHOME/init/sh",
                  !join ["module load ", *INTEL, "/2023.2.0"],
