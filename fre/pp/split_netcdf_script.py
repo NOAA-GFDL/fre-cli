@@ -18,6 +18,9 @@ import yaml
 from itertools import chain
 import logging
 
+from fre.app.helpers import get_variables
+
+
 fre_logger = logging.getLogger(__name__)
 
 def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs, 
@@ -66,7 +69,10 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   if split_all_vars:
     varlist = "all"
   else:
-    varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
+    vardict = get_variables(yamlfile, component)
+    varlist = vardict[history_source]
+    if varlist 
+    #varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
   
   #extend globbing used to find both tiled and non-tiled files
   #all files that contain the current source:history_file name,
