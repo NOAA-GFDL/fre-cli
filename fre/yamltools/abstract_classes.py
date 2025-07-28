@@ -9,7 +9,8 @@ from . import *
 
 from abc import ABC, abstractmethod
 
-class MergeYamlInfo(ABC):
+# inherited by pp_info_parser and analysis_info_parser
+class MergePPANYamls(ABC):
     @abstractmethod
     def combine_model(self):
         pass
@@ -18,27 +19,37 @@ class MergeYamlInfo(ABC):
     def get_settings_yaml(self, yaml_content_str):
         pass
 
-#    @abstractmethod
-#    def experiment_check():
-#        pass
-
     @abstractmethod
     def combine_yamls(self):
         pass
 
     @abstractmethod
     def merge_multiple_yamls(self):
-        pass 
+        pass
 
-class MergeCompileYamls():
+# inherited by compile_info_parser
+class MergeCompileYamls(ABC):
+    @abstractmethod
+    def combine_model():
+        pass
+
+    @abstractmethod
+    def combine_compile():
+        pass
+
+    @abstractmethod
+    def combine_platforms():
+        pass
+
+class ValidateYamls(ABC):
+    @abstractmethod
+    def validate_keys():
+        pass
+
 #    @abstractmethod
-#    def combine_model():
+#    def validate_values():
 #        pass
-#
-#    @abstractmethod
-#    def combine_compile():
-#        pass
-#
-#    @abstractmethod
-#    def combine_platforms():
-#        pass
+
+    @abstractmethod
+    def validate():
+        pass
