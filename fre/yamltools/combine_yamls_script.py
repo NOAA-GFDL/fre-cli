@@ -8,10 +8,10 @@ import logging
 from . import *
 from .helpers import output_yaml
 
-from . import cmor_info_parser as cmip
-from . import compile_info_parser as cip
-from . import pp_info_parser as ppip
-from . import analysis_info_parser as aip
+from fre.yamltools.info_parsers import cmor_info_parser as cmip
+from fre.yamltools.info_parsers import compile_info_parser as cip
+from fre.yamltools.info_parsers import pp_info_parser as ppip
+from fre.yamltools.info_parsers import analysis_info_parser as aip
 from . import helpers
 import pprint
 
@@ -81,107 +81,6 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
 
     return cleaned_yaml
 
-def get_combined_compileyaml(comb, output=None):
-    """
-    Combine the model, compile, and platform yamls
-    Arguments:
-    comb : combined yaml object
-    """
-    try:
-        (yaml_content, loaded_yaml)=comb.combine_model()
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge model information.") from exc
-
-    # Merge compile into combined file to create updated yaml_content/yaml
-    try:
-        (yaml_content, loaded_yaml) = comb.combine_compile(yaml_content, loaded_yaml)
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge compile yaml information.") from exc
-
-    # Merge platforms.yaml into combined file
-    try:
-        (yaml_content,loaded_yaml) = comb.combine_platforms(yaml_content, loaded_yaml)
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge platform yaml information.") from exc
-
-    # Clean the yaml
-    cleaned_yaml = helpers.clean_yaml(loaded_yaml)
-
-    # OUTPUT IF NEEDED
-    if output is not None:
-        output_yaml(cleaned_yaml, output = output)
-    else:
-        fre_logger.info("Combined yaml information saved as dictionary")
-
-    return cleaned_yaml
-
-def get_combined_ppyaml(comb):
-    """
-    Combine the model, experiment, and analysis yamls
-    Arguments:
-    comb : combined yaml object
-    """
-    try:
-        # Merge model into combined file
-        yaml_content_str = comb.combine_model()
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge model information.") from exc
-    try:
-        # Merge model into combined file
-        yaml_content_str = comb.get_settings_yaml(yaml_content_str)
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge setting information.") from exc
-
-    try:
-        # Merge pp yamls, if defined, into combined file
-        comb_pp_updated_list = comb.combine_yamls(yaml_content_str)
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge pp yaml information") from exc
-
-    try:
-        # Merge model/pp and model/analysis yamls if more than 1 is defined
-        # (without overwriting the yaml)
-        full_combined = comb.merge_multiple_yamls(comb_pp_updated_list,
-                                                  yaml_content_str)
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge multiple pp and analysis information together.") from exc
-
-    # Clean the yaml
-    cleaned_yaml = helpers.clean_yaml(full_combined)
-
-    return cleaned_yaml
-
-def get_combined_analysisyaml(comb2, output=None):
-    try:
-        # Merge model into combined file
-        yaml_content_str = comb2.combine_model()
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge model information.") from exc
-    try:
-        # Merge model into combined file
-        yaml_content_str = comb2.get_settings_yaml(yaml_content_str)
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge setting information.") from exc
-
-    try:
-        # Merge analysis yamls, if defined, into combined file
-        comb_analysis_updated_list = comb2.combine_yamls(yaml_content_str)
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge analysis yaml information") from exc
-
-    try:
-        # Merge model/pp and model/analysis yamls if more than 1 is defined
-        # (without overwriting the yaml)
-        full_combined = comb2.merge_multiple_yamls(comb_analysis_updated_list,
-                                                   yaml_content_str)
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge multiple pp and analysis information together.") from exc
-
-    # Clean the yaml
-    cleaned_yaml = helpers.clean_yaml(full_combined)
-
-    return cleaned_yaml
-
 def consolidate_yamls(yamlfile, experiment, platform, target, use, output=None):
     """
     Depending on `use` argument passed, either create the final
@@ -189,23 +88,26 @@ def consolidate_yamls(yamlfile, experiment, platform, target, use, output=None):
     """
     if use == "compile":
         fre_logger.info('initializing a compile yaml instance...')
-        combined = cip.InitCompileYaml(yamlfile, platform, target)
+        compilecombined = cip.InitCompileYaml(yamlfile, platform, target)
 
-        if output is None :
-            yml_dict = get_combined_compileyaml(combined)
+        yml_dict = compilecombined.combine()
+
+        # OUTPUT IF NEEDED
+        if output is not None:
+            output_yaml(yml_dict, output = output)
         else:
-            yml_dict = get_combined_compileyaml(combined,output)
-            fre_logger.info("Combined yaml file located here: %s", f"{os.getcwd()}/{output}")
+            fre_logger.info("Combined yaml information saved as dictionary")
+
 
     elif use =="pp":
         fre_logger.info('Initializing a post-processing and analysis yaml instance...')
         # Create pp yaml instance
-        combined = ppip.InitPPYaml(yamlfile, experiment, platform, target)
+        ppcombined = ppip.InitPPYaml(yamlfile, experiment, platform, target)
         # Create analysis yaml instance
-        combined2 = aip.InitAnalysisYaml(yamlfile, experiment, platform, target)
- 
-        yml_dict = get_combined_ppyaml(combined)
-        yml_dict2 = get_combined_analysisyaml(combined2, output)
+        analysiscombined = aip.InitAnalysisYaml(yamlfile, experiment, platform, target)
+
+        yml_dict = ppcombined.combine()
+        yml_dict2 = analysiscombined.combine()
 
         for key in yml_dict2:
             if key != "postprocess":
