@@ -2,29 +2,44 @@
 compile-yaml configuration class
 '''
 import os
-
 # this boots yaml with !join- see __init__
-from . import *
+#from fre.yamltools import *
+from fre.yamltools.helpers import clean_yaml
+from fre.yamltools.abstract_classes import MergeCompileYamls
+import yaml
 
 def get_compile_paths(full_path,loaded_yml):
     """
     Find and return the paths for the compile
     and platform yamls
+
+    :param full_path:
+    :type full_path:
+    :param loaded_yml:
+    :type loaded_yml:
+    :return:
+    :rtype: str
     """
     for key,value in loaded_yml.items():
         if key == "build":
+            if (value.get("platformYaml") or value.get("compileYaml")) is None:
+                raise ValueError("Compile or platform yaml not defined")
+
             py_path = os.path.join(full_path,value.get("platformYaml"))
             cy_path = os.path.join(full_path,value.get("compileYaml"))
 
-    return (py_path, cy_path)
+            return (py_path, cy_path)
 
 ## COMPILE CLASS ##
-class InitCompileYaml():
-    """ class holding routines for initalizing compilation yamls """
+class InitCompileYaml(MergeCompileYamls):
+    """
+    Class holding routines for initalizing and combining compilation yamls
+
+    :ivar str yamlfile: Path to model yaml configuration file
+    :ivar str platform: Platform name
+    :ivar str target: Target name
+    """
     def __init__(self,yamlfile,platform,target):
-        """
-        Process to combine yamls applicable to compilation
-        """
         self.yml = yamlfile
         #self.name = yamlfile.split(".")[0]
         self.namenopath = self.yml.split("/")[-1].split(".")[0]
@@ -40,6 +55,9 @@ class InitCompileYaml():
     def combine_model(self):
         """
         Create the combined.yaml and merge it with the model yaml
+
+        :return:
+        :rtype: str
         """
         # Define click options in string
         yaml_content = (f'name: &name "{self.namenopath}"\n'
@@ -63,6 +81,13 @@ class InitCompileYaml():
     def combine_compile(self,yaml_content,loaded_yaml):
         """
         Combine compile yaml with the defined combined.yaml
+
+        :param yaml_content:
+        :type yaml_content: str
+        :param loaded_yaml:
+        :type loaded_yml: dict
+        :return:
+        :rtype: str
         """
         self.mainyaml_dir = os.path.dirname(self.yml)
 
@@ -88,6 +113,13 @@ class InitCompileYaml():
     def combine_platforms(self, yaml_content, loaded_yaml):
         """
         Combine platforms yaml with the defined combined.yaml
+
+        :param yaml_content:
+        :type yaml_content: str
+        :param loaded_yml:
+        :type loaded_yml: dict
+        :return:
+        :rtype: str
         """
         self.mainyaml_dir = os.path.dirname(self.yml)
 
@@ -110,25 +142,31 @@ class InitCompileYaml():
         print(f"   platforms yaml: {py_path}")
         return (yaml_content, yml)
 
-    def clean_yaml(self, yaml_content):
+    def combine(self):
         """
-        Clean the yaml; remove unnecessary sections in
-        final combined yaml.
+        Combine the model, compile, and platform yamls
+
+        :return:
+        :rtype: str
         """
-        # Load the yaml
-        yml_dict=yaml.load(yaml_content, Loader = yaml.Loader)
+        try:
+            (yaml_content, loaded_yaml)=self.combine_model()
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge model information.") from exc
+
+        # Merge compile into combined file to create updated yaml_content/yaml
+        try:
+            (yaml_content, loaded_yaml) = self.combine_compile(yaml_content, loaded_yaml)
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge compile yaml information.") from exc
+
+        # Merge platforms.yaml into combined file
+        try:
+            (yaml_content,loaded_yaml) = self.combine_platforms(yaml_content, loaded_yaml)
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge platform yaml information.") from exc
 
         # Clean the yaml
-        # If keys exists, delete:
-        keys_clean=["fre_properties", "shared", "experiments"]
-        for kc in keys_clean:
-            if kc in yml_dict.keys():
-                del yml_dict[kc]
+        cleaned_yaml = clean_yaml(loaded_yaml)
 
-        cleaned_yml = yaml.safe_dump( yml_dict,
-                                      default_flow_style = False,
-                                      sort_keys = False)
-
-        # either return dictionary OR string (cleaned_yml)
-        # - string works for fremake but dictionary works for pp and list
-        return yml_dict  
+        return cleaned_yaml
