@@ -49,7 +49,7 @@ build:
 
 experiments:
   - name: "c96L65_am5f7b12r1_amip"
-    settings: "pp_yamls/settings.yaml"
+    settings: "settings.yaml"
     pp:
       - "pp_yamls/pp.c96_amip.yaml"
       - "pp_yamls/pp-TEST.c96_amip.yaml"
