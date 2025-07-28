@@ -11,6 +11,7 @@ fre_logger = logging.getLogger(__name__)
 
 # Get estimated number of timesteps
 def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
+
 '''
     This function returns an estimated number of timesteps using elapsed time and data frequency.
     
@@ -71,6 +72,7 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
 
 # Filepath is the path to the time-series file to be checked
 def validate(filepath: str):
+
     """ Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found the filename.
  
     :param filepath: Path to time-series file to be checked

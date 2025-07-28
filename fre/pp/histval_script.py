@@ -12,6 +12,7 @@ fre_logger = logging.getLogger(__name__)
 
 
 def validate(history: str, date_string: str, warn: bool):
+
     """ 
     Compares the number of timesteps in each netCDF (.nc) file to the number of expected 
     timesteps as found in the diag_manifest file(s)

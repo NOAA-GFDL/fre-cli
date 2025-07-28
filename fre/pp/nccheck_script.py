@@ -6,6 +6,7 @@ fre_logger = logging.getLogger(__name__)
 
 
 def check(file_path: str, num_steps: int):
+
     """ Compares the number of timesteps in a given netCDF (.nc) file to the number of expected timesteps 
 
     :param file_path: path to netcdf file for checking
