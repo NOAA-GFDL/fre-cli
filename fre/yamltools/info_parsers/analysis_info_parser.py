@@ -10,10 +10,11 @@ import logging
 fre_logger = logging.getLogger(__name__)
 from pathlib import Path
 import pprint
-from .helpers import experiment_check, clean_yaml
+from fre.yamltools.helpers import experiment_check, clean_yaml
+from fre.yamltools.abstract_classes import MergePPANYamls
 import yaml
 
-class InitAnalysisYaml():
+class InitAnalysisYaml(MergePPANYamls):
     """ ---- """
     def __init__(self,yamlfile,experiment,platform,target):
         """
@@ -84,7 +85,7 @@ class InitAnalysisYaml():
         If more than 1 analysis yaml defined, return a list of paths.
         """
         # Load string as yaml
-        yml=yaml.load(yaml_content_str,Loader=yaml.Loader)
+        yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yml)
 
         analysis_yamls = []
@@ -123,7 +124,7 @@ class InitAnalysisYaml():
         yamls into fully combined yaml (without overwriting like sections).
         """
         # Load string as yaml
-        yml=yaml.load(yaml_content_str,Loader=yaml.Loader)
+        yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yml)
 
         result = {}
@@ -137,7 +138,7 @@ class InitAnalysisYaml():
 
 #            print(analysis_list[0])
 #            quit()
-            result.update(yaml.load(analysis_list[1],Loader=yaml.Loader))
+            result.update(yaml.load(analysis_list[1], Loader=yaml.Loader))
 
 ###            print(analysis_list)
 ###            pprint.pprint(result)
@@ -147,7 +148,7 @@ class InitAnalysisYaml():
 #               analysis_list_to_string_concat = "".join(i)
 ###                print(i)
 ###                quit()
-                yf = yaml.load(i,Loader=yaml.Loader)
+                yf = yaml.load(i, Loader=yaml.Loader)
                 for key in result:
                     #print(key)
                     #quit()
@@ -172,3 +173,36 @@ class InitAnalysisYaml():
             fre_logger.setLevel(former_log_level)
 
         return result
+
+    def combine(self):
+        try:
+            # Merge model into combined file
+            yaml_content_str = self.combine_model()
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge model information.") from exc
+        try:
+            # Merge model into combined file
+            yaml_content_str = self.get_settings_yaml(yaml_content_str)
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge setting information.") from exc
+
+        try:
+            # Merge analysis yamls, if defined, into combined file
+            comb_analysis_updated_list = self.combine_yamls(yaml_content_str)
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge analysis yaml information") from exc
+
+        try:
+            # Merge model/pp and model/analysis yamls if more than 1 is defined
+            # (without overwriting the yaml)
+            full_combined = self.merge_multiple_yamls(comb_analysis_updated_list,
+                                                   yaml_content_str)
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge multiple pp and analysis information together.") from exc
+
+        try:
+            cleaned_yaml = clean_yaml(full_combined)
+        except:
+            raise ValueError("NO CLEAN")
+
+        return cleaned_yaml

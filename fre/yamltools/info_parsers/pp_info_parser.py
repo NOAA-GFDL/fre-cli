@@ -7,14 +7,15 @@ import logging
 fre_logger = logging.getLogger(__name__)
 from pathlib import Path
 import pprint
-from .helpers import experiment_check, clean_yaml
-from .abstract_classes import MergeYamlInfo
- 
+from fre.yamltools.helpers import experiment_check, clean_yaml
+from fre.yamltools.abstract_classes import MergePPANYamls
+from fre.yamltools.val_yml_structures import ModelYmlStructure
+import yaml 
 # this boots yaml with !join- see __init__
 from . import *
 
 ## PP CLASS ##
-class InitPPYaml(MergeYamlInfo):
+class InitPPYaml(MergePPANYamls):
     """ class holding routines for initalizing post-processing yamls """
     def __init__(self,yamlfile,experiment,platform,target):
         """
@@ -34,7 +35,9 @@ class InitPPYaml(MergeYamlInfo):
         fre_logger.setLevel(logging.INFO)        
         fre_logger.info("Combining yaml files into one dictionary: ")
         fre_logger.setLevel(former_log_level)
-        
+
+#        val1 = ModelYmlStructure(self.yml).validate()
+
     def combine_model(self):
         """
         Create the combined.yaml and merge it with the model yaml
@@ -91,7 +94,7 @@ class InitPPYaml(MergeYamlInfo):
         """
         # Experiment Check
         # Load string as yaml
-        yml=yaml.load(yaml_content_str,Loader=yaml.Loader)
+        yml=yaml.load(yaml_content_str,  Loader=yaml.Loader)
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yml)
 
         pp_yamls = []
@@ -125,7 +128,7 @@ class InitPPYaml(MergeYamlInfo):
         yamls into fully combined yaml (without overwriting like sections).
         """
         # Load string as yaml
-        yml=yaml.load(yaml_content_str,Loader=yaml.Loader)
+        yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
         (ey_path,ay_path) = experiment_check(self.mainyaml_dir,self.name,yml)
 
         result = {}
@@ -136,10 +139,10 @@ class InitPPYaml(MergeYamlInfo):
         # yamlfile, update the key in result to
         # include the loaded yaml file's value.
         if pp_list is not None and len(pp_list) > 1:
-            result.update(yaml.load(pp_list[0],Loader=yaml.Loader))
+            result.update(yaml.load(pp_list[0], Loader=yaml.Loader))
 
             for i in pp_list[1:]:
-                yf = yaml.load(i,Loader=yaml.Loader)
+                yf = yaml.load(i, Loader=yaml.Loader)
                 for key in result:
                     # Only concerned with merging component information in "postprocess" sections across yamls
                     if key != "postprocess":
@@ -167,3 +170,41 @@ class InitPPYaml(MergeYamlInfo):
             fre_logger.setLevel(former_log_level)
                 
         return result
+
+    def combine(self):
+        """
+        Combine the model, experiment, and analysis yamls
+        Arguments:
+        comb : combined yaml object
+        """
+        try:
+            # Merge model into combined file
+            yaml_content_str = self.combine_model()
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge model information.") from exc
+        try:
+            # Merge model into combined file
+            yaml_content_str = self.get_settings_yaml(yaml_content_str)
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge setting information.") from exc
+
+        try:
+            # Merge pp yamls, if defined, into combined file
+            comb_pp_updated_list = self.combine_yamls(yaml_content_str)
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge pp yaml information") from exc
+
+        try:
+            # Merge model/pp and model/analysis yamls if more than 1 is defined
+            # (without overwriting the yaml)
+            full_combined = self.merge_multiple_yamls(comb_pp_updated_list,
+                                                  yaml_content_str)
+        except Exception as exc:
+            raise ValueError("ERR: Could not merge multiple pp and analysis information together.") from exc
+
+        try:
+            cleaned_yaml = clean_yaml(full_combined)
+        except:
+            raise ValueError("The final YAML was not cleaned.")
+
+        return cleaned_yaml
