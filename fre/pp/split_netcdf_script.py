@@ -216,6 +216,8 @@ def get_max_ndims(dataset):
   Gets the maximum number of dimensions of a single var in an xarray Dataset object. Excludes coord vars, which should be single-dim anyway.
   :param dataset: xarray Dataset you want to query 
   :type dataset: xarray Dataset
+  :return: The max dimensions that a single var posesses in the Dataset
+  :rtype: int
   '''
   allvars = dataset.data_vars.keys()
   ndims = [len(dataset[v].shape) for v in allvars]
@@ -227,10 +229,14 @@ def set_coord_encoding(dset, vcoords):
   as expected
   we need the list of all vars (varnames) because that's how you get coords
   for the metadata vars (i.e. nv or bnds for time_bnds)
-  :param dset: xarray dataset object to query for info
-  :type dset: xarray dataset object
+  :param dset: xarray Dataset object to query for info
+  :type dset: xarray Dataset object
   :param vcoords: list of coordinate variables to write to file
   :type vcoords: list of strings
+  :return: A dictionary where each key is a coordinate in the xarray Dataset and 
+  each value is a dictionary where the keys are the encoding information from
+  the coordinate variable in the Dataset plus the units (if present)
+  :rtype: dict
   ..note:: This code removes _FillValue from coordinates. CF-compliant files do not
   have _FillValue on coordinates, and xarray does not have a good way to get
   _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
@@ -260,6 +266,10 @@ def set_var_encoding(dset, varnames):
   :type dset: xarray dataset object
   :param varnames: list of variables that will be written to file
   :type varnames: list of strings
+  :return: A dictionary where each key is a variable in the xarray Dataset and 
+  each value is a dictionary where the keys are the encoding information from
+  the variable in the Dataset plus the units (if present)
+  :rtype: dict
   '''
   fre_logger.debug(f"getting var encode settings")
   encode_dict = {}
@@ -286,18 +296,15 @@ def fre_outfile_name(infile, varname):
   :type infile: string
   :param varname: string to add to the infile
   :type varname: string
+  :return: new filename
+  :rtype: string
   '''
   var_outfile = re.sub(".nc", f".{varname}.nc", infile)
   return(var_outfile)
 
 def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
   '''
-  Given a yaml config file, parses the structure looking for the list of
-  variables to postprocess (https://github.com/NOAA-GFDL/fre-workflows/issues/51)
-  and returns "all" if no such list is found
-  yamlfile: .yml file used for fre pp configuration
-  yamlcomp: string, one of the components in the yamlfile
-  hist_source: string, optional, allows you to check that the hist_source is under the specified component
+  This is going to get replaced really soon
   '''
   with open(yamlfile,'r') as yml:
     yml_info = yaml.safe_load(yml)
@@ -325,63 +332,6 @@ def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
   else:
     varlist = "all"
   return(varlist)
-
-def parse_yaml_for_varlist_ppcompstyle(yamlfile, is_static, hist_source):
-  '''
-  Parses a yaml in the style of remap-pp-components. Takes 3 args:
-    yamlfile: path to yaml config file
-    is_static: is the hist_source we are working with static?
-    hist_source: short identifier for a history file (e.g. "ocean_inert_annual" or "atmos_month")
-  '''
-  with open(yamlfile,'r') as yml:
-    yml_info = yaml.safe_load(yml)
-  if is_static:
-    product = "static"
-  else:
-    product = "ts"
-  for el in yml_info['postprocess']['components']:
-    varlist = get_variables(el, product, hist_source)
-    if varlist is not None:
-      break
-  if varlist is None:
-    fre_logger.error(f"error in parse_yaml_for_varlist_ppcompstle: history_file {hist_source} was not found in file {yamlfile}")
-    raise ValueError
-  return(varlist)
-
-def get_variables(comp_info, product, req_source):
-    """
-    Taken from fre-workflows/app/remap-pp-components; when that gets added
-    to fre-cli this should be an import instead:::
-     Written by Dana
-     Retrieve variables listed for a component; save in dictionary for use later
-     Params:
-         comp_info: dictionary of information about requested component
-         product: string; one of static, ts, or av
-           static: this filename has "static" in it and has vars without time axes
-           ts: timeseries. the vars have time series unless they are metadata vars
-           av: 
-         req_source: the short identifier for the history file ("atmos_month")
-    """
-    v = None
-    if product == "static":
-        if comp_info.get("static") is None:
-            raise ValueError(f"Product is set to static but no static sources/variables defined for {comp_info.get('type')}")
-
-        for static_info in comp_info.get("static"):
-            if static_info.get("source") == req_source:
-                if static_info.get("variables") is None:
-                    v = "all"
-                else:
-                    v = static_info.get("variables")
-    else:
-        for src_info in comp_info.get("sources"): #history_file,variables
-            if src_info.get("history_file") == req_source:
-                if src_info.get("variables") is None:
-                    v = "all"
-                else:
-                    v = src_info.get("variables")
-
-    return v
 
 #Main method invocation
 if __name__ == '__main__':
