@@ -16,6 +16,11 @@ fre_logger.setLevel(logging.INFO)
 def yaml_load(yamlfile):
     """
     Load the yamlfile
+
+    :param yamlfile:
+    :type yamlfile:
+    :return:
+    :rtype: str
     """
     with open(yamlfile, 'r') as yf:
         y = yaml.load(yf, Loader = yaml.Loader)
@@ -27,6 +32,13 @@ def output_yaml(cleaned_yaml, output):
     """
     Write out the combined yaml dictionary info
     to a file if --output is specified
+
+    :param cleaned_yaml:
+    :type cleaned_yaml:
+    :param output:
+    :type output:
+    :return:
+    :rtype: str
     """
     filename = output
     with open(filename,'w') as out:
@@ -40,10 +52,15 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
     """
     Check that the experiment given is an experiment listed in the model yaml.
     Extract experiment specific information and file paths.
-    Arguments:
-    mainyaml_dir    :  model yaml file
-    comb            :  combined yaml file name
-    experiment      :  experiment name
+    
+    :param mainyaml_dir:  Model yaml file
+    :type mainyaml_dir:
+    :param experiment: Post-processing experiment name
+    :type experiment: str
+    :param loaded_yml:
+    :type loaded_yml: dict
+    :return:
+    :rtype: str
     """
     # Check if exp name given is actually valid experiment listed in combined yaml
     exp_list = []
@@ -90,6 +107,11 @@ def clean_yaml(yml_dict):
     """
     Clean the yaml; remove unnecessary sections in
     final combined yaml.
+
+    :param yml_dict:
+    :type yml_dict: dict
+    :return:
+    :rtype: str
     """
     # Clean the yaml
     # If keys exists, delete:
@@ -105,6 +127,13 @@ def clean_yaml(yml_dict):
 def validate_yaml(yaml, schema_path):
     """
     Validate yaml information
+
+    :param yaml:
+    :type yaml:
+    :param schema_path:
+    :type schema_path:
+    :return:
+    :rtype: str
     """
     # Validate combined yaml information 
     with open(schema_path, 'r') as s:

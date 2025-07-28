@@ -13,43 +13,71 @@ from abc import ABC, abstractmethod
 class MergePPANYamls(ABC):
     @abstractmethod
     def combine_model(self):
+        """
+        :return:
+        :rtype: str
+        """
         pass
 
     @abstractmethod
     def get_settings_yaml(self, yaml_content_str):
+        """
+        :return:
+        :rtype: str
+        """
         pass
 
     @abstractmethod
     def combine_yamls(self):
+        """
+        :return:
+        :rtype: str
+        """
         pass
 
     @abstractmethod
     def merge_multiple_yamls(self):
+        """
+        :return:
+        :rtype: str
+        """
         pass
 
 # inherited by compile_info_parser
 class MergeCompileYamls(ABC):
     @abstractmethod
     def combine_model():
+        """
+        :return:
+        :rtype: str
+        """
         pass
 
     @abstractmethod
     def combine_compile():
+        """
+        :return:
+        :rtype: str
+        """
         pass
 
     @abstractmethod
     def combine_platforms():
+        """
+        :return:
+        :rtype: str
+        """
         pass
 
-class ValidateYamls(ABC):
-    @abstractmethod
-    def validate_keys():
-        pass
-
+#class ValidateYamls(ABC):
+#    @abstractmethod
+#    def validate_keys():
+#        pass
+#
 #    @abstractmethod
 #    def validate_values():
 #        pass
-
-    @abstractmethod
-    def validate():
-        pass
+#
+#    @abstractmethod
+#    def validate():
+#        pass

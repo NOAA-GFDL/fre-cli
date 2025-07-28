@@ -12,6 +12,13 @@ def get_compile_paths(full_path,loaded_yml):
     """
     Find and return the paths for the compile
     and platform yamls
+
+    :param full_path:
+    :type full_path:
+    :param loaded_yml:
+    :type loaded_yml:
+    :return:
+    :rtype: str
     """
     for key,value in loaded_yml.items():
         if key == "build":
@@ -22,11 +29,14 @@ def get_compile_paths(full_path,loaded_yml):
 
 ## COMPILE CLASS ##
 class InitCompileYaml(MergeCompileYamls):
-    """ class holding routines for initalizing compilation yamls """
+    """
+    Class holding routines for initalizing and combining compilation yamls
+
+    :ivar str yamlfile: Path to model yaml configuration file
+    :ivar str platform: Platform name
+    :ivar str target: Target name
+    """
     def __init__(self,yamlfile,platform,target):
-        """
-        Process to combine yamls applicable to compilation
-        """
         self.yml = yamlfile
         #self.name = yamlfile.split(".")[0]
         self.namenopath = self.yml.split("/")[-1].split(".")[0]
@@ -42,6 +52,9 @@ class InitCompileYaml(MergeCompileYamls):
     def combine_model(self):
         """
         Create the combined.yaml and merge it with the model yaml
+
+        :return:
+        :rtype: str
         """
         # Define click options in string
         yaml_content = (f'name: &name "{self.namenopath}"\n'
@@ -65,6 +78,13 @@ class InitCompileYaml(MergeCompileYamls):
     def combine_compile(self,yaml_content,loaded_yaml):
         """
         Combine compile yaml with the defined combined.yaml
+
+        :param yaml_content:
+        :type yaml_content: str
+        :param loaded_yaml:
+        :type loaded_yml: dict
+        :return:
+        :rtype: str
         """
         self.mainyaml_dir = os.path.dirname(self.yml)
 
@@ -90,6 +110,13 @@ class InitCompileYaml(MergeCompileYamls):
     def combine_platforms(self, yaml_content, loaded_yaml):
         """
         Combine platforms yaml with the defined combined.yaml
+
+        :param yaml_content:
+        :type yaml_content: str
+        :param loaded_yml:
+        :type loaded_yml: dict
+        :return:
+        :rtype: str
         """
         self.mainyaml_dir = os.path.dirname(self.yml)
 
@@ -115,8 +142,9 @@ class InitCompileYaml(MergeCompileYamls):
     def combine(self):
         """
         Combine the model, compile, and platform yamls
-        Arguments:
-        comb : combined yaml object
+
+        :return:
+        :rtype: str
         """
         try:
             (yaml_content, loaded_yaml)=self.combine_model()

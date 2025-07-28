@@ -13,17 +13,22 @@ from fre.yamltools.info_parsers import compile_info_parser as cip
 from fre.yamltools.info_parsers import pp_info_parser as ppip
 from fre.yamltools.info_parsers import analysis_info_parser as aip
 from . import helpers
+from typing import Optional
 import pprint
 
 fre_logger = logging.getLogger(__name__)
 
 ## Functions to combine the yaml files ##
-def get_combined_cmoryaml(CMORYaml, experiment, output = None):
+def get_combined_cmoryaml(CMORYaml, experiment: str, output: Optional[str]=None):
     """
     Combine the model, experiment, and cmor yamls
-    Arguments:
-        CMORYaml (required): combined cmor-yaml object
-        output   (optional): string/Path representing target output file to write yamlfile to
+
+    :param CMORYaml: combined cmor-yaml object
+    :type CMORYaml: 
+    :param experiment: Name of post-processing experiment
+    :type experiment: str
+    :param output: Path representing target output file to write yamlfile to
+    :type output: str
     """
 
     # Merge model into combined file
@@ -81,10 +86,23 @@ def get_combined_cmoryaml(CMORYaml, experiment, output = None):
 
     return cleaned_yaml
 
-def consolidate_yamls(yamlfile, experiment, platform, target, use, output=None):
+def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, use:str, output: Optional[str]=None) -> dict:
     """
     Depending on `use` argument passed, either create the final
     combined yaml for compilation or post-processing
+
+    :param yamlfile: Path to the model yaml configuration
+    :type yamlfile: str
+    :param experiment: Post-processing experiment name
+    :type experiment: str
+    :param platform: Platform name to be used
+    :type platform: str
+    :param use: How the tool is intended to be used (options: compile | pp| cmor)
+    :type use: str
+    :param output: Path to an output file
+    :type output: str
+    :return: yaml dictionary containing combined information from multiple yaml configurations
+    :rtype: dict
     """
     if use == "compile":
         fre_logger.info('initializing a compile yaml instance...')

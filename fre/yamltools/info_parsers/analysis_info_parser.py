@@ -15,7 +15,14 @@ from fre.yamltools.abstract_classes import MergePPANYamls
 import yaml
 
 class InitAnalysisYaml(MergePPANYamls):
-    """ ---- """
+    """
+    Class holding routines for initalizing and combining post-processing yamls
+
+    :ivar str yamlfile: Path to the model yaml configuration
+    :ivar str experiment: Post-processing experiment name
+    :ivar str platform: Platform name
+    :ivar str target: Target name
+    """
     def __init__(self,yamlfile,experiment,platform,target):
         """
         Process to combine the applicable yamls for post-processing
@@ -38,6 +45,9 @@ class InitAnalysisYaml(MergePPANYamls):
     def combine_model(self):
         """
         Create the combined.yaml and merge it with the model yaml
+
+        :return:
+        :rtype: str
         """
         # Define click options in string
         yaml_content_str = (f'name: &name "{self.name}"\n'
@@ -63,6 +73,8 @@ class InitAnalysisYaml(MergePPANYamls):
         """
         :param yaml_content_str: 
         :type yaml_content_str: str
+        :return:
+        :rtype: str
         """
         my = yaml.load(yaml_content_str, Loader=yaml.Loader)
 #        print(yml.get("experiments"))
@@ -83,6 +95,11 @@ class InitAnalysisYaml(MergePPANYamls):
         """
         Combine analysis yamls with the defined combined.yaml
         If more than 1 analysis yaml defined, return a list of paths.
+
+        :param yaml_content_str:
+        :type yaml_content_str: str
+        :return:
+        :rtype: str
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
@@ -114,14 +131,19 @@ class InitAnalysisYaml(MergePPANYamls):
                 analysis_info_i = yaml_content_str + analysis_content
                 analysis_yamls.append(analysis_info_i)
 
-###        print(analysis_yamls)
-###        ah2
         return analysis_yamls
 
     def merge_multiple_yamls(self, analysis_list, yaml_content_str):
         """
         Merge separately combined post-processing and analysis
         yamls into fully combined yaml (without overwriting like sections).
+
+        :param analysis_list:
+        :type analysis_list:
+        :param yaml_content_str:
+        :type yaml_content_str:
+        :return:
+        :rtype: str
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
@@ -133,36 +155,16 @@ class InitAnalysisYaml(MergePPANYamls):
         # If instance of key is a dictionary in both result and loaded yamlfile, update the key
         # in result to include the loaded yaml file's value.
         if analysis_list is not None and len(analysis_list) > 1:
-###            yml_analysis = "".join(analysis_list[0])
-###            result.update(yaml.load(yml_analysis,Loader=yaml.Loader))
-
-#            print(analysis_list[0])
-#            quit()
             result.update(yaml.load(analysis_list[1], Loader=yaml.Loader))
 
-###            print(analysis_list)
-###            pprint.pprint(result)
-###            quit()
-
             for i in analysis_list[2:]:
-#               analysis_list_to_string_concat = "".join(i)
-###                print(i)
-###                quit()
                 yf = yaml.load(i, Loader=yaml.Loader)
                 for key in result:
-                    #print(key)
-                    #quit()
 
                     if key not in yf:
                         continue
                     if isinstance(result[key],dict) and isinstance(yf[key],dict):
                         result['analysis'] = yf['analysis'] | result['analysis']
-#                        result['analysis'] += yf['analysis']
-
-#        # If only one analysis yaml listed
-#        elif analysis_list is not None and len(analysis_list) == 1:
-##            yml_analysis = "".join(analysis_list[0])
-#            result.update(yaml.load(analysis_list[0],Loader=yaml.Loader))
 
         if ay_path is not None:
             former_log_level = fre_logger.level
@@ -174,7 +176,11 @@ class InitAnalysisYaml(MergePPANYamls):
 
         return result
 
-    def combine(self):
+    def combine(self): 
+        """
+        :return:
+        :rtype: str
+        """
         try:
             # Merge model into combined file
             yaml_content_str = self.combine_model()

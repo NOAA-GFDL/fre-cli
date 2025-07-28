@@ -10,17 +10,23 @@ import pprint
 from fre.yamltools.helpers import experiment_check, clean_yaml
 from fre.yamltools.abstract_classes import MergePPANYamls
 from fre.yamltools.val_yml_structures import ModelYmlStructure
+
 import yaml 
+
 # this boots yaml with !join- see __init__
 from . import *
 
 ## PP CLASS ##
 class InitPPYaml(MergePPANYamls):
-    """ class holding routines for initalizing post-processing yamls """
+    """ 
+    Class holding routines for initalizing and combining post-processing yamls
+
+    :ivar str yamlfile: Path to the model yaml configuration
+    :ivar str experiment: Post-processing experiment name
+    :ivar str platform: Platform name
+    :ivar str target: Target name
+    """
     def __init__(self,yamlfile,experiment,platform,target):
-        """
-        Process to combine the applicable yamls for post-processing
-        """
         self.yml = yamlfile
         self.name = experiment
         self.platform = platform
@@ -36,11 +42,14 @@ class InitPPYaml(MergePPANYamls):
         fre_logger.info("Combining yaml files into one dictionary: ")
         fre_logger.setLevel(former_log_level)
 
-#        val1 = ModelYmlStructure(self.yml).validate()
+        val1 = ModelYmlStructure(self.yml).validate()
 
     def combine_model(self):
         """
         Create the combined.yaml and merge it with the model yaml
+
+        :return:
+        :rtype: str
         """
         # Define click options in string
         yaml_content_str = (f'name: &name "{self.name}"\n'
@@ -64,8 +73,11 @@ class InitPPYaml(MergePPANYamls):
 
     def get_settings_yaml(self, yaml_content_str):
         """
+        Combined the model and settings yaml information =
         :param yaml_content_str: 
         :type yaml_content_str: str
+        :return:
+        :rtype: str
         """
         my = yaml.load(yaml_content_str, Loader=yaml.Loader)
     
@@ -91,6 +103,11 @@ class InitPPYaml(MergePPANYamls):
         """
         Combine experiment yamls with the defined combined.yaml.
         If more than 1 pp yaml defined, return a list of paths.
+
+        :param yaml_content_str: 
+        :type yaml_content_str: str
+        :return:
+        :rtype: 
         """
         # Experiment Check
         # Load string as yaml
@@ -126,6 +143,13 @@ class InitPPYaml(MergePPANYamls):
         """
         Merge separately combined post-processing and analysis
         yamls into fully combined yaml (without overwriting like sections).
+
+        :param pp_list:
+        :type pp_list:
+        :param yaml_content_str:
+        :type yaml_content_str: str
+        :return:
+        :rtype: str
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
@@ -174,8 +198,9 @@ class InitPPYaml(MergePPANYamls):
     def combine(self):
         """
         Combine the model, experiment, and analysis yamls
-        Arguments:
-        comb : combined yaml object
+
+        :return:
+        :rtype: str
         """
         try:
             # Merge model into combined file
