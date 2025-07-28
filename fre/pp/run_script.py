@@ -11,6 +11,16 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     """
     Start or restart the Cylc workflow identified by:
     <experiment>__<platform>__<target>
+    :param experiment: Name of post-processing experiment, default is None
+    :type experiment: string
+    :param platform: Name of the platform upon which the original experiment was run. Default is None.
+    :type platform: string
+    :param target: Name of the target . Default is None.
+    :type target: string
+    :param pause:
+    :type pause: boolean
+    :param no_wait:
+    :type no_wait: boolean
     """
     if None in [experiment, platform, target]:
         raise ValueError( 'experiment, platform, and target must all not be None.'
