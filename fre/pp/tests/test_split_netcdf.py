@@ -101,16 +101,15 @@ def test_split_file_run(workdir,infile, outfiledir, varlist):
     :type outfiledir: string
     :param varlist: comma-separated string specifying which variables to write ("all", some_ts_varlist, none_ts_varlist)
     :type varlist: string
-    :type origdir: string ::
-        Parameters for the 3 tests are based off of the list of variables to filter
-            on plus the type of file:
-            all: "all", the default, processes all variables in the input
-            some: processes a list of variables, some of which are and some of 
-                which are not in the input; includes one duplicate var
-            none: processes a list of variables, none of which are in the input;
-                should produce no files
-            ts: timeseries files
-            static: static files'''
+    :type origdir: string
+    
+    Parameters for the 5 tests are based off of the list of variables to filter on plus the type of file:
+    
+    - all: "all", the default, processes all variables in the input
+    - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
+    - none: processes a list of variables, none of which are in the input; should produce no files
+    - ts: timeseries files
+    - static: static files'''
     infile = osp.join(workdir, infile)
     outfiledir = osp.join(workdir, outfiledir)
     split_netcdf_args = ["pp", "split-netcdf", 
@@ -134,15 +133,15 @@ def test_split_file_data(workdir,newdir, origdir):
     :param newdir: the directory containing the newly-written files (new_all_ts_varlist, new_some_ts_varlist)
     :type newdir: string
     :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
-    :type origdir: string ::
-        Parameters for the tests differ based off the variable list from test_split_file_run
-          and the type of file being split:
-            all: "all", the default, processes all variables in the input
-            some: processes a list of variables, some of which are and some of 
-                which are not in the input; includes one duplicate var
-            ts: timeseries files
-            static: static files
-                '''
+    :type origdir: string
+    
+    Parameters for the tests differ based off the variable list from test_split_file_run and the type of file being split:
+    
+    - all: "all", the default, processes all variables in the input
+    - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
+    - ts: timeseries files
+    - static: static files
+    '''
     newdir = osp.join(workdir, newdir)
     origdir = osp.join(workdir, origdir)
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
@@ -181,14 +180,14 @@ def test_split_file_metadata(workdir,newdir, origdir):
     :param newdir: the directory containing the newly-written files (new_all_ts_varlist, new_some_ts_varlist)
     :type newdir: string
     :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
-    :type origdir: string ::
-        Parameters for the tests differ based off the variable list from test_split_file_run
-          and the type of file being split:
-            all: "all", the default, processes all variables in the input
-            some: processes a list of variables, some of which are and some of 
-                which are not in the input; includes one duplicate var
-            ts: timeseries files
-            static: static files
+    :type origdir: string
+    
+    Parameters for the tests differ based off the variable list from test_split_file_run and the type of file being split:
+    
+    - all: "all", the default, processes all variables in the input
+    - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
+    - ts: timeseries files
+    - static: static files
                 '''
     newdir = osp.join(workdir, newdir)
     origdir = osp.join(workdir, origdir)

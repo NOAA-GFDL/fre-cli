@@ -129,6 +129,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   variable name in the filename. 
   if var_list if specified, only the vars in var_list are written to file; 
   if no vars in the file match the vars in var_list, no files are written.
+  
   :param infile: input netcdf file
   :type infile: string
   :param outfiledir: writeable directory to which to write netcdf files
@@ -172,6 +173,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   var_exclude = list(set(var_patterns + [str(el) for el in var_shortvars] ))
   def matchlist(xstr):
     ''' checks a string for matches in a list of patterns
+    
         xstr: string to search for matches 
         var_exclude: list of patterns defined in line 139'''
     allmatch = [re.search(el, xstr)for el in var_exclude]
@@ -220,6 +222,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
 def get_max_ndims(dataset):
   '''
   Gets the maximum number of dimensions of a single var in an xarray Dataset object. Excludes coord vars, which should be single-dim anyway.
+  
   :param dataset: xarray Dataset you want to query 
   :type dataset: xarray Dataset
   :return: The max dimensions that a single var posesses in the Dataset
@@ -235,6 +238,7 @@ def set_coord_encoding(dset, vcoords):
   as expected
   we need the list of all vars (varnames) because that's how you get coords
   for the metadata vars (i.e. nv or bnds for time_bnds)
+  
   :param dset: xarray Dataset object to query for info
   :type dset: xarray Dataset object
   :param vcoords: list of coordinate variables to write to file
@@ -243,6 +247,7 @@ def set_coord_encoding(dset, vcoords):
   each value is a dictionary where the keys are the encoding information from
   the coordinate variable in the Dataset plus the units (if present)
   :rtype: dict
+  
   ..note:: This code removes _FillValue from coordinates. CF-compliant files do not
   have _FillValue on coordinates, and xarray does not have a good way to get
   _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
@@ -263,10 +268,11 @@ def set_coord_encoding(dset, vcoords):
 def set_var_encoding(dset, varnames):
   '''
   Gets the encoding settings needed for xarray to write out the variables
-  as expected::
+  as expected
   
   mostly addressed to time_bnds, because xarray can drop the units attribute
-    https://github.com/pydata/xarray/issues/8368
+  
+  - https://github.com/pydata/xarray/issues/8368
     
   :param dset: xarray dataset object to query for info
   :type dset: xarray dataset object
@@ -291,11 +297,13 @@ def set_var_encoding(dset, varnames):
 def fre_outfile_name(infile, varname):
   '''
   Builds split  var filenames the way that fre expects them 
-  (and in a way that should work for any .nc file)::
+  (and in a way that should work for any .nc file)
   
    This is expected to work with files formed the following way
-    Fre Input format:  date.component(.tileX).nc
-    Fre Output format: date.component.var(.tileX).nc
+   
+   - Fre Input format:  date.component(.tileX).nc
+   - Fre Output format: date.component.var(.tileX).nc
+   
    but it should also work on any file filename.nc
   
   :param infile: name of a file with a . somwehere in the filename
