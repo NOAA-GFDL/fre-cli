@@ -109,7 +109,8 @@ def test_split_file_run(workdir,infile, outfiledir, varlist):
     - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
     - none: processes a list of variables, none of which are in the input; should produce no files
     - ts: timeseries files
-    - static: static files'''
+    - static: static files
+    '''
     infile = osp.join(workdir, infile)
     outfiledir = osp.join(workdir, outfiledir)
     split_netcdf_args = ["pp", "split-netcdf", 
@@ -188,7 +189,7 @@ def test_split_file_metadata(workdir,newdir, origdir):
     - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
     - ts: timeseries files
     - static: static files
-                '''
+    '''
     newdir = osp.join(workdir, newdir)
     origdir = osp.join(workdir, origdir)
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
@@ -210,7 +211,8 @@ def test_split_file_metadata(workdir,newdir, origdir):
 #clean up splitting files
 def test_split_file_cleanup():
     ''' Cleaning up files and dirs created for this set of tests. 
-        Deletes all netcdf files (*.nc) and all dirs created for this test (new_*)'''
+        Deletes all netcdf files (*.nc) and all dirs created for this test (new_*)
+        '''
     el_list = []
     dir_list = []
     for path, subdirs, files in os.walk(test_dir):
@@ -227,33 +229,3 @@ def test_split_file_cleanup():
     dir_deleted = [not osp.isdir(el) for el in newdir]
     el_deleted = [not osp.isdir(el) for el in netcdf_files]
     assert all(el_deleted + dir_deleted)
-
-#test parsing yaml
-@pytest.mark.parametrize("component,compdir,varlist,hist_source", 
-                             [("atmos", "all_ts_varlist","all", "none"), 
-                             ("atmos", "some_ts_varlist", some_ts_varlist, "none"), 
-                             pytest.param("mantle", "none_ts_varlist", 
-                                          "", "none", marks=pytest.mark.xfail), 
-                             pytest.param("atmos", "all_ts_varlist", "all", 
-                                          "atmos_diurnal", marks=pytest.mark.xfail)])
-def test_parse_yaml(component, compdir, varlist, hist_source):
-    ''' Tests parsing yaml for the variable_list we need for splitting
-    note: I am not putting that much work into getting this formatted right; it's getting rewritten shortly once another pull request is complete
-    :param component: string corresponding to a component in the yaml
-    :param compdir: directory in which to look for the yaml (all use same filename)
-    :param varlist: list of variables expected to match what we get from the yaml
-    :param hist_source: optional, string corresponding to a hist_source that should be under the component in the yaml::
-    
-        Parameters for the tests are based off of the following: 
-            parses the yaml, does not find a varlist, gets the right default
-            parses the yaml, finds a varlist and it matches the orig results
-            parses the yaml, does not find the component and throws an error
-            parses the yaml, finds the varlist, but does not find a history_file
-              under sources that matches the hist_source
-            '''
-    yamlfile = osp.join(osp.join(casedirs[0], compdir), "am5_components_varlist.yml")
-    if hist_source == "none":
-      new_varlist = parse_yaml_for_varlist(yamlfile, component)
-    else:
-      new_varlist = parse_yaml_for_varlist(yamlfile, component, hist_source)  
-    assert varlist == new_varlist

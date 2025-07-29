@@ -69,10 +69,10 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   if split_all_vars:
     varlist = "all"
   else:
-    vardict = get_variables(yamlfile, component)
-    varlist = vardict[history_source]
-    if varlist 
-    #varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
+    #vardict = get_variables(yamlfile, component)
+    #varlist = vardict[history_source]
+    #if varlist is None:
+    varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
   
   #extend globbing used to find both tiled and non-tiled files
   #all files that contain the current source:history_file name,
@@ -244,16 +244,16 @@ def set_coord_encoding(dset, vcoords):
   :param vcoords: list of coordinate variables to write to file
   :type vcoords: list of strings
   :return: A dictionary where each key is a coordinate in the xarray Dataset and 
-  each value is a dictionary where the keys are the encoding information from
-  the coordinate variable in the Dataset plus the units (if present)
+           each value is a dictionary where the keys are the encoding information from
+           the coordinate variable in the Dataset plus the units (if present)
   :rtype: dict
   
   ..note:: This code removes _FillValue from coordinates. CF-compliant files do not
-  have _FillValue on coordinates, and xarray does not have a good way to get
-  _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
-  when coordinates *have* a _FillValue gets you wrong metadata, and bad metadata
-  is worse than no metadata. Dropping the attribute if it's present seems to be 
-  the lesser of two evils.
+           have _FillValue on coordinates, and xarray does not have a good way to get
+           _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
+           when coordinates *have* a _FillValue gets you wrong metadata, and bad metadata
+           is worse than no metadata. Dropping the attribute if it's present seems to be 
+           the lesser of two evils.
   '''
   fre_logger.debug(f"getting coord encode settings")
   encode_dict = {}
@@ -278,9 +278,7 @@ def set_var_encoding(dset, varnames):
   :type dset: xarray dataset object
   :param varnames: list of variables that will be written to file
   :type varnames: list of strings
-  :return: A dictionary where each key is a variable in the xarray Dataset and 
-  each value is a dictionary where the keys are the encoding information from
-  the variable in the Dataset plus the units (if present)
+  :return: dict {var1: {encodekey1 : encodeval1, encodekey2:encodeval2...}}
   :rtype: dict
   '''
   fre_logger.debug(f"getting var encode settings")
