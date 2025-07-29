@@ -10,10 +10,14 @@ from . import make_workflow_name
 
 def install_subtool(experiment, platform, target):
     """
-    Install the Cylc workflow definition located in
-    ~/cylc-src/<experiment>__<platform>__<target>
+    Install the Cylc workflow definition located in 
+    
+    ~/cylc-src/$(experiment)__$(platform)__$(target)
+    
     to
-    ~/cylc-run/<experiment>__<platform>__<target>
+    
+    ~/cylc-run/$(experiment)__$(platform)__$(target)
+    
     :param experiment: Name of post-processing experiment, default is None
     :type experiment: string
     :param platform: Name of the platform upon which the original experiment was run. Default is None.

@@ -8,8 +8,8 @@ TIMEOUT_SECS=120#30
 
 def status_subtool(experiment = None, platform = None, target = None):
     """
-    Report workflow state for the Cylc workflow
-    <experiment>__<platform>__<target>
+    Report workflow state for the Cylc workflow $(experiment)__$(platform)__$(target)
+    
     :param experiment: Name of post-processing experiment, default is None
     :type experiment: string
     :param platform: Name of the platform upon which the original experiment was run. Default is None.

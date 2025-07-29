@@ -22,8 +22,10 @@ from .status_script import status_subtool
 
 def run_all_fre_pp_steps(experiment = None, platform = None, target = None, config_file = None, branch = None, time = None):
     '''
-    Wrapper script for calling a FRE2 pp experiment with the canopy-style
-    infrastructure and fre-cli
+    Wrapper script for all the steps of the fre2 pp infrastructure. 
+    
+    Calls config_file, checkout_template, yaml_info, install_subtool, pp_run_subtool, (trigger) and status_subtool in sequence. (trigger) is an optional step. 
+    
     :param experiment: Name of post-processing experiment, default is None
     :type experiment: string
     :param platform: Name of the platform upon which the original experiment was run. Default is None.

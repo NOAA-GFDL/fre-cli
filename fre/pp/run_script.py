@@ -9,21 +9,17 @@ from . import make_workflow_name
 def pp_run_subtool(experiment = None, platform = None, target = None,
                    pause = False, no_wait = False):
     """
-    Start or restart the current Cylc workflow
-    FRE builds its experiment identifiers out of 3 pieces: experiment, platform and target.
-    The Cylc workflow is described by those 3 pieces separated with underscores:
-    <experiment>__<platform>__<target>
-    :param experiment: Name of post-processing experiment, default is None
+    Starts, pauses or restarts the Cylc workflow described by $(experiment)__$(platform)__$(target)
+    
+    :param experiment: Name of a post-processing experiment in the yaml, default is None
     :type experiment: string
-    :param platform: Name of the platform upon which the original experiment was run. Default is None.
+    :param platform: Platform + compiler upon which the model was run. Default is None.
     :type platform: string
     :param target: Name of the target . Default is None.
     :type target: string
-    :param pause: Whether to pause the current Cylc workflow. Defaults to false,
-    which does not pause the workflow.
+    :param pause: Whether to pause the current Cylc workflow. Defaults to false, which starts or restarts the workflow.
     :type pause: boolean
-    :param no_wait: Whether to avoid waiting at least 30 seconds for confirmation 
-    that the workflow is stopped. Defaults to False, which waits for confirmation.
+    :param no_wait: Whether to avoid waiting at least 30 seconds for confirmation that the workflow is stopped. Defaults to False, which waits for confirmation.
     :type no_wait: boolean
     """
     if None in [experiment, platform, target]:
