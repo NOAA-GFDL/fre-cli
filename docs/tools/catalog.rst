@@ -1,6 +1,6 @@
 .. NEEDS UPDATING #TODO
 
-For more complete information on the ``catalogbuilder`` tool, please see its offical `documentation <https://noaa-gfdl.github.io/CatalogBuilder/>`_.
+For more complete information on the ``catalogbuilder`` tool, please see its official `documentation <https://noaa-gfdl.github.io/CatalogBuilder/>`_.
 
 ``build``
 -----------
@@ -16,4 +16,11 @@ Generate a catalog.
 ``validate``
 ------------
 
-Validate the catalog.
+Validate catalogs
+
+* Runs the comprehensive validator tool (validates vocabulary and ensures catalogs were generated properly)
+* Minimal Syntax: ``fre catalog validate [json_path] --vocab     OR
+                    fre catalog validate [json_path] --proper_generation``
+* Module(s) needed: n/a
+* Example: ``fre catalog validate ~/example_catalog.json --vocab``
+
