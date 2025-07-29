@@ -3,15 +3,14 @@ TODO- make docstring
 '''
 
 import os
-import sys
 import logging
-fre_logger = logging.getLogger(__name__)
 
 import subprocess
-from pathlib import Path
 
-from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls_script as cy
+from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
+
+fre_logger = logging.getLogger(__name__)
 
 def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer):
     """Create the dockerfile and container build script for a container build
@@ -23,16 +22,13 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
     :param target: Predefined FRE targets
     :type target: str
     :param execute: Use this to run the created checkout script
-    :type execute: flag
+    :type execute: boolean
     :param skip_format_transfer: Skip the container format conversion to a .sif file.
-    :type execute: flag
+    :type execute: boolean
+    :raises ValueError: Error if platform passed does not exist in platforms yaml configuration 
 
     .. note:: For building a container on GAEA, users need to put in a helpdesk ticket for podman access.
     """
-
-    srcDir="src"
-    checkoutScriptName = "checkout.sh"
-    baremetalRun = False # This is needed if there are no bare metal runs
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target
@@ -58,7 +54,6 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
     modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
-    fremakeBuildList = []
     ## Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
@@ -68,15 +63,12 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 
-            ## Make the bldDir based on the modelRoot, the platform, and the target
-            srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
             if not platform["container"]:
                 continue
 
             image=modelYaml.platforms.getContainerImage(platformName)
             stage2image = modelYaml.platforms.getContainer2base(platformName)
-            bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
             tmpDir = "tmp/"+platformName
             dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],
@@ -98,15 +90,12 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
             dockerBuild.createBuildScript(platform, skip_format_transfer)
 
             former_log_level = fre_logger.level
-            fre_logger.setLevel(logging.INFO)                
+            fre_logger.setLevel(logging.INFO)
             fre_logger.info("\ntmpDir created in " + currDir + "/tmp")
             fre_logger.info("Dockerfile created in " + currDir +"\n")
             fre_logger.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
             fre_logger.setLevel(former_log_level)
-                
+
             # run the script if option is given
             if run:
                 subprocess.run(args=[dockerBuild.userScriptPath], check=True)
-
-if __name__ == "__main__":
-    dockerfile_create()

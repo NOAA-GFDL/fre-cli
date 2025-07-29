@@ -20,16 +20,22 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     :type platform: str
     :param target: Predefined FRE targets
     :type target: str
-    :param no_parallel_checkout: 
-    :type no_parallel_checkout: 
+    :param no_parallel_checkout: Option to turn off parallel checkouts
+    :type no_parallel_checkout: boolean
     :param jobs: Number of jobs to run simultaneously
     :type jobs: int
     :param execute: Use this to run the created checkout script
-    :type execute: flag
+    :type execute: boolean
     :param verbose: Get verbose messages
-    :type verbose: flag
+    :type verbose: boolean
+    :raises ValueError: 
+        - Error if 'jobs' param is not defined as integer
+        - Error if platform passed does not exist in platforms yaml configuration
 
-    .. note:: For a bare-metal build, the default is parallel checkouts. For a container build, the default is non-parallel checkouts.
+    :raises OSError: Error if checkout script did not run successfully
+
+    .. note:: For a bare-metal build, the default is to have parallel checkouts.
+              For a container build, the default is to have non-parallel checkouts.
     """
     # Define variables
     yml = yamlfile
@@ -131,6 +137,3 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
             fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
             fre_logger.info("\nCheckout script created at %s/checkout.sh \n", tmp_dir)
-
-if __name__ == "__main__":
-    checkout_create()

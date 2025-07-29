@@ -3,13 +3,14 @@ TODO: make docstring
 '''
 import os
 import logging
-fre_logger = logging.getLogger(__name__)
 
 from pathlib import Path
 from multiprocessing.dummy import Pool
 
-from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls_script as cy
+from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
+
+fre_logger = logging.getLogger(__name__)
 
 def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
     """Create the compile script for bare-metal build
@@ -25,10 +26,12 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     :param parallel: Number of concurrent model compiles (default 1)
     :type target: int
     :param execute: Use this to run the created checkout script
-    :type execute: flag
+    :type execute: boolean
     :param verbose: Get verbose messages
-    :type verbose: flag
-
+    :type verbose: boolean
+    :raises ValueError:
+        - Error if platform passed does not exist in platforms yaml configuration 
+        - Error if mkmf template defined in platforms yaml does not exist
     """
 
     # Define variables
@@ -43,7 +46,6 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
         fre_logger.setLevel(level=logging.INFO)
 
     srcDir = "src"
-    checkoutScriptName = "checkout.sh"
     baremetalRun = False  # This is needed if there are no bare metal runs
 
     ## Split and store the platforms and targets in a list
@@ -121,6 +123,3 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
             pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)  # process data_inputs iterable with pool
     else:
         return
-
-if __name__ == "__main__":
-    compile_create()
