@@ -10,6 +10,12 @@ def status_subtool(experiment = None, platform = None, target = None):
     """
     Report workflow state for the Cylc workflow
     <experiment>__<platform>__<target>
+    :param experiment: Name of post-processing experiment, default is None
+    :type experiment: string
+    :param platform: Name of the platform upon which the original experiment was run. Default is None.
+    :type platform: string
+    :param target: Name of the target . Default is None.
+    :type target: string
     """
 
     if None in [experiment, platform, target]:

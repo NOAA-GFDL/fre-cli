@@ -24,6 +24,18 @@ def run_all_fre_pp_steps(experiment = None, platform = None, target = None, conf
     '''
     Wrapper script for calling a FRE2 pp experiment with the canopy-style
     infrastructure and fre-cli
+    :param experiment: Name of post-processing experiment, default is None
+    :type experiment: string
+    :param platform: Name of the platform upon which the original experiment was run. Default is None.
+    :type platform: string
+    :param target: Name of the target . Default is None.
+    :type target: string
+    :param config_file: 
+    :type config_file:
+    :param branch:
+    :type branch: string
+    :param time:
+    :type time: integer
     '''
     print('(run_all_fre_pp_steps) config_file path resolving...')
     config_file = os.path.abspath(config_file)
