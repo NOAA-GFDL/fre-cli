@@ -16,7 +16,7 @@ Generate a catalog.
 ``validate``
 ------------
 
-Validate catalogs
+Validate a catalog
 
 * Runs the comprehensive validator tool (validates vocabulary and ensures catalogs were generated properly)
 * Minimal Syntax: ``fre catalog validate [json_path] --vocab     OR
