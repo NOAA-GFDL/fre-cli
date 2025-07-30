@@ -22,7 +22,7 @@
 
 ## **Quickstart**
 
-'fre-cli' is conda-installable from the “noaa-gfdl” anaconda channel (https://anaconda.org/NOAA-GFDL/fre-cli)
+`fre-cli` is conda-installable from the “noaa-gfdl” anaconda channel (https://anaconda.org/NOAA-GFDL/fre-cli)
 and is deployed on RDHPCS and GFDL systems as Environment Modules.
 
 ### On NOAA RDHPCS Gaea and at GFDL on PPAN

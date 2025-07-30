@@ -1,0 +1,50 @@
+name: Update Tag Version References
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  tag-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get the new tag
+        id: get_tag
+        run: |
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Get previous tag
+        id: get_prev_tag
+        run: |
+          prev_tag=$(git tag --sort=-creatordate | grep -v "${GITHUB_REF#refs/tags/}" | head -n 1)
+          echo "prev_tag=${prev_tag}" >> $GITHUB_OUTPUT
+
+      - name: Replace old tag with new tag in all relevant files
+        run: |
+          new_tag="${{ steps.get_tag.outputs.tag }}"
+          old_tag="${{ steps.get_prev_tag.outputs.prev_tag }}"
+          # Only replace if previous tag exists
+          if [ -n "$old_tag" ]; then
+            # README.md
+            sed -i "s/$old_tag/$new_tag/g" files/README.md
+            # setup.py
+            sed -i "s/$old_tag/$new_tag/g" files/setup.py
+            # test file
+            sed -i "s/$old_tag/$new_tag/g" files/fre/tests/test_fre_cli.py
+            # docs (all files)
+            find files/docs -type f -exec sed -i "s/$old_tag/$new_tag/g" {} +
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add files/README.md files/setup.py files/fre/tests/test_fre_cli.py files/docs
+          git commit -m "Update tag version references to ${{ steps.get_tag.outputs.tag }}"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
