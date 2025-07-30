@@ -8,6 +8,7 @@
 import subprocess
 import shutil
 import os
+import tarfile
 from pathlib import Path
 from typing import Type, List
 import ast
@@ -100,43 +101,57 @@ def check_interp_method(dataset: Type[xr.Dataset], regrid_vars: List[str], inter
 
 
 def check_per_component_settings(component_list, rose_app_cfg):
-    """for a source file ref'd by multiple components check per-component
+
+    """
+    for a source file ref'd by multiple components check per-component
     settings for uniqueness. output list of bools of same length to check
-    in componenet loop"""
-    do_regridding = [True] #first component will always be run
-    curr_out_grid_type_list = [safe_rose_config_get( \
-                                               rose_app_cfg, component_list[0], 'outputGridType')]
-    for i in range( 1, len(component_list) ):
-        next_comp=component_list[i]
-        next_out_grid_type=safe_rose_config_get( rose_app_cfg, next_comp, 'outputGridType')
+    in componenet loop
+    """
+
+    #first component will always be run
+    do_regridding = {component_list[0]: True}
+
+    curr_out_grid_type_list = [safe_rose_config_get(rose_app_cfg,
+                                                    component_list[0],
+                                                    'outputGridType')]
+    for component in component_list[1:]:
+        next_out_grid_type = safe_rose_config_get(rose_app_cfg, component, 'outputGridType')
         if next_out_grid_type not in curr_out_grid_type_list:
-            do_regridding.append(True)
-            curr_out_grid_type_list.append(next_out_grid_type)
+            do_regridding[component] = True
         else:
-            do_regridding.append(False)
-    if len(do_regridding) != len(component_list) :
+            do_regridding[component] = False
+
+    if len(do_regridding) != len(component_list):
         raise ValueError('problem with checking per-component settings for uniqueness')
+
     return do_regridding
 
 
 def make_component_list(config, source):
-    """make list of relevant component names where source file appears in sources"""
-    comp_list=[] #will not contain env, or command
+
+    """
+    make list of relevant component names where source file appears in sources
+    """
+
+    comp_list = [] #will not contain env, or command
     for keys, sub_node in config.walk():
+
         # only target the keys
-        if len(keys) != 1:
-            continue
+        if len(keys) != 1: continue
+
+        item = keys[0]
 
         # skip env and command keys
-        item = keys[0]
-        if item == "env" or item == "command":
-            continue
-
+        if item in ["env", "command"]: continue
+        
         # convert ascii array to array
         sources = ast.literal_eval(config.get_value(keys=[item, 'sources']))
 
-        if source in sources:
-            comp_list.append(item)
+        if source in sources: comp_list.append(item)
+        
+    if len(comp_list) == 0:
+        raise ValueError('component list empty - source file not found in any source file list!')
+
     return comp_list
 
 
@@ -155,96 +170,73 @@ def make_regrid_var_list(target_file: str, interp_method: str = None):
     return regrid_vars
 
 
-def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
-              grid_spec, rose_config):
-    """
-    calls fre-nctools' fregrid to regrid netcdf files
-    """
+def check_directory(dirtype: str = None, checkdir: str = None, makedir: bool = False, parents: bool = False):
 
-    # mandatory arguments- code exits if any of these are not present
-    if None in [ input_dir , output_dir    ,
-                 begin     , tmp_dir       ,
-                 remap_dir , source        ,
-                 grid_spec , rose_config ]:
-        raise Exception(f'a mandatory input argument is not present in {config_name})')
+    if makedir: Path(checkdir).mkdir(parents=parents, exist_ok=True)
+    
+    if not Path(checkdir).exists():
+        raise OSError('The following directory does not exist and/or could not be created'
+                      f'{dirtype} = "\n{checkdir}')
+        
+
+def regrid_xy(input_dir: str, output_dir: str, begin: str, tmp_dir: str, remap_dir: str, source: str,
+              grid_spec: str, yamlfile: str):
+
+    """
+    calls fre-nctools' fregrid to regrid variables in specified history files
+    """
 
     fre_logger.info(
-         f'\ninput_dir         = { input_dir        }\n' + \
-           f'output_dir        = { output_dir       }\n' + \
-           f'begin             = { begin            }\n' + \
-           f'tmp_dir           = { tmp_dir          }\n' + \
-           f'remap_dir         = { remap_dir        }\n' + \
-           f'source            = { source           }\n' + \
-           f'grid_spec         = { grid_spec        }\n' + \
-           f'rose_config       = { rose_config      }\n')
+        f'\ninput_dir       = {input_dir}\n' + \
+        f'output_dir        = {output_dir}\n' + \
+        f'begin             = {begin}\n' + \
+        f'tmp_dir           = {tmp_dir}\n' + \
+        f'remap_dir         = {remap_dir}\n' + \
+        f'source            = {source}\n' + \
+        f'grid_spec         = {grid_spec}\n' + \
+        f'yamlfile          = {yamlfile}\n')
 
     # rose config load check
     rose_app_config = rose_cfg.load(rose_config)
 
-    # input dir must exist
-    if not Path( input_dir ).exists():
-        raise OSError(f'input_dir={input_dir} \n does not exist')
-
-    # tmp_dir check
-    if not Path( tmp_dir ).exists():
-        raise OSError(f'tmp_dir={tmp_dir} \n does not exist.')
-
-    # output dir check
-    Path( output_dir ).mkdir( parents = True, exist_ok = True )
-    if not Path( output_dir ).exists() :
-        raise OSError('the following does not exist and/or could not be created:' +
-                        f'output_dir=\n{output_dir}')
-
-    # work/ dir check
-    work_dir = tmp_dir + 'work/'
-    Path( work_dir ).mkdir( exist_ok = True )
-    if not Path( work_dir ).exists():
-        raise OSError('the following does not exist and/or could not be created:' +
-                        f'work_dir=\n{work_dir}')
-
-    # fregrid remap dir check
-    Path(remap_dir).mkdir( exist_ok = True )
-    if not Path( remap_dir ).exists():
-        raise OSError(f'{remap_dir} could not be created')
+    # check input, temp, output, exists.  check work and remap are created
+    check_directory('input_dir', input_dir)    
+    check_directory('tmp_dir', tmp_dir)
+    check_directory('output_dir', output_dir, makedir=True, parents=True)
+    check_directory('work_dir', work_dir, makedir=True, parents=True)
+    check_directory('remap_dir', remap_dir, makedir=True)
 
     # grid_spec file management
     starting_dir = os.getcwd()
     os.chdir(work_dir)
-    if '.tar' in grid_spec:
-        untar_sp = \
-            subprocess.run( ['tar', '-xvf', grid_spec], check = True , capture_output = True)
-        if Path( 'mosaic.nc' ).exists():
-            grid_spec_file='mosaic.nc'
-        elif Path( 'grid_spec.nc' ).exists():
-            grid_spec_file='grid_spec.nc'
+
+    if tarfile.is_tarfile(grid_spec):
+        with tarfile.open(grid_spec, "vf") as tar: tar.extractall()
+        if Path('mosaic.nc').exists():
+            grid_spec_file = 'mosaic.nc'
+        elif Path('grid_spec.nc').exists():
+            grid_spec_file = 'grid_spec.nc'
         else:
             raise ValueError(f'grid_spec_file cannot be determined from grid_spec={grid_spec}')
     else:
         try:
-            grid_spec_file=grid_spec.split('/').pop()
-            shutil.copy(grid_spec, grid_spec_file )
+            shutil.copy(grid_spec, grid_spec.split('/').pop())
         except Exception as exc:
-            raise OSError(f'grid_spec={grid_spec} could not be copied.') \
-                from exc
-
-    # component loop
+            raise OSError(f'grid_spec={grid_spec} could not be copied.') from exc
+        
+    # get component list
     component_list = make_component_list(rose_app_config, source)
-    fre_logger.info(f'component_list = {component_list}')
-    if len(component_list) == 0:
-        raise ValueError('component list empty- source file not found in any source file list!')
-    if len(component_list) > 1: # check settings for uniqueness
-        do_regridding = \
-            check_per_component_settings( \
-                                          component_list, rose_app_config)
-    else:
-        do_regridding=[True]
+
+    # check settings for uniqueness
+    do_regridding = check_per_component_settings(component_list, rose_app_config)
+    
     fre_logger.info(f'component_list = {component_list}')
     fre_logger.info(f'do_regridding  = {do_regridding}')
 
     for component in component_list:
-        if not do_regridding[
-                component_list.index(component) ]:
-            continue
+
+        if not do_regridding[component_list.index(component)]: continue
+
         fre_logger.info(f'Regridding source={source} for component={component}\n')
 
         # mandatory per-component inputs, will error if nothing in rose config
