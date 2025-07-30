@@ -1,0 +1,170 @@
+netcdf atmos_scalar.198001-198412.co2mass {
+dimensions:
+	time = UNLIMITED ; // (60 currently)
+	bnds = 2 ;
+	scalar_axis = 1 ;
+variables:
+	double time(time) ;
+		time:standard_name = "time" ;
+		time:long_name = "time" ;
+		time:bounds = "time_bnds" ;
+		time:units = "days since 1979-01-01 00:00:00" ;
+		time:calendar = "standard" ;
+		time:axis = "T" ;
+	double time_bnds(time, bnds) ;
+	double scalar_axis(scalar_axis) ;
+		scalar_axis:long_name = "none" ;
+		scalar_axis:axis = "X" ;
+	float co2mass(time, scalar_axis) ;
+		co2mass:standard_name = "atmosphere_mass_of_carbon_dioxide" ;
+		co2mass:long_name = "Total Atmospheric Mass of CO2" ;
+		co2mass:units = "kg" ;
+		co2mass:_FillValue = 1.e+20f ;
+		co2mass:missing_value = 1.e+20f ;
+		co2mass:cell_methods = "time: mean" ;
+		co2mass:time_avg_info = "average_T1,average_T2,average_DT" ;
+
+// global attributes:
+		:CDI = "Climate Data Interface version 2.1.1 (https://mpimet.mpg.de/cdi)" ;
+		:Conventions = "CF-1.6" ;
+		:title = "c96L33_am5a0_cmip6Diag" ;
+		:grid_type = "regular" ;
+		:grid_tile = "N/A" ;
+		:history = "Tue Apr 23 15:49:58 2024: cdo --history -O mergetime atmos_scalar.198001-198012.co2mass.nc atmos_scalar.198101-198112.co2mass.nc atmos_scalar.198201-198212.co2mass.nc atmos_scalar.198301-198312.co2mass.nc atmos_scalar.198401-198412.co2mass.nc /home/Dana.Singh/cylc-run/am5_c96L65_amip__gfdl.ncrc5-intel22-classic__prod/share/shards/ts/native/atmos_scalar/P1M/P5Y/atmos_scalar.198001-198412.co2mass.nc\n",
+			"Tue Apr 23 15:45:50 2024: cdo --history splitname 19800101.atmos_scalar.nc /home/Dana.Singh/cylc-run/am5_c96L65_amip__gfdl.ncrc5-intel22-classic__prod/share/cycle/19800101T0000Z/split/native/19800101.atmos_scalar." ;
+		:CDO = "Climate Data Operators version 2.1.1 (https://mpimet.mpg.de/cdo)" ;
+data:
+
+ time = 380.5, 410.5, 440.5, 471, 501.5, 532, 562.5, 593.5, 624, 654.5, 685, 
+    715.5, 746.5, 776, 805.5, 836, 866.5, 897, 927.5, 958.5, 989, 1019.5, 
+    1050, 1080.5, 1111.5, 1141, 1170.5, 1201, 1231.5, 1262, 1292.5, 1323.5, 
+    1354, 1384.5, 1415, 1445.5, 1476.5, 1506, 1535.5, 1566, 1596.5, 1627, 
+    1657.5, 1688.5, 1719, 1749.5, 1780, 1810.5, 1841.5, 1871.5, 1901.5, 1932, 
+    1962.5, 1993, 2023.5, 2054.5, 2085, 2115.5, 2146, 2176.5 ;
+
+ time_bnds =
+  365, 396,
+  396, 425,
+  425, 456,
+  456, 486,
+  486, 517,
+  517, 547,
+  547, 578,
+  578, 609,
+  609, 639,
+  639, 670,
+  670, 700,
+  700, 731,
+  731, 762,
+  762, 790,
+  790, 821,
+  821, 851,
+  851, 882,
+  882, 912,
+  912, 943,
+  943, 974,
+  974, 1004,
+  1004, 1035,
+  1035, 1065,
+  1065, 1096,
+  1096, 1127,
+  1127, 1155,
+  1155, 1186,
+  1186, 1216,
+  1216, 1247,
+  1247, 1277,
+  1277, 1308,
+  1308, 1339,
+  1339, 1369,
+  1369, 1400,
+  1400, 1430,
+  1430, 1461,
+  1461, 1492,
+  1492, 1520,
+  1520, 1551,
+  1551, 1581,
+  1581, 1612,
+  1612, 1642,
+  1642, 1673,
+  1673, 1704,
+  1704, 1734,
+  1734, 1765,
+  1765, 1795,
+  1795, 1826,
+  1826, 1857,
+  1857, 1886,
+  1886, 1917,
+  1917, 1947,
+  1947, 1978,
+  1978, 2008,
+  2008, 2039,
+  2039, 2070,
+  2070, 2100,
+  2100, 2131,
+  2131, 2161,
+  2161, 2192 ;
+
+ scalar_axis = 0 ;
+
+ co2mass =
+  2.631209e+15,
+  2.632596e+15,
+  2.634025e+15,
+  2.635356e+15,
+  2.636967e+15,
+  2.63858e+15,
+  2.639883e+15,
+  2.640703e+15,
+  2.641297e+15,
+  2.641849e+15,
+  2.642533e+15,
+  2.643382e+15,
+  2.6443e+15,
+  2.645277e+15,
+  2.646183e+15,
+  2.647188e+15,
+  2.648188e+15,
+  2.64938e+15,
+  2.650161e+15,
+  2.650542e+15,
+  2.650661e+15,
+  2.650671e+15,
+  2.650829e+15,
+  2.651146e+15,
+  2.65172e+15,
+  2.652139e+15,
+  2.652551e+15,
+  2.652981e+15,
+  2.653556e+15,
+  2.654215e+15,
+  2.655128e+15,
+  2.656119e+15,
+  2.65684e+15,
+  2.657583e+15,
+  2.65846e+15,
+  2.659396e+15,
+  2.660572e+15,
+  2.661677e+15,
+  2.662824e+15,
+  2.663942e+15,
+  2.665205e+15,
+  2.66649e+15,
+  2.667776e+15,
+  2.668871e+15,
+  2.669715e+15,
+  2.670501e+15,
+  2.671439e+15,
+  2.672515e+15,
+  2.67376e+15,
+  2.674976e+15,
+  2.676071e+15,
+  2.677323e+15,
+  2.678599e+15,
+  2.679963e+15,
+  2.681328e+15,
+  2.682193e+15,
+  2.6828e+15,
+  2.683406e+15,
+  2.684116e+15,
+  2.68498e+15 ;
+}

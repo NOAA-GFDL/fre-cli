@@ -14,6 +14,7 @@ setup(
         'pylint',
         'pytest',
         'jsonschema',
+        'catalogbuilder',
         'cylc-flow',
         'cylc-rose',
         'cdo',
