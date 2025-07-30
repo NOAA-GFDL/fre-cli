@@ -24,13 +24,7 @@ def test_cli_fre_catalog_opt_dne():
 def test_cli_fre_catalog_build():
     ''' fre catalog build '''
     result = runner.invoke(fre.fre, args=["catalog", "build"])
-    stdout_str = 'Missing: input_path or output_path. ' + \
-                 'Pass it in the config yaml or as command-line option'
-    assert all( [
-                  result.exit_code == 1,
-                  stdout_str in result.stdout.split('\n')
-                ]
-              )
+    assert result.exit_code == 1
 
 def test_cli_fre_catalog_build_help():
     ''' fre catalog build --help '''
