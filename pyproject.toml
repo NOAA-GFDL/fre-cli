@@ -23,7 +23,7 @@ conda_dependencies = [
 ]
 # We also need the GFDL analysis_scripts, but that is
 # not as easy to deal with.
-dependencies = [
+dependencies = conda_dependencies + [
         'click',
         'pyyaml',
         'pylint',
@@ -34,7 +34,6 @@ dependencies = [
         'metomi-rose',
         'xarray'
 ]
-dependencies.append(conda_dependencies)
 
 classifiers = [
     "Environment :: Console",
