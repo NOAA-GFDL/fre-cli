@@ -1,21 +1,12 @@
 import logging
 from pathlib import Path
 import subprocess 
+import shutil
 import tarfile
 import xarray as xr
 import yaml
 
 fre_logger = logging.getLogger(__name__)
-
-#dictionary that maps inputRealm from the pp_yaml the variable name
-#holding the mosaic filenames in the grid_spec file
-#For example, in grid_spec.nc, atm_mosaic_file = C96_mosaic.nc
-#For land, lnd_mosaic_file = C96_mosaic.nc
-#For ocn, ocn_mosaic_file = "ocean_mosaic.nc"
-map_mosaicfile = dict(atmos = 'atm_mosaic_file',
-                      aerosol = 'atm_mosaic_file',
-                      ocean = 'ocn_mosaic_file',
-                      land = 'lnd_mosaic_file')
 
 #list of variables/fields that will not be regridded
 non_regriddable_variables = [
@@ -26,24 +17,57 @@ non_regriddable_variables = [
     'average_DT','time_bnds']
 
 
-def get_input_mosaic(datadict: dict):
+def get_input_mosaic(datadict: dict) -> str:
 
-    """
-    Intakes the input_realm field from the pp yaml and returns
-    the variable in the grid_spec file that contains the mosaic file information
-    """
-    
-    grid_spec = datadict["grid_spec"]
-    input_realm = datadict["component"]["inputRealm"]
-    
-    mosaic_key = map_mosaicfile[input_realm]
-    return str(xr.load_dataset(grid_spec)[mosaic_key].values.astype(str))
+  """
+  Gets the input mosaic filename from the grid_spec file
   
+  :datadict: dictionary containing relevant regrid parameters
+  :type datadict: dict
+  :raises IOError if the input mosaic file cannot be found in the current directory or the input directory
+  """
+    
+  input_dir = datadict["input_dir"]
+  grid_spec = datadict["grid_spec"]
+  input_realm = datadict["component"]["inputRealm"]
+  
+  match input_realm:
+    case "atmos": mosaic_key = "atm_mosaic_file"
+    case "aerosol": mosaic_key = "atm_mosaic_file"
+    case "ocean": mosaic_key = "ocn_mosaic_file"
+    case "land": mosaic_key = "lnd_mosaic_file"    
+    
+  mosaic_file = str(xr.load_dataset(grid_spec)[mosaic_key].values.astype(str))
+    
+  if Path(input_dir+mosaic_file).exists():
+    fre_logger(f"Input mosaic file {input_dir}{mosaic_file} exists")
+  elif Path(mosaic_file).exists():
+    shutil.copy(mosaic_file, input_dir+mosaic_file)
+    fre_logger(f"Copying {mosaic_file} to input directory {input_dir}") 
+  else:
+    raise IOError(f"Input mosaic file {mosaic_file} could not be found")
+  
+  return mosaic_file
+      
 
-def get_grid_spec(grid_spec: str, datadict: dict):
+def get_grid_spec(grid_spec: str, datadict: dict) -> str:
+  
+  """
+  Gets the grid_spec file by first extracing the tar file,
+  where the tar file is the value of ppyaml["postprocess"]["settings"]["pp_grid_spec"]
+  in the pp yaml file.
+  
+  :grid_spec:  User-specified grid_spec filename.  
+               If not specified, grid_spec will be set to 'grid_spec.nc'
+  :type grid_spec: str
+  :datadict: dictionary containing relevant regrid parameters
+  :type datadict: dict
+  
+  :raises IOError:  Error if the grid_spec file cannot be found
+  """
   
   if grid_spec is None: grid_spec = "grid_spec.nc"
-  
+    
   #retrieve the grid_spec tar filename from ppyaml
   pp_grid_spec_tar = datadict["pp_yaml"]['postprocess']['settings']['pp_grid_spec']
     
@@ -52,12 +76,17 @@ def get_grid_spec(grid_spec: str, datadict: dict):
     with tarfile.open(pp_grid_spec_tar, 'r') as tar: tar.extractall() 
         
   if Path(grid_spec).exists():
+    fre_logger(f"Grid_spec file {grid_spec} found in {pp_grid_spec_tar}")
     return grid_spec
   else:
-    raise OSError(f'grid_spec={grid_spec} does not exist.')
+    raise IOError(f"Grid_spec={grid_spec} could not be found in {pp_grid_spec_tar}")
     
 
 def get_input_file(datadict: dict, history_file: str):
+  
+  """
+  Gets the 
+  """
   
   input_date = datadict["input_date"]
   if input_date is None:
@@ -69,6 +98,7 @@ def get_input_file(datadict: dict, history_file: str):
 def get_remap_file(datadict: dict):
 
   remap_file = datadict["remap_file"]
+  input_dir = datadict["input_dir"]
   input_mosaic = datadict["input_mosaic"]
   nlon = datadict["output_nlon"]
   nlat = datadict["output_nlat"]
@@ -77,8 +107,8 @@ def get_remap_file(datadict: dict):
   remap_cache_file = f"{input_mosaic[:-3]}X{nlon}by{nlat}_{interp_method}.nc"
   if remap_file is not None:
     try:
-      shutil.copy(remap_file, remap_cache_file)
-      fre_logger.info(f"Copied {remap_file} to {remap_cache_file}")
+      shutil.copy(remap_file, input_dir+remap_cache_file)
+      fre_logger.info(f"Copied/Renamed {remap_file} to {remap_cache_file}")
     except Exception as exc:
       fre_logger.info(f"Cannot find specified remap_file {remap_file}\n"
                       "Remap file {remap_cache_file} will be generated on-the-fly")
@@ -108,15 +138,26 @@ def get_scalar_fields(datadict: dict):
     regrid_vars_string = ",".join([variable for variable in dataset if len(dataset[variable].sizes)>1])
 
     return regrid_vars_string
-    
+
+
+def write_summary(datadict):
+  
+  fre_logger("JOB SUMMARY")
+  fre_logger(f"FREGRID input directory: {datadict['input_dir']}")
+  fre_logger(f"FREGRID output_directory: {datadict['output_dir']}")
+  fre_logger(f"FREGRID input mosaic file: {datadict['input_mosaic']}")
+  fre_logger(f"FREGRID output lonxlat grid: {datadict['output_nlon']} X {datadict['output_nlat']}")
+  fre_logger(f"FREGRID remap file: {datadict['remap_file']}")
+  
 
 def regrid_xy(pp_yamlfile: str,
+              input_dir: str,
+              output_dir: str,
               remap_file: str = None,
               grid_spec: str = None,
               only_thesecomponents: list[int] = None,
               input_date: str = None,
-              input_dir: str = None,
-              output_dir: str = None):
+):
     
   """
   Remaps variables for each component element in the post-processing yaml file.
@@ -129,15 +170,16 @@ def regrid_xy(pp_yamlfile: str,
     
   #load pp_yaml_file to a dictionary
   with open(pp_yamlfile, 'r') as openedfile: pp_yaml = yaml.safe_load(openedfile)
+  
   datadict["pp_yaml"] = pp_yaml
+  fre_logger(f"Extracting regrid information from yaml file {pp_yamlfile}")
 
   #get grid_spec file
   datadict["grid_spec"] = get_grid_spec(grid_spec, datadict)
 
   #set input and output directory names if not specified 
-  datadict["input_dir"] = pp_yaml["directories"]["history_dir"] if input_dir is None else input_dir
-  datadict["output_dir"] = pp_yaml["directories"]["pp_dir"] if output_dir is None else output_dir
-
+  datadict["input_dir"] = input_dir + "/"
+  datadict["output_dir"] = output_dir + "/"
   datadict["remap_file"] = remap_file
   datadict["input_date"] = input_date
 
@@ -150,10 +192,18 @@ def regrid_xy(pp_yamlfile: str,
       components = [pp_yaml['postprocess']['components'][i] for i in regrid_thesecomponents]
 
   #iterate over components that will be regridded
-  for component in components:
+  count_component = 0
+  for component in components:        
+
+    count_component += 1
 
     #skip if postprocessing is turned off for the component
-    if component['postprocess_on'] is False: continue
+    if component['postprocess_on'] is False: 
+      
+      fre_logger(f"skipping component number ${count_component}")
+      continue
+
+    fre_logger(f"determining regrid specifications for component number {count_component}")
     
     datadict["component"] = component
 
@@ -183,6 +233,8 @@ def regrid_xy(pp_yamlfile: str,
           
       #get remap file and name that will be cached
       datadict["remap_file"] = get_remap_file(datadict)
+      
+      write_summary(datadict)
                         
       fregrid_command = ['fregrid',
                         '--debug',
