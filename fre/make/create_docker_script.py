@@ -1,5 +1,5 @@
 '''
-TODO- make docstring
+Create a Dockerfile and container build script, and generate a model container.
 '''
 
 import os
@@ -24,7 +24,7 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
     :param execute: Use this to run the created checkout script
     :type execute: bool
     :param skip_format_transfer: Skip the container format conversion to a .sif file.
-    :type execute: bool
+    :type skip_format_transfer: bool
     :raises ValueError: Error if platform passed does not exist in platforms yaml configuration 
 
     .. note:: For building a container on GAEA, users need to put in a helpdesk ticket for podman access.

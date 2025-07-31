@@ -1,6 +1,7 @@
 '''
-TODO: make docstring
+Create a compile script to generate a model executable.
 '''
+
 import os
 import logging
 
@@ -24,7 +25,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     :param jobs: Number of jobs to run simultaneously
     :type jobs: int
     :param parallel: Number of concurrent model compiles (default 1)
-    :type target: int
+    :type parallel: int
     :param execute: Use this to run the created checkout script
     :type execute: bool
     :param verbose: Get verbose messages

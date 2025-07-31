@@ -1,8 +1,5 @@
-#!/usr/bin/python3
 '''
-date 2023
-author(s): Tom Robinson, Dana Singh, Bennett Chang
-fre make is used to create, run and checkout code, and compile a model.
+Create, run, checkout code, and compile a model to create a model executable.
 '''
 
 import os

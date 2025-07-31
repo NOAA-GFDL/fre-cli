@@ -1,5 +1,5 @@
 '''
-TODO doc-string
+Create the Makefile
 '''
 
 import os
@@ -21,7 +21,12 @@ def makefile_create(yamlfile, platform, target):
     :type target: str
     :raises ValueError: Error if platform passed does not exist in platforms yaml configuration 
 
-    .. note::
+    .. note:: If additional libraries are defined in the compile.yaml file:
+                - for a container build, a linkline script will be generated
+                  to locate those libraries inside the container and populate 
+                  the Makefile with the correct linker flags
+                - for a bare-metal build, linker flags defined in the yaml
+                  configuration are added to the link line in the Makefile
     """
     srcDir="src"
     baremetalRun = False # This is needed if there are no bare metal runs
