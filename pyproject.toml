@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setupttools"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -17,13 +17,12 @@ keywords = [
     "fre",
     "fms",
 ]
-conda_dependencies = [
-    'cdo',
-    'cmor',
-]
-# We also need the GFDL analysis_scripts, but that is
-# not as easy to deal with.
-dependencies = conda_dependencies + [
+# Some of these are conda dependencies (e.g., cdo, cmor)
+# We should find out a better way to indicate those instead
+# of listing them here.
+# This package also requires some conda packages in the
+# noaa-gfdl channel (e.g., analysis_scripts, catalogbuilder)
+dependencies = [
         'click',
         'pyyaml',
         'pylint',
@@ -32,7 +31,9 @@ dependencies = conda_dependencies + [
         'cylc-flow',
         'cylc-rose',
         'metomi-rose',
-        'xarray'
+        'xarray',
+        'cdo',
+        'cmor',
 ]
 
 classifiers = [
@@ -47,7 +48,7 @@ dynamic = [
     "version",
 ]
 
-[tools.setuptools.dynamic]
+[tool.setuptools.dynamic]
 version = {attr = "fre.__version__"}
 
 [project.scripts]
