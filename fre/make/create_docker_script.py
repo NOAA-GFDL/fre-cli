@@ -22,9 +22,9 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
     :param target: Predefined FRE targets
     :type target: str
     :param execute: Use this to run the created checkout script
-    :type execute: boolean
+    :type execute: bool
     :param skip_format_transfer: Skip the container format conversion to a .sif file.
-    :type execute: boolean
+    :type execute: bool
     :raises ValueError: Error if platform passed does not exist in platforms yaml configuration 
 
     .. note:: For building a container on GAEA, users need to put in a helpdesk ticket for podman access.

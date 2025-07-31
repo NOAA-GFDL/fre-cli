@@ -33,13 +33,13 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
     :param jobs: Number of jobs to run simultaneously
     :type jobs: int
     :param no_parallel_checkout: Use this option if you do not want a parallel checkout
-    :type no_parallel_checkout: boolean
+    :type no_parallel_checkout: bool
     :param no_format_transfer: Skip the container format conversion to a .sif file
-    :type no_format_transfer: boolean
+    :type no_format_transfer: bool
     :param execute: Use this to run the created checkout script
-    :type execute: boolean
+    :type execute: bool
     :param verbose: Get verbose messages
-    :type verbose: boolean
+    :type verbose: bool
     :raise ValueError:
         - Error if platform passed does not exist in platforms yaml configuration 
         - Error if mkmf template defined in platforms yaml does not exist 

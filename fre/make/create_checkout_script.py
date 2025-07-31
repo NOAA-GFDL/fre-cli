@@ -21,13 +21,13 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     :param target: Predefined FRE targets
     :type target: str
     :param no_parallel_checkout: Option to turn off parallel checkouts
-    :type no_parallel_checkout: boolean
+    :type no_parallel_checkout: bool
     :param jobs: Number of jobs to run simultaneously
     :type jobs: int
     :param execute: Use this to run the created checkout script
-    :type execute: boolean
+    :type execute: bool
     :param verbose: Get verbose messages
-    :type verbose: boolean
+    :type verbose: bool
     :raises ValueError: 
         - Error if 'jobs' param is not defined as integer
         - Error if platform passed does not exist in platforms yaml configuration
