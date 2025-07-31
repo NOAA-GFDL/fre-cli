@@ -2,7 +2,7 @@ import os
 
 try:
     version = os.getenv("GIT_DESCRIBE_TAG", "2025.04")
-except:
+except Exception:
     version = "unknown"
 
 __version__=version
