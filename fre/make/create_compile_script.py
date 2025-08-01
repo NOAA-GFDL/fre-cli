@@ -13,15 +13,15 @@ from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
 fre_logger = logging.getLogger(__name__)
 
-def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
+def compile_create(yamlfile:str, platform:str, target:str, jobs:int, parallel:int, execute:bool, verbose:bool):
     """
-    Create the compile script for bare-metal build
+    Creates the compile script for bare-metal build
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platform
     :type platform: str
-    :param target: Predefined FRE targets
+    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str
     :param jobs: Number of jobs to run simultaneously
     :type jobs: int
@@ -29,7 +29,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     :type parallel: int
     :param execute: Use this to run the created checkout script
     :type execute: bool
-    :param verbose: Get verbose messages
+    :param verbose: Increase verbosity output
     :type verbose: bool
     :raises ValueError:
         - Error if platform passed does not exist in platforms yaml configuration 

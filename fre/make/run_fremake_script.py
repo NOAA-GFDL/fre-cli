@@ -16,18 +16,18 @@ from .gfdlfremake import (
 
 fre_logger = logging.getLogger(__name__)
 
-def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
+def fremake_run(yamlfile:str, platform:str, target:str, parallel:int, jobs:int, no_parallel_checkout:bool, no_format_transfer:bool, execute:bool, verbose:bool):
     """
-    Run fremake
+    Runs all of fre make code
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platform
     :type platform: str
-    :param target: Predefined FRE targets
+    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str
     :param parallel: Number of concurrent model compiles (default 1)
-    :type parallel: str
+    :type parallel: int
     :param jobs: Number of jobs to run simultaneously
     :type jobs: int
     :param no_parallel_checkout: Use this option if you do not want a parallel checkout
@@ -36,11 +36,13 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
     :type no_format_transfer: bool
     :param execute: Use this to run the created checkout script
     :type execute: bool
-    :param verbose: Get verbose messages
+    :param verbose: Increase verbosity output
     :type verbose: bool
     :raise ValueError:
         - Error if platform passed does not exist in platforms yaml configuration 
-        - Error if mkmf template defined in platforms yaml does not exist 
+        - Error if mkmf template defined in platforms yaml does not exist
+
+    .. note:: This script will eventually be a wrapper for the other fre make tools
     """
     yml = yamlfile
     name = yamlfile.split(".")[0]

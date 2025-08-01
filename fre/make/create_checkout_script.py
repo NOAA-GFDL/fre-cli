@@ -11,15 +11,15 @@ from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 # set up logging
 fre_logger = logging.getLogger(__name__)
 
-def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
+def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_checkout: bool, jobs: int, execute: bool, verbose: bool):
     """
-    Create the checkout script for bare-metal or container build
+    Creates the checkout script for bare-metal or container build
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platform
     :type platform: str
-    :param target: Predefined FRE targets
+    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str
     :param no_parallel_checkout: Option to turn off parallel checkouts
     :type no_parallel_checkout: bool
@@ -27,7 +27,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
     :type jobs: int
     :param execute: Use this to run the created checkout script
     :type execute: bool
-    :param verbose: Get verbose messages
+    :param verbose: Increase verbosity output
     :type verbose: bool
     :raises ValueError: 
         - Error if 'jobs' param is not defined as integer

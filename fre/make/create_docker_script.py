@@ -12,15 +12,15 @@ from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 
 fre_logger = logging.getLogger(__name__)
 
-def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer):
+def dockerfile_create(yamlfile:str, platform:str, target:str, execute:bool, skip_format_transfer:bool):
     """
-    Create the dockerfile and container build script for a container build
+    Creates the dockerfile and container build script for a container build
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platform
     :type platform: str
-    :param target: Predefined FRE targets
+    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str
     :param execute: Use this to run the created checkout script
     :type execute: bool
