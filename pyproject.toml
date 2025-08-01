@@ -38,13 +38,6 @@ dependencies = [
         'numpy<2',
 ]
 
-[dependency-groups]
-docs = [
-    "sphinx",
-    "renku-sphinx-theme",
-    "sphinx-rtd-theme"
-]
-
 classifiers = [
     "Environment :: Console",
     "License :: OSI Approved :: Apache Software License",
@@ -62,4 +55,11 @@ version = {attr = "fre.__version__"}
 
 [project.scripts]
 fre = 'fre.fre:fre'
+
+[dependency-groups]
+docs = [
+    "sphinx",
+    "renku-sphinx-theme",
+    "sphinx-rtd-theme"
+]
 
