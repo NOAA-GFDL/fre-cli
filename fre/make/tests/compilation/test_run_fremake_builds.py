@@ -103,7 +103,7 @@ def test_run_fremake_container_build_notransfer():
         parallel=False, jobs=1, no_parallel_checkout=True,
         no_format_transfer=True, execute=True, verbose=VERBOSE)
 
-def test_run_fremake_cleanup():
+def test_zzz_cleanup():
     ''' removes directories created by the test and checks to make sure they're gone '''
     dirstrings = ["test_run_fremake_multijob", "test_run_fremake_serial", "test_run_fremake_multitarget"]
     test_paths = [f"fre/make/tests/{el}/" for el in dirstrings]

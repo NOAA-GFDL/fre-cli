@@ -398,7 +398,7 @@ def test_fre_cli_time_unwgt_avgs_stddevs_two_files():
         outfile = (time_avg_file_dir+'frepytools_unwgt_stddev_'+two_out_file_name),
         pkg='fre-python-tools',avg_type='all',  unwgt=True )
 
-def test_fre_cli_app_gen_time_avg_cleanup():
+def test_zzz_cleanup():
     ''' Removes all .nc files in fre/app/generate_time_averages/tests/test_data/ '''
     nc_files = [os.path.join(time_avg_file_dir, el) for el in os.listdir(time_avg_file_dir)
                  if el.endswith(".nc")]
