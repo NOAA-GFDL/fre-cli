@@ -33,12 +33,10 @@ jobs:
           old_tag="${{ steps.get_prev_tag.outputs.prev_tag }}"
           # Only replace if previous tag exists
           if [ -n "$old_tag" ]; then
-            # README.md
-            sed -i "s/$old_tag/$new_tag/g" README.md
-            # setup.py
-            sed -i "s/$old_tag/$new_tag/g" setup.py
-            # test file
-            sed -i "s/$old_tag/$new_tag/g" fre/tests/test_fre_cli.py
+            # all .md files
+            find . -type f -name "*.md" -exec sed -i "s/$old_tag/$new_tag/g" {} +
+            # all .py files
+            find . -type f -name "*.py" -exec sed -i "s/$old_tag/$new_tag/g" {} +
             # docs (all files)
             find docs -type f -exec sed -i "s/$old_tag/$new_tag/g" {} +
           fi
