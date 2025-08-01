@@ -1,14 +1,9 @@
-#!/usr/bin/python3
 '''
-date 2023
-author(s): Tom Robinson, Dana Singh, Bennett Chang
-fre make is used to create, run and checkout code, and compile a model.
+Create, run, checkout code, and compile a model to create a model executable.
 '''
 
 import os
 import logging
-fre_logger = logging.getLogger(__name__)
-
 
 from multiprocessing.dummy import Pool
 from pathlib import Path
@@ -19,10 +14,36 @@ from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
-    ''' 
-    run fremake
-    '''
+fre_logger = logging.getLogger(__name__)
+
+def fremake_run(yamlfile:str, platform:str, target:str, parallel:int, jobs:int, no_parallel_checkout:bool, no_format_transfer:bool, execute:bool, verbose:bool):
+    """
+    Runs all of fre make code
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform
+    :type platform: str
+    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
+    :type target: str
+    :param parallel: Number of concurrent model compiles (default 1)
+    :type parallel: int
+    :param jobs: Number of jobs to run simultaneously
+    :type jobs: int
+    :param no_parallel_checkout: Use this option if you do not want a parallel checkout
+    :type no_parallel_checkout: bool
+    :param no_format_transfer: Skip the container format conversion to a .sif file
+    :type no_format_transfer: bool
+    :param execute: Use this to run the created checkout script
+    :type execute: bool
+    :param verbose: Increase verbosity output
+    :type verbose: bool
+    :raise ValueError:
+        - Error if platform passed does not exist in platforms yaml configuration 
+        - Error if mkmf template defined in platforms yaml does not exist
+
+    .. note:: This script will eventually be a wrapper for the other fre make tools
+    """
     yml = yamlfile
     name = yamlfile.split(".")[0]
     nparallel = parallel
@@ -41,15 +62,11 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
 
     #### Main
     srcDir="src"
-    checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
 
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target
-
-#    # Combined compile yaml file
-#    combined = Path(f"combined-{name}.yaml")
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yml,
@@ -104,7 +121,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
             target = targetfre.fretarget(targetName)
             if not modelYaml.platforms.hasPlatform(platformName):
                 raise ValueError (platformName + " does not exist in " + modelYaml.platformsfile)
-                
+
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the source directory based on the modelRoot and platform
@@ -230,7 +247,3 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 pool = Pool(processes=nparallel)
                 # process data_inputs iterable with pool
                 pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)
-
-
-if __name__ == "__main__":
-    fremake_run()
