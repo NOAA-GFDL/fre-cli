@@ -182,6 +182,9 @@ fre/tests/test_files/ocean_sos_var_file/*.nc
 fre/tests/test_files/outdirfre/
 fre/tests/test_files/outdir/
 
+# NetCDF binary files in test data directories
+**/test_data/*.nc
+
 fre/app/generate_time_averages/tests/time_avg_test_files/
 fre/app/regrid_xy/tests/*/
 
