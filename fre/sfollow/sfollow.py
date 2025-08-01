@@ -11,6 +11,7 @@ NOAA | GFDL
 
 import os
 import subprocess
+import logging
 from typing import Optional, Tuple
 
 
