@@ -33,8 +33,6 @@ def get_combined_cmoryaml(yamlfile, experiment, platform, target, output = None)
         fre_logger.info('...CmorYaml instance initialized...')
     except Exception as exc:
         raise Exception(f'cmor_info_parser.CMORYaml() initialization failed for some reason.\n exc =\n {exc}') from exc
-        #print(CmorYaml)
-        #assert False
 
 
     # Merge model into combined file
@@ -70,7 +68,6 @@ def get_combined_cmoryaml(yamlfile, experiment, platform, target, output = None)
         raise Exception(f"CmorYaml.merge_cmor_yaml failed for some reason.\n exc =\n {exc}") from exc
 
 
-    #    assert False
 
 
 
@@ -83,7 +80,6 @@ def get_combined_cmoryaml(yamlfile, experiment, platform, target, output = None)
     fre_logger.debug("cleaned_yaml = \n %s", pformat(cleaned_yaml))
 
     
-    #assert False
 
     # OUTPUT IF NEEDED
     if output is not None:
