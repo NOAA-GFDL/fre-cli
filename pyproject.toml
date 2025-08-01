@@ -38,6 +38,13 @@ dependencies = [
         'numpy<2',
 ]
 
+[project.optional-dependencies]
+docs = [
+    "sphinx",
+    "renku-sphinx-theme",
+    "sphinx-rtd-theme"
+]
+
 classifiers = [
     "Environment :: Console",
     "License :: OSI Approved :: Apache Software License",
