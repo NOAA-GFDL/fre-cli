@@ -1,5 +1,4 @@
 lmod
 nbhome
 ncrc
-ncrc
 PPAN
