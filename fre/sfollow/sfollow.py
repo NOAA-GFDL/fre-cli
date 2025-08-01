@@ -121,8 +121,8 @@ def follow_job_output(job_id: str) -> Tuple[bool, str]:
         if stdout_path is None:
             return False, f"Could not find standard output file for job {job_id}"
 
-        print(f"Following output file: {stdout_path}")
-        print("Press 'q' to quit, Ctrl+C to interrupt following")
+        logging.info(f"Following output file: {stdout_path}")
+        logging.info("Press 'q' to quit, Ctrl+C to interrupt following")
 
         # Follow the output file
         follow_output_file(stdout_path)
