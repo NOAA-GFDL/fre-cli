@@ -34,7 +34,8 @@ fre_logger = logging.getLogger(__name__)
                        "make": ".make.fremake.make_cli",
                        "app": ".app.freapp.app_cli",
                        "cmor": ".cmor.frecmor.cmor_cli",
-                       "analysis": ".analysis.freanalysis.analysis_cli"},
+                       "analysis": ".analysis.freanalysis.analysis_cli",
+                       "sfollow": ".sfollow.fresfollow.sfollow_cli"},
     help = click.style(
         "'fre' is the main CLI click group. It houses the other tool groups as lazy subcommands.",
         fg = 'cyan')
