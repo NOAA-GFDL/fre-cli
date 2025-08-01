@@ -4,12 +4,12 @@
 Setup
 =====
 FRE-cli is conda-installable from the “noaa-gfdl” anaconda channel (https://anaconda.org/NOAA-GFDL/fre-cli)
-and is deployed on RDHPCS and GFDL systems as Environment Modules.
+and is deployed on NOAA RDHPCS and GFDL systems as Environment Modules.
 
 Installing FRE-cli
 ==================
 
-Instructions for installing fre-cli on GFDL and RDHPCS systems via lmod and on any system via conda can be found in the `fre-cli repository README <https://github.com/NOAA-GFDL/fre-cli/blob/main/README.md>`__.
+Instructions for installing fre-cli on GFDL and NOAA RDHPCS systems via lmod and on any system via conda can be found in the `fre-cli repository README <https://github.com/NOAA-GFDL/fre-cli/blob/main/README.md>`__.
 
 
 Install FRE-cli from local GitHub clone (for development)
@@ -36,7 +36,6 @@ Assuming one has ``conda`` in their path, then do the following::
   # if you changed the name of the build environment, activate that name instead of fre-cli
   conda activate fre-cli
 
-  # Ithink this can be deleted now - LEC
   # add mkmf to your PATH
   export PATH=$PATH:${PWD}/mkmf/bin
 

@@ -27,9 +27,25 @@ and is deployed on RDHPCS and GFDL systems as Environment Modules.
 
 ### On NOAA RDHPCS Gaea and at GFDL on PPAN
 
+#### The preferred installation method on GAEA or at GFDL is to load modules via lmod:
+
 ```
 module use -a /ncrc/home2/fms/local/modulefiles
 module load fre/2025.04
+```
+
+#### An optional, secondary installation method is also available via a shared conda environment:
+
+- GFDL:
+```
+    module load miniforge
+    conda activate /nbhome/fms/conda/envs/fre-2025.04
+```
+- Gaea:
+```
+    module use /usw/conda/modulefiles
+    module load miniforge
+    conda activate /ncrc/home2/fms/.conda/envs/fre-2025.04
 ```
 
 ## Install via Conda
