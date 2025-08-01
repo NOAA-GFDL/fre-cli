@@ -161,5 +161,5 @@ def test_git_cleanup():
       assert all([restore.returncode == 0, check.returncode == 1])
 
 #### test cases
-def test_cleanup():
+def test_zzz_cleanup():
     _cleanup()
