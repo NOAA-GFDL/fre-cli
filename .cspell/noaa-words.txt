@@ -1,0 +1,4 @@
+lmod
+nbhome
+ncrc
+PPAN

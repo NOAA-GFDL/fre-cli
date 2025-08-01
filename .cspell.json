@@ -1,0 +1,44 @@
+{
+    "version": "0.2",
+    "language": "en",
+    "dictionaryDefinitions": [
+        {
+            "name": "noaa",
+            "path": "./.cspell/noaa-words.txt",
+            "addWords": false
+        },
+        {
+            "name": "conda",
+            "path": "./.cspell/conda-words.txt",
+            "addWords": false
+        }
+    ],
+    "dictionaries": [
+        "conda",
+        "noaa",
+        "python",
+        "softwareTerms"
+    ],
+    "words": [
+        "Blanton",
+        "CatalogBuilder",
+        "cftime",
+        "cmip",
+        "cmor",
+        "cylc-flow",
+        "cylc-rose",
+        "fre-nctools",
+        "jsonschema",
+        "metomi-rose",
+        "mkmf",
+        "modulefiles",
+        "nccmp",
+        "noarch",
+        "pylint",
+        "pytest",
+        "pyyaml",
+        "setuptools",
+        "xarray",
+        "yamltools"
+    ]
+}
