@@ -1,7 +1,10 @@
 import importlib.metadata
 
 # versioning, turn xxxx.y into xxxx.0y
-version_unexpanded = importlib.metadata.version('fre-cli')
+try:
+    version_unexpanded = importlib.metadata.version('fre-cli')
+except importlib.metadata.PackageNotFoundError:
+    version_unexpanded = "2025.04"  # fallback version from setup.py
 version_unexpanded_split = version_unexpanded.split('.')
 if len(version_unexpanded_split[1]) == 1:
     version_minor = "0" + version_unexpanded_split[1]
