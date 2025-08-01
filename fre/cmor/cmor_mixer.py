@@ -1,8 +1,24 @@
-'''
-python module housing the metadata processing routines utilizing the cmor module, in addition to
-click API entry points
-see README.md for additional information on `fre cmor run` (cmor_mixer.py) usage
-'''
+"""
+CMOR Metadata Processing and NetCDF Rewriting Routines
+======================================================
+
+This module provides metadata processing routines for CMORization, including Click CLI entry points.
+It is the core implementation for ``fre cmor run`` operations: reading metadata, processing input NetCDF files,
+and writing compliant CMIP outputs. For usage details, see the project README.md.
+
+Functions
+---------
+- rewrite_netcdf_file_var(...)
+- cmorize_target_var_files(...)
+- cmorize_all_variables_in_dir(...)
+- cmor_run_subtool(...)
+
+References
+----------
+- FRE Documentation: https://github.com/NOAA-GFDL/fre-cli
+- PEP 8 -- Style Guide for Python Code: https://www.python.org/dev/peps/pep-0008/
+- PEP 257 -- Docstring Conventions: https://www.python.org/dev/peps/pep-0257/
+"""
 
 import glob
 import json
@@ -36,20 +52,44 @@ CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
 def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
                             target_var=None, json_exp_config=None, json_table_config=None,
                             prev_path=None):
-    '''
-    Rewrite the input netcdf file containing target_var in a CMIP-compliant manner.
+    """
+    Rewrite the input NetCDF file for a target variable in a CMIP-compliant manner and write output using CMOR.
 
-    Parameters:
-        mip_var_cfgs: json dictionary object, variable table read from json_table_config.
-        local_var: string, variable name used for finding files locally containing target_var.
-        netcdf_file: string, representing path to input netcdf file.
-        target_var: string, representing the variable name attached to the data object in the netcdf file.
-        json_exp_config: string, representing path to configuration file holding metadata for appending to output.
-        json_table_config: string, representing path to configuration file holding variable names for a given table.
+    Parameters
+    ----------
+    mip_var_cfgs : dict
+        Variable table, as loaded from the MIP table JSON config.
+    local_var : str
+        Variable name used for finding files locally.
+    netcdf_file : str
+        Path to the input NetCDF file to be CMORized.
+    target_var : str
+        Name of the variable to be processed.
+    json_exp_config : str
+        Path to experiment configuration JSON file (for dataset metadata).
+    json_table_config : str
+        Path to MIP table JSON file.
+    prev_path : str, optional
+        Path to previous file (used for finding statics file for tripolar grids).
 
-    Returns:
-        filename: The name of the file returned by cmor.close.
-    '''
+    Returns
+    -------
+    str
+        Absolute path to the output file written by cmor.close.
+
+    Raises
+    ------
+    ValueError
+        If unsupported vertical dimensions or inconsistent grid dimensions are found.
+    FileNotFoundError
+        If required statics file for tripolar ocean grid is missing.
+    Exception
+        For other errors in the metadata, file IO, or CMOR calls.
+
+    Notes
+    -----
+    This function performs extensive setup of axes and metadata, and conditionally handles tripolar ocean grids.
+    """
     fre_logger.info("input data:")
     fre_logger.info("     local_var = %s", local_var)
     fre_logger.info("    target_var = %s", target_var)
@@ -538,24 +578,45 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
                              iso_datetime_range_arr=None, name_of_set=None,
                              json_exp_config=None, outdir=None,
                              mip_var_cfgs=None, json_table_config=None, run_one_mode=False):
-    ''' processes a target directory/file
-    this routine is almost entirely exposed data movement before/after calling
-    rewrite_netcdf_file_var it is also the most hopelessly opaque routine in this entire dang macro.
-    this badboy right here accepts... lord help us... !!!NINE!!! arguments, NINE.
-        indir: string, path to target directories containing netcdf files to cmorize
-        target_var: string, name of variable inside the netcdf file to cmorize
-        local_var: string, value of the variable name in the filename, right before the .nc
-                   extension. often identical to target_var but not always.
-        iso_datetime_range_arr: list of strings, each one a unique ISO datetime string found in targeted
-                          netcdf filenames
-        name_of_set: string, representing the post-processing component (GFDL convention) of the
-                     targeted files.
-        json_exp_config: see cmor_run_subtool arg desc
-        outdir: string, path to output directory root to move the cmor module output to, including
-                the whole directory structure
-        mip_var_cfgs: an opened json file object, read from json_table_config
-        json_table_config: see cmor_run_subtool arg desc
-    '''
+    """
+    CMORize a target variable across all NetCDF files in a directory.
+
+    Parameters
+    ----------
+    indir : str
+        Path to the directory containing NetCDF files to process.
+    target_var : str
+        Name of the variable to process in each file.
+    local_var : str
+        Local/filename variable name (often identical to target_var).
+    iso_datetime_range_arr : list of str
+        List of ISO datetime strings, each identifying a specific file.
+    name_of_set : str
+        Post-processing component or label for the targeted files.
+    json_exp_config : str
+        Path to experiment configuration JSON file.
+    outdir : str
+        Output directory root for CMORized files.
+    mip_var_cfgs : dict
+        Variable table from the MIP table JSON config.
+    json_table_config : str
+        Path to MIP table JSON file.
+    run_one_mode : bool, optional
+        If True, processes only one file and exits.
+
+    Returns
+    -------
+    None
+
+    Raises
+    ------
+    ValueError, OSError, Exception
+        See function body for details.
+
+    Notes
+    -----
+    Copies files to a temporary directory, runs CMORization, moves results to output, cleans up temp files.
+    """
     fre_logger.info("local_var = %s to be used for file-targeting.\n"
                     "target_var = %s to be used for reading the data \n"
                     "from the file\n"
@@ -673,26 +734,41 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
 
 def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, name_of_set, json_exp_config,
                                  outdir, mip_var_cfgs, json_table_config, run_one_mode):
-    '''
-    Processes all variables in the given directory.
+    """
+    CMORize all variables in a directory according to a variable mapping.
 
-    Parameters:
-        vars_to_run: dictionary, local-variable:target-variable pairs to process.
-        indir: string, path to directory containing netCDF files.
-        iso_datetime_range_arr: list of strings, ISO datetime strings found in targeted netCDF filenames.
-        name_of_set: string, representing the post-processing component (GFDL convention) of the targeted files.
-        json_exp_config: string, path to experiment configuration JSON file.
-        outdir: string, path to output directory root.
-        mip_var_cfgs: json dictionary object, variable table read from json_table_config.
-        json_table_config: string, path to table configuration JSON file.
-        run_one_mode: bool, if True, process only one file per variable.
+    Parameters
+    ----------
+    vars_to_run : dict
+        Mapping of local variable names (in filenames) to target variable names (in NetCDF).
+    indir : str
+        Directory containing NetCDF files to process.
+    iso_datetime_range_arr : list of str
+        List of ISO datetime strings to identify files.
+    name_of_set : str
+        Post-processing component or set label.
+    json_exp_config : str
+        Path to experiment configuration JSON file.
+    outdir : str
+        Output directory root for CMORized files.
+    mip_var_cfgs : dict
+        Variable table from the MIP table JSON config.
+    json_table_config : str
+        Path to MIP table JSON file.
+    run_one_mode : bool
+        If True, process only one file per variable.
 
-    Returns:
-        int: 0 if *the last file processed* was successful. 
-             1 if the last file processed was not successful. 
-             -1 if we didnt even try!
+    Returns
+    -------
+    int
+        0 if the last file processed was successful.
+        1 if the last file processed was not successful.
+        -1 if no files were processed.
 
-    '''
+    Notes
+    -----
+    Errors for individual variables are logged and processing continues (except for run_one_mode).
+    """
     # loop over local-variable:target-variable pairs in vars_to_run
     return_status = -1
     for local_var in vars_to_run:
@@ -724,35 +800,55 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, nam
 def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, json_exp_config=None,
                      outdir=None, run_one_mode=False,
                      opt_var_name=None, grid=None, grid_label=None, nom_res=None, start=None, stop=None, calendar_type=None):
-    '''
-    Primary steering function for the other routines in this file, i.e essentially main.
+    """
+    Main entry point for CMORization workflow, steering all routines in this file.
 
-    Parameters:
-        indir: string, directory containing netCDF files. keys specified in json_var_list are local
-               variable names used for targeting specific files.
-        json_var_list: string, points to a json file containing directory of key/value pairs. keys are "local" names
-                       used in the filename. values are strings representing the name of the data stored within the
-                       file. the key and value are often the same. making the key and value different is helpful for
-                       focusing on a specific file.
-        json_table_config: string, points to a json file containing per-variable-metadata for specific MIP table.
-        json_exp_config: string, points to a json file containing metadata dictionary for CMORization. this metadata
-                         is effectively appended to the final output file's header.
-        outdir: string, directory root that will contain the full output and directory structure generated by
-                the cmor module.
-        run_one_mode: bool, optional, for every variable in the list, if files are found, process one of them, then
-                      move on. largely of interest when debugging.
-        opt_var_name: string, optional, specify a variable name to specifically process only files with that variable.
-                      Note that this is checked against the variable name that's usually embedded in the nc filename.
-        -- gridding section: if one is specified, the other two must be as well, or error. pass otherwise. 
-        grid: string, description of grid pointed to by grid_label field, optional.
-        grid_label: string, label of grid, must be one of several possibilities in controlled vocab file, optional.
-        nom_res: string, one-dimensional size representing approximate distance spanned by a grid cell, must be one of
-                 several possibilities in the controlled vocab file, optional.
-        start, stop: string, optional arguments, strings of four integers representing years (YYYY).
-        calendar_type: string, optional, representing a CF compliant calendar_type string
-    Returns:
-        int: 0 if successful.
-    '''
+    Parameters
+    ----------
+    indir : str
+        Directory containing NetCDF files to process.
+    json_var_list : str
+        Path to JSON file with variable mapping (local to target names).
+    json_table_config : str
+        Path to MIP table JSON file (per-variable metadata).
+    json_exp_config : str
+        Path to experiment configuration JSON file (for header metadata).
+    outdir : str
+        Output directory root for CMORized files.
+    run_one_mode : bool, optional
+        If True, process only one file per variable.
+    opt_var_name : str, optional
+        If provided, only process this variable.
+    grid : str, optional
+        Grid description (if gridding is specified).
+    grid_label : str, optional
+        Grid label (must match controlled vocabulary if provided).
+    nom_res : str, optional
+        Nominal resolution for grid (must match controlled vocabulary if provided).
+    start : str, optional
+        Start year (YYYY) for files to process.
+    stop : str, optional
+        Stop year (YYYY) for files to process.
+    calendar_type : str, optional
+        CF-compliant calendar type.
+
+    Returns
+    -------
+    int
+        0 if successful.
+
+    Raises
+    ------
+    ValueError
+        If required parameters are missing or inconsistent.
+    FileNotFoundError
+        If required files do not exist.
+
+    Notes
+    -----
+    - Updates grid, label, and calendar fields in experiment config if needed.
+    - Loads variable mapping and MIP table, filters variables, and orchestrates file processing.
+    """
     # check req'd inputs
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
         raise ValueError('all input arguments except opt_var_name are required!\n' #uncovered
