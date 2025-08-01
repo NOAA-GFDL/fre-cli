@@ -71,7 +71,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #glob.glob is NOT sufficient for this. It needs to match:
   #  '00020101.atmos_level_cmip.tile4.nc'
   #  '00020101.ocean_cobalt_omip_2d.nc'
-  file_regex = f'.*{history_source}(\.tile.*)?.nc'
+  file_regex = f'.*{history_source}(\\.tile.*)?.nc'
   
   #If in sub-dir mode, process the sub-directories instead of the main one
   # and write to $outputdir/$subdir

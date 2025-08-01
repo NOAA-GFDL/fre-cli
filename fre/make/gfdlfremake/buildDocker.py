@@ -203,7 +203,7 @@ class container():
         #make runscript executable
         self.d.write("RUN chmod 744 "+self.bld+"/execrunscript.sh\n")
         #link runscript to more general location (for frerun container usage)
-        self.d.write("RUN mkdir -p /apps/bin \ \n")
+        self.d.write("RUN mkdir -p /apps/bin \\\n")
         self.d.write(" && ln -sf "+self.bld+"/execrunscript.sh "+"/apps/bin/execrunscript.sh \n")
         #finish the dockerfile
         self.d.writelines(self.setup)
