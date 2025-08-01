@@ -13,6 +13,7 @@ Release Versioning Procedure
           - `mkmf <https://github.com/NOAA-GFDL/mkmf>`__
           - `gfdl_msd_schemas <https://github.com/NOAA-GFDL/gfdl_msd_schemas>`__
           - `cmip6-cmor-tables <https://github.com/pcmdi/cmip6-cmor-tables>`__
+
           The release schedules of these submodules may vary from that of fre-cli
 
 1. Verify that git submodules ``gfdl_msd_schemas`` and ``mkmf`` reflect the latest state of the upstream repositories.
@@ -31,7 +32,7 @@ Release Versioning Procedure
    a. locally this can be done with ``git tag -a <release>`` and ``git push --tags``
    b. after the tag is pushed, CI will trigger the creation of a PR changing any reference to the previous tag with the
       new tag.  Review the PR and merge.
-   b. verify the tagged release is present `here <https://github.com/NOAA-GFDL/fre-cli/releases>`_
+   c. verify the tagged release is present `here <https://github.com/NOAA-GFDL/fre-cli/releases>`_
 
 4. Update the package release number in the ``fre-workflows`` repository:
 
