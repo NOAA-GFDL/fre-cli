@@ -205,7 +205,7 @@ def test_split_file_metadata(workdir,newdir, origdir):
     assert all_files_equal and same_count_files
 
 #clean up splitting files
-def test_split_file_cleanup():
+def test_zzz_cleanup():
     ''' Cleaning up files and dirs created for this set of tests. 
         Deletes all netcdf files (*.nc) and all dirs created for this test (new_*)'''
     el_list = []

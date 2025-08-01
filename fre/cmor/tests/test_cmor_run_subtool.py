@@ -272,7 +272,7 @@ def test_fre_cmor_run_subtool_case2_output_compare_metadata(capfd):
     assert result.returncode == 1
     _out, _err = capfd.readouterr()
 
-def test_git_cleanup():
+def test_zzz_git_cleanup():
     '''
     Performs a git restore on EXP_CONFIG to avoid false positives from
     git's record of changed files. It's supposed to change as part of the test.

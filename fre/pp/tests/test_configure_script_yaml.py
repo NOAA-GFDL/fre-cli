@@ -49,6 +49,6 @@ def test_configure_script():
                  Path(f"{OUT_DIR}/app/regrid-xy/rose-app.conf").exists(),
                  Path(f"{OUT_DIR}/app/remap-pp-components/rose-app.conf").exists() ])
 
-def test_cleanup():
+def test_zzz_cleanup():
     shutil.rmtree(f"{TEST_DIR}/configure_yaml_out")
     assert not Path(f"{TEST_DIR}/configure_yaml_out").exists()

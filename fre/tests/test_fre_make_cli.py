@@ -126,7 +126,7 @@ def test_cli_fre_make_create_checkout_container():
                  Path(f"tmp/{platform}/checkout.sh").exists(),
                  not os.access(Path(f"tmp/{platform}/checkout.sh"), os.X_OK) ])
 
-def test_cli_fre_make_create_checkout_cleanup():
+def test_zzz_cleanup():
     ''' make sure the checked out code doesnt stick around to mess up another pytest call '''
     assert Path(OUT_PATH_BASE).exists()
     shutil.rmtree(OUT_PATH_BASE)
