@@ -18,6 +18,9 @@ import yaml
 from itertools import chain
 import logging
 
+from fre.app.helpers import get_variables
+
+
 fre_logger = logging.getLogger(__name__)
 
 def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs, 
@@ -25,18 +28,25 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   '''
   Given a directory of netcdf files, splits those netcdf files into separate
   files for each data variable and copies the data variable files of interest
-  to the output directory
-  Intended to work with data structured for fre-workflows and fre-workflows
-    file naming conventions
+  to the output directory::
+  
+  Intended to work with data structured for fre-workflows and fre-workflows file naming conventions
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
-  inputDir - directory containg netcdf files
-  outputDir - directory to which to write netcdf files
-  component - the 'component' element we are currently working with in the yaml
-  history_source - a history_file under a 'source' under the 'component' that
-    we are working with. Is used to identify the files in inputDir.
-  use_subdirs - whether to recursively search through inputDir under the subdirectories.
-    used when regridding.
-  yamlfile - a .yml config file for fre postprocessing
+    
+  :param inputDir: directory containg netcdf files
+  :type inputDir: string
+  :param outputDir: directory to which to write netcdf files
+  :type outputDir: string
+  :param component: the 'component' element we are currently working with in the yaml
+  :type component: string
+  :param history_source: a history_file under a 'source' under the 'component' that we are working with. Is used to identify the files in inputDir.
+  :type history_source: string
+  :param use_subdirs: whether to recursively search through inputDir under the subdirectories. Used when regridding.
+  :type use_subdirs: boolean
+  :param yamlfile: - a .yml config file for fre postprocessing
+  :type yamlfile: string
+  :param split_all_vars: Whether to skip parsing the yamlfile and split all available vars in the file. Defaults to False.
+  :type split_all_vars: boolean
   '''
   
   #Verify input/output dirs exist and are dirs
@@ -59,7 +69,10 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   if split_all_vars:
     varlist = "all"
   else:
-    varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
+    vardict = get_variables(yamlfile, component)
+    varlist = vardict[history_source]
+    if varlist 
+    #varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
   
   #extend globbing used to find both tiled and non-tiled files
   #all files that contain the current source:history_file name,
@@ -116,9 +129,13 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   variable name in the filename. 
   if var_list if specified, only the vars in var_list are written to file; 
   if no vars in the file match the vars in var_list, no files are written.
-  infile: input netcdf file
-  outfiledir: writeable directory to which to write netcdf files
-  var_list: python list of string variable names or a string "all"
+  
+  :param infile: input netcdf file
+  :type infile: string
+  :param outfiledir: writeable directory to which to write netcdf files
+  :type outfiledir: string
+  :param var_list: python list of string variable names or a string "all"
+  :type var_list: list of strings
   '''
   if not os.path.isdir(outfiledir):
     fre_logger.info("creating output directory")
@@ -156,8 +173,9 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   var_exclude = list(set(var_patterns + [str(el) for el in var_shortvars] ))
   def matchlist(xstr):
     ''' checks a string for matches in a list of patterns
+    
         xstr: string to search for matches 
-        var_exclude: list of patterns defined in line 144'''
+        var_exclude: list of patterns defined in line 139'''
     allmatch = [re.search(el, xstr)for el in var_exclude]
     #If there's at least one match in the var_exclude list (average_bnds is OK)
     return len(list(set(allmatch))) > 1
@@ -203,9 +221,12 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
 
 def get_max_ndims(dataset):
   '''
-  Gets the maximum number of dimensions of a single var in an 
-  xarray Dataset object. Excludes coord vars, which should be single-dim anyway.
-  dataset: xarray Dataset 
+  Gets the maximum number of dimensions of a single var in an xarray Dataset object. Excludes coord vars, which should be single-dim anyway.
+  
+  :param dataset: xarray Dataset you want to query 
+  :type dataset: xarray Dataset
+  :return: The max dimensions that a single var posesses in the Dataset
+  :rtype: int
   '''
   allvars = dataset.data_vars.keys()
   ndims = [len(dataset[v].shape) for v in allvars]
@@ -217,12 +238,17 @@ def set_coord_encoding(dset, vcoords):
   as expected
   we need the list of all vars (varnames) because that's how you get coords
   for the metadata vars (i.e. nv or bnds for time_bnds)
-  dset: xarray dataset object
-  varname: name (string) of data variable we intend to write to file
-  varnames: list of all variables (string) in the dataset; needed to get
-    names of all coordinate variables since coordinate status is defined
-    only in relation with a variable
-  Note: this code removes _FillValue from coordinates. CF-compliant files do not
+  
+  :param dset: xarray Dataset object to query for info
+  :type dset: xarray Dataset object
+  :param vcoords: list of coordinate variables to write to file
+  :type vcoords: list of strings
+  :return: A dictionary where each key is a coordinate in the xarray Dataset and 
+  each value is a dictionary where the keys are the encoding information from
+  the coordinate variable in the Dataset plus the units (if present)
+  :rtype: dict
+  
+  ..note:: This code removes _FillValue from coordinates. CF-compliant files do not
   have _FillValue on coordinates, and xarray does not have a good way to get
   _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
   when coordinates *have* a _FillValue gets you wrong metadata, and bad metadata
@@ -243,10 +269,19 @@ def set_var_encoding(dset, varnames):
   '''
   Gets the encoding settings needed for xarray to write out the variables
   as expected
-  mostly addressed to time_bnds, because xarray can drop the units attribute:
-    https://github.com/pydata/xarray/issues/8368
-  dset: xarray dataset object
-  varnames: list of variables (strings) that will be written to file
+  
+  mostly addressed to time_bnds, because xarray can drop the units attribute
+  
+  - https://github.com/pydata/xarray/issues/8368
+    
+  :param dset: xarray dataset object to query for info
+  :type dset: xarray dataset object
+  :param varnames: list of variables that will be written to file
+  :type varnames: list of strings
+  :return: A dictionary where each key is a variable in the xarray Dataset and 
+  each value is a dictionary where the keys are the encoding information from
+  the variable in the Dataset plus the units (if present)
+  :rtype: dict
   '''
   fre_logger.debug(f"getting var encode settings")
   encode_dict = {}
@@ -263,23 +298,27 @@ def fre_outfile_name(infile, varname):
   '''
   Builds split  var filenames the way that fre expects them 
   (and in a way that should work for any .nc file)
-  infile: string name of .nc file
-  varname: string to be added to input
-   Fre Input format:  date.component(.tileX).nc
-   Fre Output format: date.component(.tileX)var.nc
+  
+   This is expected to work with files formed the following way
+   
+   - Fre Input format:  date.component(.tileX).nc
+   - Fre Output format: date.component.var(.tileX).nc
+   
+   but it should also work on any file filename.nc
+  
+  :param infile: name of a file with a . somwehere in the filename
+  :type infile: string
+  :param varname: string to add to the infile
+  :type varname: string
+  :return: new filename
+  :rtype: string
   '''
   var_outfile = re.sub(".nc", f".{varname}.nc", infile)
   return(var_outfile)
 
 def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
   '''
-  Given a yaml config file, parses the structure looking for the list of
-  variables to postprocess (https://github.com/NOAA-GFDL/fre-workflows/issues/51)
-  and returns "all" if no such list is found
-  yamlfile: .yml file used for fre pp configuration
-  yamlcomp: string, one of the components in the yamlfile
-  hist_source: string, optional, allows you to check that the hist_source
-    is under the specified component
+  This is going to get replaced really soon
   '''
   with open(yamlfile,'r') as yml:
     yml_info = yaml.safe_load(yml)
@@ -307,63 +346,6 @@ def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
   else:
     varlist = "all"
   return(varlist)
-
-def parse_yaml_for_varlist_ppcompstyle(yamlfile, is_static, hist_source):
-  '''
-  Parses a yaml in the style of remap-pp-components. Takes 3 args:
-    yamlfile: path to yaml config file
-    is_static: is the hist_source we are working with static?
-    hist_source: short identifier for a history file (e.g. "ocean_inert_annual" or "atmos_month")
-  '''
-  with open(yamlfile,'r') as yml:
-    yml_info = yaml.safe_load(yml)
-  if is_static:
-    product = "static"
-  else:
-    product = "ts"
-  for el in yml_info['postprocess']['components']:
-    varlist = get_variables(el, product, hist_source)
-    if varlist is not None:
-      break
-  if varlist is None:
-    fre_logger.error(f"error in parse_yaml_for_varlist_ppcompstle: history_file {hist_source} was not found in file {yamlfile}")
-    raise ValueError
-  return(varlist)
-
-def get_variables(comp_info, product, req_source):
-    """
-    Taken from fre-workflows/app/remap-pp-components; when that gets added
-    to fre-cli this should be an import instead
-    Written by Dana
-    Retrieve variables listed for a component; save in dictionary for use later
-    Params:
-        comp_info: dictionary of information about requested component
-        product: string; one of static, ts, or av
-          static: this filename has "static" in it and has vars without time axes
-          ts: timeseries. the vars have time series unless they are metadata vars
-          av: 
-        req_source: the short identifier for the history file ("atmos_month")
-    """
-    v = None
-    if product == "static":
-        if comp_info.get("static") is None:
-            raise ValueError(f"Product is set to static but no static sources/variables defined for {comp_info.get('type')}")
-
-        for static_info in comp_info.get("static"):
-            if static_info.get("source") == req_source:
-                if static_info.get("variables") is None:
-                    v = "all"
-                else:
-                    v = static_info.get("variables")
-    else:
-        for src_info in comp_info.get("sources"): #history_file,variables
-            if src_info.get("history_file") == req_source:
-                if src_info.get("variables") is None:
-                    v = "all"
-                else:
-                    v = src_info.get("variables")
-
-    return v
 
 #Main method invocation
 if __name__ == '__main__':
