@@ -1,4 +1,31 @@
-''' defines how a cmor yaml will be parsed '''
+"""
+CMOR Info Parser Module
+=======================
+
+This module provides classes and functions to parse, validate, and merge CMOR (Climate Model Output Rewriter)
+YAML configuration files for the FMS Runtime Environment (FRE) CLI. It enables extraction and composition
+of experiment-specific, grid, and post-processing YAML settings, and helps build unified configurations
+for model execution and output post-processing.
+
+Features
+--------
+- Resolves and validates experiment configurations from project YAML files.
+- Merges model, grid, post-processing, and experiment YAMLs into a single configuration dictionary.
+- Provides the :class:`CMORYaml` class interface for combining and cleaning CMOR YAML definitions.
+- Raises descriptive exceptions for missing or inconsistent configuration files.
+
+Intended Usage
+--------------
+This module is intended for internal use by FRE-CLI tools and utilities that automate configuration and
+execution of FMS-based climate model experiments, especially when CMOR-compliant output is required.
+
+References
+----------
+- FRE Documentation: https://github.com/NOAA-GFDL/fre-cli
+- PEP 8 -- Style Guide for Python Code: https://www.python.org/dev/peps/pep-0008/
+- PEP 257 -- Docstring Conventions: https://www.python.org/dev/peps/pep-0257/
+
+"""
 
 import os
 import yaml
@@ -14,12 +41,30 @@ from . import *
 
 def experiment_check(mainyaml_dir, experiment, loaded_yaml):
     """
-    Check that the experiment given is an experiment listed in the model yaml.
-    Extract experiment specific information and file paths.
-    Arguments:
-    mainyaml_dir (required) : model yaml file directory
-    experiment   (required) : string representing an experiment name
-    loaded_yaml  (required) : yaml data object
+    Check and extract experiment-specific information and file paths from a model YAML.
+
+    Parameters
+    ----------
+    mainyaml_dir : str or Path
+        Directory containing the main model YAML file.
+    experiment : str
+        Name of the experiment to look for.
+    loaded_yaml : dict
+        Parsed YAML data object containing experiment definitions.
+
+    Returns
+    -------
+    tuple of (Path, Path, Path)
+        Paths to the experiment's CMOR YAML, post-processing settings YAML, and grid YAML.
+
+    Raises
+    ------
+    NameError
+        If the experiment name is not present in the YAML.
+    FileNotFoundError
+        If required YAML files are missing.
+    ValueError
+        If post-processing YAML paths or CMOR YAML paths are not found.
     """
     # Check if exp name given is actually valid experiment listed in combined yaml
     exp_list = []
@@ -90,12 +135,41 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
 
 ## CMOR CLASS ##
 class CMORYaml():
-    """ class holding routines for initalizing cmor yamls """
+    """
+    Class for handling and merging CMOR-related YAML files.
+
+    Methods
+    -------
+    __init__(yamlfile, experiment, platform, target)
+        Initialize the CMORYaml instance.
+    __repr__()
+        Return a string representation of the object.
+    combine_model()
+        Create and merge the combined.yaml with the model YAML.
+    combine_experiment(yaml_content, loaded_yaml)
+        Combine experiment YAMLs with the combined model YAML.
+    merge_cmor_yaml(cmor_list, loaded_yaml)
+        Merge all relevant YAML contents into a final dictionary.
+    clean_yaml(yml_dict)
+        Clean the combined YAML dictionary for final use.
+    """
 
     def __init__(self,yamlfile,experiment,platform,target):#,join_constructor):
         """
-        Process to combine the applicable yamls for post-processing
+        Initialize the CMORYaml object.
+
+        Parameters
+        ----------
+        yamlfile : str or Path
+            Path to the main model YAML file.
+        experiment : str
+            Name of the experiment.
+        platform : str
+            Platform identifier.
+        target : str
+            Target identifier.
         """
+
         fre_logger.info('initializing a CMORYaml object')
         self.yml = yamlfile
         self.name = experiment
@@ -109,7 +183,14 @@ class CMORYaml():
         fre_logger.info("CMORYaml initialized!")
 
     def __repr__(self):
-        ''' return text representation of object '''
+        """
+        Return a string representation of the CMORYaml object.
+
+        Returns
+        -------
+        str
+            Human-readable string with core attributes.
+        """
         return f'{type(self).__name__}( \n\
                                yml = {self.yml} \n\
                                name = {self.name} \n\
@@ -119,7 +200,13 @@ class CMORYaml():
 
     def combine_model(self):
         """
-        Create the combined.yaml and merge it with the model yaml
+        Create a combined YAML by merging the experiment name, platform, and target 
+        with the model YAML content.
+
+        Returns
+        -------
+        tuple of (str, dict)
+            The combined YAML as a string and as a loaded dict.
         """
         # Define click options in string
         yaml_content = (f'name: &name "{self.name}"\n'
@@ -143,8 +230,19 @@ class CMORYaml():
 
     def combine_experiment(self, yaml_content, loaded_yaml):
         """
-        Combine experiment yamls with the defined combined.yaml.
-        If more than 1 pp yaml defined, return a list of paths.
+        Combine model, grid, post-processing, and experiment YAMLs.
+
+        Parameters
+        ----------
+        yaml_content : str
+            Combined model YAML content as a string.
+        loaded_yaml : dict
+            Dictionary representation of the model YAML.
+
+        Returns
+        -------
+        list of str
+            List of YAML content blocks to be merged for the experiment.
         """
         # Experiment Check
         cmory_path, ppsettingsy_path, gridsy_path = \
@@ -196,6 +294,24 @@ class CMORYaml():
 
     def merge_cmor_yaml(self, cmor_list, loaded_yaml):
         """
+        Merge a list of YAML content strings into a single dictionary.
+
+        Parameters
+        ----------
+        cmor_list : list of str
+            List of YAML content blocks.
+        loaded_yaml : dict
+            Dictionary representation of the loaded YAML.
+
+        Returns
+        -------
+        dict
+            The merged and parsed YAML dictionary.
+
+        Raises
+        ------
+        ValueError
+            If the YAML list is None.
         """
         if cmor_list is None:
             raise ValueError('cmor_list is none and should not be!!!')
@@ -217,8 +333,17 @@ class CMORYaml():
 
     def clean_yaml(self,yml_dict):
         """
-        Clean the yaml; remove unnecessary sections in
-        final combined yaml.
+        Clean the combined YAML dictionary by removing unnecessary sections.
+
+        Parameters
+        ----------
+        yml_dict : dict
+            Combined YAML dictionary to clean.
+
+        Returns
+        -------
+        dict
+            Cleaned YAML dictionary.
         """
         # Clean the yaml, the key exists, delete
         keys_clean=["name", "platform", "target", # these are needed to create the final parsed dictionary fed to cmor
