@@ -14,7 +14,8 @@ from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 fre_logger = logging.getLogger(__name__)
 
 def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
-    """Create the compile script for bare-metal build
+    """
+    Create the compile script for bare-metal build
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str

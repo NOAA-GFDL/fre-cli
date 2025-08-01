@@ -13,7 +13,8 @@ from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 fre_logger = logging.getLogger(__name__)
 
 def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer):
-    """Create the dockerfile and container build script for a container build
+    """
+    Create the dockerfile and container build script for a container build
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str

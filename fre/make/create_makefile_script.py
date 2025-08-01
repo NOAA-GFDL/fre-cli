@@ -11,7 +11,8 @@ from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 fre_logger = logging.getLogger(__name__)
 
 def makefile_create(yamlfile, platform, target):
-    """Create the makefile
+    """
+    Create the makefile
     
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
@@ -22,11 +23,11 @@ def makefile_create(yamlfile, platform, target):
     :raises ValueError: Error if platform passed does not exist in platforms yaml configuration 
 
     .. note:: If additional libraries are defined in the compile.yaml file:
-                - for a container build, a linkline script will be generated
-                  to locate those libraries inside the container and populate 
-                  the Makefile with the correct linker flags
-                - for a bare-metal build, linker flags defined in the yaml
-                  configuration are added to the link line in the Makefile
+        - for a container build, a linkline script will be generated
+          to locate those libraries inside the container and populate 
+          the Makefile with the correct linker flags
+        - for a bare-metal build, linker flags defined in the yaml
+          configuration are added to the link line in the Makefile
     """
     srcDir="src"
     baremetalRun = False # This is needed if there are no bare metal runs

@@ -17,7 +17,8 @@ from .gfdlfremake import (
 fre_logger = logging.getLogger(__name__)
 
 def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
-    """ Run fremake
+    """
+    Run fremake
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str

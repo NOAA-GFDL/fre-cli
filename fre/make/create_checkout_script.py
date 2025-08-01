@@ -12,7 +12,8 @@ from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 fre_logger = logging.getLogger(__name__)
 
 def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
-    """Create the checkout script for bare-metal or container build
+    """
+    Create the checkout script for bare-metal or container build
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
