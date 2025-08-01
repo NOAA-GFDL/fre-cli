@@ -27,14 +27,17 @@ and is deployed on RDHPCS and GFDL systems as Environment Modules.
 
 ### On NOAA RDHPCS Gaea and at GFDL on PPAN
 
-#### The preferred installation method on GAEA or at GFDL is to load modules via lmod:
+The GFDL Workflow Team installs fre-cli on Gaea, GFDL Workstations, and PPAN.  There are two supported methods for
+loading fre-cli into a user's environment.
+
+#### Load modules via lmod (Preferred method):
 
 ```
 module use -a /ncrc/home2/fms/local/modulefiles
 module load fre/2025.04
 ```
 
-#### An optional, secondary installation method is also available via a shared conda environment:
+#### Activate a shared conda environment:
 
 - GFDL:
 ```
@@ -49,6 +52,8 @@ module load fre/2025.04
 ```
 
 ## Install via Conda
+
+To use fre-cli anywhere, fre-cli is deployed to [anaconda](https://anaconda.org/NOAA-GFDL/fre-cli).  Here is an example of how to install fre-cli via conda:
 
 ```
 conda config --append channels noaa-gfdl
@@ -69,7 +74,7 @@ module load fre/test
 ```
 
 ### Major releases (`fre/YYYY.NN`)
-These deployments are currently installed by tyhe GFDL workflow team in the `fms` user directories.
+These deployments are currently installed by the GFDL workflow team in the `fms` user directories.
 ```
 # at GFDL or gaea, access with Lmod
 module load fre/YYYY.NN

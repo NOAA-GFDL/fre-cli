@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Get tags and checkout main
+      - name: Fetch tags
         run: |
           git fetch --tags origin
 
