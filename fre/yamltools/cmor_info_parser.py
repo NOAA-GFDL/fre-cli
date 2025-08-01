@@ -288,7 +288,6 @@ class CMORYaml():
             cmor_yamls.append(exp_info)
 
         #fre_logger.debug(f'cmor_yamls = \n %s', pformat(cmor_yamls))
-        #assert False
 
         return cmor_yamls
 
