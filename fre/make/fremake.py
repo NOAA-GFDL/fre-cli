@@ -213,5 +213,3 @@ def dockerfile(yamlfile, platform, target, no_format_transfer, execute):
     """ - Write the dockerfile """
     create_docker_script.dockerfile_create(yamlfile, platform, target, no_format_transfer, execute)
 
-if __name__ == "__main__":
-    make_cli()
