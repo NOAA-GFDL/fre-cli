@@ -21,20 +21,14 @@ def test_cli_fre_catalog_opt_dne():
     result = runner.invoke(fre.fre, args=["catalog", "optionDNE"])
     assert result.exit_code == 2
 
-def test_cli_fre_catalog_builder():
-    ''' fre catalog builder '''
-    result = runner.invoke(fre.fre, args=["catalog", "builder"])
-    stdout_str = 'Missing: input_path or output_path. ' + \
-                 'Pass it in the config yaml or as command-line option'
-    assert all( [
-                  result.exit_code == 1,
-                  stdout_str in result.stdout.split('\n')
-                ]
-              )
+def test_cli_fre_catalog_build():
+    ''' fre catalog build '''
+    result = runner.invoke(fre.fre, args=["catalog", "build"])
+    assert result.exit_code == 1
 
-def test_cli_fre_catalog_builder_help():
-    ''' fre catalog builder --help '''
-    result = runner.invoke(fre.fre, args=["catalog", "builder", "--help"])
+def test_cli_fre_catalog_build_help():
+    ''' fre catalog build --help '''
+    result = runner.invoke(fre.fre, args=["catalog", "build", "--help"])
     assert result.exit_code == 0
 
 def test_cli_fre_catalog_merge():

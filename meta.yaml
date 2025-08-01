@@ -30,7 +30,7 @@ requirements:
     - python=3.11.*
     - pip
     - noaa-gfdl::analysis_scripts
-    - noaa-gfdl::catalogbuilder
+    - noaa-gfdl::catalogbuilder>=2.0.2
     - noaa-gfdl::fre-nctools
     - conda-forge::cftime
     - conda-forge::click<8.2
@@ -42,6 +42,7 @@ requirements:
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
     - conda-forge::nccmp
+    - conda-forge::numpy<2
     - conda-forge::pylint
     - conda-forge::pytest
     - conda-forge::pytest-cov
