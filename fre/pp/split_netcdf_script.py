@@ -69,10 +69,12 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   if split_all_vars:
     varlist = "all"
   else:
-    #vardict = get_variables(yamlfile, component)
-    #varlist = vardict[history_source]
-    #if varlist is None:
-    varlist = parse_yaml_for_varlist(yamlfile, component, history_source)
+    vardict = get_variables(yamlfile, component)
+    if vardict is None or history_source not in vardict.keys():
+      fre_logger.error(f"error: either component {component} not defined or source {history_source} not defined under component {component} in yamlfile {yamlfile}.")
+      raise ValueError(f"error: either component {component} not defined or source {history_source} not defined under component {component} in yamlfile {yamlfile}.")
+    else:
+      varlist = vardict[history_source]
   
   #extend globbing used to find both tiled and non-tiled files
   #all files that contain the current source:history_file name,
