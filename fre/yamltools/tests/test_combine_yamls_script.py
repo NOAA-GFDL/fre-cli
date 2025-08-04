@@ -167,12 +167,12 @@ def test_check_expected_platformyamlcontent():
     # compare combined yaml info with some information that's supposed to be parsed
     expected_platform_info_1 = {'name': 'ncrc5.intel23',
                                 'compiler': 'intel',
-                                'envSetup': [' module use -a /ncrc/home2/fms/local/modulefiles',
+                                'envSetup': ['module use -a /ncrc/home2/fms/local/modulefiles',
                                              'source $MODULESHOME/init/sh',
                                              'module load intel-classic/2023.2.0',
                                              'module load fre/bronx-23',
                                              'module load cray-hdf5/1.12.2.11',
-                                             'module load cray-netcdf/4.9.0.11']
+                                             'module load cray-netcdf/4.9.0.11'],
                                 'mkTemplate': '/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/intel-classic.mk',
                                 'modelRoot': '${HOME}/fremake_canopy/test'}
     expected_platform_info_2 = {'name': 'hpcme.2023',
