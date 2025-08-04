@@ -26,15 +26,15 @@ def run_all_fre_pp_steps(experiment = None, platform = None, target = None, conf
     
     Calls config_file, checkout_template, yaml_info, install_subtool, pp_run_subtool, (trigger) and status_subtool in sequence. (trigger) is an optional step. 
     
-    :param experiment: Name of post-processing experiment, default is None
-    :type experiment: string
-    :param platform: Name of the platform upon which the original experiment was run. Default is None.
-    :type platform: string
-    :param target: Name of the target . Default is None.
-    :type target: string
-    :param config_file: 
-    :type config_file:
-    :param branch:
+    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
+    :type experiment: str
+    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
+    :type platform: str
+    :param target: Options used for the model compiler (e.g. prod-openmp), default None
+    :type target: str
+    :param config_file: yamlfile used for experiment configuration
+    :type config_file: string
+    :param branch: which git branch to pull from, default None
     :type branch: string
     :param time:
     :type time: integer

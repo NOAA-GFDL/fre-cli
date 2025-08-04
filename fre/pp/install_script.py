@@ -18,12 +18,12 @@ def install_subtool(experiment, platform, target):
     
     ~/cylc-run/$(experiment)__$(platform)__$(target)
     
-    :param experiment: Name of post-processing experiment, default is None
-    :type experiment: string
-    :param platform: Name of the platform upon which the original experiment was run. Default is None.
-    :type platform: string
-    :param target: Name of the target . Default is None.
-    :type target: string
+    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
+    :type experiment: str
+    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
+    :type platform: str
+    :param target: Options used for the model compiler (e.g. prod-openmp), default None
+    :type target: str
     """
 
     #name = experiment + '__' + platform + '__' + target
