@@ -38,8 +38,8 @@ def run_all_fre_pp_steps(experiment = None, platform = None, target = None, conf
     :type config_file: string
     :param branch: which git branch to pull from, default None
     :type branch: string
-    :param time:
-    :type time: integer
+    :param time: The start time of the segment to postprocess, if any. Formatted as a series of integers. For more information, see trigger().
+    :type time: Cylc representation of a time point
     '''
     fre_logger.info('(run_all_fre_pp_steps) config_file path resolving...')
     config_file = os.path.abspath(config_file)
