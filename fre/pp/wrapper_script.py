@@ -11,6 +11,7 @@ Author: Carolyn.Whitlock
 # error handling
 
 import os
+import logging
 
 # Import from the local packages
 from .checkout_script import checkout_template
