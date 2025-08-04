@@ -20,6 +20,8 @@ from .run_script import pp_run_subtool
 from .trigger_script import trigger
 from .status_script import status_subtool
 
+fre_logger = logging.getLogger(__name__)
+
 def run_all_fre_pp_steps(experiment = None, platform = None, target = None, config_file = None, branch = None, time = None):
     '''
     Wrapper script for all the steps of the fre2 pp infrastructure. 
@@ -39,30 +41,30 @@ def run_all_fre_pp_steps(experiment = None, platform = None, target = None, conf
     :param time:
     :type time: integer
     '''
-    print('(run_all_fre_pp_steps) config_file path resolving...')
+    fre_logger.info('(run_all_fre_pp_steps) config_file path resolving...')
     config_file = os.path.abspath(config_file)
-    print(f'            config_file={config_file}')
+    fre_logger.info(f'config_file={config_file}')
 
-    print('(run_all_fre_pp_steps) calling checkout_template')
+    fre_logger.info('(run_all_fre_pp_steps) calling checkout_template')
     checkout_template(experiment, platform, target, branch)
 
-    print('(run_all_fre_pp_steps) calling yaml_info')
+    fre_logger.info('(run_all_fre_pp_steps) calling yaml_info')
     yaml_info(config_file, experiment, platform, target)
 
-    print('(run_all_fre_pp_steps) calling install_subtool')
+    fre_logger.info('(run_all_fre_pp_steps) calling install_subtool')
     install_subtool(experiment, platform, target)
 
-    print('(run_all_fre_pp_steps) calling pp_run_subtool')
+    fre_logger.info('(run_all_fre_pp_steps) calling pp_run_subtool')
     pp_run_subtool(experiment, platform, target)
 
     if time is not None:
-        print('(run_all_fre_pp_steps) calling trigger')
+        fre_logger.info('(run_all_fre_pp_steps) calling trigger')
         trigger(experiment, platform, target, time)
 
-    print('(run_all_fre_pp_steps) calling status_subtool')
+    fre_logger.info('(run_all_fre_pp_steps) calling status_subtool')
     status_subtool(experiment, platform, target)
 
-    print('(run_all_fre_pp_steps) done.')
+    fre_logger.info('(run_all_fre_pp_steps) done.')
 
 
 if __name__ == '__main__':
