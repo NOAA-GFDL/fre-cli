@@ -250,7 +250,8 @@ def set_coord_encoding(dset, vcoords):
            the coordinate variable in the Dataset plus the units (if present)
   :rtype: dict
   
-  ..note:: This code removes _FillValue from coordinates. CF-compliant files do not
+  ..note:: 
+           This code removes _FillValue from coordinates. CF-compliant files do not
            have _FillValue on coordinates, and xarray does not have a good way to get
            _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
            when coordinates *have* a _FillValue gets you wrong metadata, and bad metadata
