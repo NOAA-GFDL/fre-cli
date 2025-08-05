@@ -16,7 +16,7 @@ def list_cli():
 @click.option("-y",
               "--yamlfile",
               type=str,
-              help="YAML file to be used for parsing",
+              help="Model YAML configuration file",
               required=True)
 def exps(yamlfile):
     """ - List experiments  available"""
@@ -26,7 +26,7 @@ def exps(yamlfile):
 @click.option("-y",
               "--yamlfile",
               type=str,
-              help="YAML file to be used for parsing",
+              help="Model YAML configuration file",
               required=True)
 def platforms(yamlfile):
     """ - List platforms available """
@@ -36,7 +36,7 @@ def platforms(yamlfile):
 @click.option("-y",
               "--yamlfile",
               type=str,
-              help="YAML file to be used for parsing",
+              help="Model YAML configuration file",
               required=True)
 @click.option("-e",
               "--experiment",
