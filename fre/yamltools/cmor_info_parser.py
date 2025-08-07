@@ -25,7 +25,7 @@ import os
 import yaml
 from pathlib import Path
 from pprint import pformat
-from typing import Any, Union, List, Dict, IO
+from typing import Any, Union, List, Dict, IO, Tuple
 
 import logging
 fre_logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ from . import *
 
 def experiment_check( mainyaml_dir: Union[str, Path],
                       experiment: str,
-                      loaded_yaml: Dict[str, Any] -> Tuple[Path, Path, Path]:
+                      loaded_yaml: Dict[str, Any] ) -> Tuple[Path, Path, Path]:
     """
     Check and extract experiment-specific information and file paths from a model YAML.
 
@@ -335,7 +335,7 @@ class CMORYaml():
         return result
 
     def clean_yaml( self,
-                    yml_dict: Dict[str, Any]  -> Dict[str, Any
+                    yml_dict: Dict[str, Any] ) -> Dict[str, Any]:
         """
         Clean the combined YAML dictionary by removing unnecessary sections.
 

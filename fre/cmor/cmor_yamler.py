@@ -319,7 +319,7 @@ def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
         elif freq != table_freq and table_freq is not None:
             raise ValueError(
                 'frequency from MIP table is incompatible with requested frequency in cmor yaml for {table_config}')
-        # frequency of data ---- the reason this spot looks kind of 
+        # frequency of data ---- the reason this spot looks kind of
 
         # gridding info of data ---- revisit/TODO
         gridding_dict = table_config['gridding']
@@ -342,7 +342,7 @@ def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
             fre_logger.info('indir = %s', indir)
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
-            
+
             if dry_run_mode:
                 fre_logger.info(  '--DRY RUN CALL---\n'
                                   'cmor_run_subtool(\n'
@@ -375,5 +375,3 @@ def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
                 start = start,
                 stop = stop
             )
-
-

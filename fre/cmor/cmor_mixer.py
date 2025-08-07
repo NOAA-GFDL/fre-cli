@@ -27,7 +27,9 @@ import cmor
 import numpy as np
 import netCDF4 as nc
 
-from .cmor_helpers import *
+from .cmor_helpers import ( print_data_minmax, from_dis_gimme_dis, find_statics_file, create_lev_bnds,
+                            get_iso_datetime_ranges, check_dataset_for_ocean_grid, get_vertical_dimension,
+                            create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type )
 
 fre_logger = logging.getLogger(__name__)
 
@@ -44,17 +46,14 @@ CMOR_EXIT_CTL=cmor.CMOR_NORMAL#.CMOR_EXIT_ON_WARNING#.CMOR_EXIT_ON_MAJOR#
 CMOR_MK_SUBDIRS=1
 CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
 
-#def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
-#                            target_var=None, json_exp_config=None, json_table_config=None,
-#                            prev_path=None):
-def rewrite_netcdf_file_var(
-        mip_var_cfgs: Optional[dict] = None,
-        local_var: Optional[str] = None,
-        netcdf_file: Optional[str] = None,
-        target_var: Optional[str] = None,
-        json_exp_config: Optional[str] = None,
-        json_table_config: Optional[str] = None,
-        prev_path: Optional[str] = None) -> Optional[str]:
+
+def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
+                             local_var: Optional[str] = None,
+                             netcdf_file: Optional[str] = None,
+                             target_var: Optional[str] = None,
+                             json_exp_config: Optional[str] = None,
+                             json_table_config: Optional[str] = None,
+                             prev_path: Optional[str] = None) -> Optional[str]:
     """
     Rewrite the input NetCDF file for a target variable in a CMIP-compliant manner and write output using CMOR.
 
@@ -192,10 +191,10 @@ def rewrite_netcdf_file_var(
                 '   moving on and doing my best, but I am probably going to break'
             )
             raise FileNotFoundError('statics file not found.') from exc
-        
+
 
         fre_logger.info("statics file found.")
-        
+
         statics_file_name = Path(statics_file_path).name
         put_statics_file_here = str(Path(netcdf_file).parent)
         shutil.copy(statics_file_path, put_statics_file_here)
@@ -513,7 +512,7 @@ def rewrite_netcdf_file_var(
                                units="Pa")
             save_ps = True
 
-            
+
         fre_logger.info('DONE assigning cmor_z')
 
     axes = []
@@ -576,6 +575,7 @@ def rewrite_netcdf_file_var(
 
     fre_logger.info('-------------------------- END rewrite_netcdf_file_var call -----\n\n')
     return filename
+
 
 def cmorize_target_var_files(indir: str = None,
                              target_var: str = None,
@@ -640,7 +640,7 @@ def cmorize_target_var_files(indir: str = None,
     for i, iso_datetime in enumerate(iso_datetime_range_arr):
         # why is nc_fls a filled list/array/object thingy here? see above line
         nc_fls[i] = f"{indir}/{name_of_set}.{iso_datetime}.{local_var}.nc"
-        
+
         fre_logger.info("input file = %s", nc_fls[i])
         if not Path(nc_fls[i]).exists():
             fre_logger.warning("input file(s) not found. Moving on.") #uncovered
@@ -702,7 +702,7 @@ def cmorize_target_var_files(indir: str = None,
         fre_logger.info('local_file_name = %s', local_file_name)
         filename = local_file_name.replace('/tmp/','/')
         fre_logger.info("filename = %s", filename)
-        
+
         # the final output file directory will be...
         filedir = Path(filename).parent
         fre_logger.info("FINAL OUTPUT FILE DIR WILL BE filedir = %s", filedir)
@@ -712,7 +712,7 @@ def cmorize_target_var_files(indir: str = None,
         except FileExistsError:
             fre_logger.warning('directory %s already exists!', filedir)
 
-        # 
+        #
         mv_cmd = f"mv {local_file_name} {filedir}"
         fre_logger.info("moving files...\n%s", mv_cmd)
         subprocess.run(mv_cmd, shell=True, check=True)
@@ -741,8 +741,7 @@ def cmorize_target_var_files(indir: str = None,
             fre_logger.warning('done processing one file!!!')
             break
 
-#def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, name_of_set, json_exp_config,
-#                                 outdir, mip_var_cfgs, json_table_config, run_one_mode):
+
 def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
                                  indir: str,
                                  iso_datetime_range_arr: List[str],
@@ -815,9 +814,7 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
             break
     return return_status
 
-#def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, json_exp_config=None,
-#                     outdir=None, run_one_mode=False,
-#                     opt_var_name=None, grid=None, grid_label=None, nom_res=None, start=None, stop=None, calendar_type=None):
+
 def cmor_run_subtool(indir: str = None,
                      json_var_list: str = None,
                      json_table_config: str = None,
@@ -915,7 +912,7 @@ def cmor_run_subtool(indir: str = None,
     fre_logger.info('loading json_table_config = \n%s', json_table_config)
     mip_var_cfgs = get_json_file_data(json_table_config)
     fre_logger.debug('keys of mip_var_cfgs["variable_entry"] is = \n %s',mip_var_cfgs["variable_entry"].keys())
-    
+
     # open input variable list, generally created by the user
     json_var_list = str(Path(json_var_list).resolve())
     fre_logger.info('loading json_var_list = \n%s', json_var_list)
@@ -956,7 +953,7 @@ def cmor_run_subtool(indir: str = None,
     indir_filenames = glob.glob(f'{indir}/*.nc')
     indir_filenames.sort()
     if len(indir_filenames) == 0:
-        raise ValueError('no files in input target directory = indir = \n%s', indir) 
+        raise ValueError('no files in input target directory = indir = \n%s', indir)
     fre_logger.debug('found %s filenames', len(indir_filenames))
 
     # name_of_set == component label
@@ -965,10 +962,10 @@ def cmor_run_subtool(indir: str = None,
 
     # make list of iso-datetimes here
     iso_datetime_range_arr = []
-    get_iso_datetime_ranges(indir_filenames, iso_datetime_range_arr, start, stop) 
+    get_iso_datetime_ranges(indir_filenames, iso_datetime_range_arr, start, stop)
     fre_logger.info('\nfound iso datetimes = %s', iso_datetime_range_arr)
     #assert False
-    
+
     # no longer needed.
     del indir_filenames
 

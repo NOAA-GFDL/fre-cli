@@ -49,7 +49,7 @@ def cmor_cli():
               help=DRY_RUN_HELP,
               required = False)
 @click.option('--start', type=str, default=None,
-              help = START_YEAR_HELP, 
+              help = START_YEAR_HELP,
               required = False)
 @click.option('--stop', type=str, default=None,
               help = STOP_YEAR_HELP,
@@ -165,7 +165,7 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
                      'must be one of the entries in the MIP controlled-vocab file.',
               required = False)
 @click.option('--start', type=str, default=None,
-              help = START_YEAR_HELP, 
+              help = START_YEAR_HELP,
               required = False)
 @click.option('--stop', type=str, default=None,
               help = STOP_YEAR_HELP,

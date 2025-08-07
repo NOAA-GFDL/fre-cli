@@ -14,7 +14,7 @@ Functions
 
 Notes
 -----
-These utilities are intended to make it easier to inspect and extract variable information from CMIP6 JSON 
+These utilities are intended to make it easier to inspect and extract variable information from CMIP6 JSON
 tables, avoiding the need for manual shell scripting and ad-hoc file inspection.
 """
 
@@ -95,7 +95,7 @@ def cmor_find_subtool(
     Parameters
     ----------
     json_var_list : str or None, optional
-        Path to a JSON file containing a dictionary of variable names to look up. If None, opt_var_name 
+        Path to a JSON file containing a dictionary of variable names to look up. If None, opt_var_name
         must be provided.
     json_table_config_dir : str
         Directory containing CMIP6 table JSON files.
@@ -115,7 +115,7 @@ def cmor_find_subtool(
 
     Notes
     -----
-    This function is intended as a helper tool for CLI users to quickly inspect variable definitions in 
+    This function is intended as a helper tool for CLI users to quickly inspect variable definitions in
     CMIP6 tables. Information is printed via the logger.
     """
     if not Path(json_table_config_dir).exists():
@@ -171,7 +171,7 @@ def make_simple_varlist( dir_targ: str,
     Returns
     -------
     dict or None
-        Dictionary of variable names (keys and values are the same), or None if no files are found or an 
+        Dictionary of variable names (keys and values are the same), or None if no files are found or an
         error occurs.
 
     Raises
