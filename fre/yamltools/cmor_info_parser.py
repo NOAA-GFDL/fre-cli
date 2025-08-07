@@ -19,18 +19,13 @@ Intended Usage
 This module is intended for internal use by FRE-CLI tools and utilities that automate configuration and
 execution of FMS-based climate model experiments, especially when CMOR-compliant output is required.
 
-References
-----------
-- FRE Documentation: https://github.com/NOAA-GFDL/fre-cli
-- PEP 8 -- Style Guide for Python Code: https://www.python.org/dev/peps/pep-0008/
-- PEP 257 -- Docstring Conventions: https://www.python.org/dev/peps/pep-0257/
-
 """
 
 import os
 import yaml
 from pathlib import Path
 from pprint import pformat
+from typing import Any, Union, List, Dict, IO
 
 import logging
 fre_logger = logging.getLogger(__name__)
@@ -39,7 +34,9 @@ fre_logger = logging.getLogger(__name__)
 from . import *
 
 
-def experiment_check(mainyaml_dir, experiment, loaded_yaml):
+def experiment_check( mainyaml_dir: Union[str, Path],
+                      experiment: str,
+                      loaded_yaml: Dict[str, Any] -> Tuple[Path, Path, Path]:
     """
     Check and extract experiment-specific information and file paths from a model YAML.
 
@@ -133,7 +130,6 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
     fre_logger.info(f'cmor_info_parser\'s experiment_check about to return cmoryaml_path!')
     return cmoryaml_path, ppsettingsyaml_path, grid_yaml_path
 
-## CMOR CLASS ##
 class CMORYaml():
     """
     Class for handling and merging CMOR-related YAML files.
@@ -154,7 +150,11 @@ class CMORYaml():
         Clean the combined YAML dictionary for final use.
     """
 
-    def __init__(self,yamlfile,experiment,platform,target):#,join_constructor):
+    def __init__( self,
+                  yamlfile: Union[str, Path],
+                  experiment: str,
+                  platform: str,
+                  target: str ) -> None:
         """
         Initialize the CMORYaml object.
 
@@ -182,7 +182,7 @@ class CMORYaml():
         # Create combined pp yaml
         fre_logger.info("CMORYaml initialized!")
 
-    def __repr__(self):
+    def __repr__( self ) -> str:
         """
         Return a string representation of the CMORYaml object.
 
@@ -198,7 +198,7 @@ class CMORYaml():
                                target = {self.target} \n\
                                mainyaml_dir = {self.mainyaml_dir}'
 
-    def combine_model(self):
+    def combine_model( self ) -> Tuple[str, Dict[str, Any]]:
         """
         Create a combined YAML by merging the experiment name, platform, and target 
         with the model YAML content.
@@ -228,7 +228,9 @@ class CMORYaml():
         fre_logger.info(f"   model yaml: {self.yml}")
         return (yaml_content, yml)
 
-    def combine_experiment(self, yaml_content, loaded_yaml):
+    def combine_experiment( self,
+                            yaml_content: str,
+                            loaded_yaml: Dict[str, Any] ) -> List[str]:
         """
         Combine model, grid, post-processing, and experiment YAMLs.
 
@@ -291,7 +293,9 @@ class CMORYaml():
 
         return cmor_yamls
 
-    def merge_cmor_yaml(self, cmor_list, loaded_yaml):
+    def merge_cmor_yaml( self,
+                         cmor_list: List[str],
+                         loaded_yaml: Dict[str, Any] ) -> Dict[str, Any]:
         """
         Merge a list of YAML content strings into a single dictionary.
 
@@ -330,7 +334,8 @@ class CMORYaml():
 
         return result
 
-    def clean_yaml(self,yml_dict):
+    def clean_yaml( self,
+                    yml_dict: Dict[str, Any]  -> Dict[str, Any
         """
         Clean the combined YAML dictionary by removing unnecessary sections.
 

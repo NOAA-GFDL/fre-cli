@@ -23,7 +23,9 @@ References
 
 import os
 import logging
+from pathlib import Path
 from pprint import pformat
+from typing import Optional, Union, Any, Dict
 
 from . import *
 from .helpers import output_yaml
@@ -34,7 +36,13 @@ from . import pp_info_parser as ppip
 
 fre_logger = logging.getLogger(__name__)
 
-def get_combined_cmoryaml(yamlfile, experiment, platform, target, output=None):
+
+
+def get_combined_cmoryaml( yamlfile: Union[str, Path],
+                           experiment: str,
+                           platform: str,
+                           target: str,
+                           output: Optional[Union[str, Path]] = None ) -> Dict[str, Any]:
     """
     Combine the model, experiment, and CMOR YAML files into a single dictionary.
 
@@ -106,7 +114,9 @@ def get_combined_cmoryaml(yamlfile, experiment, platform, target, output=None):
 
     return cleaned_yaml
 
-def get_combined_compileyaml(comb, output=None):
+
+def get_combined_compileyaml( comb: Any,
+                              output: Optional[Union[str, Path]] = None ) -> Dict[str, Any]:
     """
     Combine the model, compile, and platform YAMLs into a single configuration.
 
@@ -151,7 +161,9 @@ def get_combined_compileyaml(comb, output=None):
 
     return cleaned_yaml
 
-def get_combined_ppyaml(comb, output=None):
+
+def get_combined_ppyaml( comb: Any,
+                         output: Optional[Union[str, Path]] = None ) -> Dict[str, Any]:
     """
     Combine the model, experiment, and analysis YAMLs into a single configuration.
 
@@ -204,7 +216,13 @@ def get_combined_ppyaml(comb, output=None):
 
     return cleaned_yaml
 
-def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
+
+def consolidate_yamls( yamlfile: Union[str, Path],
+                       experiment: str,
+                       platform: str,
+                       target: str,
+                       use: str,
+                       output: Optional[Union[str, Path]] ) -> Dict[str, Any]:
     """
     Dispatch routine to produce a final combined YAML for compilation, post-processing, or CMORization.
 
