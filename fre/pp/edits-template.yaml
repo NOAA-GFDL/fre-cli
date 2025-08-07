@@ -43,7 +43,7 @@ rose-suite:
     # Default regridded resolution
     pp_default_xyinterp: *defaultxyInterp
     # Filepath to an FMS gridSpec netCDF file or a tarfile
-    pp_gridSpec: 
+    pp_grid_spec: 
 
   switches:
     # Switch to remove intermediate data files when they are no longer needed

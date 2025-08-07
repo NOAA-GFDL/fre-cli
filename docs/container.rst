@@ -84,7 +84,7 @@ Refer to globus documentation here: `Globus Online Data Transfer <https://docs.r
 **Configuration Edits**
 
 Regarding the yaml configurations, some paths need to be edited to reference the file location mounted inside the container. These include:
-    - &GRID_SPEC96 "/mnt/[experimentname]_grid/[grid_spec file]
+    - &GRID_SPEC96 "/mnt/[experimentname]_grid/[gridSpec file]
     - history_dir: "/mnt/history"
     - pp_dir: "/mnt/pp"
     - ptmp_dir: "/mnt/ptmp"
@@ -100,7 +100,7 @@ To run the container, follow these steps:
 
 .. code-block:: console
 
-   apptainer exec --writable-tmpfs --bind [Path/to/setup/folder]:/mnt --bind [Path/to/fre-worflows]:/mnt2 --bind [Path/to/grid_spec location]:/mnt/[experiment-name]_grid:ro --bind [Path/to/history/files]:/mnt/history:ro [Path/to/created/container] /app/exec/runscript.sh
+   apptainer exec --writable-tmpfs --bind [Path/to/setup/folder]:/mnt --bind [Path/to/fre-worflows]:/mnt2 --bind [Path/to/gridSpec location]:/mnt/[experiment-name]_grid:ro --bind [Path/to/history/files]:/mnt/history:ro [Path/to/created/container] /app/exec/runscript.sh
 
 NOTE: It is essential that binding is done correctly as the container’s runscript relies heavily on these paths.
 
