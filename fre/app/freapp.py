@@ -96,7 +96,7 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
                      "within input directory to target for regridding. the value for `source` " + \
                      "must be present in at least one component's configuration fields",
               required = True)
-@click.option("-g", "--grid_spec",
+@click.option("-g", "--gridSpec",
               type = str,
               help = "`grid_spec` / `grid_spec` (env var) file containing mosaic for regridding",
               required = True)
