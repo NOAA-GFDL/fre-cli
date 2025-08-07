@@ -68,12 +68,12 @@ In order to run the post-processing workflow, certain repositories and files are
 
 **Data files**
 
-Additionally, history files and gridSpec files are needed.
+Additionally, history files and grid spec files are needed.
 
-*If on Gaea*, history files and gridSpec files are usually available in a certain location; retrieve their locations
-    - Paths to the history folder and gridSpec file will be mounted into the container as read only folders/files
+*If on Gaea*, history files and grid spec files are usually available in a certain location; retrieve their locations
+    - Paths to the history folder and grid spec file will be mounted into the container as read only folders/files
 
-*If not on Gaea*, history file and gridSpec data should be transferred to the ppp-setup location in:
+*If not on Gaea*, history file and grid spec data should be transferred to the ppp-setup location in:
     - ppp-setup/history/
     - ppp-setup/[experiment]_grid/
 
@@ -100,7 +100,7 @@ To run the container, follow these steps:
 
 .. code-block:: console
 
-   apptainer exec --writable-tmpfs --bind [Path/to/setup/folder]:/mnt --bind [Path/to/fre-worflows]:/mnt2 --bind [Path/to/gridSpec location]:/mnt/[experiment-name]_grid:ro --bind [Path/to/history/files]:/mnt/history:ro [Path/to/created/container] /app/exec/runscript.sh
+   apptainer exec --writable-tmpfs --bind [Path/to/setup/folder]:/mnt --bind [Path/to/fre-worflows]:/mnt2 --bind [Path/to/gridspec location]:/mnt/[experiment-name]_grid:ro --bind [Path/to/history/files]:/mnt/history:ro [Path/to/created/container] /app/exec/runscript.sh
 
 NOTE: It is essential that binding is done correctly as the container’s runscript relies heavily on these paths.
 
