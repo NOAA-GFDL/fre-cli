@@ -55,22 +55,6 @@ def test_cli_fre_pp_checkout_case():
     assert all( [ result.exit_code == 0,
                   Path(directory).exists()] )
 
-#-- fre pp configure-xml
-def test_cli_fre_pp_configure_xml():
-    ''' fre pp configure-xml '''
-    result = runner.invoke(fre.fre, args=["pp", "configure-xml"])
-    assert result.exit_code == 2
-
-def test_cli_fre_pp_configure_xml_help():
-    ''' fre pp configure-xml --help '''
-    result = runner.invoke(fre.fre, args=["pp", "configure-xml", "--help"])
-    assert result.exit_code == 0
-
-def test_cli_fre_pp_configure_xml_opt_dne():
-    ''' fre pp configure-xml optionDNE '''
-    result = runner.invoke(fre.fre, args=["pp", "configure-xml", "optionDNE"])
-    assert result.exit_code == 2
-
 #-- fre pp configure-yaml
 def test_cli_fre_pp_configure_yaml():
     ''' fre pp configure-yaml '''

@@ -14,6 +14,7 @@ setup(
         'pylint',
         'pytest',
         'jsonschema',
+        'catalogbuilder',
         'cylc-flow',
         'cylc-rose',
         'cdo',
@@ -21,6 +22,11 @@ setup(
         'metomi-rose',
         'xarray'
     ],
+    extras_require={
+        "docs": ["sphinx",
+                 "renku-sphinx-theme",
+                 "sphinx-rtd-theme"]
+    },
     entry_points={
         'console_scripts': [
             'fre = fre.fre:fre',
