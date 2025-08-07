@@ -73,9 +73,6 @@ TEST_AM5_YAML_PATH=f"fre/yamltools/tests/AM5_example/am5.yaml"
 TEST_CMOR_YAML_PATH=f"fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml -y '''
-    #we can only write to /archive from analysis or pp
-    #or if we have a fake /archive directory (for github-ci)
-    #if os.access("/archive", os.W_OK):
     Path( os.path.expandvars(
             'fre/tests/test_files/ascii_files/mock_nbhome/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip'
         ) ).mkdir(parents=True, exist_ok=True)
@@ -98,8 +95,6 @@ def test_cli_fre_cmor_yaml_case1():
                    Path(TEST_CMOR_YAML_PATH).exists(), # input, unparsed, tool-yaml file
                    Path(f'FOO_cmor.yaml').exists(), #output, merged, parsed, model+tool yaml-file
                    result.exit_code == 0 ] )
-    #else:
-    #    pytest.skip("skipping test requiring write to /archive on unsupported platform")
 
 
 # fre cmor run
