@@ -14,7 +14,7 @@ the table prefix.
 The `fre cmor` command is now a group that contains several subcommands. This provides a clearer, more organized workflow.
 
 First, view the main help message to see the available commands:
-```bash
+```
 > fre cmor --help
 Usage: fre cmor [OPTIONS] COMMAND [ARGS]...
 
@@ -32,7 +32,7 @@ Commands:
 
 
 ### `fre cmor find`
-```bash
+```
 Usage: fre cmor find [OPTIONS]
 
   loop over json table files in config_dir and show which tables contain
@@ -59,7 +59,7 @@ Options:
 ```
 
 #### example
-```bash
+```
 > fre -v cmor find -r fre/tests/test_files/cmip6-cmor-tables/Tables/ -v sos
 INFO:cmor_finder.py:cmor_find_subtool attempting to find and open files in dir: 
  fre/tests/test_files/cmip6-cmor-tables/Tables/ 
@@ -113,7 +113,7 @@ INFO:cmor_finder.py:print_var_content
 ```
 
 ### `fre cmor varlist`
-```bash
+```
 > fre cmor varlist --help
 Usage: fre cmor varlist [OPTIONS]
 
@@ -127,7 +127,7 @@ Options:
 ```
 
 #### example
-```bash
+```
 > fre cmor varlist -d fre/tests/test_files/ocean_sos_var_file/ -o simple_varlist.txt
 > cat simple_varlist.txt 
 {
@@ -140,21 +140,12 @@ Options:
 
 ### `fre cmor yaml`
 
-```bash
+```
 > fre cmor yaml --help
   Processes a CMOR (Climate Model Output Rewriter) YAML configuration file.
 
   This function takes a YAML file and various parameters related to a climate
   model experiment, and processes the YAML file using the CMOR YAML subtool.
-
-  Parameters:     yamlfile (str): Path to the YAML configuration file.
-  experiment (str): Name of the experiment.     target (str): Target
-  specification for the CMOR process.     platform (str): Platform on which
-  the CMOR process is being run.     output (str): Output directory or file
-  for the processed data.     run_one (bool): only process one file then exit
-  dry_run (bool): don't call the cmor_mixer subtool, just printout what would
-  be called     start (str): optional, year to begin cmorizing, YYYY format
-  only     stop  (str): optional year to stop cmorizing, YYYY format only.
 
   Raises:     ValueError: If the yamlfile is not provided.
 
@@ -178,7 +169,7 @@ Options:
 ```
 
 #### example (abridged output)
-```bash
+```
 > fre -v cmor yaml --run_one --dry_run -o foo.yaml -y fre/yamltools/tests/AM5_example/am5.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel -t prod-openmp
 INFO:cmor_yamler.py:cmor_yaml_subtool calling consolidate yamls to create a combined cmor-yaml dictionary
 INFO:combine_yamls_script.py:consolidate_yamls attempting to combine cmor yaml info with info from other yamls...
@@ -247,7 +238,7 @@ cmor_run_subtool(
 ### `fre cmor run`
 
 The `run` subcommand's interface is as explicit as possible:
-```bash
+```
 > fre cmor run --help
 Usage: fre cmor run [OPTIONS]
 
@@ -310,7 +301,7 @@ Options:
 #### example
 Note that the target file here is only created after running `pytest fre/tests/test_fre_cmor_cli.py`
 
-```bash
+```
 > fre  cmor run --run_one --indir fre/tests/test_files/ocean_sos_var_file/ --varlist fre/tests/test_files/varlist --table_config fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json --exp_config fre/tests/test_files/CMOR_input_example.json --outdir fre/tests/test_files/outdir --grid_label gr --grid_desc 'FOO_BAR_PLACEHOLD' --nom_res '10000 km'
 WARNING:cmor_mixer.py:cmorize_target_var_files changing directory to: 
 /home/Ian.Laflotte/Working/fre-cli/fre/tests/test_files/outdir/tmp/
