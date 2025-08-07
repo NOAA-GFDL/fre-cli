@@ -9,17 +9,11 @@ target variable/component.
 
 Functions
 ---------
-- check_path_existence(some_path)
-- iso_to_bronx_chunk(cmor_chunk_in)
-- conv_mip_to_bronx_freq(cmor_table_freq)
-- get_bronx_freq_from_mip_table(json_table_config)
-- cmor_yaml_subtool(...)
-
-References
-----------
-- FRE Documentation: https://github.com/NOAA-GFDL/fre-cli
-- PEP 8 -- Style Guide for Python Code: https://www.python.org/dev/peps/pep-0008/
-- PEP 257 -- Docstring Conventions: https://www.python.org/dev/peps/pep-0257/
+- ``check_path_existence(some_path)``
+- ``iso_to_bronx_chunk(cmor_chunk_in)``
+- ``conv_mip_to_bronx_freq(cmor_table_freq)``
+- ``get_bronx_freq_from_mip_table(json_table_config)``
+- ``cmor_yaml_subtool(...)``
 """
 
 import json

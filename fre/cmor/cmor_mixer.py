@@ -8,16 +8,10 @@ and writing compliant CMIP outputs. For usage details, see the project README.md
 
 Functions
 ---------
-- rewrite_netcdf_file_var(...)
-- cmorize_target_var_files(...)
-- cmorize_all_variables_in_dir(...)
-- cmor_run_subtool(...)
-
-References
-----------
-- FRE Documentation: https://github.com/NOAA-GFDL/fre-cli
-- PEP 8 -- Style Guide for Python Code: https://www.python.org/dev/peps/pep-0008/
-- PEP 257 -- Docstring Conventions: https://www.python.org/dev/peps/pep-0257/
+- ``rewrite_netcdf_file_var(...)``
+- ``cmorize_target_var_files(...)``
+- ``cmorize_all_variables_in_dir(...)``
+- ``cmor_run_subtool(...)``
 """
 
 import glob

@@ -3,24 +3,19 @@ fre cmor find
 =============
 
 This module provides tools to find and print information about variables in CMIP6 JSON configuration files.
-It is primarily used for inspecting variable entries and generating variable lists for use in FRE CMORization workflows.
+It is primarily used for inspecting variable entries and generating variable lists for use in FRE CMORization
+ workflows.
 
 Functions
 ---------
-- print_var_content(table_config_file, var_name)
-- cmor_find_subtool(json_var_list, json_table_config_dir, opt_var_name)
-- make_simple_varlist(dir_targ, output_variable_list)
+- ``print_var_content(table_config_file, var_name)``
+- ``cmor_find_subtool(json_var_list, json_table_config_dir, opt_var_name)``
+- ``make_simple_varlist(dir_targ, output_variable_list)``
 
 Notes
 -----
-These utilities are intended to make it easier to inspect and extract variable information from CMIP6 JSON tables,
-avoiding the need for manual shell scripting and ad-hoc file inspection.
-
-References
-----------
-- FRE Documentation: https://github.com/NOAA-GFDL/fre-cli
-- PEP 8 -- Style Guide for Python Code: https://www.python.org/dev/peps/pep-0008/
-- PEP 257 -- Docstring Conventions: https://www.python.org/dev/peps/pep-0257/
+These utilities are intended to make it easier to inspect and extract variable information from CMIP6 JSON 
+tables, avoiding the need for manual shell scripting and ad-hoc file inspection.
 """
 
 import glob
@@ -93,7 +88,8 @@ def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_na
     Parameters
     ----------
     json_var_list : str or None, optional
-        Path to a JSON file containing a dictionary of variable names to look up. If None, opt_var_name must be provided.
+        Path to a JSON file containing a dictionary of variable names to look up. If None, opt_var_name 
+        must be provided.
     json_table_config_dir : str
         Directory containing CMIP6 table JSON files.
     opt_var_name : str or None, optional
@@ -112,8 +108,8 @@ def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_na
 
     Notes
     -----
-    This function is intended as a helper tool for CLI users to quickly inspect variable definitions in CMIP6 tables.
-    Information is printed via the logger.
+    This function is intended as a helper tool for CLI users to quickly inspect variable definitions in 
+    CMIP6 tables. Information is printed via the logger.
     """
     if not Path(json_table_config_dir).exists():
         raise OSError(f'ERROR directory {json_table_config_dir} does not exist! exit.')
@@ -166,7 +162,8 @@ def make_simple_varlist(dir_targ, output_variable_list):
     Returns
     -------
     dict or None
-        Dictionary of variable names (keys and values are the same), or None if no files are found or an error occurs.
+        Dictionary of variable names (keys and values are the same), or None if no files are found or an 
+        error occurs.
 
     Raises
     ------
@@ -192,7 +189,7 @@ def make_simple_varlist(dir_targ, output_variable_list):
         one_datetime = os.path.basename(one_file).split('.')[-3]
     except IndexError as e:
         fre_logger.warning(f'{e}')
-        fre_logger.warning('WARNING: could not find a datetime in netcdf filenames. moving on and doing the best i can.')
+        fre_logger.warning('WARNING: cannot find datetime in filenames, moving on and doing the best i can.')
         pass
 
     if one_datetime is None:

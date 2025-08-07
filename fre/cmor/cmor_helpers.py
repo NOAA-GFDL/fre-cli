@@ -1,6 +1,6 @@
 """
-CMOR Mixer Helper Functions
-===========================
+fre.cmor helper functions
+=========================
 
 This module provides helper functions for the CMORization workflow in the FRE (Flexible Runtime Environment)
 CLI, specifically for use in the cmor_mixer submodule. The utilities here support a variety of common
@@ -16,14 +16,24 @@ tasks including:
 - Creation of temporary output directories for CMOR products.
 - Reading and updating experiment configuration JSON files.
 
+Functions
+---------
+- ``print_data_minmax(ds_variable, desc)``
+- ``from_dis_gimme_dis(from_dis, gimme_dis)``
+- ``find_statics_file(bronx_file_path)``
+- ``create_lev_bnds(bound_these, with_these)``
+- ``get_iso_datetime_ranges(var_filenames, iso_daterange_arr, start, stop)``
+- ``check_dataset_for_ocean_grid(ds)``
+- ``get_vertical_dimension(ds, target_var)``
+- ``create_tmp_dir(outdir, json_exp_config)``
+- ``get_json_file_data(json_file_path)``
+- ``update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res, output_file_path)``
+- ``update_calendar_type(json_file_path, new_calendar_type, output_file_path)``
+
+Notes
+-----
 These functions aim to encapsulate frequently repeated logic in the CMOR workflow, improving code
 readability, maintainability, and robustness.
-
-References
-----------
-- FRE Documentation: https://github.com/NOAA-GFDL/fre-cli
-- PEP 8 -- Style Guide for Python Code: https://www.python.org/dev/peps/pep-0008/
-- PEP 257 -- Docstring Conventions: https://www.python.org/dev/peps/pep-0257/
 """
 
 import glob
@@ -81,7 +91,8 @@ def from_dis_gimme_dis(from_dis, gimme_dis):
 
     Notes
     -----
-    Logs a warning if the variable is not found.
+    Logs a warning if the variable is not found. The name comes from the hypothetical pronunciation
+    of 'ds', the common monniker for a netCDF4.Dataset object
     """
     try:
         return from_dis[gimme_dis][:].copy()
