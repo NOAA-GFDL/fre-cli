@@ -56,26 +56,11 @@ def cmor_cli():
               required = False)
 def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start, stop):
     """
-    Processes a CMOR (Climate Model Output Rewriter) YAML configuration file.
-
-    This function takes a YAML file and various parameters related to a climate model experiment,
-    and processes the YAML file using the CMOR YAML subtool.
-
-    Parameters:
-        yamlfile (str): Path to the YAML configuration file.
-        experiment (str): Name of the experiment.
-        target (str): Target specification for the CMOR process.
-        platform (str): Platform on which the CMOR process is being run.
-        output (str): Output directory or file for the processed data.
-        run_one (bool): only process one file then exit
-        dry_run (bool): don't call the cmor_mixer subtool, just printout what would be called
-        start (str): optional, year to begin cmorizing, YYYY format only
-        stop  (str): optional year to stop cmorizing, YYYY format only.
-
-    Raises:
-        ValueError: If the yamlfile is not provided.
+    Processes a CMOR (Climate Model Output Rewriter) YAML configuration file. This function takes a YAML file 
+    and various parameters related to a climate model experiment, and processes the YAML file using the CMOR 
+    YAML subtool.
     """
-
+    
     cmor_yaml_subtool(
         yamlfile = yamlfile,
         exp_name = experiment,
