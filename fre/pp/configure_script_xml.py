@@ -252,7 +252,7 @@ def main(xml, platform, target, experiment, do_analysis, historydir, refinedir, 
                               #historydir, refinedir, ppdir, do_refinediag,
                               #pp_start, pp_stop, validate,
                               #verbose, quiet, dual,
-                              'input/dataFile[@label="gridSpec"]')
+                              'input/dataFile[@label="grid_spec"]')
     sim_time = frelist_xpath(xml, platform, target, experiment,
                              #do_analysis,
                              #historydir, refinedir, ppdir, do_refinediag,

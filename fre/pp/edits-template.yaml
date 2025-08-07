@@ -42,7 +42,7 @@ rose-suite:
     pp_components:
     # Default regridded resolution
     pp_default_xyinterp: *defaultxyInterp
-    # Filepath to an FMS gridSpec netCDF file or a tarfile
+    # Filepath to an FMS grid_spec netCDF file or a tarfile
     pp_grid_spec: 
 
   switches:

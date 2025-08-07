@@ -46,7 +46,7 @@ def app_cli():
               required = True)
 @click.option("-g", "--grid_spec",
               type = str,
-              help = "`gridSpec` / `grid_spec` (env var) file containing mosaic for regridding",
+              help = "`grid_spec` / `grid_spec` (env var) file containing mosaic for regridding",
               required = True)
 @click.option("--rose_config",
               type = str,

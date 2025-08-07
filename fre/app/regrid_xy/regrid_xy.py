@@ -34,7 +34,7 @@ def get_input_mosaic(datadict: dict) -> str:
   
   input_dir = datadict["input_dir"]
   grid_spec = datadict["grid_spec"]
-
+  
   match datadict["component"]["inputRealm"]:
     case "atmos": mosaic_key = "atm_mosaic_file"
     case "ocean": mosaic_key = "ocn_mosaic_file"
@@ -46,7 +46,7 @@ def get_input_mosaic(datadict: dict) -> str:
     pass
   elif Path(mosaic_file).exists():
     shutil.copy(mosaic_file, f"{input_dir}/{mosaic_file}")
-    fre_logger(f"Copying {mosaic_file} to input directory {input_dir}") 
+    fre_logger.info(f"Copying {mosaic_file} to input directory {input_dir}") 
   else:
     raise IOError(f"Cannot find input mosaic file {mosaic_file} in current or input directory {input_dir}")
 
@@ -138,8 +138,8 @@ def get_remap_file(datadict: dict):
   remap_file = f"{input_mosaic[:-3]}X{nlon}by{nlat}_{interp_method}.nc"
   
   if not Path(f"{input_dir}/{remap_file}").exists():
-    if Path(output_dir+remap_file).exists():
-      shutil.copy(remap_file, output_dir+remap_file)
+    if Path(f"{output_dir}/{remap_file}").exists():
+      shutil.copy(f"{output_dir}/{remap_file}", f"{input_dir}/{remap_file}")
       fre_logger.info(f"Remap file {remap_file} in {output_dir} copied to input directory {input_dir}")
     else:
       fre_logger.info(f"Cannot find specified remap_file {remap_file}\n"
@@ -226,8 +226,8 @@ def regrid_xy(yamlfile: str,
   #save arguments to datadict
   datadict["yaml"] = thisyaml  
   datadict["grid_spec"] = get_grid_spec(datadict)  
-  datadict["input_dir"] = input_dir + "/"
-  datadict["output_dir"] = output_dir + "/"
+  datadict["input_dir"] = input_dir
+  datadict["output_dir"] = output_dir
   datadict["input_date"] = input_date
 
   datadict["current_dir"] = current_dir = os.getcwd()
