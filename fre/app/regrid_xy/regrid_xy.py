@@ -276,6 +276,12 @@ def regrid_xy(yamlfile: str,
                          "--scalar_field", datadict["scalar_field"],
                          "--output_dir", datadict["output_dir"],
                          "--output_file", datadict["output_file"]
-      ]           
-      fregrid_job = subprocess.run(fregrid_command, capture_output=True, check=True)
+      ]
 
+      fregrid_job = subprocess.run(fregrid_command, capture_output=True, text=True)
+
+      if fregrid_job.returncode == 0:
+        fre_logger.info(fregrid_job.stdout.split("\n")[-3:])
+      else:
+        raise RuntimeError(fregrid_job.stderr)
+        
