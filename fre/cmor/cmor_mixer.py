@@ -167,9 +167,8 @@ def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
     else:
         with open(json_exp_config, "r", encoding="utf-8") as file:
             data = json.load(file)
-            if data['calendar'] == lower(time_coords_calendar):
-                break
-            raise ValueError('data calendar type does not match input exp[eriment configuration required calendar type')        
+            if data['calendar'] != lower(time_coords_calendar):
+                raise ValueError('data calendar type does not match input exp[eriment configuration required calendar type')        
 
     # read in time_bnds, if present
     fre_logger.info('attempting to read coordinate BNDS, time_bnds')
