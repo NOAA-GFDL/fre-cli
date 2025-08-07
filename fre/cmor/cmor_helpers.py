@@ -42,11 +42,15 @@ import logging
 import numpy as np
 import os
 from pathlib import Path
+from typing import Optional, Any, List, Union
+
+from netCDF4 import Dataset
 
 fre_logger = logging.getLogger(__name__)
 
 
-def print_data_minmax(ds_variable=None, desc=None):
+def print_data_minmax( ds_variable: Optional[np.ma.core.MaskedArray] = None,
+                       desc: Optional[str] = None) -> None:
     """
     Log the minimum and maximum values of a numpy MaskedArray along with a description.
 
@@ -73,7 +77,8 @@ def print_data_minmax(ds_variable=None, desc=None):
     return
 
 
-def from_dis_gimme_dis(from_dis, gimme_dis):
+def from_dis_gimme_dis( from_dis: Dataset,
+                        gimme_dis: str) -> Optional[np.ndarray]:
     """
     Retrieve and return a copy of a variable from a netCDF4.Dataset-like object.
 
@@ -101,7 +106,7 @@ def from_dis_gimme_dis(from_dis, gimme_dis):
         return None
 
 
-def find_statics_file(bronx_file_path):
+def find_statics_file( bronx_file_path: str) -> Optional[str]:
     """
     Attempt to find the corresponding statics file given a FRE-bronx-style file path.
 
@@ -140,7 +145,8 @@ def find_statics_file(bronx_file_path):
         return None
 
 
-def create_lev_bnds(bound_these=None, with_these=None):
+def create_lev_bnds( bound_these: Optional[Any] = None,
+                     with_these: Optional[Any] = None) -> np.ndarray:
     """
     Create a vertical level bounds array for a set of levels.
 
@@ -178,7 +184,10 @@ def create_lev_bnds(bound_these=None, with_these=None):
     return the_bnds
 
 
-def get_iso_datetime_ranges(var_filenames, iso_daterange_arr=None, start=None, stop=None):
+def get_iso_datetime_ranges( var_filenames: List[str],
+                             iso_daterange_arr: Optional[List[str]] = None,
+                             start: Optional[str] = None,
+                             stop: Optional[str] = None) -> None:
     """
     Extract and append ISO datetime ranges from filenames, filtered by start/stop years if specified.
 
@@ -245,7 +254,7 @@ def get_iso_datetime_ranges(var_filenames, iso_daterange_arr=None, start=None, s
         raise ValueError('iso_daterange_arr has length 0! i need to find at least one datetime range!')
 
 
-def check_dataset_for_ocean_grid(ds):
+def check_dataset_for_ocean_grid( ds: Dataset) -> bool:
     """
     Check if a netCDF4.Dataset uses an ocean grid (i.e., contains 'xh' or 'yh' variables).
 
@@ -275,7 +284,8 @@ def check_dataset_for_ocean_grid(ds):
     return uses_ocean_grid
 
 
-def get_vertical_dimension(ds, target_var):
+def get_vertical_dimension( ds: Dataset,
+                            target_var: str) -> Union[str, int]:
     """
     Determine the vertical dimension for a variable in a netCDF4.Dataset.
 
@@ -310,7 +320,8 @@ def get_vertical_dimension(ds, target_var):
     return vert_dim
 
 
-def create_tmp_dir(outdir, json_exp_config=None):
+def create_tmp_dir( outdir: str,
+                    json_exp_config: Optional[str] = None) -> str:
     """
     Create a temporary directory for output, possibly informed by a JSON experiment config.
 
@@ -360,7 +371,7 @@ def create_tmp_dir(outdir, json_exp_config=None):
     return tmp_dir
 
 
-def get_json_file_data(json_file_path=None):
+def get_json_file_data( json_file_path: Optional[str] = None) -> dict:
     """
     Load and return the contents of a JSON file.
 
@@ -389,7 +400,11 @@ def get_json_file_data(json_file_path=None):
         ) from exc
 
 
-def update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res, output_file_path=None):
+def update_grid_and_label( json_file_path: str,
+                           new_grid_label: str,
+                           new_grid: str,
+                           new_nom_res: str,
+                           output_file_path: Optional[str] = None) -> None:
     """
     Update the "grid_label", "grid", and "nominal_resolution" fields in a JSON experiment config.
 
@@ -477,7 +492,9 @@ def update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res,
         raise
 
 
-def update_calendar_type(json_file_path, new_calendar_type, output_file_path=None):
+def update_calendar_type( json_file_path: str,
+                          new_calendar_type: str,
+                          output_file_path: Optional[str] = None) -> None:
     """
     Update the "calendar" field in a JSON experiment config file.
 

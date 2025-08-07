@@ -23,6 +23,7 @@ import json
 import logging
 import os
 from pathlib import Path
+from typing import Optional, Dict, IO
 
 fre_logger = logging.getLogger(__name__)
 
@@ -32,7 +33,9 @@ DO_NOT_PRINT_LIST = [
     'valid_min', 'valid_max'
 ]
 
-def print_var_content(table_config_file, var_name):
+#def print_var_content(table_config_file, var_name):
+def print_var_content(table_config_file: IO[str],
+                      var_name: str) -> None:
     """
     Print information about a specific variable from a given CMIP6 JSON configuration file.
 
@@ -81,7 +84,11 @@ def print_var_content(table_config_file, var_name):
         fre_logger.info('    %s: %s', content, var_content[content])
     fre_logger.info('\n')
 
-def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_name=None):
+#def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_name=None):
+def cmor_find_subtool(
+    json_var_list: Optional[str] = None,
+    json_table_config_dir: Optional[str] = None,
+    opt_var_name: Optional[str] = None) -> None:
     """
     Find and print information about variables in CMIP6 JSON configuration files in a specified directory.
 
@@ -144,7 +151,9 @@ def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_na
         fre_logger.error('this line should be unreachable!!!')
         assert False
 
-def make_simple_varlist(dir_targ, output_variable_list):
+#def make_simple_varlist(        dir_targ, output_variable_list):
+def make_simple_varlist( dir_targ: str,
+                         output_variable_list: Optional[str]) -> Optional[Dict[str, str]]:
     """
     Generate a JSON file containing a list of variable names from NetCDF files in a specified directory.
 

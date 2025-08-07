@@ -21,12 +21,14 @@ from pathlib import Path
 import pprint
 import logging
 import os
+from typing import Optional, List, Dict, Any, Union
+
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 from .cmor_mixer import cmor_run_subtool
 
 fre_logger = logging.getLogger(__name__)
 
-def check_path_existence(some_path):
+def check_path_existence(some_path: str):
     """
     Check if the given path exists, raising FileNotFoundError if not.
 
@@ -43,7 +45,7 @@ def check_path_existence(some_path):
     if not Path(some_path).exists():
         raise FileNotFoundError(f'does not exist:  {some_path}')
 
-def iso_to_bronx_chunk(cmor_chunk_in):
+def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
     """
     Convert an ISO8601 duration string (e.g., 'P5Y') to FRE-bronx-style chunk string (e.g., '5yr').
 
@@ -70,7 +72,7 @@ def iso_to_bronx_chunk(cmor_chunk_in):
     fre_logger.debug('bronx_chunk = %s', bronx_chunk)
     return bronx_chunk
 
-def conv_mip_to_bronx_freq(cmor_table_freq):
+def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
     """
     Convert a MIP table frequency string to its FRE-bronx equivalent using a lookup table.
 
@@ -114,7 +116,7 @@ def conv_mip_to_bronx_freq(cmor_table_freq):
         raise KeyError(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency')
     return bronx_freq
 
-def get_bronx_freq_from_mip_table(json_table_config):
+def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
     """
     Extract the frequency of data from a CMIP MIP table (JSON), returning its FRE-bronx equivalent.
 
@@ -146,10 +148,17 @@ def get_bronx_freq_from_mip_table(json_table_config):
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
 
-def cmor_yaml_subtool(
-    yamlfile=None, exp_name=None, platform=None, target=None, output=None, opt_var_name=None,
-    run_one_mode=False, dry_run_mode=False, start=None, stop=None, calendar_type=None
-):
+def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
+                       exp_name: Optional[str] = None,
+                       platform: Optional[str] = None,
+                       target: Optional[str] = None,
+                       output: Optional[Union[str, Path]] = None,
+                       opt_var_name: Optional[str] = None,
+                       run_one_mode: bool = False,
+                       dry_run_mode: bool = False,
+                       start: Optional[str] = None,
+                       stop: Optional[str] = None,
+                       calendar_type: Optional[str] = None) -> None:
     """
     Main driver for CMORization using model YAML configuration files.
 

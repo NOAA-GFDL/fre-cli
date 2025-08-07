@@ -21,6 +21,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+from typing import Optional, List, Dict, Any
 
 import cmor
 import numpy as np
@@ -43,9 +44,17 @@ CMOR_EXIT_CTL=cmor.CMOR_NORMAL#.CMOR_EXIT_ON_WARNING#.CMOR_EXIT_ON_MAJOR#
 CMOR_MK_SUBDIRS=1
 CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
 
-def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
-                            target_var=None, json_exp_config=None, json_table_config=None,
-                            prev_path=None):
+#def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
+#                            target_var=None, json_exp_config=None, json_table_config=None,
+#                            prev_path=None):
+def rewrite_netcdf_file_var(
+        mip_var_cfgs: Optional[dict] = None,
+        local_var: Optional[str] = None,
+        netcdf_file: Optional[str] = None,
+        target_var: Optional[str] = None,
+        json_exp_config: Optional[str] = None,
+        json_table_config: Optional[str] = None,
+        prev_path: Optional[str] = None) -> Optional[str]:
     """
     Rewrite the input NetCDF file for a target variable in a CMIP-compliant manner and write output using CMOR.
 
@@ -568,10 +577,16 @@ def rewrite_netcdf_file_var(mip_var_cfgs=None, local_var=None, netcdf_file=None,
     fre_logger.info('-------------------------- END rewrite_netcdf_file_var call -----\n\n')
     return filename
 
-def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
-                             iso_datetime_range_arr=None, name_of_set=None,
-                             json_exp_config=None, outdir=None,
-                             mip_var_cfgs=None, json_table_config=None, run_one_mode=False):
+def cmorize_target_var_files(indir: str = None,
+                             target_var: str = None,
+                             local_var: str = None,
+                             iso_datetime_range_arr: List[str] = None,
+                             name_of_set: str = None,
+                             json_exp_config: str = None,
+                             outdir: str = None,
+                             mip_var_cfgs: Dict[str, Any] = None,
+                             json_table_config: str = None,
+                             run_one_mode: bool = False):
     """
     CMORize a target variable across all NetCDF files in a directory.
 
@@ -726,8 +741,17 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
             fre_logger.warning('done processing one file!!!')
             break
 
-def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, name_of_set, json_exp_config,
-                                 outdir, mip_var_cfgs, json_table_config, run_one_mode):
+#def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, name_of_set, json_exp_config,
+#                                 outdir, mip_var_cfgs, json_table_config, run_one_mode):
+def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
+                                 indir: str,
+                                 iso_datetime_range_arr: List[str],
+                                 name_of_set: str,
+                                 json_exp_config: str,
+                                 outdir: str,
+                                 mip_var_cfgs: Dict[str, Any],
+                                 json_table_config: str,
+                                 run_one_mode: bool) -> int:
     """
     CMORize all variables in a directory according to a variable mapping.
 
@@ -791,9 +815,22 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, nam
             break
     return return_status
 
-def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, json_exp_config=None,
-                     outdir=None, run_one_mode=False,
-                     opt_var_name=None, grid=None, grid_label=None, nom_res=None, start=None, stop=None, calendar_type=None):
+#def cmor_run_subtool(indir=None, json_var_list=None, json_table_config=None, json_exp_config=None,
+#                     outdir=None, run_one_mode=False,
+#                     opt_var_name=None, grid=None, grid_label=None, nom_res=None, start=None, stop=None, calendar_type=None):
+def cmor_run_subtool(indir: str = None,
+                     json_var_list: str = None,
+                     json_table_config: str = None,
+                     json_exp_config: str = None,
+                     outdir: str = None,
+                     run_one_mode: Optional[bool] = False,
+                     opt_var_name: Optional[str] = None,
+                     grid: Optional[str] = None,
+                     grid_label: Optional[str] = None,
+                     nom_res: Optional[str] = None,
+                     start: Optional[str] = None,
+                     stop: Optional[str] = None,
+                     calendar_type: Optional[str] = None) -> int:
     """
     Main entry point for CMORization workflow, steering all routines in this file.
 
