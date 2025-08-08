@@ -63,7 +63,7 @@ def validate(filepath):
     # Get the date range from the filename
     # This regular expression accepts at mininum '.YYYY-YYYY.' date strings.
     # If month, day, hour, and minute strings are present it will identify them by looking for groups of two digits after the year string
-    match = re.compile("\.((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)-((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)\.")
+    match = re.compile(r"\.((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)-((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)\.")
     filename = os.path.basename(filepath)
     date_range = match.search(filename)
 
