@@ -140,14 +140,14 @@ class container():
         self.d.write(" && cd $bld_dir/"+comp+" \\ \n")
 
         # Create the mkmf line
-        # If this lib doesnt have any code dependencies and it
+        # If this lib doesn't have any code dependencies and it
         # requires the preprocessor (no -o and yes --use-cpp)
         if c["requires"] == [] and c["doF90Cpp"]:
             self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template --use-cpp -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
-        elif c["requires"] == []: # If this lib doesnt have any code dependencies (no -o)
+        elif c["requires"] == []: # If this lib doesn't have any code dependencies (no -o)
             self.d.write(" && mkmf -m Makefile -a $src_dir -b $bld_dir -p lib"+comp+".a -t $mkmf_template -c \""+c["cppdefs"]+"\" "+c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
         else: #Has requirements
-            #Set up the requirements as a string to inclue after the -o
+            #Set up the requirements as a string to include after the -o
             reqstring = ""
             for r in c["requires"]:
                 reqstring = reqstring+"-I$bld_dir/"+r+" "

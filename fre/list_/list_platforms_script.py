@@ -1,5 +1,5 @@
 """
-Script combines the model yaml with the compile and platofrms yaml.
+Script combines the model yaml with the compile and platforms yaml.
 Merged yaml dictionary is parsed to list experiment information.
 """
 

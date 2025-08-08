@@ -13,7 +13,7 @@ DATA_DIR = Path(f"{CWD}/fre/app/remap_pp_components/tests/test-data")
 # YAML configuration example file
 YAML_EX = f"{DATA_DIR}/yaml_ex.yaml"
 
-# Define/create necessary output/input locatiions
+# Define/create necessary output/input locations
 TEST_OUTDIR = f"{TEST_DIR}/test-outDir"
 REMAP_IN = f"{TEST_OUTDIR}/ncgen-output"
 REMAP_OUT = f"{TEST_OUTDIR}/remap-output"
@@ -166,16 +166,16 @@ def test_remap_pp_components(capfd):
         assert False
 
     # Check for
-    # 1. creation of output directory structre,
+    # 1. creation of output directory structure,
     # 2. link to nc file in output location
     assert all([Path(f"{REMAP_OUT}/atmos_scalar/{PRODUCT}/monthly/5yr").exists(),
                 Path(f"{REMAP_OUT}/atmos_scalar/{PRODUCT}/monthly/5yr/{DATA_NC_FILES[0]}").exists()])
     out, err = capfd.readouterr()
 
 ## Pytest can utilize monkeypatch fixture, if needed, which can help set/delete attributes, environments, etc.
-## monkeypatch.setenv() used to set/reset specific envrionment variables in each test, 
+## monkeypatch.setenv() used to set/reset specific environment variables in each test, 
 ## without resetting them for all tests or the proceeding test (i.e. - wouldn't effect 
-## other test's envrionment variables defined)
+## other test's environment variables defined)
 def test_remap_pp_components_with_ensmem(capfd):
     """
     Checks for success of remapping a file with rose app config using
@@ -209,7 +209,7 @@ def test_remap_pp_components_with_ensmem(capfd):
         assert False
 
     # Check for
-    # 1. creation of output directory structre,
+    # 1. creation of output directory structure,
     # 2. link to nc file in output location
     assert all([Path(f"{remap_ens_out}/atmos_scalar/{PRODUCT}/ens_01/monthly/5yr").exists(),
                 Path(f"{remap_ens_out}/atmos_scalar/{PRODUCT}/ens_01/monthly/5yr/{DATA_NC_FILES[0]}").exists()])
@@ -277,7 +277,7 @@ def test_remap_pp_components_statics(capfd):
         assert False
 
     # Check for
-    # 1. creation of output directory structre,
+    # 1. creation of output directory structure,
     # 2. link to nc file in output location
     assert all([Path(f"{remap_static_out}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
                 Path(f"{remap_static_out}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}").exists()])
@@ -337,7 +337,7 @@ def test_nccmp_ncgen_remap_statics(capfd):
 ## VARIABLE FILTERING TESTS ##
 def test_remap_variable_filtering(capfd):
     """
-    Test variable filtering capabilties
+    Test variable filtering capabilities
     - same file should be found as in first regular remap test,
       but component defined specifies variable co2mass
     """
@@ -362,7 +362,7 @@ def test_remap_variable_filtering(capfd):
         assert False
 
     # Check for
-    # 1. creation of output directory structre,
+    # 1. creation of output directory structure,
     # 2. link to nc file in output location
     assert all([Path(f"{REMAP_OUT}/atmos_scalar_test_vars/{PRODUCT}/monthly/5yr").exists(),
                 Path(f"{REMAP_OUT}/atmos_scalar_test_vars/{PRODUCT}/monthly/5yr/{DATA_NC_FILES[1]}").exists()])
@@ -370,7 +370,7 @@ def test_remap_variable_filtering(capfd):
 
 def test_remap_static_variable_filtering(capfd):
     """
-    Test variable filtering capabilties
+    Test variable filtering capabilities
     - same file should be found as in static remap test,
       but component, defined specifies variable bk
     """
@@ -393,7 +393,7 @@ def test_remap_static_variable_filtering(capfd):
         assert False
 
     # Check for
-    # 1. creation of output directory structre,
+    # 1. creation of output directory structure,
     # 2. link to nc file in output location
     assert all([Path(f"{remap_static_out}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
                 Path(f"{remap_static_out}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[1]}").exists()])
@@ -402,7 +402,7 @@ def test_remap_static_variable_filtering(capfd):
 @pytest.mark.xfail
 def test_remap_variable_filtering_fail(capfd):
     """
-    Test failure of variable filtering capabilties when
+    Test failure of variable filtering capabilities when
     variable does not exist; variable = no_var
     """
     # run script
@@ -420,7 +420,7 @@ def test_remap_variable_filtering_fail(capfd):
 @pytest.mark.xfail
 def test_remap_static_variable_filtering_fail(capfd):
     """
-    Test failure of variable filtering capabilties for statics
+    Test failure of variable filtering capabilities for statics
     when variable does not exist; variables = bk, no_var
     """
     # run script

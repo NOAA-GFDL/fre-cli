@@ -63,7 +63,7 @@ def experiment_check(mainyaml_dir,experiment,loaded_yaml):
 
 ## PP CLASS ##
 class InitPPYaml():
-    """ class holding routines for initalizing post-processing yamls """
+    """ class holding routines for initializing post-processing yamls """
     def __init__(self,yamlfile,experiment,platform,target):
         """
         Process to combine the applicable yamls for post-processing

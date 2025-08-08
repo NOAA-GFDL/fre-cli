@@ -74,7 +74,7 @@ Assuming one has `conda` in their paths, then do the following::
   cd fre-cli
 
   # to avoid being prompted for confirmation, add '-y' to the call
-  # this downloads/builds fre-cli's dependecies ONLY
+  # this downloads/builds fre-cli's dependencies ONLY
   conda env create -f environment.yml
 
   # activate the environment you just created.

@@ -130,7 +130,7 @@ def test_cli_fre_cmor_run_case1():
     cmor_creates_dir = \
         f'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/{grid_label}'
     full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldnt be
+        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldn't be
     full_outputfile = \
         f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199307-199308.nc"
 
@@ -138,7 +138,7 @@ def test_cli_fre_cmor_run_case1():
     filename = 'reduced_ocean_monthly_1x1deg.199307-199308.sos.nc' # unneeded, this is mostly for reference
     full_inputfile=f"{indir}/{filename}"
 
-    # clean up, lest we fool outselves
+    # clean up, lest we fool ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
@@ -173,7 +173,7 @@ def test_cli_fre_cmor_run_case2():
     cmor_creates_dir = \
         f'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/{grid_label}'
     full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldnt be
+        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldn't be
     full_outputfile = \
         f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199307-199308.nc"
 
@@ -181,7 +181,7 @@ def test_cli_fre_cmor_run_case2():
     filename = 'reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc' # unneeded, this is mostly for reference
     full_inputfile=f"{indir}/{filename}"
 
-    # clean up, lest we fool outselves
+    # clean up, lest we fool ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 

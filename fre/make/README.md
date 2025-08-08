@@ -29,7 +29,7 @@ fre make checkout-script -y [model yaml file] -p [platform] -t [target] --execut
 # Create Makefile
 fre make makefile -y [model yaml file] -p [platform] -t [target]
 
-# Creat the compile script
+# Create the compile script
 fre make compile-script -y [model yaml file] -p [platform] -t [target]
 
 # Create and run the compile script

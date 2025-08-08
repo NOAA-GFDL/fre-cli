@@ -24,7 +24,7 @@ virtual environment with ``python>=3.11.*`` and all requirements. This installs 
 any local changes.
 
 Development work on ``fre-cli`` should occur within a conda environment housing ``fre-cli``'s requirements, and
-a local copy of the repository to install with ``pip`` using the ``-e/--editable`` flag on. This specific approch is
+a local copy of the repository to install with ``pip`` using the ``-e/--editable`` flag on. This specific approach is
 described in :ref:`setup`.
 
 
@@ -49,7 +49,7 @@ law), with the ``click`` CLI entry-point under ``fre/TOOL/freTOOL.py``.
 Here, the developer usually uses the ``fre TOOL COMMAND *ARGV`` call as a test, focused on seeing the changes they are
 introducing, and develop the code until they see the result they are looking for. The specific ``fre TOOL COMMAND *ARGV``
 should/can often become a unit-test in one of the corresponding files in ``fre/tests``. The sought-after changes the
-devleloper wished to introduce should become ``assert`` conditions encoded within the unit-test. Both success and failure
+developer wished to introduce should become ``assert`` conditions encoded within the unit-test. Both success and failure
 conditions should ideally be tested. 
 
 

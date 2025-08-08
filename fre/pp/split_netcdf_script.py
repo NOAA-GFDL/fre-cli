@@ -29,7 +29,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   Intended to work with data structured for fre-workflows and fre-workflows
     file naming conventions
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
-  inputDir - directory containg netcdf files
+  inputDir - directory containing netcdf files
   outputDir - directory to which to write netcdf files
   component - the 'component' element we are currently working with in the yaml
   history_source - a history_file under a 'source' under the 'component' that
@@ -168,7 +168,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   fre_logger.debug(f"var filter list: {var_list}")
   
   #datavars does 2 things: keep track of which vars to write, and tell xarray
-  #which vars to drop. we need to seprate those things for the variable filtering.
+  #which vars to drop. we need to separate those things for the variable filtering.
   if var_list == "all":
     write_vars = datavars
   else:

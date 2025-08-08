@@ -11,7 +11,7 @@ def writeRepo(file,repo,component,srcDir,branch,add,multi,jobs,pc):
         - component Model component name
         - srcDir The source directory
         - branch The version to clone/checkout
-        - add Additional instrcutions after the clone
+        - add Additional instructions after the clone
         - multi True if a component has more than one repo to clone
     """
     ## Write message about cloning repo and branch in component

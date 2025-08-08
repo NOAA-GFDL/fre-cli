@@ -40,7 +40,7 @@ fre_properties:
 
 build:
   # compile information
-  compileYaml: "compiile.yaml" 
+  compileYaml: "compile.yaml" 
   platformYaml: "wrong_platforms.yaml"
 
 shared:

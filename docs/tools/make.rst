@@ -7,7 +7,7 @@
         - `-y, --yamlfile [experiment yaml] (required)`
         - `-p, --platform [platform] (required)`
         - `-t, --target [target] (required)`
-        - `-j, --jobs [number of jobs to run simultneously]`
+        - `-j, --jobs [number of jobs to run simultaneously]`
         - `-npc, --no-parallel-checkout (for container build)`
         - `-e, --execute`
 
@@ -30,8 +30,8 @@
         - `-y, --yamlfile [experiment yaml] (required)`
         - `-p, --platform [platform] (required)`
         - `-t, --target [target] (required)`
-        - `-j, --jobs [number of jobs to run simultneously]`
-        - `-n, --parallel [number of concurrent modile compiles]`
+        - `-j, --jobs [number of jobs to run simultaneously]`
+        - `-n, --parallel [number of concurrent module compiles]`
         - `-e, --execute`
 
 ``dockerfile``
@@ -55,5 +55,5 @@
         - `-p, --platform [platform] (required)`
         - `-t, --target [target] (required)`
         - `-npc, --no-parallel-checkout (for container build)`
-        - `-j, --jobs [number of jobs to run simultneously]`
-        - `-n, --parallel [number of concurrent modile compiles]`
+        - `-j, --jobs [number of jobs to run simultaneously]`
+        - `-n, --parallel [number of concurrent module compiles]`

@@ -25,7 +25,7 @@ arguments
   
   - sets ``fre``'s verbosity from the default ``logging.WARNING`` to ``logging.ERROR``.
 	
-* (optional) ``-l, --log_file PATH``, argument specifying a log file inwhich to store ``logging`` messages
+* (optional) ``-l, --log_file PATH``, argument specifying a log file in which to store ``logging`` messages
   
   - the given (or default) verbosity will be used as-specified
 	

@@ -86,7 +86,7 @@ class makefile():
         Param: 
             - self The Makefile object
             - c The component
-            - r The requires for that componenet
+            - r The requires for that component
             - o The overrides for that component
         """
         self.c.append(c)

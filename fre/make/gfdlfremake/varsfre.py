@@ -40,7 +40,7 @@ class frevars():
     return re.sub(r"\$\(\w+\)", getVarYamlSub, string)
 
 ## Wrapper that relaces environment ${} and FRE $() variables
-## \param self the FRE yaml varaibles (FRE properties)
+## \param self the FRE yaml variables (FRE properties)
 ## \param string The YAML string that is having its variables replaced
 ## \returns string with the environment and FRE variables replaced
   def freVarSub(self, string):

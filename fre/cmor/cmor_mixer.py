@@ -667,7 +667,7 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, nam
     Returns:
         int: 0 if *the last file processed* was successful. 
              1 if the last file processed was not successful. 
-             -1 if we didnt even try!
+             -1 if we didn't even try!
 
     '''
     # loop over local-variable:target-variable pairs in vars_to_run

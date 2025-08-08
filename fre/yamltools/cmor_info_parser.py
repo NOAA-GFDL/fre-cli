@@ -89,7 +89,7 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
 
 ## CMOR CLASS ##
 class CMORYaml():
-    """ class holding routines for initalizing cmor yamls """
+    """ class holding routines for initializing cmor yamls """
 
     def __init__(self,yamlfile,experiment,platform,target):#,join_constructor):
         """
