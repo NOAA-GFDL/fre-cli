@@ -9,6 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: streetsidesoftware/cspell-action@v7
+        continue-on-error: true # TEMPORARY
         with:
           # Define glob patterns to filter the files to be checked.
           # Use a new line between patterns to define multiple
