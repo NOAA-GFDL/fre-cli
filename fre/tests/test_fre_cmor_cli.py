@@ -19,8 +19,8 @@ ROOTDIR = 'fre/tests/test_files'
 # these unit tests should be more about the cli, rather than the workload
 YYYYMMDD=date.today().strftime('%Y%m%d')
 
-COPIED_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc'
-ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199307-199308.sos.nc'
+COPIED_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
+ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
 
 def test_setup_test_files():
     "set-up test: copy and rename NetCDF file created in test_fre_cmor_run_subtool.py"
@@ -125,6 +125,7 @@ def test_cli_fre_cmor_run_case1():
     grid_label = 'gr'
     grid_desc = 'FOO_BAR_PLACEHOLD'
     nom_res = '10000 km'
+    calendar='julian'
 
     # determined by cmor_run_subtool
     cmor_creates_dir = \
@@ -132,10 +133,10 @@ def test_cli_fre_cmor_run_case1():
     full_outputdir = \
         f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldnt be
     full_outputfile = \
-        f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199307-199308.nc"
+        f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199301-199302.nc"
 
     # FYI
-    filename = 'reduced_ocean_monthly_1x1deg.199307-199308.sos.nc' # unneeded, this is mostly for reference
+    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc' # unneeded, this is mostly for reference
     full_inputfile=f"{indir}/{filename}"
 
     # clean up, lest we fool outselves
@@ -149,6 +150,7 @@ def test_cli_fre_cmor_run_case1():
                                              "--table_config", table_config,
                                              "--exp_config", exp_config,
                                              "--outdir",  outdir,
+                                             "--calendar", calendar,
                                              "--grid_label", grid_label,
                                              "--grid_desc", grid_desc,
                                              "--nom_res", nom_res ] )
@@ -168,6 +170,7 @@ def test_cli_fre_cmor_run_case2():
     grid_label = 'gr'
     grid_desc = 'FOO_BAR_PLACEHOLD'
     nom_res = '10000 km'
+    calendar='julian'
 
     # determined by cmor_run_subtool
     cmor_creates_dir = \
@@ -175,10 +178,10 @@ def test_cli_fre_cmor_run_case2():
     full_outputdir = \
         f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldnt be
     full_outputfile = \
-        f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199307-199308.nc"
+        f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199301-199302.nc"
 
     # FYI
-    filename = 'reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc' # unneeded, this is mostly for reference
+    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc' # unneeded, this is mostly for reference
     full_inputfile=f"{indir}/{filename}"
 
     # clean up, lest we fool outselves
@@ -192,6 +195,7 @@ def test_cli_fre_cmor_run_case2():
                                             "--table_config", table_config,
                                             "--exp_config", exp_config,
                                             "--outdir",  outdir,
+                                            "--calendar", calendar,
                                              "--grid_label", grid_label,
                                              "--grid_desc", grid_desc,
                                              "--nom_res", nom_res ] )
