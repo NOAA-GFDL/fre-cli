@@ -276,6 +276,6 @@ def consolidate_yamls( yamlfile: Union[str, Path],
         yml_dict = get_combined_cmoryaml(yamlfile, experiment, platform, target, output)
         fre_logger.info('... done attempting to combine cmor yaml info')
     else:
-        raise ValueError("'use' value is not valid; must be one of: 'compile', 'pp', or 'cmor' (case-insensitive)")
+        raise ValueError("'use' value is not valid; must be one of: 'compile', 'pp', or 'cmor'")
 
     return yml_dict
