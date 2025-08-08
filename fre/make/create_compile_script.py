@@ -87,8 +87,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                                                              srcDir=srcDir,
                                                              bldDir=bldDir,
                                                              target=target,
-                                                             modules=platform["modules"],
-                                                             modulesInit=platform["modulesInit"],
+                                                             env_setup=platform["envSetup"],
                                                              jobs=jobs)
                 for c in fremakeYaml['src']:
                     fremakeBuild.writeBuildComponents(c)
@@ -102,6 +101,3 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
             pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)  # process data_inputs iterable with pool
     else:
         return
-
-if __name__ == "__main__":
-    compile_create()

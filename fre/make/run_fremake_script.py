@@ -149,8 +149,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                                                              srcDir = srcDir,
                                                              bldDir = bldDir,
                                                              target = target,
-                                                             modules = platform["modules"],
-                                                             modulesInit = platform["modulesInit"],
+                                                             env_setup = platform["envSetup"],
                                                              jobs = jobs)
 
                 for c in fremakeYaml['src']:
@@ -230,7 +229,3 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 pool = Pool(processes=nparallel)
                 # process data_inputs iterable with pool
                 pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)
-
-
-if __name__ == "__main__":
-    fremake_run()

@@ -23,16 +23,11 @@ class platforms ():
                 p["compiler"]
             except:
                 raise Exception("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n")
-            ## Check for modules to load
+            ## Check for list of commands that include modules to initialize, load, and unload
             try:
-                p["modules"]
+                p["envSetup"]
             except:
-                p["modules"]=[""]
-            ## Check for modulesInit to set up the modules environment
-            try:
-                p["modulesInit"]
-            except:
-                p["modulesInit"]=[""]
+                p["envSetup"]=[""]
             ## Get the root for the build
             try:
                 p["modelRoot"]
