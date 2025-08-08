@@ -134,6 +134,7 @@ cmorized
 cmorizes
 cmorizing
 cmoryaml
+cmory
 cobv
 coef
 combinedfile
@@ -343,6 +344,7 @@ outfiledir
 outpath
 outputdir
 outputfile
+oxic
 parallelizations
 parseyaml
 pathnames
@@ -382,6 +384,7 @@ qpoint
 rainwat
 redissolution
 reengineered
+reff
 refinediag
 regriddable
 regridding
@@ -405,6 +408,7 @@ sftlf
 sftof
 shflx
 shortvars
+skyoutgoing
 snowwat
 spack
 spackloads
@@ -412,6 +416,7 @@ sphum
 srces
 srcs
 stddevs
+strat
 subdaily
 subdirs
 subhr
