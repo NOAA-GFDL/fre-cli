@@ -1,30 +1,41 @@
 '''
-TODO doc-string
+Create the Makefile
 '''
 
 import os
 import logging
+
+import fre.yamltools.combine_yamls_script as cy
+from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
+
 fre_logger = logging.getLogger(__name__)
 
-from pathlib import Path
-
-from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
-import fre.yamltools.combine_yamls_script as cy
-
-def makefile_create(yamlfile, platform, target):
+def makefile_create(yamlfile: str, platform: str, target:str):
     """
-    Create the makefile
+    Creates the makefile
+    
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform
+    :type platform: str
+    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
+    :type target: str
+    :raises ValueError: Error if platform passed does not exist in platforms yaml configuration 
+
+    .. note:: If additional libraries are defined in the compile.yaml file:
+       - for a container build, a linkline script will be generated
+       to locate those libraries inside the container and populate 
+       the Makefile with the correct linker flags
+       - for a bare-metal build, linker flags defined in the yaml
+       configuration are added to the link line in the Makefile
     """
     srcDir="src"
-    checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target
     yml = yamlfile
     name = yamlfile.split(".")[0]
-
-    #    combined = Path(f"combined-{name}.yaml")
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yml,
@@ -41,7 +52,6 @@ def makefile_create(yamlfile, platform, target):
     modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
-    fremakeBuildList = []
     ## Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
@@ -67,7 +77,7 @@ def makefile_create(yamlfile, platform, target):
                                              bldDir = bldDir,
                                              mkTemplatePath = platform["mkTemplate"])
                 # Loop through components and send the component name, requires, and overrides for the Makefile
-                for c in fremakeYaml['src']: 
+                for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
                 former_log_level = fre_logger.level
@@ -92,6 +102,3 @@ def makefile_create(yamlfile, platform, target):
                 fre_logger.setLevel(logging.INFO)
                 fre_logger.info("\nMakefile created at " + tmpDir + "/Makefile" + "\n")
                 fre_logger.setLevel(former_log_level)
-
-if __name__ == "__main__":
-    makefile_create()

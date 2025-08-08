@@ -1,17 +1,41 @@
 '''
-TODO: make docstring
+Create a compile script to generate a model executable.
 '''
+
 import os
 import logging
-fre_logger = logging.getLogger(__name__)
 
 from pathlib import Path
 from multiprocessing.dummy import Pool
 
-from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls_script as cy
+from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
-def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
+fre_logger = logging.getLogger(__name__)
+
+def compile_create(yamlfile:str, platform:str, target:str, jobs:int, parallel:int, execute:bool, verbose:bool):
+    """
+    Creates the compile script for bare-metal build
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform
+    :type platform: str
+    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
+    :type target: str
+    :param jobs: Number of jobs to run simultaneously
+    :type jobs: int
+    :param parallel: Number of concurrent model compiles (default 1)
+    :type parallel: int
+    :param execute: Use this to run the created checkout script
+    :type execute: bool
+    :param verbose: Increase verbosity output
+    :type verbose: bool
+    :raises ValueError:
+        - Error if platform passed does not exist in platforms yaml configuration 
+        - Error if mkmf template defined in platforms yaml does not exist
+    """
+
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
@@ -24,7 +48,6 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
         fre_logger.setLevel(level=logging.INFO)
 
     srcDir = "src"
-    checkoutScriptName = "checkout.sh"
     baremetalRun = False  # This is needed if there are no bare metal runs
 
     ## Split and store the platforms and targets in a list
@@ -102,6 +125,3 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
             pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)  # process data_inputs iterable with pool
     else:
         return
-
-if __name__ == "__main__":
-    compile_create()
