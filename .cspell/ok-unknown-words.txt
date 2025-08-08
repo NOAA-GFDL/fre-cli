@@ -24,10 +24,8 @@ DINTERNAL
 DMAXFIELDMETHODS
 DMAXFIELDS
 DSPMD
-Dorkey
 ESGF
 EXPNAME
-Ebronx
 Emon
 FREPYTOOLSTIMEAVERAGER
 Fremake
@@ -142,7 +140,6 @@ combinedfile
 combinedyaml
 combinefail
 compdir
-compiile
 compiledict
 compilefile
 compileinfo
@@ -151,7 +148,6 @@ compileyaml
 compp
 compval
 contactslist
-couldnt
 cppdefs
 createscript
 creationtime
@@ -251,7 +247,6 @@ hpoint
 htotal
 iamnotreallyused
 ierr
-improvemnent
 indexlist
 indir
 infile
@@ -262,7 +257,6 @@ inputfiles
 intakebuilder
 intercomparisons
 intrafile
-inwhich
 isodatetime
 jaon
 jhan
@@ -283,7 +277,6 @@ linklinecreate
 linklineon
 listtools
 lnetcdf
-locatiions
 longwave
 lons
 lwdn
@@ -350,7 +343,6 @@ outfiledir
 outpath
 outputdir
 outputfile
-oxic
 parallelizations
 parseyaml
 pathnames
@@ -390,7 +382,6 @@ qpoint
 rainwat
 redissolution
 reengineered
-reff
 refinediag
 regriddable
 regridding
