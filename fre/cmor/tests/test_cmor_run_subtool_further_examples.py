@@ -61,21 +61,21 @@ ESM4_DEV_PP_DIR='USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-pro
 @pytest.mark.parametrize( "testfile_dir,table,opt_var_name,grid_label,start,calendar",
   [
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DECK_PP_DIR}/atmos_plev39_cmip/ts/monthly/5yr/zonavg/',
-                  'AERmonZ', 'ta',        'gr1','1850','360_day', id='AERmonZ_ta_gr1' ),
+                  'AERmonZ', 'ta',        'gr1','1850','noleap', id='AERmonZ_ta_gr1' ),
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DECK_PP_DIR}/atmos_scalar/ts/monthly/5yr/',
-                  'Amon',    'ch4global', 'gr', '1850','360_day', id='Amon_ch4global_gr' ),
+                  'Amon',    'ch4global', 'gr', '1850','noleap', id='Amon_ch4global_gr' ),
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DECK_PP_DIR}/LUmip_refined/ts/monthly/5yr/',
-                  'Emon',    'gppLut',    'gr1','1850','360_day', id='Emon_gppLut_gr1' ),
+                  'Emon',    'gppLut',    'gr1','1850','noleap', id='Emon_gppLut_gr1' ),
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DECK_PP_DIR}/atmos_level_cmip/ts/monthly/5yr/',
                   'Amon',    'cl',        'gr1','1850','noleap', id='Amon_cl_gr1' ),
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DECK_PP_DIR}/atmos_level_cmip/ts/monthly/5yr/',
                   'Amon',    'mc',        'gr1','1850','noleap', id='Amon_mc_gr1' ),
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DEV_PP_DIR}/ocean_monthly_z_1x1deg/ts/monthly/5yr/',
-                  'Omon',    'so',        'gr', '0001','360_day', id='Omon_so_gr' ),
+                  'Omon',    'so',        'gr', '0001','noleap', id='Omon_so_gr' ),
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DEV_PP_DIR}/ocean_monthly/ts/monthly/5yr/',
-                  'Omon',    'sos',       'gn', '0001','360_day', id='Omon_sos_gn' ),
+                  'Omon',    'sos',       'gn', '0001','noleap', id='Omon_sos_gn' ),
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DEV_PP_DIR}/land/ts/monthly/5yr/',
-                  'Lmon',    'lai',       'gr1','0001','360_day', id='Lmon_lai_gr1' ),
+                  'Lmon',    'lai',       'gr1','0001','noleap', id='Lmon_lai_gr1' ),
   ] )
 
 def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar):
