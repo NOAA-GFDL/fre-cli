@@ -1,4 +1,14 @@
+"""
+module init file for fre. sets the version attribute, and sets up a fre_logger
+"""
+
 import importlib.metadata
+import logging
+
+fre_logger=logging.getLogger(__name__)
+FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
+logging.basicConfig(level = logging.WARNING, format=FORMAT,
+                    filename = None, encoding = 'utf-8' )
 
 # versioning, turn xxxx.y into xxxx.0y
 version_unexpanded = importlib.metadata.version('fre-cli')
@@ -19,11 +29,3 @@ except IndexError:
     version = version_unexpanded_split[0] + '.' + version_minor
 
 __version__=version
-
-
-import logging
-fre_logger=logging.getLogger(__name__)
-FORMAT = "%(levelname)s:%(filename)s:%(funcName)s %(message)s"
-logging.basicConfig(level = logging.WARNING, format=FORMAT,
-                    filename = None, encoding = 'utf-8' )
-
