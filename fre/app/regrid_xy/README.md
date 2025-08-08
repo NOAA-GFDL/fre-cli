@@ -23,7 +23,7 @@ _______________________________________
 _______________________________________
 `fregridRemapDir` / `remap_dir` (env var) directory containing remap file for regridding
 _______________________________________
-`gridSpec` / `grid_spec` (env var) file containing mosaic for regridding 
+`grid_spec` / `grid_spec` (env var) file containing mosaic for regridding 
 _______________________________________
 `defaultxyInterp` / `def_xy_interp` (env var) default lat/lon resolution for output regridding. (change me? TODO)
 
