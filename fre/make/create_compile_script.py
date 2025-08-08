@@ -103,5 +103,3 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
     else:
         return
 
-if __name__ == "__main__":
-    compile_create()

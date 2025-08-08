@@ -34,6 +34,12 @@ EXP_CONFIG = f'{ROOTDIR}/CMOR_input_example.json'
 OUTDIR = f'{ROOTDIR}/outdir'
 TMPDIR = f'{OUTDIR}/tmp'
 
+# input file details. if calendar matches data, the dates should be preserved or equiv.
+DATETIMES_INPUTFILE='199301-199302'
+FILENAME = f'reduced_ocean_monthly_1x1deg.{DATETIMES_INPUTFILE}.sos' 
+FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
+CALENDAR_TYPE = 'julian'
+
 # determined by cmor_run_subtool
 YYYYMMDD = date.today().strftime('%Y%m%d')
 CMOR_CREATES_DIR = \
@@ -41,11 +47,7 @@ CMOR_CREATES_DIR = \
 FULL_OUTPUTDIR = \
    f"{OUTDIR}/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
 FULL_OUTPUTFILE = \
-f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{GRID_LABEL}_199307-199308.nc"
-
-# FYI but helpful for tests
-FILENAME = 'reduced_ocean_monthly_1x1deg.199307-199308.sos' # unneeded, this is mostly for reference
-FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
+f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{GRID_LABEL}_{DATETIMES_INPUTFILE}.nc"
 
 
 def test_setup_fre_cmor_run_subtool(capfd):
@@ -100,7 +102,8 @@ def test_fre_cmor_run_subtool_case1(capfd):
         run_one_mode = True,
         grid_label = GRID_LABEL,
         grid = GRID,
-        nom_res = NOM_RES
+        nom_res = NOM_RES,
+        calendar_type = CALENDAR_TYPE
     )
 
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
@@ -152,7 +155,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
 
 # FYI, but again, helpful for tests
 FILENAME_DIFF = \
-    'reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc'
+    f'reduced_ocean_monthly_1x1deg.{DATETIMES_INPUTFILE}.sosV2.nc'
 FULL_INPUTFILE_DIFF = \
     f"{INDIR}/{FILENAME_DIFF}"
 VARLIST_DIFF = \
@@ -224,7 +227,8 @@ def test_fre_cmor_run_subtool_case2(capfd):
         run_one_mode = True,
         grid_label = GRID_LABEL,
         grid = GRID,
-        nom_res = NOM_RES
+        nom_res = NOM_RES,
+        calendar_type = CALENDAR_TYPE
     )
 
     # check we ran on the right input file.

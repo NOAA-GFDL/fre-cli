@@ -36,7 +36,7 @@ requirements:
     - conda-forge::click<8.2
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
-    - conda-forge::cmor>=3.10.0
+    - conda-forge::cmor>=3.11.0
     - conda-forge::cdo>=2.0.0
     - conda-forge::jinja2=3.0.*
     - conda-forge::jsonschema

@@ -232,5 +232,3 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)
 
 
-if __name__ == "__main__":
-    fremake_run()
