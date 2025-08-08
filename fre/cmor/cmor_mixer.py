@@ -178,6 +178,12 @@ def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
     fre_logger.info('attempting to read variable data, %s', target_var)
     var = from_dis_gimme_dis(from_dis=ds, gimme_dis=target_var)
 
+    ## var type
+    #var_dtype = var.dtype
+
+    # var missing_value
+    var_missing_val = var.missing_value
+
     # grab var_dim
     var_dim = len(var.shape)
     fre_logger.info("var_dim = %d, local_var = %s", var_dim, local_var)
@@ -569,7 +575,9 @@ def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
     fre_logger.info("positive = %s", positive)
 
     fre_logger.info('cmor.variable call: for target_var = %s ',target_var)
-    cmor_var = cmor.variable(target_var, units, axes, positive=positive)
+    cmor_var = cmor.variable(target_var, units, axes,
+                             missing_value = var_missing_val,
+                             positive = positive)
     fre_logger.info('DONE cmor.variable call: for target_var = %s ',target_var)
 
     # Write the output to disk
