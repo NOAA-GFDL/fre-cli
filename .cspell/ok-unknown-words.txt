@@ -17,7 +17,6 @@ CPPDEFS
 CYLC
 Clim
 Containerzation
-Creat
 Cylc
 DCLIMATE
 DHAVE
@@ -31,7 +30,6 @@ EXPNAME
 Ebronx
 Emon
 FREPYTOOLSTIMEAVERAGER
-Falses
 Fremake
 Frepp
 GETTID
@@ -74,8 +72,6 @@ PCMDI
 PLACEHOLD
 ROOTDIR
 Regridding
-Rization
-Rizing
 Rmon
 SIGPIPE
 SOURCEDIR
@@ -139,7 +135,6 @@ cmorize
 cmorized
 cmorizes
 cmorizing
-cmory
 cmoryaml
 cobv
 coef
@@ -174,7 +169,6 @@ defaultxy
 delz
 denit
 deptho
-devleloper
 dimname
 dirstrings
 distclean
@@ -420,8 +414,6 @@ sftlf
 sftof
 shflx
 shortvars
-simultneously
-skyoutgoing
 snowwat
 spack
 spackloads
@@ -436,7 +428,6 @@ subp
 subtool
 subtool's
 subtools
-supicion
 surfresp
 swdn
 swup
@@ -467,9 +458,7 @@ ucomp
 unlimdim
 unmsk
 untar
-untarredv
 unwgt
-validatefail
 varlist
 varnames
 varsfre
@@ -479,7 +468,6 @@ vcoords
 vect
 wgts
 withism
-wtihin
 xcomp
 xcomponents
 xdaily
