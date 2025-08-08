@@ -181,8 +181,8 @@ def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
     ## var type
     #var_dtype = var.dtype
 
-    # var missing_value
-    var_missing_val = var.missing_value
+    # var missing_value, in numpy masked_array land, called the fill_value
+    var_missing_val = var.fill_value
 
     # grab var_dim
     var_dim = len(var.shape)
