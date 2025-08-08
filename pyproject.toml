@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fre-cli"
+description = "Command Line Interface for FRE commands"
+readme = "README.md"
+requires-python = "==3.11.*" # loosen this TODO
+license = {text = "Apache License (2.0)"}
+authors = [
+    {name = "MSD Workflow Team", email="oar.gfdl.workflow@noaa.gov"}
+]
+keywords = [
+    "gfdl",
+    "workflow",
+    "fre",
+    "fms",
+]
+# Some of these are conda dependencies (e.g., cdo, cmor)
+# We should find out a better way to indicate those instead
+# of listing them here.
+# This package also requires some conda packages in the
+# noaa-gfdl channel (e.g., analysis_scripts, catalogbuilder)
+dependencies = [
+        'catalogbuilder',
+        'cdo',
+        'click',
+        'cmor',
+        'cylc-flow',
+        'cylc-rose',
+        'pyyaml',
+        'pylint',
+        'pytest',
+        'jsonschema',
+        'metomi-rose',
+        'xarray',
+        'numpy<2',
+]
+
+classifiers = [
+    "Environment :: Console",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+]
+
+dynamic = [
+    "version",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "fre.__version__"}
+
+[project.scripts]
+fre = 'fre.fre:fre'
+
+[project.optional-dependencies]
+docs = [
+    "sphinx",
+    "renku-sphinx-theme",
+    "sphinx-rtd-theme"
+]
+

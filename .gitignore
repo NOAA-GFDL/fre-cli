@@ -173,6 +173,8 @@ cython_debug/
 # autogen'd by doc build
 docs/fre.*
 docs/modules.rst
+/docs/modules.rst
+
 
 ##### GOTTA CLEAN THIS UP
 # files pulled/created via testing
