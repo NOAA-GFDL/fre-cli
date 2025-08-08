@@ -1,4 +1,4 @@
-netcdf reduced_ocean_monthly_1x1deg.199301-199712.sos {
+netcdf reduced_ocean_monthly_1x1deg.199301-199302.sos {
 dimensions:
 	lat = 2 ;
 	bnds = 2 ;
@@ -52,7 +52,7 @@ variables:
 		:git_hash = "b86d27037f755a82c586e55073dd575245c144b1" ;
 		:creationtime = "Mon Jun 17 18:57:22 2024" ;
 		:hostname = "pp337" ;
-		:history = "Wed Nov  6 19:17:52 2024: ncks -d lat,0,1 -d lon,0,1 -d time,0,1 ocean_monthly_1x1deg.199301-199712.sos.nc -o reduced_ocean_monthly_1x1deg.199301-199712.sos.nc\n",
+		:history = "Wed Nov  6 19:17:52 2024: ncks -d lat,0,1 -d lon,0,1 -d time,0,1 ocean_monthly_1x1deg.199301-199712.sos.nc -o reduced_ocean_monthly_1x1deg.199301-199302.sos.nc\n",
 			"fregrid --standard_dimension --input_mosaic ocean_mosaic.nc --input_file all --interp_method conserve_order1 --remap_file .fregrid_remap_file_360_by_180.nc --nlon 360 --nlat 180 --scalar_field (**please see the field list in this file**) --output_file out.nc" ;
 		:external_variables = "areacello" ;
 		:NCO = "netCDF Operators version 5.1.5 (Homepage = http://nco.sf.net, Code = http://github.com/nco/nco)" ;
