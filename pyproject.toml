@@ -56,7 +56,7 @@ version = {attr = "fre.__version__"}
 [project.scripts]
 fre = 'fre.fre:fre'
 
-[dependency-groups]
+[project.optional-dependencies]
 docs = [
     "sphinx",
     "renku-sphinx-theme",
