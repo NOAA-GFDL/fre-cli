@@ -5,12 +5,12 @@
         {
             "name": "noaa",
             "path": "./.cspell/noaa-words.txt",
-            "addWords": false
+            "addWords": true
         },
         {
             "name": "conda",
             "path": "./.cspell/conda-words.txt",
-            "addWords": false
+            "addWords": true
         }
     ],
     "dictionaries": [
