@@ -16,7 +16,7 @@ def trigger(experiment = None, platform = None, target = None, time = None):
     :type target: str
     :param time: The start time of the segment. Formatted as a series of integers.
     :type time: Cylc representation of a time point
-    ..note: 
+    .. note: 
     The segment is defined as a start point (--time) and a duration (defined in
     the experiment yaml). Cylc combines the two for a cycle duration; we are using
     datetime cycling (https://cylc.github.io/cylc-doc/stable/html/glossary.html#term-datetime-cycling)
