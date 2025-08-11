@@ -87,8 +87,7 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
                                                              srcDir=srcDir,
                                                              bldDir=bldDir,
                                                              target=target,
-                                                             modules=platform["modules"],
-                                                             modulesInit=platform["modulesInit"],
+                                                             env_setup=platform["envSetup"],
                                                              jobs=jobs)
                 for c in fremakeYaml['src']:
                     fremakeBuild.writeBuildComponents(c)

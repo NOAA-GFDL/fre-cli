@@ -817,6 +817,7 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
     -----
     Errors for individual variables are logged and processing continues (except for run_one_mode).
     """
+
     # loop over local-variable:target-variable pairs in vars_to_run
     return_status = -1
     for local_var in vars_to_run:

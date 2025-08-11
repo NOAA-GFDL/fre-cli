@@ -180,7 +180,7 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
         except OSError as exc:
             print(f'WARNING: TMPDIR={TMPDIR} could not be removed.')
             print( '         this does not matter that much, but is unfortunate.')
-            print( '         supicion: something the cmor module is using is not being closed')
+            print( '         suspicion: something the cmor module is using is not being closed')
 
     #assert not Path(TMPDIR).exists()    # VERY ANNOYING !!! FYI WARNING TODO
 
@@ -191,7 +191,7 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
         except OSError as exc:
             print(f'WARNING: OUTDIR={OUTDIR} could not be removed.')
             print( '         this does not matter that much, but is unfortunate.')
-            print( '         supicion: something the cmor module is using is not being closed')
+            print( '         suspicion: something the cmor module is using is not being closed')
 
     #assert not Path(OUTDIR).exists()    # VERY ANNOYING !!! FYI WARNING TODO
 

@@ -224,7 +224,7 @@ def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
 
 
     # ---------------------------------------------------
-    # inbetween-logic to form args ----------------------
+    # between-logic to form args ----------------------
     # ---------------------------------------------------
 
     # target input pp directory

@@ -70,7 +70,7 @@ def print_var_content(table_config_file: IO[str],
     try:
         table_name = proj_table_vars["Header"].get('table_id').split(' ')[1]
     except KeyError:
-        fre_logger.warning('couldnt get header and table_name field')
+        fre_logger.warning("couldn't get header and table_name field")
 
     if table_name is not None:
         fre_logger.info('found %s data in table %s!', var_name, table_name)
