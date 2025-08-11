@@ -69,7 +69,8 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   if split_all_vars:
     varlist = "all"
   else:
-    vardict = get_variables(yamlfile, component)
+    ydict = yaml.safe_load(Path(yamlfile).read_text())
+    vardict = get_variables(ydict, component)
     if vardict is None or history_source not in vardict.keys():
       fre_logger.error(f"error: either component {component} not defined or source {history_source} not defined under component {component} in yamlfile {yamlfile}.")
       raise ValueError(f"error: either component {component} not defined or source {history_source} not defined under component {component} in yamlfile {yamlfile}.")

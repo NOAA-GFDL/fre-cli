@@ -22,8 +22,13 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     """
     fre_logger.debug(f"Yaml file information: {yml}")
     fre_logger.debug(f"PP component: {pp_comp}")
+    if not isinstance(yml, dict):
+        raise TypeError("yml should be of type dict, but was of type " + str(type(yml)))
 
     src_vars={}
+    print(yml)
+    print(yml.keys())
+    print(yml["postprocess"].keys())
     for component_info in yml["postprocess"]["components"]:
         # if component in yaml not an active pp component, skip
         if component_info.get("type") != pp_comp:
