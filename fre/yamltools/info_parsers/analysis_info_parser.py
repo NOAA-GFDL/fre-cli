@@ -105,10 +105,13 @@ class InitAnalysisYaml(MergePPANYamls):
         name, platform, target, model yaml content, settings yaml
         content, and analysis yaml content
 
-        :param yaml_content_str:
+        :param yaml_content_str: string of yaml information,
+                                 including name, platform, target,
+                                 model yaml content, and settings
+                                 yaml content
         :type yaml_content_str: str
         :return: List of combined yaml information (str elements)
-        :rtype: list of str
+        :rtype: list of strings
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
@@ -147,12 +150,14 @@ class InitAnalysisYaml(MergePPANYamls):
         Merge separately combined post-processing and analysis
         yamls into fully combined yaml (without overwriting like sections).
 
-        :param analysis_list:
-        :type analysis_list:
-        :param yaml_content_str:
-        :type yaml_content_str:
-        :return:
-        :rtype: str
+        :param analysis_list: list of combined model, settings, and analysis yaml strings
+                        associated with each analysis yaml listed under the experiment
+        :type analysis_list: list of strings
+        :param yaml_content_str: --------
+        :type yaml_content_str: str
+        :return: fully combined yaml dictionary (includes model, settings,
+                 and multiple analysis yamls)
+        :rtype: dict
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
@@ -185,8 +190,8 @@ class InitAnalysisYaml(MergePPANYamls):
 
     def combine(self):
         """
-        :return:
-        :rtype: str
+        :return: cleaned, combined yaml dictionary
+        :rtype: dict
         """
         # Create combined pp yaml
         former_log_level = fre_logger.level

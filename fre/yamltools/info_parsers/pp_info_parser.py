@@ -150,8 +150,9 @@ class InitPPYaml(MergePPANYamls):
         Merge separately combined post-processing and analysis
         yamls into fully combined yaml (without overwriting like sections).
 
-        :param pp_list: list of combined model, settings, and pp yaml string
-        :type pp_list: array
+        :param pp_list: list of combined model, settings, and pp yaml strings
+                        associated with each pp yaml listed under the experiment
+        :type pp_list: list of strings
         :param yaml_content_str: -----------
         :type yaml_content_str: str
         :return: fully combined yaml dictionary (includes model, settings,
