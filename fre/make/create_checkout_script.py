@@ -8,12 +8,13 @@ import os
 import subprocess
 import logging
 import fre.yamltools.combine_yamls_script as cy
+from typing import Optional
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
 # set up logging
 fre_logger = logging.getLogger(__name__)
 
-def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_checkout: bool, jobs: int, execute: bool, verbose: bool):
+def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_checkout: bool, njobs: int, execute: bool, verbose: bool):
     """
     Creates the checkout script for bare-metal or container build
     The checkout script will clone component repositories, defined 
@@ -28,9 +29,9 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
     :type target: str
     :param no_parallel_checkout: Option to turn off parallel checkouts
     :type no_parallel_checkout: bool
-    :param jobs: Number of jobs to run simultaneously
-    :type jobs: int
-    :param execute: Run the created checkout script
+    :param njobs: Used in the recursive clone; number of submodules to fetch simultaneously (default 4)
+    :type njobs: int
+    :param execute: Run the created checkout script to check out source code
     :type execute: bool
     :param verbose: Increase verbosity output
     :type verbose: bool
@@ -47,7 +48,7 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
     yml = yamlfile
     name = yamlfile.split(".")[0]
     run = execute
-    jobs = str(jobs)
+    jobs = str(njobs)
     pcheck = no_parallel_checkout
 
     if isinstance(jobs, bool) and execute:

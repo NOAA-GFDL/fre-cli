@@ -1,5 +1,7 @@
 '''
-Create a Dockerfile and container build script, and generate a model container.
+Creates a Dockerfile and container build script
+
+If the build script is executed, a singularity image file (.sif) is generated. 
 '''
 
 import os
@@ -18,15 +20,17 @@ def dockerfile_create(yamlfile:str, platform:str, target:str, execute:bool, skip
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
-    :param platform: FRE platform
+    :param platform: FRE container platform; container platforms are defined in the platforms yaml
+                     Container platforms can build non-shareable (includes intel compilers) and shareable
+                     (does not include intel compilers) singularity image files.
     :type platform: str
     :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str
-    :param execute: Use this to run the created checkout script
+    :param execute: Run the created dockerfile to build a container
     :type execute: bool
     :param skip_format_transfer: Skip the container format conversion to a .sif file.
     :type skip_format_transfer: bool
-    :raises ValueError: Error if platform passed does not exist in platforms yaml configuration 
+    :raises ValueError: Error if platform does not exist in platforms yaml configuration 
 
     .. note:: For building a container on GAEA, users need to put in a helpdesk ticket for podman access.
     """

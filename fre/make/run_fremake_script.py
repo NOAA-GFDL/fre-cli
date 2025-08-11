@@ -16,38 +16,39 @@ from .gfdlfremake import (
 
 fre_logger = logging.getLogger(__name__)
 
-def fremake_run(yamlfile:str, platform:str, target:str, parallel:int, jobs:int, no_parallel_checkout:bool, no_format_transfer:bool, execute:bool, verbose:bool):
+def fremake_run(yamlfile:str, platform:str, target:str, nparallel:int, njobs:int, no_parallel_checkout:bool, no_format_transfer:bool, execute:bool, verbose:bool):
     """
     Runs all of fre make code
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
-    :param platform: FRE platform
+    :param platform: FRE platform; defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str
     :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str
-    :param parallel: Number of concurrent model compiles (default 1)
-    :type parallel: int
-    :param jobs: Number of jobs to run simultaneously
-    :type jobs: int
+    :param nparallel: Number of concurrent model builds (default 1)
+    :type nparallel: int
+    :param njobs: Number of jobs to run simultaneously; used for parallelism with make and recursive cloning with checking out source code (default 4)
+    :type njobs: int
     :param no_parallel_checkout: Use this option if you do not want a parallel checkout
     :type no_parallel_checkout: bool
     :param no_format_transfer: Skip the container format conversion to a .sif file
     :type no_format_transfer: bool
-    :param execute: Use this to run the created checkout script
+    :param execute: Run the created compile script or dockerfile to create a model executable or container
     :type execute: bool
     :param verbose: Increase verbosity output
     :type verbose: bool
     :raise ValueError:
-        - Error if platform passed does not exist in platforms yaml configuration 
+        - Error if platform does not exist in platforms yaml configuration 
         - Error if mkmf template defined in platforms yaml does not exist
 
     .. note:: This script will eventually be a wrapper for the other fre make tools
     """
     yml = yamlfile
     name = yamlfile.split(".")[0]
-    nparallel = parallel
-    jobs = str(jobs)
+    nparallel = nparallel
+    jobs = str(njobs)
     pcheck = no_parallel_checkout
 
     if pcheck:

@@ -1,5 +1,5 @@
 '''
-Create the Makefile
+Creates the Makefile
 '''
 
 import os
@@ -16,16 +16,19 @@ def makefile_create(yamlfile: str, platform: str, target:str):
     
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
-    :param platform: FRE platform
+    :param platform: FRE platform; defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str
     :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str
-    :raises ValueError: Error if platform passed does not exist in platforms yaml configuration 
+    :raises ValueError: Error if platform does not exist in platforms yaml configuration 
 
     .. note:: If additional libraries are defined in the compile.yaml file:
+
        - for a container build, a linkline script will be generated
        to locate those libraries inside the container and populate 
        the Makefile with the correct linker flags
+
        - for a bare-metal build, linker flags defined in the yaml
        configuration are added to the link line in the Makefile
     """

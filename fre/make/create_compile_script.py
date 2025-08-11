@@ -1,5 +1,5 @@
 '''
-Create a compile script to generate a model executable.
+Creates a compile script to generate a model executable.
 '''
 
 import os
@@ -13,34 +13,35 @@ from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
 fre_logger = logging.getLogger(__name__)
 
-def compile_create(yamlfile:str, platform:str, target:str, jobs:int, parallel:int, execute:bool, verbose:bool):
+def compile_create(yamlfile:str, platform:str, target:str, njobs:int, nparallel:int, execute:bool, verbose:bool):
     """
     Creates the compile script for bare-metal build
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
-    :param platform: FRE platform
+    :param platform: FRE platform; defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str
     :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str
-    :param jobs: Number of jobs to run simultaneously
-    :type jobs: int
-    :param parallel: Number of concurrent model compiles (default 1)
-    :type parallel: int
-    :param execute: Use this to run the created checkout script
+    :param njobs: Used for parallelism with make; number of files to build simultaneously; on a per-build basis (default 4)
+    :type njobs: int
+    :param nparallel: Number of concurrent model builds (default 1)
+    :type nparallel: int
+    :param execute: Run the created compile script to build a model executable
     :type execute: bool
     :param verbose: Increase verbosity output
     :type verbose: bool
     :raises ValueError:
-        - Error if platform passed does not exist in platforms yaml configuration 
-        - Error if mkmf template defined in platforms yaml does not exist
+        - Error if platform does not exist in platforms yaml configuration 
+        - Error if the mkmf template defined in platforms yaml does not exist
     """
 
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
-    nparallel = parallel
-    jobs = str(jobs)
+    nparallel = nparallel
+    jobs = str(njobs)
 
     if verbose:
         fre_logger.setLevel(level=logging.DEBUG)
