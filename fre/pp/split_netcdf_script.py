@@ -228,7 +228,7 @@ def get_max_ndims(dataset):
   
   :param dataset: xarray Dataset you want to query 
   :type dataset: xarray Dataset
-  :return: The max dimensions that a single var possessses in the Dataset
+  :return: The max dimensions that a single var possesses in the Dataset
   :rtype: int
   '''
   allvars = dataset.data_vars.keys()
