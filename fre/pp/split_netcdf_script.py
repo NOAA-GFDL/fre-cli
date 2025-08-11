@@ -41,7 +41,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   to the output directory
   
   Intended to work with data structured for fre-workflows and fre-workflows file naming conventions
-    Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
+  - Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
     
   :param inputDir: directory containing netcdf files
   :type inputDir: string
@@ -256,7 +256,7 @@ def set_coord_encoding(dset, vcoords):
            the coordinate variable in the Dataset plus the units (if present)
   :rtype: dict
   
-  ..note:: 
+  .. note:: 
            This code removes _FillValue from coordinates. CF-compliant files do not
            have _FillValue on coordinates, and xarray does not have a good way to get
            _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
