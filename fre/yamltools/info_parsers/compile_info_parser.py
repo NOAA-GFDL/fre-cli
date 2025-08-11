@@ -8,7 +8,7 @@ from fre.yamltools.helpers import clean_yaml
 from fre.yamltools.abstract_classes import MergeCompileYamls
 import yaml
 
-def get_compile_paths(full_path,loaded_yml):
+def get_compile_paths(full_path, yaml_content):
     """
     Find and return the paths for the compile
     and platform yamls
@@ -20,6 +20,9 @@ def get_compile_paths(full_path,loaded_yml):
     :return:
     :rtype: str
     """
+    # Load string as yaml
+    yml=yaml.load(yaml_content, Loader = yaml.Loader)
+
     for key,value in loaded_yml.items():
         if key == "build":
             if (value.get("platformYaml") or value.get("compileYaml")) is None:
@@ -56,7 +59,8 @@ class InitCompileYaml(MergeCompileYamls):
         """
         Create the combined.yaml and merge it with the model yaml
 
-        :return:
+        :return: string of yaml information, including name, platform,
+                 target, and model yaml content
         :rtype: str
         """
         # Define click options in string
@@ -71,20 +75,22 @@ class InitCompileYaml(MergeCompileYamls):
         # Combine information as strings
         yaml_content += model_content
 
-        # Load string as yaml
-        yml=yaml.load(yaml_content, Loader = yaml.Loader)
+#        # Load string as yaml
+#        yml=yaml.load(yaml_content, Loader = yaml.Loader)
 
         # Return the combined string and loaded yaml
         print(f"   model yaml: {self.yml}")
-        return (yaml_content, yml)
+        return (yaml_content)
 
-    def combine_compile(self,yaml_content,loaded_yaml):
+    def combine_compile(self,yaml_content):
         """
         Combine compile yaml with the defined combined.yaml
 
-        :param yaml_content:
+        :param yaml_content: string of yaml information,
+                             including name, platform, target,
+                             and model yaml content
         :type yaml_content: str
-        :param loaded_yaml:
+        :param loaded_yaml: 
         :type loaded_yml: dict
         :return:
         :rtype: str
@@ -93,7 +99,7 @@ class InitCompileYaml(MergeCompileYamls):
 
         # Get compile info
         #( py_path, cy_path ) = get_compile_paths(self.mainyaml_dir,loaded_yaml)
-        ( _, cy_path ) = get_compile_paths(self.mainyaml_dir, loaded_yaml)
+        ( _, cy_path ) = get_compile_paths(self.mainyaml_dir, yaml_content)
 
         # copy compile yaml info into combined yaml
         if cy_path is not None:
@@ -103,14 +109,14 @@ class InitCompileYaml(MergeCompileYamls):
         # Combine information as strings
         yaml_content += compile_content
 
-        # Load string as yaml
-        yml = yaml.load(yaml_content, Loader = yaml.Loader)
+#        # Load string as yaml
+#        yml = yaml.load(yaml_content, Loader = yaml.Loader)
 
         # Return the combined string and loaded yaml
         print(f"   compile yaml: {cy_path}")
-        return ( yaml_content, yml )
+        return (yaml_content)
 
-    def combine_platforms(self, yaml_content, loaded_yaml):
+    def combine_platforms(self, yaml_content):
         """
         Combine platforms yaml with the defined combined.yaml
 
@@ -124,7 +130,7 @@ class InitCompileYaml(MergeCompileYamls):
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Get compile info
-        ( py_path, _ ) = get_compile_paths(self.mainyaml_dir, loaded_yaml)
+        ( py_path, _ ) = get_compile_paths(self.mainyaml_dir, yaml_content)
 
         # copy compile yaml info into combined yaml
         platform_content = None
@@ -140,7 +146,7 @@ class InitCompileYaml(MergeCompileYamls):
 
         # Return the combined string and loaded yaml
         print(f"   platforms yaml: {py_path}")
-        return (yaml_content, yml)
+        return yml
 
     def combine(self):
         """
@@ -150,23 +156,23 @@ class InitCompileYaml(MergeCompileYamls):
         :rtype: str
         """
         try:
-            (yaml_content, loaded_yaml)=self.combine_model()
+            yaml_content=self.combine_model()
         except Exception as exc:
             raise ValueError("ERR: Could not merge model information.") from exc
 
         # Merge compile into combined file to create updated yaml_content/yaml
         try:
-            (yaml_content, loaded_yaml) = self.combine_compile(yaml_content, loaded_yaml)
+            yaml_content = self.combine_compile(yaml_content)
         except Exception as exc:
             raise ValueError("ERR: Could not merge compile yaml information.") from exc
 
         # Merge platforms.yaml into combined file
         try:
-            (yaml_content,loaded_yaml) = self.combine_platforms(yaml_content, loaded_yaml)
+            full_combined = self.combine_platforms(yaml_content)
         except Exception as exc:
             raise ValueError("ERR: Could not merge platform yaml information.") from exc
 
         # Clean the yaml
-        cleaned_yaml = clean_yaml(loaded_yaml)
+        cleaned_yaml = clean_yaml(full_combined)
 
         return cleaned_yaml
