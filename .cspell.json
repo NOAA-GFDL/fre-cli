@@ -69,6 +69,7 @@
 		"xyinterp",
 		"yamls",
 		"yamltools",
-                "njobs"
+                "njobs",
+                "RDHPCS"
     ]
 }
