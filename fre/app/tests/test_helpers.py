@@ -40,6 +40,14 @@ def test_get_variables():
                 out2 == expected_dicts[1],
                 out3 == expected_dicts[2]])
 
+@pytest.mark.xfail(raises = TypeError)                
+def test_get_variables_err():
+    """
+    Test get_variables() returns an error when given inappropriate input
+    """
+    out = helpers.get_variables(yml = YAML_EX, pp_comp = "test_param")
+    assert 0
+
 def test_change_directory():
     """
     Test change_directory context manager.
