@@ -228,7 +228,7 @@ def get_max_ndims(dataset):
   
   :param dataset: xarray Dataset you want to query 
   :type dataset: xarray Dataset
-  :return: The max dimensions that a single var posessses in the Dataset
+  :return: The max dimensions that a single var possessses in the Dataset
   :rtype: int
   '''
   allvars = dataset.data_vars.keys()
@@ -308,7 +308,7 @@ def fre_outfile_name(infile, varname):
    
    but it should also work on any file filename.nc
   
-  :param infile: name of a file with a . somwehere in the filename
+  :param infile: name of a file with a . somewhere in the filename
   :type infile: string
   :param varname: string to add to the infile
   :type varname: string
