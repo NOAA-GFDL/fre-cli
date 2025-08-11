@@ -45,7 +45,7 @@ non_regriddable_variables = [
 
 
 def get_input_mosaic(datadict: dict) -> type[Path]:
-    
+
     """
     Gets the input mosaic filename from the grid_spec file.
     If the input mosaic file is not in input_dir, this function will copy the input mosaic file to input_dir.
@@ -116,7 +116,7 @@ def get_grid_spec(datadict: dict) -> type[Path]:
 
 
 def get_input_file_argument(datadict: dict, history_file: str) -> str:
-   
+
     """
     Formats the input file name where the input file contains the variable data that will be regridded.
 
@@ -144,7 +144,7 @@ def get_input_file_argument(datadict: dict, history_file: str) -> str:
 
 
 def get_remap_file(datadict: dict):
- 
+
     """
     Determines the remap filename based on the input mosaic filename, output grid size, and
     conservative order.  For example, this function will return the name
@@ -189,7 +189,7 @@ def get_remap_file(datadict: dict):
 
 
 def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
-    
+
     """
     Returns the scalar_fields argument for fregrid.
     Scalar_fields is a string of comma separated list of variables
@@ -224,7 +224,7 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 
 
 def write_summary(datadict):
-    
+
     """
     Logs a summary of the component that will be regridded in a human-readable format
     This function will log only if the logging level is set to INFO or lower
@@ -253,7 +253,7 @@ def regrid_xy(
     components: list[str] = None,
     input_date: str = None,
 ):
-    
+
     """
     Submits a fregrid job for each regriddable component in the model yaml file.
 

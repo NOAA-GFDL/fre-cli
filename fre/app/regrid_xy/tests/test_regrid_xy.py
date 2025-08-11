@@ -13,7 +13,7 @@ def test_regrid_xy():
   Tests the main function regrid_xy and ensures
   data is regridded correctly
   """
-  
+
   date = "20250729"
   ncomponents = 5
   skip_component = 3
@@ -24,7 +24,7 @@ def test_regrid_xy():
 
   input_dir.mkdir(exist_ok=True)
   output_dir.mkdir(exist_ok=True)
-  
+
   #generate test files
   generate_files.set_test(date_in=date,
                           yamlfile_in=yamlfile,
@@ -32,9 +32,9 @@ def test_regrid_xy():
                           ncomponents_in=ncomponents,
                           input_dir_in=input_dir,
                           skip_component_in=skip_component)
-  
+
   generate_files.make_all()
-  
+
   regrid_xy.regrid_xy(yamlfile=yamlfile,
                       input_dir=input_dir.name,
                       output_dir=output_dir.name,
@@ -46,18 +46,18 @@ def test_regrid_xy():
   for outfile in checkfiles:
 
     checkme = xr.load_dataset(outfile)
-  
+
     assert "wet_c" not in checkme
     assert "mister" in checkme
     assert "darcy" in checkme
-    
+
     assert np.all(checkme["mister"].values==np.float64(1.0))
     assert np.all(checkme["darcy"].values==np.float64(2.0))
 
   #third component should not have been regridded
   for ifile in input_files:
     assert not (output_dir/Path(f"{date}.{ifile}{skip_component}.nc")).exists()
-    
+
   shutil.rmtree(output_dir)
   generate_files.cleanup()
 
@@ -67,11 +67,11 @@ def test_get_input_mosaic():
   """
   Tests get_input_mosaic correctly copies the mosaic file to the input directory
   """
-  
+
   input_dir = Path("input_dir")
   grid_spec = Path("grid_spec.nc")
   mosaic_file = Path("ocean_mosaic.nc")
-  
+
   generate_files.make_grid_spec()
   mosaic_file.touch()
   input_dir.mkdir(exist_ok=True)
@@ -93,15 +93,15 @@ def test_get_input_file_argument():
   """
   Tests get_input_file
   """
-  
-  input_date = "20250807"  
+
+  input_date = "20250807"
   history_file = "pemberley"
   datadict = {"input_date": input_date}
   assert regrid_xy.get_input_file_argument(datadict, history_file) == input_date + "." + history_file
 
   datadict["input_date"] = None
   assert regrid_xy.get_input_file_argument(datadict, history_file) == history_file
-  
+
 
 def test_get_remap_file():
 
@@ -114,14 +114,14 @@ def test_get_remap_file():
   nlon = 40
   nlat = 10
   interp_method = "conserve_order1"
-  
+
   datadict = {"input_dir": input_dir,
               "input_mosaic": input_mosaic,
               "output_nlon": nlon,
               "output_nlat": nlat,
               "interp_method": interp_method}
 
-  input_dir.mkdir(exist_ok=True)  
+  input_dir.mkdir(exist_ok=True)
 
   #check remap file from current directory is copied to input directory
   remap_file = Path(f"{input_mosaic.stem}X{nlon}by{nlat}_{interp_method}.nc")
@@ -131,6 +131,6 @@ def test_get_remap_file():
 
   assert check.exists()
   assert check == input_dir/remap_file
-  
-  shutil.rmtree(input_dir)      
-  
+
+  shutil.rmtree(input_dir)
+
