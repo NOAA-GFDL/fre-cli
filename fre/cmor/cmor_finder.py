@@ -39,22 +39,18 @@ def print_var_content(table_config_file: IO[str],
     """
     Print information about a specific variable from a given CMIP6 JSON configuration file.
 
-    Parameters
-    ----------
-    table_config_file : file-like object
-        An open file object for a CMIP6 table JSON file. The file should be opened in text mode.
-    var_name : str
-        The name of the variable to look for in the configuration file.
+    :param table_config_file: An open file object for a CMIP6 table JSON file. The file should be opened in text mode
+    :type table_config_file: file-like object
+    :param var_name: The name of the variable to look for in the configuration file. 
+    :type var_name: str    
+    :raises Exception: If there is an issue reading the JSON content from the file.
+    :raises KeyError: If the variable is not found in the JSON content.
+    :return: None
+    :rtype: None
 
-    Returns
-    -------
-    None
-
-    Notes
-    -----
-    - Outputs information to the logger at INFO level.
-    - If the variable is not found, logs a debug message and returns.
-    - Only prints selected fields, omitting any in DO_NOT_PRINT_LIST.
+    .. note:: Outputs information to the logger at INFO level.
+    .. note:: If the variable is not found, logs a debug message and returns.
+    .. note:: Only prints selected fields, omitting any in DO_NOT_PRINT_LIST.
     """
     try:
         proj_table_vars = json.load(table_config_file)
@@ -91,31 +87,19 @@ def cmor_find_subtool( json_var_list: Optional[str] = None,
     """
     Find and print information about variables in CMIP6 JSON configuration files in a specified directory.
 
-    Parameters
-    ----------
-    json_var_list : str or None, optional
-        Path to a JSON file containing a dictionary of variable names to look up. If None, opt_var_name
-        must be provided.
-    json_table_config_dir : str
-        Directory containing CMIP6 table JSON files.
-    opt_var_name : str or None, optional
-        Name of a single variable to look up. If None, json_var_list must be provided.
+    :param json_var_list: Path to a JSON file containing a dictionary of variable names to look up. If None, opt_var_name must be provided.
+    :type json_var_list: str or None, optional
+    :param json_table_config_dir: Directory containing CMIP6 table JSON files.
+    :type json_table_config_dir: str
+    :param opt_var_name: Name of a single variable to look up. If None, json_var_list must be provided.
+    :type opt_var_name: str or None, optional
+    :raises OSError: If the specified directory does not exist or contains no JSON files.
+    :raises ValueError: If neither opt_var_name nor json_var_list is provided.
+    :return: None
+    :rtype: None
 
-    Returns
-    -------
-    None
-
-    Raises
-    ------
-    OSError
-        If the specified directory does not exist or contains no JSON files.
-    ValueError
-        If neither opt_var_name nor json_var_list is provided.
-
-    Notes
-    -----
-    This function is intended as a helper tool for CLI users to quickly inspect variable definitions in
-    CMIP6 tables. Information is printed via the logger.
+    .. note:: This function is intended as a helper tool for CLI users to quickly inspect variable definitions in
+              CMIP6 tables. Information is printed via the logger.
     """
     if not Path(json_table_config_dir).exists():
         raise OSError(f'ERROR directory {json_table_config_dir} does not exist! exit.')

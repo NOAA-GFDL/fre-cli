@@ -46,32 +46,21 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
     """
     Combine the model, experiment, and CMOR YAML files into a single dictionary.
 
-    Parameters
-    ----------
-    yamlfile : str or Path
-        Path to the model YAML file.
-    experiment : str
-        Name of the experiment to target.
-    platform : str
-        Platform identifier (e.g., compute environment).
-    target : str
-        Target build or run configuration.
-    output : str or Path, optional
-        If given, path to write the combined YAML file.
+    :param yamlfile: Path to the model YAML file.
+    :type yamlfile: str or Path
+    :param experiment: Name of the experiment to target.
+    :type experiment: str
+    :param platform: Platform identifier (e.g., compute environment).
+    :type platform: str
+    :param target: Target build or run configuration.
+    :type target: str
+    :param output: If given, path to write the combined YAML file.
+    :type output: str or Path, optional
+    :raises Exception: For errors in initialization or merging steps.
+    :return: Cleaned, combined CMOR YAML configuration.
+    :rtype: dict
 
-    Returns
-    -------
-    dict
-        Cleaned, combined CMOR YAML configuration.
-
-    Raises
-    ------
-    Exception
-        For errors in initialization or merging steps.
-
-    Notes
-    -----
-    The merging process combines information from model, experiment, and CMOR YAMLs, and cleans the result.
+    .. note:: The merging process combines information from model, experiment, and CMOR YAMLs, and cleans the result.
     """
     try:
         fre_logger.info('calling cmor_info_parser.CMORYaml to initialize a CMORYaml instance...')
@@ -120,22 +109,13 @@ def get_combined_compileyaml( comb: Any,
     """
     Combine the model, compile, and platform YAMLs into a single configuration.
 
-    Parameters
-    ----------
-    comb : object
-        Instance of a class implementing combine_model, combine_compile, and combine_platforms methods.
-    output : str or Path, optional
-        If given, path to write the combined YAML file.
-
-    Returns
-    -------
-    dict
-        Cleaned, combined compile YAML configuration.
-
-    Raises
-    ------
-    ValueError
-        For errors in merging steps.
+    :param comb: Instance of a class implementing combine_model, combine_compile, and combine_platforms methods.
+    :type comb: object
+    :param output: If given, path to write the combined YAML file.
+    :type output: str or Path, optional
+    :raises ValueError: For errors in merging steps.
+    :return: Cleaned, combined compile YAML configuration.
+    :rtype: dict
     """
     try:
         (yaml_content, loaded_yaml) = comb.combine_model()
@@ -167,22 +147,13 @@ def get_combined_ppyaml( comb: Any,
     """
     Combine the model, experiment, and analysis YAMLs into a single configuration.
 
-    Parameters
-    ----------
-    comb : object
-        Instance of a class implementing combine_model, combine_experiment, combine_analysis, and merge_multiple_yamls.
-    output : str or Path, optional
-        If given, path to write the combined YAML file.
-
-    Returns
-    -------
-    dict
-        Cleaned, combined post-processing YAML configuration.
-
-    Raises
-    ------
-    ValueError
-        For errors in merging steps.
+    :param comb: Instance of a class implementing combine_model, combine_experiment, combine_analysis, and merge_multiple_yamls.
+    :type comb: object
+    :param output: If given, path to write the combined YAML file.
+    :type output: str or Path, optional
+    :raises ValueError: For errors in merging steps.
+    :return: Cleaned, combined post-processing YAML configuration.
+    :rtype: dict
     """
     try:
         yaml_content_str = comb.combine_model()
@@ -226,30 +197,21 @@ def consolidate_yamls( yamlfile: Union[str, Path],
     """
     Dispatch routine to produce a final combined YAML for compilation, post-processing, or CMORization.
 
-    Parameters
-    ----------
-    yamlfile : str or Path
-        Path to the model YAML file.
-    experiment : str
-        Name of the experiment to target (required for 'pp' and 'cmor').
-    platform : str
-        Platform identifier.
-    target : str
-        Target build or run configuration.
-    use : str
-        'compile', 'pp', or 'cmor': determines the type of combination performed.
-    output : str or Path, optional
-        If given, path to write the combined YAML file.
-
-    Returns
-    -------
-    dict
-        The combined YAML configuration as a dictionary.
-
-    Raises
-    ------
-    ValueError
-        If 'use' is not one of the supported values.
+    :param yamlfile: Path to the model YAML file.
+    :type yamlfile: str or Path
+    :param experiment: Name of the experiment to target (required for 'pp' and 'cmor').
+    :type experiment: str
+    :param platform: Platform identifier.
+    :type platform: str
+    :param target: Target build or run configuration.
+    :type target: str
+    :param use: 'compile', 'pp', or 'cmor': determines the type of combination performed.
+    :type use: str
+    :param output: If given, path to write the combined YAML file.
+    :type output: str or Path, optional
+    :raises ValueError: If 'use' is not one of the supported values.
+    :return: The combined YAML configuration as a dictionary.
+    :rtype: dict
     """
     if use == "compile":
         fre_logger.info('initializing a compile yaml instance...')

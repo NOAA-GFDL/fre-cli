@@ -13,7 +13,12 @@ fre_logger.setLevel(logging.INFO)
 
 def yaml_load(yamlfile):
     """
-    Load the yamlfile
+    Load the yamlfile.
+
+    :param yamlfile: Path to the YAML file to load
+    :type yamlfile: str
+    :return: Loaded YAML content
+    :rtype: dict
     """
     with open(yamlfile, 'r') as yf:
         y = yaml.load(yf, Loader = yaml.Loader)
@@ -23,8 +28,14 @@ def yaml_load(yamlfile):
 
 def output_yaml(cleaned_yaml, output):
     """
-    Write out the combined yaml dictionary info
-    to a file if --output is specified
+    Write out the combined yaml dictionary info to a file if --output is specified.
+
+    :param cleaned_yaml: The cleaned YAML dictionary to write
+    :type cleaned_yaml: dict
+    :param output: Path to the output file
+    :type output: str
+    :return: None
+    :rtype: None
     """
     filename = output
     with open(filename,'w') as out:
@@ -36,7 +47,15 @@ def output_yaml(cleaned_yaml, output):
 
 def validate_yaml(yaml, schema_path):
     """
-    Validate yaml information
+    Validate yaml information.
+
+    :param yaml: YAML dictionary to validate
+    :type yaml: dict
+    :param schema_path: Path to the JSON schema file
+    :type schema_path: str
+    :raises ValueError: If the YAML dictionary is not valid
+    :return: True if validation passes
+    :rtype: bool
     """
     # Validate combined yaml information 
     with open(schema_path, 'r') as s:

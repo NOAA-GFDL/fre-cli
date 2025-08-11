@@ -54,20 +54,15 @@ def print_data_minmax( ds_variable: Optional[np.ma.core.MaskedArray] = None,
     """
     Log the minimum and maximum values of a numpy MaskedArray along with a description.
 
-    Parameters
-    ----------
-    ds_variable : numpy.ma.core.MaskedArray, optional
-        The data array whose min/max is to be logged.
-    desc : str, optional
-        Description of the data.
+    :param ds_variable: The data array whose min/max is to be logged.
+    :type ds_variable: numpy.ma.core.MaskedArray, optional
+    :param desc: Description of the data.
+    :type desc: str, optional
 
-    Returns
-    -------
-    None
+    :return: None
+    :rtype: None
 
-    Notes
-    -----
-    If the data cannot be logged, a warning is issued.
+    .. note:: If the data cannot be logged, a warning is issued.
     """
     try:
         fre_logger.info('info for \n desc = %s \n %s', desc, type(ds_variable))
@@ -82,22 +77,14 @@ def from_dis_gimme_dis( from_dis: Dataset,
     """
     Retrieve and return a copy of a variable from a netCDF4.Dataset-like object.
 
-    Parameters
-    ----------
-    from_dis : netCDF4.Dataset
-        The source dataset object.
-    gimme_dis : str
-        The variable name to extract from the dataset.
+    :param from_dis: The source dataset object.
+    :type from_dis: netCDF4.Dataset
+    :param gimme_dis: The variable name to extract from the dataset.
+    :type gimme_dis: str
+    :return: A copy of the requested variable's data, or None if not found.
+    :rtype: np.ndarray or None
 
-    Returns
-    -------
-    np.ndarray or None
-        A copy of the requested variable's data, or None if not found.
-
-    Notes
-    -----
-    Logs a warning if the variable is not found. The name comes from the hypothetical pronunciation
-    of 'ds', the common monniker for a netCDF4.Dataset object
+    .. note:: Logs a warning if the variable is not found. The name comes from the hypothetical pronunciation of 'ds', the common monniker for a netCDF4.Dataset object.
     """
     try:
         return from_dis[gimme_dis][:].copy()
@@ -110,20 +97,12 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     """
     Attempt to find the corresponding statics file given a FRE-bronx-style file path.
 
-    Parameters
-    ----------
-    bronx_file_path : str
-        File path to use as a reference for statics file location.
+    :param bronx_file_path: File path to use as a reference for statics file location.
+    :type bronx_file_path: str
+    :return: Path to the statics file if found, else None.
+    :rtype: str or None
 
-    Returns
-    -------
-    str or None
-        Path to the statics file if found, else None.
-
-    Notes
-    -----
-    The function searches upward in the directory structure until it finds a 'pp' directory,
-    then globs for '*static*.nc' files.
+    .. note:: The function searches upward in the directory structure until it finds a 'pp' directory, then globs for '*static*.nc' files.
     """
     bronx_file_path_elem = bronx_file_path.split('/')
     num_elem = len(bronx_file_path_elem)
@@ -150,26 +129,15 @@ def create_lev_bnds( bound_these: Optional[Any] = None,
     """
     Create a vertical level bounds array for a set of levels.
 
-    Parameters
-    ----------
-    bound_these : array-like
-        List or array of level midpoints.
-    with_these : array-like
-        List or array of level bounds (length must be len(bound_these) + 1).
+    :param bound_these: List or array of level midpoints.
+    :type bound_these: array-like
+    :param with_these: List or array of level bounds (length must be len(bound_these) + 1).
+    :type with_these: array-like
+    :raises ValueError: If the length of with_these is not len(bound_these) + 1.
+    :return: Array of shape (len(bound_these), 2), where each row gives the bounds for a level.
+    :rtype: np.ndarray
 
-    Returns
-    -------
-    np.ndarray
-        Array of shape (len(bound_these), 2), where each row gives the bounds for a level.
-
-    Raises
-    ------
-    ValueError
-        If the length of with_these is not len(bound_these) + 1.
-
-    Notes
-    -----
-    Logs debug information about the input and output arrays.
+    .. note:: Logs debug information about the input and output arrays.
     """
     if len(with_these) != (len(bound_these) + 1):
         raise ValueError('failed creating bnds on-the-fly :-(')
@@ -191,29 +159,19 @@ def get_iso_datetime_ranges( var_filenames: List[str],
     """
     Extract and append ISO datetime ranges from filenames, filtered by start/stop years if specified.
 
-    Parameters
-    ----------
-    var_filenames : list of str
-        Filenames, some of which contain ISO datetime ranges (e.g. 'YYYYMMDD-YYYYMMDD').
-    iso_daterange_arr : list of str
-        List to append found datetime ranges to; modified in-place.
-    start : str, optional
-        Start year in 'YYYY' format; only ranges within/after this year are included.
-    stop : str, optional
-        Stop year in 'YYYY' format; only ranges within/before this year are included.
+    :param var_filenames: Filenames, some of which contain ISO datetime ranges (e.g. 'YYYYMMDD-YYYYMMDD').
+    :type var_filenames: list of str
+    :param iso_daterange_arr: List to append found datetime ranges to; modified in-place.
+    :type iso_daterange_arr: list of str
+    :param start: Start year in 'YYYY' format; only ranges within/after this year are included.
+    :type start: str, optional
+    :param stop: Stop year in 'YYYY' format; only ranges within/before this year are included.
+    :type stop: str, optional
+    :raises ValueError: If iso_daterange_arr is not provided or if no datetime ranges are found.
+    :return: None
+    :rtype: None
 
-    Returns
-    -------
-    None
-
-    Raises
-    ------
-    ValueError
-        If iso_daterange_arr is not provided or if no datetime ranges are found.
-
-    Notes
-    -----
-    This function modifies iso_daterange_arr in-place.
+    .. note:: This function modifies iso_daterange_arr in-place.
     """
     fre_logger.debug('start = %s', start)
     fre_logger.debug('stop = %s', stop)
@@ -258,19 +216,12 @@ def check_dataset_for_ocean_grid( ds: Dataset) -> bool:
     """
     Check if a netCDF4.Dataset uses an ocean grid (i.e., contains 'xh' or 'yh' variables).
 
-    Parameters
-    ----------
-    ds : netCDF4.Dataset
-        Dataset to be checked.
+    :param ds: Dataset to be checked.
+    :type ds: netCDF4.Dataset
+    :return: True if ocean grid variables are present, otherwise False.
+    :rtype: bool
 
-    Returns
-    -------
-    bool
-        True if ocean grid variables are present, otherwise False.
-
-    Notes
-    -----
-    Logs a warning if an ocean grid is detected.
+    .. note:: Logs a warning if an ocean grid is detected.
     """
     ds_var_keys = list(ds.variables.keys())
     uses_ocean_grid = any(["xh" in ds_var_keys, "yh" in ds_var_keys])
@@ -289,21 +240,14 @@ def get_vertical_dimension( ds: Dataset,
     """
     Determine the vertical dimension for a variable in a netCDF4.Dataset.
 
-    Parameters
-    ----------
-    ds : netCDF4.Dataset
-        Dataset containing variables.
-    target_var : str
-        Name of the variable to inspect.
+    :param ds: Dataset containing variables.
+    :type ds: netCDF4.Dataset
+    :param target_var: Name of the variable to inspect.
+    :type target_var: str
+    :return: Name of the vertical dimension if found, otherwise 0.
+    :rtype: str or int
 
-    Returns
-    -------
-    str or int
-        Name of the vertical dimension if found, otherwise 0.
-
-    Notes
-    -----
-    Returns 0 if no vertical dimension is detected.
+    .. note:: Returns 0 if no vertical dimension is detected.
     """
     vert_dim = 0
     for name, variable in ds.variables.items():
@@ -325,26 +269,15 @@ def create_tmp_dir( outdir: str,
     """
     Create a temporary directory for output, possibly informed by a JSON experiment config.
 
-    Parameters
-    ----------
-    outdir : str
-        Base output directory.
-    json_exp_config : str, optional
-        Path to a JSON config file with an "outpath" key.
+    :param outdir: Base output directory.
+    :type outdir: str
+    :param json_exp_config: Path to a JSON config file with an "outpath" key.
+    :type json_exp_config: str, optional
+    :raises OSError: If the temporary directory cannot be created.
+    :return: Path to the created temporary directory.
+    :rtype: str
 
-    Returns
-    -------
-    str
-        Path to the created temporary directory.
-
-    Raises
-    ------
-    OSError
-        If the temporary directory cannot be created.
-
-    Notes
-    -----
-    If json_exp_config is provided and contains "outpath", a subdirectory is also created.
+    .. note:: If json_exp_config is provided and contains "outpath", a subdirectory is also created.
     """
     outdir_from_exp_config = None
     if json_exp_config is not None:
@@ -375,20 +308,11 @@ def get_json_file_data( json_file_path: Optional[str] = None) -> dict:
     """
     Load and return the contents of a JSON file.
 
-    Parameters
-    ----------
-    json_file_path : str
-        Path to the JSON file.
-
-    Returns
-    -------
-    dict
-        Parsed data from the JSON file.
-
-    Raises
-    ------
-    FileNotFoundError
-        If the file cannot be opened.
+    :param json_file_path: Path to the JSON file.
+    :type json_file_path: str
+    :raises FileNotFoundError: If the file cannot be opened.
+    :return: Parsed data from the JSON file.
+    :rtype: dict
     """
     try:
         with open(json_file_path, "r", encoding="utf-8") as json_config_file:
@@ -408,37 +332,24 @@ def update_grid_and_label( json_file_path: str,
     """
     Update the "grid_label", "grid", and "nominal_resolution" fields in a JSON experiment config.
 
-    Parameters
-    ----------
-    json_file_path : str
-        Path to the input JSON file.
-    new_grid_label : str
-        New value for the "grid_label" field.
-    new_grid : str
-        New value for the "grid" field.
-    new_nom_res : str
-        New value for the "nominal_resolution" field.
-    output_file_path : str, optional
-        Path to save the updated JSON file. If None, overwrites the original file.
+    :param json_file_path: Path to the input JSON file.
+    :type json_file_path: str
+    :param new_grid_label: New value for the "grid_label" field.
+    :type new_grid_label: str
+    :param new_grid: New value for the "grid" field.
+    :type new_grid: str
+    :param new_nom_res: New value for the "nominal_resolution" field.
+    :type new_nom_res: str
+    :param output_file_path: Path to save the updated JSON file. If None, overwrites the original file.
+    :type output_file_path: str, optional
+    :raises FileNotFoundError: If the input JSON file does not exist.
+    :raises KeyError: If a required field is not found in the JSON file.
+    :raises ValueError: If any input value is None.
+    :raises json.JSONDecodeError: If the JSON file cannot be decoded.
+    :return: None
+    :rtype: None
 
-    Raises
-    ------
-    FileNotFoundError
-        If the input JSON file does not exist.
-    KeyError
-        If a required field is not found in the JSON file.
-    ValueError
-        If any input value is None.
-    json.JSONDecodeError
-        If the JSON file cannot be decoded.
-
-    Returns
-    -------
-    None
-
-    Notes
-    -----
-    The function logs before and after values, and overwrites the input file unless an output path is given.
+    .. note:: The function logs before and after values, and overwrites the input file unless an output path is given.
     """
     if None in [new_grid_label, new_grid, new_nom_res]:
         fre_logger.error(
@@ -498,33 +409,20 @@ def update_calendar_type( json_file_path: str,
     """
     Update the "calendar" field in a JSON experiment config file.
 
-    Parameters
-    ----------
-    json_file_path : str
-        Path to the input JSON file.
-    new_calendar_type : str
-        New value for the "calendar" field.
-    output_file_path : str, optional
-        Path to save the updated JSON file. If None, overwrites the original file.
+    :param json_file_path: Path to the input JSON file.
+    :type json_file_path: str
+    :param new_calendar_type: New value for the "calendar" field.
+    :type new_calendar_type: str
+    :param output_file_path: Path to save the updated JSON file. If None, overwrites the original file.
+    :type output_file_path: str, optional
+    :raises FileNotFoundError: If the input JSON file does not exist.
+    :raises KeyError: If the "calendar" field is not found in the JSON file.
+    :raises ValueError: If new_calendar_type is None.
+    :raises json.JSONDecodeError: If the JSON file cannot be decoded.
+    :return: None
+    :rtype: None
 
-    Raises
-    ------
-    FileNotFoundError
-        If the input JSON file does not exist.
-    KeyError
-        If the "calendar" field is not found in the JSON file.
-    ValueError
-        If new_calendar_type is None.
-    json.JSONDecodeError
-        If the JSON file cannot be decoded.
-
-    Returns
-    -------
-    None
-
-    Notes
-    -----
-    The function logs before and after values, and overwrites the input file unless an output path is given.
+    .. note:: The function logs before and after values, and overwrites the input file unless an output path is given.
     """
     if new_calendar_type is None:
         fre_logger.error(

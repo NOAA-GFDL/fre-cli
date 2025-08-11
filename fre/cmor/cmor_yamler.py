@@ -32,15 +32,9 @@ def check_path_existence(some_path: str):
     """
     Check if the given path exists, raising FileNotFoundError if not.
 
-    Parameters
-    ----------
-    some_path : str
-        A string representing a filesystem path (relative or absolute).
-
-    Raises
-    ------
-    FileNotFoundError
-        If the path does not exist.
+    :param some_path: A string representing a filesystem path (relative or absolute).
+    :type some_path: str
+    :raises FileNotFoundError: If the path does not exist.
     """
     if not Path(some_path).exists():
         raise FileNotFoundError(f'does not exist:  {some_path}')
@@ -49,20 +43,11 @@ def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
     """
     Convert an ISO8601 duration string (e.g., 'P5Y') to FRE-bronx-style chunk string (e.g., '5yr').
 
-    Parameters
-    ----------
-    cmor_chunk_in : str
-        ISO8601 formatted string representing a time interval (must start with 'P' and end with 'Y').
-
-    Returns
-    -------
-    str
-        FRE-bronx chunk string.
-
-    Raises
-    ------
-    ValueError
-        If the input does not follow the expected ISO format.
+    :param cmor_chunk_in: ISO8601 formatted string representing a time interval (must start with 'P' and end with 'Y').
+    :type cmor_chunk_in: str
+    :raises ValueError: If the input does not follow the expected ISO format.
+    :return: FRE-bronx chunk string.
+    :rtype: str
     """
     fre_logger.debug('cmor_chunk_in = %s', cmor_chunk_in)
     if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
@@ -76,20 +61,11 @@ def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
     """
     Convert a MIP table frequency string to its FRE-bronx equivalent using a lookup table.
 
-    Parameters
-    ----------
-    cmor_table_freq : str
-        Frequency string as found in a MIP table (e.g., 'mon', 'day', 'yr', etc.).
-
-    Returns
-    -------
-    str or None
-        FRE-bronx frequency string, or None if not mappable.
-
-    Raises
-    ------
-    KeyError
-        If the frequency string is not recognized as valid.
+    :param cmor_table_freq: Frequency string as found in a MIP table (e.g., 'mon', 'day', 'yr', etc.).
+    :type cmor_table_freq: str
+    :raises KeyError: If the frequency string is not recognized as valid.
+    :return: FRE-bronx frequency string, or None if not mappable.
+    :rtype: str or None
     """
     cmor_to_bronx_dict = {
         "1hr"    : "1hr",
@@ -120,20 +96,11 @@ def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
     """
     Extract the frequency of data from a CMIP MIP table (JSON), returning its FRE-bronx equivalent.
 
-    Parameters
-    ----------
-    json_table_config : str
-        Path to a JSON MIP table file with 'variable_entry' metadata.
-
-    Returns
-    -------
-    str
-        FRE-bronx frequency string.
-
-    Raises
-    ------
-    KeyError
-        If the frequency cannot be found or mapped.
+    :param json_table_config: Path to a JSON MIP table file with 'variable_entry' metadata.
+    :type json_table_config: str
+    :raises KeyError: If the frequency cannot be found or mapped.
+    :return: FRE-bronx frequency string.
+    :rtype: str
     """
     table_freq = None
     with open(json_table_config, 'r', encoding='utf-8') as table_config_file:
@@ -161,55 +128,42 @@ def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
                        calendar_type: Optional[str] = None) -> None:
     """
     Main driver for CMORization using model YAML configuration files.
-
     This routine parses the model YAML, combines configuration, resolves and checks all required
     paths and metadata, and orchestrates calls to cmor_run_subtool for each table/component/variable
     defined in the configuration.
 
-    Parameters
-    ----------
-    yamlfile : str or Path
-        Path to a model-yaml file holding experiment and workflow configuration.
-    exp_name : str
-        Experiment name (must be present in the YAML file).
-    platform : str
-        Platform target (e.g., 'ncrc4.intel').
-    target : str
-        Compilation target (e.g., 'prod-openmp').
-    output : str or Path, optional
-        Optional path for YAML output.
-    opt_var_name : str, optional
-        If specified, process only files matching this variable name.
-    run_one_mode : bool, optional
-        If True, process only one file and exit.
-    dry_run_mode : bool, optional
-        If True, print configuration and actions without executing cmor_run_subtool.
-    start : str, optional
-        Four-digit year (YYYY) indicating start of date range to process.
-    stop : str, optional
-        Four-digit year (YYYY) indicating end of date range to process.
-    calendar_type : str, optional
-        CF-compliant calendar type.
+    :param yamlfile: Path to a model-yaml file holding experiment and workflow configuration.
+    :type yamlfile: str or Path
+    :param exp_name: Experiment name (must be present in the YAML file).
+    :type exp_name: str
+    :param platform: Platform target (e.g., 'ncrc4.intel').
+    :type platform: str
+    :param target: Compilation target (e.g., 'prod-openmp').
+    :type target: str
+    :param output: Optional path for YAML output.
+    :type output: str or Path, optional
+    :param opt_var_name: If specified, process only files matching this variable name.
+    :type opt_var_name: str, optional
+    :param run_one_mode: If True, process only one file and exit.
+    :type run_one_mode: bool, optional
+    :param dry_run_mode: If True, print configuration and actions without executing cmor_run_subtool.
+    :type dry_run_mode: bool, optional
+    :param start: Four-digit year (YYYY) indicating start of date range to process.
+    :type start: str, optional
+    :param stop: Four-digit year (YYYY) indicating end of date range to process.
+    :type stop: str, optional
+    :param calendar_type: CF-compliant calendar type.
+    :type calendar_type: str, optional
+    :raises FileNotFoundError: If required paths do not exist.
+    :raises OSError: If output directories cannot be created.
+    :raises ValueError: If required configuration is missing or inconsistent.
+    :return: None
+    :rtype: None
 
-    Returns
-    -------
-    None
-
-    Raises
-    ------
-    FileNotFoundError
-        If required paths do not exist.
-    OSError
-        If output directories cannot be created.
-    ValueError
-        If required configuration is missing or inconsistent.
-
-    Notes
-    -----
-    - Reads and combines YAML and JSON configuration.
-    - Performs path, frequency, and gridding checks.
-    - Delegates actual CMORization to cmor_run_subtool, except in dry-run mode.
-    - All actions and key decisions are logged.
+    .. note:: Reads and combines YAML and JSON configuration.
+    .. note:: Performs path, frequency, and gridding checks.
+    .. note:: Delegates actual CMORization to cmor_run_subtool, except in dry-run mode.
+    .. note:: All actions and key decisions are logged.
     """
 
     # ---------------------------------------------------

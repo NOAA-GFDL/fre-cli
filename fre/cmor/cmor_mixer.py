@@ -57,40 +57,27 @@ def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
     """
     Rewrite the input NetCDF file for a target variable in a CMIP-compliant manner and write output using CMOR.
 
-    Parameters
-    ----------
-    mip_var_cfgs : dict
-        Variable table, as loaded from the MIP table JSON config.
-    local_var : str
-        Variable name used for finding files locally.
-    netcdf_file : str
-        Path to the input NetCDF file to be CMORized.
-    target_var : str
-        Name of the variable to be processed.
-    json_exp_config : str
-        Path to experiment configuration JSON file (for dataset metadata).
-    json_table_config : str
-        Path to MIP table JSON file.
-    prev_path : str, optional
-        Path to previous file (used for finding statics file for tripolar grids).
+    :param mip_var_cfgs: Variable table, as loaded from the MIP table JSON config.
+    :type mip_var_cfgs: dict
+    :param local_var: Variable name used for finding files locally.
+    :type local_var: str
+    :param netcdf_file: Path to the input NetCDF file to be CMORized.
+    :type netcdf_file: str
+    :param target_var: Name of the variable to be processed.
+    :type target_var: str
+    :param json_exp_config: Path to experiment configuration JSON file (for dataset metadata).
+    :type json_exp_config: str
+    :param json_table_config: Path to MIP table JSON file.
+    :type json_table_config: str
+    :param prev_path: Path to previous file (used for finding statics file for tripolar grids).
+    :type prev_path: str, optional
+    :raises ValueError: If unsupported vertical dimensions or inconsistent grid dimensions are found.
+    :raises FileNotFoundError: If required statics file for tripolar ocean grid is missing.
+    :raises Exception: For other errors in the metadata, file IO, or CMOR calls.
+    :return: Absolute path to the output file written by cmor.close.
+    :rtype: str
 
-    Returns
-    -------
-    str
-        Absolute path to the output file written by cmor.close.
-
-    Raises
-    ------
-    ValueError
-        If unsupported vertical dimensions or inconsistent grid dimensions are found.
-    FileNotFoundError
-        If required statics file for tripolar ocean grid is missing.
-    Exception
-        For other errors in the metadata, file IO, or CMOR calls.
-
-    Notes
-    -----
-    This function performs extensive setup of axes and metadata, and conditionally handles tripolar ocean grids.
+    .. note:: This function performs extensive setup of axes and metadata, and conditionally handles tripolar ocean grids.
     """
     fre_logger.info("input data:")
     fre_logger.info("     local_var = %s", local_var)
@@ -621,41 +608,33 @@ def cmorize_target_var_files(indir: str = None,
     """
     CMORize a target variable across all NetCDF files in a directory.
 
-    Parameters
-    ----------
-    indir : str
-        Path to the directory containing NetCDF files to process.
-    target_var : str
-        Name of the variable to process in each file.
-    local_var : str
-        Local/filename variable name (often identical to target_var).
-    iso_datetime_range_arr : list of str
-        List of ISO datetime strings, each identifying a specific file.
-    name_of_set : str
-        Post-processing component or label for the targeted files.
-    json_exp_config : str
-        Path to experiment configuration JSON file.
-    outdir : str
-        Output directory root for CMORized files.
-    mip_var_cfgs : dict
-        Variable table from the MIP table JSON config.
-    json_table_config : str
-        Path to MIP table JSON file.
-    run_one_mode : bool, optional
-        If True, processes only one file and exits.
+    :param indir: Path to the directory containing NetCDF files to process.
+    :type indir: str
+    :param target_var: Name of the variable to process in each file.
+    :type target_var: str
+    :param local_var: Local/filename variable name (often identical to target_var).
+    :type local_var: str
+    :param iso_datetime_range_arr: List of ISO datetime strings, each identifying a specific file.
+    :type iso_datetime_range_arr: list of str
+    :param name_of_set: Post-processing component or label for the targeted files.
+    :type name_of_set: str
+    :param json_exp_config: Path to experiment configuration JSON file.
+    :type json_exp_config: str
+    :param outdir: Output directory root for CMORized files.
+    :type outdir: str
+    :param mip_var_cfgs: Variable table from the MIP table JSON config.
+    :type mip_var_cfgs: dict
+    :param json_table_config: Path to MIP table JSON file.
+    :type json_table_config: str
+    :param run_one_mode: If True, processes only one file and exits.
+    :type run_one_mode: bool, optional
+    :raises ValueError: See function body for details.
+    :raises OSError: See function body for details.
+    :raises Exception: See function body for details.
+    :return: None
+    :rtype: None
 
-    Returns
-    -------
-    None
-
-    Raises
-    ------
-    ValueError, OSError, Exception
-        See function body for details.
-
-    Notes
-    -----
-    Copies files to a temporary directory, runs CMORization, moves results to output, cleans up temp files.
+    .. note:: Copies files to a temporary directory, runs CMORization, moves results to output, cleans up temp files.
     """
     fre_logger.info("local_var = %s to be used for file-targeting.\n"
                     "target_var = %s to be used for reading the data \n"
@@ -785,37 +764,28 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
     """
     CMORize all variables in a directory according to a variable mapping.
 
-    Parameters
-    ----------
-    vars_to_run : dict
-        Mapping of local variable names (in filenames) to target variable names (in NetCDF).
-    indir : str
-        Directory containing NetCDF files to process.
-    iso_datetime_range_arr : list of str
-        List of ISO datetime strings to identify files.
-    name_of_set : str
-        Post-processing component or set label.
-    json_exp_config : str
-        Path to experiment configuration JSON file.
-    outdir : str
-        Output directory root for CMORized files.
-    mip_var_cfgs : dict
-        Variable table from the MIP table JSON config.
-    json_table_config : str
-        Path to MIP table JSON file.
-    run_one_mode : bool
-        If True, process only one file per variable.
+    :param vars_to_run: Mapping of local variable names (in filenames) to target variable names (in NetCDF).
+    :type vars_to_run: dict
+    :param indir: Directory containing NetCDF files to process.
+    :type indir: str
+    :param iso_datetime_range_arr: List of ISO datetime strings to identify files.
+    :type iso_datetime_range_arr: list of str
+    :param name_of_set: Post-processing component or set label.
+    :type name_of_set: str
+    :param json_exp_config: Path to experiment configuration JSON file.
+    :type json_exp_config: str
+    :param outdir: Output directory root for CMORized files.
+    :type outdir: str
+    :param mip_var_cfgs: Variable table from the MIP table JSON config.
+    :type mip_var_cfgs: dict
+    :param json_table_config: Path to MIP table JSON file.
+    :type json_table_config: str
+    :param run_one_mode: If True, process only one file per variable.
+    :type run_one_mode: bool
+    :return: 0 if the last file processed was successful, 1 if the last file processed was not successful, -1 if no files were processed.
+    :rtype: int
 
-    Returns
-    -------
-    int
-        0 if the last file processed was successful.
-        1 if the last file processed was not successful.
-        -1 if no files were processed.
-
-    Notes
-    -----
-    Errors for individual variables are logged and processing continues (except for run_one_mode).
+    .. note:: Errors for individual variables are logged and processing continues (except for run_one_mode).
     """
 
     # loop over local-variable:target-variable pairs in vars_to_run
@@ -863,51 +833,39 @@ def cmor_run_subtool(indir: str = None,
     """
     Main entry point for CMORization workflow, steering all routines in this file.
 
-    Parameters
-    ----------
-    indir : str
-        Directory containing NetCDF files to process.
-    json_var_list : str
-        Path to JSON file with variable mapping (local to target names).
-    json_table_config : str
-        Path to MIP table JSON file (per-variable metadata).
-    json_exp_config : str
-        Path to experiment configuration JSON file (for header metadata).
-    outdir : str
-        Output directory root for CMORized files.
-    run_one_mode : bool, optional
-        If True, process only one file per variable.
-    opt_var_name : str, optional
-        If provided, only process this variable.
-    grid : str, optional
-        Grid description (if gridding is specified).
-    grid_label : str, optional
-        Grid label (must match controlled vocabulary if provided).
-    nom_res : str, optional
-        Nominal resolution for grid (must match controlled vocabulary if provided).
-    start : str, optional
-        Start year (YYYY) for files to process.
-    stop : str, optional
-        Stop year (YYYY) for files to process.
-    calendar_type : str, optional
-        CF-compliant calendar type.
+    :param indir: Directory containing NetCDF files to process.
+    :type indir: str
+    :param json_var_list: Path to JSON file with variable mapping (local to target names).
+    :type json_var_list: str
+    :param json_table_config: Path to MIP table JSON file (per-variable metadata).
+    :type json_table_config: str
+    :param json_exp_config: Path to experiment configuration JSON file (for header metadata).
+    :type json_exp_config: str
+    :param outdir: Output directory root for CMORized files.
+    :type outdir: str
+    :param run_one_mode: If True, process only one file per variable.
+    :type run_one_mode: bool, optional
+    :param opt_var_name: If provided, only process this variable.
+    :type opt_var_name: str, optional
+    :param grid: Grid description (if gridding is specified).
+    :type grid: str, optional
+    :param grid_label: Grid label (must match controlled vocabulary if provided).
+    :type grid_label: str, optional
+    :param nom_res: Nominal resolution for grid (must match controlled vocabulary if provided).
+    :type nom_res: str, optional
+    :param start: Start year (YYYY) for files to process.
+    :type start: str, optional
+    :param stop: Stop year (YYYY) for files to process.
+    :type stop: str, optional
+    :param calendar_type: CF-compliant calendar type.
+    :type calendar_type: str, optional
+    :raises ValueError: If required parameters are missing or inconsistent.
+    :raises FileNotFoundError: If required files do not exist.
+    :return: 0 if successful.
+    :rtype: int
 
-    Returns
-    -------
-    int
-        0 if successful.
-
-    Raises
-    ------
-    ValueError
-        If required parameters are missing or inconsistent.
-    FileNotFoundError
-        If required files do not exist.
-
-    Notes
-    -----
-    - Updates grid, label, and calendar fields in experiment config if needed.
-    - Loads variable mapping and MIP table, filters variables, and orchestrates file processing.
+    .. note:: Updates grid, label, and calendar fields in experiment config if needed.
+    .. note:: Loads variable mapping and MIP table, filters variables, and orchestrates file processing.
     """
     # check req'd inputs
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
