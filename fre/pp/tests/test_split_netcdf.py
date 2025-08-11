@@ -5,7 +5,7 @@ Tests split-netcdf, parse_yaml from split_netcdf_script.py
 import pytest
 import re
 from fre.pp import split_netcdf_script
-from fre.pp.split_netcdf_script import split_file_xarray, parse_yaml_for_varlist
+from fre.pp.split_netcdf_script import split_file_xarray
 import subprocess
 import os
 from os import path as osp
