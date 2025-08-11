@@ -117,7 +117,7 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
 
 
     # ---------------------------------------------------
-    # inbetween-logic to form args ----------------------
+    # between-logic to form args ----------------------
     # ---------------------------------------------------
 
     # target input pp directory

@@ -62,7 +62,7 @@ fre pp configure-yaml -e EXPNAME -p PLATFORM -t TARGET -y YAML
 
 ```
 
-3. (OPTIONAL BUT RECCOMENDED) Create `history-manifest` for config validation
+3. (OPTIONAL BUT RECOMMENDED) Create `history-manifest` for config validation
 
 Create a `history-manifest` of a single tar file archive first for use in the validation. 
 This list represents the available source files within the history tar archives, and enables the 

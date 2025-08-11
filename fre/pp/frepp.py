@@ -37,7 +37,7 @@ def pp_cli():
               required=True)
 def status(experiment, platform, target):
     """
-    Report status of PP configuratio
+    Report status of PP configuration
     """
     status_script.status_subtool(experiment, platform, target)
 
@@ -247,9 +247,9 @@ def all(experiment, platform, target, config_file, branch, time):
     """
     Execute fre pp steps in order
     """
-    fre_logger.info('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
+    fre_logger.info('(frepp.wrapper) about to forward context to wrapper.run_all_fre_pp_steps via click...')
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
-    fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
+    fre_logger.info('(frepp.wrapper) done forwarding context to wrapper.run_all_fre_pp_steps via click.')
 
 #fre pp trigger
 @pp_cli.command()

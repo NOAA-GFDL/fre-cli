@@ -4,9 +4,8 @@ entry point for fre catalog subcommands
 
 import click
 
-#import catalogbuilder
 from catalogbuilder.scripts import gen_intake_gfdl
-from catalogbuilder.scripts import test_catalog
+from catalogbuilder.tests import compval
 from catalogbuilder.scripts import combine_cats
 
 
@@ -32,9 +31,11 @@ def catalog_cli():
 @click.option('--append', is_flag = True, default = False)
 @click.option('--slow', is_flag = True, default = False,
     help = "Open NetCDF files to retrieve additional vocabulary (standard_name and intrafile static variables")
+@click.option('--strict', is_flag = True, default = False,
+    help = "Ensure output catalog is strictly compliant with schema")
 @click.pass_context
-def builder(context, input_path = None, output_path = None, config = None, filter_realm = None,
-            filter_freq = None, filter_chunk = None, verbose = False, overwrite = False, append = False, slow = False):
+def build(context, input_path = None, output_path = None, config = None, filter_realm = None,
+          filter_freq = None, filter_chunk = None, verbose = False, overwrite = False, append = False, slow = False, strict = False):
     # pylint: disable=unused-argument
     """ - Generate .csv and .json files for catalog """
     context.forward(gen_intake_gfdl.create_catalog_cli)
@@ -42,13 +43,17 @@ def builder(context, input_path = None, output_path = None, config = None, filte
 @catalog_cli.command()
 @click.argument('json_path', nargs = 1 , required = True)
 @click.argument('json_template_path', nargs = 1 , required = False)
+@click.option('--vocab', is_flag=True, default = False,
+              help="Validates catalog vocabulary")
+@click.option('-pg','--proper_generation', is_flag=True, default = False,
+              help="Ensures that catalog has been 'properly generated' (No empty columns, reflects template)")
 @click.option('-tf', '--test-failure', is_flag=True, default = False,
               help="Errors are only printed. Program will not exit.")
 @click.pass_context
-def validate(context, json_path, json_template_path, test_failure):
+def validate(context, json_path, json_template_path, vocab, proper_generation, test_failure):
     # pylint: disable=unused-argument
-    """ - Validate a catalog against catalog schema """
-    context.forward(test_catalog.main)
+    """ - Validate catalogs against controlled vocabulary as provided by particular JSON schemas per vocabulary type (vocabulary validation) OR Validate a catalog against catalog schema template (proper generation checking) """
+    context.forward(compval.main)
 
 @catalog_cli.command()
 @click.option('--input', required = True, multiple = True,
