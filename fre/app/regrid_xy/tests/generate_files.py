@@ -1,4 +1,6 @@
 import numpy as np
+from pathlib import Path
+import shutil
 import yaml
 import xarray as xr
 
@@ -8,6 +10,8 @@ ntiles = 6
 ncomponents = 3
 skip_component = -99
 date = "20250729" 
+
+yamlfile = "test_yaml.yaml"
 grid_spec = "grid_spec.nc"
 input_grid = f"C{N}"
 input_dir = "test_inputs"
@@ -15,9 +19,25 @@ inputRealm = "atmos"
 input_mosaic = f"{input_grid}_mosaic.nc"
 input_files = ["atmos_daily_cmip", "atmos_diurnal"]
 
+def cleanup():
+  
+  if Path(yamlfile).exists():
+    Path(yamlfile).unlink()
+
+  if Path(grid_spec).exists():
+    Path(grid_spec).unlink()
+
+  if Path(input_mosaic).exists():
+    Path(input_mosaic).unlink()
+
+  if Path(input_dir).exists():
+    shutil.rmtree(input_dir)
+
+
 def set_test(N_in: int = None,
              ntiles_in: int = None,
              date_in: str = None,
+             yamlfile_in: str = None,
              grid_spec_in: str = None,
              ncomponents_in: int = None,
              skip_component_in: int = None,
@@ -29,13 +49,14 @@ def set_test(N_in: int = None,
   
   global Np, N, ntiles, grid_spec, input_grid, input_files
   global ncomponents, date, input_mosaic, source_gridtype
-  global skip_component, input_dir
+  global skip_component, input_dir, yamlfile
   
   if N_in is not None: N, Np = N_in, N_in+1      
   if ntiles_in is not None: ntiles = ntiles_in
   if date_in is not None: date = date_in
   if ncomponents_in is not None: ncomponents = ncomponents_in
   if skip_component_in is not None: skip_component = skip_component_in
+  if yamlfile_in is not None: yamlfile = yamlfile_in
   if grid_spec_in is not None: grid_spec = grid_spec_in
   if input_grid_in is not None: input_grid = input_grid_in
   if input_mosaic_in is not None: input_mosaic = input_mosaic_in
@@ -44,7 +65,7 @@ def set_test(N_in: int = None,
   if input_dir_in is not None: input_dir = input_dir_in
 
   
-def make_yaml(yamlfile: str = "test_pp.yaml"):
+def make_yaml():
 
   ppyaml = {}
   ppyaml["name"] = "regrid_xy_test"

@@ -1,8 +1,7 @@
 import logging
-import os
 from pathlib import Path
-import subprocess 
 import shutil
+import subprocess 
 import tarfile
 import xarray as xr
 import yaml
@@ -18,7 +17,7 @@ non_regriddable_variables = [
   'average_DT','time_bnds']
 
 
-def get_input_mosaic(datadict: dict) -> str:
+def get_input_mosaic(datadict: dict) -> type[Path]:
   
   """
   Gets the input mosaic filename from the grid_spec file.  
@@ -27,6 +26,9 @@ def get_input_mosaic(datadict: dict) -> str:
   :datadict: dictionary containing relevant regrid parameters
   :type datadict: dict
   :raises IOError: Error if the input mosaic file cannot be found in the current or input directory
+  
+  :return: input_mosaic file path as a Path object
+  :rtype: Path
 
   .. note:: The input mosaic filename is a required input argument for fregrid.
             The input mosaic contains the input grid information.
@@ -40,20 +42,20 @@ def get_input_mosaic(datadict: dict) -> str:
     case "ocean": mosaic_key = "ocn_mosaic_file"
     case "land": mosaic_key = "lnd_mosaic_file"    
   
-  mosaic_file = str(xr.load_dataset(grid_spec)[mosaic_key].values.astype(str))
+  mosaic_file = Path(str(xr.load_dataset(grid_spec)[mosaic_key].values.astype(str)))
   
-  if Path(f"{input_dir}/{mosaic_file}").exists():
+  if (input_dir/mosaic_file).exists():
     pass
-  elif Path(mosaic_file).exists():
-    shutil.copy(mosaic_file, f"{input_dir}/{mosaic_file}")
+  elif mosaic_file.exists():
+    shutil.copy(mosaic_file, input_dir/mosaic_file)
     fre_logger.info(f"Copying {mosaic_file} to input directory {input_dir}") 
   else:
     raise IOError(f"Cannot find input mosaic file {mosaic_file} in current or input directory {input_dir}")
 
-  return mosaic_file
+  return input_dir/mosaic_file
 
 
-def get_grid_spec(datadict: dict) -> str:
+def get_grid_spec(datadict: dict) -> type[Path]:
   
   """
   Gets the grid_spec.nc file from the tar file specified in 
@@ -64,12 +66,15 @@ def get_grid_spec(datadict: dict) -> str:
   
   :raises IOError:  Error if grid_spec.nc file cannot be found in the tar file
   
+  :return: grid_spec file path as a Path object
+  :rtype: Path  
+  
   .. note:: All grid_spec files are expected to be named "grid_spec.nc".  
             The grid_spec file is required in order to obtain the 
             input mosaic filename 
   """
   
-  grid_spec = "grid_spec.nc"
+  grid_spec = Path("grid_spec.nc")
   
   pp_grid_spec_tar = datadict["yaml"]["postprocess"]["settings"]["pp_grid_spec"]
   
@@ -77,13 +82,13 @@ def get_grid_spec(datadict: dict) -> str:
   if tarfile.is_tarfile(pp_grid_spec_tar):
     with tarfile.open(pp_grid_spec_tar, 'r') as tar: tar.extractall() 
     
-  if not Path(grid_spec).exists():
+  if not grid_spec.exists():
     raise IOError(f"Cannot find {grid_spec} in tar file {pp_grid_spec_tar}")
   
   return grid_spec
     
 
-def get_input_file(datadict: dict, history_file: str) -> str: 
+def get_input_file_argument(datadict: dict, history_file: str) -> str: 
   
   """
   Formats the input file name where the input file contains the variable data that will be regridded.
@@ -92,6 +97,9 @@ def get_input_file(datadict: dict, history_file: str) -> str:
   :type datadict:dict 
   :history_file: history file type 
   :type history_file: str
+  
+  :return: formatted input file name
+  :rtype: str
 
   .. note:: The input filenames are required arguments for fregrid and refer to the history files containing the 
   data that will be regridded.  A time series of history files exist for regridding:.e.g., 
@@ -122,6 +130,9 @@ def get_remap_file(datadict: dict):
   :datadict: dictionary containing relevant regrid parameters
   :type datadict: dict
   
+  :return: remap file path as a Path object
+  :rtype: Path
+  
   ..note:: remap_file is a required fregrid argument.  If the remap_file exists, then 
            fregrid will read in the remapping parameters (the exchange grid for conservative methods) 
            from the remap_file for regridding the variables.  If the remap_file does not exist, 
@@ -129,27 +140,26 @@ def get_remap_file(datadict: dict):
   """
     
   input_dir = datadict["input_dir"]
-  output_dir = datadict["output_dir"]
   input_mosaic = datadict["input_mosaic"]
   nlon = datadict["output_nlon"]
   nlat = datadict["output_nlat"]
   interp_method = datadict["interp_method"]  
   
-  remap_file = f"{input_mosaic[:-3]}X{nlon}by{nlat}_{interp_method}.nc"
+  remap_file = Path(f"{input_mosaic.stem}X{nlon}by{nlat}_{interp_method}.nc")
   
-  if not Path(f"{input_dir}/{remap_file}").exists():
-    if Path(f"{output_dir}/{remap_file}").exists():
-      shutil.copy(f"{output_dir}/{remap_file}", f"{input_dir}/{remap_file}")
-      fre_logger.info(f"Remap file {remap_file} in {output_dir} copied to input directory {input_dir}")
+  if not (input_dir/remap_file).exists():
+    if (remap_file).exists():
+      shutil.copy(remap_file, input_dir/remap_file)
+      fre_logger.info(f"Remap file {remap_file} copied to input directory {input_dir}")
     else:
       fre_logger.info(f"Cannot find specified remap_file {remap_file}\n"
-                      "Remap file {remap_file} will be generated and saved to the output directory"
-                      f"{output_dir}")
+                      "Remap file {remap_file} will be generated and saved to the input directory"
+                      f"{input_dir}")
 
-  return remap_file
+  return input_dir/remap_file
 
 
-def get_scalar_fields(datadict: dict) -> str:
+def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 
   """
   Returns the scalar_fields argument for fregrid.
@@ -158,28 +168,37 @@ def get_scalar_fields(datadict: dict) -> str:
 
   :datadict: dictionary containing relevant regrid parameters
   :type datadict: dict
+  
+  :return: tuple of a string of scalar fields and a boolean indicating whether regridding is needed
+  :rtype: tuple[str, bool]
 
   ..note:: With the exception of the variables in the list
            non_regriddable_variables, all variables
            will be regridded.
   """
   
-  mosaic_file = f"{datadict['input_dir']}/{datadict['input_mosaic']}"
-  input_file = f"{datadict['input_dir']}/{datadict['input_file']}"
+  mosaic_file = datadict['input_mosaic']
   
-  input_file += ".tile1.nc" if xr.load_dataset(mosaic_file).sizes["ntiles"] > 1 else ".nc"
+  extension = ".tile1.nc" if xr.load_dataset(mosaic_file).sizes["ntiles"] > 1 else ".nc"
+  input_file = datadict['input_dir']/Path(datadict['input_file']+extension)
   
   #xarray gives an error if variables in non_regriddable_variables do not exist in the dataset
   #The errors="ignore" overrides the error
-  dataset = xr.load_dataset(str(input_file)).drop_vars(non_regriddable_variables, errors="ignore")
+  dataset = xr.load_dataset(input_file).drop_vars(non_regriddable_variables, errors="ignore")
   
-  return ",".join([variable for variable in dataset if len(dataset[variable].sizes)>1])
+  regrid = True
+  if len(dataset) == 0:
+    fre_logger.warning(f"No variables found in {input_file} to regrid")
+    regrid = False
+  
+  return ",".join([variable for variable in dataset]), regrid
 
 
 def write_summary(datadict):
 
   """
   Logs a summary of the component that will be regridded in a human-readable format
+  This function will log only if the logging level is set to INFO or lower
 
   :datadict: dictionary containing relevant regrid parameters
   :type datadict: dict
@@ -226,11 +245,9 @@ def regrid_xy(yamlfile: str,
   #save arguments to datadict
   datadict["yaml"] = thisyaml  
   datadict["grid_spec"] = get_grid_spec(datadict)  
-  datadict["input_dir"] = input_dir
-  datadict["output_dir"] = output_dir
+  datadict["input_dir"] = Path(input_dir)
+  datadict["output_dir"] = Path(output_dir)
   datadict["input_date"] = input_date
-
-  datadict["current_dir"] = current_dir = os.getcwd()
   
   #get list of components to regrid
   components_list = thisyaml['postprocess']['components']
@@ -242,24 +259,22 @@ def regrid_xy(yamlfile: str,
   for component in components_list:        
     
     if component["postprocess_on"] is False:       
-      fre_logger.info(f"skipping component {component['type']}")
+      fre_logger.warning(f"skipping component {component['type']}")
       continue
     
     datadict["component"] = component    
     datadict["input_mosaic"] = get_input_mosaic(datadict)
-
-    [output_nlat, output_nlon] = [int(dims) for dims in component["xyInterp"].split(",")]
-    datadict["output_nlat"] = output_nlat
-    datadict["output_nlon"] = output_nlon
-                
+    datadict["output_nlat"], datadict["output_nlon"] = component["xyInterp"].split(",")
     datadict["interp_method"] = component["interpMethod"]
-
+    
     #iterate over each history file in the component
     for history_dict in component["sources"]:
 
-      datadict["input_file"] = get_input_file(datadict, history_dict["history_file"])      
-      datadict["output_file"] = datadict["input_file"]          
-      datadict["scalar_field"] = get_scalar_fields(datadict)                  
+      datadict["input_file"] = get_input_file_argument(datadict, history_dict["history_file"])      
+      datadict["scalar_field"], regrid = get_scalar_fields(datadict)             
+      
+      if not regrid: continue
+           
       datadict["remap_file"] = get_remap_file(datadict)
       
       write_summary(datadict)
@@ -267,15 +282,15 @@ def regrid_xy(yamlfile: str,
       fregrid_command = ["fregrid",
                          "--debug",
                          "--standard_dimension",
-                         "--input_mosaic", input_dir+'/'+datadict["input_mosaic"],
-                         "--input_file", input_dir+'/'+datadict["input_file"],
+                         "--input_dir", str(datadict["input_dir"]),
+                         "--input_mosaic", str(datadict["input_mosaic"]),
+                         "--input_file", datadict["input_file"],
                          "--interp_method", datadict["interp_method"],
-                         "--remap_file", input_dir+'/'+datadict["remap_file"],
-                         "--nlon", str(datadict["output_nlon"]),
-                         "--nlat", str(datadict["output_nlat"]),
+                         "--remap_file", str(datadict["remap_file"]),
+                         "--nlon", datadict["output_nlon"],
+                         "--nlat", datadict["output_nlat"],
                          "--scalar_field", datadict["scalar_field"],
-                         "--output_dir", datadict["output_dir"],
-                         "--output_file", datadict["output_file"]
+                         "--output_dir", str(datadict["output_dir"]),
       ]
 
       fregrid_job = subprocess.run(fregrid_command, capture_output=True, text=True)

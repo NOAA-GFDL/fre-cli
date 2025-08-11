@@ -1,5 +1,5 @@
 import numpy as np
-import os
+from pathlib import Path
 import shutil
 import xarray as xr
 
@@ -18,14 +18,16 @@ def test_regrid_xy():
   ncomponents = 5
   skip_component = 3
   input_files = ["atmos_daily_cmip", "atmos_diurnal"]
-  input_dir = "test_inputs"
-  output_dir = "test_outputs"
+  yamlfile = "test_yaml.yaml"
+  input_dir = Path("test_inputs")
+  output_dir = Path("test_outputs")
 
-  os.makedirs(input_dir, exist_ok=True)
-  os.makedirs(output_dir, exist_ok=True)
+  input_dir.mkdir(exist_ok=True)
+  output_dir.mkdir(exist_ok=True)
   
   #generate test files
   generate_files.set_test(date_in=date,
+                          yamlfile_in=yamlfile,
                           input_files_in=input_files,
                           ncomponents_in=ncomponents,
                           input_dir_in=input_dir,
@@ -33,13 +35,13 @@ def test_regrid_xy():
   
   generate_files.make_all()
   
-  regrid_xy.regrid_xy(yamlfile="test_pp.yaml",
-                      input_dir=input_dir,
-                      output_dir=output_dir,
+  regrid_xy.regrid_xy(yamlfile=yamlfile,
+                      input_dir=input_dir.name,
+                      output_dir=output_dir.name,
                       input_date=date)
 
   #check answers, for the third component, postprocess_on = False
-  checkfiles = [f"{output_dir}/{date}.{ifile}{i}.nc" for ifile in input_files
+  checkfiles = [Path(output_dir)/Path(f"{date}.{ifile}{i}.nc") for ifile in input_files
                 for i in range(1,ncomponents+1) if i!=skip_component]
   for outfile in checkfiles:
 
@@ -53,13 +55,11 @@ def test_regrid_xy():
     assert np.all(checkme["darcy"].values==np.float64(2.0))
 
   #third component should not have been regridded
-  for ifile in [f"{output_dir}/{date}.{ifile}{skip_component}.nc" for ifile in input_files]:
-    assert not os.path.isfile(ifile)
+  for ifile in input_files:
+    assert not (output_dir/Path(f"{date}.{ifile}{skip_component}.nc")).exists()
     
-  shutil.rmtree(input_dir)
   shutil.rmtree(output_dir)
-  os.remove("test_pp.yaml")
-  os.remove("grid_spec.nc")
+  generate_files.cleanup()
 
 
 def test_get_input_mosaic():
@@ -68,26 +68,27 @@ def test_get_input_mosaic():
   Tests get_input_mosaic correctly copies the mosaic file to the input directory
   """
   
-  input_dir = "input_dir"
-  grid_spec = "grid_spec.nc"
-  mosaic_file = "ocean_mosaic.nc"
+  input_dir = Path("input_dir")
+  grid_spec = Path("grid_spec.nc")
+  mosaic_file = Path("ocean_mosaic.nc")
   
-  generate_files.make_grid_spec()  
-  with open(mosaic_file, 'w') as thisfile: pass
-  os.makedirs(input_dir, exist_ok=True)
+  generate_files.make_grid_spec()
+  mosaic_file.touch()
+  input_dir.mkdir(exist_ok=True)
 
   datadict=dict(input_dir=input_dir, grid_spec=grid_spec, component={"inputRealm":"ocean"})
 
-  regrid_xy.get_input_mosaic(datadict)
+  #copy mosaic_file to input_dir and return mosaic_file/input_dir
+  check = regrid_xy.get_input_mosaic(datadict)
+  assert check.exists()
+  assert check == input_dir/mosaic_file
 
-  assert os.path.isfile(input_dir+"/"+mosaic_file)
-
-  shutil.rmtree(input_dir)
-  os.remove(mosaic_file)
-  os.remove(grid_spec)
+  mosaic_file.unlink()  #clean up
+  grid_spec.unlink()  #clean up
+  shutil.rmtree(input_dir)  #clean up
 
 
-def test_get_input_file():
+def test_get_input_file_argument():
 
   """
   Tests get_input_file
@@ -96,10 +97,10 @@ def test_get_input_file():
   input_date = "20250807"  
   history_file = "pemberley"
   datadict = {"input_date": input_date}
-  assert regrid_xy.get_input_file(datadict, history_file) == input_date + "." + history_file
+  assert regrid_xy.get_input_file_argument(datadict, history_file) == input_date + "." + history_file
 
   datadict["input_date"] = None
-  assert regrid_xy.get_input_file(datadict, history_file) == history_file
+  assert regrid_xy.get_input_file_argument(datadict, history_file) == history_file
   
 
 def test_get_remap_file():
@@ -108,40 +109,28 @@ def test_get_remap_file():
   Tests get_remap_file
   """
 
-  input_dir = "input_dir"
-  output_dir = "output_dir"
-  input_mosaic = "C20_mosaic.nc"
+  input_dir = Path("input_dir")
+  input_mosaic = Path("C20_mosaic.nc")
   nlon = 40
   nlat = 10
   interp_method = "conserve_order1"
   
   datadict = {"input_dir": input_dir,
-              "output_dir": output_dir,
               "input_mosaic": input_mosaic,
               "output_nlon": nlon,
               "output_nlat": nlat,
               "interp_method": interp_method}
 
-  os.makedirs(output_dir, exist_ok=True)
-  os.makedirs(input_dir, exist_ok=True)  
+  input_dir.mkdir(exist_ok=True)  
 
-  #check filename is correct
-  answer = "C20_mosaicX40by10_conserve_order1.nc"
-  assert regrid_xy.get_remap_file(datadict) == answer
+  #check remap file from current directory is copied to input directory
+  remap_file = Path(f"{input_mosaic.stem}X{nlon}by{nlat}_{interp_method}.nc")
+  remap_file.touch()
 
-  #check remap file from output directory is copied to the input directory
-  with open(output_dir+"/"+answer, "w") as thisfile: pass
-  regrid_xy.get_remap_file(datadict)
-  assert os.path.isfile(input_dir+"/"+answer)
+  check = regrid_xy.get_remap_file(datadict)
 
-  #ensure all works well when the remap file is in the input directory
-  assert answer == regrid_xy.get_remap_file(datadict)
-
-  shutil.rmtree(input_dir)
-  shutil.rmtree(output_dir)  
+  assert check.exists()
+  assert check == input_dir/remap_file
   
-    
-if __name__ == "__main__":
-  test_regrid_xy()
-  
+  shutil.rmtree(input_dir)      
   
