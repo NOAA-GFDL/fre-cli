@@ -1,5 +1,5 @@
 '''
-Creates the Makefile
+Creates the Makefile for model compilation
 '''
 
 import os
@@ -12,7 +12,7 @@ fre_logger = logging.getLogger(__name__)
 
 def makefile_create(yamlfile: str, platform: str, target:str):
     """
-    Creates the makefile
+    Creates the makefile for model compilation
     
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
@@ -23,14 +23,15 @@ def makefile_create(yamlfile: str, platform: str, target:str):
     :type target: str
     :raises ValueError: Error if platform does not exist in platforms yaml configuration 
 
-    .. note:: If additional libraries are defined in the compile.yaml file:
+    .. note:: If additional library dependencies are defined in the compile.yaml file:
 
-       - for a container build, a linkline script will be generated
-       to locate those libraries inside the container and populate 
-       the Makefile with the correct linker flags
+       - for a container build (library dependecies defined with "container_addlibs" in
+       the compile yaml), a linkline script will be generated to determine paths for the
+       additional libraries located inside the container and add the appropriate flags
+       to the Makefile
 
-       - for a bare-metal build, linker flags defined in the yaml
-       configuration are added to the link line in the Makefile
+       - for a bare-metal build (linker flags defined with "baremetal_linkerflags" in the
+         compile yaml), linker flags are added to the link line in the Makefile
     """
     srcDir="src"
     baremetalRun = False # This is needed if there are no bare metal runs

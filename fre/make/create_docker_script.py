@@ -32,7 +32,7 @@ def dockerfile_create(yamlfile:str, platform:str, target:str, execute:bool, skip
     :type skip_format_transfer: bool
     :raises ValueError: Error if platform does not exist in platforms yaml configuration 
 
-    .. note:: For building a container on GAEA, users need to put in a helpdesk ticket for podman access.
+    .. note:: To build an image on GFDL's RDHPCS GAEA, please submit a GFDL helpdesk ticket for podman access.
     """
     ## Split and store the platforms and targets in a list
     plist = platform
