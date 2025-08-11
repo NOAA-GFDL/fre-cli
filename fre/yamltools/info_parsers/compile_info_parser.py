@@ -23,7 +23,7 @@ def get_compile_paths(full_path, yaml_content):
     # Load string as yaml
     yml=yaml.load(yaml_content, Loader = yaml.Loader)
 
-    for key,value in loaded_yml.items():
+    for key,value in yml.items():
         if key == "build":
             if (value.get("platformYaml") or value.get("compileYaml")) is None:
                 raise ValueError("Compile or platform yaml not defined")
