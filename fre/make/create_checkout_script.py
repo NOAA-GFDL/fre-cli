@@ -1,5 +1,7 @@
 '''
-Checks out source code
+Creates a checkout script.
+
+When run, the checkout script checks out source code needed to build the model. 
 '''
 
 import os
@@ -14,10 +16,13 @@ fre_logger = logging.getLogger(__name__)
 def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_checkout: bool, jobs: int, execute: bool, verbose: bool):
     """
     Creates the checkout script for bare-metal or container build
+    The checkout script will clone component repositories, defined 
+    in the compile yaml, needed to build the model.
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
-    :param platform: FRE platform
+    :param platform: FRE platform; defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str
     :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str
@@ -25,18 +30,18 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
     :type no_parallel_checkout: bool
     :param jobs: Number of jobs to run simultaneously
     :type jobs: int
-    :param execute: Use this to run the created checkout script
+    :param execute: Run the created checkout script
     :type execute: bool
     :param verbose: Increase verbosity output
     :type verbose: bool
     :raises ValueError: 
-        - Error if 'jobs' param is not defined as integer
-        - Error if platform passed does not exist in platforms yaml configuration
+        - Error if 'jobs' param is not an integer
+        - Error if platform does not exist in platforms yaml configuration
 
-    :raises OSError: Error if checkout script did not run successfully
+    :raises OSError: Error if checkout script does not run successfully
 
-    .. note:: For a bare-metal build, the default is to have parallel checkouts.
-              For a container build, the default is to have non-parallel checkouts.
+    .. note:: For a bare-metal build, no_parallel_checkout = True
+              For a container build, no_parallel_checkout = False
     """
     # Define variables
     yml = yamlfile
