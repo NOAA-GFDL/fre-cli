@@ -55,7 +55,7 @@
 ----------------
 
 * Splits single netcdf file into separate netcdf files with one data variable per file
-* Minimal Syntax: ``fre pp split-netcdf -f netcdf_file -o output_directory [-v var1,var2...varn]``
+* Minimal Syntax: ``fre pp split-netcdf -f netcdf_file -o output_directory [-v var_1,var_2...var_n]``
 * Module(s) needed: n/a
 * Example: ``fre pp split-netcdf -f 19790101.atmos_tracer.tile6.nc -o output/ -v tasmax,tasmin``
 
