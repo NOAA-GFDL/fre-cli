@@ -1,5 +1,6 @@
 '''
-Create, run, checkout code, and compile a model to create a model executable.
+For a bare-metal build: Creates and runs the checkout script to check out source code, creates the makefile, and creates the compile script to generate a model executable.
+For a container build: Creates the checkout script and makefile, and creates and runs a dockerfile to generate a singularity image file.
 '''
 
 import os
@@ -41,7 +42,7 @@ def fremake_run(yamlfile:str, platform:str, target:str, nparallel:int, njobs:int
     :type verbose: bool
     :raise ValueError:
         - Error if platform does not exist in platforms yaml configuration 
-        - Error if mkmf template defined in platforms yaml does not exist
+        - Error if the mkmf template defined in platforms yaml does not exist
 
     .. note:: This script will eventually be a wrapper for the other fre make tools
     """
