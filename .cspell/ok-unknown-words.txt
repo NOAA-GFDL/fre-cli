@@ -182,6 +182,7 @@ envsoft
 errormsg
 evap
 excinfo
+execinfo
 execrunscript
 exitstatus
 experimentname

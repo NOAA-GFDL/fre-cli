@@ -13,7 +13,7 @@ from fre.pp.split_netcdf_script import split_netcdf
 def test_split_netcdf_file_regex_pattern():
     """
     Test that split_netcdf function correctly creates a regex
-    that matches the test cases that we are intrested in 
+    that matches the test cases that we are interested in 
     
     This specifically tests: FILE_REGEX = f'.*{history_source}(\\.tile.*)?.nc'
     """
@@ -42,7 +42,7 @@ def test_split_netcdf_file_regex_pattern():
 
 def generate_regex(history_source):
     '''
-    Pull the regex from split_netcdf through a bizzare use of side effects
+    Pull the regex from split_netcdf through a bizarre use of side effects
     :param history_source: history_source for the regex; used to build regex
     :type history_source: string
     '''
