@@ -215,12 +215,11 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
     # The errors="ignore" overrides the error
     dataset = xr.load_dataset(input_file).drop_vars(non_regriddable_variables, errors="ignore")
 
-    regrid = True
     if len(dataset) == 0:
         fre_logger.warning(f"No variables found in {input_file} to regrid")
-        regrid = False
+        return "None", False
 
-    return ",".join([variable for variable in dataset]), regrid
+    return ",".join([variable for variable in dataset]), True
 
 
 def write_summary(datadict):
