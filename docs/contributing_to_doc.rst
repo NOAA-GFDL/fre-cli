@@ -88,7 +88,8 @@ Troubleshooting
 Both conda and python can interact oddly with c-shell. If you get the following error:
 
 .. code-block:: console
-> pip install .[docs]
-pip: No match.
+
+ > pip install .[docs]
+ pip: No match.
 
 You are likely in c-shell and can solve your issue by switching to a bash shell, re-loading your fre-cli environment, and running the local sphinx build commands again. 
