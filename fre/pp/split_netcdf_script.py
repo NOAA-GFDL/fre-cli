@@ -33,7 +33,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   Intended to work with data structured for fre-workflows and fre-workflows file naming conventions
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
     
-  :param inputDir: directory containg netcdf files
+  :param inputDir: directory containing netcdf files
   :type inputDir: string
   :param outputDir: directory to which to write netcdf files
   :type outputDir: string
@@ -228,7 +228,7 @@ def get_max_ndims(dataset):
   
   :param dataset: xarray Dataset you want to query 
   :type dataset: xarray Dataset
-  :return: The max dimensions that a single var posesses in the Dataset
+  :return: The max dimensions that a single var posessses in the Dataset
   :rtype: int
   '''
   allvars = dataset.data_vars.keys()
