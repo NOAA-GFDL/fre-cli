@@ -99,7 +99,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                                                       mkTemplatePath = platform["mkTemplate"],
                                                       tmpDir = tmpDir)
 
-                # Loop through compenents and send the component name and requires for the Makefile
+                # Loop through components and send the component name and requires for the Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()

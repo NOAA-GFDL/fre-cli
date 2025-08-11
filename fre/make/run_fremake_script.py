@@ -169,8 +169,7 @@ def fremake_run(yamlfile:str, platform:str, target:str, nparallel:int, njobs:int
                                                              srcDir = srcDir,
                                                              bldDir = bldDir,
                                                              target = target,
-                                                             modules = platform["modules"],
-                                                             modulesInit = platform["modulesInit"],
+                                                             env_setup = platform["envSetup"],
                                                              jobs = jobs)
 
                 for c in fremakeYaml['src']:

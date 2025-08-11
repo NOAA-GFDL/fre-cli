@@ -101,7 +101,7 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
 
         platform = model_yaml.platforms.getPlatformFromName(platform_name)
 
-        # ceate the source directory for the platform
+        # create the source directory for the platform
         if not platform["container"]:
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
             # if the source directory does not exist, it is created
