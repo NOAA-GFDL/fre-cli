@@ -13,7 +13,7 @@ CI/CD minutes, and making PR reviews incredibly easy for documentation changes.
 
 * you DO NOT NEED a ``readthedocs.org`` account.
 * Make a branch, either with ``NOAA-GFDL/fre-cli`` as the remote, or your own fork.
-* Edit a file any non-zero amount, commit that change to your branch, and push. If the branch is idential to ``main``,
+* Edit a file any non-zero amount, commit that change to your branch, and push. If the branch is identical to ``main``,
   you cannot open a PR!
 * Once the PR is opened, a ``readthedocs`` workflow will be run, even if that PR is in draft mode. To confirm it is
   running, or did run, open your PR in a web browser, scroll to the bottom to find the latests workflow runs under

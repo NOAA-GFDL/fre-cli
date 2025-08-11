@@ -56,7 +56,7 @@ def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: b
     :type ens: str
     :param dir_ts: directory time series workaround
     :type dir_ts: boolean
-    :return: output directory sturcture
+    :return: output directory structure
     :rtype: str
     """
 
@@ -176,7 +176,7 @@ def truncate_date(date: str, freq: str) -> str:
     :type date: ISO string format
     :param freq: frequency
     :type freq: str
-    :return: trucated date string 
+    :return: truncated date string 
     :rtype: str
     """
 
@@ -268,7 +268,7 @@ def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict) 
     :type product: str
     :param req_source: source being looped over
     :type req_source: str
-    :param src_vars: dictionary of variables asociated with source name
+    :param src_vars: dictionary of variables associated with source name
     :type src_vars: dict
     :raises ValueError: if there are no static sources, but the product is set to static
     :return: list of variables associated with source name
@@ -371,7 +371,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
     :type yaml_config: str
     :raises ValueError:
         - if no input files are found
-        - if no offine diagnostic file is found
+        - if no offline diagnostic file is found
     """
 
     # List variables
