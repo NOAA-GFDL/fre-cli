@@ -1,5 +1,6 @@
 '''
 For a bare-metal build: Creates and runs the checkout script to check out source code, creates the makefile, and creates the compile script to generate a model executable.
+
 For a container build: Creates the checkout script and makefile, and creates and runs a dockerfile to generate a singularity image file.
 '''
 
