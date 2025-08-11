@@ -77,7 +77,7 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
                     else:
                         raise Exception("Expected files not found")
                 else:
-                    fre_logger.debug(f"Skipping {source}")
+                    fre_logger.debug(f"Skipping {source} as it does not appear to be monthly or annual frequency; neither '{subdir_mon}' nor '{subdir_yr}' exists")
             elif frequency == "mon":
                 subdir = Path(dir_ / 'ts' / grid / source / 'P1M' / str(input_interval))
                 if subdir.exists():
@@ -89,7 +89,7 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
                     else:
                         raise Exception("Expected files not found")
                 else:
-                    fre_logger.debug(f"Skipping {source}")
+                    fre_logger.debug(f"Skipping {source} as it does not appear to be monthly frequency; '{subdir_mon}' does not exist")
             else:
                 raise ValueError("Frequency '{frequency}' not recognized")
 
@@ -115,15 +115,32 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
                 ZZZZ = metomi.isodatetime.dumpers.TimePointDumper().strftime(dd + input_interval - one_year, "%Y")
 
                 if source_frequency == "P1Y":
-                    input_files.append(subdir / (source + YYYY + '-' + ZZZZ + '.' + var + '.nc'))
+                    input_files.append(subdir / (source + '.' + YYYY + '-' + ZZZZ + '.' + var + '.nc'))
                 else:
                     input_files.append(subdir / (source + '.' + YYYY + '01-' + ZZZZ + '12.' + var + '.nc'))
 
             fre_logger.debug(input_files)
 
+            # form output filename
+            first = list(recurrence)[0]
+            last = list(recurrence)[-1]
+            first_YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(first, "%Y")
+            last_YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(last, "%Y")
+            if source_frequency == "P1Y":
+                subdir = Path(dir_ / 'av' / grid / source / 'P1Y' / str(output_interval))
+            else:
+                subdir = Path(dir_ / 'av' / grid / source / 'P1M' / str(output_interval))
+            if source_frequency == "P1Y":
+                output_file = subdir / (source + '.' + first_YYYY + '-' + last_YYYY + '.' + var + '.nc')
+            else:
+                output_file = subdir / (source + '.' + first_YYYY + '01-' + last_YYYY + '12.' + var + '.nc')
+
+            # create output directory
+            subdir.mkdir(parents=True, exist_ok=True)
+
             if frequency == "yr":
-                generate_time_averages.generate_time_average(input_files, 'out.nc', 'fre-nctools', var, False, 'all')
+                generate_time_averages.generate_time_average(input_files, output_file, 'fre-nctools', var, False, 'all')
             elif frequency == "mon":
-                generate_time_average.generate_time_average(input_files, 'out.nc', 'fre-nctools', var, False, 'month')
+                generate_time_averages.generate_time_average(input_files, output_file, 'fre-nctools', var, False, 'month')
             else:
                 raise ValueError(f"Output frequency '{frequency}' not recognized")
