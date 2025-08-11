@@ -149,7 +149,7 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, us
         #assert False
 
         fre_logger.info('attempting to combine cmor yaml info with info from other yamls...')
-        yml_dict = get_combined_cmoryaml( CmorYaml, experiment, output )
+        yml_dict = get_combined_cmoryaml( CmorYaml, output )
         fre_logger.info('... done attempting to combine cmor yaml info')
 
     else:
