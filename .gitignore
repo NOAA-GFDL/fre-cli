@@ -185,7 +185,6 @@ fre/tests/test_files/outdirfre/
 fre/tests/test_files/outdir/
 
 fre/app/generate_time_averages/tests/time_avg_test_files/
-fre/app/generate_time_averages/tests/test_data/
 fre/app/regrid_xy/tests/*/
 
 fre/make/tests/*_out/

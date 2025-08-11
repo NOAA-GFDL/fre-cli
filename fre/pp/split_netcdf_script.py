@@ -23,6 +23,29 @@ from fre.app.helpers import get_variables
 
 fre_logger = logging.getLogger(__name__)
 
+  
+#extend globbing used to find both tiled and non-tiled files
+#all files that contain the current source:history_file name,
+#0-1 instances of "tile" and end in .nc
+#under most circumstances, this should match 1 file
+#older regex - not currently working
+#FILE_REGEX = f'*.{history_source}?(.tile?).nc'
+#FILE_REGEX = f'*.{history_source}*.*.nc'
+#glob.glob is NOT sufficient for this. It needs to match:
+#  '00020101.atmos_level_cmip.tile4.nc'
+#  '00020101.ocean_cobalt_omip_2d.nc'
+FILE_REGEX = f'.*{history_source}(\\.tile.*)?.nc'
+
+#These are patterns used to match known kinds of metadata-like variables
+#in netcdf files
+#*_bnds, *_bounds: bounds variables. Defines the edges of a coordinate var
+#*_offset: i and j offsets. Constants added to a coordinate var to get
+#   actual coordinate values, used to compress data
+#*_average: calculated averages for a variable. 
+#These vars may also be covered by the var_shortvars query, but it doesn't
+#hurt to double-check.
+VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
+
 def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs, 
                  yamlfile, split_all_vars=False):
   '''
@@ -77,18 +100,6 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     else:
       varlist = vardict[history_source]
   
-  #extend globbing used to find both tiled and non-tiled files
-  #all files that contain the current source:history_file name,
-  #0-1 instances of "tile" and end in .nc
-  #under most circumstances, this should match 1 file
-  #older regex - not currently working
-  #file_regex = f'*.{history_source}?(.tile?).nc'
-  #file_regex = f'*.{history_source}*.*.nc'
-  #glob.glob is NOT sufficient for this. It needs to match:
-  #  '00020101.atmos_level_cmip.tile4.nc'
-  #  '00020101.ocean_cobalt_omip_2d.nc'
-  file_regex = f'.*{history_source}(\\.tile.*)?.nc'
-  
   #If in sub-dir mode, process the sub-directories instead of the main one
   # and write to $outputdir/$subdir
   if use_subdirs:
@@ -99,7 +110,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     sd_string = ",".join(subdirs)
     for sd in subdirs:
       sdw = os.path.join(workdir,sd)
-      files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
+      files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(FILE_REGEX, el) is not None]
       if len(files) == 0:
         fre_logger.info(f"No input files found; skipping subdir {subdir}")
       else:
@@ -111,15 +122,15 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
           files_split += 1
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
-      fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir} that match pattern {file_regex}; no splitting took place")
+      fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir} that match pattern {FILE_REGEX}; no splitting took place")
       raise OSError
   else:
-      files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
+      files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(FILE_REGEX, el) is not None] 
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
       if len(files) == 0:
-        fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
+        fre_logger.error(f"error: no files found in {workdir} that match pattern {FILE_REGEX}; no splitting took place")
         raise OSError
     
   fre_logger.info("split-netcdf-wrapper call complete")
@@ -147,11 +158,6 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   if not os.path.isfile(infile):
     fre_logger.error(f"error: input file {infile} not found. Please check the path.")
     raise OSError(f"error: input file {infile} not found. Please check the path.")
-  
-  #patterns meant to match the bounds vars
-  #the i and j offsets + the average_* vars are included in this category,
-  #but they also get covered in the var_shortvars query below
-  var_patterns = ["_bnds", "_bounds", "_offset", "average_"]
 
   dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False, decode_coords="all")
   allvars = dataset.data_vars.keys()
@@ -170,10 +176,10 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= varsize) and v not in dataset._coord_names]
   #having a variable listed as both a metadata var and a coordinate var seems to
   #lead to the weird adding a _FillValue behavior
-  fre_logger.info(f"var patterns: {var_patterns}")
+  fre_logger.info(f"var patterns: {VAR_PATTERNS}")
   fre_logger.info(f"1 or 2-d vars: {var_shortvars}")
   #both combined gets you a decent list of non-diagnostic variables
-  var_exclude = list(set(var_patterns + [str(el) for el in var_shortvars] ))
+  var_exclude = list(set(VAR_PATTERNS + [str(el) for el in var_shortvars] ))
   def matchlist(xstr):
     ''' checks a string for matches in a list of patterns
     

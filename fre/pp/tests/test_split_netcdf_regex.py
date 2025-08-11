@@ -1,6 +1,6 @@
 """
 Test fre.pp.split_netcdf_script file regex pattern
-Tests coverage for line 74 which contains the fixed regex pattern
+Tests the FILE_REGEX at the start of the file
 """
 import os
 import tempfile
@@ -10,11 +10,12 @@ import pathlib
 from pathlib import Path
 from fre.pp.split_netcdf_script import split_netcdf
 
+FILE_REGEX = f'.*{history_source}(\\.tile.*)?.nc'
 
-def test_split_netcdf_file_regex_pattern():
+def test_split_netcdf_FILE_REGEX_pattern():
     """
-    Test that split_netcdf function correctly creates the file regex pattern on line 90
-    This specifically tests: file_regex = f'.*{history_source}(\\.tile.*)?.nc'
+    Test that split_netcdf function correctly creates the FILE_REGEX
+    This specifically tests: FILE_REGEX = f'.*{history_source}(\\.tile.*)?.nc'
     """
     # Create temporary directories for testing
     with tempfile.TemporaryDirectory() as temp_input, \
@@ -85,13 +86,12 @@ def test_split_netcdf_file_regex_pattern():
             assert found_expected_pattern, f"Expected regex pattern '{expected_pattern}' not found in captured patterns: {captured_patterns}"
 
 
-def test_file_regex_pattern_direct():
+def test_FILE_REGEX_pattern_direct():
     """
     Test the regex pattern directly to ensure it works correctly
-    This tests the actual pattern from line 90: f'.*{history_source}(\\.tile.*)?.nc'
+    This tests the actual pattern at the top of the file: f'.*{history_source}(\\.tile.*)?.nc'
     """
     history_source = "atmos_daily"
-    file_regex = f'.*{history_source}(\\.tile.*)?.nc'
     
     # Test files that should match
     matching_files = [
@@ -111,46 +111,44 @@ def test_file_regex_pattern_direct():
     
     # Test matching files
     for filename in matching_files:
-        match = re.search(file_regex, filename)
-        assert match is not None, f"File '{filename}' should match regex pattern '{file_regex}'"
+        match = re.search(FILE_REGEX, filename)
+        assert match is not None, f"File '{filename}' should match regex pattern '{FILE_REGEX}'"
     
     # Test non-matching files
     for filename in non_matching_files:
-        match = re.search(file_regex, filename)
-        assert match is None, f"File '{filename}' should NOT match regex pattern '{file_regex}'"
+        match = re.search(FILE_REGEX, filename)
+        assert match is None, f"File '{filename}' should NOT match regex pattern '{FILE_REGEX}'"
 
 
-def test_file_regex_pattern_ocean_example():
+def test_FILE_REGEX_pattern_ocean_example():
     """
     Test the regex pattern with ocean example from the comments
     """
     history_source = "ocean_cobalt_omip_2d"
-    file_regex = f'.*{history_source}(\\.tile.*)?.nc'
     
     # From the comment: '00020101.ocean_cobalt_omip_2d.nc'
     test_file = "00020101.ocean_cobalt_omip_2d.nc"
-    match = re.search(file_regex, test_file)
-    assert match is not None, f"File '{test_file}' should match regex pattern '{file_regex}'"
+    match = re.search(FILE_REGEX, test_file)
+    assert match is not None, f"File '{test_file}' should match regex pattern '{FILE_REGEX}'"
     
     # Test that it also works with tile versions
     tiled_file = "00020101.ocean_cobalt_omip_2d.tile3.nc"
-    match = re.search(file_regex, tiled_file)
-    assert match is not None, f"File '{tiled_file}' should match regex pattern '{file_regex}'"
+    match = re.search(FILE_REGEX, tiled_file)
+    assert match is not None, f"File '{tiled_file}' should match regex pattern '{FILE_REGEX}'"
 
 
-def test_file_regex_pattern_atmos_level_example():
+def test_FILE_REGEX_pattern_atmos_level_example():
     """
     Test the regex pattern with atmos_level example from the comments
     """
     history_source = "atmos_level_cmip"
-    file_regex = f'.*{history_source}(\\.tile.*)?.nc'
     
     # From the comment: '00020101.atmos_level_cmip.tile4.nc'
     test_file = "00020101.atmos_level_cmip.tile4.nc"
-    match = re.search(file_regex, test_file)
-    assert match is not None, f"File '{test_file}' should match regex pattern '{file_regex}'"
+    match = re.search(FILE_REGEX, test_file)
+    assert match is not None, f"File '{test_file}' should match regex pattern '{FILE_REGEX}'"
     
     # Test non-tiled version
     non_tiled_file = "00020101.atmos_level_cmip.nc"
-    match = re.search(file_regex, non_tiled_file)
-    assert match is not None, f"File '{non_tiled_file}' should match regex pattern '{file_regex}'"
+    match = re.search(FILE_REGEX, non_tiled_file)
+    assert match is not None, f"File '{non_tiled_file}' should match regex pattern '{FILE_REGEX}'"
