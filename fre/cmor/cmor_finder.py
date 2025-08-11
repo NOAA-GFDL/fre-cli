@@ -186,7 +186,7 @@ def make_simple_varlist( dir_targ: str,
     - Logs errors if no files are found in the directory or if no files match the expected pattern.
     - Logs a warning if only one file is found.
     """
-    # if the variable is in the filename, it's likely delimeted by another period.
+    # if the variable is in the filename, it's likely delimited by another period.
     one_file = next(glob.iglob(os.path.join(dir_targ, "*.*.nc")), None)
     if not one_file:
         fre_logger.error("No files found in the directory.") #uncovered

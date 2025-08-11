@@ -155,7 +155,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
         pass
 
     if time_coords_calendar is None:
-        try: # second attempt if first didnt work
+        try: # second attempt if first didn't work
             time_coords_calendar=ds['time'].calendar_type
         except:
             pass
