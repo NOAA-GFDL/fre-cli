@@ -12,14 +12,14 @@
 
 [Fre-cli Documentation](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/index.html) is hosted on `readthedocs`
 
-`fre-cli` is the Flexible Runtime Environment (`FRE`) command-line interface (`CLI`). `fre-cli` aims to gives users intuitive and 
+`fre-cli` is the Flexible Runtime Environment (`FRE`) command-line interface (`CLI`). `fre-cli` aims to gives users intuitive and
 easy-to-understand access to both newly developed, and legacy `FRE` tools via a `click`-driven CLI, delivered as a `conda` package.
 
 
 
 ## **Intro**
-`fre-cli` is a modern, user-friendly `conda` package that allows users to call `FRE` commands via a pythonic `Click`-based interface 
-in a **_fre_** **tool** **_subtool_** style syntax. To learn more about what that means, read the graphic below or watch the following
+`fre-cli` is a modern, user-friendly `conda` package that allows users to call `FRE` commands via a pythonic `Click`-based interface
+in a **_fre_** **tool** **_sub_tool_** style syntax. To learn more about what that means, read the graphic below or watch the following
 sample video in this section
 
 ![Screenshot from 2024-04-18 13-42-04](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/43c028a6-4e6a-42fe-8bec-008b6758ea9b)
@@ -46,8 +46,8 @@ conda create --name fre-202501 --channel noaa-gfdl --channel conda-forge fre-cli
 
 
 ### Method 2 - developer-approach, Personal Conda Environment via repo clone
-Developers should have a full personal environment (without `fre-cli`) and use a locally `pip`-installed copy of the code. This 
-enables full-featured usage of the software, equivalent to that of Method 1, but with the flexibility of being able to reliably 
+Developers should have a full personal environment (without `fre-cli`) and use a locally `pip`-installed copy of the code. This
+enables full-featured usage of the software, equivalent to that of Method 1, but with the flexibility of being able to reliably
 `pip` install a local copy of the code.
 
 This approach can be used both in and outside of GFDL. The only difference is how one accesses `conda` commands
@@ -66,7 +66,7 @@ git clone --recursive https://github.com/noaa-gfdl/fre-cli.git
 cd fre-cli
 
 # to avoid being prompted for confirmation, add '-y' to the call
-# this downloads/builds fre-cli's dependecies ONLY
+# this downloads/builds fre-cli's dependencies ONLY
 conda env create -f environment.yml
 
 # activate the environment you just created.
@@ -85,12 +85,12 @@ pip install -e .
 
 ### Method 3 - a User on GFDL systems (e.g. PPAN, Gaea), with `Lmod`
 If you do not wish to interface with `conda` at all, but desire access to `fre` commands, simply execute `module load fre/2025.01`,
-and you're ready to go. This is the simplest way to access `fre-cli` at GFDL, but does not easily facillitate `fre-cli` development.
+and you're ready to go. This is the simplest way to access `fre-cli` at GFDL, but does not easily facilitate `fre-cli` development.
 
 
 ### Method 4 - a User at GFDL, via Conda Environment Activation
-If you want to hit the ground running, but have some flexibility being able to utilize local python code with `fre-cli` environment, 
-this option can work for you. Developers can also utilize this approach for rapid-prototyping, but it's reccomended to switch to 
+If you want to hit the ground running, but have some flexibility being able to utilize local python code with `fre-cli` environment,
+this option can work for you. Developers can also utilize this approach for rapid-prototyping, but it's recommended to switch to
 Method 1 for finalizing contributions.
 
 - GFDL Workstation:
@@ -106,8 +106,8 @@ Method 1 for finalizing contributions.
 ```
 
 ## GFDL deployment notes
-Presently, all PRs accepted for merging to `main` trigger a conda-package deployment to the 
-[`noaa-gfdl` channel](https://anaconda.org/NOAA-GFDL/fre-cli), with the latest package version. 
+Presently, all PRs accepted for merging to `main` trigger a conda-package deployment to the
+[`noaa-gfdl` channel](https://anaconda.org/NOAA-GFDL/fre-cli), with the latest package version.
 
 ### Latest available release (`fre/test`)
 GFDL and gaea's `fre-cli` is re-built and re-installed as a conda environment/package every night at midnight into the `fms` user spaces.
@@ -138,7 +138,7 @@ conda activate /nbhome/fms/conda/envs/fre-2025.NN
 
 
 ### Patch releases (`fre/2025.NN.PP`)
-These deployments are hand-installed to the same major-release location, overwriting them. 
+These deployments are hand-installed to the same major-release location, overwriting them.
 ```
 # at GFDL or gaea, access with Lmod
 module load fre/2025.NN
@@ -151,7 +151,7 @@ conda activate /nbhome/fms/conda/envs/fre-2025.NN
 ```
 
 ### Which `fre` version do I have?
-You can always check the specific version, down to the patch-release space, with 
+You can always check the specific version, down to the patch-release space, with
 ```
 $ ] fre --version
 fre, version 2025.NN.PP
