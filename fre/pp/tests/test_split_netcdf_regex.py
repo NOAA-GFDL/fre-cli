@@ -61,8 +61,6 @@ def test_split_netcdf_file_regex_pattern():
             # Call the function with test parameters
             history_source = "atmos_daily"
             component = "atmos"
-            #fake_yamlfile = pathlib.Path(temp_input, "fake/yamlfile.yml")
-            #fake_yamlfile.touch()
             
             try:
                 split_netcdf(
@@ -71,8 +69,8 @@ def test_split_netcdf_file_regex_pattern():
                     component=component,
                     history_source=history_source,
                     use_subdirs=False,
-                    yamlfile=fake/yaml/file.yml,
-                    split_all_vars=False
+                    yamlfile="/fake/yaml/file.yml",
+                    split_all_vars=True
                 )
             except SystemExit:
                 # Function calls sys.exit(0) at the end, which is expected
