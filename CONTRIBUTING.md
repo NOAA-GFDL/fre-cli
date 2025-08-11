@@ -26,7 +26,7 @@ If there is *no* subdirectory created for the new tool command group you are try
   7. Using `@[tool]Cli.command()`, add the `@click.option` and any other [Click attributes/decorators](https://click.palletsprojects.com/en/8.1.x/api/#click.command) needed
       - The commands within `fre[tool].py` must contain an additional decorator after the arguments, options, and other command components: `@click.pass_context`
       - Add `context` and the other decorator attributes into the function declaration (i.e. `def subCommand(context, yaml, platform, target)`) 
-      - Add a `""" - [description] """` to help describe the command and pass `context.foward(subCommandFunction)` inside of the command to let it invoke the functions from outside files
+      - Add a `""" - [description] """` to help describe the command and pass `context.forward(subCommandFunction)` inside of the command to let it invoke the functions from outside files
   8. If the tool group is not already added into the `__init__.py` in the /fre folder, add it using `from .tool import *`
   9. With the lazy groups implemented in `lazy_group.py`, all that needs to be done is to add to the `lazy_subcommands` defined inside of the main `@click.group`, `fre`, inside of `fre.py`
       - Add the line: `"[tool]": ".[tool].fre[tool].[tool]Cli"`

@@ -189,7 +189,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   fre_logger.debug(f"var filter list: {var_list}")
   
   #datavars does 2 things: keep track of which vars to write, and tell xarray
-  #which vars to drop. we need to seprate those things for the variable filtering.
+  #which vars to drop. we need to separate those things for the variable filtering.
   if var_list == "all":
     write_vars = datavars
   else:
