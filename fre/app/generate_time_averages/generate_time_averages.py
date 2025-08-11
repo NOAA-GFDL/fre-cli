@@ -15,10 +15,11 @@ def generate_time_average(infile = None, outfile = None,
     #Use cdo to merge multiple files if present
     merged = False
     if type(infile).__name__=='list' and len(infile)> 1:   #multiple files case. Generates one combined file
+        infile_str = [str(item) for item in infile]
         from cdo import Cdo
         _cdo=Cdo()
         merged_file = "merged_output.nc"
-        _cdo.mergetime(input=' '.join(infile), output=merged_file)
+        _cdo.mergetime(input=' '.join(infile_str), output=merged_file)
         multi_file = infile   #preserve the original file names for later
         infile = merged_file
         merged = True
