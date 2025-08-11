@@ -318,37 +318,6 @@ def fre_outfile_name(infile, varname):
   var_outfile = re.sub(".nc", f".{varname}.nc", infile)
   return(var_outfile)
 
-def parse_yaml_for_varlist(yamlfile,yamlcomp,hist_source="none"):
-  '''
-  This is going to get replaced really soon
-  '''
-  with open(yamlfile,'r') as yml:
-    yml_info = yaml.safe_load(yml)
-  #yml_info["postprocess"]["components"] is a list from which we want the att 'type'
-  #see the cylc documentation on task parameters for more information - 
-  #but the short version is that by the time that split_netcdf is getting called,
-  #we're going to have an env variable called CYLC_TASK_PARAM_component that's a
-  #comma-separated list of all components we're postprocessing and an env variable 
-  #called history_file (inherited from CYLC_TASK_PARAM_(regrid/native))
-  #that refers to the parameter combo cylc is currently on 
-  comp_el = [el for el in yml_info['postprocess']['components'] if el.get("type") == yamlcomp]
-  if len(comp_el) == 0:
-    fre_logger.error(f"error in parse_yaml_for_varlist: component {yamlcomp} not found in {yamlfile}")
-    raise ValueError(f"error in parse_yaml_for_varlist: component {yamlcomp} not found in {yamlfile}")
-  #if hist_source is specified, check that it is under right component
-  if hist_source != "none":
-    ymlsources = comp_el[0]["sources"]
-    hist_srces = [el['history_file'] for el in ymlsources]
-    if not any([el == hist_source for el in hist_srces]):
-      fre_logger.error(f"error in parse_yaml_for_varlist: history_file {hist_source} is not found under component {yamlcomp} in file {yamlfile}")
-      raise ValueError(f"error in parse_yaml_for_varlist: history_file {hist_source} is not found under component {yamlcomp} in file {yamlfile}")
-  #"variables" is at the same level as "sources" in the yaml
-  if "variables" in comp_el[0].keys():
-    varlist = comp_el[0]["variables"]
-  else:
-    varlist = "all"
-  return(varlist)
-
 #Main method invocation
 if __name__ == '__main__':
     split_file_xarray(sys.argv[1], sys.argv[2])
