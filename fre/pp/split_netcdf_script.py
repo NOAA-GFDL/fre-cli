@@ -23,19 +23,6 @@ from fre.app.helpers import get_variables
 
 fre_logger = logging.getLogger(__name__)
 
-  
-#extend globbing used to find both tiled and non-tiled files
-#all files that contain the current source:history_file name,
-#0-1 instances of "tile" and end in .nc
-#under most circumstances, this should match 1 file
-#older regex - not currently working
-#FILE_REGEX = f'*.{history_source}?(.tile?).nc'
-#FILE_REGEX = f'*.{history_source}*.*.nc'
-#glob.glob is NOT sufficient for this. It needs to match:
-#  '00020101.atmos_level_cmip.tile4.nc'
-#  '00020101.ocean_cobalt_omip_2d.nc'
-FILE_REGEX = f'.*{history_source}(\\.tile.*)?.nc'
-
 #These are patterns used to match known kinds of metadata-like variables
 #in netcdf files
 #*_bnds, *_bounds: bounds variables. Defines the edges of a coordinate var
@@ -99,6 +86,18 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       raise ValueError(f"error: either component {component} not defined or source {history_source} not defined under component {component} in yamlfile {yamlfile}.")
     else:
       varlist = vardict[history_source]
+      
+  #extend globbing used to find both tiled and non-tiled files
+  #all files that contain the current source:history_file name,
+  #0-1 instances of "tile" and end in .nc
+  #under most circumstances, this should match 1 file
+  #older regex - not currently working
+  #file_regex = f'*.{history_source}?(.tile?).nc'
+  #file_regex = f'*.{history_source}*.*.nc'
+  #glob.glob is NOT sufficient for this. It needs to match:
+  #  '00020101.atmos_level_cmip.tile4.nc'
+  #  '00020101.ocean_cobalt_omip_2d.nc'
+  file_regex = f'.*{history_source}(\\.tile.*)?.nc'
   
   #If in sub-dir mode, process the sub-directories instead of the main one
   # and write to $outputdir/$subdir
@@ -110,7 +109,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     sd_string = ",".join(subdirs)
     for sd in subdirs:
       sdw = os.path.join(workdir,sd)
-      files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(FILE_REGEX, el) is not None]
+      files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
       if len(files) == 0:
         fre_logger.info(f"No input files found; skipping subdir {subdir}")
       else:
@@ -122,15 +121,15 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
           files_split += 1
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
-      fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir} that match pattern {FILE_REGEX}; no splitting took place")
+      fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir} that match pattern {file_regex}; no splitting took place")
       raise OSError
   else:
-      files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(FILE_REGEX, el) is not None] 
+      files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
       if len(files) == 0:
-        fre_logger.error(f"error: no files found in {workdir} that match pattern {FILE_REGEX}; no splitting took place")
+        fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
         raise OSError
     
   fre_logger.info("split-netcdf-wrapper call complete")
