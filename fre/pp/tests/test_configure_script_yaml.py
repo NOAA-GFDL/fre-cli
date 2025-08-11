@@ -23,7 +23,7 @@ def test_combinedyaml_exists():
 
 def test_configure_script():
     """
-    Tests success of confgure yaml script
+    Tests success of configure yaml script
     Creates rose-suite, regrid rose-app, remap rose-app
     TO-DO: will break this up for better tests
     """

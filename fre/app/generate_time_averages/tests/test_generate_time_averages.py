@@ -136,7 +136,7 @@ def test_fre_cli_time_unwgt_avgs():
 #    assert pl.Path(all_outfile).exists()
 
 
-# Numerics-based tests. these have room for improvemnent for sure (TODO)
+# Numerics-based tests. these have room for improvement for sure (TODO)
 # compare frepytools, cdo time-average output to fre-nctools where possible
 var='LWP'
 str_fre_nctools_inf=time_avg_file_dir+'frenctools_timavg_'+test_file_name # this is now in the repo
@@ -409,7 +409,7 @@ def test_zzz_cleanup():
     assert all(nc_remove)
 
 '''
-To be implemnted when fre-nctools has been updated. these options currently work locally if a user has fre-nctools in their conda env.
+To be implemented when fre-nctools has been updated. these options currently work locally if a user has fre-nctools in their conda env.
 ## fre-nctools avgs+stddevs, weighted+unweighted, all ------------------------
 def test_fre_nctool_time_avgs():
     # generates a time averaged file using fre_nctools's version

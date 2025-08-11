@@ -170,7 +170,9 @@ cython_debug/
 
 
 
-
+# Ignore the modules.rst file, as the build project
+# creates it
+/docs/modules.rst
 
 ##### GOTTA CLEAN THIS UP
 
