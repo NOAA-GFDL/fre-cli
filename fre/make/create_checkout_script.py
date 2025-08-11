@@ -14,7 +14,7 @@ from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 # set up logging
 fre_logger = logging.getLogger(__name__)
 
-def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_checkout: bool, njobs: int, execute: bool, verbose: bool):
+def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_checkout: Optional[bool] = None, njobs: int = 4, execute: Optional[bool] = False, verbose: Optional[bool] = None):
     """
     Creates the checkout script for bare-metal or container build
     The checkout script will clone component repositories, defined 

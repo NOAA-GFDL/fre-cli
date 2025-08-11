@@ -10,11 +10,12 @@ import logging
 import subprocess
 
 import fre.yamltools.combine_yamls_script as cy
+from typing import Optional
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 
 fre_logger = logging.getLogger(__name__)
 
-def dockerfile_create(yamlfile:str, platform:str, target:str, execute:bool, skip_format_transfer:bool):
+def dockerfile_create(yamlfile:str, platform:str, target:str, execute: Optional[bool] = False, no_format_transfer: Optional[bool] = False):
     """
     Creates the dockerfile and container build script for a container build
 
@@ -29,8 +30,8 @@ def dockerfile_create(yamlfile:str, platform:str, target:str, execute:bool, skip
     :type target: str
     :param execute: Run the created dockerfile to build a container
     :type execute: bool
-    :param skip_format_transfer: Skip the container format conversion to a .sif file.
-    :type skip_format_transfer: bool
+    :param no_format_transfer: Skip the container format conversion to a .sif file.
+    :type no_format_transfer: bool
     :raises ValueError: Error if platform does not exist in platforms yaml configuration 
 
     .. note:: To build an image on GFDL's RDHPCS GAEA, please submit a GFDL helpdesk ticket for podman access.
@@ -93,7 +94,7 @@ def dockerfile_create(yamlfile:str, platform:str, target:str, execute:bool, skip
             currDir = os.getcwd()
 
             # create build script for container
-            dockerBuild.createBuildScript(platform, skip_format_transfer)
+            dockerBuild.createBuildScript(platform, skip_format_transfer = no_format_transfer)
 
             former_log_level = fre_logger.level
             fre_logger.setLevel(logging.INFO)

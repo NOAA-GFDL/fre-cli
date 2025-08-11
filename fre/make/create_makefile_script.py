@@ -25,7 +25,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
 
     .. note:: If additional library dependencies are defined in the compile.yaml file:
 
-       - for a container build (library dependecies defined with "container_addlibs" in
+       - for a container build (library dependencies defined with "container_addlibs" in
          the compile yaml), a linkline script will be generated to determine paths for the
          additional libraries located inside the container and add the appropriate flags
          to the Makefile

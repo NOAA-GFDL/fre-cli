@@ -12,13 +12,14 @@ from pathlib import Path
 
 import subprocess
 import fre.yamltools.combine_yamls_script as cy
+from typing import Optional
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
 fre_logger = logging.getLogger(__name__)
 
-def fremake_run(yamlfile:str, platform:str, target:str, nparallel:int, njobs:int, no_parallel_checkout:bool, no_format_transfer:bool, execute:bool, verbose:bool):
+def fremake_run(yamlfile:str, platform:str, target:str, nparallel: int = 1, njobs: int = 4, no_parallel_checkout: Optional[bool] = None, no_format_transfer: Optional[bool] = False, execute: Optional[bool] = False, verbose: Optional[bool] = None):
     """
     Runs all of fre make code
 

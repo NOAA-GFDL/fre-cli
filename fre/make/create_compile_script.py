@@ -9,11 +9,12 @@ from pathlib import Path
 from multiprocessing.dummy import Pool
 
 import fre.yamltools.combine_yamls_script as cy
+from typing import Optional
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
 fre_logger = logging.getLogger(__name__)
 
-def compile_create(yamlfile:str, platform:str, target:str, njobs:int, nparallel:int, execute:bool, verbose:bool):
+def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4, nparallel: int = 1, execute: Optional[bool] = False, verbose: Optional[bool] = None):
     """
     Creates the compile script for bare-metal build
 
