@@ -1,3 +1,4 @@
+// configuration for spellcheck workflow
 {
     "version": "0.2",
     "language": "en",
@@ -5,7 +6,8 @@
         {
             "name": "ok-unknown-words",
             "path": "./.cspell/ok-unknown-words.txt",
-            "addWords": false
+            "addWords": true,
+			"noSuggest": true // set to true to turn off  
         }
     ],
     "dictionaries": [

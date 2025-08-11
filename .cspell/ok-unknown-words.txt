@@ -53,7 +53,7 @@ untarred
 validatefail
 xarray
 xyinterp
-yamlsOA
+yamls
 yamltools
 AMIP
 AOGCM
