@@ -2,19 +2,27 @@
 {
     "version": "0.2",
     "language": "en",
+    "caseSensitive": false,
     "dictionaryDefinitions": [
         {
             "name": "ok-unknown-words",
             "path": "./.cspell/ok-unknown-words.txt",
-            "addWords": true,
-			"noSuggest": true // set to true to turn off  
+            "addWords": false,
         }
     ],
     "dictionaries": [
-        "ok-unknown-words"
+        "ok-unknown-words",
+        // "noaa-words", // TODO sort words into categories
+        // "gfdl-words",
+        // "software-words"
     ],
-	"ignorePaths": [
-		"*.cdl"
-	],
-
+    "ignorePaths": [
+        "cspell.json",
+        "*.cdl",
+        "build",
+        "fre_cli.egg-info",
+        "fre/mkmf",
+        "fre/gfdl_msd_schemas",
+        "fre/tests/test_files/cmip6-cmor-tables"
+    ]
 }
