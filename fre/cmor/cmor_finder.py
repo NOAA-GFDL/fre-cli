@@ -33,7 +33,7 @@ DO_NOT_PRINT_LIST = [
     'valid_min', 'valid_max'
 ]
 
-#def print_var_content(table_config_file, var_name):
+
 def print_var_content(table_config_file: IO[str],
                       var_name: str) -> None:
     """
@@ -84,11 +84,10 @@ def print_var_content(table_config_file: IO[str],
         fre_logger.info('    %s: %s', content, var_content[content])
     fre_logger.info('\n')
 
-#def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_name=None):
-def cmor_find_subtool(
-    json_var_list: Optional[str] = None,
-    json_table_config_dir: Optional[str] = None,
-    opt_var_name: Optional[str] = None) -> None:
+
+def cmor_find_subtool( json_var_list: Optional[str] = None,
+                       json_table_config_dir: Optional[str] = None,
+                       opt_var_name: Optional[str] = None) -> None:
     """
     Find and print information about variables in CMIP6 JSON configuration files in a specified directory.
 
@@ -151,40 +150,29 @@ def cmor_find_subtool(
         fre_logger.error('this line should be unreachable!!!')
         assert False
 
-#def make_simple_varlist(        dir_targ, output_variable_list):
+
 def make_simple_varlist( dir_targ: str,
                          output_variable_list: Optional[str]) -> Optional[Dict[str, str]]:
     """
     Generate a JSON file containing a list of variable names from NetCDF files in a specified directory.
-
     This function searches for NetCDF files in the given directory, or a subdirectory, "ts/monthly/5yr",
     if not already included. It then extracts variable names from the filenames, and writes these variable
     names to a JSON file.
 
-    Parameters
-    ----------
-    dir_targ : str
-        The target directory to search for NetCDF files.
-    output_variable_list : str
-        The path to the output JSON file where the variable list will be saved.
+    :param dir_targ: The target directory to search for NetCDF files.
+    :type dir_targ: str
+    :param output_variable_list: The path to the output JSON file where the variable list will be saved.
+    :type output_variable_list: str
+    :raises OSError: if the outputfile cannot be written
+    :return: Dictionary of variable names (keys and values are the same), or None if no files are found or an error occurs
+    :rtype: dict or None
 
-    Returns
-    -------
-    dict or None
-        Dictionary of variable names (keys and values are the same), or None if no files are found or an
-        error occurs.
+    .. note:: Assumes NetCDF filenames are of the form: <something>.<variable>.<datetime>.nc
+    .. note:: Variable name is assumed to be the second-to-last component when split by periods.
+    .. note:: Logs a warning if only one file is found.
 
-    Raises
-    ------
-    OSError
-        If the output file cannot be written.
+    .. warning:: Logs errors if no files are found in the directory or if no files match the expected pattern.
 
-    Notes
-    -----
-    - Assumes NetCDF filenames are of the form: <something>.<variable>.<datetime>.nc
-    - Variable name is assumed to be the second-to-last component when split by periods.
-    - Logs errors if no files are found in the directory or if no files match the expected pattern.
-    - Logs a warning if only one file is found.
     """
     # if the variable is in the filename, it's likely delimited by another period.
     one_file = next(glob.iglob(os.path.join(dir_targ, "*.*.nc")), None)
