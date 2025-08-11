@@ -6,6 +6,8 @@ import os
 import tempfile
 import re
 from unittest.mock import patch, MagicMock
+import pathlib
+from pathlib import Path
 from fre.pp.split_netcdf_script import split_netcdf
 
 
@@ -59,6 +61,8 @@ def test_split_netcdf_file_regex_pattern():
             # Call the function with test parameters
             history_source = "atmos_daily"
             component = "atmos"
+            #fake_yamlfile = pathlib.Path(temp_input, "fake/yamlfile.yml")
+            #fake_yamlfile.touch()
             
             try:
                 split_netcdf(
@@ -67,14 +71,14 @@ def test_split_netcdf_file_regex_pattern():
                     component=component,
                     history_source=history_source,
                     use_subdirs=False,
-                    yamlfile="/fake/yaml/file.yml",
+                    yamlfile=fake/yaml/file.yml,
                     split_all_vars=False
                 )
             except SystemExit:
                 # Function calls sys.exit(0) at the end, which is expected
                 pass
             
-            # Verify that the regex pattern was created correctly (line 74)
+            # Verify that the regex pattern was created correctly (line 90)
             # The pattern should be: f'.*{history_source}(\\.tile.*)?.nc'
             expected_pattern = f'.*{history_source}(\\.tile.*)?.nc'
             
