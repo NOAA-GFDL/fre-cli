@@ -97,7 +97,7 @@ cmor:
 #      variable_list: # required, path to a dictionary of variables, helps also to target input files
 #        !join [*table_dir, '/', "variables_to_cmorize_in_this_table.lst"]
 #      freq: #optional, if not specified we try to figure it out from the MIP table entries
-#      gridding: #optional, if specified is applied to all taget components within this table
+#      gridding: #optional, if specified is applied to all target components within this table
 #        - grid_label: "gn" # must be one of the options specified in MIP controlled vocab
 #          grid_desc: "native gridding ex description" # helpful description, largely not restricted
 #          nom_res: "10000 km" # must be one of the options specified in MIP controlled vocab

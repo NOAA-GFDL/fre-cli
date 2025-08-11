@@ -84,7 +84,7 @@ def makefile_create(yamlfile, platform, target):
                                                       mkTemplatePath = platform["mkTemplate"],
                                                       tmpDir = tmpDir)
 
-                # Loop through compenents and send the component name and requires for the Makefile
+                # Loop through components and send the component name and requires for the Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
                 freMakefile.writeMakefile()
@@ -92,6 +92,3 @@ def makefile_create(yamlfile, platform, target):
                 fre_logger.setLevel(logging.INFO)
                 fre_logger.info("\nMakefile created at " + tmpDir + "/Makefile" + "\n")
                 fre_logger.setLevel(former_log_level)
-
-if __name__ == "__main__":
-    makefile_create()

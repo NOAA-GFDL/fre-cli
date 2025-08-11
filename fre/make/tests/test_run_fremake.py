@@ -199,7 +199,7 @@ def test_run_fremake_compile_script_creation_multitarget():
             f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{t}/exec/compile.sh").exists()
 
 def test_run_fremake_checkout_script_creation_multitarget():
-    ''' check for checkout script creation for mulit-target build'''
+    ''' check for checkout script creation for multi-target build'''
     ''' check checkout script exists from previous test'''
     assert Path(
         f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists()

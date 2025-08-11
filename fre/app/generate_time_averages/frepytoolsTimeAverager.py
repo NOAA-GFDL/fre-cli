@@ -1,4 +1,4 @@
-''' class for python-native routine usuing netCDF4 and numpy to crunch time-averages '''
+''' class for python-native routine using netCDF4 and numpy to crunch time-averages '''
 
 import math
 import numpy
@@ -169,7 +169,7 @@ class frepytoolsTimeAverager(timeAverager):
                     # this strongly influences the final data structure shape of the averages.
                     # if set to None, and lets say you try to write
                     # e.g. the original 'time_bnds' (which has 60 time steps)
-                    # the array holding the avg. value will suddently have 60 time steps
+                    # the array holding the avg. value will suddenly have 60 time steps
                     # even though only 1 is needed, 59 time steps will have no data
                     #nc_fout.createDimension( dimname=key, size=None )
                     nc_fout.createDimension( dimname=key, size=1)
@@ -232,6 +232,6 @@ class frepytoolsTimeAverager(timeAverager):
         nc_fout.close()
         #close input file
         nc_fin.close()
-        print(f'wrote ouput file: {outfile}')
+        print(f'wrote output file: {outfile}')
 
         return 0
