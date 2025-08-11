@@ -3,7 +3,7 @@ post-processing yaml class
 '''
 import os
 import logging
-#import pprint
+import pprint
 
 from fre.yamltools.helpers import experiment_check, clean_yaml
 from fre.yamltools.abstract_classes import MergePPANYamls
@@ -36,12 +36,6 @@ class InitPPYaml(MergePPANYamls):
         mainyaml_dir = os.path.abspath(self.yml)
         self.mainyaml_dir = os.path.dirname(mainyaml_dir)
 
-        # Create combined pp yaml
-        former_log_level = fre_logger.level
-        fre_logger.setLevel(logging.INFO)
-        fre_logger.info("Combining yaml files into one dictionary: ")
-        fre_logger.setLevel(former_log_level)
-
         # Validate required keys are included in model yaml config
         #val1 = ModelYmlStructure(self.yml).validate()
 
@@ -49,7 +43,8 @@ class InitPPYaml(MergePPANYamls):
         """
         Create the combined.yaml and merge it with the model yaml
 
-        :return:
+        :return: string of yaml information, including name, platform,
+                 target, and model yaml content
         :rtype: str
         """
         # Define click options in string
@@ -72,12 +67,16 @@ class InitPPYaml(MergePPANYamls):
 
         return yaml_content_str
 
-    def get_settings_yaml(self, yaml_content_str):
+    def combine_settings(self, yaml_content_str):
         """
-        Combined the model and settings yaml information =
-        :param yaml_content_str: 
+        Combined the model and settings yaml information
+
+        :param yaml_content_str: string of yaml information,
+                                 including name, platform,
+                                 target, and model yaml content
         :type yaml_content_str: str
-        :return:
+        :return: string of yaml information, including name, platform,
+                 target, model yaml content, and setting yaml content
         :rtype: str
         """
         my = yaml.load(yaml_content_str, Loader=yaml.Loader)
@@ -99,15 +98,21 @@ class InitPPYaml(MergePPANYamls):
 
         return yaml_content_str
 
-    def combine_yamls(self, yaml_content_str):
+    def combine_yamls(self, yaml_content_str: str):
         """
         Combine experiment yamls with the defined combined.yaml.
-        If more than 1 pp yaml defined, return a list of paths.
+        If more than 1 pp yaml defined, return a list of strings.
+        Each string contains combined yaml information, including
+        name, platform, target, model yaml content, settings yaml
+        content, and pp yaml content
 
-        :param yaml_content_str: 
+        :param yaml_content_str: string of yaml information,
+                                 including name, platform, target,
+                                 model yaml content, and settings
+                                 yaml content
         :type yaml_content_str: str
-        :return:
-        :rtype: 
+        :return: List of combined yaml information (str elements)
+        :rtype: list of strings
         """
         # Experiment Check
         # Load string as yaml
@@ -145,12 +150,13 @@ class InitPPYaml(MergePPANYamls):
         Merge separately combined post-processing and analysis
         yamls into fully combined yaml (without overwriting like sections).
 
-        :param pp_list:
-        :type pp_list:
-        :param yaml_content_str:
+        :param pp_list: list of combined model, settings, and pp yaml string
+        :type pp_list: array
+        :param yaml_content_str: -----------
         :type yaml_content_str: str
-        :return:
-        :rtype: str
+        :return: fully combined yaml dictionary (includes model, settings,
+                 and multiple pp yamls)
+        :rtype: dict
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
@@ -168,12 +174,12 @@ class InitPPYaml(MergePPANYamls):
 
             for i in pp_list[1:]:
                 yf = yaml.load(i, Loader=yaml.Loader)
-                for key in result.items():
+                for key, value in result.items():
                     # Only concerned with merging component information
                     # in "postprocess" sections across yamls
                     if key != "postprocess":
                         continue
-                    if key not in yf:
+                    if key not in yf.keys():
                         continue
 
                     if isinstance(result[key],dict) and isinstance(yf[key],dict):
@@ -181,7 +187,6 @@ class InitPPYaml(MergePPANYamls):
                             result['postprocess']["components"] += yf['postprocess']["components"]
                         else:
                             result['postprocess']["components"] = yf['postprocess']["components"]
-
         # If only one post-processing yaml listed
 #        elif pp_list is not None and len(pp_list) == 1:
 ##            yml_pp = "".join(pp_list[0])
@@ -199,11 +204,17 @@ class InitPPYaml(MergePPANYamls):
 
     def combine(self):
         """
-        Combine the model, experiment, and analysis yamls
+        Combine the model, experiment, and pp yamls
 
-        :return:
-        :rtype: str
+        :return: cleaned, combined yaml dictionary
+        :rtype: dict
         """
+        # Create combined pp yaml
+        former_log_level = fre_logger.level
+        fre_logger.setLevel(logging.INFO)
+        fre_logger.info("Combining yaml files into one dictionary: ")
+        fre_logger.setLevel(former_log_level)
+
         try:
             # Merge model into combined file
             yaml_content_str = self.combine_model()
@@ -211,7 +222,7 @@ class InitPPYaml(MergePPANYamls):
             raise ValueError("ERR: Could not merge model information.") from exc
         try:
             # Merge model into combined file
-            yaml_content_str = self.get_settings_yaml(yaml_content_str)
+            yaml_content_str = self.combine_settings(yaml_content_str)
         except Exception as exc:
             raise ValueError("ERR: Could not merge setting information.") from exc
 
@@ -225,9 +236,9 @@ class InitPPYaml(MergePPANYamls):
             # Merge model/pp and model/analysis yamls if more than 1 is defined
             # (without overwriting the yaml)
             full_combined = self.merge_multiple_yamls(comb_pp_updated_list,
-                                                  yaml_content_str)
+                                                      yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge multiple pp and analysis information together.") from exc
+            raise ValueError("ERR: Could not merge multiple pp yaml information together.") from exc
 
         try:
             cleaned_yaml = clean_yaml(full_combined)

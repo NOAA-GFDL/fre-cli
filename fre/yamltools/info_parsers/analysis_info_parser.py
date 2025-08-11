@@ -37,17 +37,12 @@ class InitAnalysisYaml(MergePPANYamls):
         mainyaml_dir = os.path.abspath(self.yml)
         self.mainyaml_dir = os.path.dirname(mainyaml_dir)
 
-        # Create combined pp yaml
-        former_log_level = fre_logger.level
-        fre_logger.setLevel(logging.INFO)
-        fre_logger.info("Combining yaml files into one dictionary: ")
-
-
     def combine_model(self):
         """
         Create the combined.yaml and merge it with the model yaml
 
-        :return:
+        :return: string of yaml information, including name, platform,
+                 target, and model yaml content
         :rtype: str
         """
         # Define click options in string
@@ -70,37 +65,50 @@ class InitAnalysisYaml(MergePPANYamls):
 
         return yaml_content_str
 
-    def get_settings_yaml(self, yaml_content_str):
+    def combine_settings(self, yaml_content_str):
         """
-        :param yaml_content_str: 
+        Combined the model and settings yaml information
+
+        :param yaml_content_str: string of yaml information,
+                                 including name, platform,
+                                 target, and model yaml content
         :type yaml_content_str: str
-        :return:
+        :return: string of yaml information, including name, platform,
+                 target, model yaml content, and setting yaml content
         :rtype: str
         """
         my = yaml.load(yaml_content_str, Loader=yaml.Loader)
-#        print(yml.get("experiments"))
 
         for i in my.get("experiments"):
             if self.name != i.get("name"):
                 continue
             settings = i.get("settings")
 
-#        print(f"{self.mainyaml_dir}/{settings}")
         with open(f"{self.mainyaml_dir}/{settings}", 'r') as f:
             settings_content = f.read()
 
         yaml_content_str += settings_content
+
+        # Return the combined string and loaded yaml
+        former_log_level = fre_logger.level
+        fre_logger.setLevel(logging.INFO)
+        fre_logger.info("   settings yaml: %s", settings)
+        fre_logger.setLevel(former_log_level)
+
         return yaml_content_str
 
     def combine_yamls(self,yaml_content_str):
         """
         Combine analysis yamls with the defined combined.yaml
-        If more than 1 analysis yaml defined, return a list of paths.
+        If more than 1 analysis yaml defined, return a list of strings.
+        Each string contains combined yaml information, including
+        name, platform, target, model yaml content, settings yaml
+        content, and analysis yaml content
 
         :param yaml_content_str:
         :type yaml_content_str: str
-        :return:
-        :rtype: str
+        :return: List of combined yaml information (str elements)
+        :rtype: list of str
         """
         # Load string as yaml
         yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
@@ -157,13 +165,12 @@ class InitAnalysisYaml(MergePPANYamls):
         # in result to include the loaded yaml file's value.
         if analysis_list is not None and len(analysis_list) > 1:
             result.update(yaml.load(analysis_list[1], Loader=yaml.Loader))
-
             for i in analysis_list[2:]:
                 yf = yaml.load(i, Loader=yaml.Loader)
-                for key in result.items():
-                    if key not in yf:
+                for key, value in result.items():
+                    if key not in yf.keys():
                         continue
-                    if isinstance(result[key],dict) and isinstance(yf[key],dict):
+                    if isinstance(result[key], dict) and isinstance(yf[key],dict):
                         result['analysis'] = yf['analysis'] | result['analysis']
 
         if ay_path is not None:
@@ -181,6 +188,12 @@ class InitAnalysisYaml(MergePPANYamls):
         :return:
         :rtype: str
         """
+        # Create combined pp yaml
+        former_log_level = fre_logger.level
+        fre_logger.setLevel(logging.INFO)
+        fre_logger.info("Combining yaml files into one dictionary: ")
+        fre_logger.setLevel(former_log_level)
+
         try:
             # Merge model into combined file
             yaml_content_str = self.combine_model()
@@ -188,7 +201,7 @@ class InitAnalysisYaml(MergePPANYamls):
             raise ValueError("ERR: Could not merge model information.") from exc
         try:
             # Merge model into combined file
-            yaml_content_str = self.get_settings_yaml(yaml_content_str)
+            yaml_content_str = self.combine_settings(yaml_content_str)
         except Exception as exc:
             raise ValueError("ERR: Could not merge setting information.") from exc
 
@@ -204,7 +217,7 @@ class InitAnalysisYaml(MergePPANYamls):
             full_combined = self.merge_multiple_yamls(comb_analysis_updated_list,
                                                    yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge multiple pp and analysis information together.") from exc
+            raise ValueError("ERR: Could not merge multiple analysis yaml information together.") from exc
 
         try:
             cleaned_yaml = clean_yaml(full_combined)

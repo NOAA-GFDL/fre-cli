@@ -1,75 +1,76 @@
-import os
-import logging
-fre_logger = logging.getLogger(__name__)
-from pathlib import Path
-#import pprint
-
-# this boots yaml with !join- see __init__
-from . import *
-
+'''
+Abstract base classes to provide scaffolding of
+yaml combining process for classes that inherit
+them.
+'''
 from abc import ABC, abstractmethod
 
 # inherited by pp_info_parser and analysis_info_parser
 class MergePPANYamls(ABC):
+    """
+    Scaffolding for merging pp and analysis yamls
+    """
     @abstractmethod
     def combine_model(self):
         """
-        :return:
-        :rtype: str
+        Function that will combine model yaml information with
+        passed click options name, platform, and target
         """
         pass
 
     @abstractmethod
-    def get_settings_yaml(self, yaml_content_str):
+    def combine_settings(self, yaml_content_str):
         """
-        :return:
-        :rtype: str
+        Function that will combine settings yaml information
+        with output yaml str from combine_model
         """
         pass
 
     @abstractmethod
     def combine_yamls(self):
         """
-        :return:
-        :rtype: str
+        Function that will 
         """
         pass
 
     @abstractmethod
     def merge_multiple_yamls(self):
         """
-        :return:
-        :rtype: str
+        Function that will merge multiple yaml dictionaries
+        to produce final combined yaml of information
         """
         pass
 
 # inherited by compile_info_parser
 class MergeCompileYamls(ABC):
+    """
+    Scaffolding for merging compile yamls
+    """
     @abstractmethod
-    def combine_model():
+    def combine_model(self):
         """
-        :return:
-        :rtype: str
+        Function that will combine model yaml information with
+        passed click options name, platform, and target
         """
         pass
 
     @abstractmethod
-    def combine_compile():
+    def combine_compile(self):
         """
-        :return:
-        :rtype: str
+        Function that will combine compile yaml information
+        with output yaml str from combine_model
         """
         pass
 
     @abstractmethod
-    def combine_platforms():
+    def combine_platforms(self):
         """
-        :return:
-        :rtype: str
+        Function that will combine platform yaml information
+        with output yaml str from combine_compile
         """
         pass
 
-class ValidateYamls(ABC):
+#class ValidateYamls(ABC):
 #    @abstractmethod
 #    def validate_keys():
 #        pass
@@ -78,6 +79,6 @@ class ValidateYamls(ABC):
 #    def validate_values():
 #        pass
 #
-    @abstractmethod
-    def validate():
-        pass
+#    @abstractmethod
+#    def validate():
+#        pass
