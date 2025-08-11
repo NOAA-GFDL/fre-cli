@@ -60,7 +60,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         os.makedirs(directory, exist_ok = True)
     except Exception as exc:
         raise OSError(
-            '(checkoutScript) directory {directory} wasn't able to be created. exit!') from exc
+            "(checkoutScript) directory {directory} wasn't able to be created. exit!") from exc
     finally:
         os.chdir(go_back_here)
 
