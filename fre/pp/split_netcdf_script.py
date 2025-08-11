@@ -38,7 +38,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   '''
   Given a directory of netcdf files, splits those netcdf files into separate
   files for each data variable and copies the data variable files of interest
-  to the output directory::
+  to the output directory
   
   Intended to work with data structured for fre-workflows and fre-workflows file naming conventions
     Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
