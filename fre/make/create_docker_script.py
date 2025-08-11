@@ -20,9 +20,10 @@ def dockerfile_create(yamlfile:str, platform:str, target:str, execute:bool, skip
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
-    :param platform: FRE container platform; container platforms are defined in the platforms yaml
+    :param platform: FRE container platform; container platforms are defined in the platforms yaml.
                      Container platforms can build non-shareable (includes intel compilers) and shareable
-                     (does not include intel compilers) singularity image files.
+                     (does not include intel compilers) singularity image files. An example of a
+                     non-shareable container platform is "hpcme.2023"
     :type platform: str
     :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
     :type target: str

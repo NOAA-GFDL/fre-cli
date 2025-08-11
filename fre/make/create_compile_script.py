@@ -1,5 +1,5 @@
 '''
-Creates a compile script to generate a model executable.
+Creates a compile script to compile the model and generate a model executable.
 '''
 
 import os
