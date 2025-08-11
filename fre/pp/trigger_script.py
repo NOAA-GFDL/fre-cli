@@ -8,6 +8,7 @@ fre_logger = logging.getLogger(__name__)
 def trigger(experiment = None, platform = None, target = None, time = None):
     """
     Trigger the postprocessing tasks for one segment of the history.
+    
     :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str
     :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
@@ -17,6 +18,7 @@ def trigger(experiment = None, platform = None, target = None, time = None):
     :param time: The start time of the segment. Formatted as a series of integers.
     :type time: Cylc representation of a time point
     .. note: 
+    
     The segment is defined as a start point (--time) and a duration (defined in
     the experiment yaml). Cylc combines the two for a cycle duration; we are using
     datetime cycling (https://cylc.github.io/cylc-doc/stable/html/glossary.html#term-datetime-cycling)
