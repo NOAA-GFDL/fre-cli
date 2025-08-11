@@ -19,7 +19,7 @@ def getEnvSub(inString):
 ## Replaces all instances of Linux environment variables (${VAR}) in a string using getEnvSub
 ## \param string A string to have the variables replaced
 def envReplace(string):
-  return re.sub("\$\{\w+\}", getEnvSub, string)
+  return re.sub(r"\$\{\w+\}", getEnvSub, string)
 
 ## Reads stores and replaces the fre variables set in the model YAML
 class frevars():
@@ -37,10 +37,10 @@ class frevars():
     ## \param inString A string that specifies the value to be retrieved
     def getVarYamlSub(inString):
       return self.modelyaml[removeEnclosing(inString.group())]
-    return re.sub("\$\(\w+\)", getVarYamlSub, string)
+    return re.sub(r"\$\(\w+\)", getVarYamlSub, string)
 
 ## Wrapper that relaces environment ${} and FRE $() variables
-## \param self the FRE yaml varaibles (FRE properties)
+## \param self the FRE yaml variables (FRE properties)
 ## \param string The YAML string that is having its variables replaced
 ## \returns string with the environment and FRE variables replaced
   def freVarSub(self, string):

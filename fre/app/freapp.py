@@ -68,7 +68,7 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
 @click.option("-i", "--input_dir",
               type = str,
               help = "`inputDir` / `input_dir` (env var) specifies input directory to regrid, " + \
-                     "typically an untarredv history file archive" ,
+                     "typically an untarred history file archive" ,
               required = True)
 @click.option("-o", "--output_dir",
               type = str,

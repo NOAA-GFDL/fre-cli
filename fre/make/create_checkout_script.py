@@ -72,7 +72,7 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
 
         platform = model_yaml.platforms.getPlatformFromName(platform_name)
 
-        # ceate the source directory for the platform
+        # create the source directory for the platform
         if not platform["container"]:
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
             # if the source directory does not exist, it is created
@@ -115,6 +115,3 @@ def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, exec
             fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(),jobs,pc)
             fre_checkout.finish(model_yaml.compile.getCompileYaml(),pc)
             fre_logger.info("\nCheckout script created at %s/checkout.sh \n", tmp_dir)
-
-if __name__ == "__main__":
-    checkout_create()

@@ -56,11 +56,11 @@ class compileYaml():
             raise
         ## Loop through the src array
         for c in self.yaml['src']:
-        ## Check for required componenet name
+        ## Check for required component name
             try:
                 c['component']
             except:
-                print("You must set the 'componet' name for each src component")
+                print("You must set the 'component' name for each src component")
                 raise
             ## Check for required repo url
             try:

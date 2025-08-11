@@ -147,7 +147,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
 
         # set remap items
         rose_remap.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
-        # if xyInterp doesnt exist, grid is native
+        # if xyInterp doesn't exist, grid is native
         if i.get("xyInterp") is None:
             rose_remap.set(keys=[f'{comp}', 'grid'], value='native')
 
