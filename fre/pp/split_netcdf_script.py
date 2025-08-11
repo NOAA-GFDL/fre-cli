@@ -183,7 +183,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
     ''' checks a string for matches in a list of patterns
     
         xstr: string to search for matches 
-        var_exclude: list of patterns defined in line 139'''
+        var_exclude: list of patterns defined in VAR_EXCLUDE'''
     allmatch = [re.search(el, xstr)for el in var_exclude]
     #If there's at least one match in the var_exclude list (average_bnds is OK)
     return len(list(set(allmatch))) > 1
