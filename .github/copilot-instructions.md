@@ -123,6 +123,12 @@ fre app regrid --help
 
 ## Common Issues and Workarounds
 
+**Network timeout during pip install**:
+- If `pip install -e .` fails with timeout errors, this indicates network connectivity issues
+- In CI environments, this may be due to firewall limitations
+- Solution: The conda environment already contains most dependencies, so CLI testing can proceed
+- Document as: "pip install fails due to network/firewall limitations - use conda environment directly"
+
 **YAML validation failures**: 
 - Many test YAML files may fail validation due to strict schema requirements
 - This is expected behavior - the validation is working correctly
