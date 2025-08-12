@@ -103,10 +103,7 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
         for var in variables:
             fre_logger.debug(f"Variable loop: averaging variable '{var}'")
             # form the input file list
-            if source_frequency == "P1Y":
-                subdir = Path(dir_ / 'ts' / grid / source / 'P1Y' / str(input_interval))
-            else:
-                subdir = Path(dir_ / 'ts' / grid / source / 'P1M' / str(input_interval))
+            subdir = Path(dir_ / 'ts' / grid / source / source_frequency / str(input_interval))
 
             input_files = []
 
@@ -126,11 +123,8 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
             last = list(recurrence)[-1]
             first_YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(first, "%Y")
             last_YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(last, "%Y")
-            if source_frequency == "P1Y":
-                subdir = Path(dir_ / 'av' / grid / source / 'P1Y' / str(output_interval))
-            else:
-                subdir = Path(dir_ / 'av' / grid / source / 'P1M' / str(output_interval))
-            if source_frequency == "P1Y":
+            subdir = Path(dir_ / 'av' / grid / source / frequency_iso / str(output_interval))
+            if frequency == "yr":
                 output_file = subdir / (source + '.' + first_YYYY + '-' + last_YYYY + '.' + var + '.nc')
             else:
                 output_file = subdir / (source + '.' + first_YYYY + '01-' + last_YYYY + '12.' + var + '.nc')
