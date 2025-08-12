@@ -44,7 +44,7 @@ arguments
   - the other configuration files are typically housing metadata associated with ``coordinates``,
     ``formula_terms``, and controlled-vocabulary (``CV``).
 
-* (required) ``-o, --outdir TEXT``, path-prefix inwhich the output directory structure is created.
+* (required) ``-o, --outdir TEXT``, path-prefix in which the output directory structure is created.
 
   - further output-directories and structure/template information is specified specified in ``exp_config``
 
@@ -78,7 +78,7 @@ The bulk of this routine is housed in ``fre/cmor/cmor_mixer.py``, which is a rew
 Sergey Nikonov's original ``CMORcommander.py`` script, utilized during GFDL's CMIP6 publishing run.
 
 This code is dependent on two primary json configuration files- a MIP
-variable table and another containing experiment (i.e. model) specific metdata (e.g. grid) to append
+variable table and another containing experiment (i.e. model) specific metadata (e.g. grid) to append
 to the output netCDF file headers, in addition to other configuration options such as output directory
 name specification, output path templates, and specification of other json configuration files containing
 controlled-vocabulary (CV), coordinate, and formula term conventions for rewriting the output metadata.

@@ -62,7 +62,7 @@ class frenctoolsTimeAverager(timeAverager):
         from subprocess import Popen, PIPE
 
         
-        #Recursive call if month is selcted for climatology. by Avery Kiihne
+        #Recursive call if month is selected for climatology. by Avery Kiihne
         if self.avg_type == 'month':
             monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
             output_dir = f"monthly_output_files"    #Folder for the results, split by month
