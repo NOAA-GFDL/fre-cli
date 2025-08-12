@@ -15,7 +15,7 @@ def test_regrid_xy():
   """
 
   date = "20250729"
-  ncomponents = 5
+  n_components = 5
   skip_component = 3
   input_files = ["atmos_daily_cmip", "atmos_diurnal"]
   yamlfile = "test_yaml.yaml"
@@ -29,7 +29,7 @@ def test_regrid_xy():
   generate_files.set_test(date_in=date,
                           yamlfile_in=yamlfile,
                           input_files_in=input_files,
-                          ncomponents_in=ncomponents,
+                          n_components_in=n_components,
                           input_dir_in=input_dir,
                           skip_component_in=skip_component)
 
@@ -41,8 +41,8 @@ def test_regrid_xy():
                       input_date=date)
 
   #check answers, for the third component, postprocess_on = False
-  checkfiles = [Path(output_dir)/Path(f"{date}.{ifile}{i}.nc") for ifile in input_files
-                for i in range(1,ncomponents+1) if i!=skip_component]
+  checkfiles = [output_dir/f"{date}.{ifile}{i}.nc" for ifile in input_files
+                for i in range(1,n_components+1) if i!=skip_component]
   for outfile in checkfiles:
 
     checkme = xr.load_dataset(outfile)
@@ -56,7 +56,7 @@ def test_regrid_xy():
 
   #third component should not have been regridded
   for ifile in input_files:
-    assert not (output_dir/Path(f"{date}.{ifile}{skip_component}.nc")).exists()
+    assert not (output_dir/f"{date}.{ifile}{skip_component}.nc").exists()
 
   shutil.rmtree(output_dir)
   generate_files.cleanup()
@@ -80,8 +80,8 @@ def test_get_input_mosaic():
 
   #copy mosaic_file to input_dir and return mosaic_file/input_dir
   check = regrid_xy.get_input_mosaic(datadict)
-  assert check.exists()
-  assert check == input_dir/mosaic_file
+  assert check == str(input_dir/mosaic_file)
+  assert Path(check).exists()
 
   mosaic_file.unlink()  #clean up
   grid_spec.unlink()  #clean up
@@ -110,13 +110,13 @@ def test_get_remap_file():
   """
 
   input_dir = Path("input_dir")
-  input_mosaic = Path("C20_mosaic.nc")
+  input_mosaic = "C20_mosaic"
   nlon = 40
   nlat = 10
   interp_method = "conserve_order1"
 
-  datadict = {"input_dir": input_dir,
-              "input_mosaic": input_mosaic,
+  datadict = {"input_dir": input_dir.name,
+              "input_mosaic": input_mosaic+".nc",
               "output_nlon": nlon,
               "output_nlat": nlat,
               "interp_method": interp_method}
@@ -124,13 +124,13 @@ def test_get_remap_file():
   input_dir.mkdir(exist_ok=True)
 
   #check remap file from current directory is copied to input directory
-  remap_file = Path(f"{input_mosaic.stem}X{nlon}by{nlat}_{interp_method}.nc")
+  remap_file = Path(f"{input_mosaic}X{nlon}by{nlat}_{interp_method}.nc")
   remap_file.touch()
 
   check = regrid_xy.get_remap_file(datadict)
 
-  assert check.exists()
-  assert check == input_dir/remap_file
+  assert check == str(input_dir/remap_file)
+  assert Path(check).exists()
 
   shutil.rmtree(input_dir)
 
