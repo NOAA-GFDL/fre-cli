@@ -97,7 +97,7 @@ def make_yaml():
 
 def make_grid_spec():
   xr.Dataset(data_vars={"atm_mosaic_file": f"{input_mosaic}".encode(),
-                        "lnd_moasic_file": f"{input_mosaic}".encode(),
+                        "lnd_mosaic_file": f"{input_mosaic}".encode(),
                         "ocn_mosaic_file": "ocean_mosaic.nc".encode()}
              ).to_netcdf(grid_spec)
 
