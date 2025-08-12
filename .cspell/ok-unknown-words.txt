@@ -382,6 +382,7 @@ pytests
 pytools
 qpoint
 rainwat
+RDHPCS
 redissolution
 reengineered
 reff
