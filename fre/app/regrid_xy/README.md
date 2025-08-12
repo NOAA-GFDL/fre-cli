@@ -11,7 +11,7 @@ config field name / python variable name (type) explanation
 
 the following are required to be specified:
 _______________________________________
-`inputDir` / `input_dir` (env var) specifies input directory to regrid, typically an untarredv history file archive
+`inputDir` / `input_dir` (env var) specifies input directory to regrid, typically an untarred history file archive
 _______________________________________
 `source` / `source` (env var) source name for input target file name within input directory to target for regridding. the value for `source` must be present in at least one component's configuration fields
 _______________________________________
@@ -29,7 +29,7 @@ _______________________________________
 
 
 # INPUT PARAMETERS (configuration fields, mandatory)
-the following parameters are REQUIRED to be specified on a per-component basis wtihin `app/regrid-xy/rose-app.conf`. A component's input parameters are delineated with a `[component_name]`
+the following parameters are REQUIRED to be specified on a per-component basis within `app/regrid-xy/rose-app.conf`. A component's input parameters are delineated with a `[component_name]`
 _______________________________________
 `inputRealm` / `input_realm` (config field) realm within model from which the input component/source files are derived
 _______________________________________

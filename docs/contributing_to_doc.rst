@@ -16,7 +16,7 @@ CI/CD minutes, and making PR reviews incredibly easy for documentation changes.
 
 * you DO NOT NEED a ``readthedocs.org`` account.
 * Make a branch, either with ``NOAA-GFDL/fre-cli`` as the remote, or your own fork.
-* Edit a file any non-zero amount, commit that change to your branch, and push. If the branch is idential to ``main``,
+* Edit a file any non-zero amount, commit that change to your branch, and push. If the branch is identical to ``main``,
   you cannot open a PR!
 * Once the PR is opened, a ``readthedocs`` workflow will be run, even if that PR is in draft mode. To confirm it is
   running, or did run, open your PR in a web browser, scroll to the bottom to find the latests workflow runs under
@@ -62,7 +62,7 @@ auto-generate a clickable module-index from doc-strings.
 
 install ``sphinx`` and related packages
 ---------------------------------------
-from the root-directory of your local repository copy, issue the following commands.
+From the root-directory of your local repository copy, issue the following commands.
 
 .. code-block:: console
 
@@ -81,3 +81,15 @@ Another note- ``sphinx-build`` is quite permissive, though loud. It makes accura
 is able to successfully finish anyways. After the first successful build, many warnings will not be displayed a second
 time unless the file throwing the warning was changed. To get all the (useful AND useless) build output like the first
 run, simply add ``-E`` or ``--fresh-env`` to the call to avoid using ``sphinx``\'s build-cache. 
+
+Troubleshooting
+===============
+
+Both conda and python can interact oddly with c-shell. If you get the following error:
+
+.. code-block:: console
+
+ > pip install .[docs]
+ pip: No match.
+
+You are likely in c-shell and can solve your issue by switching to a bash shell, re-loading your fre-cli environment, and running the local sphinx build commands again. 
