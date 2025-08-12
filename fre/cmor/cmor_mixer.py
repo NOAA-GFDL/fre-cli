@@ -77,7 +77,8 @@ def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
     :return: Absolute path to the output file written by cmor.close.
     :rtype: str
 
-    .. note:: This function performs extensive setup of axes and metadata, and conditionally handles tripolar ocean grids.
+    .. note:: This function performs extensive setup of axes and metadata, and conditionally handles tripolar
+              ocean grids.
     """
     fre_logger.info("input data:")
     fre_logger.info("     local_var = %s", local_var)
@@ -149,13 +150,14 @@ def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
 
     # if it's still None, give a warning and move on.
     if time_coords_calendar is None:
-        fre_logger.warning("WARNING: input netcdf file's time coordinates do not have a calendar nor calendar_type field"
+        fre_logger.warning("WARNING input netcdf file's time coordinates do not have a calendar nor calendar_type field"
                            "this output could have the wrong calendar!")
     else:
         with open(json_exp_config, "r", encoding="utf-8") as file:
             data = json.load(file)
             if data['calendar'] != time_coords_calendar.lower():
-                raise ValueError(f"data calendar type {time_coords_calendar} does not match input config calendar type: {data['calendar']}")        
+                raise ValueError(f"data calendar type {time_coords_calendar} "
+                                 f"does not match input config calendar type: {data['calendar']}")
 
     # read in time_bnds, if present
     fre_logger.info('attempting to read coordinate BNDS, time_bnds')
@@ -707,7 +709,8 @@ def cmorize_target_var_files(indir: str = None,
         # now that CMOR has rewritten things... we can take our post-rewriting actions
         # first, remove /tmp/ from the output path.
         if not Path(local_file_name).is_absolute():
-            raise Exception('UGH')
+            raise ValueError(f'local_file_name should be an absolute path, not a relative one. \n '
+                             f'local_file_name = {local_file_name}')
 
         fre_logger.info('local_file_name = %s', local_file_name)
         filename = local_file_name.replace('/tmp/','/')
@@ -722,7 +725,6 @@ def cmorize_target_var_files(indir: str = None,
         except FileExistsError:
             fre_logger.warning('directory %s already exists!', filedir)
 
-        #
         mv_cmd = f"mv {local_file_name} {filedir}"
         fre_logger.info("moving files...\n%s", mv_cmd)
         subprocess.run(mv_cmd, shell=True, check=True)
@@ -782,7 +784,7 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
     :type json_table_config: str
     :param run_one_mode: If True, process only one file per variable.
     :type run_one_mode: bool
-    :return: 0 if the last file processed was successful, 1 if the last file processed was not successful, -1 if no files were processed.
+    :return: 0 if last file processed was successful, 1 if last file processed failed, -1 if no files were processed.
     :rtype: int
 
     .. note:: Errors for individual variables are logged and processing continues (except for run_one_mode).
@@ -886,9 +888,6 @@ def cmor_run_subtool(indir: str = None,
     # the function checks the potential error conditions RE CF compliance.
     if calendar_type is not None:
         update_calendar_type(json_exp_config, calendar_type, output_file_path = None)
-
-    #return
-
 
     # do not open, but confirm the existence of the exp-specific metadata file
     if Path(json_exp_config).exists():
