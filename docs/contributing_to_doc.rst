@@ -1,7 +1,7 @@
 .. last updated early Jul 9 2025.
 
 ``fre-cli``'s documentation is built with ``sphinx`` and written in restructured-text.
-A decent cheat-sheet for restructured-text can be found 
+A decent cheat-sheet for restructured-text can be found
 `at this gist <https://gist.github.com/SMotaal/24006b13b354e6edad0c486749171a70#sections>`__.
 
 with a PR to NOAA-GFDL/fre-cli (recommended)
@@ -35,7 +35,7 @@ this is for you. It also won't use your own github account minutes.
 
 * Make sure you HAVE a fork underneath your github profile, if not, fork the repository under the NOAA-GFDL namespace
 * Navigate to readthedocs' `log-in page <https://app.readthedocs.org/accounts/signup/>`_ and sign in with your GitHub
-  account. This effectively creates a ``readthedocs.org`` account for you, attached to your ``github`` account. 
+  account. This effectively creates a ``readthedocs.org`` account for you, attached to your ``github`` account.
 * Click "Add project" and search for ``fre-cli``. If your fork doesn't automatically come up, you do not have a fork!
   Go back to the first step in this list.
 * If your changes do not live on a branch named ``main`` (they should not, at least), configure the project to look
@@ -59,7 +59,7 @@ auto-generate a clickable module-index from doc-strings.
 
 install ``sphinx`` and related packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-from the root-directory of your local repository copy, issue the following commands.
+From the root-directory of your local repository copy, issue the following commands.
 
 .. code-block:: console
 
@@ -75,3 +75,15 @@ You should be able to click around the locally built html and links should work 
           a second time unless the file throwing the warning was changed. To get all the (useful AND useless) build
           output like the first run, simply add ``-E`` or ``--fresh-env`` to the call to avoid using ``sphinx``\'s
           build-cache.
+Troubleshooting
+~~~~~~~~~~~~~~~
+
+Both conda and python can interact oddly with c-shell. If you get the following error:
+
+.. code-block:: console
+
+ > pip install .[docs]
+ pip: No match.
+
+You are likely in c-shell and can solve your issue by switching to a bash shell, re-loading your fre-cli environment,
+and running the local sphinx build commands again.

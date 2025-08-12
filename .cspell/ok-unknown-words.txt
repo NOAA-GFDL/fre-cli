@@ -174,12 +174,15 @@ dset
 dunp
 dura
 ecpe
+encodekey
+encodeval
 enot
 ensmem
 envsoft
 errormsg
 evap
 excinfo
+execinfo
 execrunscript
 exitstatus
 experimentname
@@ -456,6 +459,7 @@ unlimdim
 unmsk
 untar
 unwgt
+vardict
 varlist
 varnames
 varsfre
@@ -480,6 +484,7 @@ yamlfilepath
 yamlfre
 yamlpath
 yamlvalidate
+ydict
 ymlsources
 ymonmean
 ymonstddev
