@@ -1,4 +1,4 @@
-''' This script will determine an estimated number of timesteps from a postprocessed time-series file's name and run nccheck on it '''
+''' This script will determine an estimated number of timesteps from a postprocessed time-series file's name and run nccheck on it. Ran during time-series file creation during rename-split-to-pp and make-timeseries tasks in fre postprocessing workflow. '''
 
 import os
 import logging
@@ -11,11 +11,12 @@ fre_logger = logging.getLogger(__name__)
 
 # Get estimated number of timesteps
 def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
-
     """
-    This function returns an estimated number of timesteps using elapsed time and data frequency.
+
+    Returns the estimated number of timesteps using elapsed time (calculated using date_start/date_end) and data frequency (provided in chunk_type argument).
+    Date string formats must be YYYY,YYYYMM,YYYYMMDD,YYYYMMDDHH,or YYYYMMDDHH:mm
     
-    Ex: 3 years worth of data with monthly frequency would be estimated to have 36 timesteps (3 years * 12 months)
+    Ex: Will return value of 36 (timesteps) for 3 years of data with monthly frequency output (3 years * 12 months)
         
     :param date_start: Starting time of data chunk
     :type date_start: str
@@ -23,7 +24,7 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
     :type date_end: str
     :param chunk_type: Frequency of data chunk
     :type chunk_type: str
-    :param cal: Calandar type used for data
+    :param cal: Calendar type corresponding to data (must be a cftime supported calendar: ‘standard’, ‘gregorian’, ‘proleptic_gregorian’, ‘noleap’, ‘365_day’, ‘360_day’, ‘julian’, ‘all_leap’, ‘366_day’)
     :type cal: str
     :return: Estimated number of timesteps
     :rtype: int
@@ -73,13 +74,14 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
 
 # Filepath is the path to the time-series file to be checked
 def validate(filepath: str):
-
     """
-    Compares the number of timesteps in each netCDF (.nc) file to the number of expected timesteps as found the filename.
+
+    Compares the number of timesteps in a postprocessed time-series netCDF (.nc) file to the number of expected timesteps as calculated using elapsed time and data frequency.
  
     :param filepath: Path to time-series file to be checked
     :type filepath: str
-    :return: Returns 0 unless an exception is raised or timesteps differ from expectation
+    :raises ValueError: Calendar name doesn't follow cftime conventions, frequency can't be determined from filepath, or number of timesteps differ from expectation
+    :return: Returns 0 unless an exception is raised or number of timesteps differ from expectation
     :rtype: int
     """
 
