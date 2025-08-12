@@ -170,21 +170,21 @@ cython_debug/
 .vscode/*
 .vscode
 
-# autogen'd by doc build
-docs/fre.*
-docs/modules.rst
-/docs/modules.rst
 
 
-##### GOTTA CLEAN THIS UP
 # files pulled/created via testing
 Dockerfile
 createContainer.sh
 FOO_cmor.yaml
 rose-app-run.conf
+*.nc
 tmp/
 
+# autogen'd by doc build
+docs/fre.*
+docs/modules.rst
 
+# parts of the package
 fre/app/generate_time_averages/tests/time_avg_test_files/
 fre/app/regrid_xy/tests/*/
 fre/make/tests/*_out/
@@ -192,9 +192,9 @@ fre/make/tests/test_run_fremake_*/
 fre/pp/tests/configure_yaml_out/
 fre/yamltools/tests/combine_yamls_out/
 
+# parts of the package tests
 fre/tests/fremake_out
 fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_*
 fre/tests/test_files/outdirfre/
 fre/tests/test_files/outdir/
-*.nc
 
