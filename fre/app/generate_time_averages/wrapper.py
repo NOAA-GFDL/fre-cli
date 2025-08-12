@@ -48,7 +48,7 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
     for source in sources:
         fre_logger.debug(f"Main loop: averaging history file '{source}'")
         # first, retrieve the variable names from the first segment
-        recurrence = recurrence_parser.parse('R1' + '/' + str(cycle_point.year) + '/' + str(input_interval))
+        recurrence = recurrence_parser.parse('R1' + '/' + f"{cycle_point.year:04d}" + '/' + str(input_interval))
         variables = []
         source_frequency = ""
         for dd in recurrence:
@@ -61,7 +61,7 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
                 subdir_yr =  Path(dir_ / 'ts' / grid / source / 'P1Y' / str(input_interval))
                 subdir_mon = Path(dir_ / 'ts' / grid / source / 'P1M' / str(input_interval))
                 if subdir_yr.exists():
-                    results = glob.glob(subdir_yr / (source + YYYY + '-' + ZZZZ + '.*.nc'))
+                    results = glob.glob(str(subdir_yr / (source + '.' + YYYY + '-' + ZZZZ + '.*.nc')))
                     if results:
                         variables = extract_variables_from_files(results)
                         source_frequency = "P1Y"
@@ -98,7 +98,7 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
 
         # then run the climo tool for each variable
         number_of_files = output_interval.get_seconds() / input_interval.get_seconds()
-        recurrence = recurrence_parser.parse('R' + str(int(number_of_files)) + '/' + str(cycle_point.year) + '/' + str(input_interval))
+        recurrence = recurrence_parser.parse('R' + str(int(number_of_files)) + '/' + f"{cycle_point.year:04d}" + '/' + str(input_interval))
 
         for var in variables:
             fre_logger.debug(f"Variable loop: averaging variable '{var}'")
