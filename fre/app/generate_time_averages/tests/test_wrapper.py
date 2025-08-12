@@ -26,8 +26,19 @@ def create_input_files(tmp_path):
     for file_ in input_files:
         assert file_.exists()
 
+    # write netcdfs from the cdfs
+    for file_ in input_files:
+        output_file = tmp_path / file_.stem
+        output_file = Path(str(output_file) + '.nc')
+        command = ['ncgen', '-o', output_file, file_]
+        sp = subprocess.run(command, check=True)
+        assert sp.returncode == 0
+        assert output_file.exists()
+
+    yield tmp_path
+
 def test_wrapper(create_input_files):
     """
     Run climatology wrapper and verify output.
     """
-
+    assert False
