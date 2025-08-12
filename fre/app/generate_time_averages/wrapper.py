@@ -81,7 +81,7 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
             elif frequency == "mon":
                 subdir = Path(dir_ / 'ts' / grid / source / 'P1M' / str(input_interval))
                 if subdir.exists():
-                    results = glob.glob(str(subdir_mon / (source + '.' + YYYY + '01-' + ZZZZ + '12.*.nc')))
+                    results = glob.glob(str(subdir / (source + '.' + YYYY + '01-' + ZZZZ + '12.*.nc')))
                     if results:
                         variables = extract_variables_from_files(results)
                         source_frequency = "P1M"
