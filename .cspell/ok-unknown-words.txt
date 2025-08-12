@@ -112,12 +112,15 @@ dunp
 dura
 ecpe
 Emon
+encodekey
+encodeval
 enot
 ensmem
 errormsg
 ESGF
 evap
 excinfo
+execinfo
 execrunscript
 exitstatus
 experimentname
@@ -480,6 +483,7 @@ untarred
 unwgt
 Utheri
 validatefail
+vardict
 varlist
 varnames
 varsfre
@@ -520,6 +524,7 @@ yamls
 Yamls
 yamltools
 yamlvalidate
+ydict
 ymlsources
 ymonmean
 ymonstddev

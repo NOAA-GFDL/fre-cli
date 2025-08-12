@@ -5,7 +5,7 @@ Tests split-netcdf, parse_yaml from split_netcdf_script.py
 import pytest
 import re
 from fre.pp import split_netcdf_script
-from fre.pp.split_netcdf_script import split_file_xarray, parse_yaml_for_varlist
+from fre.pp.split_netcdf_script import split_file_xarray
 import subprocess
 import os
 from os import path as osp
@@ -93,22 +93,24 @@ def test_split_file_setup():
 def test_split_file_run(workdir,infile, outfiledir, varlist):
     ''' Checks that split-netcdf will run when called from the command line 
     
-        workdir: subdir all operations are relative to
-        infile: netcdf file to split into single-var files
-        outfiledir: directory to which to write the split netcdf files
-          (new_all_ts_varlist, new_some_ts_varlist, new_none_ts_varlist)
-        varlist: comma-separated string specifying which variables to write 
-          ("all", some_ts_varlist, none_ts_varlist)
-        
-        Parameters for the 3 tests are based off of the list of variables to filter
-            on plus the type of file:
-            all: "all", the default, processes all variables in the input
-            some: processes a list of variables, some of which are and some of 
-                which are not in the input; includes one duplicate var
-            none: processes a list of variables, none of which are in the input;
-                should produce no files
-            ts: timeseries files
-            static: static files'''
+    :param workdir: subdir all operations are relative to
+    :type workdir: string
+    :param infile: netcdf file to split into single-var files
+    :type infile: string
+    :param outfiledir: directory to which to write the split netcdf files (new_all_ts_varlist, new_some_ts_varlist, new_none_ts_varlist)
+    :type outfiledir: string
+    :param varlist: comma-separated string specifying which variables to write ("all", some_ts_varlist, none_ts_varlist)
+    :type varlist: string
+    :type origdir: string
+    
+    Parameters for the 5 tests are based off of the list of variables to filter on plus the type of file:
+    
+    - all: "all", the default, processes all variables in the input
+    - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
+    - none: processes a list of variables, none of which are in the input; should produce no files
+    - ts: timeseries files
+    - static: static files
+    '''
     infile = osp.join(workdir, infile)
     outfiledir = osp.join(workdir, outfiledir)
     split_netcdf_args = ["pp", "split-netcdf", 
@@ -127,19 +129,20 @@ def test_split_file_run(workdir,infile, outfiledir, varlist):
                          pytest.param(casedirs[1],"new_some_static_varlist", "some_static_varlist", id='static_some')])    
 def test_split_file_data(workdir,newdir, origdir):
     ''' Checks that the data in the new files match the data in the old files
-        workdir: dir that all operations are relative to
-        newdir: the directory containing the newly-written files
-          (new_all_ts_varlist, new_some_ts_varlist)
-        origdir: dir containing the old files to check against
-          (all_ts_varlist, some_ts_varlist)
-        Parameters for the tests differ based off the variable list from test_split_file_run
-          and the type of file being split:
-            all: "all", the default, processes all variables in the input
-            some: processes a list of variables, some of which are and some of 
-                which are not in the input; includes one duplicate var
-            ts: timeseries files
-            static: static files
-                '''
+    :param workdir: dir that all operations are relative to
+    :type workdir: string
+    :param newdir: the directory containing the newly-written files (new_all_ts_varlist, new_some_ts_varlist)
+    :type newdir: string
+    :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
+    :type origdir: string
+    
+    Parameters for the tests differ based off the variable list from test_split_file_run and the type of file being split:
+    
+    - all: "all", the default, processes all variables in the input
+    - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
+    - ts: timeseries files
+    - static: static files
+    '''
     newdir = osp.join(workdir, newdir)
     origdir = osp.join(workdir, origdir)
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
@@ -174,19 +177,20 @@ def test_split_file_data(workdir,newdir, origdir):
                          pytest.param(casedirs[1],"new_some_static_varlist", "some_static_varlist", id='static_some')])
 def test_split_file_metadata(workdir,newdir, origdir):
     ''' Checks that the metadata in the new files match the metadata in the old files 
-        workdir: dir that all operations are relative to
-        newdir: the directory containing the newly-written files
-          (new_all_ts_varlist, new_some_ts_varlist)
-        origdir: dir containing the old files to check against
-          (all_ts_varlist, some_ts_varlist)
-        Parameters for the tests differ based off the variable list from test_split_file_run
-          and the type of file being split:
-            all: "all", the default, processes all variables in the input
-            some: processes a list of variables, some of which are and some of 
-                which are not in the input; includes one duplicate var
-            ts: timeseries files
-            static: static files
-                '''
+    :param workdir: dir that all operations are relative to
+    :type workdir: string
+    :param newdir: the directory containing the newly-written files (new_all_ts_varlist, new_some_ts_varlist)
+    :type newdir: string
+    :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
+    :type origdir: string
+    
+    Parameters for the tests differ based off the variable list from test_split_file_run and the type of file being split:
+    
+    - all: "all", the default, processes all variables in the input
+    - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
+    - ts: timeseries files
+    - static: static files
+    '''
     newdir = osp.join(workdir, newdir)
     origdir = osp.join(workdir, origdir)
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
@@ -209,7 +213,8 @@ def test_split_file_metadata(workdir,newdir, origdir):
 #clean up splitting files
 def test_split_file_cleanup():
     ''' Cleaning up files and dirs created for this set of tests. 
-        Deletes all netcdf files (*.nc) and all dirs created for this test (new_*)'''
+        Deletes all netcdf files (*.nc) and all dirs created for this test (new_*)
+        '''
     el_list = []
     dir_list = []
     for path, subdirs, files in os.walk(test_dir):
@@ -226,32 +231,3 @@ def test_split_file_cleanup():
     dir_deleted = [not osp.isdir(el) for el in newdir]
     el_deleted = [not osp.isdir(el) for el in netcdf_files]
     assert all(el_deleted + dir_deleted)
-
-#test parsing yaml
-@pytest.mark.parametrize("component,compdir,varlist,hist_source", 
-                             [("atmos", "all_ts_varlist","all", "none"), 
-                             ("atmos", "some_ts_varlist", some_ts_varlist, "none"), 
-                             pytest.param("mantle", "none_ts_varlist", 
-                                          "", "none", marks=pytest.mark.xfail), 
-                             pytest.param("atmos", "all_ts_varlist", "all", 
-                                          "atmos_diurnal", marks=pytest.mark.xfail)])
-def test_parse_yaml(component, compdir, varlist, hist_source):
-    ''' Tests parsing yaml for the variable_list we need for splitting 
-        component: string corresponding to a component in the yaml
-        compdir: directory in which to look for the yaml (all use same filename)
-        varlist: list of variables expected to match what we get from the yaml
-        hist_source: optional, string corresponding to a hist_source that should be under the component in the yaml
-        
-        Parameters for the tests are based off of the following: 
-            parses the yaml, does not find a varlist, gets the right default
-            parses the yaml, finds a varlist and it matches the orig results
-            parses the yaml, does not find the component and throws an error
-            parses the yaml, finds the varlist, but does not find a history_file
-              under sources that matches the hist_source
-            '''
-    yamlfile = osp.join(osp.join(casedirs[0], compdir), "am5_components_varlist.yml")
-    if hist_source == "none":
-      new_varlist = parse_yaml_for_varlist(yamlfile, component)
-    else:
-      new_varlist = parse_yaml_for_varlist(yamlfile, component, hist_source)  
-    assert varlist == new_varlist

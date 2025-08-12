@@ -62,7 +62,7 @@ auto-generate a clickable module-index from doc-strings.
 
 install ``sphinx`` and related packages
 ---------------------------------------
-from the root-directory of your local repository copy, issue the following commands.
+From the root-directory of your local repository copy, issue the following commands.
 
 .. code-block:: console
 
@@ -81,3 +81,15 @@ Another note- ``sphinx-build`` is quite permissive, though loud. It makes accura
 is able to successfully finish anyways. After the first successful build, many warnings will not be displayed a second
 time unless the file throwing the warning was changed. To get all the (useful AND useless) build output like the first
 run, simply add ``-E`` or ``--fresh-env`` to the call to avoid using ``sphinx``\'s build-cache. 
+
+Troubleshooting
+===============
+
+Both conda and python can interact oddly with c-shell. If you get the following error:
+
+.. code-block:: console
+
+ > pip install .[docs]
+ pip: No match.
+
+You are likely in c-shell and can solve your issue by switching to a bash shell, re-loading your fre-cli environment, and running the local sphinx build commands again. 
