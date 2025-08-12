@@ -386,6 +386,8 @@ qpoint
 rainwat
 Rbite
 Rcommander
+RDHPCS
+redissolution
 reengineered
 reff
 refinediag
