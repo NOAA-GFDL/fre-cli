@@ -11,6 +11,19 @@ from click.testing import CliRunner
 
 from fre import fre
 
+"""
+CLI Tests for fre cmor *
+Tests the command-line-interface calls for tools in the fre cmor suite. 
+Each tool generally gets 3 tests:
+    - fre cmor $tool, checking for exit code 0 (fails if cli isn't configured right)
+    - fre cmor $tool --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre cmor $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+      right and thinks the tool has a --optionDNE option)
+      
+We also have a set of more complicated tests for testing the full set of 
+command-line args for fre cmor yaml and fre cmor run. 
+"""
+
 runner = CliRunner()
 
 # where are we? we're running pytest from the base directory of this repo
