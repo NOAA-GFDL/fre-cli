@@ -230,6 +230,7 @@ Laflotte
 landuse
 lastindex
 latlon
+latxlon
 lazygroup
 LDFLAGS
 levelname
