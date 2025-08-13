@@ -49,7 +49,3 @@ def run_all_fre_pp_steps(experiment = None, platform = None, target = None, conf
     status_subtool(experiment, platform, target)
 
     print('(run_all_fre_pp_steps) done.')
-
-
-if __name__ == '__main__':
-    run_all_fre_pp_steps()

@@ -20,7 +20,3 @@ def trigger(experiment = None, platform = None, target = None, time = None):
     fre_logger.debug('running the following command: ')
     fre_logger.debug(cmd)
     subprocess.run(cmd, shell=True, check=True, timeout=30)
-
-
-if __name__ == "__main__":
-    trigger()

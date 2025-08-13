@@ -28,6 +28,3 @@ def check(file_path, num_steps):
     else:
         fre_logger.error(f" Unexpected number of timesteps found in {file_path}. Found: {num_actual_steps} timesteps  Expected: {num_steps} timesteps")
         raise ValueError(f" Unexpected number of timesteps found in {file_path}. Found: {num_actual_steps} timesteps  Expected: {num_steps} timesteps")
-
-if __name__  == "__main__":
-    check()
