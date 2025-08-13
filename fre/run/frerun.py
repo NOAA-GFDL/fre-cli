@@ -15,6 +15,3 @@ def function(uppercase):
     """ - Execute fre run test """
     run_test_function(uppercase)
     raise NotImplementedError('fre run has not been implemented yet!')
-
-if __name__ == "__main__":
-    run_cli()

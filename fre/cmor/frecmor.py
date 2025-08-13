@@ -204,7 +204,3 @@ def varlist(dir_targ, output_variable_list):
     Create a simple variable list from netCDF files in the target directory.
     """
     make_simple_varlist(dir_targ, output_variable_list)
-
-
-if __name__ == "__main__":
-    cmor_cli()

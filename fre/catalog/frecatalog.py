@@ -64,6 +64,3 @@ def validate(context, json_path, json_template_path, vocab, proper_generation, t
 def merge(context, input, output):
     """ - Merge two or more more catalogs into one """
     context.invoke(combine_cats.combine_cats, inputfiles=input, output_path=output)
-
-if __name__ == "__main__":
-    catalog_cli()

@@ -267,7 +267,3 @@ def trigger(experiment, platform, target, time):
     Start postprocessing for a particular time
     """
     trigger_script.trigger(experiment, platform, target, time)
-
-if __name__ == "__main__":
-    ''' entry point for click to fre pp commands '''
-    pp_cli()

@@ -103,6 +103,3 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
 
 
 #############################################
-
-if __name__ == '__main__':
-    checkout_template()
