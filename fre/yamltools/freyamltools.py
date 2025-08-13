@@ -30,4 +30,3 @@ def combine_yamls(yamlfile,
     combine_yamls_script.consolidate_yamls(yamlfile,
                                            experiment, platform, target,
                                            use, output)
-

@@ -41,4 +41,3 @@ def validate_subtool(experiment = None, platform = None, target = None):
         raise Exception('cylc validate . exited non-zero')
     finally:
         os.chdir(go_back_here)
-

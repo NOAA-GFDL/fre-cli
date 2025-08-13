@@ -212,4 +212,3 @@ def compile_script(yamlfile, platform, target, jobs, parallel, execute, verbose)
 def dockerfile(yamlfile, platform, target, no_format_transfer, execute):
     """ - Write the dockerfile """
     create_docker_script.dockerfile_create(yamlfile, platform, target, no_format_transfer, execute)
-

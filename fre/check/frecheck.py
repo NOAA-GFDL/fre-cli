@@ -14,4 +14,3 @@ def function(uppercase):
     """ - Execute fre check test """
     check_test_function(uppercase)
     raise NotImplementedError('fre check has not been implemented yet!')
-

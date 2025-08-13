@@ -43,4 +43,3 @@ def platforms(yamlfile):
 def pp_components(yamlfile, experiment):
     """ - List components to be ppst-processed for a defined experiment"""
     list_pp_components_script.list_ppcomps_subtool(yamlfile, experiment)
-

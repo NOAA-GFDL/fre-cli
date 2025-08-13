@@ -223,9 +223,8 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
                 #buildDockerfile(fremakeYaml, image)
 
     if baremetalRun:
-        if __name__ == '__main__':
-            if execute:
-                # Create a multiprocessing Pool
-                pool = Pool(processes=nparallel)
-                # process data_inputs iterable with pool
-                pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)
+        if execute:
+            # Create a multiprocessing Pool
+            pool = Pool(processes=nparallel)
+            # process data_inputs iterable with pool
+            pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)

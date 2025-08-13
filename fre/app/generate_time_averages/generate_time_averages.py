@@ -91,4 +91,3 @@ def generate(inf = None, outf = None,
         fre_logger.info(f'WARNING: exitstatus={exitstatus} != 0. Something exited poorly!')
     else:
         fre_logger.info('time averaging finished successfully')
-

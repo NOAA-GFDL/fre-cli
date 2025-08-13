@@ -26,4 +26,3 @@ def status_subtool(experiment = None, platform = None, target = None):
         subprocess.run(cmd, shell=True, check=True, timeout=TIMEOUT_SECS)
     except:
         raise Exception('FAILED: subprocess call to- cylc workflow-state {name}')
-

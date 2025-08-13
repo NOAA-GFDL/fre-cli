@@ -267,4 +267,3 @@ def trigger(experiment, platform, target, time):
     Start postprocessing for a particular time
     """
     trigger_script.trigger(experiment, platform, target, time)
-

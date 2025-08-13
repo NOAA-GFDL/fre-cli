@@ -83,4 +83,3 @@ def validate(history,date_string,warn):
               "\n".join(mismatches))
 
     return 0
-
