@@ -336,6 +336,7 @@ OUTPUTDIR
 outputfile
 OUTPUTFILE
 parallelizations
+parseyaml
 pathlib
 pathnames
 pcheck
