@@ -1,6 +1,6 @@
 """
-    Script creates rose-apps and rose-suite
-    files for the workflow from the pp yaml.
+Script creates rose-apps and rose-suite
+files for the workflow from the pp yaml.
 """
 
 ## TO-DO:
@@ -9,6 +9,7 @@
 
 import os
 import json
+import logging
 
 from pathlib import Path
 from jsonschema import validate, SchemaError, ValidationError
@@ -17,7 +18,6 @@ import metomi.rose.config
 
 import fre.yamltools.combine_yamls_script as cy
 
-import logging
 fre_logger = logging.getLogger(__name__)
 
 ####################
@@ -38,13 +38,13 @@ def validate_yaml(yamlfile):
     """
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
-    fre_logger.info(f"Using yaml schema '{schema_path}'")
+    fre_logger.info("Using yaml schema '%s'", schema_path)
     # Load the json schema: .load() (vs .loads()) reads and parses the json in one)
     try:
-        with open(schema_path,'r') as s:
+        with open(schema_path,'r', encoding='utf-8') as s:
             schema = json.load(s)
     except:
-        fre_logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
+        fre_logger.error("Schema '%s' is not valid. Contact the FRE team.", schema_path)
         raise
 
     # Validate yaml
@@ -53,7 +53,7 @@ def validate_yaml(yamlfile):
         validate(instance=yamlfile,schema=schema)
         fre_logger.info("Combined yaml valid")
     except SchemaError:
-        fre_logger.error(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
+        fre_logger.error("Schema '%s' is not valid. Contact the FRE team.", schema_path)
         raise
     except ValidationError:
         fre_logger.error("Combined yaml is not valid. Please fix the errors and try again.")
@@ -117,7 +117,7 @@ def set_rose_suite(yamlfile,rose_suite):
                 for key,value in i.items():
                     # if pp start/stop is specified as integer, pad zeros
                     # or else cylc validate will fail
-                    if key == 'pp_start' or key == 'pp_stop':
+                    if key in ['pp_start', 'pp_stop']:
                         if isinstance(value, int):
                             value = f"{value:04}"
                     # rose-suite.conf is somewhat finicky with quoting
@@ -220,20 +220,20 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
 
     # Write output files
     fre_logger.info("Writing output files...")
-    fre_logger.info("  " + outfile)
+    fre_logger.info("  %s", outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
     outfile = os.path.join(cylc_dir, "rose-suite.conf")
     dumper(rose_suite, outfile)
-    fre_logger.info("  " + outfile)
+    fre_logger.info("  %s", outfile)
 
     outfile = os.path.join(cylc_dir, "app", "regrid-xy", "rose-app.conf")
     dumper(rose_regrid, outfile)
-    fre_logger.info("  " + outfile)
+    fre_logger.info("  %s", outfile)
 
     outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
     dumper(rose_remap, outfile)
-    fre_logger.info("  " + outfile)
+    fre_logger.info("  %s", outfile)
 
     fre_logger.info('Finished')
 
