@@ -58,7 +58,8 @@ Cmor
 CMOR
 CMORBITE
 cmorization
-cmorize
+cmorizes
+cmorizing
 cmorized
 cmory
 cmoryaml
@@ -125,6 +126,7 @@ execrunscript
 exitstatus
 experimentname
 expname
+EBronx
 EXPNAME
 expyaml
 Falses
@@ -227,6 +229,7 @@ Laflotte
 landuse
 lastindex
 latlon
+latxlon
 lazygroup
 LDFLAGS
 levelname
@@ -436,6 +439,7 @@ sphum
 srces
 SRCROOT
 srcs
+Stofferahn
 stddevs
 strat
 subdaily
