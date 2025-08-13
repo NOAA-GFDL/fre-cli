@@ -59,6 +59,8 @@ CMOR
 CMORBITE
 cmorization
 cmorize
+cmorizes
+cmorizing
 cmorized
 cmory
 cmoryaml
@@ -125,6 +127,7 @@ execrunscript
 exitstatus
 experimentname
 expname
+EBronx
 EXPNAME
 expyaml
 Falses
@@ -436,6 +439,7 @@ sphum
 srces
 SRCROOT
 srcs
+Stofferahn
 stddevs
 strat
 subdaily
