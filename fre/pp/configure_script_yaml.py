@@ -237,3 +237,4 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
 
     fre_logger.info('Finished')
 
+# Use parseyaml function to parse created edits.yaml

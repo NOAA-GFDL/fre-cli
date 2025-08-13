@@ -91,4 +91,3 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
             # run the script if option is given
             if run:
                 subprocess.run(args=[dockerBuild.userScriptPath], check=True)
-

@@ -401,4 +401,3 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
 def main():
     """steering, local test/debug"""
     return regrid_xy()
-

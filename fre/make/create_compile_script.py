@@ -101,4 +101,3 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
             pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)  # process data_inputs iterable with pool
     else:
         return
-

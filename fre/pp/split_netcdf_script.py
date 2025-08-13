@@ -322,3 +322,5 @@ def fre_outfile_name(infile, varname):
   '''
   var_outfile = re.sub(".nc", f".{varname}.nc", infile)
   return(var_outfile)
+
+#Main method invocation
