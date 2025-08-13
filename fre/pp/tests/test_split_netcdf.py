@@ -161,7 +161,6 @@ def test_split_file_data(workdir,newdir, origdir):
             print(" ".join(nccmp_cmd))
             print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
             print(sp.stdout, sp.stderr)
-
     assert all_files_equal and same_count_files
 
 #test_split_file_metadata is currently commented out because the set of commands:
@@ -207,7 +206,6 @@ def test_split_file_metadata(workdir,newdir, origdir):
             all_files_equal=False
             print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
             print(sp.stdout, sp.stderr)
-
     assert all_files_equal and same_count_files
 
 #clean up splitting files
