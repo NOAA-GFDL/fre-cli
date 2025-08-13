@@ -51,7 +51,7 @@ class frenctoolsTimeAverager(timeAverager):
         #Recursive call if month is selcted for climatology. by Avery Kiihne
         if self.avg_type == 'month':
             monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
-            output_dir = f"monthly_output_files"    #Folder for the results, split by month
+            output_dir = Path(outfile).parent       #Save output in the user-specified location
             os.makedirs(monthly_nc_dir, exist_ok=True)   #create directory if it does not exist
             os.makedirs(output_dir, exist_ok=True)
             #Extract unique months from the infile 
