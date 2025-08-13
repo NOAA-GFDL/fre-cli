@@ -124,10 +124,7 @@ def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval
             first_YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(first, "%Y")
             last_YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(last, "%Y")
             subdir = Path(dir_ / 'av' / grid / source / frequency_iso / str(output_interval))
-            if frequency == "yr":
-                output_file = subdir / (source + '.' + first_YYYY + '-' + last_YYYY + '.' + var + '.nc')
-            else:
-                output_file = subdir / (source + '.' + first_YYYY + '01-' + last_YYYY + '12.' + var + '.nc')
+            output_file = subdir / (source + '.' + first_YYYY + '-' + last_YYYY + '.' + var + '.nc')
 
             # create output directory
             subdir.mkdir(parents=True, exist_ok=True)

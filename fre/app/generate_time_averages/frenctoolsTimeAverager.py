@@ -7,6 +7,7 @@ from cdo import Cdo
 import logging
 import subprocess
 import shutil
+from pathlib import Path
 
 fre_logger = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class frenctoolsTimeAverager(timeAverager):
 
             #Dictionary to store output filenames by month
             nc_month_file_paths = {month_index: os.path.join(monthly_nc_dir, f"all_years.{month_index}.nc") for month_index in month_indices}
-            month_output_file_paths = {month_index: os.path.join(output_dir, f"{outfile}_.{month_index}.nc") for month_index in month_indices}
+            month_output_file_paths = {month_index: os.path.join(output_dir, f"{Path(outfile).stem}.{month_index:02d}.nc") for month_index in month_indices}
 
             cdo = Cdo()
             #Loop through each month and select the corresponding data
