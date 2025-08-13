@@ -174,12 +174,15 @@ dset
 dunp
 dura
 ecpe
+encodekey
+encodeval
 enot
 ensmem
 envsoft
 errormsg
 evap
 excinfo
+execinfo
 execrunscript
 exitstatus
 experimentname
@@ -382,6 +385,7 @@ pytests
 pytools
 qpoint
 rainwat
+RDHPCS
 redissolution
 reengineered
 reff
@@ -455,6 +459,7 @@ unlimdim
 unmsk
 untar
 unwgt
+vardict
 varlist
 varnames
 varsfre
@@ -479,6 +484,7 @@ yamlfilepath
 yamlfre
 yamlpath
 yamlvalidate
+ydict
 ymlsources
 ymonmean
 ymonstddev
