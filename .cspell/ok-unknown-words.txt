@@ -58,6 +58,7 @@ Cmor
 CMOR
 CMORBITE
 cmorization
+cmorize
 cmorizes
 cmorizing
 cmorized
