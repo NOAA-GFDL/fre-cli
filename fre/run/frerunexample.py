@@ -10,6 +10,3 @@ def run_test_function(uppercase=None):
     if uppercase:
         statement = statement.upper()
     print(statement)
-
-if __name__ == '__main__':
-    run_test_function()

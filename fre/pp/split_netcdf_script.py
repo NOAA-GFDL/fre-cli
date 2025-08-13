@@ -324,5 +324,3 @@ def fre_outfile_name(infile, varname):
   return(var_outfile)
 
 #Main method invocation
-if __name__ == '__main__':
-    split_file_xarray(sys.argv[1], sys.argv[2])
