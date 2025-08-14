@@ -78,7 +78,7 @@ def get_grid_spec(datadict: dict) -> str:
     return grid_spec
 
 
-def get_input_mosaic(datadict: dict) -> type[Path]:
+def get_input_mosaic(datadict: dict) -> str:
 
     """
     Gets the input mosaic filename from the grid_spec file.
