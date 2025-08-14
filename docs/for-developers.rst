@@ -153,7 +153,14 @@ In the case where non-python files like templates, examples, and outputs are to 
 
 .. _repository-maintenance:
 
-repository maintenance
+Repository Maintenance
 ======================
 
 .. include:: for-maintainers.rst
+
+.. _repository-documentation:
+
+Contributing to Documentation
+=============================
+
+.. include:: contributing_to_doc.rst

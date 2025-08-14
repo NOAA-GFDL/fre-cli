@@ -270,7 +270,3 @@ def trigger(experiment, platform, target, time):
     Start postprocessing history files that represent a specific chunk of time
     """
     trigger_script.trigger(experiment, platform, target, time)
-
-if __name__ == "__main__":
-    ''' entry point for click to fre pp commands '''
-    pp_cli()
