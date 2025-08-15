@@ -1,0 +1,52 @@
+name: Update Tag Version References
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  tag-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Fetch tags
+        run: |
+          git fetch --tags origin
+
+      - name: Get the new tag
+        id: get_tag
+        run: |
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Get previous tag
+        id: get_prev_tag
+        run: |
+          prev_tag=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
+          echo "prev_tag=${prev_tag}" >> $GITHUB_OUTPUT
+
+      - name: Replace old tag with new tag in all relevant files
+        run: |
+          new_tag="${{ steps.get_tag.outputs.tag }}"
+          old_tag="${{ steps.get_prev_tag.outputs.prev_tag }}"
+          # Only replace if previous tag exists
+          if [ -n "$old_tag" ]; then
+            # all .md files
+            find . -type f -name "*.md" -exec sed -i "s/$old_tag/$new_tag/g" {} +
+            # all .py files
+            find . -type f -name "*.py" -exec sed -i "s/$old_tag/$new_tag/g" {} +
+            # docs (all files)
+            find docs -type f -exec sed -i "s/$old_tag/$new_tag/g" {} +
+          fi
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7.0.6
+        with:
+          base: main                   # creates a new branch off of main
+          branch: update-version-post-release # name of the created branch
+          branch-suffix: timestamp     # add a timestamp to branch name
+          delete-branch: true          # delete afer merge
+          title: Update refs to version number post-release
+          body: automated change, replaces references to the old version number with the new version number upon releases. This PR will need to be closed and reopened to run CI testing.

@@ -77,7 +77,7 @@ def get_iso_datetime_ranges(var_filenames, iso_daterange_arr=None, start=None,st
         var_filenames: non-empty list of strings representing filenames. some of which presumably
                        contain ranges of datetimes as strings, hopefully like ????????-????????
         iso_daterange_arr: list of strings, empty or non-empty, representing datetime ranges found in
-                          var_filenames entries. the object pointed to by the reference iso_dateramge_arr 
+                          var_filenames entries. the object pointed to by the reference iso_daterange_arr 
                           is manipulated directly, and so need-not be returned.
         start: string of four integers representing a year in any calendar. only YYYY format supported. 
                if the starting year of the data is before this, the datetime range is excluded from var_filenames
