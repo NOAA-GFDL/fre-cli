@@ -4,6 +4,16 @@ from click.testing import CliRunner
 
 from fre import fre
 
+"""
+CLI Tests for fre catalog *
+Tests the command-line-interface calls for tools in the fre catalog suite. 
+Each tool generally gets 3 tests:
+    - fre catalog $tool, checking for exit code 0 (fails if cli isn't configured right)
+    - fre catalog $tool --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre catalog $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+      right and thinks the tool has a --optionDNE option)
+"""
+
 runner = CliRunner()
 
 def test_cli_fre_catalog():

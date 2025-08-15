@@ -6,6 +6,19 @@ import os
 import shutil
 from fre import fre
 
+"""
+CLI Tests for fre make *
+Tests the command-line-interface calls for tools in the fre make suite. 
+Each tool generally gets 3 tests:
+    - fre make , checking for exit code 0 (fails if cli isn't configured right)
+    - fre make --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre make --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+      right and thinks the tool has a --optionDNE option)
+      
+We also have a set of more complicated tests for fre make testing the checkout
+and container creation (and cleaning up after those operations)
+"""
+
 runner = CliRunner()
 TEST_DIR=Path("fre/tests")
 OUT_PATH_BASE=f"{TEST_DIR}/test_files/test_fre_make_cli"

@@ -4,6 +4,17 @@ from click.testing import CliRunner
 
 from fre import fre
 
+"""
+CLI Tests for fre 
+Tests the command-line-interface calls for fre itself. 
+We've got 4-ish tests:
+    - fre , checking for exit code 0 (fails if cli isn't configured right)
+    - fre --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+      right and thinks the tool has a --optionDNE option)
+    - fre --version, checking for version GTE current version (fails if version isn't defined)
+"""
+
 runner = CliRunner()
 
 def test_cli_fre():
