@@ -1,0 +1,1 @@
+# SFollow tests initialization
