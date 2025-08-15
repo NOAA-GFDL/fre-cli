@@ -75,6 +75,25 @@ intercomparisons (MIPs) using the ``cmor`` module is, quite cleverly, referred t
 ``fre pp``
 ==========
 
+The identifiers for the Cylc workflows are built from 3 pieces, separated with two underscores: 
+
+  $(experiment)__$(platform)__$(target)
+  
+For the tools called by ```fre pp $tool```, these usually correspond to the -e, -p. -t arguments.  
+
+The *experiment* is a short description of the model configuration that was run. It corresponds to one of the experiment names that are displayed by ```fre list exps -y $yamlfile```, and the workflow tools with throw an error if -e does not match one of the experiment names in the yaml. 
+
+The *platform* is the combination of the platform upon which the model was run and the compiler with which it was built. Bronx added 'gfdl' to the platform for all postprocessing experiments, since those are run on the postprocessing nodes at the Geophysical Fluid Dynamics Lab.
+
+The *target* is the option that was used for the model compiler. There are currently 5-ish options we expect to see:
+    - prod   - Used for production experiments. Runs most slowly, but with highest precision.
+    - repro  - Used when reproducing past results for regression tests. Slower than debug, faster than production.
+    - debug  - Used when debugging. Fastest runtime.
+    - openmp - Used when compiled and linked with OpenMP. Can be put onto the end of another target (e.g. prod-openmp)
+    - hdf5   - Added directives to generate HDF5-based netCDF files. Can be put onto the end of another target (e.g. repro-hdf5)
+    
+    For more information see: https://sites.google.com/noaa.gov/oar-gfdl-msd-docs/fre-documentation/fre-documentation/compiling-an-experiment#h.52hq1w2v4klg
+
 .. include:: tools/pp.rst
 
 
