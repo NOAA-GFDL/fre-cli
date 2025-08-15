@@ -110,8 +110,8 @@ class frepytoolsTimeAverager(timeAverager):
 
                 for lon in range(num_lon_bnds):
                     tim_val_array= lon_val_array[lon].copy()
-                    avgvals[0][lat][lon]=sum( (tim_val_array[tim] * wgts[tim] )
-                                              for tim in range(num_time_bnds) ) / wgts_sum
+                    # Use numpy.ma.sum to properly handle masked arrays and avoid warnings
+                    avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array * wgts) / wgts_sum
 
                     del tim_val_array
                 del lon_val_array
@@ -122,9 +122,8 @@ class frepytoolsTimeAverager(timeAverager):
 
                 for lon in range(num_lon_bnds):
                     tim_val_array= lon_val_array[lon].copy()
-                    avgvals[0][lat][lon]=sum( # no time sum needed here, b.c. unweighted, so sum
-                        tim_val_array[tim] for tim in range(num_time_bnds)
-                               ) / num_time_bnds
+                    # Use numpy.ma.sum to properly handle masked arrays and avoid warnings
+                    avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array) / num_time_bnds
 
                     del tim_val_array
                 del lon_val_array
