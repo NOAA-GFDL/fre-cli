@@ -94,6 +94,3 @@ def validate(history: str, date_string: str, warn: bool):
               "\n".join(mismatches))
 
     return 0
-
-if __name__ == '__main__':
-    validate()

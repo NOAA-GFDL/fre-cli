@@ -79,6 +79,3 @@ def fre(verbose = 0, quiet = False, log_file = None):
         fre_logger.info('fre_file_handler added to base_fre_logger') # first message that will appear in the log file if used
         
     fre_logger.debug('click entry-point function call done.')
-    
-if __name__ == '__main__':
-    fre()
