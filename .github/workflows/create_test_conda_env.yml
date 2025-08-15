@@ -53,7 +53,7 @@ jobs:
       - name: Run pylint in fre-cli environment
         run: |
           # run pylint, ignored modules avoid warnings arising from code internal to those modules
-          pylint --fail-under 0.1 --output pylint_results.txt --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
+          pylint --fail-under 0.1 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
@@ -62,15 +62,3 @@ jobs:
           files: coverage.xml
           flags: unittests
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Archive pylint results
-        uses: actions/upload-artifact@v4
-        with:
-          name: pylint-results
-          path: pylint_results.txt
-
-      - name: Archive coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-results
-          path: coverage.xml
