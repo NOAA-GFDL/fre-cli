@@ -44,31 +44,27 @@
 
 ## Testing
 
-**Run core CLI tests**:
+**Run `click` CLI tests**:
 ```bash
-pytest fre/tests/test_fre_cli.py -v
+pytest -v fre/tests
 ```
-- Takes approximately 1 second
-- Should pass all 5 tests
+- These tests cover integration with the `click` CLI functionality
+- Takes approximately 10 seconds
+- All tests should pass, be skipped, or xfail
 
-**Run full test suite**:
+**Run functionality/implementation tests**:
 ```bash
-pytest fre/tests/ -v --tb=short --disable-warnings
+pytest -v --ignore fre/tests fre/
 ```
-- Takes approximately 3 seconds
-- NEVER CANCEL: Set timeout to 30+ minutes
-- Expect 100+ tests to pass, some may be skipped (marked with pytest.xfail)
-- No tests should fail without being marked as expected failures
-
-**Testing beyond CLI tools**:
-- Tests for modules in `fre/*/tests/` cover implementation details
-- Tests for application functionality in `fre/app/*/tests/` 
 - Each tool directory contains its own test suite
-- Run tool-specific tests: `pytest fre/[tool]/tests/ -v`
+- These tests avoid `click` CLI functionality and test `fre/` in a pythonic manner
+- Tests for tools are in `fre/*/tests/` and `fre/app/*/tests/`
+- The tests are generally for functionality of certain function calls
+- Run tool-specific tests: `pytest -v fre/[tool]/tests/` or `pytest -v fre/app/[tool]/tests`
 
 **Run specific test file**:
 ```bash
-pytest fre/tests/test_fre_[TOOL]_cli.py -v
+pytest -v fre/tests/test_fre_[TOOL]_cli.py -v
 ```
 Note: Not all test files follow this exact pattern - explore the test directories for actual file names.
 
@@ -76,6 +72,7 @@ Note: Not all test files follow this exact pattern - explore the test directorie
 ```bash
 pytest fre/tests/test_fre_cli.py::test_cli_fre_help -s
 ```
+Note: Like above, not all test files and test names file this exact pattern - this is only an example.
 
 ## Validation
 
@@ -90,14 +87,14 @@ pytest fre/tests/test_fre_cli.py::test_cli_fre_help -s
 
 2. **Test CLI functionality**:
    ```bash
-   fre --version  # Should show: fre, version 2025.04
-   fre --help     # Should show all available commands
+   pytest -v fre/tests
    ```
 
-3. **ALWAYS test the main CLI entry point** after making changes:
+3. **Test CLI by hand** after making changes:
    ```bash
    fre --help
-   fre [your-tool] --help
+   fre [tool] --help
+   fre app [tool] --help
    ```
 
 ## CLI Usage Patterns
@@ -106,7 +103,7 @@ pytest fre/tests/test_fre_cli.py::test_cli_fre_help -s
 
 **Available tools**:
 - `analysis` - Analysis subcommands
-- `app` - Application subcommands (regrid, remap, generate time averages)
+- `app` - Application subcommands (`regrid`, `remap`, `generate_time_averages`)
 - `catalog` - Catalog building and management
 - `check` - Validation checks (not fully implemented)
 - `cmor` - CMOR processing
@@ -117,18 +114,10 @@ pytest fre/tests/test_fre_cli.py::test_cli_fre_help -s
 - `yamltools` - YAML manipulation and combination
 
 **Example usage scenarios to test**:
-```bash
-# List available subcommands for a tool
-fre list --help
-fre yamltools --help
-
-# Test YAML tools functionality
-fre yamltools combine-yamls --help
-
-# Test app functionality
-fre app --help
-fre app regrid --help
-```
+- each test in `fre/tests` has a CLI-equivalent call
+- some tests in other places can also be reduced to CLI-equivalent calls
+  - e.g. `fre/cmor/tests/test_cmor_run_subtool.py::test_fre_cmor_run_subtool_case1`
+- generally lean on the `pytest` testing suite 
 
 ## Common Issues and Workarounds
 
@@ -140,7 +129,7 @@ fre app regrid --help
 **CMOR test expectations**:
 - CMOR tests that do not succeed in the pipeline are marked as being skipped
 - This is expected behavior - the validation is working correctly
-- Focus on CLI functionality tests rather than skipped CMOR tests
+- This is changing soon
 
 **Environment activation issues**:
 - Always use the full conda activation commands shown above
@@ -188,7 +177,7 @@ conda install conda-build conda-verify
 conda build .
 ```
 - NEVER CANCEL: Can take approximately 10 minutes
-- Set timeout to 90+ minutes
+- Set timeout to 60+ minutes
 
 ## Development Workflow
 
