@@ -16,7 +16,7 @@ def list_cli():
 @click.option("-y",
               "--yamlfile",
               type=str,
-              help="YAML file to be used for parsing",
+              help="Model YAML configuration file",
               required=True)
 def exps(yamlfile):
     """ - List experiments  available"""
@@ -26,7 +26,7 @@ def exps(yamlfile):
 @click.option("-y",
               "--yamlfile",
               type=str,
-              help="YAML file to be used for parsing",
+              help="Model YAML configuration file",
               required=True)
 def platforms(yamlfile):
     """ - List platforms available """
@@ -36,7 +36,7 @@ def platforms(yamlfile):
 @click.option("-y",
               "--yamlfile",
               type=str,
-              help="YAML file to be used for parsing",
+              help="Model YAML configuration file",
               required=True)
 @click.option("-e",
               "--experiment",
@@ -46,6 +46,3 @@ def platforms(yamlfile):
 def pp_components(yamlfile, experiment):
     """ - List components to be ppst-processed for a defined experiment"""
     list_pp_components_script.list_ppcomps_subtool(yamlfile, experiment)
-
-if __name__ == "__main__":
-    list_cli()

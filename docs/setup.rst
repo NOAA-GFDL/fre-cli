@@ -4,65 +4,19 @@
 Setup
 =====
 FRE-cli is conda-installable from the “noaa-gfdl” anaconda channel (https://anaconda.org/NOAA-GFDL/fre-cli)
-and is deployed on GFDL systems as Environment Modules.
+and is deployed on NOAA RDHPCS and GFDL systems as Environment Modules.
 
-On GFDL systems
-===============
+Installing FRE-cli
+==================
 
-use Lmod
---------
-If you are at GFDL (gaea, PPAN, workstations), you may skip installation by using Lmod.
-Use `module avail fre` to list the available `fre` releases, and then `module load` the
-most recent release::
+Instructions for installing fre-cli on GFDL and NOAA RDHPCS systems via lmod and on any system via conda can be found in the `fre-cli repository README <https://github.com/NOAA-GFDL/fre-cli/blob/main/README.md>`__.
 
-  # List the available FRE modules
-  module avail fre
 
-  # Load the latest FRE (<NN> is the latest)
-  module load fre/2025.<NN>
+Install FRE-cli from local GitHub clone (for development)
+=========================================================
 
-  fre --help
-
-use conda
----------
-If you are at GFDL (gaea, PPAN, workstations), you may activate the environments used by the modules directly with conda::
-
-  # get conda in your PATH
-  module load miniforge
-
-  # if on PPAN or workstation
-  conda activate
-
-  # if on gaea
-  conda activate 
-
-Build-your-own FRE environment
-==============================
-If you are outside GFDL, you must manage and configure your own installation of conda and/or miniforge. If you're at GFDL, bring conda into your PATH like so::
-
-  module load miniforge
-
-create environment from uploaded conda package
-----------------------------------------------
-If one is not interested in contributing to FRE or developing fre-cli, the simplest approach is to grab the latest fre-cli from the NOAA-GFDL anaconda channel::
-
-  conda create --name fre --channel noaa-gfdl --channel conda-forge fre-cli
-
-  # to grab a specific version (where NN is the latest release), instead do:
-  conda create --name fre-2025<NN> --channel noaa-gfdl --channel conda-forge fre-cli::2025.<NN>
-
-and activate it::
-
-  conda activate fre
-
-confirm the environment and package was build successfully with::
-
-  fre --help
-
-create environment from github repo clone
------------------------------------------
-If one is interested in contributing to FRE and wishes to develop features and have user-like functionality, it's recommended to download and use the code from the repository directly.
-Assuming one has `conda` in their paths, then do the following::
+When contributing to FRE, it is recommended to download and use the code from the repository directly to test changes.
+Assuming one has ``conda`` in their path, then do the following::
 
   # Append necessary channels- fre-cli needs only these two channels and no others to build.
   # it's possible depending on your conda installation that additional configuration steps are needed
@@ -74,7 +28,7 @@ Assuming one has `conda` in their paths, then do the following::
   cd fre-cli
 
   # to avoid being prompted for confirmation, add '-y' to the call
-  # this downloads/builds fre-cli's dependecies ONLY
+  # this downloads/builds fre-cli's dependencies ONLY
   conda env create -f environment.yml
 
   # activate the environment you just created.

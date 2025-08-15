@@ -16,7 +16,7 @@ The compile yaml can follow the below structure:
          repo: "url of code repository"                                                  (string)
          branch: "version of code to clone"                                              (string / list of strings)
          paths: ["paths in the component to compile"]                                    (list of strings)
-         cppdefs: "CPPDEFS ot include in compiling componenet                            (string)
+         cppdefs: "CPPDEFS ot include in compiling component                            (string)
          makeOverrides: "overrides openmp target for MOM6"                               ('OPENMP=""') (string)
          otherFlags: "Include flags needed to retrieve other necessary code"             (string)
          doF90Cpp: True if the preprocessor needs to be run                              (boolean) 

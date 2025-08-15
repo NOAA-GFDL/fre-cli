@@ -68,7 +68,7 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
 @click.option("-i", "--input_dir",
               type = str,
               help = "`inputDir` / `input_dir` (env var) specifies input directory to regrid, " + \
-                     "typically an untarredv history file archive" ,
+                     "typically an untarred history file archive" ,
               required = True)
 @click.option("-o", "--output_dir",
               type = str,
@@ -163,6 +163,3 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     start_time = time.perf_counter()
     generate(inf, outf, pkg, var, unwgt, avg_type)
     click.echo(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
-
-if __name__ == "__main__":
-    app_cli()

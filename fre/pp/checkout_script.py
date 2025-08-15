@@ -21,11 +21,11 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     """
     Create a directory and checkout the workflow template files from the repo
 
-    :param experiment: name of post processing experiment, default None
+    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str
-    :param platform: which platform to use, default None
+    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
     :type platform: str
-    :param target: name of target (prod, debug, open-mp, repro), default None
+    :param target: Options used for the model compiler (e.g. prod-openmp), default None
     :type target: str
     :param branch: which git branch to pull from, default None
     :type branch: str
@@ -60,7 +60,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         os.makedirs(directory, exist_ok = True)
     except Exception as exc:
         raise OSError(
-            '(checkoutScript) directory {directory} wasnt able to be created. exit!') from exc
+            f"(checkoutScript) directory {directory} wasn't able to be created. exit!") from exc
     finally:
         os.chdir(go_back_here)
 
@@ -103,6 +103,3 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
 
 
 #############################################
-
-if __name__ == '__main__':
-    checkout_template()

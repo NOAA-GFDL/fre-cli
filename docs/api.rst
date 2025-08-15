@@ -2,4 +2,4 @@
 API
 ===
 
-see :ref:`modindex`
+.. include:: modules.rst
