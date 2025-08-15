@@ -60,7 +60,8 @@ Options:
 
 #### example
 ```
-> fre -v cmor find -r fre/tests/test_files/cmip6-cmor-tables/Tables/ -v sos
+> fre -v cmor find -r fre/tests/test_files/cmip6-cmor-tables/Tables/ \
+                   -v sos
 INFO:cmor_finder.py:cmor_find_subtool attempting to find and open files in dir: 
  fre/tests/test_files/cmip6-cmor-tables/Tables/ 
 INFO:cmor_finder.py:cmor_find_subtool found content in json_table_config_dir
@@ -128,7 +129,8 @@ Options:
 
 #### example
 ```
-> fre cmor varlist -d fre/tests/test_files/ocean_sos_var_file/ -o simple_varlist.txt
+> fre cmor varlist -d fre/tests/test_files/ocean_sos_var_file/ \
+                   -o simple_varlist.txt
 > cat simple_varlist.txt 
 {
     "sosV2": "sosV2",
@@ -302,7 +304,13 @@ Options:
 Note that the target file here is only created after running `pytest fre/tests/test_fre_cmor_cli.py`
 
 ```
-> fre  cmor run --run_one --indir fre/tests/test_files/ocean_sos_var_file/ --varlist fre/tests/test_files/varlist --table_config fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json --exp_config fre/tests/test_files/CMOR_input_example.json --outdir fre/tests/test_files/outdir --grid_label gr --grid_desc 'FOO_BAR_PLACEHOLD' --nom_res '10000 km'
+> fre cmor run --run_one \
+               --indir fre/tests/test_files/ocean_sos_var_file/
+               --varlist fre/tests/test_files/varlist \
+               --table_config fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json \
+               --exp_config fre/tests/test_files/CMOR_input_example.json \
+               --outdir fre/tests/test_files/outdir \
+               --grid_label gr --grid_desc FOO_BAR_PLACEHOLD --nom_res '10000 km'
 WARNING:cmor_mixer.py:cmorize_target_var_files changing directory to: 
 /home/Ian.Laflotte/Working/fre-cli/fre/tests/test_files/outdir/tmp/
 
