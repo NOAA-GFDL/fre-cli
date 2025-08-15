@@ -57,12 +57,20 @@ pytest fre/tests/ -v --tb=short --disable-warnings
 ```
 - Takes approximately 3 seconds
 - NEVER CANCEL: Set timeout to 30+ minutes
-- Expect 110+ tests to pass, 2-3 may be skipped, some CMOR tests may fail (this is normal)
+- Expect 100+ tests to pass, some may be skipped (marked with pytest.xfail)
+- No tests should fail without being marked as expected failures
+
+**Testing beyond CLI tools**:
+- Tests for modules in `fre/*/tests/` cover implementation details
+- Tests for application functionality in `fre/app/*/tests/` 
+- Each tool directory contains its own test suite
+- Run tool-specific tests: `pytest fre/[tool]/tests/ -v`
 
 **Run specific test file**:
 ```bash
 pytest fre/tests/test_fre_[TOOL]_cli.py -v
 ```
+Note: Not all test files follow this exact pattern - explore the test directories for actual file names.
 
 **Run single test with output**:
 ```bash
@@ -75,9 +83,10 @@ pytest fre/tests/test_fre_cli.py::test_cli_fre_help -s
 
 1. **Run pylint** (required for CI):
    ```bash
-   pylint fre/fre.py --disable=all --enable=C0103,C0301,W0611
+   pylint fre/ --disable=all --enable=C0103,C0301,W0611
    ```
    - May show line length warnings (normal)
+   - Targets the entire fre/ directory for comprehensive checking
 
 2. **Test CLI functionality**:
    ```bash
@@ -123,20 +132,15 @@ fre app regrid --help
 
 ## Common Issues and Workarounds
 
-**Network timeout during pip install**:
-- If `pip install -e .` fails with timeout errors, this indicates network connectivity issues
-- In CI environments, this may be due to firewall limitations
-- Solution: The conda environment already contains most dependencies, so CLI testing can proceed
-- Document as: "pip install fails due to network/firewall limitations - use conda environment directly"
-
 **YAML validation failures**: 
 - Many test YAML files may fail validation due to strict schema requirements
 - This is expected behavior - the validation is working correctly
 - Do NOT disable validation to "fix" test failures
 
-**CMOR test failures**:
-- Some CMOR tests may fail due to missing test data files
-- This is known and acceptable - focus on CLI functionality tests
+**CMOR test expectations**:
+- CMOR tests that do not succeed in the pipeline are marked as being skipped
+- This is expected behavior - the validation is working correctly
+- Focus on CLI functionality tests rather than skipped CMOR tests
 
 **Environment activation issues**:
 - Always use the full conda activation commands shown above
@@ -174,6 +178,7 @@ fre/[tool]/
 
 **GitHub Actions workflows**:
 - `build_conda.yml` - Builds conda package on PRs
+- `create_test_conda_env.yml` - Creates test environment and runs tests
 - `publish_conda.yml` - Publishes to noaa-gfdl channel on main
 - Tests run automatically - ensure local tests pass first
 
@@ -182,7 +187,7 @@ fre/[tool]/
 conda install conda-build conda-verify
 conda build .
 ```
-- NEVER CANCEL: Can take 60+ minutes
+- NEVER CANCEL: Can take approximately 10 minutes
 - Set timeout to 90+ minutes
 
 ## Development Workflow
@@ -200,6 +205,6 @@ conda build .
 - **Test suite**: Under 5 minutes  
 - **CLI commands**: Nearly instantaneous
 - **Package installation**: 10-15 seconds
-- **Conda build**: 60+ minutes (if needed)
+- **Conda build**: Approximately 10 minutes (if needed)
 
 **CRITICAL**: NEVER CANCEL long-running operations. The timing estimates include appropriate buffers.
