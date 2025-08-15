@@ -1,12 +1,23 @@
-''' Checks that a netCDF (.nc) file contains expected number of timesteps '''
+''' Checks that a netCDF (.nc) file contains expected number of timesteps. Used by fre pp histval and fre pp ppval. '''
 import logging
 import netCDF4
 
 fre_logger = logging.getLogger(__name__)
 
 
-def check(file_path, num_steps):
-    """ Compares the number of timesteps in a given netCDF (.nc) file to the number of expected timesteps """
+def check(file_path: str, num_steps: int):
+    """
+
+    Compares the number of timesteps in a given netCDF (.nc) file to the number of expected timesteps 
+
+    :param file_path: path to netcdf file for checking
+    :type file_path: str
+    :param num_steps: number of expected timesteps
+    :type num_steps: int
+    :raises ValueError: Actual number of timesteps differs from expected number of timesteps
+    :return: 0 unless number of timesteps differs from expectation
+    :rtype: int
+    """
 
     fre_logger.info(f" netCDF file = {file_path}")
 
