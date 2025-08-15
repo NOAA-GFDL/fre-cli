@@ -1,6 +1,6 @@
 # Full Documentation is Available
 
-(here)[https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#cmorize-postprocessed-output]
+[here](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#cmorize-postprocessed-output)
 
 ## Usage Notes for `fre cmor`
 
