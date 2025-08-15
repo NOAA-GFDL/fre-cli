@@ -82,7 +82,7 @@ class frepytoolsTimeAverager(timeAverager):
         if not self.unwgt: #compute sum of weights
             wgts = ( numpy.moveaxis( time_bnds,0,-1 )[1][:].copy() - \
                      numpy.moveaxis( time_bnds,0,-1 )[0][:].copy() )
-            wgts_sum=sum(wgts)
+            wgts_sum=numpy.ma.sum(wgts)
             if __debug__:
                 print(f'wgts_sum={wgts_sum}')
 
