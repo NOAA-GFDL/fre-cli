@@ -1,32 +1,59 @@
-#!/usr/bin/python3
 '''
-date 2023
-author(s): Tom Robinson, Dana Singh, Bennett Chang
-fre make is used to create, run and checkout code, and compile a model.
+For a bare-metal build: Creates and runs the checkout script to check out source code, creates the makefile, and creates the compile script to generate a model executable.
+
+For a container build: Creates the checkout script and makefile, and creates and runs a dockerfile to generate a singularity image file.
 '''
 
 import os
 import logging
-fre_logger = logging.getLogger(__name__)
-
 
 from multiprocessing.dummy import Pool
 from pathlib import Path
 
 import subprocess
 import fre.yamltools.combine_yamls_script as cy
+from typing import Optional
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
 
-def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
-    ''' 
-    run fremake
-    '''
+fre_logger = logging.getLogger(__name__)
+
+def fremake_run(yamlfile:str, platform:str, target:str, nparallel: int = 1, njobs: int = 4,
+                no_parallel_checkout: Optional[bool] = None, no_format_transfer: Optional[bool] = False,
+                execute: Optional[bool] = False, verbose: Optional[bool] = None):
+    """
+    Runs all of fre make code
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform; defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
+    :type platform: str
+    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
+    :type target: str
+    :param nparallel: Number of concurrent model builds (default 1)
+    :type nparallel: int
+    :param njobs: Number of jobs to run simultaneously; used for parallelism with make and recursive cloning with checking out source code (default 4)
+    :type njobs: int
+    :param no_parallel_checkout: Use this option if you do not want a parallel checkout
+    :type no_parallel_checkout: bool
+    :param no_format_transfer: Skip the container format conversion to a .sif file
+    :type no_format_transfer: bool
+    :param execute: Run the created compile script or dockerfile to create a model executable or container
+    :type execute: bool
+    :param verbose: Increase verbosity output
+    :type verbose: bool
+    :raise ValueError:
+        - Error if platform does not exist in platforms yaml configuration 
+        - Error if the mkmf template defined in platforms yaml does not exist
+
+    .. note:: This script will eventually be a wrapper for the other fre make tools
+    """
     yml = yamlfile
     name = yamlfile.split(".")[0]
-    nparallel = parallel
-    jobs = str(jobs)
+    nparallel = nparallel
+    jobs = str(njobs)
     pcheck = no_parallel_checkout
 
     if pcheck:
@@ -41,15 +68,11 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
 
     #### Main
     srcDir="src"
-    checkoutScriptName = "checkout.sh"
     baremetalRun = False # This is needed if there are no bare metal runs
 
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target
-
-#    # Combined compile yaml file
-#    combined = Path(f"combined-{name}.yaml")
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yml,
@@ -104,7 +127,7 @@ def fremake_run(yamlfile, platform, target, parallel, jobs, no_parallel_checkout
             target = targetfre.fretarget(targetName)
             if not modelYaml.platforms.hasPlatform(platformName):
                 raise ValueError (platformName + " does not exist in " + modelYaml.platformsfile)
-                
+
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 
             ## Make the source directory based on the modelRoot and platform

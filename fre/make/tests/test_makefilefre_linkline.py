@@ -10,7 +10,9 @@ from fre.make.gfdlfremake.makefilefre import linklineBuild
 
 
 class MockMakefileObject:
-    """Mock makefile object for testing linklineBuild"""
+    """
+    Mock makefile object for testing linklineBuild
+    """
     def __init__(self, filePath, experiment, libs):
         self.filePath = filePath
         self.e = experiment
