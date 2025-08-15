@@ -24,6 +24,11 @@ fre_logger = logging.getLogger(__name__)
 def yaml_load(yamlfile):
     """
     Load the given yaml.
+
+    :param yamlfile:
+    :type yamlfile:
+    :return:
+    :rtype:
     """
     # Load the main yaml
     with open(yamlfile,'r') as f:
@@ -34,7 +39,11 @@ def yaml_load(yamlfile):
 ######VALIDATE#####
 def validate_yaml(yamlfile):
     """
-     Using the schema.json file, the yaml format is validated.
+    Using the schema.json file, the yaml format is validated.
+
+    :param yamlfile:
+    :type yamlfile:
+    :raises ValueError:
     """
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
@@ -53,19 +62,28 @@ def validate_yaml(yamlfile):
         validate(instance=yamlfile,schema=schema)
         fre_logger.info("Combined yaml valid")
     except SchemaError:
-        fre_logger.error("Schema '%s' is not valid. Contact the FRE team.", schema_path)
-        raise
+#        fre_logger.error("Schema '%s' is not valid. Contact the FRE team.", schema_path)
+        raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
     except ValidationError:
-        fre_logger.error("Combined yaml is not valid. Please fix the errors and try again.")
-        raise
+#        fre_logger.error("Combined yaml is not valid. Please fix the errors and try again.")
+        raise ValueError("Combined yaml is not valid. Please fix the errors and try again.")
     except:
-        fre_logger.error("Unclear error from validation. Please try to find the error and try again.")
-        raise
+#        fre_logger.error("Unclear error from validation. Please try to find the error and try again.")
+        raise ValueError("Unclear error from validation. Please try to find the error and try again.")
 
 ####################
-def rose_init(experiment,platform,target):
+def rose_init(experiment, platform, target):
     """
     Initialize the rose suite and app configurations.
+
+    :param: experiment
+    :type:
+    :param: platform
+    :type:
+    :param: target
+    :type:
+    :return:
+    :rtype:
     """
     # initialize rose suite config
     rose_suite = metomi.rose.config.ConfigNode()
@@ -94,6 +112,11 @@ def quote_rose_values(value):
     """
     rose-suite.conf template variables must be quoted unless they are
     boolean or a list, in which case do not quote them.
+
+    :param: value
+    :type:
+    :return:
+    :rtype:
     """
     if isinstance(value, bool):
         return f"{value}"
@@ -106,6 +129,11 @@ def quote_rose_values(value):
 def set_rose_suite(yamlfile,rose_suite):
     """
     Set items in the rose suite configuration.
+
+    :param: yamlfile
+    :type:
+    :param: rose_suite
+    :type:
     """
     pp=yamlfile.get("postprocess")
     dirs=yamlfile.get("directories")
@@ -132,6 +160,13 @@ def set_rose_suite(yamlfile,rose_suite):
 def set_rose_apps(yamlfile,rose_regrid,rose_remap):
     """
     Set items in the regrid and remap rose app configurations.
+
+    :param: yamlfile
+    :type:
+    :param: rose_regrid
+    :type:
+    :param: rose_remap
+    :type:
     """
     components = yamlfile.get("postprocess").get("components")
     for i in components:
@@ -184,6 +219,16 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     configuration files are created in the cylc-src
     directory. The pp.yaml is also copied to the
     cylc-src directory.
+
+    :param: yamlfile
+    :type:
+    :param: experiment
+    :type:
+    :param: platform
+    :type:
+    :param: target
+    :type:
+    :raises ValueError:
     """
     fre_logger.info('Starting')
 
