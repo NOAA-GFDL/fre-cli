@@ -14,7 +14,9 @@ from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
 fre_logger = logging.getLogger(__name__)
 
-def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4, nparallel: int = 1, execute: Optional[bool] = False, verbose: Optional[bool] = None):
+def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
+                   nparallel: int = 1, execute: Optional[bool] = False,
+                   verbose: Optional[bool] = None):
     """
     Creates the compile script for bare-metal build
 
