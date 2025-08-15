@@ -98,6 +98,7 @@ def install(experiment, platform, target):
     """
     install_script.install_subtool(experiment, platform, target)
 
+#fre pp configure
 @pp_cli.command()
 @click.option("-y", "--yamlfile", type=str,
               help="YAML file to be used for parsing",
@@ -117,6 +118,7 @@ def configure_yaml(yamlfile,experiment,platform,target):
     """
     configure_script_yaml.yaml_info(yamlfile,experiment,platform,target)
 
+#fre pp checkout
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -249,6 +251,7 @@ def all(experiment, platform, target, config_file, branch, time):
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
     fre_logger.info('(frepp.wrapper) done forwarding context to wrapper.run_all_fre_pp_steps via click.')
 
+#fre pp trigger
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -264,10 +267,6 @@ def all(experiment, platform, target, config_file, branch, time):
               help="Time whose history files are ready")
 def trigger(experiment, platform, target, time):
     """
-    Start postprocessing for a particular time
+    Start postprocessing history files that represent a specific chunk of time
     """
     trigger_script.trigger(experiment, platform, target, time)
-
-if __name__ == "__main__":
-    ''' entry point for click to fre pp commands '''
-    pp_cli()

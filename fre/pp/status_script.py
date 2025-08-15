@@ -8,8 +8,14 @@ TIMEOUT_SECS=120#30
 
 def status_subtool(experiment = None, platform = None, target = None):
     """
-    Report workflow state for the Cylc workflow
-    <experiment>__<platform>__<target>
+    Report workflow state for the Cylc workflow $(experiment)__$(platform)__$(target)
+    
+    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
+    :type experiment: str
+    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
+    :type platform: str
+    :param target: Options used for the model compiler (e.g. prod-openmp), default None
+    :type target: str
     """
 
     if None in [experiment, platform, target]:
@@ -26,6 +32,3 @@ def status_subtool(experiment = None, platform = None, target = None):
         subprocess.run(cmd, shell=True, check=True, timeout=TIMEOUT_SECS)
     except:
         raise Exception('FAILED: subprocess call to- cylc workflow-state {name}')
-
-if __name__ == "__main__":
-    status_subtool()

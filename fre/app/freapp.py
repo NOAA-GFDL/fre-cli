@@ -162,6 +162,3 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     start_time = time.perf_counter()
     generate(inf, outf, pkg, var, unwgt, avg_type)
     click.echo(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
-
-if __name__ == "__main__":
-    app_cli()
