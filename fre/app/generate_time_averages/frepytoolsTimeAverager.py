@@ -94,7 +94,7 @@ class frepytoolsTimeAverager(timeAverager):
         print(f'num_lat_bnds={num_lat_bnds}')
         num_lon_bnds=fin_dims['lon'].size
         print(f'num_lon_bnds={num_lon_bnds}')
-        avgvals=numpy.zeros((1,num_lat_bnds,num_lon_bnds),dtype=float)
+        avgvals=numpy.ma.zeros((1,num_lat_bnds,num_lon_bnds),dtype=float)
 
         # this loop behavior 100% should be re-factored into generator functions.
         # they should be slightly faster, and much more readable. (TODO)
