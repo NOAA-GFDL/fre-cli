@@ -70,7 +70,13 @@ class frepytoolsTimeAverager(timeAverager):
 
         # (TODO) determine what we need to worry about with masks and account for it
         # check for mask, adjust accordingly
-        #is_masked = ma.is_masked(val_array)
+        # Check if there are actually masked values in the data
+        var_data = nc_fin[targ_var][:] 
+        has_masked_data = numpy.ma.is_masked(var_data) and numpy.ma.count_masked(var_data) > 0
+        has_masked_time_bnds = numpy.ma.is_masked(time_bnds) and numpy.ma.count_masked(time_bnds) > 0
+        
+        if __debug__:
+            print(f'has_masked_data={has_masked_data}, has_masked_time_bnds={has_masked_time_bnds}')
 
         # (TODO) make this a sep function, make tests, extend
         # read in sizes of specific axes / compute weights
@@ -82,7 +88,11 @@ class frepytoolsTimeAverager(timeAverager):
         if not self.unwgt: #compute sum of weights
             wgts = ( numpy.moveaxis( time_bnds,0,-1 )[1][:].copy() - \
                      numpy.moveaxis( time_bnds,0,-1 )[0][:].copy() )
-            wgts_sum=numpy.ma.sum(wgts)
+            # Use numpy.ma.sum only if there are actually masked values in time_bnds
+            if has_masked_time_bnds:
+                wgts_sum=numpy.ma.sum(wgts)
+            else:
+                wgts_sum=sum(wgts)
             if __debug__:
                 print(f'wgts_sum={wgts_sum}')
 
@@ -94,7 +104,11 @@ class frepytoolsTimeAverager(timeAverager):
         print(f'num_lat_bnds={num_lat_bnds}')
         num_lon_bnds=fin_dims['lon'].size
         print(f'num_lon_bnds={num_lon_bnds}')
-        avgvals=numpy.ma.zeros((1,num_lat_bnds,num_lon_bnds),dtype=float)
+        # Use masked array only if there's actually masked data
+        if has_masked_data:
+            avgvals=numpy.ma.zeros((1,num_lat_bnds,num_lon_bnds),dtype=float)
+        else:
+            avgvals=numpy.zeros((1,num_lat_bnds,num_lon_bnds),dtype=float)
 
         # this loop behavior 100% should be re-factored into generator functions.
         # they should be slightly faster, and much more readable. (TODO)
@@ -110,8 +124,12 @@ class frepytoolsTimeAverager(timeAverager):
 
                 for lon in range(num_lon_bnds):
                     tim_val_array= lon_val_array[lon].copy()
-                    # Use numpy.ma.sum to properly handle masked arrays and avoid warnings
-                    avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array * wgts) / wgts_sum
+                    # Use numpy.ma.sum only if there are actually masked values
+                    if has_masked_data:
+                        avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array * wgts) / wgts_sum
+                    else:
+                        avgvals[0][lat][lon]=sum( (tim_val_array[tim] * wgts[tim] )
+                                                  for tim in range(num_time_bnds) ) / wgts_sum
 
                     del tim_val_array
                 del lon_val_array
@@ -122,8 +140,13 @@ class frepytoolsTimeAverager(timeAverager):
 
                 for lon in range(num_lon_bnds):
                     tim_val_array= lon_val_array[lon].copy()
-                    # Use numpy.ma.sum to properly handle masked arrays and avoid warnings
-                    avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array) / num_time_bnds
+                    # Use numpy.ma.sum only if there are actually masked values
+                    if has_masked_data:
+                        avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array) / num_time_bnds
+                    else:
+                        avgvals[0][lat][lon]=sum( # no time sum needed here, b.c. unweighted, so sum
+                            tim_val_array[tim] for tim in range(num_time_bnds)
+                                   ) / num_time_bnds
 
                     del tim_val_array
                 del lon_val_array
