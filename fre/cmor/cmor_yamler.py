@@ -1,6 +1,19 @@
 """
-this module is for 'fre cmor yaml' calls, driving and steering the cmor_run_subtool via a model-yaml file holding
-configuration information on e.g. target experiments
+YAML-Driven CMORization Workflow Tools
+======================================
+
+This module powers the ``fre cmor yaml`` command, steering the CMORization workflow by parsing model-YAML
+files that describe target experiments and their configurations. It combines model-level and experiment-level
+configuration, parses required metadata and paths, and orchestrates calls to ``cmor_run_subtool`` for each
+target variable/component.
+
+Functions
+---------
+- ``check_path_existence(some_path)``
+- ``iso_to_bronx_chunk(cmor_chunk_in)``
+- ``conv_mip_to_bronx_freq(cmor_table_freq)``
+- ``get_bronx_freq_from_mip_table(json_table_config)``
+- ``cmor_yaml_subtool(...)``
 """
 
 import json
@@ -8,41 +21,52 @@ from pathlib import Path
 import pprint
 import logging
 import os
+from typing import Optional, List, Dict, Any, Union
+
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 from .cmor_mixer import cmor_run_subtool
 
 fre_logger = logging.getLogger(__name__)
 
-def check_path_existence(some_path):
-    '''
-    simple function checking for pathlib.Path existence, raising a FileNotFoundError if needed
-    Args:
-        some_path (str), required, a string representing a path. can be relative or absolute
-    '''
-    if not Path(some_path).exists():
-        raise FileNotFoundError('does not exist:  {}'.format(some_path)) # uncovered
+def check_path_existence(some_path: str):
+    """
+    Check if the given path exists, raising FileNotFoundError if not.
 
-def iso_to_bronx_chunk(cmor_chunk_in):
-    '''
-    converts a string representing a datetime chunk in ISO's convention (e.g. 'P5Y'),
-    to a string representing the same thing in FRE-bronx's convention
-    Args:
-        cmor_chunk_in (str), required, ISO 8601 formatted string representing a datetime interval
-    '''
+    :param some_path: A string representing a filesystem path (relative or absolute).
+    :type some_path: str
+    :raises FileNotFoundError: If the path does not exist.
+    """
+    if not Path(some_path).exists():
+        raise FileNotFoundError(f'does not exist:  {some_path}')
+
+def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
+    """
+    Convert an ISO8601 duration string (e.g., 'P5Y') to FRE-bronx-style chunk string (e.g., '5yr').
+
+    :param cmor_chunk_in: ISO8601 formatted string representing a time interval (must start with 'P' and end with 'Y').
+    :type cmor_chunk_in: str
+    :raises ValueError: If the input does not follow the expected ISO format.
+    :return: FRE-bronx chunk string.
+    :rtype: str
+    """
     fre_logger.debug('cmor_chunk_in = %s', cmor_chunk_in)
     if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
         bronx_chunk = f'{cmor_chunk_in[1:-1]}yr'
     else:
-        raise ValueError('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py') #uncovered
+        raise ValueError('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py')
     fre_logger.debug('bronx_chunk = %s', bronx_chunk)
     return bronx_chunk
 
-def conv_mip_to_bronx_freq(cmor_table_freq):
-    '''
-    uses a look up table to convert a given frequency in a MIP table, to that same frequency under FRE-bronx convention instead
-    Args:
-        cmor_table_freq (str), required, a frequency string read from a MIP table, subject to a controlled vocabulary. 
-    '''
+def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
+    """
+    Convert a MIP table frequency string to its FRE-bronx equivalent using a lookup table.
+
+    :param cmor_table_freq: Frequency string as found in a MIP table (e.g., 'mon', 'day', 'yr', etc.).
+    :type cmor_table_freq: str
+    :raises KeyError: If the frequency string is not recognized as valid.
+    :return: FRE-bronx frequency string, or None if not mappable.
+    :rtype: str or None
+    """
     cmor_to_bronx_dict = {
         "1hr"    : "1hr",
         "1hrCM"  : None,
@@ -63,16 +87,21 @@ def conv_mip_to_bronx_freq(cmor_table_freq):
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
     if bronx_freq is None:
-        raise KeyError(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent') #uncovered
+        fre_logger.warning(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent')
+    if cmor_table_freq not in cmor_to_bronx_dict.keys():
+        raise KeyError(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency')
     return bronx_freq
 
-def get_bronx_freq_from_mip_table(json_table_config):
-    '''
-    checks one of the variable fields within a cmip cmor table for the frequency of the data the table describes
-    takes in a path to a json cmip cmor table file, and output a string corresponding to a FREbronx style frequency
-    Args:
-        json_table_config (str), required, a string representing a path to a json MIP table holding metadata under variable names
-    '''
+def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
+    """
+    Extract the frequency of data from a CMIP MIP table (JSON), returning its FRE-bronx equivalent.
+
+    :param json_table_config: Path to a JSON MIP table file with 'variable_entry' metadata.
+    :type json_table_config: str
+    :raises KeyError: If the frequency cannot be found or mapped.
+    :return: FRE-bronx frequency string.
+    :rtype: str
+    """
     table_freq = None
     with open(json_table_config, 'r', encoding='utf-8') as table_config_file:
         table_config_data = json.load(table_config_file)
@@ -80,30 +109,62 @@ def get_bronx_freq_from_mip_table(json_table_config):
             try:
                 table_freq = table_config_data['variable_entry'][var_entry]['frequency']
                 break
-            except Exception as exc: #uncovered
+            except Exception as exc:
                 raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
-                               'ALWAYS have frequency info under the variable entry!! EXIT! BAD!') from exc
+                               'have frequency info under the variable entry!') from exc
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
 
-def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, output=None, opt_var_name=None,
-                      run_one_mode=False, dry_run_mode=False, start=None, stop=None):
-    '''
-    A routine that cmorizes targets based on configuration stored in the model yaml. The model yaml
-    points to various cmor-yaml configurations. The two levels of information are combined, their fields
-    are parsed to de-reference anchors and call fre's internal yaml constructor functions.
-        yamlfile (required): string or Path to a model-yaml
-        exp_name (required): string representing an experiment name. it must be present in the list of
-                             experiments within the targeted yamlfile
-        platform (required): string representing platform target (e.g. ncrc4.intel)
-        target   (required): string representing compilation target (e.g. prod-openmp)
-        output   (optional): string or Path representing target location for yamlfile output if desired
-        opt_var_name (optional): string, specify a variable name to specifically process only filenames matching
-                                 that variable name. I.e., this string help target local_vars, not target_vars.
+def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
+                       exp_name: Optional[str] = None,
+                       platform: Optional[str] = None,
+                       target: Optional[str] = None,
+                       output: Optional[Union[str, Path]] = None,
+                       opt_var_name: Optional[str] = None,
+                       run_one_mode: bool = False,
+                       dry_run_mode: bool = False,
+                       start: Optional[str] = None,
+                       stop: Optional[str] = None,
+                       calendar_type: Optional[str] = None) -> None:
+    """
+    Main driver for CMORization using model YAML configuration files.
+    This routine parses the model YAML, combines configuration, resolves and checks all required
+    paths and metadata, and orchestrates calls to cmor_run_subtool for each table/component/variable
+    defined in the configuration.
 
-        run_one_mode (optional): boolean, when True, will only process one of targeted files, then exit.
-        start, stop: string, optional arguments, strings of four integers representing years (YYYY).
-    '''
+    :param yamlfile: Path to a model-yaml file holding experiment and workflow configuration.
+    :type yamlfile: str or Path
+    :param exp_name: Experiment name (must be present in the YAML file).
+    :type exp_name: str
+    :param platform: Platform target (e.g., 'ncrc4.intel').
+    :type platform: str
+    :param target: Compilation target (e.g., 'prod-openmp').
+    :type target: str
+    :param output: Optional path for YAML output.
+    :type output: str or Path, optional
+    :param opt_var_name: If specified, process only files matching this variable name.
+    :type opt_var_name: str, optional
+    :param run_one_mode: If True, process only one file and exit.
+    :type run_one_mode: bool, optional
+    :param dry_run_mode: If True, print configuration and actions without executing cmor_run_subtool.
+    :type dry_run_mode: bool, optional
+    :param start: Four-digit year (YYYY) indicating start of date range to process.
+    :type start: str, optional
+    :param stop: Four-digit year (YYYY) indicating end of date range to process.
+    :type stop: str, optional
+    :param calendar_type: CF-compliant calendar type.
+    :type calendar_type: str, optional
+    :raises FileNotFoundError: If required paths do not exist.
+    :raises OSError: If output directories cannot be created.
+    :raises ValueError: If required configuration is missing or inconsistent.
+    :return: None
+    :rtype: None
+
+    .. note:: Reads and combines YAML and JSON configuration.
+    .. note:: Performs path, frequency, and gridding checks.
+    .. note:: Delegates actual CMORization to cmor_run_subtool, except in dry-run mode.
+    .. note:: All actions and key decisions are logged.
+    """
 
     # ---------------------------------------------------
     # parsing the target model yaml ---------------------
@@ -171,6 +232,13 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         except KeyError:
             fre_logger.warning(
                 'no stop year for fre.cmor given anywhere, will end with latest datetime found in filenames!')
+    if calendar_type is None:
+        try:
+            yaml_calendar_type = cmor_yaml_dict['calendar_type']
+            calendar_type = yaml_calendar_type
+        except KeyError:
+            fre_logger.warning(
+                'no calendar_type for fre.cmor given anywhere, will use what is in %s', json_exp_config)
 
     # ---------------------------------------------------
     # showtime ------------------------------------------
@@ -189,13 +257,10 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         check_path_existence(json_table_config)
 
 
-        # frequency of data ---- revisit/TODO
-        # if freq is None:
-        #   use whats in the targeted mip table
-        #   if it's not right, we'll error trying to open input later...
-        # else:
-        #   check freq consistent with whats in the mip table
-        #   error now if it's inconsistent
+        # frequency of data ---- the reason this spot looks kind of awkward is because of the case where
+        #                        the table if e.g. Ofx and thus the table's frequency field is smth like 'fx'
+        #                        if that's the case, we only demand that the freq field is filled out in the yaml
+        #                        which is really more about path resolving than anything.
         freq = table_config['freq']
         table_freq = get_bronx_freq_from_mip_table(json_table_config)
         if freq is None:
@@ -205,10 +270,10 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
         if freq is None:
             raise ValueError(
                 f'not enough frequency information to process variables for {table_config}')
-        elif freq != table_freq:
+        elif freq != table_freq and table_freq is not None:
             raise ValueError(
                 'frequency from MIP table is incompatible with requested frequency in cmor yaml for {table_config}')
-        # frequency of data ---- revisit
+        # frequency of data ---- the reason this spot looks kind of
 
         # gridding info of data ---- revisit/TODO
         gridding_dict = table_config['gridding']
@@ -231,24 +296,10 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
             fre_logger.info('indir = %s', indir)
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
-            if not dry_run_mode:
-                cmor_run_subtool( #uncovered
-                    indir = indir ,
-                    json_var_list = json_var_list ,
-                    json_table_config = json_table_config ,
-                    json_exp_config = json_exp_config ,
-                    outdir = cmorized_outdir ,
-                    run_one_mode = run_one_mode ,
-                    opt_var_name = opt_var_name ,
-                    grid = grid_desc ,
-                    grid_label = grid_label ,
-                    nom_res = nom_res ,
-                    start = start,
-                    stop = stop
-                )
-            else:
-                fre_logger.debug('--DRY RUN CALL---\n'
-                                 'cmor_run_subtool(\n'
+
+            if dry_run_mode:
+                fre_logger.info(  '--DRY RUN CALL---\n'
+                                  'cmor_run_subtool(\n'
                                  f'    indir = {indir} ,\n'
                                  f'    json_var_list = {json_var_list} ,\n'
                                  f'    json_table_config = {json_table_config} ,\n'
@@ -260,8 +311,21 @@ def cmor_yaml_subtool(yamlfile=None, exp_name=None, platform=None, target=None, 
                                  f'    grid_label = {grid_label} ,\n'
                                  f'    nom_res = {nom_res} ,\n'
                                  f'    start = {start} ,\n'
-                                 f'    stop = {stop}\n'
-                                  ')\n'
-                                 )
-
-
+                                 f'    stop = {stop} ,\n'
+                                 f'    calendar_type={calendar_type} '
+                                  ')\n' )
+                continue
+            cmor_run_subtool( #uncovered
+                indir = indir ,
+                json_var_list = json_var_list ,
+                json_table_config = json_table_config ,
+                json_exp_config = json_exp_config ,
+                outdir = cmorized_outdir ,
+                run_one_mode = run_one_mode ,
+                opt_var_name = opt_var_name ,
+                grid = grid_desc ,
+                grid_label = grid_label ,
+                nom_res = nom_res ,
+                start = start,
+                stop = stop
+            )
