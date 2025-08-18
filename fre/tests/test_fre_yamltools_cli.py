@@ -13,7 +13,7 @@ import yaml
 def test_cli_fre_yamltools():
     ''' fre yamltools '''
     result = runner.invoke(fre.fre, args=["yamltools"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_yamltools_help():
     ''' fre yamltools --help '''

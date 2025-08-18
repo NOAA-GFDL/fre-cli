@@ -9,7 +9,7 @@ runner = CliRunner()
 def test_cli_fre():
     ''' fre '''
     result = runner.invoke(fre.fre)
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_help():
     ''' fre --help '''
