@@ -23,4 +23,4 @@ jobs:
           conda install conda-build anaconda-client conda-verify
           export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
           conda config --set anaconda_upload yes
-          conda build .
+          conda build --label dev .
