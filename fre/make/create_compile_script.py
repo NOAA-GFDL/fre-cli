@@ -1,22 +1,50 @@
 '''
-TODO: make docstring
+Creates a compile script to compile the model and generate a model executable.
 '''
+
 import os
 import logging
-fre_logger = logging.getLogger(__name__)
 
 from pathlib import Path
 from multiprocessing.dummy import Pool
 
-from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 import fre.yamltools.combine_yamls_script as cy
+from typing import Optional
+from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
-def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose):
+fre_logger = logging.getLogger(__name__)
+
+def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
+                   nparallel: int = 1, execute: Optional[bool] = False,
+                   verbose: Optional[bool] = None):
+    """
+    Creates the compile script for bare-metal build
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform; defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
+    :type platform: str
+    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
+    :type target: str
+    :param njobs: Used for parallelism with make; number of files to build simultaneously; on a per-build basis (default 4)
+    :type njobs: int
+    :param nparallel: Number of concurrent model builds (default 1)
+    :type nparallel: int
+    :param execute: Run the created compile script to build a model executable
+    :type execute: bool
+    :param verbose: Increase verbosity output
+    :type verbose: bool
+    :raises ValueError:
+        - Error if platform does not exist in platforms yaml configuration 
+        - Error if the mkmf template defined in platforms yaml does not exist
+    """
+
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
-    nparallel = parallel
-    jobs = str(jobs)
+    nparallel = nparallel
+    jobs = str(njobs)
 
     if verbose:
         fre_logger.setLevel(level=logging.DEBUG)
@@ -24,7 +52,6 @@ def compile_create(yamlfile, platform, target, jobs, parallel, execute, verbose)
         fre_logger.setLevel(level=logging.INFO)
 
     srcDir = "src"
-    checkoutScriptName = "checkout.sh"
     baremetalRun = False  # This is needed if there are no bare metal runs
 
     ## Split and store the platforms and targets in a list

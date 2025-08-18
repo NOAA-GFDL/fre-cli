@@ -1,8 +1,10 @@
 ''' this file holds yaml-constructors for fre.yamltools '''
 
 import typing
+import yaml
 
-def join_constructor(loader, node) -> str:
+def join_constructor( loader: yaml.Loader,
+                      node: yaml.Node ) -> str:
     """
     Allows strings defined as elements in a list, specified in a yaml, to be concatenated together. this constructor
     is generally getting associated with the default yaml.Loader used by the pyyaml module. This function is not generally
