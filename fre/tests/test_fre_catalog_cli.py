@@ -36,7 +36,7 @@ def test_cli_fre_catalog_merge():
     expected_stdout = "Error: Missing option '--input'."
     assert all( [
         result.exit_code == 2,
-        expected_stdout in result.output.split('\n')
+        expected_stdout in result.output
     ] )
 
 def test_cli_fre_catalog_merge_help():

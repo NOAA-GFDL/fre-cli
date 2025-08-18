@@ -31,4 +31,4 @@ def test_cli_fre_version():
     result = runner.invoke(fre.fre, args='--version')
     expected_out = 'fre, version 2025.04'
     assert all( [ result.exit_code == 0,
-                  expected_out in result.stdout.split('\n') ] )
+                  expected_out in result.output ] )
