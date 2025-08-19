@@ -220,13 +220,15 @@ def yaml_info(yamlfile: str=None, experiment: str=None, platform: str=None, targ
     directory. The pp.yaml is also copied to the
     cylc-src directory.
 
-    :param yamlfile: Path to YAML file
+    :param yamlfile: Path to YAML file used for experiment configuration, default None
     :type yamlfile: str
-    :param experiment: Name of post-processing experiment, default None
+    :param experiment: One of the postprocessing experiment names from the yaml displayed
+                       by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str
-    :param platform: Name of platform to use, default None
+    :param platform: The location + compiler that was used to run the model 
+                     (e.g. gfdl.ncrc5-deploy), default None
     :type platform: str
-    :param target: Name of target (prod, debug, open-mp, repro)
+    :param target: Options used for the model compiler (e.g. prod-openmp), default None
     :type target: str
     :raises ValueError: if experiment, platform, target or yamlfile is None
     """
