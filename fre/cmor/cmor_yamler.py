@@ -25,95 +25,9 @@ from typing import Optional, List, Dict, Any, Union
 
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 from .cmor_mixer import cmor_run_subtool
+from .cmor_helpers import check_path_existence, iso_to_bronx_chunk, conv_mip_to_bronx_freq
 
 fre_logger = logging.getLogger(__name__)
-
-def check_path_existence(some_path: str):
-    """
-    Check if the given path exists, raising FileNotFoundError if not.
-
-    :param some_path: A string representing a filesystem path (relative or absolute).
-    :type some_path: str
-    :raises FileNotFoundError: If the path does not exist.
-    """
-    if not Path(some_path).exists():
-        raise FileNotFoundError(f'does not exist:  {some_path}')
-
-def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
-    """
-    Convert an ISO8601 duration string (e.g., 'P5Y') to FRE-bronx-style chunk string (e.g., '5yr').
-
-    :param cmor_chunk_in: ISO8601 formatted string representing a time interval (must start with 'P' and end with 'Y').
-    :type cmor_chunk_in: str
-    :raises ValueError: If the input does not follow the expected ISO format.
-    :return: FRE-bronx chunk string.
-    :rtype: str
-    """
-    fre_logger.debug('cmor_chunk_in = %s', cmor_chunk_in)
-    if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
-        bronx_chunk = f'{cmor_chunk_in[1:-1]}yr'
-    else:
-        raise ValueError('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py')
-    fre_logger.debug('bronx_chunk = %s', bronx_chunk)
-    return bronx_chunk
-
-def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
-    """
-    Convert a MIP table frequency string to its FRE-bronx equivalent using a lookup table.
-
-    :param cmor_table_freq: Frequency string as found in a MIP table (e.g., 'mon', 'day', 'yr', etc.).
-    :type cmor_table_freq: str
-    :raises KeyError: If the frequency string is not recognized as valid.
-    :return: FRE-bronx frequency string, or None if not mappable.
-    :rtype: str or None
-    """
-    cmor_to_bronx_dict = {
-        "1hr"    : "1hr",
-        "1hrCM"  : None,
-        "1hrPt"  : None,
-        "3hr"    : "3hr",
-        "3hrPt"  : None,
-        "6hr"    : "6hr",
-        "6hrPt"  : None,
-        "day"    : "daily",
-        "dec"    : None,
-        "fx"     : None,
-        "mon"    : "monthly",
-        "monC"   : None,
-        "monPt"  : None,
-        "subhrPt": None,
-        "yr"     : "annual",
-        "yrPt"   : None
-    }
-    bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
-    if bronx_freq is None:
-        fre_logger.warning(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent')
-    if cmor_table_freq not in cmor_to_bronx_dict.keys():
-        raise KeyError(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency')
-    return bronx_freq
-
-def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
-    """
-    Extract the frequency of data from a CMIP MIP table (JSON), returning its FRE-bronx equivalent.
-
-    :param json_table_config: Path to a JSON MIP table file with 'variable_entry' metadata.
-    :type json_table_config: str
-    :raises KeyError: If the frequency cannot be found or mapped.
-    :return: FRE-bronx frequency string.
-    :rtype: str
-    """
-    table_freq = None
-    with open(json_table_config, 'r', encoding='utf-8') as table_config_file:
-        table_config_data = json.load(table_config_file)
-        for var_entry in table_config_data['variable_entry']:
-            try:
-                table_freq = table_config_data['variable_entry'][var_entry]['frequency']
-                break
-            except Exception as exc:
-                raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
-                               'have frequency info under the variable entry!') from exc
-    bronx_freq = conv_mip_to_bronx_freq(table_freq)
-    return bronx_freq
 
 def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
                        exp_name: Optional[str] = None,
