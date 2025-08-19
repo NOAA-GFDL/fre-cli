@@ -44,7 +44,7 @@ import os
 from pathlib import Path
 from typing import Optional, Any, List, Union
 
-from netCDF4 import Dataset
+from netCDF4 import Dataset, Variable
 
 fre_logger = logging.getLogger(__name__)
 
@@ -124,15 +124,15 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
         return None
 
 
-def create_lev_bnds( bound_these: Optional[Any] = None,
-                     with_these: Optional[Any] = None) -> np.ndarray:
+def create_lev_bnds( bound_these: Variable = None,
+                     with_these: Variable = None) -> np.ndarray:
     """
     Create a vertical level bounds array for a set of levels.
 
-    :param bound_these: List or array of level midpoints.
-    :type bound_these: array-like
-    :param with_these: List or array of level bounds (length must be len(bound_these) + 1).
-    :type with_these: array-like
+    :param bound_these: netCDF4 Variable with a numpy array representing veritcal levels
+    :type bound_these: netCDF4.Variable
+    :param with_these: netCDF4 Variable with a numpy array representing level bounds, one longer than bound_these
+    :type with_these: netCDF4.Variable
     :raises ValueError: If the length of with_these is not len(bound_these) + 1.
     :return: Array of shape (len(bound_these), 2), where each row gives the bounds for a level.
     :rtype: np.ndarray
