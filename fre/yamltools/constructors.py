@@ -3,7 +3,7 @@
 import typing
 import yaml
 
-def join_constructor( loader: yaml.Loader,
+def _join_constructor( loader: yaml.Loader,
                       node: yaml.Node ) -> str:
     """
     Allows strings defined as elements in a list, specified in a yaml, to be concatenated together. this constructor
