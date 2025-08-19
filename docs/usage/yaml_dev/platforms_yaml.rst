@@ -17,6 +17,7 @@ The platform yaml contains user defined information for both bare-metal and cont
         containerRun: "apptainer" - the container run program
         containerBase: the base image used for the container
         mkTemplate: path to the mk template file
+        containerOutputLocation: The path (str) to where the output model container will be located
       - name: container platform name (FOR TWO STAGE BUILD)
         compiler: compiler you are using
         RUNenv: Commands needed at the beginning of a RUN in dockerfile
@@ -28,3 +29,4 @@ The platform yaml contains user defined information for both bare-metal and cont
         mkTemplate: path to the mk template file
         container2step: True/False if creating a 2 step container build
         container2base: the base image used for the second build step
+        containerOutputLocation: The path (str) to where the output model container will be located
