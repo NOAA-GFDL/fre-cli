@@ -1,6 +1,6 @@
 """
 CMOR Info Parser Module
-=======================
+-----------------------
 
 This module provides classes and functions to parse, validate, and merge CMOR (Climate Model Output Rewriter)
 YAML configuration files for the FMS Runtime Environment (FRE) CLI. It enables extraction and composition
@@ -9,7 +9,7 @@ for model execution and output post-processing.
 
 Features
 --------
-- Resolves and validates experiment configurations from project YAML files.
+- Resolves and (partially) validates yaml configuration parsed along the way
 - Merges model, grid, post-processing, and experiment YAMLs into a single configuration dictionary.
 - Provides the :class:`CMORYaml` class interface for combining and cleaning CMOR YAML definitions.
 - Raises descriptive exceptions for missing or inconsistent configuration files.
@@ -19,6 +19,13 @@ Intended Usage
 This module is intended for internal use by FRE-CLI tools and utilities that automate configuration and
 execution of FMS-based climate model experiments, especially when CMOR-compliant output is required.
 
+Functions
+---------
+- ``experiment_check(...)``
+
+Classes
+-------
+- :class:`CMORyaml`
 """
 
 import os
