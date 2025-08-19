@@ -7,18 +7,23 @@ YAML files into unified configurations for the Flexible Runtime Environment (FRE
 to consolidate YAMLs for CMORization, compilation, and post-processing, supporting both command-line tools
 and internal workflow automation.
 
+There are only four functions currently. The primary one is `consolidate_yamls`, and the others are called through
+it by specifying the `use` argument.
+
+Of the other functions, each `get_combined_Xyaml` takes the model and X-flavored `yaml` (e.g., a `cmor` or `compile`
+configuration), opens them up, parses them for things like anchors, other resolvable objects, and produces a final
+output dictionary. 
+
+Notice there's another pattern in fre.yamltools- every possible `use` argument `X` to `consolidate_yamls` leads to a
+`fre.yamltools.X_info_parser` module that houses specifics to `yaml`-configuration combintation and usage approaches
+unique to the context.
+
 Functions
 ---------
 - get_combined_cmoryaml(...)
 - get_combined_compileyaml(...)
 - get_combined_ppyaml(...)
 - consolidate_yamls(...)
-
-References
-----------
-- FRE Documentation: https://github.com/NOAA-GFDL/fre-cli
-- PEP 8 -- Style Guide for Python Code: https://www.python.org/dev/peps/pep-0008/
-- PEP 257 -- Docstring Conventions: https://www.python.org/dev/peps/pep-0257/
 """
 
 import os
@@ -44,7 +49,9 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
                            target: str,
                            output: Optional[Union[str, Path]] = None ) -> Dict[str, Any]:
     """
-    Combine the model, experiment, and CMOR YAML files into a single dictionary.
+    Combine configuration information from the model, cmor, and other FRE-yaml config files into
+    a single dictionary. the dictionary is intended to be read by `fre cmor yaml`.
+    The final result relies on several calls to fre.cmor.cmor_info_parser.CMORYaml class routines.
 
     :param yamlfile: Path to the model YAML file.
     :type yamlfile: str or Path
@@ -60,7 +67,7 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
     :return: Cleaned, combined CMOR YAML configuration.
     :rtype: dict
 
-    .. note:: The merging process combines information from model, experiment, and CMOR YAMLs, and cleans the result.
+    .. note:: The merging process details are within the CMORYaml class code
     """
     try:
         fre_logger.info('calling cmor_info_parser.CMORYaml to initialize a CMORYaml instance...')
