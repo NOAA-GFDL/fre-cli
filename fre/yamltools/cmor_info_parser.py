@@ -130,6 +130,11 @@ class CMORYaml():
     """
     Class for handling and merging CMOR-related YAML files.
 
+    :ivar str yamlfile: str representing path to main module YAML file.
+    :ivar str experiment: Name of an experiment.
+    :ivar str platform: Platform identifier.
+    :ivar str target: Target identifier.
+
     Methods
     -------
     __init__(yamlfile, experiment, platform, target)
