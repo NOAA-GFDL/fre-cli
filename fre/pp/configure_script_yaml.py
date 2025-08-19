@@ -7,7 +7,7 @@ import os
 import json
 import logging
 
-from pathlib import Pathi
+from pathlib import Path
 from typing import Tuple
 from jsonschema import validate, SchemaError, ValidationError
 import metomi.rose.config
