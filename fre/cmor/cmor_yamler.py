@@ -29,17 +29,17 @@ from .cmor_helpers import check_path_existence, iso_to_bronx_chunk, conv_mip_to_
 
 fre_logger = logging.getLogger(__name__)
 
-def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
-                       exp_name: Optional[str] = None,
-                       platform: Optional[str] = None,
-                       target: Optional[str] = None,
-                       output: Optional[Union[str, Path]] = None,
+def cmor_yaml_subtool( yamlfile: str = None,
+                       exp_name: str = None,
+                       platform: str = None,
+                       target: str = None,
+                       output: Optional[str] = None,
                        opt_var_name: Optional[str] = None,
                        run_one_mode: bool = False,
                        dry_run_mode: bool = False,
                        start: Optional[str] = None,
                        stop: Optional[str] = None,
-                       calendar_type: Optional[str] = None) -> None:
+                       calendar_type: Optional[str] = None):
     """
     Main driver for CMORization using model YAML configuration files.
     This routine parses the model YAML, combines configuration, resolves and checks all required
@@ -47,21 +47,21 @@ def cmor_yaml_subtool( yamlfile: Optional[Union[str, Path]] = None,
     defined in the configuration.
 
     :param yamlfile: Path to a model-yaml file holding experiment and workflow configuration.
-    :type yamlfile: str or Path
+    :type yamlfile: str
     :param exp_name: Experiment name (must be present in the YAML file).
     :type exp_name: str
     :param platform: Platform target (e.g., 'ncrc4.intel').
     :type platform: str
     :param target: Compilation target (e.g., 'prod-openmp').
     :type target: str
-    :param output: Optional path for YAML output.
-    :type output: str or Path, optional
+    :param output: filename for YAML output.
+    :type output: str, optional
     :param opt_var_name: If specified, process only files matching this variable name.
     :type opt_var_name: str, optional
     :param run_one_mode: If True, process only one file and exit.
-    :type run_one_mode: bool, optional
+    :type run_one_mode: bool
     :param dry_run_mode: If True, print configuration and actions without executing cmor_run_subtool.
-    :type dry_run_mode: bool, optional
+    :type dry_run_mode: bool
     :param start: Four-digit year (YYYY) indicating start of date range to process.
     :type start: str, optional
     :param stop: Four-digit year (YYYY) indicating end of date range to process.
