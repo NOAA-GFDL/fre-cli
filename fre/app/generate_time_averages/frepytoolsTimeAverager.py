@@ -225,21 +225,18 @@ class frepytoolsTimeAverager(timeAverager):
         unwritten_var_list=[]
         unwritten_var_ncattr_dict={}
         for var in nc_fin_vars:
-            if var != targ_var:
-                fre_logger.info(f'\nattempting to create output variable: {var}')
-                #print(f'is it a time variable? {self.var_is_time(nc_fin.variables[var])}')
-                nc_fout.createVariable(var, nc_fin[var].dtype, nc_fin[var].dimensions)
-                nc_fout.variables[var].setncatts(nc_fin[var].__dict__)
-                try:
-                    nc_fout.variables[var][:] = nc_fin[var][:]
-                except:
-                    fre_logger.warning(f'could not write var={var}. i bet its the shape!')
-                    fre_logger.warning(f'nc_fin[var].shape={nc_fin[var].shape}')
-                    #print(f'len(nc_fout.variables[{var}])={len(nc_fout.variables[var])}')
-                    nc_fout.variables[var][:] = [ nc_fin[var][0] ]
-                    fre_logger.warning(f'time variable? {self.var_has_time_units(nc_fin.variables[var])}')
-            else:
+            if var == targ_var:
                 continue
+            fre_logger.info(f'\nattempting to create output variable: {var}')
+            nc_fout.createVariable(var, nc_fin[var].dtype, nc_fin[var].dimensions)
+            nc_fout.variables[var].setncatts(nc_fin[var].__dict__)
+            try:
+                nc_fout.variables[var][:] = nc_fin[var][:]
+            except:
+                fre_logger.warning(f'could not write var={var}. i bet its the shape!')
+                fre_logger.warning(f'nc_fin[var].shape={nc_fin[var].shape}')
+                nc_fout.variables[var][:] = [ nc_fin[var][0] ]
+                fre_logger.warning(f'time variable? {self.var_has_time_units(nc_fin.variables[var])}')
 
         if len(unwritten_var_list)>0:
             fre_logger.warning(f'WARNING: some variables\' data ({unwritten_var_list}) was not written.')
