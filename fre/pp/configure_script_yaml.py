@@ -3,10 +3,6 @@ Script creates rose-apps and rose-suite
 files for the workflow from the pp yaml.
 """
 
-## TO-DO:
-# - condition where there are multiple pp yamls
-# - validation here or in combined-yamls tools
-
 import os
 import json
 import logging
@@ -20,30 +16,18 @@ import fre.yamltools.combine_yamls_script as cy
 
 fre_logger = logging.getLogger(__name__)
 
-####################
-def yaml_load(yamlfile):
-    """
-    Load the given yaml.
-
-    :param yamlfile:
-    :type yamlfile:
-    :return:
-    :rtype:
-    """
-    # Load the main yaml
-    with open(yamlfile,'r') as f:
-        y=yaml.safe_load(f)
-
-    return y
-
 ######VALIDATE#####
-def validate_yaml(yamlfile):
+def validate_yaml(yamlfile: dict):
     """
     Using the schema.json file, the yaml format is validated.
 
-    :param yamlfile:
-    :type yamlfile:
+    :param yamlfile: Model, settings, pp, and analysis yaml
+                     information combined into a dictionary
+    :type yamlfile: dict
     :raises ValueError:
+        - if gfdl_mdf_schema path is not valid
+        - combined yaml is not valid
+        - unclear error in validation
     """
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
@@ -62,28 +46,36 @@ def validate_yaml(yamlfile):
         validate(instance=yamlfile,schema=schema)
         fre_logger.info("Combined yaml valid")
     except SchemaError:
-#        fre_logger.error("Schema '%s' is not valid. Contact the FRE team.", schema_path)
         raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
     except ValidationError:
-#        fre_logger.error("Combined yaml is not valid. Please fix the errors and try again.")
         raise ValueError("Combined yaml is not valid. Please fix the errors and try again.")
     except:
-#        fre_logger.error("Unclear error from validation. Please try to find the error and try again.")
         raise ValueError("Unclear error from validation. Please try to find the error and try again.")
 
 ####################
-def rose_init(experiment, platform, target):
+def rose_init(experiment: str, platform: str, target: str):
     """
     Initialize the rose suite and app configurations.
 
-    :param: experiment
-    :type:
-    :param: platform
-    :type:
-    :param: target
-    :type:
+    :param experiment: Name of post-procesing experiment, default None
+    :type experiment: str
+    :param platform: Name of platform to use, default None
+    :type platform: str
+    :param target: Name of target (prod, debug, open-mp, repro)
+    :type target: str
     :return:
+        - rose_suite: class within Rose python library; represents
+                      elements of the rose-suite configuration
+        - rose_regrid: class within Rose python library; represents
+                       elements of the rose-app configuration used in
+                       the regrid-xy task
+        - rose_remap: class within Rose python library; represents
+                      elements of the rose-app configuration used in
+                      the remap-pp-components task
     :rtype:
+        - rose_suite: class
+        - rose_regrid: class
+        - rose_remap: class
     """
     # initialize rose suite config
     rose_suite = metomi.rose.config.ConfigNode()
@@ -113,11 +105,13 @@ def quote_rose_values(value):
     rose-suite.conf template variables must be quoted unless they are
     boolean or a list, in which case do not quote them.
 
-    :param: value
-    :type:
-    :return:
-    :rtype:
+    :param value: 
+    :type value: str
+    :return: Quoted string
+    :rtype: str
     """
+    print(f"quote value: {type(value)}")
+    quit()
     if isinstance(value, bool):
         return f"{value}"
     elif isinstance(value, list):
@@ -126,14 +120,16 @@ def quote_rose_values(value):
         return "'" + str(value) + "'"
 
 ####################
-def set_rose_suite(yamlfile,rose_suite):
+def set_rose_suite(yamlfile: dict, rose_suite):
     """
     Set items in the rose suite configuration.
 
-    :param: yamlfile
-    :type:
-    :param: rose_suite
-    :type:
+    :param yamlfile: Model, settings, pp, and analysis yaml
+                     information combined into a dictionary
+    :type yamlfile: dict
+    :param rose_suite: class within Rose python library; represents 
+                       elements of the rose-suite configuration 
+    :type rose_suite: class
     """
     pp=yamlfile.get("postprocess")
     dirs=yamlfile.get("directories")
@@ -157,16 +153,21 @@ def set_rose_suite(yamlfile,rose_suite):
             rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
 
 ####################
-def set_rose_apps(yamlfile,rose_regrid,rose_remap):
+def set_rose_apps(yamlfile: dict, rose_regrid, rose_remap):
     """
     Set items in the regrid and remap rose app configurations.
 
-    :param: yamlfile
-    :type:
-    :param: rose_regrid
-    :type:
-    :param: rose_remap
-    :type:
+    :param yamlfile: Model, settings, pp, and analysis yaml
+                     information combined into a dictionary
+    :type yamlfile: dict
+    :param rose_regrid: class within Rose python library; represents
+                        elements of rose-app configuration used in
+                        the regrid-xy task
+    :type rose_regrid: class
+    :param rose_remap: class within Rose python library; represents
+                       elements of rose-app configuration used in
+                       the remap-pp-components task
+    :type rose_remap: class
     """
     components = yamlfile.get("postprocess").get("components")
     for i in components:
@@ -213,22 +214,22 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
                             value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
 ####################
-def yaml_info(yamlfile = None, experiment = None, platform = None, target = None):
+def yaml_info(yamlfile: str=None, experiment: str=None, platform: str=None, target: str=None):
     """
     Using a valid pp.yaml, the rose-app and rose-suite
     configuration files are created in the cylc-src
     directory. The pp.yaml is also copied to the
     cylc-src directory.
 
-    :param: yamlfile
-    :type:
-    :param: experiment
-    :type:
-    :param: platform
-    :type:
-    :param: target
-    :type:
-    :raises ValueError:
+    :param yamlfile: Path to YAML file
+    :type yamlfile: str
+    :param experiment: Name of post-procesing experiment, default None
+    :type experiment: str
+    :param platform: Name of platform to use, default None
+    :type platform: str
+    :param target: Name of target (prod, debug, open-mp, repro)
+    :type target: str
+    :raises ValueError: if experiment, platform, target or yamlfile is None
     """
     fre_logger.info('Starting')
 
@@ -258,10 +259,10 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
 
     ## PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items
-    set_rose_suite(full_yamldict,rose_suite) ####comb_pp_yaml,rose_suite)
+    set_rose_suite(full_yamldict,rose_suite)
 
     # Set regrid and remap rose app items
-    set_rose_apps(full_yamldict,rose_regrid,rose_remap) ####comb_pp_yaml,rose_regrid,rose_remap)
+    set_rose_apps(full_yamldict,rose_regrid,rose_remap)
 
     # Write output files
     fre_logger.info("Writing output files...")
