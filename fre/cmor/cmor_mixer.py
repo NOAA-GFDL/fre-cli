@@ -1,10 +1,18 @@
 """
-CMOR Metadata Processing and NetCDF Rewriting Routines
+FRE / CMOR Metadata Mixing and Rewriting (CMORization)
 ======================================================
 
-This module provides metadata processing routines for CMORization, including Click CLI entry points.
-It is the core implementation for ``fre cmor run`` operations: reading metadata, processing input NetCDF files,
-and writing compliant CMIP outputs. For usage details, see the project README.md.
+This module provides routines which rewrite post-processed FRE/FMS model output in a community-driven, standardized way.
+This module relies heavily on PCMDI's CMOR module and it's python API. It is the core implementation for
+``fre cmor run`` operations- mixing and matching GFDL's and FRE's conventions to CMOR's expectations, so that
+participation in model-intercomparison projects may be eased. For more usage details, see the project README.md, the
+FRE documenation, and PCMDI's CMOR module documentation available at https://cmor.llnl.gov/.
+
+This module currently follows a composite pattern, analagous to nested/russian doll, where a large piece contains a
+smaller piece which contains another. ``fre cmor run`` leads directly to ``cmor_run_subtool``, which calls
+``cmorize_all_variables_in_dir`` once, which calls ``cmorize_all_variables_in_dir`` once, which calls
+``cmorize_target_var_files`` once per variable in a variable list, and calls ``rewrite_netcdf_file_var`` once per found
+datetime for a given variable. Functions within ``cmor_helpers`` assist with the CMORization process.
 
 Functions
 ---------
@@ -12,6 +20,11 @@ Functions
 - ``cmorize_target_var_files(...)``
 - ``cmorize_all_variables_in_dir(...)``
 - ``cmor_run_subtool(...)``
+
+.. note:: The name "mixer" comes from a conversation between Chris Blanton, the original code author (Sergey Nikonov),
+          and the next author/maintainer, Ian Laflotte, in 2022. Chris wanted to change the name, and Sergey kind of
+          enjoyed the original CMORCommander.py, and so did not have any suggestions. Ian, whom was very new and knew
+          nothing, suggested "cmor mixer", not truly understanding why. Chris and Sergey decided to go with it.
 """
 
 import glob
@@ -47,13 +60,13 @@ CMOR_MK_SUBDIRS=1
 CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
 
 
-def rewrite_netcdf_file_var( mip_var_cfgs: Optional[dict] = None,
-                             local_var: Optional[str] = None,
-                             netcdf_file: Optional[str] = None,
-                             target_var: Optional[str] = None,
-                             json_exp_config: Optional[str] = None,
-                             json_table_config: Optional[str] = None,
-                             prev_path: Optional[str] = None) -> Optional[str]:
+def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
+                             local_var: str = None,
+                             netcdf_file: str = None,
+                             target_var: str = None,
+                             json_exp_config: str = None,
+                             json_table_config: str = None,
+                             prev_path: Optional[str] = None) -> str:
     """
     Rewrite the input NetCDF file for a target variable in a CMIP-compliant manner and write output using CMOR.
 
