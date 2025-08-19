@@ -74,9 +74,9 @@ def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config
                       elements of the rose-app configuration used in
                       the remap-pp-components task
     :rtype:
-        - rose_suite: class
-        - rose_regrid: class
-        - rose_remap: class
+        - rose_suite: metomi.rose.config.ConfigNode class
+        - rose_regrid: metomi.rose.config.ConfigNode class
+        - rose_remap: metomi.rose.config.ConfigNode class
     """
     # initialize rose suite config
     rose_suite = metomi.rose.config.ConfigNode()
