@@ -5,8 +5,7 @@ The platform yaml contains user defined information for both bare-metal and cont
     platforms:
       - name: the platform name
         compiler: the compiler you are using
-        modulesInit: ["array of commands that are needed to load modules." , "each command must end with a newline character"]
-        modules: [array of modules to load including compiler]
+        envSetup: ["array of additional shell commands that are needed to compile the model" (this can include loading/unloading modules)]
         mkTemplate: The location of the mkmf make template
         modelRoot: The root directory of the model (where src, exec, experiments will go)
       - name: container platform name (FOR ONE STAGE BUILD)
