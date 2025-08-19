@@ -7,7 +7,8 @@ import os
 import json
 import logging
 
-from pathlib import Path
+from pathlib import Pathi
+from typing import Tuple
 from jsonschema import validate, SchemaError, ValidationError
 import metomi.rose.config
 
@@ -53,11 +54,11 @@ def validate_yaml(yamlfile: dict):
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 ####################
-def rose_init(experiment: str, platform: str, target: str):
+def rose_init(experiment: str, platform: str, target: str) -> Tuple[rose_suite, rose_regrid, rose_remap]:
     """
     Initializes the rose suite and app configurations.
 
-    :param experiment: Name of post-procesing experiment, default None
+    :param experiment: Name of post-processing experiment, default None
     :type experiment: str
     :param platform: Name of platform to use, default None
     :type platform: str
@@ -100,7 +101,7 @@ def rose_init(experiment: str, platform: str, target: str):
     return(rose_suite,rose_regrid,rose_remap)
 
 ####################
-def quote_rose_values(value):
+def quote_rose_values(value:str) -> str:
     """
     rose-suite.conf template variables must be quoted unless they are
     boolean or a list, in which case do not quote them.
@@ -221,7 +222,7 @@ def yaml_info(yamlfile: str=None, experiment: str=None, platform: str=None, targ
 
     :param yamlfile: Path to YAML file
     :type yamlfile: str
-    :param experiment: Name of post-procesing experiment, default None
+    :param experiment: Name of post-processing experiment, default None
     :type experiment: str
     :param platform: Name of platform to use, default None
     :type platform: str
