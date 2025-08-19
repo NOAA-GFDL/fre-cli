@@ -1,6 +1,6 @@
 """
 YAML Combination Utilities for FRE
-==================================
+----------------------------------
 
 This module provides utility functions for combining model, experiment, compile, platform, and analysis
 YAML files into unified configurations for the Flexible Runtime Environment (FRE) workflow. It offers routines
