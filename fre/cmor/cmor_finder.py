@@ -40,7 +40,7 @@ def print_var_content(table_config_file: IO[str],
     Print information about a specific variable from a given CMIP6 JSON configuration file.
 
     :param table_config_file: An open file object for a CMIP6 table JSON file. The file should be opened in text mode
-    :type table_config_file: file-like object
+    :type table_config_file: input buffer/stream of text, usually output by the open() built-in. see python typing doc
     :param var_name: The name of the variable to look for in the configuration file. 
     :type var_name: str    
     :raises Exception: If there is an issue reading the JSON content from the file.
