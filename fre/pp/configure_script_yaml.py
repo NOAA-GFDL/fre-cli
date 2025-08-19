@@ -9,7 +9,6 @@ import logging
 
 from pathlib import Path
 from jsonschema import validate, SchemaError, ValidationError
-import yaml
 import metomi.rose.config
 
 import fre.yamltools.combine_yamls_script as cy
@@ -19,7 +18,8 @@ fre_logger = logging.getLogger(__name__)
 ######VALIDATE#####
 def validate_yaml(yamlfile: dict):
     """
-    Using the schema.json file, the yaml format is validated.
+    Using the schema.json file in gfdl_msd_schemas,
+    the yaml format is validated.
 
     :param yamlfile: Model, settings, pp, and analysis yaml
                      information combined into a dictionary
@@ -45,17 +45,17 @@ def validate_yaml(yamlfile: dict):
     try:
         validate(instance=yamlfile,schema=schema)
         fre_logger.info("Combined yaml valid")
-    except SchemaError:
-        raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.")
-    except ValidationError:
-        raise ValueError("Combined yaml is not valid. Please fix the errors and try again.")
-    except:
-        raise ValueError("Unclear error from validation. Please try to find the error and try again.")
+    except SchemaError as exc:
+        raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.") from exc
+    except ValidationError as exc:
+        raise ValueError("Combined yaml is not valid. Please fix the errors and try again.") from exc
+    except Exception as exc:
+        raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 ####################
 def rose_init(experiment: str, platform: str, target: str):
     """
-    Initialize the rose suite and app configurations.
+    Initializes the rose suite and app configurations.
 
     :param experiment: Name of post-procesing experiment, default None
     :type experiment: str
@@ -105,13 +105,11 @@ def quote_rose_values(value):
     rose-suite.conf template variables must be quoted unless they are
     boolean or a list, in which case do not quote them.
 
-    :param value: 
+    :param value: rose-suite configuration value 
     :type value: str
-    :return: Quoted string
+    :return: quoted rose-suite configuration value (if not bool or list)
     :rtype: str
     """
-    print(f"quote value: {type(value)}")
-    quit()
     if isinstance(value, bool):
         return f"{value}"
     elif isinstance(value, list):
@@ -122,7 +120,7 @@ def quote_rose_values(value):
 ####################
 def set_rose_suite(yamlfile: dict, rose_suite):
     """
-    Set items in the rose suite configuration.
+    Sets items in the rose suite configuration.
 
     :param yamlfile: Model, settings, pp, and analysis yaml
                      information combined into a dictionary
@@ -155,7 +153,7 @@ def set_rose_suite(yamlfile: dict, rose_suite):
 ####################
 def set_rose_apps(yamlfile: dict, rose_regrid, rose_remap):
     """
-    Set items in the regrid and remap rose app configurations.
+    Sets items in the regrid and remap rose app configurations.
 
     :param yamlfile: Model, settings, pp, and analysis yaml
                      information combined into a dictionary
