@@ -1,6 +1,9 @@
 ''' class for python-native routine using netCDF4 and numpy to crunch time-averages '''
 
 import math
+import logging
+fre_logger = logging.getLogger(__name__)
+
 import numpy
 from netCDF4 import Dataset
 
@@ -28,20 +31,18 @@ class frepytoolsTimeAverager(timeAverager):
         :rtype: int
         """
         assert self.pkg=="fre-python-tools"
-        if __debug__:
-            print(locals()) #input argument details
+        fre_logger.debug(locals()) #input argument details
 
-        if __debug__:
-            print('calling generate_frepythontools_timavg for file: ' + infile)
+        fre_logger.info('calling generate_frepythontools_timavg for file: ' + infile)
 
         if self.avg_type != 'all':
-            print(f'ERROR: avg_type={self.avg_type} not supported at this time.')
+            fre_logger.error(f'avg_type={self.avg_type} not supported at this time.')
             return 1
 
         # (TODO) file I/O should be a sep function, no? make tests, extend
         nc_fin = Dataset(infile, 'r')
         if nc_fin.file_format != 'NETCDF4':
-            print(f'INFO: input file is not netCDF4 format, is {nc_fin.file_format}')
+            fre_logger.info(f'input file is not netCDF4 format, is {nc_fin.file_format}')
 
         # (TODO) make this a sep function, make tests, extend
         # identifying the input variable, two approaches
@@ -52,8 +53,7 @@ class frepytoolsTimeAverager(timeAverager):
         else: # this can be replaced w/ a regex search maybe
             targ_var = infile.split('/').pop().split('.')[-2]
 
-        if __debug__:
-            print(f'targ_var={targ_var}')
+        fre_logger.debug(f'targ_var={targ_var}')
 
         # (TODO) make this a sep function, make tests, extend
         # check for the variable we're hoping is in the file
@@ -64,7 +64,7 @@ class frepytoolsTimeAverager(timeAverager):
                 time_bnds = nc_fin['time_bnds'][:].copy()
                 break
         if time_bnds is None:
-            print('requested variable not found. exit.')
+            fre_logger.error('requested variable not found. exit.')
             return 1
 
 
@@ -75,8 +75,7 @@ class frepytoolsTimeAverager(timeAverager):
         has_masked_data = numpy.ma.is_masked(var_data) and numpy.ma.count_masked(var_data) > 0
         has_masked_time_bnds = numpy.ma.is_masked(time_bnds) and numpy.ma.count_masked(time_bnds) > 0
         
-        if __debug__:
-            print(f'has_masked_data={has_masked_data}, has_masked_time_bnds={has_masked_time_bnds}')
+        fre_logger.debug(f'has_masked_data={has_masked_data}, has_masked_time_bnds={has_masked_time_bnds}')
 
         # (TODO) make this a sep function, make tests, extend
         # read in sizes of specific axes / compute weights
@@ -93,17 +92,17 @@ class frepytoolsTimeAverager(timeAverager):
                 wgts_sum=numpy.ma.sum(wgts)
             else:
                 wgts_sum=sum(wgts)
-            if __debug__:
-                print(f'wgts_sum={wgts_sum}')
+            
+            fre_logger.debug(f'wgts_sum={wgts_sum}')
 
 
         # initialize arrays, is there better practice for reserving the memory necessary
         # for holding the day? is something that does more write-on-demand possible like
         # reading data on-demand? (TODO)
         num_lat_bnds=fin_dims['lat'].size
-        print(f'num_lat_bnds={num_lat_bnds}')
+        fre_logger.debug(f'num_lat_bnds={num_lat_bnds}')
         num_lon_bnds=fin_dims['lon'].size
-        print(f'num_lon_bnds={num_lon_bnds}')
+        fre_logger.debug(f'num_lon_bnds={num_lon_bnds}')
         # Use masked array only if there's actually masked data
         if has_masked_data:
             avgvals=numpy.ma.zeros((1,num_lat_bnds,num_lon_bnds),dtype=float)
@@ -118,7 +117,7 @@ class frepytoolsTimeAverager(timeAverager):
         # parallelism via multiprocessing shouldn't be too bad- explore an alt [dask] too (TODO)
         # compute average, for each lat/lon coordinate over time record in file
         if not self.unwgt: #weighted case
-            print('computing weighted statistics')
+            fre_logger.info('computing weighted statistics')
             for lat in range(num_lat_bnds):
                 lon_val_array=numpy.moveaxis( nc_fin[targ_var][:],0,-1)[lat].copy()
 
@@ -134,7 +133,7 @@ class frepytoolsTimeAverager(timeAverager):
                     del tim_val_array
                 del lon_val_array
         else: #unweighted case
-            print('computing unweighted statistics')
+            fre_logger.info('computing unweighted statistics')
             for lat in range(num_lat_bnds):
                 lon_val_array=numpy.moveaxis( nc_fin[targ_var][:],0,-1)[lat].copy()
 
@@ -162,28 +161,28 @@ class frepytoolsTimeAverager(timeAverager):
 
         # (TODO) make this a sep function, make tests, extend
         # write file global attributes
-        print('------- writing output attributes. --------')
+        fre_logger.info('------- writing output attributes. --------')
         unwritten_ncattr_list=[]
         try:
             nc_fout.setncatts(nc_fin.__dict__) #this copies the global attributes exactly.
         except: # if the first way doesn't work...
-            print('could not copy ncatts from input file. trying to copy one-by-one')
+            fre_logger.warning('could not copy ncatts from input file. trying to copy one-by-one')
             fin_ncattrs=nc_fin.ncattrs()
             for ncattr in fin_ncattrs:
-                print(f'\n_________\nncattr={ncattr}')
+                fre_logger.debug(f'\n_________\nncattr={ncattr}')
                 try:
                     nc_fout.setncattr(ncattr, nc_fin.getncattr(ncattr))
                 except:
-                    print(f'could not get nc file attribute: {ncattr}. moving on.')
+                    fre_logger.warning(f'could not get nc file attribute: {ncattr}. moving on.')
                     unwritten_ncattr_list.append(ncattr)
         if len(unwritten_ncattr_list)>0:
-            print(f'WARNING: Some global attributes ({unwritten_ncattr_list}) were not written.')
-        print('------- DONE writing output attributes. --------')
+            fre_logger.warning(f'WARNING: Some global attributes ({unwritten_ncattr_list}) were not written.')
+        fre_logger.info('------- DONE writing output attributes. --------')
         ##
 
         # (TODO) make this a sep function, make tests, extend
         # write file dimensions
-        print('\n ------ writing output dimensions. ------ ')
+        fre_logger.info('\n ------ writing output dimensions. ------ ')
         unwritten_dims_list=[]
         for key in fin_dims:
             try:
@@ -198,11 +197,11 @@ class frepytoolsTimeAverager(timeAverager):
                 else:
                     nc_fout.createDimension( dimname=key, size=fin_dims[key].size )
             except:
-                print(f'problem. cannot read/write dimension {key}')
+                fre_logger.warning(f'problem. cannot read/write dimension {key}')
                 unwritten_dims_list.append(key)
         if len(unwritten_dims_list)>0:
-            print(f'WARNING: Some dimensions ({unwritten_dims_list}) were not written.')
-        print('------ DONE writing output dimensions. ------- \n')
+            fre_logger.warning(f'WARNING: Some dimensions ({unwritten_dims_list}) were not written.')
+        fre_logger.info('------ DONE writing output dimensions. ------- \n')
         ##
 
 
@@ -211,49 +210,49 @@ class frepytoolsTimeAverager(timeAverager):
         # copying metadata, not fully correct
         # but not far from wrong according to CF
         # cell_methods must be changed TO DO
-        print(f'\n------- writing data for data {targ_var} -------- ')
+        fre_logger.info(f'\n------- writing data for data {targ_var} -------- ')
         nc_fout.createVariable(targ_var, nc_fin[targ_var].dtype, nc_fin[targ_var].dimensions)
         nc_fout.variables[targ_var].setncatts(nc_fin[targ_var].__dict__)
 
 
         nc_fout.variables[targ_var][:]=avgvals
-        print('---------- DONE writing output variables. ---------')
+        fre_logger.info('---------- DONE writing output variables. ---------')
         ##
 
         # (TODO) make this a sep function, make tests, extend
         # write OTHER output variables (aka data) #prev code.
-        print('\n------- writing other output variables. -------- ')
+        fre_logger.info('\n------- writing other output variables. -------- ')
         unwritten_var_list=[]
         unwritten_var_ncattr_dict={}
         for var in nc_fin_vars:
             if var != targ_var:
-                print(f'\nattempting to create output variable: {var}')
+                fre_logger.info(f'\nattempting to create output variable: {var}')
                 #print(f'is it a time variable? {self.var_is_time(nc_fin.variables[var])}')
                 nc_fout.createVariable(var, nc_fin[var].dtype, nc_fin[var].dimensions)
                 nc_fout.variables[var].setncatts(nc_fin[var].__dict__)
                 try:
                     nc_fout.variables[var][:] = nc_fin[var][:]
                 except:
-                    print(f'could not write var={var}. i bet its the shape!')
-                    print(f'nc_fin[var].shape={nc_fin[var].shape}')
+                    fre_logger.warning(f'could not write var={var}. i bet its the shape!')
+                    fre_logger.warning(f'nc_fin[var].shape={nc_fin[var].shape}')
                     #print(f'len(nc_fout.variables[{var}])={len(nc_fout.variables[var])}')
                     nc_fout.variables[var][:] = [ nc_fin[var][0] ]
-                    print(f'time variable? {self.var_has_time_units(nc_fin.variables[var])}')
+                    fre_logger.warning(f'time variable? {self.var_has_time_units(nc_fin.variables[var])}')
             else:
                 continue
 
         if len(unwritten_var_list)>0:
-            print(f'WARNING: some variables\' data ({unwritten_var_list}) was not written.')
+            fre_logger.warning(f'WARNING: some variables\' data ({unwritten_var_list}) was not written.')
         if len(unwritten_var_ncattr_dict)>0:
-            print('WARNING: some variables\' metadata was not successfully written.')
-            print(f'WARNING: relevant variable/attr pairs: \n{unwritten_var_ncattr_dict}')
-        print('---------- DONE writing output variables. ---------')
+            fre_logger.warning('WARNING: some variables\' metadata was not successfully written.')
+            fre_logger.warning(f'WARNING: relevant variable/attr pairs: \n{unwritten_var_ncattr_dict}')
+        fre_logger.info('---------- DONE writing output variables. ---------')
         ##
 
 
         nc_fout.close()
         #close input file
         nc_fin.close()
-        print(f'wrote output file: {outfile}')
+        fre_logger.info(f'wrote output file: {outfile}')
 
         return 0
