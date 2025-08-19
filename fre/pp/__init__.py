@@ -9,11 +9,11 @@ def make_workflow_name(experiment : Optional[str] = None,
     user to the shell being used by python, we split/reform the string to remove semi-colons or
     spaces that may be used to execute an arbitrary command with elevated privileges.
 
-    :param experiment: string representing the name of an experiment
+    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str
-    :param platform: string representing the name of a platform
+    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
     :type platform: str
-    :param target: string representing the name of a compilation target
+    :param target: Options used for the model compiler (e.g. prod-openmp), default None
     :type target: str
     :return: string created in specific format from the input strings
     :rtype: str
