@@ -134,6 +134,7 @@ class CMORYaml():
     :ivar str experiment: Name of an experiment.
     :ivar str platform: Platform identifier.
     :ivar str target: Target identifier.
+    :ivar str mainyaml_dir: path to the model yaml directory for later path resolution
 
     Methods
     -------
