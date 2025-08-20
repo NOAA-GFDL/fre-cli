@@ -11,7 +11,7 @@ Comprehensive documentation on `fre cmor` is available at the
 [official fre-cli docs](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#cmorize-postprocessed-output).
 
 These subtools are highly dependent on the [`PCMDI/cmor` module](https://github.com/pcmdi/cmor). As such, the documentation is
-good to have nearby, and can be found [here](http://cmor.llnl.gov/].
+good to have nearby, and can be found [here](http://cmor.llnl.gov/).
 
 
 ## Getting Started
