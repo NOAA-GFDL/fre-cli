@@ -12,7 +12,17 @@ recurrence_parser = metomi.isodatetime.parsers.TimeRecurrenceParser()
 one_year = duration_parser.parse('P1Y')
 
 
-def extract_variables_from_files(files):
+def extract_variables_from_files(files: list[str]) -> list[str]:
+    """
+    Utility to extract "variable" part of a list of input files,
+    outputing a list of variables.
+    e.g. 'ocean_annual.1958-1962.evs.nc' will return 'evs'
+
+    :param files: List of relative path filenames to parse
+    :param type: list[str]
+    :return: List of variables
+    :rtype: list[str]
+    """
     variables = []
     for file_ in files:
         basename = Path(file_).name
@@ -21,7 +31,25 @@ def extract_variables_from_files(files):
     return variables
 
 
-def generate_wrapper(cycle_point, dir_, sources, output_interval, input_interval, grid, frequency):
+def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_interval: str, input_interval: str, grid: str, frequency: str) -> None:
+    """
+    Run climatology tool on a subset of timeseries
+
+    :param cycle_point: Beginning of the climatology
+    :param type: ISO8601 time-point
+    :param dir_: Root shards directory
+    :param type: str
+    :param sources: List of history files to average
+    :param type: list[str]
+    :param output_interval: Desired output interval
+    :param type: ISO8601 duration
+    :param input_interval: Input timeseries length
+    :param type: ISO8601 duration
+    :param frequency: Period to average: 'yr' or 'mon'
+    :param type: ISO8601 duration
+    :rtype: None
+    """
+
     fre_logger.debug("Input options:")
     fre_logger.debug(f"cycle_point: {cycle_point}")
     fre_logger.debug(f"dir: {dir_}")
