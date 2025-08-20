@@ -63,7 +63,7 @@ Required configuration
 .. code-block:: console
 
  directories:
-   history: /arch5/am5/am5/am5f7c1r0/c96L65_am5f7c1r0_amip/gfdl.ncrc5-deploy-prod-openmp/history
+   history_dir: /arch5/am5/am5/am5f7c1r0/c96L65_am5f7c1r0_amip/gfdl.ncrc5-deploy-prod-openmp/history
 
 2. Set the segment size as an ISO8601 duration (e.g. P1Y is "one year")
 
