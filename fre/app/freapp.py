@@ -8,6 +8,7 @@ from .mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
 from .generate_time_averages.wrapper import generate_wrapper
 from .regrid_xy.regrid_xy import regrid_xy
+from .generate_time_averages.combine import combine
 
 @click.group(help=click.style(" - app subcommands", fg=(250,154,90)))
 def app_cli():
@@ -148,6 +149,41 @@ def gen_time_averages_wrapper(cycle_point, dir, sources, output_interval, input_
     """
     sources_list = sources.split(',')
     generate_wrapper(cycle_point, dir, sources_list, output_interval, input_interval, grid, frequency)
+
+@app_cli.command()
+@click.option("--in-dir",
+              type = str,
+              required = True,
+              help = "Input directory")
+@click.option("--out-dir",
+              type = str,
+              required = True,
+              help = "Output directory")
+@click.option("--component",
+              type = str,
+              required = True,
+              help = "Component name to combine")
+@click.option("--begin",
+              type = str,
+              required = True,
+              help = "Beginning year")
+@click.option("--end",
+              type = str,
+              required = True,
+              help = "Ending year")
+@click.option("--frequency",
+              type = str,
+              required = True,
+              help = "Climatology frequency; 'mon' or 'yr'")
+@click.option("--interval",
+              type = str,
+              required = True,
+              help = "Climatology interval in ISO8601")
+def combine_time_averages(indir, outdir, component, begin, end, frequency, interval):
+    """
+    Combine per-variable climatologies into one file
+    """
+    combine(in_dir, out_dir, component, begin, end, frequency, interval)
 
 if __name__ == "__main__":
     app_cli()
