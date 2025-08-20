@@ -26,6 +26,12 @@ ncgen_input = (time_avg_file_dir + base_file_name+".cdl")
 ncgen_output = (time_avg_file_dir + base_file_name+".nc")
 test_file_name = 'atmos.197901-198312.LWP.nc'
 
+if pl.Path(ncgen_output).exists():
+    pl.Path(ncgen_output).unlink()
+assert pl.Path(ncgen_input).exists()
+ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
+subprocess.run(ex, check = True)
+
 ### Also recreate frenctools_timavg_atmos.197901-198312.LWP
 time_avg_file_dir=str(pl.Path.cwd())+'/fre/app/generate_time_averages/tests/test_data/'
 base_file_name_2='frenctools_timavg_atmos.197901-198312.LWP'
@@ -33,18 +39,11 @@ base_file_name_2='frenctools_timavg_atmos.197901-198312.LWP'
 ncgen_input = (time_avg_file_dir + base_file_name_2+".cdl")
 ncgen_output = (time_avg_file_dir + base_file_name_2+".nc")
 
-def test_setup():
-    if pl.Path(ncgen_output).exists():
-        pl.Path(ncgen_output).unlink()
-    assert pl.Path(ncgen_input).exists()
-    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
-    subprocess.run(ex, check = True)
-
-    #if pl.Path(ncgen_output).exists():
-    #    pl.Path(ncgen_output).unlink()
-    #assert pl.Path(ncgen_input).exists()
-    #ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
-    #subprocess.run(ex, check = True)
+if pl.Path(ncgen_output).exists():
+    pl.Path(ncgen_output).unlink()
+assert pl.Path(ncgen_input).exists()
+ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
+subprocess.run(ex, check = True)
 
 
 def test_time_avg_file_dir_exists():
