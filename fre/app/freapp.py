@@ -179,7 +179,7 @@ def gen_time_averages_wrapper(cycle_point, dir, sources, output_interval, input_
               type = str,
               required = True,
               help = "Climatology interval in ISO8601")
-def combine_time_averages(indir, outdir, component, begin, end, frequency, interval):
+def combine_time_averages(in_dir, out_dir, component, begin, end, frequency, interval):
     """
     Combine per-variable climatologies into one file
     """

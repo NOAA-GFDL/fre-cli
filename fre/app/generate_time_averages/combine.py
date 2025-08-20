@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 import glob
 import os
+import subprocess
 import metomi.isodatetime.parsers
 import metomi.isodatetime.dumpers
 from . import generate_time_averages
@@ -24,7 +25,8 @@ def form_bronx_directory_name(frequency, interval):
         frequency_label = "annual"
     else:
         raise ValueError(f"Frequency '{frequency}' not recognized")
-    return frequency_label + '_' + interval + 'yr'
+    interval_object = duration_parser.parse(interval)
+    return frequency_label + '_' + str(interval_object.years) + 'yr'
 
 
 def check_glob(target):
@@ -38,37 +40,45 @@ def check_glob(target):
         raise FileNotFoundError(f"{target} resolves to no files")
 
 
-def combine(in_dir, root_out_dir, component, begin, end, frequency, interval):
+def combine(root_in_dir, root_out_dir, component, begin, end, frequency, interval):
     """
     Combine per-variable climatologies into one file
     """
-
-    if not Path(in_dir).exists():
-        raise FileNotFoundError(f"Input directory '{in_dir}' does not exist")
-
-    root_out_dir = Path(root_out_dir)
-    if not out_dir.exists():
-        raise FileNotFoundError(f"Output directory '{out_dir}' does not exist")
-    out_dir = root_out_dir / form_bronx_directory_name(frequency, interval)
+    if frequency == "yr":
+        frequency_iso = "P1Y"
+    elif frequency == "mon":
+        frequency_iso = "P1M"
+    else:
+        raise ValueError(f"Frequency '{frequency}' not known")
+    outdir = Path(root_out_dir) / component / "av" / form_bronx_directory_name(frequency, interval)
+    fre_logger.debug(f"Output dir = '{outdir}'")
     outdir.mkdir(exist_ok=True)
 
-    if interval.years == 1:
+    if begin == end:
         date_string = begin
     else:
         date_string = begin + '-' + end
 
-    os.chdir(in_dir)
+    indir = Path(root_in_dir) / frequency_iso / interval
+    fre_logger.debug(f"Input dir = '{indir}'")
+    os.chdir(indir)
 
     if frequency == 'yr':
         source = component + '.' + date_string + '.*.nc'
         target = component + '.' + date_string + '.nc'
         check_glob(source)
-        #subprocess.run(['cdo', '-O', source, target], check=True)
+        subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
+        fre_logger.debug(f"Output file created: {target}")
+        fre_logger.debug(f"Copying to {outdir}")
+        subprocess.run(['gcp', '-v', target, outdir], check=True)
     elif frequency == 'mon':
         for MM in range(1,13):
-            source = f"component.{date_string}.*.{MM:02d}.nc"
-            target = f"component.{date_string}.{MM:02d}.nc"
+            source = f"{component}.{date_string}.*.{MM:02d}.nc"
+            target = f"{component}.{date_string}.{MM:02d}.nc"
             check_glob(source)
-            #subprocess.run(['cdo', '-O', source, target], check=True)
+            subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
+            fre_logger.debug(f"Output file created: {target}")
+            fre_logger.debug(f"Copying to {outdir}")
+            subprocess.run(['gcp', '-v', target, outdir], check=True)
     else:
         raise ValueError(f"Frequency '{frequency}' not known")
