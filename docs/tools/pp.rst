@@ -9,7 +9,7 @@
 * Module(s) needed: n/a
 * Example: ``fre pp all -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -T prod-openmp -c /home/$user/pp/ue2/user-edits/edits.yaml -b v023-test``
 
-``configure``
+``configure-yaml``
 -------------
 
 * Postprocessing yaml configuration

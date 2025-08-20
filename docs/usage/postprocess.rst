@@ -93,17 +93,21 @@ Postprocessed files within a "component" share a horizontal grid; which can be t
 Required configuration
 
 4. Define the atmos and ocean postprocess components
-   
+
 .. code-block:: console
 
  postprocess:
    components:
      - type: atmos
 
-       sources: [atmos_month, atmos_annual]
+       sources:
+         - history_file: "atmos_month"
+         - history_file: "atmos_annual"
      - type: ocean
 
-       sources: [ocean_month, ocean_annual]
+       sources:
+         - history_file: "ocean_month"
+         - history_file: "ocean_annual"
 
 XY-regridding
 -------------
@@ -123,7 +127,11 @@ Optional configuration (i.e. if xy-regridding is desired)
    components:
      - type: atmos
 
-       sources: [atmos_month, atmos_annual]
+       postprocess_on: True
+
+       sources:
+          - history_file: "atmos_month"
+          - history_file: "atmos_annual"
 
        sourceGrid: cubedsphere
 
@@ -134,7 +142,12 @@ Optional configuration (i.e. if xy-regridding is desired)
        interpMethod: conserve_order2
      - type: ocean
 
-       sources: [ocean_month, ocean_annual]
+       postprocess_on: True
+
+       sources:
+         - history_file: "ocean_month"
+         - history_file: "ocean_annual"
+
 
        sourceGrid: tripolar
 
