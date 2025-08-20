@@ -4,8 +4,8 @@
 
 ``all``
 -------
-* Executes steps of fre postprocessing in order (fre pp configure, fre pp checkout, fre pp validate, fre pp install, fre pp run, trigger and status)
-* Minimal syntax: ``fre pp all -e experiment_name -p platform_name -t target_name -c config_file [ -b [branch] -t [time] ]``
+* Executes steps of fre postprocessing in order (fre pp configure-yaml, fre pp checkout, fre pp validate, fre pp install, fre pp run, trigger and status)
+* Minimal syntax: ``fre pp all -e experiment_name -p platform_name -T target_name -c config_file [ -b [branch] -t [time] ]``
 * Module(s) needed: n/a
 * Example: ``fre pp all -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -T prod-openmp -c /home/$user/pp/ue2/user-edits/edits.yaml -b v023-test``
 
@@ -13,23 +13,23 @@
 -------------
 
 * Postprocessing yaml configuration
-* Minimal Syntax: ``fre pp configure -y [user-edit yaml file]``
+* Minimal Syntax: ``fre pp configure-yaml -y [user-edit yaml file] -e experiment_name -p platform_name -t target_name``
 * Module(s) needed: n/a
-* Example: ``fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml``
+* Example: ``fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -T prod-openmp``
 
 
 ``checkout``
 ------------
 
-* Checkout template file and clone gitlab.gfdl.noaa.gov/fre2/workflows/postprocessing.git repository to ~/cylc_src
+* Checkout template file and clone https://github.com/NOAA-GFDL/fre-workflows.git git repository to ~/cylc_src
 * Minimal Syntax: ``fre pp checkout -e experiment_name -p platform_name -t target_name [ -b [branch] ]``
 * Module(s) needed: n/a
 * Example: ``fre pp checkout -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp``
 
 ``install``
 -----------
-
-* Installs an experiment configuration into ~/cylc_run/$experiment_configuration
+i
+* Installs an experiment configuration into ~/cylc_run/$(experiment)_$(platform)_$(target)
 * Minimal Syntax:  ``fre pp install -e experiment_name -p platform_name -t target_name``
 * Module(s) needed: n/a
 * Example: ``fre pp install -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp``
@@ -38,7 +38,7 @@
 -------
 
 * Submits postprocessing job
-* Minimal Syntax: ``fre pp run -e experiment_name -p platform_name -t target_name``
+* Minimal Syntax: ``fre pp run -e experiment_name -p platform_name -t target_name [ --pause --no-wait ]``
 * Module(s) needed: n/a
 * Example: ``fre pp run -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp``
 
@@ -55,7 +55,7 @@
 ----------------
 
 * Splits single netcdf file into separate netcdf files with one data variable per file
-* Minimal Syntax: ``fre pp split-netcdf -f netcdf_file -o output_directory [-v var_1,var_2...var_n]``
+* Minimal Syntax: ``fre pp split-netcdf -f netcdf_file -o output_directory -v var_1,var_2...var_n``
 * Module(s) needed: n/a
 * Example: ``fre pp split-netcdf -f 19790101.atmos_tracer.tile6.nc -o output/ -v tasmax,tasmin``
 
@@ -63,7 +63,7 @@
 ------------------------
 
 * Given a directory structure with netcdf files, calls split-netcdf on individual netcdf files
-* Minimal Syntax: ``fre pp split-netcdf-wrapper -i input/ -o output/ [-c yaml_component -s history_source -y yamlfile.yml | --split-all-vars] [--use-subdirs]``
+* Minimal Syntax: ``fre pp split-netcdf-wrapper -i input/ -o output/ -s history_source [-c yaml_component -y yamlfile.yml --split-all-vars --use-subdirs]``
 * Module(s) needed: n/a
 * Example: ``fre pp split-netcdf-wrapper -i input/ -o output/ --split-all-vars --use-subdirs``
 
@@ -80,7 +80,7 @@
 -----------
 
 * Run nccheck over all files found in diag manifest
-* Minimal Syntax: ``fre pp histval --history [path to directory containing history files] --date_string [date_string]``
+* Minimal Syntax: ``fre pp histval --history [path to directory containing history files] --date_string [date_string] [ --warn ]``
 * Module(s) needed: n/a
 * Example: ``fre pp histval --history /some_path/dir_with_history_files/ --date_string 00010101``
 
