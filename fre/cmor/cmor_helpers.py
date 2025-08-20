@@ -88,7 +88,8 @@ def from_dis_gimme_dis( from_dis: Dataset,
     :return: A copy of the requested variable's data, or None if not found.
     :rtype: np.ndarray or None
 
-    .. note:: Logs a warning if the variable is not found. The name comes from the hypothetical pronunciation of 'ds', the common monniker for a netCDF4.Dataset object.
+    .. note:: Logs a warning if the variable is not found. The name comes from a hypothetical pronunciation of 'ds',
+              the common monniker for a netCDF4.Dataset object.
     """
     try:
         return from_dis[gimme_dis][:].copy()
@@ -99,14 +100,26 @@ def from_dis_gimme_dis( from_dis: Dataset,
 
 def find_statics_file( bronx_file_path: str) -> Optional[str]:
     """
-    Attempt to find the corresponding statics file given a FRE-bronx-style file path.
+    Attempt to find the corresponding statics file given the path to a FRE-bronx output file. The code assumes
+    the output file is in a FRE-bronx directory structure when trying to access the statics file. The structure is
+    mocked in this package within the `fre/tests/test_files/ascii_files/mock_archive` directory structure. cd'ing
+    there and using the command "tree" will reveal the mocked directory structure, something like:
+        <STEM>/<EXP_NAME>/<PLATFORM>-<TARGET>/
+        └── pp
+            ├── component
+                ├── realm_frequency.static.nc
+                └── ts
+                    └── frequency
+                        └── chunk_size
+                            └── component.YYYYMM-YYYYMM.var.nc
 
     :param bronx_file_path: File path to use as a reference for statics file location.
     :type bronx_file_path: str
     :return: Path to the statics file if found, else None.
     :rtype: str or None
 
-    .. note:: The function searches upward in the directory structure until it finds a 'pp' directory, then globs for '*static*.nc' files.
+    .. note:: The function searches upward in the directory structure until it finds a 'pp' directory, then globs
+              for '*static*.nc' files.
     """
     bronx_file_path_elem = bronx_file_path.split('/')
     num_elem = len(bronx_file_path_elem)
