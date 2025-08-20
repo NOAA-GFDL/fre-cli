@@ -4,19 +4,21 @@ import glob
 import os
 import subprocess
 import metomi.isodatetime.parsers
-import metomi.isodatetime.dumpers
-from . import generate_time_averages
 
 fre_logger = logging.getLogger(__name__)
-timepoint_parser = metomi.isodatetime.parsers.TimePointParser()
 duration_parser = metomi.isodatetime.parsers.DurationParser()
-recurrence_parser = metomi.isodatetime.parsers.TimeRecurrenceParser()
-one_year = duration_parser.parse('P1Y')
 
-def form_bronx_directory_name(frequency, interval):
+def form_bronx_directory_name(frequency: str, interval: str) -> str:
     """
-    Form the legacy Bronx timeaverage directory path
-    given a frequency and interval
+    Form the legacy Bronx timeaverage directory name
+    given a frequency and interval.
+
+    :param frequency: Frequency of the climatology
+    :type frequency: 'mon' or 'yr'
+    :param interval: Interval of the climatology
+    :type interval: ISO8601 duration
+    :return: Corresponding Bronx directory name
+    :rtype: str
     """
 
     if frequency == "mon":
@@ -29,9 +31,14 @@ def form_bronx_directory_name(frequency, interval):
     return frequency_label + '_' + str(interval_object.years) + 'yr'
 
 
-def check_glob(target):
+def check_glob(target: str) -> None:
     """
-    Verify that is at least one file resolved by the glob.
+    Verify that at least one file is resolved by the glob.
+    Raises FileNotFoundError if no files are found.
+
+    :param target: Glob target to resolve
+    :type target: str
+    :rtype: None
     """
     files = glob.glob(target)
     if len(files) >= 1:
@@ -40,9 +47,25 @@ def check_glob(target):
         raise FileNotFoundError(f"{target} resolves to no files")
 
 
-def combine(root_in_dir, root_out_dir, component, begin, end, frequency, interval):
+def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end: str, frequency: str, interval: str) -> None:
     """
-    Combine per-variable climatologies into one file
+    Combine per-variable climatologies into one file.
+
+    :param root_in_dir: Root timeaverage shards directory, up to the "av"
+    :param type: str
+    :param root_out_dir: Root output postprocess directory, up to the "pp"
+    :param type: str
+    :param component: Component to process
+    :param type: str
+    :param begin: Beginning of the climatology
+    :param type: YYYY
+    :param end: Ending of the climatology
+    :param type: YYYY
+    :param frequency: Sampling type of the climatology
+    :param type: 'mon' or 'yr'
+    :param interval: Length of the climatology
+    :param type: ISO8601 duration
+    :rtype: None
     """
     if frequency == "yr":
         frequency_iso = "P1Y"
