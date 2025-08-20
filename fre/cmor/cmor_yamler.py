@@ -25,7 +25,8 @@ from typing import Optional, List, Dict, Any, Union
 
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 from .cmor_mixer import cmor_run_subtool
-from .cmor_helpers import check_path_existence, iso_to_bronx_chunk, conv_mip_to_bronx_freq
+from .cmor_helpers import ( check_path_existence, iso_to_bronx_chunk, conv_mip_to_bronx_freq,
+                            get_bronx_freq_from_mip_table )
 
 fre_logger = logging.getLogger(__name__)
 
