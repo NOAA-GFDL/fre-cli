@@ -11,7 +11,7 @@ Comprehensive documentation on `fre cmor` is available at the
 [official fre-cli docs](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#cmorize-postprocessed-output).
 
 These subtools are highly dependent on the [`PCMDI/cmor` module](https://github.com/pcmdi/cmor). As such, the documentation is
-good to have nearby, and can be found (here)[http://cmor.llnl.gov/].
+good to have nearby, and can be found [here](http://cmor.llnl.gov/].
 
 
 ## Getting Started
@@ -23,26 +23,26 @@ repository, and the user directly.
 ### External Configuration
 
 - CMOR rewrites ("CMORizes") the target input files based on configuration in MIP tables,
-  e.g. the (cmip6-cmor-tables.)[https://github.com/pcmdi/cmip6-cmor-tables])
+  e.g. the [cmip6-cmor-tables](https://github.com/pcmdi/cmip6-cmor-tables).
 - A controlled vocabulary must be present, and is usually associated with the MIP tables,
-  e.g. the (CMIP6_CVs)[https://github.com/WCRP-CMIP/CMIP6_CVs].
+  e.g. the [CMIP6_CVs](https://github.com/WCRP-CMIP/CMIP6_CVs).
 
 
 ### Required User Configuration
 
 - A variable list as a JSON dictionary is required, to assist with targeting the right input files for CMORization. An example
-  in the respository is included (here)[https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json].
+  in the respository is included [here](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json).
   Additionally, see `fre cmor varlist` and the `--opt_var_name` flag for more information.
 
 - An experiment configuration file as a JSON dictionary, an example provided by PCMDI is included in the repository
-  (here)[https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMOR_input_example.json]. Notably it must contain the
+  [here](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMOR_input_example.json). Notably it must contain the
   correct information for the targeted input files' `calendar` and `grid` attributes. It will also define the output directory structure.
 
 - If desired, a `fre.cmor`-flavored `yaml` file to encode many `fre cmor run` calls in one `fre cmor yaml` call, with `pp` and
   `model` flavored `yaml` files nearby. See `fre cmor yaml`. The exact structure of these configuration files is currently being actively
   developed, but current working(ish) examples are available in this repository:
-  (AM5-oriented ex.)[https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml],
-  (ESM4-oriented ex.)[http://github.com/NOAA-GFDL/fre-cli/blob/main/fre/yamltools/tests/esm4_cmip6_ex/esm4_cmip6.yaml]
+  [AM5-oriented ex.](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml),
+  [ESM4-oriented ex.](http://github.com/NOAA-GFDL/fre-cli/blob/main/fre/yamltools/tests/esm4_cmip6_ex/esm4_cmip6.yaml)
 
 
 ## Subcommands & Usage Examples
