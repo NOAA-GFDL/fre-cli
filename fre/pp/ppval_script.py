@@ -76,7 +76,7 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
 def validate(filepath: str):
     """
 
-    Compares the number of timesteps in a postprocessed time-series netCDF (.nc) file to the number of expected timesteps as calculated using elapsed time and data frequency.
+    Compares the number of timesteps in a postprocessed time-series netCDF (.nc) file to the number of expected timesteps as calculated using elapsed time and data frequency. Runs nccheck on every timeseries file in pp dir.
  
     :param filepath: Path to time-series file to be checked
     :type filepath: str
