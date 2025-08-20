@@ -1,13 +1,13 @@
 ``checkout``
 ------------
 
-``fre make checkout [options]``
+``fre make checkout-script [options]``
    - Purpose: Creates the checkout script and can check out source code (with execute option)
    - Options:
         - `-y, --yamlfile [experiment yaml] (required)`
         - `-p, --platform [platform] (required)`
         - `-t, --target [target] (required)`
-        - `-j, --jobs [number of jobs to run simultaneously]`
+        - `-j, --njobs [number of jobs to run simultaneously]`
         - `-npc, --no-parallel-checkout (for container build)`
         - `-e, --execute`
 
@@ -24,13 +24,13 @@
 ``compile``
 -----------
 
-``fre make compile [options]``
+``fre make compile-script [options]``
    - Purpose: Creates the compile script and compiles the model (with execute option)
    - Options:
         - `-y, --yamlfile [experiment yaml] (required)`
         - `-p, --platform [platform] (required)`
         - `-t, --target [target] (required)`
-        - `-j, --jobs [number of jobs to run simultaneously]`
+        - `-j, --njobs [number of jobs to run simultaneously]`
         - `-n, --parallel [number of concurrent module compiles]`
         - `-e, --execute`
 
@@ -55,5 +55,5 @@
         - `-p, --platform [platform] (required)`
         - `-t, --target [target] (required)`
         - `-npc, --no-parallel-checkout (for container build)`
-        - `-j, --jobs [number of jobs to run simultaneously]`
+        - `-j, --njobs [number of jobs to run simultaneously]`
         - `-n, --parallel [number of concurrent module compiles]`
