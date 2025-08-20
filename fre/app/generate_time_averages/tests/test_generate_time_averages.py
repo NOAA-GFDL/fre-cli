@@ -26,24 +26,28 @@ ncgen_input = (time_avg_file_dir + base_file_name+".cdl")
 ncgen_output = (time_avg_file_dir + base_file_name+".nc")
 test_file_name = 'atmos.197901-198312.LWP.nc'
 
-if pl.Path(ncgen_output).exists():
-    pl.Path(ncgen_output).unlink()
-assert pl.Path(ncgen_input).exists()
-ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
-subprocess.run(ex, check = True)
-
 ### Also recreate frenctools_timavg_atmos.197901-198312.LWP
-time_avg_file_dir=str(pl.Path.cwd())+'/fre/app/generate_time_averages/tests/test_data/'
 base_file_name_2='frenctools_timavg_atmos.197901-198312.LWP'
 
-ncgen_input = (time_avg_file_dir + base_file_name_2+".cdl")
-ncgen_output = (time_avg_file_dir + base_file_name_2+".nc")
+ncgen_input_2 = (time_avg_file_dir + base_file_name_2+".cdl")
+ncgen_output_2 = (time_avg_file_dir + base_file_name_2+".nc")
 
-if pl.Path(ncgen_output).exists():
-    pl.Path(ncgen_output).unlink()
-assert pl.Path(ncgen_input).exists()
-ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
-subprocess.run(ex, check = True)
+
+def setup_test_files():
+    """Generate test files needed for the tests. Called by test functions that need these files."""
+    # Generate first test file
+    if pl.Path(ncgen_output).exists():
+        pl.Path(ncgen_output).unlink()
+    assert pl.Path(ncgen_input).exists()
+    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
+    subprocess.run(ex, check = True)
+    
+    # Generate second test file
+    if pl.Path(ncgen_output_2).exists():
+        pl.Path(ncgen_output_2).unlink()
+    assert pl.Path(ncgen_input_2).exists()
+    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output_2, ncgen_input_2 ]
+    subprocess.run(ex, check = True)
 
 
 def test_time_avg_file_dir_exists():
@@ -52,6 +56,7 @@ def test_time_avg_file_dir_exists():
 
 def test_time_avg_input_file_exists():
     ''' look for input test file '''
+    setup_test_files()  # Generate test files if needed
     assert pl.Path( time_avg_file_dir + test_file_name ).exists()
 
 ### cdo avgs, unweighted, all/seasonal/monthly ------------------------
@@ -285,17 +290,20 @@ def test_compare_cdo_to_fre_nctools():
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 #################################################################################################
-time_avg_file_dir=str(pl.Path.cwd())+'/fre/app/generate_time_averages/tests/test_data/'
 base_file_names=['ocean_1x1.000101-000212.tos','ocean_1x1.000301-000412.tos']
-for base_file_name in base_file_names:
-    ncgen_input = (time_avg_file_dir + base_file_name+".cdl")
-    ncgen_output = (time_avg_file_dir + base_file_name+".nc")
 
-    if pl.Path(ncgen_output).exists():
-        pl.Path(ncgen_output).unlink()
-    assert pl.Path(ncgen_input).exists()
-    ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
-    subprocess.run(ex, check = True)
+
+def setup_two_test_files():
+    """Generate the two ocean test files needed for multi-file tests."""
+    for base_file_name in base_file_names:
+        ncgen_input = (time_avg_file_dir + base_file_name+".cdl")
+        ncgen_output = (time_avg_file_dir + base_file_name+".nc")
+
+        if pl.Path(ncgen_output).exists():
+            pl.Path(ncgen_output).unlink()
+        assert pl.Path(ncgen_input).exists()
+        ex = [ 'ncgen3', '-k', 'netCDF-4', '-o', ncgen_output, ncgen_input ]
+        subprocess.run(ex, check = True)
 
 
 ''' for testing fre app generate-time-averages with multiple files'''
@@ -309,6 +317,7 @@ two_out_file_name = 'test_out_double_hist.nc'
 #preamble tests
 def test_time_avg_file_dir_exists_two_files():
     ''' look for input test file directory '''
+    setup_two_test_files()  # Generate the two ocean test files
     assert pl.Path(time_avg_file_dir).exists()
 
 
