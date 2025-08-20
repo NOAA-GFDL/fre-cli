@@ -49,6 +49,7 @@ requirements:
     - conda-forge::python-cdo
     - conda-forge::pyyaml
     - conda-forge::xarray
+    - conda-forge::netcdf4
 
 test:
   source_files:
