@@ -1,4 +1,13 @@
-"""Test fre analysis cli."""
+"""
+CLI Tests for fre analysis *
+Tests the command-line-interface calls for tools in the fre analysis suite. 
+Each tool generally gets 3 tests:
+    - fre analysis $tool, checking for exit code 0 (fails if cli isn't configured right)
+    - fre analysis $tool --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre analysis $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+      right and thinks the tool has a --optionDNE option)
+"""
+
 from click.testing import CliRunner
 
 from fre import fre
