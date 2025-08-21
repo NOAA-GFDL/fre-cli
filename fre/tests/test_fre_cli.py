@@ -1,9 +1,3 @@
-''' test "fre" calls '''
-
-from click.testing import CliRunner
-
-from fre import fre
-
 """
 CLI Tests for fre 
 Tests the command-line-interface calls for fre itself. 
@@ -14,6 +8,10 @@ We've got 4-ish tests:
       right and thinks the tool has a --optionDNE option)
     - fre --version, checking for version GTE current version (fails if version isn't defined)
 """
+
+from click.testing import CliRunner
+
+from fre import fre
 
 runner = CliRunner()
 

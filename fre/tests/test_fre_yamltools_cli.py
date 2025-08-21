@@ -1,11 +1,3 @@
-''' test "fre yamltools" calls '''
-
-from pathlib import Path
-
-from click.testing import CliRunner
-
-from fre import fre
-
 """
 CLI Tests for the fre yamltools*
 Tests the command-line-interface calls for tools in the fre yamltools suite. 
@@ -18,6 +10,10 @@ Each tool generally gets 3 tests:
 We also have one significantly more complex test for combine-yamls, which needs to verify
 that a command-line call to combine-yamls makes the same yaml that we expect
 """
+from pathlib import Path
+from click.testing import CliRunner
+
+from fre import fre
 
 runner = CliRunner()
 

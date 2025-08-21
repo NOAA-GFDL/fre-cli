@@ -1,16 +1,3 @@
-''' test "fre cmor" calls '''
-
-from datetime import date
-from pathlib import Path
-import shutil
-import os
-
-import pytest
-
-from click.testing import CliRunner
-
-from fre import fre
-
 """
 CLI Tests for fre cmor *
 Tests the command-line-interface calls for tools in the fre cmor suite. 
@@ -23,6 +10,17 @@ Each tool generally gets 3 tests:
 We also have a set of more complicated tests for testing the full set of 
 command-line args for fre cmor yaml and fre cmor run. 
 """
+
+from datetime import date
+from pathlib import Path
+import shutil
+import os
+
+import pytest
+
+from click.testing import CliRunner
+
+from fre import fre
 
 runner = CliRunner()
 

@@ -1,9 +1,3 @@
-''' test "fre list" calls '''
-
-from click.testing import CliRunner
-
-from fre import fre
-
 """
 CLI Tests for fre list *
 Tests the command-line-interface calls for tools in the fre list suite. 
@@ -13,6 +7,10 @@ Each tool generally gets 3 tests:
     - fre list $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured 
       right and thinks the tool has a --optionDNE option)
 """
+
+from click.testing import CliRunner
+
+from fre import fre
 
 runner = CliRunner()
 
