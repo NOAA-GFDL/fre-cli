@@ -8,7 +8,8 @@ from abc import ABC, abstractmethod
 # inherited by pp_info_parser and analysis_info_parser
 class MergePPANYamls(ABC):
     """
-    Scaffolding for merging pp and analysis yamls
+    Scaffolding for merging pp and analysis yamls; inherited by pp_info_parser
+    and analysis_info_parser
     """
     @abstractmethod
     def combine_model(self):
@@ -29,7 +30,8 @@ class MergePPANYamls(ABC):
     @abstractmethod
     def combine_yamls(self):
         """
-        Function that will 
+        Function that will combine output yaml str (from merging 
+        the model and settings yaml) with pp/experiment yaml information
         """
         pass
 
@@ -44,7 +46,7 @@ class MergePPANYamls(ABC):
 # inherited by compile_info_parser
 class MergeCompileYamls(ABC):
     """
-    Scaffolding for merging compile yamls
+    Scaffolding for merging compile yamls; inherited by compile_info_parser
     """
     @abstractmethod
     def combine_model(self):

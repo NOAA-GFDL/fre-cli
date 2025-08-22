@@ -87,7 +87,7 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, us
     Depending on `use` argument passed, either create the final
     combined yaml for compilation or post-processing
 
-    :param yamlfile: Path to the model yaml configuration
+    :param yamlfile: Path to the model YAML configuration
     :type yamlfile: str
     :param experiment: Post-processing experiment name
     :type experiment: str
@@ -95,10 +95,13 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, us
     :type platform: str
     :param use: How the tool is intended to be used (options: compile | pp| cmor)
     :type use: str
-    :param output: Path to an output file
+    :param output: Output file name
     :type output: str
+    :raise ValueError: if 'use' value is not a valid entry (compile, pp or cmor)
     :return: yaml dictionary containing combined information from multiple yaml configurations
     :rtype: dict
+
+    ..note:: The output file name should include a .yaml extension to indicate it is a YAML configuration file
     """
     if use == "compile":
         fre_logger.info('initializing a compile yaml instance...')
