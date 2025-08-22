@@ -65,8 +65,8 @@ def test_compile_creation():
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = PLATFORM,
                                          target = TARGET,
-                                         jobs = 4,
-                                         parallel = 1,
+                                         njobs = 4,
+                                         nparallel = 1,
                                          execute = False,
                                          verbose = False)
     # Check for creation of compile script
@@ -89,8 +89,8 @@ def test_compile_executable_failure():
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = PLATFORM,
                                          target = TARGET,
-                                         jobs = 4,
-                                         parallel = 1,
+                                         njobs = 4,
+                                         nparallel = 1,
                                          execute = True,
                                          verbose = False)
 
@@ -116,8 +116,8 @@ def test_bad_platform():
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = BAD_PLATFORM,
                                          target = TARGET,
-                                         jobs = 4,
-                                         parallel = 1,
+                                         njobs = 4,
+                                         nparallel = 1,
                                          execute = False,
                                          verbose = False)
 
@@ -136,8 +136,8 @@ def test_bad_platform_compilelog():
         create_compile_script.compile_create(yamlfile = yamlfile_path,
                                              platform = BAD_PLATFORM,
                                              target = TARGET,
-                                             jobs = 4,
-                                             parallel = 1,
+                                             njobs = 4,
+                                             nparallel = 1,
                                              execute = False,
                                              verbose = False)
     except:
@@ -158,8 +158,8 @@ def test_bad_target():
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = PLATFORM,
                                          target = BAD_TARGET,
-                                         jobs = 4,
-                                         parallel = 1,
+                                         njobs = 4,
+                                         nparallel = 1,
                                          execute = False,
                                          verbose = False)
 
@@ -178,8 +178,8 @@ def test_bad_target_compilelog():
         create_compile_script.compile_create(yamlfile = yamlfile_path,
                                              platform = PLATFORM,
                                              target = BAD_TARGET,
-                                             jobs = 4,
-                                             parallel = 1,
+                                             njobs = 4,
+                                             nparallel = 1,
                                              execute = False,
                                              verbose = False)
     except:
@@ -198,8 +198,8 @@ def test_multi_target():
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = PLATFORM,
                                          target = MULTI_TARGET,
-                                         jobs = 4,
-                                         parallel = 1,
+                                         njobs = 4,
+                                         nparallel = 1,
                                          execute = False,
                                          verbose = False)
 

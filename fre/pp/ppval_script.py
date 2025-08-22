@@ -145,6 +145,3 @@ def validate(filepath):
         fre_logger.error(f" Timesteps found in {filepath} differ from expectation")
 
     return 0
-
-if __name__ == '__main__':
-    validate()
