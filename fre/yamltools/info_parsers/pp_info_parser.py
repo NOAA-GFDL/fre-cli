@@ -153,7 +153,7 @@ class InitPPYaml(MergePPANYamls):
         :param pp_list: list of combined model, settings, and pp yaml strings
                         associated with each pp yaml listed under the experiment
         :type pp_list: list of strings
-        :param yaml_content_str: -----------
+        :param yaml_content_str: string of combined model and settings yaml content
         :type yaml_content_str: str
         :return: fully combined yaml dictionary (includes model, settings,
                  and multiple pp yamls)
@@ -207,7 +207,8 @@ class InitPPYaml(MergePPANYamls):
         """
         Combine the model, experiment, and pp yamls
 
-        :return: cleaned, combined yaml dictionary
+        :return: combined yaml dictionary with the fre_properties
+                 and experiments sections removed
         :rtype: dict
         """
         # Create combined pp yaml
@@ -234,7 +235,7 @@ class InitPPYaml(MergePPANYamls):
             raise ValueError("ERR: Could not merge pp yaml information") from exc
 
         try:
-            # Merge model/pp and model/analysis yamls if more than 1 is defined
+            # Merge model/pp yamls if more than 1 is defined
             # (without overwriting the yaml)
             full_combined = self.merge_multiple_yamls(comb_pp_updated_list,
                                                       yaml_content_str)

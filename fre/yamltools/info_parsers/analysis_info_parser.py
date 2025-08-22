@@ -153,7 +153,7 @@ class InitAnalysisYaml(MergePPANYamls):
         :param analysis_list: list of combined model, settings, and analysis yaml strings
                         associated with each analysis yaml listed under the experiment
         :type analysis_list: list of strings
-        :param yaml_content_str: --------
+        :param yaml_content_str: string of combined model and settings yaml content
         :type yaml_content_str: str
         :return: fully combined yaml dictionary (includes model, settings,
                  and multiple analysis yamls)
@@ -199,28 +199,29 @@ class InitAnalysisYaml(MergePPANYamls):
         fre_logger.info("Combining yaml files into one dictionary: ")
         fre_logger.setLevel(former_log_level)
 
+        # Merge model into combined file
         try:
-            # Merge model into combined file
             yaml_content_str = self.combine_model()
         except Exception as exc:
             raise ValueError("ERR: Could not merge model information.") from exc
+
+        # Merge settings into combined file
         try:
-            # Merge model into combined file
             yaml_content_str = self.combine_settings(yaml_content_str)
         except Exception as exc:
             raise ValueError("ERR: Could not merge setting information.") from exc
 
+        # Merge analysis yamls, if defined, into combined file
         try:
-            # Merge analysis yamls, if defined, into combined file
             comb_analysis_updated_list = self.combine_yamls(yaml_content_str)
         except Exception as exc:
             raise ValueError("ERR: Could not merge analysis yaml information") from exc
 
+        # Merge model/analysis yamls if more than 1 is defined
+        # (without overwriting the yaml)
         try:
-            # Merge model/pp and model/analysis yamls if more than 1 is defined
-            # (without overwriting the yaml)
             full_combined = self.merge_multiple_yamls(comb_analysis_updated_list,
-                                                   yaml_content_str)
+                                                      yaml_content_str)
         except Exception as exc:
             raise ValueError("ERR: Could not merge multiple analysis yaml information together.") from exc
 

@@ -13,11 +13,13 @@ def get_compile_paths(full_path, yaml_content):
     Find and return the paths for the compile
     and platform yamls
 
-    :param full_path:
-    :type full_path:
-    :param loaded_yml:
-    :type loaded_yml:
+    :param full_path: directory name where the model yaml configuration lives
+    :type full_path: str
+    :raises ValueError: if there are no compile or platforms yaml
+                        file paths defined in the model yaml 
     :return:
+        - py_path: path to the platforms yaml configuration
+        - cy_path: path to the compile yaml configuration
     :rtype: str
     """
     # Load string as yaml
@@ -90,9 +92,8 @@ class InitCompileYaml(MergeCompileYamls):
                              including name, platform, target,
                              and model yaml content
         :type yaml_content: str
-        :param loaded_yaml: 
-        :type loaded_yml: dict
-        :return:
+        :return: string of yaml information including name, platform,
+                 target, model, and compile yaml content
         :rtype: str
         """
         self.mainyaml_dir = os.path.dirname(self.yml)
@@ -120,12 +121,12 @@ class InitCompileYaml(MergeCompileYamls):
         """
         Combine platforms yaml with the defined combined.yaml
 
-        :param yaml_content:
+        :param yaml_content: string of yaml information including name, platform,
+                             target, model, and compile yaml content
         :type yaml_content: str
-        :param loaded_yml:
-        :type loaded_yml: dict
-        :return:
-        :rtype: str
+        :return: dictionary of yaml information including name, platform,
+                 target, model, compile, and platform yaml content
+        :rtype: dict
         """
         self.mainyaml_dir = os.path.dirname(self.yml)
 
@@ -152,8 +153,9 @@ class InitCompileYaml(MergeCompileYamls):
         """
         Combine the model, compile, and platform yamls
 
-        :return:
-        :rtype: str
+        :return: combined yaml dictionary with the fre_properties
+                 and experiments sections removed
+        :rtype: dict
         """
         try:
             yaml_content=self.combine_model()
