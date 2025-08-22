@@ -58,7 +58,7 @@ class InitCompileYaml(MergeCompileYamls):
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Create combined compile yaml
-        fre_logger("Combining yaml files into one dictionary: ")
+        fre_logger.info("Combining yaml files into one dictionary: ")
 
     def combine_model(self):
         """
@@ -81,7 +81,7 @@ class InitCompileYaml(MergeCompileYamls):
         yaml_content += model_content
 
         # Return the combined string and loaded yaml
-        fre_logger(f"   model yaml: {self.yml}")
+        fre_logger.info(f"   model yaml: {self.yml}")
         return (yaml_content)
 
     def combine_compile(self,yaml_content):
@@ -111,7 +111,7 @@ class InitCompileYaml(MergeCompileYamls):
         yaml_content += compile_content
 
         # Return the combined string and loaded yaml
-        fre_logger(f"   compile yaml: {cy_path}")
+        fre_logger.info(f"   compile yaml: {cy_path}")
         return (yaml_content)
 
     def combine_platforms(self, yaml_content):
@@ -143,7 +143,7 @@ class InitCompileYaml(MergeCompileYamls):
         yml = yaml.load(yaml_content, Loader = yaml.Loader)
 
         # Return the combined string and loaded yaml
-        fre_logger(f"   platforms yaml: {py_path}")
+        fre_logger.info(f"   platforms yaml: {py_path}")
         return yml
 
     def combine(self):
