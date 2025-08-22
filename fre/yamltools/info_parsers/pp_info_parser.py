@@ -111,6 +111,7 @@ class InitPPYaml(MergePPANYamls):
                                  model yaml content, and settings
                                  yaml content
         :type yaml_content_str: str
+        :raises ValueError: if experiment yaml path is None
         :return: List of combined yaml information (str elements)
         :rtype: list of strings
         """
@@ -205,8 +206,20 @@ class InitPPYaml(MergePPANYamls):
 
     def combine(self):
         """
-        Combine the model, experiment, and pp yamls
+        Merge name, platform, target, model yaml, settings yaml, and
+        pp yamls
 
+        :raises ValueError:
+            - if model yaml info could not be merged with name,
+              platform, and target
+            - if model yaml info, name, platform, and target info
+              could not be merged with settings yaml
+            - if model yaml info, name, platform, target, and
+              settings yaml info could not be merged with pp
+              yaml
+            - if multiple combined yaml dicttionaries can not be
+              merged together
+            - if the final combined yaml dictinary can not be cleaned
         :return: combined yaml dictionary with the fre_properties
                  and experiments sections removed
         :rtype: dict

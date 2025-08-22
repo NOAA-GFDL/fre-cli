@@ -190,6 +190,20 @@ class InitAnalysisYaml(MergePPANYamls):
 
     def combine(self):
         """
+        Merge name, platform, target, model yaml, settings yaml, and
+        analysis yamls
+
+        :raises ValueError:
+            - if model yaml info could not be merged with name,
+              platform, and target
+            - if model yaml info, name, platform, and target info
+              could not be merged with settings yaml
+            - if model yaml info, name, platform, target, and
+              settings yaml info could not be merged with analysis
+              yaml
+            - if multiple combined yaml dicttionaries can not be
+              merged together
+            - if the final combined yaml dictinary can not be cleaned
         :return: cleaned, combined yaml dictionary
         :rtype: dict
         """

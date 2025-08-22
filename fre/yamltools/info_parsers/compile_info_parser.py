@@ -2,11 +2,14 @@
 compile-yaml configuration class
 '''
 import os
+import logging
 # this boots yaml with !join- see __init__
 #from fre.yamltools import *
 from fre.yamltools.helpers import clean_yaml
 from fre.yamltools.abstract_classes import MergeCompileYamls
 import yaml
+
+fre_logger = logging.getLogger(__name__)
 
 def get_compile_paths(full_path, yaml_content):
     """
@@ -55,7 +58,7 @@ class InitCompileYaml(MergeCompileYamls):
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Create combined compile yaml
-        print("Combining yaml files into one dictionary: ")
+        fre_logger("Combining yaml files into one dictionary: ")
 
     def combine_model(self):
         """
@@ -77,11 +80,8 @@ class InitCompileYaml(MergeCompileYamls):
         # Combine information as strings
         yaml_content += model_content
 
-#        # Load string as yaml
-#        yml=yaml.load(yaml_content, Loader = yaml.Loader)
-
         # Return the combined string and loaded yaml
-        print(f"   model yaml: {self.yml}")
+        fre_logger(f"   model yaml: {self.yml}")
         return (yaml_content)
 
     def combine_compile(self,yaml_content):
@@ -110,11 +110,8 @@ class InitCompileYaml(MergeCompileYamls):
         # Combine information as strings
         yaml_content += compile_content
 
-#        # Load string as yaml
-#        yml = yaml.load(yaml_content, Loader = yaml.Loader)
-
         # Return the combined string and loaded yaml
-        print(f"   compile yaml: {cy_path}")
+        fre_logger(f"   compile yaml: {cy_path}")
         return (yaml_content)
 
     def combine_platforms(self, yaml_content):
@@ -146,13 +143,20 @@ class InitCompileYaml(MergeCompileYamls):
         yml = yaml.load(yaml_content, Loader = yaml.Loader)
 
         # Return the combined string and loaded yaml
-        print(f"   platforms yaml: {py_path}")
+        fre_logger(f"   platforms yaml: {py_path}")
         return yml
 
     def combine(self):
         """
         Combine the model, compile, and platform yamls
 
+        :raises ValueError:
+            - if model yaml information could not be merged with 
+              name, platform, and target click options
+            - if compile yaml information could not be merged with 
+              model yaml info, name, platform, and target
+            - if platform yaml information could not be merged with
+              model yaml, compile yaml, name, platform, and target
         :return: combined yaml dictionary with the fre_properties
                  and experiments sections removed
         :rtype: dict
