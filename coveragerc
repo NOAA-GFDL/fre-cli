@@ -8,6 +8,7 @@ omit =
     fre/catalog/tests/*
     fre/check/*
     fre/cmor/tests/*
+    fre/sfollow/tests/*
     fre/list_/tests/*
     fre/make/tests/*
     fre/pp/tests/*
