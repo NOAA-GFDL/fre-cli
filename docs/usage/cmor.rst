@@ -1,8 +1,8 @@
 CMOR Usage Overview
-==================
+===================
 
 ``fre cmor`` is the FRE CLI command group for rewriting climate model output with CMIP-compliant metadata, 
-a process known as "CMORization". This set of tools leverages the external ``cmor`` python package within 
+a process known as "CMORization". This set of tools leverages the external ``cmor`` python API within 
 the ``fre`` ecosystem.
 
 Getting Started
@@ -10,10 +10,10 @@ Getting Started
 
 ``fre cmor`` provides several subcommands for different aspects of the CMORization workflow:
 
-* ``fre cmor run`` - Core engine for rewriting individual directories of netCDF files  
-* ``fre cmor yaml`` - Higher-level tool for processing multiple runs using YAML configuration
-* ``fre cmor find`` - Helper for exploring MIP table configurations
-* ``fre cmor varlist`` - Helper for generating variable lists from netCDF files
+* ``fre cmor run`` - Core engine for rewriting individual directories of netCDF files according to a MIP table 
+* ``fre cmor yaml`` - Higher-level tool for processing multiple directories / MIP tables using YAML configuration
+* ``fre cmor find`` - Helper for exploring MIP table configurations for information on a specific variable
+* ``fre cmor varlist`` - Helper for generating variable lists from directories of netCDF files
 
 To see all available subcommands:
 
@@ -21,19 +21,23 @@ To see all available subcommands:
 
    fre cmor --help
 
-Basic Workflow
---------------
-
-1. **Prepare Configuration Files**
+Configuration
+-------------
    
-   - Obtain MIP tables (e.g., `cmip6-cmor-tables <https://github.com/pcmdi/cmip6-cmor-tables>`_)
-   - Obtain controlled vocabulary files (e.g., `CMIP6_CVs <https://github.com/WCRP-CMIP/CMIP6_CVs>`_)
-   - Create experiment configuration JSON file
-   - Create or generate variable list JSON file
+   - Required, external, MIP tables (e.g., `cmip6-cmor-tables <https://github.com/pcmdi/cmip6-cmor-tables>`_)
+   - Required, external, controlled vocabulary files (e.g., `CMIP6_CVs <https://github.com/WCRP-CMIP/CMIP6_CVs>`_)
+   - Required, user-edited, experiment configuration JSON file (an `example <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMOR_input_example.json>`_ within ``fre-cli``)
+   - Required (usually), a list of target variables for CMORization in the form of a JSON-dictionary (an `example <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json>`_ within ``fre-cli``)
 
-2. **Individual File Processing**
+
+Functionalities
+---------------
+
+1. **Individual Directory / MIP table CMORization**
    
-   Use ``fre cmor run`` for processing specific directories:
+   Use ``fre cmor run`` for processing specific directories via the ``--indir`` argument. The ``--run_one``
+   flag will cause an exit after (successfully or otherwise) rewring one file. The ``--opt_var_name`` argument 
+   will only CMORize files with a matching variable name.
 
    .. code-block:: bash
 
@@ -43,7 +47,7 @@ Basic Workflow
                    --exp_config /path/to/experiment_config.json \
                    --outdir /path/to/output
 
-3. **Batch Processing with YAML**
+2. **CMORization of Many directory / MIP table targets via YAML**
    
    Use ``fre cmor yaml`` for processing multiple runs configured via YAML:
 
