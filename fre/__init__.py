@@ -1,5 +1,5 @@
 import os
-version = os.getenv("GIT_DESCRIBE_TAG", "2025.04")
+version = os.getenv("GIT_DESCRIBE_TAG", "0001.01")
 __version__ = version
 
 import logging
