@@ -1,4 +1,4 @@
-fre_properties:
+fre_properties: &ANCHORS
   - &AM5_VERSION        "am5f7b12r1"
   - &FRE_STEM           !join [am5/, *AM5_VERSION]
 
@@ -8,7 +8,7 @@ fre_properties:
   - &ANA_AMIP_START     1980
   - &ANA_AMIP_END       2020
 
-  - &PP_AMIP_CHUNK96    "P1Y"
+#  - &PP_AMIP_CHUNK96    "P1Y"
   - &PP_AMIP_CHUNK384   "P1Y"
   - &PP_XYINTERP96      "180,288"
   - &PP_XYINTERP384     "720,1152"
