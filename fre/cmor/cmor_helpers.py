@@ -102,17 +102,27 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     """
     Attempt to find the corresponding statics file given the path to a FRE-bronx output file. The code assumes
     the output file is in a FRE-bronx directory structure when trying to access the statics file. The structure is
-    mocked in this package within the `fre/tests/test_files/ascii_files/mock_archive` directory structure. cd'ing
-    there and using the command "tree" will reveal the mocked directory structure, something like:
-        <STEM>/<EXP_NAME>/<PLATFORM>-<TARGET>/
-        └── pp
-            ├── component
-                ├── realm_frequency.static.nc
-                └── ts
-                    └── frequency
-                        └── chunk_size
-                            └── component.YYYYMM-YYYYMM.var.nc
+    mocked in this package within the `fre/tests/test_files/ascii_files/mock_archive` directory structure. `cd`'ing
+    there and using the command `tree` will reveal the mocked directory structure, something like:
 
+    
+    <STEM>/<EXP_NAME>/<PLATFORM>-<TARGET>/
+
+    └── pp
+
+        ├── component
+
+            ├── realm_frequency.static.nc
+
+            └── ts
+
+                └── frequency
+
+                    └── chunk_size
+
+                        └── component.YYYYMM-YYYYMM.var.nc
+
+    
     :param bronx_file_path: File path to use as a reference for statics file location.
     :type bronx_file_path: str
     :return: Path to the statics file if found, else None.
