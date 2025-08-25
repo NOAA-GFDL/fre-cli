@@ -1,3 +1,62 @@
+CMOR Usage Overview
+==================
+
+``fre cmor`` is the FRE CLI command group for rewriting climate model output with CMIP-compliant metadata, 
+a process known as "CMORization". This set of tools leverages the external ``cmor`` python package within 
+the ``fre`` ecosystem.
+
+Getting Started
+---------------
+
+``fre cmor`` provides several subcommands for different aspects of the CMORization workflow:
+
+* ``fre cmor run`` - Core engine for rewriting individual directories of netCDF files  
+* ``fre cmor yaml`` - Higher-level tool for processing multiple runs using YAML configuration
+* ``fre cmor find`` - Helper for exploring MIP table configurations
+* ``fre cmor varlist`` - Helper for generating variable lists from netCDF files
+
+To see all available subcommands:
+
+.. code-block:: bash
+
+   fre cmor --help
+
+Basic Workflow
+--------------
+
+1. **Prepare Configuration Files**
+   
+   - Obtain MIP tables (e.g., `cmip6-cmor-tables <https://github.com/pcmdi/cmip6-cmor-tables>`_)
+   - Obtain controlled vocabulary files (e.g., `CMIP6_CVs <https://github.com/WCRP-CMIP/CMIP6_CVs>`_)
+   - Create experiment configuration JSON file
+   - Create or generate variable list JSON file
+
+2. **Individual File Processing**
+   
+   Use ``fre cmor run`` for processing specific directories:
+
+   .. code-block:: bash
+
+      fre cmor run --indir /path/to/netcdf/files \
+                   --varlist /path/to/varlist.json \
+                   --table_config /path/to/MIP_table.json \
+                   --exp_config /path/to/experiment_config.json \
+                   --outdir /path/to/output
+
+3. **Batch Processing with YAML**
+   
+   Use ``fre cmor yaml`` for processing multiple runs configured via YAML:
+
+   .. code-block:: bash
+
+      fre cmor yaml --yamlfile /path/to/cmor_config.yaml \
+                    --experiment experiment_name \
+                    --platform platform_name \
+                    --target target_name
+
+Command Usage Guidelines
+------------------------
+
 Brief rundown of commands also provided below:
 
 * Enter commands and follow ``--help`` messages for guidance 
@@ -12,9 +71,20 @@ Brief rundown of commands also provided below:
 * ``fre/setup.py`` allows ``fre/fre.py`` to be ran as ``fre`` on the command line by defining it as an
   *entry point*. Without it, the call would be instead, something like ``python fre/fre.py``
 
+Additional Resources
+--------------------
+
 * See also, ``fre cmor``'s `README <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/cmor/README.md>`_
 * See also, ``fre cmor``'s `project board <https://github.com/orgs/NOAA-GFDL/projects/35>`_
+* Comprehensive documentation: `official fre-cli docs <https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#cmorize-postprocessed-output>`_
+* PCMDI CMOR documentation: `CMOR User Guide <http://cmor.llnl.gov/>`_
+
+Background
+----------
 
 This set of tools leverages the external ``cmor`` python package within the ``fre`` ecosystem. ``cmor`` is an
 acronym for "climate model output rewriter". The process of rewriting model-specific output files for model
 intercomparisons (MIPs) using the ``cmor`` module is, quite cleverly, referred to as "CMORizing".
+
+The ``fre cmor`` tools are designed to work with any MIP project (CMIP6, CMIP7, etc.) by simply changing
+the table configuration files and controlled vocabulary as appropriate for the target MIP.
