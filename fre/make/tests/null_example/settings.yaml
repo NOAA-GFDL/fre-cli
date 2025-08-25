@@ -1,13 +1,13 @@
-directories: &shared_directories
+directories:
   history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
   pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
   analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
 
 # shared pp settings
 postprocess:
-  settings: &shared_settings
+  settings:
     site:               "ppan"
-  switches: &shared_switches
+  switches:
     clean_work:         True
     do_refinediag:      False
     do_analysis:        True
