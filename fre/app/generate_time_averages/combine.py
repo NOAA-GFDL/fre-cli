@@ -75,12 +75,12 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end
         raise ValueError(f"Frequency '{frequency}' not known")
     outdir = Path(root_out_dir) / component / "av" / form_bronx_directory_name(frequency, interval)
     fre_logger.debug(f"Output dir = '{outdir}'")
-    outdir.mkdir(exist_ok=True)
+    outdir.mkdir(exist_ok=True, parents=True)
 
     if begin == end:
-        date_string = begin
+        date_string = f"{begin:04d}"
     else:
-        date_string = begin + '-' + end
+        date_string = f"{begin:04d}-{end:04d}"
 
     indir = Path(root_in_dir) / frequency_iso / interval
     fre_logger.debug(f"Input dir = '{indir}'")
@@ -93,7 +93,7 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end
         subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
         fre_logger.debug(f"Output file created: {target}")
         fre_logger.debug(f"Copying to {outdir}")
-        subprocess.run(['gcp', '-v', target, outdir], check=True)
+        subprocess.run(['cp', '-v', target, outdir], check=True)
     elif frequency == 'mon':
         for MM in range(1,13):
             source = f"{component}.{date_string}.*.{MM:02d}.nc"
@@ -102,6 +102,6 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end
             subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
             fre_logger.debug(f"Output file created: {target}")
             fre_logger.debug(f"Copying to {outdir}")
-            subprocess.run(['gcp', '-v', target, outdir], check=True)
+            subprocess.run(['cp', '-v', target, outdir], check=True)
     else:
         raise ValueError(f"Frequency '{frequency}' not known")
