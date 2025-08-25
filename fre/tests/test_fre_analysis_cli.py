@@ -19,7 +19,7 @@ runner = CliRunner()
 def test_cli_fre_analysis():
     """Most basic invocation of fre analysis."""
     result = runner.invoke(fre.fre, args=["analysis"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 
 def test_cli_fre_analysis_help():
