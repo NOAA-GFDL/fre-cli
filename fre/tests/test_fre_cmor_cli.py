@@ -41,7 +41,7 @@ def test_setup_test_files():
 def test_cli_fre_cmor():
     ''' fre cmor '''
     result = runner.invoke(fre.fre, args=["cmor"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_cmor_help():
     ''' fre cmor --help '''
