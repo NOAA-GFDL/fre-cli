@@ -1,5 +1,3 @@
-''' test "fre pp" calls '''
-
 import os
 import shutil
 from pathlib import Path
@@ -8,14 +6,23 @@ from click.testing import CliRunner
 
 from fre import fre
 
-runner = CliRunner()
+"""
+CLI Tests for fre pp *
+Tests the command-line-interface calls for tools in the fre pp suite. 
+Each tool generally gets 3 tests:
+    - fre pp $tool, checking for exit code 0 (fails if cli isn't configured right)
+    - fre pp $tool --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre pp $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+      right and thinks the tool has a --optionDNE option)
+"""
 
+runner = CliRunner()
 
 #-- fre pp
 def test_cli_fre_pp():
     ''' fre pp '''
     result = runner.invoke(fre.fre, args=["pp"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_pp_help():
     ''' fre pp --help '''
