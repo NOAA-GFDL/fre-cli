@@ -4,18 +4,18 @@
 
 ``all``
 -------
-* Executes steps of fre postprocessing in order (fre pp configure-yaml, fre pp checkout, fre pp validate, fre pp install, fre pp run, trigger and status)
+* Executes the fre postprocessing steps in order (fre pp configure-yaml, fre pp checkout, fre pp validate, fre pp install, fre pp run, trigger and status)
 * Minimal syntax: ``fre pp all -e experiment_name -p platform_name -T target_name -c config_file [ -b [branch] -t [time] ]``
 * Module(s) needed: n/a
-* Example: ``fre pp all -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -T prod-openmp -c /home/$user/pp/ue2/user-edits/edits.yaml -b v023-test``
+* Example: ``fre pp all -e c96L65_am5f4b4r0_amip -p ncrc5.intel23 -T prod -c ./am5.yaml -b main``
 
 ``configure-yaml``
--------------
+------------------
 
 * Postprocessing yaml configuration
 * Minimal Syntax: ``fre pp configure-yaml -y [user-edit yaml file] -e experiment_name -p platform_name -t target_name``
 * Module(s) needed: n/a
-* Example: ``fre pp configure -y /home/$user/pp/ue2/user-edits/edits.yaml -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -T prod-openmp``
+* Example: ``fre pp configure-yaml -y /home/$user/pp/ue2/user-edits/edits.yaml -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp``
 
 
 ``checkout``
@@ -28,7 +28,7 @@
 
 ``install``
 -----------
-i
+
 * Installs an experiment configuration into ~/cylc_run/$(experiment)_$(platform)_$(target)
 * Minimal Syntax:  ``fre pp install -e experiment_name -p platform_name -t target_name``
 * Module(s) needed: n/a
@@ -63,9 +63,13 @@ i
 ------------------------
 
 * Given a directory structure with netcdf files, calls split-netcdf on individual netcdf files
-* Minimal Syntax: ``fre pp split-netcdf-wrapper -i input/ -o output/ -s history_source [-c yaml_component -y yamlfile.yml --split-all-vars --use-subdirs]``
+* If `split-netcdf-wrapper` is called with the the argument `--split-all-vars`, then `-c` and `-y` are not required.
+* Minimal Syntax: ``fre pp split-netcdf-wrapper -i input/ -o output/ -s history_source --split-all-vars [--use-subdirs]``
+* Otherwise, `-c` and `-y` requirements are necessary.
+* Minimal Syntax: ``fre pp split-netcdf-wrapper -i input/ -o output/ -s history_source -c yaml_component -y yamlfile.yml [--use-subdirs]``
 * Module(s) needed: n/a
-* Example: ``fre pp split-netcdf-wrapper -i input/ -o output/ --split-all-vars --use-subdirs``
+* Example 1: ``fre pp split-netcdf-wrapper -i input/ -o output/ --split-all-vars --use-subdirs``
+* Example 2: ``fre pp split-netcdf-wrapper -i input/ -o output/ -c ocean_cobalt_tracers_year_z -y ./ESM4.5v06_b08_cobv3_mekep_piC.yaml --use-subdirs``
 
 ``nccheck``
 -----------
