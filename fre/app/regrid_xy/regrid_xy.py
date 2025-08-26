@@ -271,8 +271,9 @@ def regrid_xy(yamlfile: str,
     :work_dir: Directory that will contain the extracted files from the grid_spec tar
     :remap_dir: Directory that will contain the generated remap file
     :Source: The stem of the history file to regrid
-    :Input_date: Datestring in the format of YYYYMMDD that corresponds to the date prefix of the history files,
-                 e.g., input_date=20250730 where the history filename is 20250730.atmos_month_aer.tile1.nc
+    :Input_date: Datestring where the first 8 characters correspond to YYYYMMDD 
+                 Input_date[:8] represents the date prefix in the history files,
+                 e.g., input_date=20250730T0000Z where the history filename is 20250730.atmos_month_aer.tile1.nc
 
     .. note:  All directories should be in absolute paths
     """
@@ -309,7 +310,7 @@ def regrid_xy(yamlfile: str,
     datadict["output_dir"] = output_dir
     datadict["work_dir"] = work_dir
     datadict["remap_dir"] = remap_dir
-    datadict["input_date"] = input_date
+    datadict["input_date"] = input_date[:8]
 
     components = []
     for component in yamldict["postprocess"]["components"]:

@@ -74,7 +74,7 @@ def test_regrid_xy():
                         work_dir=str(work_dir),
                         remap_dir=str(remap_dir),
                         source=source,
-                        input_date=date)
+                        input_date=date+"TTTT")
 
   #check answers
   for source_dict in pp_input_files + emma_input_files:
