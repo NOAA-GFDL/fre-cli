@@ -37,15 +37,19 @@ information in these instructions is incomplete or found to be in error.
 
 **Core test commands**:
 ```bash
-# CLI tests
+# all CLI tests
 pytest -v fre/tests
 
-# Tool/app tests  
+# all Tool/app tests  
 pytest -v --ignore fre/tests fre/
 
-# Specific tests
+# Specific Tool/app tests
 pytest -v fre/[tool]/tests/
 pytest -v fre/app/[app]/tests/
+
+# Single tool/app test
+pytest -v fre/[tool]/tests/test_functionality.py::test_a_single_test
+pytest -v fre/app/[app]/tests/test_functionality.py::test_a_single_test
 
 # Code quality
 pylint --fail-under 0.1 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
