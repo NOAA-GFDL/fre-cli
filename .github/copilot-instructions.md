@@ -4,13 +4,14 @@
 
 ## Working Effectively
 
-**Bootstrap, build, and test the repository:**
+**Conda setup, Code Initialization, Env Creation, Activation, and Install**
 
 1. **Configure conda channels** (required for all dependencies):
    ```bash
    conda config --append channels noaa-gfdl
    conda config --append channels conda-forge
    ```
+   - requirements must be obtained through the `conda-forge` or `noaa-gfdl` channels
 
 2. **Initialize git submodules** (essential - contains mkmf tools):
    ```bash
@@ -25,7 +26,7 @@
    ```
    - Takes approximately 2 minutes 20 seconds
    - NEVER CANCEL: Set timeout to 10+ minutes
-   - Creates environment named `fre-cli` with Python 3.11
+   - Creates environment named `fre-cli`
 
 4. **Activate environment and add mkmf to PATH**:
    ```bash
@@ -41,61 +42,60 @@
    - Takes approximately 13 seconds
    - NEVER CANCEL: Set timeout to 10+ minutes
    - The `-e` flag enables immediate reflection of code changes
+   - Never run code from within the `fre/` package directory structure
 
-## Testing
+## Testing Effectively
 
-**Run `click` CLI tests**:
-```bash
-pytest -v fre/tests
-```
-- These tests cover integration with the `click` CLI functionality
-- Takes approximately 10 seconds
-- All tests should pass, be skipped, or xfail
+**Testing Changes to the Code**
 
-**Run functionality/implementation tests**:
-```bash
-pytest -v --ignore fre/tests fre/
-```
-- Each tool directory contains its own test suite
-- These tests avoid `click` CLI functionality and test `fre/` in a pythonic manner
-- Tests for tools are in `fre/*/tests/` and `fre/app/*/tests/`
-- The tests are generally for functionality of certain function calls
-- Run tool-specific tests: `pytest -v fre/[tool]/tests/` or `pytest -v fre/app/[tool]/tests`
-
-**Run specific test file**:
-```bash
-pytest -v fre/tests/test_fre_[TOOL]_cli.py -v
-```
-Note: Not all test files follow this exact pattern - explore the test directories for actual file names.
-
-**Run single test with output**:
-```bash
-pytest fre/tests/test_fre_cli.py::test_cli_fre_help -s
-```
-Note: Like above, not all test files and test names file this exact pattern - this is only an example.
-
-## Validation
-
-**Always run these validation steps before committing:**
-
-1. **Run pylint** (required for CI):
-   ```bash
-   pylint fre/ --disable=all --enable=C0103,C0301,W0611
-   ```
-   - May show line length warnings (normal)
-   - Targets the entire fre/ directory for comprehensive checking
-
-2. **Test CLI functionality**:
+1. **Run `click` CLI tests**:
    ```bash
    pytest -v fre/tests
    ```
+   - These tests cover integration with the `click` CLI functionality
+   - Takes approximately 10 seconds
+   - All tests should pass, be skipped, or xfail
+   - set `log-level INFO` or `DEBUG` if needed
 
-3. **Test CLI by hand** after making changes:
+2. **Run functionality/implementation tests**:
    ```bash
-   fre --help
-   fre [tool] --help
-   fre app [tool] --help
+   pytest -v --ignore fre/tests fre/
    ```
+   - Each tool directory contains its own test suite
+   - These routines test `fre` tools and apps in a pythonic manner
+   - The tests are generally for functionality independent of the `click`-based CLI
+   - Run tool-specific tests: `pytest -v fre/[tool]/tests/`
+   - Run app-specific tests `pytest -v fre/app/[app]/tests`
+   - set `log-level INFO` or `DEBUG` if needed
+   - depending on the environment, adding `--ignore=fre/make/tests/compilation` may be appropriate
+
+
+3. **Run a specific test file**:
+   ```bash
+   pytest -v fre/tests/test_fre_cli.py
+   ```
+   - this is just an example, other test files have different names
+   - explore the test directories to discover which tests to run
+   - quicker than running all tests to vet small changes
+   - set `log-level INFO` or `DEBUG` if needed
+
+4. **Run single test**:
+   ```bash
+   pytest -v fre/tests/test_fre_cli.py::test_cli_fre_help
+   ```
+   - this is just an example, other test files/functions have different names
+   - explore the test directories and the test files to discover which tests to run
+   - some tests require a previous `setup` style test to succeed
+   - tests that require a `setup` will typically fail when run in isolation
+   - set `log-level INFO` or `DEBUG` if needed
+
+5. **Run pylint**:
+   ```bash
+   pylint --fail-under 0.1 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
+   ```
+   - Targets the entire `fre/` directory for comprehensive checking
+   - Don't prioritize fixing complaints until functionality is understood
+
 
 ## CLI Usage Patterns
 
@@ -122,14 +122,8 @@ Note: Like above, not all test files and test names file this exact pattern - th
 ## Common Issues and Workarounds
 
 **YAML validation failures**: 
-- Many test YAML files may fail validation due to strict schema requirements
-- This is expected behavior - the validation is working correctly
 - Do NOT disable validation to "fix" test failures
-
-**CMOR test expectations**:
-- CMOR tests that do not succeed in the pipeline are marked as being skipped
-- This is expected behavior - the validation is working correctly
-- This is changing soon
+- Instead, check if the `gfdl_msd_schemas` submodule commit is appropriate
 
 **Environment activation issues**:
 - Always use the full conda activation commands shown above
