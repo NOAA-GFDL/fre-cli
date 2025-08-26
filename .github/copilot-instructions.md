@@ -1,6 +1,7 @@
 # FRE-CLI Development Instructions
 
-**ALWAYS** follow these instructions first and fallback to additional search and context gathering only if the information in these instructions is incomplete or found to be in error.
+**ALWAYS** follow these instructions first and fallback to additional search and context gathering only if the 
+information in these instructions is incomplete or found to be in error.
 
 ## Working Effectively
 
@@ -17,14 +18,14 @@
    ```bash
    git submodule update --init --recursive
    ```
-   - Takes approximately 6 seconds
+   - Takes roughly 10 seconds or less
    - NEVER CANCEL: Wait for completion
 
 3. **Create conda environment**:
    ```bash
    conda env create -f environment.yml
    ```
-   - Takes approximately 2 minutes 20 seconds
+   - Takes approximately 2 - 3 minutes
    - NEVER CANCEL: Set timeout to 10+ minutes
    - Creates environment named `fre-cli`
 
@@ -39,7 +40,7 @@
    ```bash
    pip install -e .
    ```
-   - Takes approximately 13 seconds
+   - Takes approximately 10 - 20 seconds
    - NEVER CANCEL: Set timeout to 10+ minutes
    - The `-e` flag enables immediate reflection of code changes
    - Never run code from within the `fre/` package directory structure
@@ -67,8 +68,7 @@
    - Run tool-specific tests: `pytest -v fre/[tool]/tests/`
    - Run app-specific tests `pytest -v fre/app/[app]/tests`
    - set `log-level INFO` or `DEBUG` if needed
-   - If you are running tests in an environment without a Fortran compiler or required build tools (e.g., some CI systems or minimal containers), add `--ignore=fre/make/tests/compilation` to skip compilation tests that would otherwise fail.
-
+   - if no Fortran compilers or other build tools, add `--ignore=fre/make/tests/compilation` to `pytest` call
 
 3. **Run a specific test file**:
    ```bash
@@ -93,8 +93,9 @@
    ```bash
    pylint --fail-under 0.1 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
    ```
-   - Targets the entire `fre/` directory for comprehensive checking
-   - Focus on implementing and verifying functionality first; address pylint complaints after your code passes all relevant tests and is functionally complete.
+   - targets the entire `fre/` directory for comprehensive checking
+   - focus on implementing and verifying functionality first
+   - address pylint complaints after your code passes all relevant tests and is functionally complete.
 
 
 ## CLI Usage Patterns
@@ -105,12 +106,12 @@
 - `analysis` - Analysis subcommands
 - `app` - Application subcommands (`regrid`, `remap`, `generate_time_averages`)
 - `catalog` - Catalog building and management
-- `check` - Validation checks (not fully implemented)
+- `check` - Validation checks (not-yet-implemented)
 - `cmor` - CMOR processing
 - `list` - List experiments, platforms, components
 - `make` - Build system integration
 - `pp` - Post-processing tools
-- `run` - Run management (not fully implemented) 
+- `run` - Run management (not-yet-implemented) 
 - `yamltools` - YAML manipulation and combination
 
 **Example usage scenarios to test**:
@@ -121,7 +122,7 @@
 
 ## Common Issues and Workarounds
 
-**YAML validation failures**: 
+**YAML validation failures**:
 - Do NOT disable validation to "fix" test failures
 - Instead, check if the `gfdl_msd_schemas` submodule commit is appropriate
 
@@ -163,7 +164,6 @@ fre/[tool]/
 - `build_conda.yml` - Builds conda package on PRs
 - `create_test_conda_env.yml` - Creates test environment and runs tests
 - `publish_conda.yml` - Publishes to noaa-gfdl channel on main
-- Tests run automatically - ensure local tests pass first
 
 **Conda build** (for advanced users):
 ```bash
@@ -184,6 +184,7 @@ conda build .
    - You may encounter validation errors such as missing required fields, incorrect data types, or schema mismatches. 
    - Review each error: fix the YAML file if the error is due to incorrect formatting or missing data, or update the code to handle new valid scenarios. 
    - If unsure whether an error is acceptable, consult the schema documentation or ask a team member.
+
 ## Performance Expectations
 
 - **Environment creation**: 2-3 minutes total
