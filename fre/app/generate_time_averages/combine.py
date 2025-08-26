@@ -84,6 +84,7 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end
 
     indir = Path(root_in_dir) / frequency_iso / interval
     fre_logger.debug(f"Input dir = '{indir}'")
+    gotta_go_back_here = os.getcwd()
     os.chdir(indir)
 
     if frequency == 'yr':
@@ -105,3 +106,5 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end
             subprocess.run(['cp', '-v', target, outdir], check=True)
     else:
         raise ValueError(f"Frequency '{frequency}' not known")
+
+    os.chdir(gotta_go_back_here)
