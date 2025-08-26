@@ -7,16 +7,14 @@ YAML files into unified configurations for the Flexible Runtime Environment (FRE
 to consolidate YAMLs for CMORization, compilation, and post-processing, supporting both command-line tools
 and internal workflow automation.
 
-There are only four functions currently. The primary one is `consolidate_yamls`, and the others are called through
-it by specifying the `use` argument.
+There are only four functions currently, with `consolidate_yamls` acting as the center of this file's control-flow. 
+The other functions are called within `consolidate_yamls`, based on the `use` argument passed to it. `use` may be 
+one of `cmor`, `pp`, and `compile` at this time, and determines which pieces of information are needed, where they 
+come from, and where they are placed in the output dictionary. 
 
-Of the other functions, each `get_combined_Xyaml` takes the model and X-flavored `yaml` (e.g., a `cmor` or `compile`
-configuration), opens them up, parses them for things like anchors, other resolvable objects, and produces a final
-output dictionary. 
-
-Notice there's another pattern in fre.yamltools- every possible `use` argument `X` to `consolidate_yamls` leads to a
-`fre.yamltools.X_info_parser` module that houses specifics to `yaml`-configuration combintation and usage approaches
-unique to the context.
+For every possible `use` argument currently accepted by `consolidate_yamls`, there exists a corresponding 
+`info_parser` class that houses the specific requirements of the combination and the implementation as well.
+For more information, consult the docstrings in those functions and modules, as well as those in this file.
 
 Functions
 ---------
