@@ -125,7 +125,7 @@ def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
         if dim in list(ds.variables):  # dim needs to have values in file
             if ds[dim].attrs["long_name"] == "pressure":
                 pressure_coord = ds[dim]
-            elif ("coordinates" in ds.attrs) and (ds[dim].attrs["units"] == "Pa"):
+            elif "coordinates" in ds.attrs and ds[dim].attrs["units"] == "Pa":
                 pressure_coord = ds[dim]
 
     return pressure_coord
