@@ -75,7 +75,7 @@ def get_grid_spec(datadict: dict) -> str:
         with tarfile.open(pp_grid_spec_tar, "r") as tar:
             tar.extractall()
 
-    #error if grid_spec file is not found after untarring 
+    #error if grid_spec file is not found after extracting from tar file
     if not Path(grid_spec).exists():
         raise IOError(f"Cannot find {grid_spec} in tar file {pp_grid_spec_tar}")
 
