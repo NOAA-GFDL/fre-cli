@@ -7,8 +7,9 @@ from ..mask_atmos_plevel import mask_atmos_plevel
 
 @pytest.fixture()
 def create_input_files(tmp_path):
-    """Create input data file atmos_cmip.ua_unmsk.nc and ps file atmos_cmip.ps.nc
-    in a temporary directory, and return the temporary directory.
+    """
+    Create input data file atmos_cmip.ua_unmsk.nc and ps file atmos_cmip.ps.nc
+    in a temporary directory, and return the name of the temporary directory.
     """
     # path to input files
     input_ = Path('fre/tests/test_files/reduced_ascii_files/atmos_cmip.ua_unmsk.cdl')
@@ -48,8 +49,9 @@ def create_input_files(tmp_path):
 
 
 def test_mask_atmos_plevel(create_input_files):
-    """Do the pressure masking on the test input file,
-    and then compare to the known reference output file.
+    """
+    Do the pressure masking on the test input file,
+    and then compare to a previously generated output file.
     """
     tmp_input = Path(create_input_files / "input.nc")
     tmp_ps = Path(create_input_files / "ps.nc")

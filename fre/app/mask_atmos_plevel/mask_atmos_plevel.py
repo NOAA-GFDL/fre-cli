@@ -6,7 +6,8 @@ import logging
 fre_logger = logging.getLogger(__name__)
 
 def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
-    """Mask pressure-level diagnostic output below land surface
+    """
+    Mask pressure-level diagnostic output below land surface
 
     :param infile: Input NetCDF file containing pressure-level output to be masked
     :type infile: str
@@ -20,7 +21,7 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
     :raises FileNotFound: Input file does not exist
     :rtype: None
 
-    .. note:: Input variables must have an attribute `pressure_mask` set to `False`. Output variables have the attribute set to `True`.
+    .. note:: Input variables must have an attribute `pressure_mask` that is set to `False`. The resulting output variable will have the attribute set to `True`.
     """
 
     # Error if outfile exists
@@ -66,7 +67,8 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
 
 
 def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Dataset) -> xr.Dataset:
-    """Mask data with pressure larger than surface pressure
+    """
+    Mask data with pressure larger than surface pressure
     :param ds: Input dataset to be masked
     :type infile: xarray.Dataset
     :param var: Input variable to be masked
@@ -104,8 +106,9 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
 
 
 def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
-    """Check if dataArray has pressure coordinate fitting requirements
-    and return it
+    """
+    Return the pressure coordinate of the Dataset or None if
+    the Dataset does not have a pressure coordinate.
     :param ds: Input dataset to inspect
     :type ds: xarray.Dataset
     :param var: Input variable name to inspect
@@ -129,7 +132,8 @@ def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
 
 
 def write_dataset(ds: xr.Dataset, template: xr.Dataset, outfile: str) -> None:
-    """Prepare the dataset and write output NetCDF file
+    """
+    Prepare the dataset and write NetCDF file
     :param ds: Input dataset to write to disk
     :type infile: xarray.Dataset
     :param template: Remainder dataset to also write to disk
