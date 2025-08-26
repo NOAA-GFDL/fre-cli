@@ -13,22 +13,16 @@ Through the fre-cli, `fre make` can be used to create and run a checkout script,
 
 ### **Bare-metal Build:**
 ```bash
-# Create checkout script
-fre make checkout-script -y [model yaml file] -p [platform] -t [target]
-
 # Create and run checkout script
 fre make checkout-script -y [model yaml file] -p [platform] -t [target] --execute
 
 # Create Makefile
 fre make makefile -y [model yaml file] -p [platform] -t [target]
 
-# Create the compile script
-fre make compile-script -y [model yaml file] -p [platform] -t [target]
-
 # Create and run the compile script
 fre make compile-script -y [model yaml file] -p [platform] -t [target] --execute
 
-# Run all of fre make
+# Run fre make checkout-script, fre make makefile, and fre make compile-script in order
 fre make all -y [model yaml file] -p [platform] -t [target] [other options...]
 ```
 
@@ -37,17 +31,11 @@ For the container build, parallel checkouts are not supported, so the `-npc` opt
 
 ***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
 ```bash
-# Create checkout script
-fre make checkout-script -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] -npc
-
 # Create and run checkout script
 fre make checkout-script -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 
 # Create Makefile
 fre make makefile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
-
-#Create a Dockerfile
-fre make dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
 
 # Create and run the Dockerfile
 fre make dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
