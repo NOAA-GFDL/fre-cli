@@ -30,18 +30,19 @@ requirements:
     - python=3.11.*
     - pip
     - noaa-gfdl::analysis_scripts
-    - noaa-gfdl::catalogbuilder
+    - noaa-gfdl::catalogbuilder>=2.0.2
     - noaa-gfdl::fre-nctools
     - conda-forge::cftime
     - conda-forge::click<8.2
     - conda-forge::cylc-flow>=8.2.0
     - conda-forge::cylc-rose
-    - conda-forge::cmor>=3.10.0
+    - conda-forge::cmor>=3.11.0
     - conda-forge::cdo>=2.0.0
     - conda-forge::jinja2=3.0.*
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
     - conda-forge::nccmp
+    - conda-forge::numpy<2
     - conda-forge::pylint
     - conda-forge::pytest
     - conda-forge::pytest-cov

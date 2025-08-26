@@ -147,7 +147,7 @@ def set_rose_apps(yamlfile,rose_regrid,rose_remap):
 
         # set remap items
         rose_remap.set(keys=[f'{comp}', 'sources'], value=f'{sources}')
-        # if xyInterp doesnt exist, grid is native
+        # if xyInterp doesn't exist, grid is native
         if i.get("xyInterp") is None:
             rose_remap.set(keys=[f'{comp}', 'grid'], value='native')
 
@@ -184,6 +184,14 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     configuration files are created in the cylc-src
     directory. The pp.yaml is also copied to the
     cylc-src directory.
+    :param yamlfile: yamlfile used for experiment configuration, default None
+    :type yamlfile: string
+    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
+    :type experiment: str
+    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
+    :type platform: str
+    :param target: Options used for the model compiler (e.g. prod-openmp), default None
+    :type target: str
     """
     fre_logger.info('Starting')
 
@@ -238,5 +246,3 @@ def yaml_info(yamlfile = None, experiment = None, platform = None, target = None
     fre_logger.info('Finished')
 
 # Use parseyaml function to parse created edits.yaml
-if __name__ == '__main__':
-    yaml_info()

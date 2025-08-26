@@ -22,8 +22,8 @@ postprocess:
         - history_file: "atmos_4xdaily"
         - history_file: "atmos_8xdaily"
         - history_file: "atmos_daily"
+          variables: ["tasmax", "tasmin", "ps", "tasmin", "tas", "temp", "zsurf", "pv350K"]
         - history_file: "atmos_month"
-      variables: ["tasmax", "tasmin", "ps", "tasmin", "tas", "temp", "zsurf", "pv350K"]
       <<: *regrid-c2
       postprocess_on: True
     - type: 'atmos_cmip'

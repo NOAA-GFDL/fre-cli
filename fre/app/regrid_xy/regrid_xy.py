@@ -102,7 +102,7 @@ def check_interp_method(dataset: Type[xr.Dataset], regrid_vars: List[str], inter
 def check_per_component_settings(component_list, rose_app_cfg):
     """for a source file ref'd by multiple components check per-component
     settings for uniqueness. output list of bools of same length to check
-    in componenet loop"""
+    in component loop"""
     do_regridding = [True] #first component will always be run
     curr_out_grid_type_list = [safe_rose_config_get( \
                                                rose_app_cfg, component_list[0], 'outputGridType')]
@@ -401,6 +401,3 @@ def regrid_xy(input_dir, output_dir, begin, tmp_dir, remap_dir, source,
 def main():
     """steering, local test/debug"""
     return regrid_xy()
-
-if __name__=='__main__':
-    main()

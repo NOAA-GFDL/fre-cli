@@ -526,7 +526,7 @@ def cmorize_target_var_files(indir=None, target_var=None, local_var=None,
     ''' processes a target directory/file
     this routine is almost entirely exposed data movement before/after calling
     rewrite_netcdf_file_var it is also the most hopelessly opaque routine in this entire dang macro.
-    this badboy right here accepts... lord help us... !!!NINE!!! arguments, NINE.
+    this function accepts nine arguments.
         indir: string, path to target directories containing netcdf files to cmorize
         target_var: string, name of variable inside the netcdf file to cmorize
         local_var: string, value of the variable name in the filename, right before the .nc
@@ -667,7 +667,7 @@ def cmorize_all_variables_in_dir(vars_to_run, indir, iso_datetime_range_arr, nam
     Returns:
         int: 0 if *the last file processed* was successful. 
              1 if the last file processed was not successful. 
-             -1 if we didnt even try!
+             -1 if we didn't even try!
 
     '''
     # loop over local-variable:target-variable pairs in vars_to_run

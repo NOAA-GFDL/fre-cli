@@ -7,7 +7,6 @@ fre_logger = logging.getLogger(__name__)
 #fre tools
 from . import checkout_script
 from . import configure_script_yaml
-from . import configure_script_xml
 from . import validate_script
 from . import histval_script
 from . import ppval_script
@@ -38,7 +37,7 @@ def pp_cli():
               required=True)
 def status(experiment, platform, target):
     """
-    Report status of PP configuratio
+    Report status of PP configuration
     """
     status_script.status_subtool(experiment, platform, target)
 
@@ -99,6 +98,7 @@ def install(experiment, platform, target):
     """
     install_script.install_subtool(experiment, platform, target)
 
+#fre pp configure
 @pp_cli.command()
 @click.option("-y", "--yamlfile", type=str,
               help="YAML file to be used for parsing",
@@ -118,6 +118,7 @@ def configure_yaml(yamlfile,experiment,platform,target):
     """
     configure_script_yaml.yaml_info(yamlfile,experiment,platform,target)
 
+#fre pp checkout
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -136,65 +137,6 @@ def checkout(experiment, platform, target, branch=None):
     Execute fre pp checkout
     """
     checkout_script.checkout_template(experiment, platform, target, branch)
-
-@pp_cli.command()
-@click.option('-x', '--xml',
-              required=True,
-              help="Required. The Bronx XML")
-@click.option('-p', '--platform',
-              required=True,
-              help="Required. The Bronx XML Platform")
-@click.option('-t', '--target',
-              required=True,
-              help="Required. The Bronx XML Target")
-@click.option('-e', '--experiment',
-              required=True,
-              help="Required. The Bronx XML Experiment")
-@click.option('--do_analysis',
-              is_flag=True,
-              default=False,
-              help="Optional. Runs the analysis scripts.")
-@click.option('--historydir',
-              help="Optional. History directory to reference. " \
-                   "If not specified, the XML's default will be used.")
-@click.option('--refinedir',
-              help="Optional. History refineDiag directory to reference. " \
-                   "If not specified, the XML's default will be used.")
-@click.option('--ppdir',
-              help="Optional. Postprocessing directory to reference. " \
-                   "If not specified, the XML's default will be used.")
-@click.option('--do_refinediag',
-              is_flag=True,
-              default=False,
-              help="Optional. Process refineDiag scripts")
-@click.option('--pp_start', type=str, default='0000',
-              help="Optional. Starting year of postprocessing. " \
-                   "If not specified, a default value of '0000' " \
-                   "will be set and must be changed in rose-suite.conf")
-@click.option('--pp_stop', type=str, default='0000',
-              help="Optional. Ending year of postprocessing. " \
-                    "If not specified, a default value of '0000' " \
-                    "will be set and must be changed in rose-suite.conf")
-@click.option('--validate',
-              is_flag=True,
-              help="Optional. Run the Cylc validator " \
-                    "immediately after conversion")
-@click.option('-v', '--verbose',
-              is_flag=True,
-              help="Optional. Display detailed output")
-@click.option('-q', '--quiet',
-              is_flag=True,
-              help="Optional. Display only serious messages and/or errors")
-@click.option('--dual',
-              is_flag=True,
-              help="Optional. Append '_canopy' to pp, analysis, and refinediag dirs")
-def configure_xml(xml, platform, target, experiment, do_analysis, historydir, refinedir,
-                  ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual):
-    """
-    Converts a Bronx XML to a Canopy rose-suite.conf
-    """
-    configure_script_xml.convert(xml, platform, target, experiment, do_analysis, historydir, refinedir,
-                                 ppdir, do_refinediag, pp_start, pp_stop, validate, verbose, quiet, dual)
 
 #fre pp nccheck
 @pp_cli.command()
@@ -305,10 +247,11 @@ def all(experiment, platform, target, config_file, branch, time):
     """
     Execute fre pp steps in order
     """
-    fre_logger.info('(frepp.wrapper) about to foward context to wrapper.run_all_fre_pp_steps via click...')
+    fre_logger.info('(frepp.wrapper) about to forward context to wrapper.run_all_fre_pp_steps via click...')
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
-    fre_logger.info('(frepp.wrapper) done fowarding context to wrapper.run_all_fre_pp_steps via click.')
+    fre_logger.info('(frepp.wrapper) done forwarding context to wrapper.run_all_fre_pp_steps via click.')
 
+#fre pp trigger
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -324,10 +267,6 @@ def all(experiment, platform, target, config_file, branch, time):
               help="Time whose history files are ready")
 def trigger(experiment, platform, target, time):
     """
-    Start postprocessing for a particular time
+    Start postprocessing history files that represent a specific chunk of time
     """
     trigger_script.trigger(experiment, platform, target, time)
-
-if __name__ == "__main__":
-    ''' entry point for click to fre pp commands '''
-    pp_cli()

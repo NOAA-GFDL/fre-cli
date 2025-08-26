@@ -3,6 +3,8 @@ omit =
     fre/analysis/tests/*
     fre/app/generate_time_averages/tests/*
     fre/app/regrid_xy/tests/*
+    fre/app/remap_pp_components/tests/*
+    fre/app/tests/*
     fre/catalog/tests/*
     fre/check/*
     fre/cmor/tests/*
@@ -12,5 +14,5 @@ omit =
     fre/run/*
     fre/yamltools/tests/*
     fre/tests/*
-	fre/gfdl_msd_schemas/*
-	fre/mkmf/*
+    fre/gfdl_msd_schemas/*
+    fre/mkmf/*

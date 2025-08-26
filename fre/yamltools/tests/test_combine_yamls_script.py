@@ -147,6 +147,49 @@ def test_combined_compileyaml_validatefail():
     except:
         assert True
 
+def test_check_expected_platformyamlcontent():
+    ''' Test that expected yaml information (platform info) is included in dictionary content '''
+    TEST_DIR = Path("fre/make/tests")
+    NM_EXAMPLE = Path("null_example")
+    YAMLFILE = "null_model.yaml"
+    EXP_NAME = YAMLFILE.split(".")[0]
+
+    yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
+
+    # Combine model / experiment
+    yml_dict = cy.consolidate_yamls(yamlfile = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}",
+                                    experiment = EXP_NAME,
+                                    platform = None,
+                                    target = None,
+                                    use = "compile",
+                                    output = None)
+
+    # compare combined yaml info with some information that's supposed to be parsed
+    expected_platform_info_1 = {'name': 'ncrc5.intel23',
+                                'compiler': 'intel',
+                                'envSetup': ['module use -a /ncrc/home2/fms/local/modulefiles',
+                                             'source $MODULESHOME/init/sh',
+                                             'module load intel-classic/2023.2.0',
+                                             'module load fre/bronx-23',
+                                             'module load cray-hdf5/1.12.2.11',
+                                             'module load cray-netcdf/4.9.0.11'],
+                                'mkTemplate': '/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/intel-classic.mk',
+                                'modelRoot': '${HOME}/fremake_canopy/test'}
+    expected_platform_info_2 = {'name': 'hpcme.2023',
+                                'compiler': 'intel',
+                                'RUNenv': ['. /spack/share/spack/setup-env.sh', 'spack load libyaml', 'spack load netcdf-fortran@4.5.4', 'spack load hdf5@1.14.0'],
+                                'modelRoot': '/apps',
+                                'container': True,
+                                'containerBuild': 'podman',
+                                'containerRun': 'apptainer',
+                                'containerBase': 'docker.io/ecpe4s/noaa-intel-prototype:2023.09.25',
+                                'mkTemplate': '/apps/mkmf/templates/hpcme-intel21.mk'}
+
+    for key,value in yml_dict.items():
+        if key == "platforms":
+            assert expected_platform_info_1 in value
+            assert expected_platform_info_2 in value
+
 ############ PP ############
 def test_expyaml_exists():
     """

@@ -1,15 +1,16 @@
 """
-experimentation file for integrating one file's functions into main prototype fre file
-authored by Bennett.Chang@noaa.gov | bcc2761
-NOAA | GFDL
+Template file for frecheck
+fre check has not been developed yet
 """
 
 def check_test_function(uppercase=None):
-    """Execute fre list testfunction2."""
+    """
+    Description of fre check test function
+    This is just a template for a function to be developed
+    :param uppercase: this is the description of your first parameter in the template function
+    :type uppercase: str
+    """
     statement = "testingtestingtestingtesting"
     if uppercase:
         statement = statement.upper()
     print(statement)
-
-if __name__ == '__main__':
-    check_test_function()

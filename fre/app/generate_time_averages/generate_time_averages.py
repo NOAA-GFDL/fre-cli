@@ -20,7 +20,7 @@ def generate_time_average(infile = None, outfile = None,
     :type unwgt: bool
     :param avg_type: time scale for climatology. Accepted variables vary based on pkg ('all','seas','month'), defaults to 'all'
     :type avg_type: str
-    :return: error message if requested package unkown, otherwise returns climatology
+    :return: error message if requested package unknown, otherwise returns climatology
     :rtype: int
     """
     if __debug__:
@@ -54,7 +54,7 @@ def generate_time_average(infile = None, outfile = None,
                                        unwgt = unwgt ,
                                        avg_type = avg_type)
 
-    elif pkg == 'fre-python-tools':   #fre-python-tools adresses var in a uniqe way, which is adressed here
+    elif pkg == 'fre-python-tools':   #fre-python-tools addresses var in a unique way, which is addressed here
       #TO-DO: generate an error message if multiple files exist in infiles, with different results for the var search
         if merged == True and var == None:
             var = multi_file[0].split('/').pop().split('.')[-2]
@@ -91,9 +91,3 @@ def generate(inf = None, outf = None,
         fre_logger.info(f'WARNING: exitstatus={exitstatus} != 0. Something exited poorly!')
     else:
         fre_logger.info('time averaging finished successfully')
-
-if __name__ == '__main__':
-    import time
-    start_time=time.perf_counter()
-    generate(inf, outf, pkg, var, unwgt, avg_type)
-    fre_logger.info(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
