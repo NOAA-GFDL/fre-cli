@@ -8,7 +8,6 @@ import json
 import logging
 
 from pathlib import Path
-from typing import Tuple
 from jsonschema import validate, SchemaError, ValidationError
 import metomi.rose.config
 
@@ -17,10 +16,10 @@ import fre.yamltools.combine_yamls_script as cy
 fre_logger = logging.getLogger(__name__)
 
 ######VALIDATE#####
-def validate_yaml(yamlfile: dict):
+def validate_yaml(yamlfile: dict) -> None:
     """
-    Using the schema.json file in gfdl_msd_schemas,
-    the yaml format is validated.
+    Validate the format of the yaml file based
+    on the schema.json in gfdl_msd_schemas
 
     :param yamlfile: Model, settings, pp, and analysis yaml
                      information combined into a dictionary
@@ -44,7 +43,7 @@ def validate_yaml(yamlfile: dict):
     # Validate yaml
     # If the yaml is not valid, the schema validation will raise errors and exit
     try:
-        validate(instance=yamlfile,schema=schema)
+        validate(instance = yamlfile,schema=schema)
         fre_logger.info("Combined yaml valid")
     except SchemaError as exc:
         raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.") from exc
@@ -54,7 +53,7 @@ def validate_yaml(yamlfile: dict):
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 ####################
-def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config.ConfigNode:
+def rose_init(experiment: str, platform: str, target: str) -> type[metomi.rose.config.ConfigNode]:
     """
     Initializes the rose suite and app configurations.
 
@@ -98,10 +97,10 @@ def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config
     rose_remap = metomi.rose.config.ConfigNode()
     rose_remap.set(keys=['command', 'default'], value='remap-pp-components')
 
-    return(rose_suite,rose_regrid,rose_remap)
+    return(rose_suite, rose_regrid, rose_remap)
 
 ####################
-def quote_rose_values(value:str) -> str:
+def quote_rose_values(value: str) -> str:
     """
     rose-suite.conf template variables must be quoted unless they are
     boolean or a list, in which case do not quote them.
@@ -119,7 +118,7 @@ def quote_rose_values(value:str) -> str:
         return "'" + str(value) + "'"
 
 ####################
-def set_rose_suite(yamlfile: dict, rose_suite):
+def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) -> None:
     """
     Sets items in the rose suite configuration.
 
@@ -128,7 +127,7 @@ def set_rose_suite(yamlfile: dict, rose_suite):
     :type yamlfile: dict
     :param rose_suite: class within Rose python library; represents 
                        elements of the rose-suite configuration 
-    :type rose_suite: class
+    :type rose_suite: metomi.rose.config.ConfigNode; class
     """
     pp=yamlfile.get("postprocess")
     dirs=yamlfile.get("directories")
@@ -152,7 +151,7 @@ def set_rose_suite(yamlfile: dict, rose_suite):
             rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
 
 ####################
-def set_rose_apps(yamlfile: dict, rose_regrid, rose_remap):
+def set_rose_apps(yamlfile: dict, rose_regrid: metomi.rose.config.ConfigNode, rose_remap: metomi.rose.config.ConfigNode) -> None:
     """
     Sets items in the regrid and remap rose app configurations.
 
@@ -162,11 +161,11 @@ def set_rose_apps(yamlfile: dict, rose_regrid, rose_remap):
     :param rose_regrid: class within Rose python library; represents
                         elements of rose-app configuration used in
                         the regrid-xy task
-    :type rose_regrid: class
+    :type rose_regrid: metomi.rose.config.ConfigNode; class
     :param rose_remap: class within Rose python library; represents
                        elements of rose-app configuration used in
                        the remap-pp-components task
-    :type rose_remap: class
+    :type rose_remap: metomi.rose.config.ConfigNode; class
     """
     components = yamlfile.get("postprocess").get("components")
     for i in components:
@@ -283,5 +282,3 @@ def yaml_info(yamlfile: str=None, experiment: str=None, platform: str=None, targ
     fre_logger.info("  %s", outfile)
 
     fre_logger.info('Finished')
-
-# Use parseyaml function to parse created edits.yaml
