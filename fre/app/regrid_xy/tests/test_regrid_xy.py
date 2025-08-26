@@ -20,7 +20,7 @@ work_dir = Path(curr_dir)/"test_work"
 
 components = []
 pp_input_files = [{"history_file":"pemberley"}, {"history_file":"longbourn"}]
-components.append({"xyInterp": f"{N},{N}",                                      
+components.append({"xyInterp": f"{N},{N}",
                    "interpMethod": "conserve_order2",
                    "inputRealm": "atmos",
                    "type": f"pride_and_prejudice",
@@ -28,7 +28,7 @@ components.append({"xyInterp": f"{N},{N}",
                    "postprocess_on": True}
 )
 emma_input_files = [{"history_file":"hartfield"}, {"history_file":"donwell_abbey"}]
-components.append({"xyInterp": f"{N},{N}",                                      
+components.append({"xyInterp": f"{N},{N}",
                    "interpMethod": "conserve_order2",
                    "inputRealm": "atmos",
                    "type": f"emma",
@@ -36,7 +36,7 @@ components.append({"xyInterp": f"{N},{N}",
                    "postprocess_on": True}
 )
 here_input_files = [{"history_file":"gfdl"}, {"history_file":"princeton"}]
-components.append({"xyInterp": f"{N},{N}",                                      
+components.append({"xyInterp": f"{N},{N}",
                    "interpMethod": "conserve_order2",
                    "inputRealm": "atmos",
                    "type": "here",
@@ -75,21 +75,21 @@ def test_regrid_xy():
                         remap_dir=str(remap_dir),
                         source=source,
                         input_date=date)
-    
+
   #check answers
   for source_dict in pp_input_files + emma_input_files:
     outfile = output_dir/f"{date}.{source_dict['history_file']}.nc"
-    
-    checkme = xr.load_dataset(outfile)
 
-    assert "wet_c" not in checkme
-    assert "mister" in checkme
-    assert "darcy" in checkme
-    assert "wins" in checkme
+    test = xr.load_dataset(outfile)
 
-    assert np.all(checkme["mister"].values==np.float64(1.0))
-    assert np.all(checkme["darcy"].values==np.float64(2.0))
-    assert np.all(checkme["wins"].values==np.float64(3.0))
+    assert "wet_c" not in test
+    assert "mister" in test
+    assert "darcy" in test
+    assert "wins" in test
+
+    assert np.all(test["mister"].values==np.float64(1.0))
+    assert np.all(test["darcy"].values==np.float64(2.0))
+    assert np.all(test["wins"].values==np.float64(3.0))
 
   #check answers, these shouldn't have been regridded
   for source_dict in here_input_files:
@@ -103,6 +103,7 @@ def test_regrid_xy():
   #remove test directories
   shutil.rmtree(output_dir)
   shutil.rmtree(remap_dir)
+  shutil.rmtree(work_dir)
   generate_files.cleanup()
 
 
@@ -152,7 +153,7 @@ def test_get_remap_file():
   nlon = 40
   nlat = 10
   interp_method = "conserve_order1"
-  
+
   datadict = {"remap_dir": remap_dir.name,
               "input_mosaic": input_mosaic+".nc",
               "output_nlon": nlon,

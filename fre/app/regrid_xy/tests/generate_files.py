@@ -38,7 +38,7 @@ def cleanup():
   for i in range(1, ntiles+1):
     gridfile = Path(f"{input_grid}.tile{i}.nc")
     if gridfile.exists(): gridfile.unlink()
-    
+
 
 def set_test(components_in: dict,
              N_in: int = None,
@@ -70,7 +70,7 @@ def set_test(components_in: dict,
   if input_dir_in is not None: input_dir = input_dir_in
 
   tar_list = []
-  
+
 def make_yaml():
 
   ppyaml = {}

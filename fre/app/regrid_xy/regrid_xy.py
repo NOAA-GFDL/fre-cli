@@ -53,7 +53,7 @@ def get_grid_spec(datadict: dict) -> str:
     :datadict: dictionary containing relevant regrid parameters
     :type datadict: dict
 
-    :raises IOError:  Error if grid_spec.nc file cannot be found in the 
+    :raises IOError:  Error if grid_spec.nc file cannot be found in the
                       current directory
 
     :return: grid_spec filename
@@ -70,7 +70,7 @@ def get_grid_spec(datadict: dict) -> str:
     #get tar file containing the grid_spec file
     pp_grid_spec_tar = datadict["yaml"]["postprocess"]["settings"]["pp_grid_spec"]
 
-    #untar grid_spec tar file into the current work directory    
+    #untar grid_spec tar file into the current work directory
     if tarfile.is_tarfile(pp_grid_spec_tar):
         with tarfile.open(pp_grid_spec_tar, "r") as tar:
             tar.extractall()
@@ -89,10 +89,10 @@ def get_input_mosaic(datadict: dict) -> str:
 
     :datadict: dictionary containing relevant regrid parameters
     :type datadict: dict
-    :raises IOError: Error if the input mosaic file cannot be found in the 
+    :raises IOError: Error if the input mosaic file cannot be found in the
                      current work directory
 
-    :return: input_mosaic file 
+    :return: input_mosaic file
     :rtype: str
 
     .. note:: The input mosaic filename is a required input argument for fregrid.
@@ -213,7 +213,7 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 
     #add the proper suffix to the input filename
     with xr.open_dataset(mosaic_file) as dataset:
-        input_file += ".tile1.nc" if dataset.sizes["ntiles"] > 1 else ".nc"    
+        input_file += ".tile1.nc" if dataset.sizes["ntiles"] > 1 else ".nc"
 
     # xarray gives an error if variables in non_regriddable_variables do not exist in the dataset
     # The errors="ignore" overrides the error
@@ -255,7 +255,7 @@ def regrid_xy(yamlfile: str,
               input_dir: str,
               output_dir: str,
               work_dir: str,
-              remap_dir: str, 
+              remap_dir: str,
               source: str,
               input_date: str = None,
 ):
@@ -268,7 +268,7 @@ def regrid_xy(yamlfile: str,
     :input_dir: Name of the input directory containing the input/history files,
                 Fregrid will look for all input history files in input_dir.
     :output_dir: Name of the output directory where fregrid outputs will be saved
-    :work_dir: Directory that will contain the extracted files from the grid_spec tar 
+    :work_dir: Directory that will contain the extracted files from the grid_spec tar
     :remap_dir: Directory that will contain the generated remap file
     :Source: The stem of the history file to regrid
     :Input_date: Datestring in the format of YYYYMMDD that corresponds to the date prefix of the history files,
@@ -294,7 +294,7 @@ def regrid_xy(yamlfile: str,
         os.chdir(work_dir)
     except Exception:
         raise RuntimeError(f"Cannot change into work directory {work_dir}")
-    
+
     #initialize datadict
     datadict = {}
 
@@ -319,21 +319,21 @@ def regrid_xy(yamlfile: str,
 
     # submit fregrid job for each component
     for component in components:
-        
-        # skip component if postprocess_on = False 
+
+        # skip component if postprocess_on = False
         if not component["postprocess_on"]:
             fre_logger.warning((f"postprocess_on=False for {source} in component {component['type']}."
                                 "Skipping {source}"))
             continue
-        
+
         datadict["inputRealm"] = component["inputRealm"]
         datadict["input_mosaic"] = get_input_mosaic(datadict)
         datadict["output_nlat"], datadict["output_nlon"] = component["xyInterp"].split(",")
         datadict["interp_method"] = component["interpMethod"]
-        datadict["remap_file"] = get_remap_file(datadict)        
+        datadict["remap_file"] = get_remap_file(datadict)
         datadict["input_file"] = get_input_file(datadict, source)
         datadict["scalar_field"], regrid = get_scalar_fields(datadict)
-        
+
         # skip if there are no variables to regrid
         if not regrid: continue
 
