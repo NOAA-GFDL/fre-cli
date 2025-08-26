@@ -67,7 +67,7 @@
    - Run tool-specific tests: `pytest -v fre/[tool]/tests/`
    - Run app-specific tests `pytest -v fre/app/[app]/tests`
    - set `log-level INFO` or `DEBUG` if needed
-   - depending on the environment, adding `--ignore=fre/make/tests/compilation` may be appropriate
+   - If you are running tests in an environment without a Fortran compiler or required build tools (e.g., some CI systems or minimal containers), add `--ignore=fre/make/tests/compilation` to skip compilation tests that would otherwise fail.
 
 
 3. **Run a specific test file**:
@@ -94,7 +94,7 @@
    pylint --fail-under 0.1 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
    ```
    - Targets the entire `fre/` directory for comprehensive checking
-   - Don't prioritize fixing complaints until functionality is understood
+   - Focus on implementing and verifying functionality first; address pylint complaints after your code passes all relevant tests and is functionally complete.
 
 
 ## CLI Usage Patterns
@@ -180,8 +180,10 @@ conda build .
 3. **Test immediately** with relevant CLI commands
 4. **Run test suite** before committing
 5. **Validate with pylint** if modifying Python files
-6. **Test real user scenarios** with sample YAML files (expect some validation errors)
-
+6. **Test real user scenarios** with sample YAML files. 
+   - You may encounter validation errors such as missing required fields, incorrect data types, or schema mismatches. 
+   - Review each error: fix the YAML file if the error is due to incorrect formatting or missing data, or update the code to handle new valid scenarios. 
+   - If unsure whether an error is acceptable, consult the schema documentation or ask a team member.
 ## Performance Expectations
 
 - **Environment creation**: 2-3 minutes total
