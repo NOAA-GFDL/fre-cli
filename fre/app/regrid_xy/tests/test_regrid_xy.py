@@ -170,6 +170,3 @@ def test_get_remap_file():
 
   Path(remap_file).unlink()
   shutil.rmtree(remap_dir)
-
-
-  

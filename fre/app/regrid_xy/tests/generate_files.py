@@ -161,5 +161,3 @@ def make_all():
   make_data()
   with tarfile.open(grid_spec_tar, "w") as tar:
     for ifile in tar_list: tar.add(ifile)
-  
-    

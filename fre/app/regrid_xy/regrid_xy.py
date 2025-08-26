@@ -90,7 +90,7 @@ def get_input_mosaic(datadict: dict) -> str:
     :datadict: dictionary containing relevant regrid parameters
     :type datadict: dict
     :raises IOError: Error if the input mosaic file cannot be found in the 
-                     current current directory
+                     current work directory
 
     :return: input_mosaic file 
     :rtype: str
