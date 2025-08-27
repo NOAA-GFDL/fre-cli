@@ -9,6 +9,7 @@ import logging
 
 from pathlib import Path
 from jsonschema import validate, SchemaError, ValidationError
+from typing import Tuple
 import metomi.rose.config
 
 import fre.yamltools.combine_yamls_script as cy
@@ -28,6 +29,8 @@ def validate_yaml(yamlfile: dict) -> None:
         - if gfdl_mdf_schema path is not valid
         - combined yaml is not valid
         - unclear error in validation
+    :return: None
+    :rtype: None
     """
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
@@ -53,7 +56,7 @@ def validate_yaml(yamlfile: dict) -> None:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 ####################
-def rose_init(experiment: str, platform: str, target: str) -> type[metomi.rose.config.ConfigNode]:
+def rose_init(experiment: str, platform: str, target: str) -> Tuple[metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode, [metomi.rose.configi.ConfigNode]:
     """
     Initializes the rose suite and app configurations.
 
@@ -107,7 +110,7 @@ def quote_rose_values(value: str) -> str:
 
     :param value: rose-suite configuration value 
     :type value: str
-    :return: quoted rose-suite configuration value (if not bool or list)
+    :return: quoted rose-suite configuration value
     :rtype: str
     """
     if isinstance(value, bool):
@@ -128,6 +131,8 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     :param rose_suite: class within Rose python library; represents 
                        elements of the rose-suite configuration 
     :type rose_suite: metomi.rose.config.ConfigNode; class
+    :return: None
+    :rtype: None
     """
     pp=yamlfile.get("postprocess")
     dirs=yamlfile.get("directories")
@@ -166,6 +171,8 @@ def set_rose_apps(yamlfile: dict, rose_regrid: metomi.rose.config.ConfigNode, ro
                        elements of rose-app configuration used in
                        the remap-pp-components task
     :type rose_remap: metomi.rose.config.ConfigNode; class
+    :return: None
+    :rtype: None
     """
     components = yamlfile.get("postprocess").get("components")
     for i in components:
@@ -212,11 +219,10 @@ def set_rose_apps(yamlfile: dict, rose_regrid: metomi.rose.config.ConfigNode, ro
                             value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
 ####################
-def yaml_info(yamlfile: str=None, experiment: str=None, platform: str=None, target: str=None):
+def yaml_info(yamlfile: str=None, experiment: str=None, platform: str=None, target: str=None) -> None:
     """
-    Using a valid pp.yaml, the rose-app and rose-suite
-    configuration files are created in the cylc-src
-    directory. The pp.yaml is also copied to the
+    Using a valid pp.yaml, the rose-app and rose-suite configuration files are
+    created in the cylc-src directory. The pp.yaml is also copied to the
     cylc-src directory.
 
     :param yamlfile: Path to YAML file used for experiment configuration, default None
@@ -230,6 +236,14 @@ def yaml_info(yamlfile: str=None, experiment: str=None, platform: str=None, targ
     :param target: Options used for the model compiler (e.g. prod-openmp), default None
     :type target: str
     :raises ValueError: if experiment, platform, target or yamlfile is None
+    :return: None
+    :rtype: None
+
+    .. note:: In this function, outfile is defined and used with consolidate_yamls.
+              This will create a final, combined yaml file in the ~/cylc-src/[workflow_id]
+              directory. Additionally, rose-suite, regrid-xy rose-app, and remap rose-app
+              information is being dumped into their own confirugation files in the cylc-src
+              directory.
     """
     fre_logger.info('Starting')
 
