@@ -552,3 +552,5 @@ longbourn
 pemberley
 openedfile
 lonxlat
+njobs
+RDHPCS
