@@ -1,7 +1,7 @@
-FRE CATALOG TOOL
-================
+FRE Catalog
+===========
 
-The catalog tool allows users to build, validate, or merge intake-esm compatible catalogs.
+The FRE catalog toolset allows users to build, validate, or merge intake-esm compatible catalogs.
 
 Usage
 -----
@@ -20,7 +20,6 @@ Merge -  Merge two or more more catalogs into one
 Issues
 ------
 
-If you are having trouble using the catalog builder, please submit an issue in the FRE-cli repository or CatalogBuilder repository.
+If you are having trouble using the catalog builder, please submit an issue in the FRE-cli repository.
 
 FRE-cli: https://github.com/NOAA-GFDL/fre-cli/issues
-CatalogBuilder: https://github.com/NOAA-GFDL/CatalogBuilder/issues
