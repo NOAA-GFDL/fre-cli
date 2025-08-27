@@ -1,6 +1,8 @@
+{% set fallback_version = load_file_regex(load_file="fre/__init__.py", regex_pattern='version = os\.getenv\([^,]+,\s*[\"\'](.*?)[\"\']') %}
+
 package:
   name: fre-cli
-  version: '{{ environ.get("GIT_DESCRIBE_TAG", "2025.04") }}'
+  version: '{{ environ.get("GIT_DESCRIBE_TAG", fallback_version[1]) }}'
 
 # conda-build will always defer to what's specified here
 source:
