@@ -1,8 +1,12 @@
-{% set fallback_version = load_file_regex(load_file="fre/__init__.py", regex_pattern='version = os\.getenv\([^,]+,\s*[\"\'](.*?)[\"\']') %}
+# Previous complex regex-based approach (works but opaque):
+# {% set fallback_version = load_file_regex(load_file="fre/__init__.py", regex_pattern='version = os\.getenv\([^,]+,\s*[\"\'](.*?)[\"\']') %}
+
+# Clear and readable approach: extract version from the fallback default value
+{% set version_info = load_file_regex(load_file="fre/__init__.py", regex_pattern='os\.getenv\("GIT_DESCRIBE_TAG", "([^"]+)"\)') %}
 
 package:
   name: fre-cli
-  version: '{{ environ.get("GIT_DESCRIBE_TAG", fallback_version[1]) }}'
+  version: '{{ environ.get("GIT_DESCRIBE_TAG", version_info[1]) }}'
 
 # conda-build will always defer to what's specified here
 source:
