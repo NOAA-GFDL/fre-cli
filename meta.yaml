@@ -1,8 +1,6 @@
-{% set data = load_setup_py_data() %}
-
 package:
   name: fre-cli
-  version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
+  version: '{{ environ.get("GIT_DESCRIBE_TAG", "2025.04") }}'
 
 # conda-build will always defer to what's specified here
 source:
