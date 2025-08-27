@@ -27,10 +27,7 @@ Useful Resources
  - https://docs.python.org/3/library/typing.html
  - https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
  - https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#field-lists
- - https://www.woolseyworkshop.com/2020/07/17/documenting-python-programs-with-sphinx/#CreatingASamplePythonProgram
- - https://github.com/NilsJPWerner/autoDocstring/blob/HEAD/docs/sphinx.md
  - https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
- - https://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html#restructured-text-rest-and-sphinx-cheatsheet
 
 An Example:
 
