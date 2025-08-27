@@ -56,7 +56,7 @@ def validate_yaml(yamlfile: dict) -> None:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 ####################
-def rose_init(experiment: str, platform: str, target: str) -> Tuple[metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode, [metomi.rose.configi.ConfigNode]:
+def rose_init(experiment: str, platform: str, target: str) -> Tuple[metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode]:
     """
     Initializes the rose suite and app configurations.
 
