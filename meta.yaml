@@ -1,12 +1,18 @@
 # Previous complex regex-based approach (works but opaque):
 # {% set fallback_version = load_file_regex(load_file="fre/__init__.py", regex_pattern='version = os\.getenv\([^,]+,\s*[\"\'](.*?)[\"\']') %}
 
-# Clear and readable approach: extract version from the fallback default value
-{% set version_info = load_file_regex(load_file="fre/__init__.py", regex_pattern='os\.getenv\("GIT_DESCRIBE_TAG", "([^"]+)"\)') %}
+# Comment out the current regex-based solution as requested
+# {% set version_info = load_file_regex(load_file="fre/__init__.py", regex_pattern='os\.getenv\("GIT_DESCRIBE_TAG", "([^"]+)"\)') %}
+
+# Modern pyproject.toml approach: Use load_pyproject_toml (pyproject-flavored equivalent of load_setup_py_data)
+# This is the modern conda-build function for pyproject.toml files, avoiding regex
+{% set pyproject_data = load_pyproject_toml() %}
+# Since version is dynamic in pyproject.toml, we use the hardcoded fallback from fre/__init__.py
+{% set fallback_version = "2025.04" %}
 
 package:
   name: fre-cli
-  version: '{{ environ.get("GIT_DESCRIBE_TAG", version_info[1]) }}'
+  version: '{{ environ.get("GIT_DESCRIBE_TAG", fallback_version) }}'
 
 # conda-build will always defer to what's specified here
 source:
