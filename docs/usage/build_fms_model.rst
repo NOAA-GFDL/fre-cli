@@ -30,7 +30,7 @@ Guide
   # Create checkout script
   fre make checkout-script -y [model yaml file] -p [platform] -t [target]
 
-  # Create and run checkout script
+  # Or create and RUN checkout script
   fre make checkout-script -y [model yaml file] -p [platform] -t [target] --execute
 
   # Create Makefile
@@ -39,10 +39,10 @@ Guide
   # Create the compile script
   fre make compile-script -y [model yaml file] -p [platform] -t [target]
 
-  # Create and run the compile script
+  # Or create and RUN the compile script
   fre make compile-script -y [model yaml file] -p [platform] -t [target] --execute
 
-  # Run all of fremake
+  # Run all of fremake: creates checkout script, makefile, compile script, and model executable
   fre make all -y [model yaml file] -p [platform] -t [target] [other options...] --execute
 
 2. Container Build:
@@ -62,10 +62,11 @@ Gaea users will not be able to create containers unless they have requested and 
   # Create a Dockerfile
   fre make dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
 
-  # Create and run the Dockerfile
+  # Or create and RUN the Dockerfile
   fre make dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 
-  # Run all of fremake
+  # Run all of fremake: create and checkout script, makefile, dockerfile, container
+  # creation script, and model container
   fre make all  -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 
 Quickstart
