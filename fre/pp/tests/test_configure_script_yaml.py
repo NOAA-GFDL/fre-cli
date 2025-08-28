@@ -94,3 +94,10 @@ def test_validate_fail():
 def test_cleanup():
     shutil.rmtree(f"{TEST_DIR}/configure_yaml_out")
     assert not Path(f"{TEST_DIR}/configure_yaml_out").exists()
+
+## to-do:
+# - mock wrong schema path
+# - any other raises missed
+#def test_mock_validation_wrong_schema_path():
+#    """
+#    """

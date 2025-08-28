@@ -64,7 +64,7 @@ def rose_init(experiment: str, platform: str, target: str) -> Tuple[metomi.rose.
     :type experiment: str
     :param platform: Name of platform to use, default None
     :type platform: str
-    :param target: Name of target (prod, debug, open-mp, repro)
+    :param target: Name of target ([prod/debug/repro]-openmp)
     :type target: str
     :return:
         - rose_suite: class within Rose python library; represents
