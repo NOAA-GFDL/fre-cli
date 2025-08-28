@@ -32,8 +32,11 @@ jobs:
           # just in case
           conda config --show channels
 
+          # update conda
+          conda update conda
+
           # install conda-build and conda-verify
-          conda install conda-build conda-verify
+          conda install conda-build conda-verify python>3.12
 
           # conda build
           mkdir -p /app/fre-cli-tarball
