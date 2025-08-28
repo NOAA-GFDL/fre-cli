@@ -1,4 +1,12 @@
-{% set pyproject_data = load_file_data("pyproject.toml") %}
+# Previous complex regex-based approach (works but opaque):
+# {% set fallback_version = load_file_regex(load_file="fre/__init__.py", regex_pattern='version = os\.getenv\([^,]+,\s*[\"\'](.*?)[\"\']') %}
+
+# Comment out the current regex-based solution as requested
+# {% set version_info = load_file_regex(load_file="fre/__init__.py", regex_pattern='os\.getenv\("GIT_DESCRIBE_TAG", "([^"]+)"\)') %}
+
+# Modern pyproject.toml approach: Use load_pyproject_toml (pyproject-flavored equivalent of load_setup_py_data)
+# load_pyproject_toml should resolve dynamic versions automatically
+{% set pyproject_data = load_pyproject_toml() %}
 
 package:
   name: fre-cli
