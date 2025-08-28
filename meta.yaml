@@ -1,4 +1,6 @@
-{% set version_info = load_file_regex(load_file="fre/__init__.py", regex_pattern='os\.getenv\("GIT_DESCRIBE_TAG", "([^"]+)"\)') %}
+{% set version_info = load_file_regex(
+  load_file="fre/__init__.py", 
+  regex_pattern='os\.getenv\("GIT_DESCRIBE_TAG", "([^"]+)"\)') %}
 
 package:
   name: fre-cli
