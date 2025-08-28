@@ -20,7 +20,7 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Setup conda channels
+      - name: Run Conda to Build
         run: |
           # append the reqd channels
           conda config --append channels conda-forge
@@ -32,19 +32,12 @@ jobs:
           # just in case
           conda config --show channels
 
-      - name: conda update
-        run: |
           # update conda
-          conda update conda
           conda update --all
 
-      - name: conda install build reqs
-        run: |
           # install conda-build and conda-verify
-          conda install conda-forge::conda-build conda-forge::conda-verify conda-forge::python>3.12
-          
-      - name: conda build
-        run: |
+          conda install conda-forge::conda-build conda-forge::conda-verify conda-forge::python==3.13.5
+
           # conda build
           mkdir -p /app/fre-cli-tarball
           conda build --package-format tar.bz2 --output-folder /app/fre-cli-tarball .
