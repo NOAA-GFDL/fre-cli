@@ -24,7 +24,7 @@ channels:
 
 requirements:
   host:
-    - python=3.11.*
+    - python
     - pip
   run:
     - python=3.11.*
