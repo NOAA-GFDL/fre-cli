@@ -9,7 +9,6 @@ import logging
 
 from pathlib import Path
 from jsonschema import validate, SchemaError, ValidationError
-from typing import Tuple
 import metomi.rose.config
 
 import fre.yamltools.combine_yamls_script as cy
@@ -56,7 +55,7 @@ def validate_yaml(yamlfile: dict) -> None:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 ####################
-def rose_init(experiment: str, platform: str, target: str) -> Tuple[metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode]:
+def rose_init(experiment: str, platform: str, target: str) -> tuple[metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode]:
     """
     Initializes the rose suite and app configurations.
 
@@ -219,7 +218,7 @@ def set_rose_apps(yamlfile: dict, rose_regrid: metomi.rose.config.ConfigNode, ro
                             value=f'{interp_split[0]}_{interp_split[1]}.{interp_method}')
 
 ####################
-def yaml_info(yamlfile: str=None, experiment: str=None, platform: str=None, target: str=None) -> None:
+def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None, target: str = None) -> None:
     """
     Using a valid pp.yaml, the rose-app and rose-suite configuration files are
     created in the cylc-src directory. The pp.yaml is also copied to the
