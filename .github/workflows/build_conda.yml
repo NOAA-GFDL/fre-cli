@@ -40,8 +40,6 @@ jobs:
 
       - name: conda install build reqs
         run: |
-          # uninstall obnoxious package i did not ask for
-          conda uninstall anaconda-anon-usage
           # install conda-build and conda-verify
           conda install conda-forge::conda-build conda-forge::conda-verify conda-forge::python>3.12
           
