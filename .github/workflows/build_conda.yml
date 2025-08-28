@@ -33,10 +33,10 @@ jobs:
           conda config --show channels
 
           # update conda
-          conda update conda
+          conda update --all
 
           # install conda-build and conda-verify
-          conda install conda-build conda-verify python>3.12
+          conda install conda-forge::conda-build conda-forge::conda-verify conda-forge::python==3.13.5
 
           # conda build
           mkdir -p /app/fre-cli-tarball
