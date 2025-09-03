@@ -37,7 +37,7 @@ def test_cli_fre_make_opt_dne():
     assert result.exit_code == 2
 
 def test_cli_fre_make_create_checkout_baremetal():
-    ''' fre make checkout -y am5.yaml -p ncrc5.intel23 -t debug'''
+    ''' fre make checkout-script -y am5.yaml -p ncrc5.intel23 -t debug'''
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_baremetal"
 
     # Set paths and click options
@@ -70,7 +70,7 @@ def test_cli_fre_make_create_checkout_baremetal():
                  os.access(Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh"), os.X_OK)])
 
 def test_cli_fre_make_create_checkout_baremetal_npc():
-    ''' fre make checkout -y null_model.yaml -p ncrc5.intel23 -t debug -npc'''
+    ''' fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t debug -npc'''
 
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_baremetal_npc"
 
@@ -104,7 +104,7 @@ def test_cli_fre_make_create_checkout_baremetal_npc():
                  os.access(Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh"), os.X_OK)])
 
 def test_cli_fre_make_create_checkout_container():
-    ''' fre make checkout -y null_model.yaml -p hpcme.2023 -t debug'''
+    ''' fre make checkout-script -y null_model.yaml -p hpcme.2023 -t debug'''
 
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_container"
 
