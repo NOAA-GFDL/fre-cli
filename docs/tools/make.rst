@@ -9,7 +9,7 @@
         - ``-t, --target [target] (required)``
         - ``-j, --njobs [number of jobs to run simultaneously]``
         - ``-npc, --no-parallel-checkout (for container build)``
-        - ``-e, --execute`
+        - ``-e, --execute``
 
 ``makefile`` 
 -------------
