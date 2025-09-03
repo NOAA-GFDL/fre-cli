@@ -219,6 +219,7 @@ INTERP
 intrafile
 ISMIP
 isodatetime
+ivar
 jaon
 jhan
 jhanbigmem
