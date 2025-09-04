@@ -546,5 +546,11 @@ zfactor
 zonavg
 zsurf
 zxvf
+donwell
+hartfield
+longbourn
+pemberley
+openedfile
+lonxlat
 njobs
 RDHPCS
