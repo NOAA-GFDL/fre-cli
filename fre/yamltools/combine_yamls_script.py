@@ -101,7 +101,8 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, us
     :return: yaml dictionary containing combined information from multiple yaml configurations
     :rtype: dict
 
-    ..note:: The output file name should include a .yaml extension to indicate it is a YAML configuration file
+    ..note:: The output file name should include a .yaml extension to indicate
+             it is a YAML configuration file
     """
     if use == "compile":
         fre_logger.info('initializing a compile yaml instance...')
@@ -131,7 +132,7 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, us
         analysis_yml_dict = analysiscombined.combine()
 
         ## Note: The combined pp and analysis yamls both contain (defined in model and settings.yml)
-        ##       name, platform, target (click options), build, directories, and postprocess section.
+        ##       name, platform, target(click options), build, directories, and postprocess section.
         ##       However, the combined pp yamls include the postprocess['components']. Thus, we need
         ##       to update the combined analysis yaml dictionary (specifically the pp section) with
         ##       the like postprocess section in combined pp yaml dictionary.
