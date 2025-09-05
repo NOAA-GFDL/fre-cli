@@ -1,10 +1,35 @@
-'''
- script that combines the model yaml with the compile, platform, and experiment yamls.
-'''
+"""
+YAML Combination Utilities for FRE
+----------------------------------
+
+This module provides utility functions for combining model, experiment, compile, platform, and analysis
+YAML files into unified configurations for the Flexible Runtime Environment (FRE) workflow. It offers routines
+to consolidate YAMLs for CMORization, compilation, and post-processing, supporting both command-line tools
+and internal workflow automation.
+
+There are only four functions currently, with `consolidate_yamls` acting as the center of this file's control-flow. 
+The other functions are called within `consolidate_yamls`, based on the `use` argument passed to it. `use` may be 
+one of `cmor`, `pp`, and `compile` at this time, and determines which pieces of information are needed, where they 
+come from, and where they are placed in the output dictionary. 
+
+For every possible `use` argument currently accepted by `consolidate_yamls`, there exists a corresponding 
+`info_parser` class that houses the specific requirements of the combination and the implementation as well.
+For more information, consult the docstrings in those functions and modules, as well as those in this file.
+
+Functions
+---------
+- get_combined_cmoryaml(...)
+- get_combined_compileyaml(...)
+- get_combined_ppyaml(...)
+- consolidate_yamls(...)
+"""
+
 import os
 import logging
+from pathlib import Path
+from pprint import pformat
+from typing import Optional, Union, Any, Dict
 
-# this boots yaml with !join- see __init__
 from . import *
 from .helpers import output_yaml
 
@@ -14,134 +39,152 @@ from . import pp_info_parser as ppip
 
 fre_logger = logging.getLogger(__name__)
 
-## Functions to combine the yaml files ##
-def get_combined_cmoryaml(CMORYaml, experiment, output = None):
-    """
-    Combine the model, experiment, and cmor yamls
-    Arguments:
-        CMORYaml (required): combined cmor-yaml object
-        output   (optional): string/Path representing target output file to write yamlfile to
-    """
 
-    # Merge model into combined file
+
+def get_combined_cmoryaml( yamlfile: Union[str, Path],
+                           experiment: str,
+                           platform: str,
+                           target: str,
+                           output: Optional[Union[str, Path]] = None ) -> Dict[str, Any]:
+    """
+    Combine configuration information from the model, cmor, and other FRE-yaml config files into
+    a single dictionary. the dictionary is intended to be read by `fre cmor yaml`.
+    The final result relies on several calls to fre.cmor.cmor_info_parser.CMORYaml class routines.
+
+    :param yamlfile: Path to the model YAML file.
+    :type yamlfile: str or Path
+    :param experiment: Name of the experiment to target.
+    :type experiment: str
+    :param platform: Platform identifier (e.g., compute environment).
+    :type platform: str
+    :param target: Target build or run configuration.
+    :type target: str
+    :param output: If given, path to write the combined YAML file.
+    :type output: str or Path, optional
+    :raises Exception: For errors in initialization or merging steps.
+    :return: Cleaned, combined CMOR YAML configuration.
+    :rtype: dict
+
+    .. note:: The merging process details are within the CMORYaml class code
+    """
     try:
-        fre_logger.info('\n\ncalling CMORYaml.combine_model() for yaml_content and loaded_yaml...')
-        yaml_content, loaded_yaml = CMORYaml.combine_model()
-        #fre_logger.info(f'loaded_yaml = \n {loaded_yaml}')
-        #fre_logger.info(f'yaml_content = \n {yaml_content}')
-        fre_logger.info('\n... CMORYaml.combine_model succeeded.\n')
+        fre_logger.info('calling cmor_info_parser.CMORYaml to initialize a CMORYaml instance...')
+        CmorYaml = cmip.CMORYaml(yamlfile, experiment, platform, target)
+        fre_logger.debug('...CmorYaml =\n %s...', pformat(CmorYaml))
+        fre_logger.info('...CmorYaml instance initialized...')
     except Exception as exc:
-        raise ValueError("CMORYaml.combine_model failed") from exc
+        raise Exception(f'cmor_info_parser.CMORYaml() initialization failed for some reason.\n exc =\n {exc}') from exc
 
-    # Merge cmor experiment yamls into combined file, calls experiment_check
     try:
-        fre_logger.info('\n\ncalling CMORYaml.combine_experiment(), for comb_cmor_updated_list \n'
+        fre_logger.info('calling CmorYaml.combine_model() for yaml_content and loaded_yaml...')
+        yaml_content, loaded_yaml = CmorYaml.combine_model()
+        fre_logger.info('... CmorYaml.combine_model succeeded.\n')
+    except Exception as exc:
+        raise Exception(f"CmorYaml.combine_model failed for some reason.\n exc =\n {exc}") from exc
+
+    try:
+        fre_logger.info('calling CmorYaml.combine_experiment(), for comb_cmor_updated_list '
                         'using args yaml_content and loaded_yaml...')
-        comb_cmor_updated_list = CMORYaml.combine_experiment( yaml_content,
-                                                              loaded_yaml   )
-        #fre_logger.info(f'comb_cmor_updated_list = ... \n ')#\n {comb_cmor_updated_list}')
-        #import pprint
-        #pprint.PrettyPrinter(indent=1).pprint(comb_cmor_updated_list)
-        fre_logger.info('\n... CMORYaml.combine_experiment succeeded.\n')
+        comb_cmor_updated_list = CmorYaml.combine_experiment(yaml_content, loaded_yaml)
+        fre_logger.info('... CmorYaml.combine_experiment succeeded.\n')
     except Exception as exc:
-        raise ValueError("CMORYaml.combine_experiment failed") from exc
+        raise Exception(f"CmorYaml.combine_experiment failed for some reason.\n exc =\n {exc}") from exc
 
-
-    # Merge model/cmor yamls if more than 1 is defined
-    # (without overwriting the yaml)
     try:
-        fre_logger.info('\ncalling CMORYaml.merge_cmor_yaml(), for full_cmor_yaml.\n'
+        fre_logger.info('\ncalling CmorYaml.merge_cmor_yaml(), for full_cmor_yaml.\n'
                         'using args comb_cmor_updated_list and loaded_yaml...')
-        full_cmor_yaml = CMORYaml.merge_cmor_yaml( comb_cmor_updated_list,
-                                                   loaded_yaml                 )
-        #fre_logger.info(f'full_cmor_yaml = \n ')
-        #import pprint
-        #pprint.PrettyPrinter(indent=1).pprint(full_cmor_yaml)
-        fre_logger.info('\n... CMORYaml.merge_cmor_yaml succeeded\n')
+        full_cmor_yaml = CmorYaml.merge_cmor_yaml(comb_cmor_updated_list, loaded_yaml)
+        fre_logger.info('... CmorYaml.merge_cmor_yaml succeeded\n')
     except Exception as exc:
-        raise ValueError("CMORYaml.merge_cmor_yaml failed") from exc
+        raise Exception(f"CmorYaml.merge_cmor_yaml failed for some reason.\n exc =\n {exc}") from exc
 
-    # Clean the yaml
-    cleaned_yaml = CMORYaml.clean_yaml( full_cmor_yaml )
+    cleaned_yaml = CmorYaml.clean_yaml(full_cmor_yaml)
     fre_logger.info("Combined cmor-yaml information cleaned+saved as dictionary")
+    fre_logger.debug("cleaned_yaml = \n %s", pformat(cleaned_yaml))
 
-    # OUTPUT IF NEEDED
     if output is not None:
-        output_yaml( cleaned_yaml, output )
+        output_yaml(cleaned_yaml, output)
         fre_logger.info(f"Combined cmor-yaml information saved to {output}")
 
     return cleaned_yaml
 
-def get_combined_compileyaml(comb, output=None):
+
+def get_combined_compileyaml( comb: Any,
+                              output: Optional[Union[str, Path]] = None ) -> Dict[str, Any]:
     """
-    Combine the model, compile, and platform yamls
-    Arguments:
-    comb : combined yaml object
+    Combine the model, compile, and platform YAMLs into a single configuration.
+
+    :param comb: Instance of a class implementing combine_model, combine_compile, and combine_platforms methods.
+    :type comb: object
+    :param output: If given, path to write the combined YAML file.
+    :type output: str or Path, optional
+    :raises ValueError: For errors in merging steps.
+    :return: Cleaned, combined compile YAML configuration.
+    :rtype: dict
     """
     try:
-        (yaml_content, loaded_yaml)=comb.combine_model()
+        (yaml_content, loaded_yaml) = comb.combine_model()
     except Exception as exc:
         raise ValueError("ERR: Could not merge model information.") from exc
 
-    # Merge compile into combined file to create updated yaml_content/yaml
     try:
         (yaml_content, loaded_yaml) = comb.combine_compile(yaml_content, loaded_yaml)
     except Exception as exc:
         raise ValueError("ERR: Could not merge compile yaml information.") from exc
 
-    # Merge platforms.yaml into combined file
     try:
-        (yaml_content,loaded_yaml) = comb.combine_platforms(yaml_content, loaded_yaml)
+        (yaml_content, loaded_yaml) = comb.combine_platforms(yaml_content, loaded_yaml)
     except Exception as exc:
         raise ValueError("ERR: Could not merge platform yaml information.") from exc
 
-    # Clean the yaml
     cleaned_yaml = comb.clean_yaml(yaml_content)
 
-    # OUTPUT IF NEEDED
     if output is not None:
-        output_yaml(cleaned_yaml, output = output)
+        output_yaml(cleaned_yaml, output=output)
     else:
         fre_logger.info("Combined yaml information saved as dictionary")
 
     return cleaned_yaml
 
-def get_combined_ppyaml(comb, output=None):
+
+def get_combined_ppyaml( comb: Any,
+                         output: Optional[Union[str, Path]] = None ) -> Dict[str, Any]:
     """
-    Combine the model, experiment, and analysis yamls
-    Arguments:
-    comb : combined yaml object
+    Combine the model, experiment, and analysis YAMLs into a single configuration.
+
+    :param comb: Instance of a class implementing combine_model, combine_experiment, combine_analysis, and merge_multiple_yamls.
+    :type comb: object
+    :param output: If given, path to write the combined YAML file.
+    :type output: str or Path, optional
+    :raises ValueError: For errors in merging steps.
+    :return: Cleaned, combined post-processing YAML configuration.
+    :rtype: dict
     """
     try:
-        # Merge model into combined file
         yaml_content_str = comb.combine_model()
     except Exception as exc:
         raise ValueError("ERR: Could not merge model information.") from exc
 
     try:
-        # Merge pp experiment yamls into combined file
         comb_pp_updated_list = comb.combine_experiment(yaml_content_str)
     except Exception as exc:
         raise ValueError("ERR: Could not merge pp experiment yaml information") from exc
     try:
-        # Merge analysis yamls, if defined, into combined file
         comb_analysis_updated_list = comb.combine_analysis(yaml_content_str)
     except Exception as exc:
         raise ValueError("ERR: Could not merge analysis yaml information") from exc
 
     try:
-        # Merge model/pp and model/analysis yamls if more than 1 is defined
-        # (without overwriting the yaml)
-        full_combined = comb.merge_multiple_yamls(comb_pp_updated_list,
-                                                  comb_analysis_updated_list,
-                                                  yaml_content_str)
+        full_combined = comb.merge_multiple_yamls(
+            comb_pp_updated_list, comb_analysis_updated_list, yaml_content_str
+        )
     except Exception as exc:
-        raise ValueError("ERR: Could not merge multiple pp and analysis information together.") from exc
+        raise ValueError(
+            "ERR: Could not merge multiple pp and analysis information together."
+        ) from exc
 
-    # Clean the yaml
     cleaned_yaml = comb.clean_yaml(full_combined)
 
-    # OUTPUT IF NEEDED
     if output is not None:
         output_yaml(cleaned_yaml, output)
     else:
@@ -149,22 +192,43 @@ def get_combined_ppyaml(comb, output=None):
 
     return cleaned_yaml
 
-def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
+
+def consolidate_yamls( yamlfile: Union[str, Path],
+                       experiment: str,
+                       platform: str,
+                       target: str,
+                       use: str,
+                       output: Optional[Union[str, Path]] ) -> Dict[str, Any]:
     """
-    Depending on `use` argument passed, either create the final
-    combined yaml for compilation or post-processing
+    Dispatch routine to produce a final combined YAML for compilation, post-processing, or CMORization.
+
+    :param yamlfile: Path to the model YAML file.
+    :type yamlfile: str or Path
+    :param experiment: Name of the experiment to target (required for 'pp' and 'cmor').
+    :type experiment: str
+    :param platform: Platform identifier.
+    :type platform: str
+    :param target: Target build or run configuration.
+    :type target: str
+    :param use: 'compile', 'pp', or 'cmor': determines the type of combination performed.
+    :type use: str
+    :param output: If given, path to write the combined YAML file.
+    :type output: str or Path, optional
+    :raises ValueError: If 'use' is not one of the supported values.
+    :return: The combined YAML configuration as a dictionary.
+    :rtype: dict
     """
     if use == "compile":
         fre_logger.info('initializing a compile yaml instance...')
         combined = cip.InitCompileYaml(yamlfile, platform, target)
 
-        if output is None :
+        if output is None:
             yml_dict = get_combined_compileyaml(combined)
         else:
-            yml_dict = get_combined_compileyaml(combined,output)
+            yml_dict = get_combined_compileyaml(combined, output)
             fre_logger.info("Combined yaml file located here: %s", f"{os.getcwd()}/{output}")
 
-    elif use =="pp":
+    elif use == "pp":
         fre_logger.info('initializing a post-processing and analysis yaml instance...')
         combined = ppip.InitPPYaml(yamlfile, experiment, platform, target)
 
@@ -175,17 +239,10 @@ def consolidate_yamls(yamlfile, experiment, platform, target, use, output):
             fre_logger.info("Combined yaml file located here: %s", output)
 
     elif use == "cmor":
-        fre_logger.info('initializing a CMORYaml instance...')
-        CmorYaml = cmip.CMORYaml( yamlfile, experiment, platform, target )
-        fre_logger.info('...CMORYaml instance initialized')
-        #print(CmorYaml)
-        #assert False
-
         fre_logger.info('attempting to combine cmor yaml info with info from other yamls...')
-        yml_dict = get_combined_cmoryaml( CmorYaml, experiment, output )
+        yml_dict = get_combined_cmoryaml(yamlfile, experiment, platform, target, output)
         fre_logger.info('... done attempting to combine cmor yaml info')
-
     else:
-        raise ValueError("'use' value is not valid; must be 'compile' or 'pp'")
+        raise ValueError("'use' value is not valid; must be one of: 'compile', 'pp', or 'cmor'")
 
     return yml_dict
