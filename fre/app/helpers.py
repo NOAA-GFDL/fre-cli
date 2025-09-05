@@ -61,6 +61,17 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
 
     return src_vars
 
+def get_variables_hist_src(yml: dict pp_hist_src: str) -> list:
+    '''
+    Gets the variables associated with a history_source from the yamlfile.
+    This only works because the history_source elements underneath the pp components
+    are supposed to be unique, and it is needed because some tasks in flow.cylc
+    (like split-netcdf) cycle on the flat list of all history_source elements, 
+    not <component> then <history_source>. 
+    '''
+    src_vars = []
+    return src_vars
+
 ## NOTE: For python 3.11 - this might be available already as contextlib.chdir()
 ## Re-asses if our own contextmanager function is needed here
 @contextmanager
