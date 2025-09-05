@@ -1,3 +1,7 @@
+#to-do: work on being able to overwrite these if necessary?
+fre_properties:
+  - &PP_AMIP_CHUNK96    "P1Y"
+
 directories: &shared_directories
   history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
   pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
