@@ -123,24 +123,28 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, us
         # Create analysis yaml instance
         analysiscombined = aip.InitAnalysisYaml(yamlfile, experiment, platform, target)
 
-        yml_dict = ppcombined.combine()
-        yml_dict2 = analysiscombined.combine()
+        ## NOTE: PP and analysis yamls are separately combined so they both have access to
+        ##       variables set in the model and settings yaml.
+        # Combine model, settings, and pp yamls
+        pp_yml_dict = ppcombined.combine()
+        # Combine model, settings, and analysis yamls
+        analysis_yml_dict = analysiscombined.combine()
 
-        for key in yml_dict2.items():
-            if key != "postprocess":
-                continue
-            if key not in yml_dict:
-                continue
-
-            if isinstance(yml_dict2[key],dict) and isinstance(yml_dict[key],dict):
-                if 'components' in yml_dict2['postprocess']:
-                    yml_dict2['postprocess']["components"] += yml_dict['postprocess']["components"]
-                else:
-                    yml_dict2['postprocess']["components"] = yml_dict['postprocess']["components"]
+        ## Note: The combined pp and analysis yamls both contain (defined in model and settings.yml)
+        ##       name, platform, target (click options), build, directories, and postprocess section.
+        ##       However, the combined pp yamls include the postprocess['components']. Thus, we need
+        ##       to update the combined analysis yaml dictionary (specifically the pp section) with
+        ##       the like postprocess section in combined pp yaml dictionary.
+        if analysis_yml_dict:
+            yml_dict = analysis_yml_dict.copy()
+            yml_dict.update(pp_yml_dict)
+        else:
+            yml_dict = pp_yml_dict.copy()
+            fre_logger.info("No analysis yamls were combined")
 
         # OUTPUT IF NEEDED
         if output is not None:
-            output_yaml(yml_dict2, output)
+            output_yaml(yml_dict, output)
         else:
             fre_logger.info("Combined yaml information saved as dictionary")
 
