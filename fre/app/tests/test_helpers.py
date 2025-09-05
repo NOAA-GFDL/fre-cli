@@ -1,14 +1,20 @@
 from pathlib import Path
 import yaml
 import pytest
+import os
+from os import path
 from fre.app import helpers
 
+print(dir(helpers))
+
 ## Path to example test data
-DATA_DIR = Path("fre/app/remap_pp_components/tests/test-data")
+thisfile = Path(os.path.abspath(__file__))
+APP_DIR  = thisfile.parent.parent
+DATA_DIR = Path(f"{APP_DIR}/remap_pp_components/tests/test-data")
 ## YAML configuration example file
 YAML_EX = f"{DATA_DIR}/yaml_ex.yaml"
 
-DIR_CHANGE = Path("fre/app/remap_pp_components")
+DIR_CHANGE = Path(f"{APP_DIR}/remap_pp_components")
 
 def test_get_variables():
     """
@@ -47,6 +53,28 @@ def test_get_variables_err():
     with pytest.raises( TypeError ) as execinfo:
         out = helpers.get_variables(yml = YAML_EX, pp_comp = "test_param")
     assert execinfo.type is TypeError
+    
+    
+@pytest.mark.parametrize("hist_src,var_list", 
+                          [ 
+                          pytest.param("atmos_month", "all", id="tseries-all"),
+                          pytest.param("atmos_static_scalar", "all", id="static-all"),
+                          pytest.param("atmos_scalar_test_vars",["co2mass"], id="tseries-varlist"),
+                          pytest.param("atmos_static_scalar_test_vars", ["bk"] , id="static-varlist"),
+                          pytest.param("atmos_daily", "all", id="fail-nohist_src", marks=pytest.mark.xfail())
+                          ])    
+def test_get_variables_hist_src(hist_src, var_list):
+    '''
+    Test get_variables_hist_src()
+    - timeseries all, static all
+    - timeseries varlist, static varlist
+    - hist_src not found in file (xfail)
+    '''
+    # Load the yaml config
+    with open(YAML_EX,'r') as f:
+        yml=yaml.safe_load(f)
+    new_var_list = helpers.get_variables_hist_src(yml, hist_src)
+    assert new_var_list == var_list
 
 def test_change_directory():
     """

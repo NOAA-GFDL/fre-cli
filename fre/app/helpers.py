@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import yaml
 from contextlib import contextmanager
+import sys
 
 # set up logging
 import logging
@@ -61,7 +62,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
 
     return src_vars
 
-def get_variables_hist_src(yml: dict pp_hist_src: str) -> list:
+def get_variables_hist_src(yml: dict, hist_src: str) -> list:
     '''
     Gets the variables associated with a history_source from the yamlfile.
     This only works because the history_source elements underneath the pp components
@@ -69,7 +70,42 @@ def get_variables_hist_src(yml: dict pp_hist_src: str) -> list:
     (like split-netcdf) cycle on the flat list of all history_source elements, 
     not <component> then <history_source>. 
     '''
+    fre_logger.debug(f"Yaml file information: {yml}")
+    fre_logger.debug(f"history source: {hist_src}")
+    if not isinstance(yml, dict):
+        raise TypeError("yml should be of type dict, but was of type " + str(type(yml)))
+    is_found = False
     src_vars = []
+    for component_info in yml["postprocess"]["components"]:
+        print(component_info['type'])
+        #it is assumed that hist_src is pre-filtered for active/inactive pp components
+        src_info = component_info.get("sources")
+        #timeseries case
+        for src in src_info:
+            print(src)
+            if src['history_file'] == hist_src:
+                is_found = True
+                if src.get("variables"):
+                    src_vars = src.get("variables")
+                else:
+                    src_vars = "all"
+                break
+        #static case
+        if component_info.get("static"):
+            static_el = component_info.get("static")
+            print(static_el[0])
+            print(static_el[0].get("source"))
+            if static_el[0].get("source") == hist_src:
+                is_found = True
+                if static_el[0].get("variables"):
+                    src_vars = static_el[0].get("variables")
+                else:
+                    src_vars = "all"
+                break
+    #using is_found rather than a check for length on the off chance that the 
+    #variable list is of length 0 without being caught earlier in the config
+    if not is_found:
+        raise ValueError(f"history_file, {hist_src}, not found in pp yaml configuration!")
     return src_vars
 
 ## NOTE: For python 3.11 - this might be available already as contextlib.chdir()
@@ -97,3 +133,11 @@ def change_directory(new_path: str):
         yield
     finally:
         os.chdir(original_path)
+
+if __name__ == '__main__':
+    print("getting hist_src variables from yaml")
+    yamlfile = "/home/cew/Code/fre-cli/fre/app/remap_pp_components/tests/test-data/yaml_ex.yaml"
+    with open(yamlfile, 'r') as yfile:
+        yml = yaml.safe_load(yfile)
+    src_list = get_variables_hist_src(yml, sys.argv[1])
+    print(src_list)
