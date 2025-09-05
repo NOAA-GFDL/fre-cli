@@ -1,6 +1,5 @@
 #to-do: work on being able to overwrite these if necessary?
 fre_properties:
-  - *ANCHORS
   - &PP_AMIP_CHUNK96    "P1Y"
 
 directories: &shared_directories

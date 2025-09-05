@@ -164,21 +164,24 @@ class InitCompileYaml(MergeCompileYamls):
         try:
             yaml_content=self.combine_model()
         except Exception as exc:
-            raise ValueError("ERR: Could not merge model information.") from exc
+            raise ValueError("ERR: Could not merge model yaml config with name, platform, and target.") from exc
 
         # Merge compile into combined file to create updated yaml_content/yaml
         try:
             yaml_content = self.combine_compile(yaml_content)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge compile yaml information.") from exc
+            raise ValueError("ERR: Could not merge compile yaml config with model config.") from exc
 
         # Merge platforms.yaml into combined file
         try:
             full_combined = self.combine_platforms(yaml_content)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge platform yaml information.") from exc
+            raise ValueError("ERR: Could not merge platform yaml config with model and compile configs.") from exc
 
         # Clean the yaml
-        cleaned_yaml = clean_yaml(full_combined)
+        try:
+            cleaned_yaml = clean_yaml(full_combined)
+        except Excpetion as exc:
+            raise ValueError("The final YAML could not cleaned.") from exc
 
         return cleaned_yaml

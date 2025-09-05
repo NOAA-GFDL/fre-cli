@@ -201,7 +201,6 @@ class InitPPYaml(MergePPANYamls):
                 exp = str(i).rsplit('/', maxsplit=1)[-1]
                 fre_logger.info("   experiment yaml: %s", exp)
             fre_logger.setLevel(former_log_level)
-
         return result
 
     def combine(self):
@@ -234,18 +233,18 @@ class InitPPYaml(MergePPANYamls):
             # Merge model into combined file
             yaml_content_str = self.combine_model()
         except Exception as exc:
-            raise ValueError("ERR: Could not merge model information.") from exc
+            raise ValueError("ERR: Could not merge model yaml config with name, platform, and target.") from exc
         try:
             # Merge model into combined file
             yaml_content_str = self.combine_settings(yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge setting information.") from exc
+            raise ValueError("ERR: Could not merge setting config with model config.") from exc
 
         try:
             # Merge pp yamls, if defined, into combined file
             comb_pp_updated_list = self.combine_yamls(yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge pp yaml information") from exc
+            raise ValueError("ERR: Could not merge pp yaml config with model and setting config.") from exc
 
         try:
             # Merge model/pp yamls if more than 1 is defined
@@ -253,11 +252,11 @@ class InitPPYaml(MergePPANYamls):
             full_combined = self.merge_multiple_yamls(comb_pp_updated_list,
                                                       yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge multiple pp yaml information together.") from exc
+            raise ValueError("ERR: Could not merge multiple pp yaml configs together.") from exc
 
         try:
             cleaned_yaml = clean_yaml(full_combined)
         except Exception as exc:
-            raise ValueError("The final YAML was not cleaned.") from exc
+            raise ValueError("The final YAML could not cleaned.") from exc
 
         return cleaned_yaml
