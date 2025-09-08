@@ -1,4 +1,7 @@
-''' This script will determine an estimated number of timesteps from a postprocessed time-series file's name and run nccheck on it. Ran during time-series file creation during rename-split-to-pp and make-timeseries tasks in fre postprocessing workflow. '''
+''' 
+This script will determine an estimated number of timesteps from a postprocessed time-series file's name and run nccheck on it.
+Ran during time-series file creation during rename-split-to-pp and make-timeseries tasks in fre postprocessing workflow. 
+'''
 
 import os
 import logging
@@ -24,7 +27,8 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
     :type date_end: str
     :param chunk_type: Frequency of data chunk
     :type chunk_type: str
-    :param cal: Calendar type corresponding to data (must be a cftime supported calendar: ‘standard’, ‘gregorian’, ‘proleptic_gregorian’, ‘noleap’, ‘365_day’, ‘360_day’, ‘julian’, ‘all_leap’, ‘366_day’)
+    :param cal: Calendar type corresponding to data (must be a cftime supported calendar: ‘standard’, ‘gregorian’,
+                ‘proleptic_gregorian’, ‘noleap’, ‘365_day’, ‘360_day’, ‘julian’, ‘all_leap’, ‘366_day’)
     :type cal: str
     :return: Estimated number of timesteps
     :rtype: int
@@ -76,7 +80,8 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
 def validate(filepath: str):
     """
 
-    Compares the number of timesteps in a postprocessed time-series netCDF (.nc) file to the number of expected timesteps as calculated using elapsed time and data frequency. Runs nccheck on every timeseries file in pp dir.
+    Compares the number of timesteps in a postprocessed time-series netCDF (.nc) file to the number of expected timesteps as calculated using elapsed time and data frequency.
+    Runs nccheck on every timeseries file in pp dir.
  
     :param filepath: Path to time-series file to be checked
     :type filepath: str
