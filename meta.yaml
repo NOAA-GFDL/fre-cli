@@ -67,7 +67,7 @@ test:
     - fre.run
     - fre.yamltools
   commands:
-    - pylint --fail-under 0.70 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
+    - pylint --fail-under 7.00 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
     # run pytest but ignore any tests that require compilation
     - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/ 
     - fre --help

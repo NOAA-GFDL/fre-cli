@@ -52,7 +52,7 @@ pytest -v fre/[tool]/tests/test_functionality.py::test_a_single_test
 pytest -v fre/app/[app]/tests/test_functionality.py::test_a_single_test
 
 # Code quality
-pylint --fail-under 0.70 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
+pylint --fail-under 7.00 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
 ```
 
 **Critical notes**:
