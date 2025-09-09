@@ -6,22 +6,24 @@ Follow these Style Guidelines when contributing to the `fre-cli` repository.
 
 Here are some things to keep in mind when writing documentation:
  - Keep sentences short
- - Avoid the use of pronouns (this, that, it, etc)
- - Use the imperative mood (the subject you is understood) for procedures
-    - E.g. “Go to www.google.com”; “Install Conda”
+ - Avoid the use of pronouns such as this, that, and it
+ - Use the imperative mood for procedures
+    - E.g. Instead of "You should install Conda" say “Install Conda”
  - Write in active voice rather than passive
- - Write objectively (do not include humor, jargon, idioms, etc)
+ - Write objectively (minimize humor, jargon, idioms, etc)
 
 Useful Resources:
  - https://docs.openstack.org/doc-contrib-guide/writing-style/general-writing-guidelines.html
 
 ## Inline Python Documentation Requirements
 
-Document classes and functions with field lists for all Python files. You do not need to document click interface
-functions with field lists.
+Document classes and functions with docstrings. These doctrings should contain field lists documenting arguments and
+returns.  Field lists are sequences of fields marked up: `:fieldname: Field content`.  You do not need to document
+click interface functions with field lists.
 
 Document classes, variables and functions with type hinting.  It is encouraged to document click interface functions
-with type hinting
+with type hinting.  Type hinting is when you annotate functions and variables with the expected Python type.
+Annotations are described in [PEP 3107](https://peps.python.org/pep-3107/). 
 
 Useful Resources
  - https://docs.python.org/3/library/typing.html
@@ -29,7 +31,8 @@ Useful Resources
  - https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#field-lists
  - https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
 
-An Example:
+This example shows how to properly document a class and two functions with docstrings containing field lists and type
+hinting:
 
 ```python
 from typing import Any, List, ClassVar
@@ -49,7 +52,7 @@ class MyClass(object):
         self.var1 = par1 # instance variables
         self.var2 = par2
 
-def abc(a: int, c: List[int] = [1,2]) -> Any:
+def func_with_return_and_optional_param(a: int, c: List[int] = [1,2]) -> Any:
     """
     summary
 
@@ -76,7 +79,7 @@ def abc(a: int, c: List[int] = [1,2]) -> Any:
         raise AssertionError("a is more than 10")
     return c
 
-def func1(foo: str):
+def simple_func(foo: str):
     """
     summary
 
