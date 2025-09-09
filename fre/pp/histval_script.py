@@ -83,6 +83,3 @@ def validate(history,date_string,warn):
               "\n".join(mismatches))
 
     return 0
-
-if __name__ == '__main__':
-    validate()

@@ -1,4 +1,13 @@
 """ test "fre app" calls """
+"""
+CLI Tests for fre app *
+Tests the command-line-interface calls for tools in the fre apps. 
+Each tool generally gets 3 tests:
+    - fre app $tool, checking for exit code 0 (fails if cli isn't configured right)
+    - fre app $tool --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre app $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+      right and thinks the tool has a --optionDNE option)
+"""
 
 import os
 import subprocess
@@ -16,7 +25,7 @@ runner = CliRunner()
 def test_cli_fre_app(capfd):
     """ fre app """
     result = runner.invoke(fre.fre, args=["app"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_help(capfd):
@@ -117,3 +126,23 @@ def test_cli_fre_app_regrid_test_case_1(capfd):
     result = runner.invoke(fre.fre, args=args_list )
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
+
+# fre app remap
+def test_cli_fre_app_remap(capfd):
+    """ fre app remap """
+    result = runner.invoke(fre.fre, args=["app", "remap"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_remap_help(capfd):
+    """ fre app remap --help """
+    result = runner.invoke(fre.fre, args=["app", "remap", "--help"])
+    assert result.exit_code == 0
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_remap_opt_dne(capfd):
+    """ fre app remap optionDNE """
+    result = runner.invoke(fre.fre, args=["app", "remap", "optionDNE"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+

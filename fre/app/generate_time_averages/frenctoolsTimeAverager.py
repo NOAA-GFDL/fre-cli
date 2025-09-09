@@ -18,7 +18,22 @@ class frenctoolsTimeAverager(timeAverager):
     '''
 
     def generate_timavg(self, infile=None, outfile=None):
-        ''' use fre-nctool's CLI timavg.csh with subprocess call '''
+        """
+        use fre-nctool's CLI timavg.csh with subprocess call
+
+        :param self: This is an instance of the class frenctoolsTimeAverager
+        :param infile: path to history file, or list of paths, default is None
+        :type infile: str, list
+        :param outfile: path to where output file should be stored, default is None
+        :type outfile: str
+        :return: 1 if timavg.csh command is not properly executed, and 0 if function has a clean exit
+        :rtype: int
+        :raises ValueError:
+            - instance variable self.avg_type not supported
+            - No infile specified
+            - Cannot find timavg.csh (likely the user is not in an environment with frenctools installed)
+            - timavgcsh command is not properly executed
+        """
         assert self.pkg=="fre-nctools"
         if __debug__:
             fre_logger.debug(locals()) #input argument details
@@ -48,7 +63,7 @@ class frenctoolsTimeAverager(timeAverager):
         from subprocess import Popen, PIPE
 
         
-        #Recursive call if month is selcted for climatology. by Avery Kiihne
+        #Recursive call if month is selected for climatology. by Avery Kiihne
         if self.avg_type == 'month':
             monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
             output_dir = Path(outfile).parent       #Save output in the user-specified location

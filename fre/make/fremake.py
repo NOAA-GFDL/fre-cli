@@ -8,10 +8,10 @@ from fre.make import run_fremake_script
 YAMLFILE_OPT_HELP = """Experiment yaml compile FILE
 """
 EXPERIMENT_OPT_HELP = """Name of experiment"""
-PLATFORM_OPT_HELP = """Hardware and software FRE platform space separated list of STRING(s).
+PLATFORM_OPT_HELP = """Hardware and software FRE platform string.
 This sets platform-specific data and instructions
 """
-TARGET_OPT_HELP   = """a space separated list of STRING(s) that defines compilation settings and
+TARGET_OPT_HELP   = """String that defines compilation settings and
 linkage directives for experiments. Predefined targets refer to groups of directives that exist in
 the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod',
 'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive
@@ -19,8 +19,7 @@ the mkmf template file (referenced in buildDocker.py). Possible predefined targe
 """
 PARALLEL_OPT_HELP = """Number of concurrent model compiles (default 1)
 """
-JOBS_OPT_HELP = """Number of jobs to run simultaneously. Used for make -jJOBS and git clone
-recursive --jobs=JOBS
+JOBS_OPT_HELP = """Number of jobs to run simultaneously. Used for make -jJOBS (parallelism with make) and git clone recursive --njobs=JOBS (# of submodules fetched simultaneously)
 """
 NO_PARALLEL_CHECKOUT_OPT_HELP =  """Use this option if you do not want a parallel checkout.
 The default is to have parallel checkouts.
@@ -51,13 +50,13 @@ def make_cli():
               help = TARGET_OPT_HELP,
               required = True)
 @click.option("-n",
-              "--parallel",
+              "--nparallel",
               type = int,
               metavar = '',
               default = 1,
               help = PARALLEL_OPT_HELP)
 @click.option("-j",
-              "--jobs",
+              "--njobs",
               type = int,
               metavar = '',
               default = 4,
@@ -80,10 +79,10 @@ def make_cli():
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def all(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose):
+def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose):
     """ - Perform all fre make functions; run checkout and compile scripts to create model executable or container"""
     run_fremake_script.fremake_run(
-        yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_format_transfer, execute, verbose)
+        yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose)
 
 @make_cli.command()
 @click.option("-y",
@@ -103,7 +102,7 @@ def all(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_for
               help = TARGET_OPT_HELP,
               required = True)
 @click.option("-j",
-              "--jobs",
+              "--njobs",
               type = int,
               metavar = '',
               default = 4,
@@ -120,10 +119,10 @@ def all(yamlfile, platform, target, parallel, jobs, no_parallel_checkout, no_for
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def checkout_script(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
+def checkout_script(yamlfile, platform, target, no_parallel_checkout, njobs, execute, verbose):
     """ - Write the checkout script """
     create_checkout_script.checkout_create(
-        yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose)
+        yamlfile, platform, target, no_parallel_checkout, njobs, execute, verbose)
 
 @make_cli.command
 @click.option("-y",
@@ -162,13 +161,13 @@ def makefile(yamlfile, platform, target):
               help = TARGET_OPT_HELP,
               required = True)
 @click.option("-j",
-              "--jobs",
+              "--njobs",
               type = int,
               metavar = '',
               default = 4,
               help = JOBS_OPT_HELP)
 @click.option("-n",
-              "--parallel",
+              "--nparallel",
               type = int,
               metavar = '', default = 1,
               help = PARALLEL_OPT_HELP)
@@ -180,10 +179,10 @@ def makefile(yamlfile, platform, target):
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def compile_script(yamlfile, platform, target, jobs, parallel, execute, verbose):
+def compile_script(yamlfile, platform, target, njobs, nparallel, execute, verbose):
     """ - Write the compile script """
     create_compile_script.compile_create(
-        yamlfile, platform, target, jobs, parallel, execute, verbose)
+        yamlfile, platform, target, njobs, nparallel, execute, verbose)
 
 @make_cli.command
 @click.option("-y",
@@ -208,10 +207,8 @@ def compile_script(yamlfile, platform, target, jobs, parallel, execute, verbose)
               help = "Use this to skip the container format conversion to a .sif file.")
 @click.option("--execute",
               is_flag = True,
+              default = False,
               help = "Build Dockerfile that has been generated by create-docker.")
 def dockerfile(yamlfile, platform, target, no_format_transfer, execute):
     """ - Write the dockerfile """
     create_docker_script.dockerfile_create(yamlfile, platform, target, no_format_transfer, execute)
-
-if __name__ == "__main__":
-    make_cli()

@@ -1,62 +1,60 @@
 """
-Script combines the model yaml with exp, platform, and target to list experiment information.
+Script combines the model yaml with experiment, platform, and target 
+information to list experiment information.
 """
 
 import logging
+import yaml
+
+from fre.yamltools import pp_info_parser as ppip
+
+## to-do: figure out validation
+# Imports associated with commented block
+# from pathlib import Path
+# from fre.yamltools import helpers
+# from fre.yamltools import combine_yamls_script as cy
+
 fre_logger = logging.getLogger(__name__)
 
-from pathlib import Path
-
-# this brings in the yaml module with the join_constructor
-# this is defined in the __init__
-from fre.yamltools import *
-
-
-from fre.yamltools.helpers import yaml_load
-from fre.yamltools import combine_yamls as cy
-
-# To look into: ignore undefined alias error msg for listing?
-# Found this somewhere but don't fully understand yet
-#class NoAliasDumper(yaml.SafeDumper):
-#    def ignore_aliases(self, data):
-#        return True
-
-def quick_combine(yml, exp, platform, target):
-    """
-    Create intermediate combined model and exp. yaml
-    This is done to avoid an "undefined alias" error
-    """
-    # Combine model / experiment
-    # note, this needs combine_yamls.py, instead of it's successor for now
-    comb = cy.init_pp_yaml(yml,exp,platform,target)
-    comb.combine_model()
-
-def remove(combined):
-    """
-    Remove intermediate combined yaml.
-    """
-    if Path(combined).exists():
-        Path(combined).unlink()
-        fre_logger.info(f"Intermediate combined yaml {combined} removed.")
-    else:
-        raise ValueError(f"{combined} could not be found to remove.")
-
-def list_experiments_subtool(yamlfile):
+def list_experiments_subtool(yamlfile: str):
     """
     List the post-processing experiments available
+
+    :param yamlfile: path to yaml configuration file
+    :type yamlfile: str
     """
+    exp = None
+    platform = None
+    target = None
 
-    e = "None"
-    p = "None"
-    t = "None"
+    # Combine model
+    # Create pp yaml instance
+    yamldict = ppip.InitPPYaml(yamlfile, exp, platform, target)
+    yaml_str = yamldict.combine_model()
+    yaml_dict = yaml.load(yaml_str, Loader = yaml.Loader)
 
-    combined = f"combined-{e}.yaml"
-
-    # Combine model / experiment
-    quick_combine(yamlfile,e,p,t)
-
-    # load the yaml we made
-    c = yaml_load(combined)
+## COULD HAVE been one way to validate but section we'd want to parse was
+## cleaned in final/"combined" yaml information
+## Currently not a way to validate model yaml information because we only
+## have schemas for the final "combined" compile or pp information (both
+## of which remove the "experiments" section I believe
+#    exp = yamlfile.split("/")[-1].split(".")[0]
+#    platform = "None"
+#    target = "None"
+#
+#    # Combine model / experiment
+#    yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
+#                                    experiment = exp,
+#                                    platform = platform,
+#                                    target = target,
+#                                    use = "compile",
+#                                    output = None)
+#
+#    # Validate combined yaml information
+#    frelist_dir = Path(__file__).resolve().parents[2]
+#    schema_path = f"{frelist_dir}/fre/gfdl_msd_schemas/FRE/fre_make.json"
+#    # from fre.yamltools
+#    helpers.validate_yaml(yml_dict, schema_path)
 
     # set logger level to INFO
     former_log_level = fre_logger.level
@@ -64,12 +62,9 @@ def list_experiments_subtool(yamlfile):
 
     # log the experiment names, which should show up on screen for sure
     fre_logger.info("Post-processing experiments available:")
-    for i in c.get("experiments"):
-        fre_logger.info(f'   - {i.get("name")}')
+    for i in yaml_dict.get("experiments"):
+        fre_logger.info('   - %s', i.get("name"))
     fre_logger.info("\n")
 
     # set logger back to normal level
     fre_logger.setLevel(former_log_level)
-
-    # Clean intermediate combined yaml
-    remove(combined)

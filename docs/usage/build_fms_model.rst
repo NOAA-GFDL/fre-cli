@@ -28,22 +28,22 @@ Guide
 .. code-block::
 
   # Create checkout script
-  fre make checkout -y [model yaml file] -p [platform] -t [target]
+  fre make checkout-script -y [model yaml file] -p [platform] -t [target]
 
-  # Create and run checkout script
-  fre make checkout -y [model yaml file] -p [platform] -t [target] --execute
+  # Or create and RUN checkout script
+  fre make checkout-script -y [model yaml file] -p [platform] -t [target] --execute
 
   # Create Makefile
   fre make makefile -y [model yaml file] -p [platform] -t [target]
 
-  # Creat the compile script
-  fre make compile -y [model yaml file] -p [platform] -t [target]
+  # Create the compile script
+  fre make compile-script -y [model yaml file] -p [platform] -t [target]
 
-  # Create and run the compile script
-  fre make compile -y [model yaml file] -p [platform] -t [target] --execute
+  # Or create and RUN the compile script
+  fre make compile-script -y [model yaml file] -p [platform] -t [target] --execute
 
-  # Run all of fremake
-  fre make all -y [model yaml file] -p [platform] -t [target] [other options...]
+  # Run all of fremake: creates checkout script, makefile, compile script, and model executable
+  fre make all -y [model yaml file] -p [platform] -t [target] [other options...] --execute
 
 2. Container Build:
 
@@ -54,10 +54,7 @@ Gaea users will not be able to create containers unless they have requested and 
 .. code-block::
 
   # Create checkout script
-  fre make checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
-
-  # Create and run checkout script
-  fre make checkout -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
+  fre make checkout-script -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
 
   # Create Makefile
   fre make makefile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
@@ -65,8 +62,12 @@ Gaea users will not be able to create containers unless they have requested and 
   # Create a Dockerfile
   fre make dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
 
-  # Create and run the Dockerfile
+  # Or create and RUN the Dockerfile
   fre make dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
+
+  # Run all of fremake: create and checkout script, makefile, dockerfile, container
+  # creation script, and model container
+  fre make all  -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
 
 Quickstart
 ----------
@@ -76,38 +77,28 @@ The quickstart instructions can be used with the null model example located in t
 
 .. code-block::
 
-  # Create checkout script
-  fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod
-
-  # Create and run checkout script
+  # Create and run checkout script: checkout script will check out source code as 
+                                    defined in the compile.yaml
   fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
   # Create Makefile
   fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod
 
-  # Create the compile script
-  fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod
-
-  # Create and run the compile script
+  # Create and run the compile script to generate a model executable
   fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
 2. Bare-metal Build Multi-target:
 
 .. code-block::
 
-  # Create checkout script
-  fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
-
-  # Create and run checkout script
+  # Create and run checkout script: checkout script will check out source code as 
+                                    defined in the compile.yaml
   fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
   # Create Makefile
   fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
-  # Create the compile script
-  fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
-
-  # Create and run the compile script
+  # Create and run a compile script for each target specified; generates model executables
   fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
 3. Container Build:
@@ -119,16 +110,11 @@ In order for the container to build successfully, the parallel checkout feature 
   # Create checkout script
   fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod
 
-  # Create and run checkout script
-  fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod --execute
-
   # Create Makefile
   fre make makefile -y null_model.yaml -p hpcme.2023 -t prod
 
-  # Create Dockerfile
-  fre make dockerfile -y null_model.yaml -p hpcme.2023 -t prod
-
-  # Create and run the Dockerfile
+  # Create the Dockerfile and container build script: the container build script (createContainer.sh)
+                                                      uses the Dockerfile to build a model container
   fre make dockerfile -y null_model.yaml -p hpcme.2023 -t prod --execute
 
 4. Run all of fremake:
@@ -137,14 +123,10 @@ In order for the container to build successfully, the parallel checkout feature 
 
 .. code-block::
 
-  # Bare-metal: create and run checkout script, create makefile, create compile script
-  fre make all -y null_model.yaml -p ncrc5.intel23 -t prod
-
-  # Bare-metal: create and run checkout script, create makefile, create and run compile script
+  # Bare-metal: create and run checkout script, create makefile, create and RUN compile script to
+                generate a model executable
   fre make all -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
-  # Container: create checkout script, makefile, and dockerfile
-  fre make all -y null_model.yaml -p hpcme.2023 -t prod
-
-  # Container: create checkout script, makefile, create and run dockerfile to build container
+  # Container: create checkout script, makefile, create dockerfile, and create and RUN the container
+               build script to generate a model container
   fre make all -y null_model.yaml -p hpcme.2023 -t prod --execute

@@ -47,14 +47,14 @@ def linklineBuild(self):
             fh.writelines(textwrap.dedent(self.linklinecreate))
             fh.write("MF_PATH='/apps/"+self.e+"/exec/Makefile'\n")
             fh.write('sed -i "/MK_TEMPLATE = /a LL = $line" $MF_PATH\n')
-            fh.write("sed -i 's|\($^\) \($(LDFLAGS)\)|\\1 $(LL) \\2|' $MF_PATH\n")
+            fh.write("sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(LL) \\2|' $MF_PATH\n")
 
 ## BARE METAL; if addlibs defined on bare metal, include those additional libraries in link line
     elif "tmp" not in self.filePath:
         for l in self.l: # baremetal_linkerflags
             linkline = linkline + " " + l
         os.system(f"sed -i '/MK_TEMPLATE = /a LL = {linkline}' {self.filePath}/Makefile")
-        os.system(f"sed -i 's|\($(LDFLAGS)\)|$(LL) \\1|' {self.filePath}/Makefile")
+        os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {self.filePath}/Makefile")
 
 class makefile():
     def __init__(self,exp,libs,srcDir,bldDir,mkTemplatePath):
@@ -86,7 +86,7 @@ class makefile():
         Param: 
             - self The Makefile object
             - c The component
-            - r The requires for that componenet
+            - r The requires for that component
             - o The overrides for that component
         """
         self.c.append(c)

@@ -1,4 +1,5 @@
-=============
+===
 API
-=============
-Auto-harvested goodness, coming soon.
+===
+
+.. include:: modules.rst

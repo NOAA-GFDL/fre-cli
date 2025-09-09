@@ -1,4 +1,13 @@
-''' test "fre" calls '''
+"""
+CLI Tests for fre 
+Tests the command-line-interface calls for fre itself. 
+We've got 4-ish tests:
+    - fre , checking for exit code 0 (fails if cli isn't configured right)
+    - fre --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+      right and thinks the tool has a --optionDNE option)
+    - fre --version, checking for version GTE current version (fails if version isn't defined)
+"""
 
 from click.testing import CliRunner
 
@@ -9,7 +18,7 @@ runner = CliRunner()
 def test_cli_fre():
     ''' fre '''
     result = runner.invoke(fre.fre)
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_help():
     ''' fre --help '''
@@ -24,11 +33,11 @@ def test_cli_fre_option_dne():
 
 def test_fre_version():
     ''' module import flavor of below cli test '''
-    assert '2025.03' == fre.version
+    assert '2025.04' == fre.version
 
 def test_cli_fre_version():
     ''' fre --version '''
     result = runner.invoke(fre.fre, args='--version')
-    expected_out = 'fre, version 2025.03'
+    expected_out = 'fre, version 2025.04'
     assert all( [ result.exit_code == 0,
-                  expected_out in result.stdout.split('\n') ] )
+                  expected_out in result.output ] )

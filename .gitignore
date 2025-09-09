@@ -1,4 +1,4 @@
-># Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -167,35 +167,33 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
+.vscode/*
+.vscode
 
 
-
-
-
-##### GOTTA CLEAN THIS UP
 
 # files pulled/created via testing
-tmp/
-
-fre/tests/fremake_out
-fre/tests/test_files/ocean_sos_var_file/*.nc
-fre/tests/test_files/outdirfre/
-fre/tests/test_files/outdir/
-
-fre/app/generate_time_averages/tests/time_avg_test_files/
-fre/app/regrid_xy/tests/*/
-
-fre/make/tests/*_out/
-fre/pp/tests/configure_yaml_out/
-
-fre/yamltools/tests/combine_yamls_out/
 Dockerfile
 createContainer.sh
 FOO_cmor.yaml
-fregrid_remap_file_288_by_180.nc
 rose-app-run.conf
-.vscode/*
-.vscode
-fre/tests/test_files/CMOR_input_example.json
-fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_*
+*.nc
+tmp/
+
+# autogen'd by doc build
 docs/fre.*
+docs/modules.rst
+
+# parts of the package
+fre/app/generate_time_averages/tests/time_avg_test_files/
+fre/app/regrid_xy/tests/*/
+fre/make/tests/*_out/
+fre/make/tests/test_run_fremake_*/
+fre/pp/tests/configure_yaml_out/
+fre/yamltools/tests/combine_yamls_out/
+
+# parts of the package tests
+fre/tests/fremake_out
+fre/tests/test_files/ascii_files/split_netcdf/atmos_daily.tile3/new_*
+fre/tests/test_files/outdirfre/
+fre/tests/test_files/outdir/

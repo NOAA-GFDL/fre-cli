@@ -9,16 +9,68 @@ from .generate_time_averages.generate_time_averages import generate
 from .generate_time_averages.wrapper import generate_wrapper
 from .regrid_xy.regrid_xy import regrid_xy
 from .generate_time_averages.combine import combine
+from .remap_pp_components.remap_pp_components import remap_pp_components
 
 @click.group(help=click.style(" - app subcommands", fg=(250,154,90)))
 def app_cli():
     ''' entry point to fre app click commands '''
 
 @app_cli.command()
+@click.option("-i", "--input-dir",
+              type = str,
+              help = "Input directory",
+              required = True)
+@click.option("-o", "--output-dir",
+              type = str,
+              help = "Output directory",
+              required = True)
+@click.option("-b", "--begin-date",
+              type = str,
+              help = "ISO8601 date format; date to begin post-processing data",
+              required = True)
+@click.option("-c", "--current-chunk",
+              type = str,
+              help = "Current chunk to post-process",
+              required = True)
+@click.option("-p", "--product",
+              type = click.Choice(['ts', 'av', 'static']),
+              help = " Variable to define time-series, time-averaging or static",
+              required = True)
+@click.option("-ppc", "--pp-component",
+              type = str,
+              help = "Component to be post-processed",
+              required = True)
+@click.option("-cp", "--copy-tool",
+              type = click.Choice(['gcp','cp']),
+              help = "Tool to use for copying files; gcp can be used in on gfdl systems where gcp is available",
+              required = False)
+@click.option("-y", "--yaml-config",
+              type = str,
+              help = "Path of yaml configuration file",
+              required =  True)
+@click.option("-em", "--ens-mem",
+              type = str,
+              help = "Ensemble member number as XX",
+              required = False)
+@click.option("-tsw", "--ts-workaround",
+              type = click.Choice(['True','False']),
+              default = None,
+              help = "Time series workaround variable",
+              required = False)
+
+def remap(input_dir, output_dir, begin_date, current_chunk,
+          product, pp_component, copy_tool, yaml_config,
+          ts_workaround, ens_mem):
+    ''' Remap netcdf files to an updated output directory structure '''
+    remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
+                        product, pp_component, copy_tool, yaml_config,
+                        ts_workaround, ens_mem)
+
+@app_cli.command()
 @click.option("-i", "--input_dir",
               type = str,
               help = "`inputDir` / `input_dir` (env var) specifies input directory to regrid, " + \
-                     "typically an untarredv history file archive" ,
+                     "typically an untarred history file archive" ,
               required = True)
 @click.option("-o", "--output_dir",
               type = str,
