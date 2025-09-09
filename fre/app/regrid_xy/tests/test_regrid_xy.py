@@ -7,7 +7,7 @@ import xarray as xr
 import fre.app.regrid_xy.regrid_xy as regrid_xy
 import fre.app.regrid_xy.tests.generate_files as generate_files
 
-N = 20
+nxy = 20
 date = "20250729"
 
 curr_dir = os.getcwd()
@@ -20,7 +20,7 @@ work_dir = Path(curr_dir)/"test_work"
 
 components = []
 pp_input_files = [{"history_file":"pemberley"}, {"history_file":"longbourn"}]
-components.append({"xyInterp": f"{N},{N}",
+components.append({"xyInterp": f"{nxy},{nxy}",
                    "interpMethod": "conserve_order2",
                    "inputRealm": "atmos",
                    "type": f"pride_and_prejudice",
@@ -28,7 +28,7 @@ components.append({"xyInterp": f"{N},{N}",
                    "postprocess_on": True}
 )
 emma_input_files = [{"history_file":"hartfield"}, {"history_file":"donwell_abbey"}]
-components.append({"xyInterp": f"{N},{N}",
+components.append({"xyInterp": f"{nxy},{nxy}",
                    "interpMethod": "conserve_order2",
                    "inputRealm": "atmos",
                    "type": f"emma",
@@ -36,7 +36,7 @@ components.append({"xyInterp": f"{N},{N}",
                    "postprocess_on": True}
 )
 here_input_files = [{"history_file":"gfdl"}, {"history_file":"princeton"}]
-components.append({"xyInterp": f"{N},{N}",
+components.append({"xyInterp": f"{nxy},{nxy}",
                    "interpMethod": "conserve_order2",
                    "inputRealm": "atmos",
                    "type": "here",
@@ -97,7 +97,7 @@ def test_regrid_xy():
     assert not (output_dir/f"{date}.{ifile}.nc").exists()
 
   #check remap_file exists and is not empty
-  remap_file = remap_dir/f"C{N}_mosaicX{N}by{N}_conserve_order2.nc"
+  remap_file = remap_dir/f"C{nxy}_mosaicX{nxy}by{nxy}_conserve_order2.nc"
   assert remap_file.exists()
 
   #remove test directories

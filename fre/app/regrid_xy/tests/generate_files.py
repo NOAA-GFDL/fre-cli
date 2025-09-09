@@ -5,14 +5,14 @@ import tarfile
 import yaml
 import xarray as xr
 
-N = 20
-Np = N + 1
+nxy = 20
+nxyp = nxy + 1
 ntiles = 6
 date = "20250729"
 
 yamlfile = "test_yaml.yaml"
 grid_spec_tar = "grid_spec.tar"
-input_grid = f"C{N}"
+input_grid = f"C{nxy}"
 input_dir = "test_inputs"
 input_mosaic = f"{input_grid}_mosaic.nc"
 components: dict =  None
@@ -41,7 +41,7 @@ def cleanup():
 
 
 def set_test(components_in: dict,
-             N_in: int = None,
+             nxy_in: int = None,
              ntiles_in: int = None,
              date_in: str = None,
              yamlfile_in: str = None,
@@ -51,16 +51,16 @@ def set_test(components_in: dict,
              input_dir_in: str = None):
 
   global components
-  global Np, N, ntiles, grid_spec_tar, input_grid
+  global nxyp, nxy, ntiles, grid_spec_tar, input_grid
   global date, input_mosaic
   global input_dir, yamlfile
   global tar_list
 
   components = components_in
-  if N_in is not None:
-    N = N_in
-    Np = N_in+1
-    input_grid = f"C{N}"
+  if nxy_in is not None:
+    nxy = nxy_in
+    nxyp = nxy_in+1
+    input_grid = f"C{nxy}"
   if ntiles_in is not None: ntiles = ntiles_in
   if date_in is not None: date = date_in
   if yamlfile_in is not None: yamlfile = yamlfile_in
@@ -117,8 +117,8 @@ def make_mosaic():
 
 def make_grid():
 
-  xy = np.arange(0, Np, 1, dtype=np.float64)
-  area = np.ones((N, N), dtype=np.float64)
+  xy = np.arange(0, nxyp, 1, dtype=np.float64)
+  area = np.ones((nxy, nxy), dtype=np.float64)
 
   x, y = np.meshgrid(xy, xy)
 
@@ -137,20 +137,21 @@ def make_grid():
 def make_data():
 
   data = {}
-  data["mister"] = xr.DataArray(np.full((N,N), 1.0, dtype=np.float64), dims=["ny", "nx"])
-  data["darcy"] = xr.DataArray(np.full((N,N), 2.0, dtype=np.float64), dims=["ny", "nx"])
-  data["wins"] = xr.DataArray(np.full((N,N), 3.0, dtype=np.float64), dims=["ny", "nx"])
-  data["wet_c"] = xr.DataArray(np.full((N,N), 5.0, dtype=np.float64), dims=["ny", "nx"])
+  data["mister"] = xr.DataArray(np.full((nxy,nxy), 1.0, dtype=np.float64), dims=["ny", "nx"])
+  data["darcy"] = xr.DataArray(np.full((nxy,nxy), 2.0, dtype=np.float64), dims=["ny", "nx"])
+  data["wins"] = xr.DataArray(np.full((nxy,nxy), 3.0, dtype=np.float64), dims=["ny", "nx"])
+  data["wet_c"] = xr.DataArray(np.full((nxy,nxy), 5.0, dtype=np.float64), dims=["ny", "nx"])
 
-  coords = {"nx": np.arange(1,Np, dtype=np.float64),
-            "ny": np.arange(1,Np, dtype=np.float64)}
+  coords = {"nx": np.arange(1,nxyp, dtype=np.float64),
+            "ny": np.arange(1,nxyp, dtype=np.float64)}
 
   dataset = xr.Dataset(data_vars=data, coords=coords)
 
   for component in components:
     for source in component["sources"]:
       history_file = source["history_file"]
-      for i in range(1, ntiles+1): dataset.to_netcdf(f"{input_dir}/{date}.{history_file}.tile{i}.nc")
+      for i in range(1, ntiles+1):
+        dataset.to_netcdf(f"{input_dir}/{date}.{history_file}.tile{i}.nc")
 
 
 def make_all():
