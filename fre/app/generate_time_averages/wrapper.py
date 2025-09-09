@@ -89,7 +89,7 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                 subdir_yr =  Path(dir_ / 'ts' / grid / source / 'P1Y' / str(input_interval))
                 subdir_mon = Path(dir_ / 'ts' / grid / source / 'P1M' / str(input_interval))
                 if subdir_yr.exists():
-                    results = glob.glob(str(subdir_yr / (source + '.' + YYYY + '-' + ZZZZ + '.*.nc')))
+                    results = glob.glob(str(subdir_yr / f"{source}.{YYYY}-{ZZZZ}.*.nc"))
                     if results:
                         variables = extract_variables_from_files(results)
                         source_frequency = "P1Y"
@@ -97,7 +97,7 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                     else:
                         raise Exception(f"Expected files not found in {subdir_yr}")
                 elif subdir_mon.exists():
-                    results = glob.glob(str(subdir_mon / (source + '.' + YYYY + '01-' + ZZZZ + '12.*.nc')))
+                    results = glob.glob(str(subdir_mon / f"{source}.{YYYY}01-{ZZZZ}12.*.nc"))
                     if results:
                         variables = extract_variables_from_files(results)
                         source_frequency = "P1M"
@@ -140,9 +140,9 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                 ZZZZ = metomi.isodatetime.dumpers.TimePointDumper().strftime(dd + input_interval - one_year, "%Y")
 
                 if source_frequency == "P1Y":
-                    input_files.append(subdir / (source + '.' + YYYY + '-' + ZZZZ + '.' + var + '.nc'))
+                    input_files.append(subdir / f"{source}.{YYYY}-{ZZZZ}.{var}.nc")
                 else:
-                    input_files.append(subdir / (source + '.' + YYYY + '01-' + ZZZZ + '12.' + var + '.nc'))
+                    input_files.append(subdir / f"{source}.{YYYY}01-{ZZZZ}12.{var}.nc")
 
             fre_logger.debug(input_files)
 
