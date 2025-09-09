@@ -1,15 +1,12 @@
 import logging
 from pathlib import Path
 import glob
-import metomi.isodatetime.parsers
-import metomi.isodatetime.dumpers
+from metomi.isodatetime.parsers import TimePointParser, DurationParser, TimeRecurrenceParser
+from metomi.isodatetime.dumpers import TimePointDumper
 from . import generate_time_averages
 
 fre_logger = logging.getLogger(__name__)
-timepoint_parser = metomi.isodatetime.parsers.TimePointParser()
-duration_parser = metomi.isodatetime.parsers.DurationParser()
-recurrence_parser = metomi.isodatetime.parsers.TimeRecurrenceParser()
-one_year = duration_parser.parse('P1Y')
+one_year = DurationParser().parse('P1Y')
 
 
 def extract_variables_from_files(files: list[str]) -> list[str]:
@@ -60,9 +57,9 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
     fre_logger.debug(f"frequency: {frequency}")
 
     dir_ = Path(dir_)
-    cycle_point = timepoint_parser.parse(cycle_point)
-    output_interval = duration_parser.parse(output_interval)
-    input_interval = duration_parser.parse(input_interval)
+    cycle_point = TimePointParser().parse(cycle_point)
+    output_interval = DurationParser().parse(output_interval)
+    input_interval = DurationParser().parse(input_interval)
 
     # convert frequency 'yr' or 'mon' to ISO8601
     if frequency == 'mon':
@@ -76,12 +73,12 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
     for source in sources:
         fre_logger.debug(f"Main loop: averaging history file '{source}'")
         # first, retrieve the variable names from the first segment
-        recurrence = recurrence_parser.parse('R1' + '/' + f"{cycle_point.year:04d}" + '/' + str(input_interval))
+        recurrence = TimeRecurrenceParser().parse('R1' + '/' + f"{cycle_point.year:04d}" + '/' + str(input_interval))
         variables = []
         source_frequency = ""
         for dd in recurrence:
-            YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(dd, "%Y")
-            ZZZZ = metomi.isodatetime.dumpers.TimePointDumper().strftime(dd + input_interval - one_year, "%Y")
+            YYYY = TimePointDumper().strftime(dd, "%Y")
+            ZZZZ = TimePointDumper().strftime(dd + input_interval - one_year, "%Y")
             # mon or yr timeseries => yr climo
             # mon timeseries => mon climo
             if frequency == "yr":
@@ -126,7 +123,7 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
 
         # then run the climo tool for each variable
         number_of_files = output_interval.get_seconds() / input_interval.get_seconds()
-        recurrence = recurrence_parser.parse('R' + str(int(number_of_files)) + '/' + f"{cycle_point.year:04d}" + '/' + str(input_interval))
+        recurrence = TimeRecurrenceParser().parse('R' + str(int(number_of_files)) + '/' + f"{cycle_point.year:04d}" + '/' + str(input_interval))
 
         for var in variables:
             fre_logger.debug(f"Variable loop: averaging variable '{var}'")
@@ -136,8 +133,8 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
             input_files = []
 
             for dd in recurrence:
-                YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(dd, "%Y")
-                ZZZZ = metomi.isodatetime.dumpers.TimePointDumper().strftime(dd + input_interval - one_year, "%Y")
+                YYYY = TimePointDumper().strftime(dd, "%Y")
+                ZZZZ = TimePointDumper().strftime(dd + input_interval - one_year, "%Y")
 
                 if source_frequency == "P1Y":
                     input_files.append(subdir / f"{source}.{YYYY}-{ZZZZ}.{var}.nc")
@@ -149,8 +146,8 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
             # form output filename
             first = list(recurrence)[0]
             last = list(recurrence)[-1]
-            first_YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(first, "%Y")
-            last_YYYY = metomi.isodatetime.dumpers.TimePointDumper().strftime(last, "%Y")
+            first_YYYY = TimePointDumper().strftime(first, "%Y")
+            last_YYYY = TimePointDumper().strftime(last, "%Y")
             subdir = Path(dir_ / 'av' / grid / source / frequency_iso / str(output_interval))
             output_file = subdir / (source + '.' + first_YYYY + '-' + last_YYYY + '.' + var + '.nc')
 
