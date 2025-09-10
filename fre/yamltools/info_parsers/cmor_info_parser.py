@@ -91,23 +91,23 @@ def experiment_check( mainyaml_dir: Union[str, Path],
         if ppyamls is None:
             raise ValueError(f"no ppyaml paths found under experiment = {experiment}")
 
-        ppsettingsyaml=None
-        for ppyaml in ppyamls:
-            #fre_logger.info(f'\nwithin ppyamls we have (SINGULAR) ppyaml=\n{ppyaml}')
-            if 'settings' in ppyaml:
-                ppsettingsyaml=ppyaml
-                break
-
-        if ppsettingsyaml is None:
-            raise ValueError( f"could not find a path pointing to pp-settings for "
-                              f"cmor-yamler and experiment name = {experiment}" )
-
-        fre_logger.info(f'ppsettingsyaml path found- checking to see if it exists...')
-        if not Path(os.path.join(mainyaml_dir, ppsettingsyaml)).exists():
-            raise FileNotFoundError(f'ppsettingsyaml={ppsettingsyaml} does not exist!')
-        ppsettingsyaml_path=Path(os.path.join(mainyaml_dir, ppsettingsyaml))
-
-        fre_logger.info(f'ppsettingsyaml={ppsettingsyaml}')
+#        ppsettingsyaml=None
+#        for ppyaml in ppyamls:
+#            #fre_logger.info(f'\nwithin ppyamls we have (SINGULAR) ppyaml=\n{ppyaml}')
+#            if 'settings' in ppyaml:
+#                ppsettingsyaml=ppyaml
+#                break
+#
+#        if ppsettingsyaml is None:
+#            raise ValueError( f"could not find a path pointing to pp-settings for "
+#                              f"cmor-yamler and experiment name = {experiment}" )
+#
+#        fre_logger.info(f'ppsettingsyaml path found- checking to see if it exists...')
+#        if not Path(os.path.join(mainyaml_dir, ppsettingsyaml)).exists():
+#            raise FileNotFoundError(f'ppsettingsyaml={ppsettingsyaml} does not exist!')
+#        ppsettingsyaml_path=Path(os.path.join(mainyaml_dir, ppsettingsyaml))
+#
+#        fre_logger.info(f'ppsettingsyaml={ppsettingsyaml}')
 
         cmoryaml=i.get("cmor")[0]
         if cmoryaml is None:
@@ -223,9 +223,36 @@ class CMORYaml():
         fre_logger.info(f"   model yaml: {self.yml}")
         return (yaml_content, yml)
 
-    def combine_experiment( self,
-                            yaml_content: str,
-                            loaded_yaml: Dict[str, Any] ) -> List[str]:
+
+    def get_settings_yaml(self, yaml_content_str):
+        """
+        :param yaml_content_str:
+        :type yaml_content_str: str
+        """
+        my = yaml.load(yaml_content_str, Loader=yaml.Loader)
+
+        for i in my.get("experiments"):
+            if self.name != i.get("name"):
+                continue
+            settings = i.get("settings")
+
+        with open(f"{self.mainyaml_dir}/{settings}", 'r') as f:
+            settings_content = f.read()
+
+        yaml_content_str += settings_content
+
+        # Return the combined string and loaded yaml
+        former_log_level = fre_logger.level
+        fre_logger.setLevel(logging.INFO)
+        fre_logger.info(f"   settings yaml: {settings}")
+        fre_logger.setLevel(former_log_level)
+
+        return yaml_content_str
+
+#    def combine_experiment( self,
+#                            yaml_content: str,
+#                            loaded_yaml: Dict[str, Any] ) -> List[str]:
+    def combine_experiment(self, yaml_content, loaded_yaml):
         """
         Combine model, grid, post-processing, and experiment YAMLs.
 
@@ -247,9 +274,9 @@ class CMORYaml():
         if cmory_path is None:
             raise ValueError('cmory_path is none!')
 
-        fre_logger.info(f'ppsettingsy_path = {ppsettingsy_path}')
-        if ppsettingsy_path is None:
-            raise ValueError('ppsettingsy_path is none!')
+#        fre_logger.info(f'ppsettingsy_path = {ppsettingsy_path}')
+#        if ppsettingsy_path is None:
+#            raise ValueError('ppsettingsy_path is none!')
 
         fre_logger.info(f'gridsy_path = {gridsy_path}')
         if gridsy_path is None:
@@ -264,12 +291,12 @@ class CMORYaml():
             grid_info = grid_content
             cmor_yamls.append(grid_info)
 
-        # ... then append pp_settings
-        with open(ppsettingsy_path,'r') as syp:
-            set_content = syp.read()
-            #set_info = yaml_content + set_content
-            set_info = set_content
-            cmor_yamls.append(set_info)
+#        # ... then append pp_settings
+#        with open(ppsettingsy_path,'r') as syp:
+#            set_content = syp.read()
+#            #set_info = yaml_content + set_content
+#            set_info = set_content
+#            cmor_yamls.append(set_info)
 
         # ... now append the cmor info?
         with open(cmory_path,'r') as eyp:
