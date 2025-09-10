@@ -133,11 +133,3 @@ def change_directory(new_path: str):
         yield
     finally:
         os.chdir(original_path)
-
-if __name__ == '__main__':
-    print("getting hist_src variables from yaml")
-    yamlfile = "/home/cew/Code/fre-cli/fre/app/remap_pp_components/tests/test-data/yaml_ex.yaml"
-    with open(yamlfile, 'r') as yfile:
-        yml = yaml.safe_load(yfile)
-    src_list = get_variables_hist_src(yml, sys.argv[1])
-    print(src_list)
