@@ -36,7 +36,7 @@ TMPDIR = f'{OUTDIR}/tmp'
 
 # input file details. if calendar matches data, the dates should be preserved or equiv.
 DATETIMES_INPUTFILE='199301-199302'
-FILENAME = f'reduced_ocean_monthly_1x1deg.{DATETIMES_INPUTFILE}.sos' 
+FILENAME = f'reduced_ocean_monthly_1x1deg.{DATETIMES_INPUTFILE}.sos'
 FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
 CALENDAR_TYPE = 'julian'
 
@@ -286,12 +286,12 @@ def test_git_cleanup():
       #doesn't run happily in CI and not needed
       assert True
     else:
-      git_cmd = f"git restore {EXP_CONFIG}" 
-      restore = subprocess.run(git_cmd, 
+      git_cmd = f"git restore {EXP_CONFIG}"
+      restore = subprocess.run(git_cmd,
                     shell=True,
                     check=False)
       check_cmd = f"git status | grep {EXP_CONFIG}"
-      check = subprocess.run(check_cmd, 
+      check = subprocess.run(check_cmd,
                              shell = True, check = False)
       #first command completed, second found no file in git status
       assert all([restore.returncode == 0, check.returncode == 1])

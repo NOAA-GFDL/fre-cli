@@ -7,12 +7,12 @@ YAML files into unified configurations for the Flexible Runtime Environment (FRE
 to consolidate YAMLs for CMORization, compilation, and post-processing, supporting both command-line tools
 and internal workflow automation.
 
-There are only four functions currently, with `consolidate_yamls` acting as the center of this file's control-flow. 
-The other functions are called within `consolidate_yamls`, based on the `use` argument passed to it. `use` may be 
-one of `cmor`, `pp`, and `compile` at this time, and determines which pieces of information are needed, where they 
-come from, and where they are placed in the output dictionary. 
+There are only four functions currently, with `consolidate_yamls` acting as the center of this file's control-flow.
+The other functions are called within `consolidate_yamls`, based on the `use` argument passed to it. `use` may be
+one of `cmor`, `pp`, and `compile` at this time, and determines which pieces of information are needed, where they
+come from, and where they are placed in the output dictionary.
 
-For every possible `use` argument currently accepted by `consolidate_yamls`, there exists a corresponding 
+For every possible `use` argument currently accepted by `consolidate_yamls`, there exists a corresponding
 `info_parser` class that houses the specific requirements of the combination and the implementation as well.
 For more information, consult the docstrings in those functions and modules, as well as those in this file.
 
@@ -48,7 +48,7 @@ fre_logger = logging.getLogger(__name__)
 #    Combine the model, experiment, and cmor yamls
 #
 #    :param CMORYaml: combined cmor-yaml object
-#    :type CMORYaml: 
+#    :type CMORYaml:
 #    :param output: Path representing target output file to write yamlfile to
 #    :type output: str
 #    """
@@ -87,7 +87,7 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
     except Exception as exc:
         raise ValueError("CMORYaml.combine_model failed") from exc
 
-    
+
     # Merge cmor experiment yamls into combined file, calls experiment_check
     try:
         fre_logger.info('calling CmorYaml.combine_model() for yaml_content and loaded_yaml...')
@@ -132,7 +132,7 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
     fre_logger.info("Combined cmor-yaml information cleaned+saved as dictionary")
     #fre_logger.debug("cleaned_yaml = \n %s", pformat(cleaned_yaml))
     ##assert False # good.
-    
+
     if output is not None:
         output_yaml( cleaned_yaml, output )
         fre_logger.info("Combined cmor-yaml information saved to %s", output)
