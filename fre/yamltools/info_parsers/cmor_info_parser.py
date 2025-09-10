@@ -70,8 +70,8 @@ def experiment_check( mainyaml_dir: Union[str, Path],
     # Extract yaml path for exp. provided
     # if experiment matches name in list of experiments in yaml, extract file path
     cmoryaml_path = None
-    ppsettingsyaml_path = None
-    cmor_yaml_path = None
+    settings_yaml_path = None
+    grid_yaml_path = None
     for i in loaded_yaml.get("experiments"):
         if experiment != i.get("name"):
             continue
@@ -91,23 +91,23 @@ def experiment_check( mainyaml_dir: Union[str, Path],
         if ppyamls is None:
             raise ValueError(f"no ppyaml paths found under experiment = {experiment}")
 
-#        ppsettingsyaml=None
-#        for ppyaml in ppyamls:
-#            #fre_logger.info(f'\nwithin ppyamls we have (SINGULAR) ppyaml=\n{ppyaml}')
-#            if 'settings' in ppyaml:
-#                ppsettingsyaml=ppyaml
-#                break
-#
-#        if ppsettingsyaml is None:
-#            raise ValueError( f"could not find a path pointing to pp-settings for "
-#                              f"cmor-yamler and experiment name = {experiment}" )
-#
-#        fre_logger.info(f'ppsettingsyaml path found- checking to see if it exists...')
-#        if not Path(os.path.join(mainyaml_dir, ppsettingsyaml)).exists():
-#            raise FileNotFoundError(f'ppsettingsyaml={ppsettingsyaml} does not exist!')
-#        ppsettingsyaml_path=Path(os.path.join(mainyaml_dir, ppsettingsyaml))
-#
-#        fre_logger.info(f'ppsettingsyaml={ppsettingsyaml}')
+        #ppsettingsyaml=None
+        #for ppyaml in ppyamls:
+        #    #fre_logger.info(f'\nwithin ppyamls we have (SINGULAR) ppyaml=\n{ppyaml}')
+        #    if 'settings' in ppyaml:
+        #        ppsettingsyaml=ppyaml
+        #        break
+        #
+        #if ppsettingsyaml is None:
+        #    raise ValueError( f"could not find a path pointing to pp-settings for "
+        #                      f"cmor-yamler and experiment name = {experiment}" )
+        #
+        #fre_logger.info(f'ppsettingsyaml path found- checking to see if it exists...')
+        #if not Path(os.path.join(mainyaml_dir, ppsettingsyaml)).exists():
+        #    raise FileNotFoundError(f'ppsettingsyaml={ppsettingsyaml} does not exist!')
+        #ppsettingsyaml_path=Path(os.path.join(mainyaml_dir, ppsettingsyaml))
+        #
+        #fre_logger.info(f'ppsettingsyaml={ppsettingsyaml}')
 
         cmoryaml=i.get("cmor")[0]
         if cmoryaml is None:
@@ -117,14 +117,14 @@ def experiment_check( mainyaml_dir: Union[str, Path],
         if not Path(os.path.join(mainyaml_dir, cmoryaml)).exists():
             raise FileNotFoundError(f'cmoryaml={cmoryaml} does not exist!')
 
-        cmoryaml_path = Path(os.path.join(mainyaml_dir, cmoryaml))
+        cmor_yaml_path = Path( os.path.join(mainyaml_dir, cmoryaml) )
         break
 
-    if cmoryaml_path is None:
-        raise ValueError('... something wrong... cmoryaml_path is None... it should not be none!')
+    if cmor_yaml_path is None:
+        raise ValueError('... something wrong... cmor_yaml_path is None... it should not be none!')
 
-    fre_logger.info(f'cmor_info_parser\'s experiment_check about to return cmoryaml_path!')
-    return cmoryaml_path, ppsettingsyaml_path, grid_yaml_path
+    fre_logger.info(f'cmor_info_parser\'s experiment_check about to return cmor_yaml_path!')
+    return cmor_yaml_path, settings_yaml_path, grid_yaml_path
 
 class CMORYaml():
     """
