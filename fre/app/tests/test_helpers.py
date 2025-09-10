@@ -75,6 +75,18 @@ def test_get_variables_hist_src(hist_src, var_list):
         yml=yaml.safe_load(f)
     new_var_list = helpers.get_variables_hist_src(yml, hist_src)
     assert new_var_list == var_list
+    
+def test_yaml_load_wrong_type():
+    '''
+    Checks that we get the right error raised when we try to read an unloaded yaml
+    for get_variables and get_variables_hist_src
+    '''
+    with pytest.raises( Type Error ) as execinfo:
+        out1 = helpers.get_variables(YAML_EX, 'atmos_scalar_test_vars')
+    assert assert execinfo.type is TypeError
+    with pytest.raises( Type Error ) as execinfo2:
+        out1 = helpers.get_variables_hist_src(YAML_EX, 'atmos_scalar_test_vars')
+    assert assert execinfo2.type is TypeError    
 
 def test_change_directory():
     """

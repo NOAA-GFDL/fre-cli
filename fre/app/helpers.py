@@ -15,6 +15,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     :type yml: dict
     :param pp_comp: Active pp component
     :type pp_comp: str
+    :raises TypeError: if yml is not a dict (i.e. a path to a yamlfile)
     :raises ValueError: if the active pp component is not found in the yaml configuration
     :return: dictionary of {source name: [variables]}
         - the values are a list of specified variables
@@ -69,6 +70,15 @@ def get_variables_hist_src(yml: dict, hist_src: str) -> list:
     are supposed to be unique, and it is needed because some tasks in flow.cylc
     (like split-netcdf) cycle on the flat list of all history_source elements, 
     not <component> then <history_source>. 
+    
+    :param yml: loaded yaml file
+    :type yml: dict
+    :param hist_src: name of a history_source file in that yamlfile
+    :type hist_src: string
+    :raises TypeError: if yml is not a dict (i.e. a path to a yamlfile)
+    :raises ValueError: if the history_source is not found in the yaml configuration
+    :return: either "all" or a list of variables associated with history_source
+    :rtype: string or list
     '''
     fre_logger.debug(f"Yaml file information: {yml}")
     fre_logger.debug(f"history source: {hist_src}")
@@ -77,12 +87,10 @@ def get_variables_hist_src(yml: dict, hist_src: str) -> list:
     is_found = False
     src_vars = []
     for component_info in yml["postprocess"]["components"]:
-        print(component_info['type'])
         #it is assumed that hist_src is pre-filtered for active/inactive pp components
         src_info = component_info.get("sources")
         #timeseries case
         for src in src_info:
-            print(src)
             if src['history_file'] == hist_src:
                 is_found = True
                 if src.get("variables"):
@@ -93,8 +101,6 @@ def get_variables_hist_src(yml: dict, hist_src: str) -> list:
         #static case
         if component_info.get("static"):
             static_el = component_info.get("static")
-            print(static_el[0])
-            print(static_el[0].get("source"))
             if static_el[0].get("source") == hist_src:
                 is_found = True
                 if static_el[0].get("variables"):
@@ -105,7 +111,7 @@ def get_variables_hist_src(yml: dict, hist_src: str) -> list:
     #using is_found rather than a check for length on the off chance that the 
     #variable list is of length 0 without being caught earlier in the config
     if not is_found:
-        raise ValueError(f"history_file, {hist_src}, not found in pp yaml configuration!")
+        raise ValueError(f"history_file, {hist_src}, not found in pp yaml configuration {yml}!")
     return src_vars
 
 ## NOTE: For python 3.11 - this might be available already as contextlib.chdir()
