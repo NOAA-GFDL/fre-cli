@@ -61,4 +61,4 @@ jobs:
           verbose: true
           files: coverage.xml
           flags: unittests
-           token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
