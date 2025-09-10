@@ -43,69 +43,78 @@ from . import *
 
 fre_logger = logging.getLogger(__name__)
 
-#def get_combined_cmoryaml( yamlfile: Union[str, Path],
-#                           experiment: str,
-#                           platform: str,
-#                           target: str,
-#                           output: Optional[Union[str, Path]] = None ) -> Dict[str, Any]:
+#def get_combined_cmoryaml(CMORYaml, output: Optional[str]=None):
 #    """
-#    Combine configuration information from the model, cmor, and other FRE-yaml config files into
-#    a single dictionary. the dictionary is intended to be read by `fre cmor yaml`.
-#    The final result relies on several calls to fre.cmor.cmor_info_parser.CMORYaml class routines.
+#    Combine the model, experiment, and cmor yamls
 #
-#    :param yamlfile: Path to the model YAML file.
-#    :type yamlfile: str or Path
-#    :param experiment: Name of the experiment to target.
-#    :type experiment: str
-#    :param platform: Platform identifier (e.g., compute environment).
-#    :type platform: str
-#    :param target: Target build or run configuration.
-#    :type target: str
-#    :param output: If given, path to write the combined YAML file.
-#    :type output: str or Path, optional
-#    :raises Exception: For errors in initialization or merging steps.
-#    :return: Cleaned, combined CMOR YAML configuration.
-#    :rtype: dict
-#
-#    .. note:: The merging process details are within the CMORYaml class code
+#    :param CMORYaml: combined cmor-yaml object
+#    :type CMORYaml: 
+#    :param output: Path representing target output file to write yamlfile to
+#    :type output: str
 #    """
-def get_combined_cmoryaml(CMORYaml, output: Optional[str]=None):
+def get_combined_cmoryaml( yamlfile: Union[str, Path],
+                           experiment: str,
+                           platform: str,
+                           target: str,
+                           output: Optional[Union[str, Path]] = None ) -> Dict[str, Any]:
     """
-    Combine the model, experiment, and cmor yamls
+    Combine configuration information from the model, cmor, and other FRE-yaml config files into
+    a single dictionary. the dictionary is intended to be read by `fre cmor yaml`.
+    The final result relies on several calls to fre.cmor.cmor_info_parser.CMORYaml class routines.
 
-    :param CMORYaml: combined cmor-yaml object
-    :type CMORYaml: 
-    :param output: Path representing target output file to write yamlfile to
-    :type output: str
+    :param yamlfile: Path to the model YAML file.
+    :type yamlfile: str or Path
+    :param experiment: Name of the experiment to target.
+    :type experiment: str
+    :param platform: Platform identifier (e.g., compute environment).
+    :type platform: str
+    :param target: Target build or run configuration.
+    :type target: str
+    :param output: If given, path to write the combined YAML file.
+    :type output: str or Path, optional
+    :raises Exception: For errors in initialization or merging steps.
+    :return: Cleaned, combined CMOR YAML configuration.
+    :rtype: dict
+
+    .. note:: The merging process details are within the CMORYaml class code
     """
     try:
         fre_logger.info('calling cmor_info_parser.CMORYaml to initialize a CMORYaml instance...')
         CmorYaml = cmip.CMORYaml(yamlfile, experiment, platform, target)
-        fre_logger.debug('...CmorYaml =\n %s...', pformat(CmorYaml))
         fre_logger.info('...CmorYaml instance initialized...')
+        #fre_logger.debug('...CmorYaml =\n %s...', pformat(CmorYaml))
+        ##assert False # good.
     except Exception as exc:
         raise ValueError("CMORYaml.combine_model failed") from exc
 
-    # Merge settings information into combined file
-    try:
-        # Merge model into combined file
-        yaml_content = CMORYaml.get_settings_yaml(yaml_content)
-    except Exception as exc:
-        raise ValueError("ERR: Could not merge setting information.") from exc
     
     # Merge cmor experiment yamls into combined file, calls experiment_check
     try:
         fre_logger.info('calling CmorYaml.combine_model() for yaml_content and loaded_yaml...')
         yaml_content, loaded_yaml = CmorYaml.combine_model()
         fre_logger.info('... CmorYaml.combine_model succeeded.\n')
+        #fre_logger.debug('... loaded_yaml = %s', pformat(loaded_yaml))
+        #fre_logger.debug('... yaml_content = ...\n %s', pformat(yaml_content))
+        ##assert False # good.
     except Exception as exc:
         raise Exception(f"CmorYaml.combine_model failed for some reason.\n exc =\n {exc}") from exc
+
+
+    # Merge settings information into combined file
+    try:
+        # Merge model into combined file
+        yaml_content = CmorYaml.get_settings_yaml(yaml_content)
+    except Exception as exc:
+        raise ValueError(f"ERR: Could not merge setting information. exc = \n{exc}") from exc
+
 
     try:
         fre_logger.info('calling CmorYaml.combine_experiment(), for comb_cmor_updated_list '
                         'using args yaml_content and loaded_yaml...')
         comb_cmor_updated_list = CmorYaml.combine_experiment(yaml_content, loaded_yaml)
         fre_logger.info('... CmorYaml.combine_experiment succeeded.\n')
+        #fre_logger.debug('... comb_cmor_updated_list = ...\n %s', pformat(comb_cmor_updated_list))
+        ##assert False # good.
     except Exception as exc:
         raise Exception(f"CmorYaml.combine_experiment failed for some reason.\n exc =\n {exc}") from exc
 
@@ -114,16 +123,20 @@ def get_combined_cmoryaml(CMORYaml, output: Optional[str]=None):
                         'using args comb_cmor_updated_list and loaded_yaml...')
         full_cmor_yaml = CmorYaml.merge_cmor_yaml(comb_cmor_updated_list, loaded_yaml)
         fre_logger.info('... CmorYaml.merge_cmor_yaml succeeded\n')
+        #fre_logger.debug('... full_cmor_yaml = ...\n %s', pformat(full_cmor_yaml))
+        ##assert False # good.
     except Exception as exc:
         raise Exception(f"CmorYaml.merge_cmor_yaml failed for some reason.\n exc =\n {exc}") from exc
 
     cleaned_yaml = CmorYaml.clean_yaml(full_cmor_yaml)
     fre_logger.info("Combined cmor-yaml information cleaned+saved as dictionary")
-    fre_logger.debug("cleaned_yaml = \n %s", pformat(cleaned_yaml))
-
+    #fre_logger.debug("cleaned_yaml = \n %s", pformat(cleaned_yaml))
+    ##assert False # good.
+    
     if output is not None:
         output_yaml( cleaned_yaml, output )
         fre_logger.info("Combined cmor-yaml information saved to %s", output)
+    #assert False
 
     return cleaned_yaml
 
@@ -195,8 +208,8 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, us
 
     elif use == "cmor":
         fre_logger.info('attempting to combine cmor yaml info with info from other yamls...')
-#        yml_dict = get_combined_cmoryaml(yamlfile, experiment, platform, target, output)
-        yml_dict = get_combined_cmoryaml( CmorYaml, output )
+        yml_dict = get_combined_cmoryaml(yamlfile, experiment, platform, target, output)
+#        yml_dict = get_combined_cmoryaml( CmorYaml, output )
         fre_logger.info('... done attempting to combine cmor yaml info')
     else:
         raise ValueError("'use' value is not valid; must be one of: 'compile', 'pp', or 'cmor'")

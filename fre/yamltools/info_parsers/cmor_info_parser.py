@@ -249,10 +249,9 @@ class CMORYaml():
 
         return yaml_content_str
 
-#    def combine_experiment( self,
-#                            yaml_content: str,
-#                            loaded_yaml: Dict[str, Any] ) -> List[str]:
-    def combine_experiment(self, yaml_content, loaded_yaml):
+    def combine_experiment( self,
+                            yaml_content: str,
+                            loaded_yaml: Dict[str, Any] ) -> List[str]:
         """
         Combine model, grid, post-processing, and experiment YAMLs.
 
@@ -274,9 +273,9 @@ class CMORYaml():
         if cmory_path is None:
             raise ValueError('cmory_path is none!')
 
-#        fre_logger.info(f'ppsettingsy_path = {ppsettingsy_path}')
-#        if ppsettingsy_path is None:
-#            raise ValueError('ppsettingsy_path is none!')
+        #fre_logger.info(f'ppsettingsy_path = {ppsettingsy_path}')
+        #if ppsettingsy_path is None:
+        #    raise ValueError('ppsettingsy_path is none!')
 
         fre_logger.info(f'gridsy_path = {gridsy_path}')
         if gridsy_path is None:
