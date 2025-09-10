@@ -52,7 +52,7 @@ def get_grid_spec(datadict: dict) -> str:
     Gets the grid_spec.nc file from the tar file specified in
     yaml["postprocess"]["settings"]["pp_grid_spec"]
 
-    :datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary containing relevant regrid parameters
     :type datadict: dict
 
     :raises IOError:  Error if grid_spec.nc file cannot be found in the
@@ -89,7 +89,7 @@ def get_input_mosaic(datadict: dict) -> str:
     """
     Gets the input mosaic filename from the grid_spec file.
 
-    :datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary containing relevant regrid parameters
     :type datadict: dict
     :raises IOError: Error if the input mosaic file cannot be found in the
                      current work directory
@@ -125,9 +125,9 @@ def get_input_file(datadict: dict, source: str) -> str:
     """
     Formats the input file name where the input file contains the variable data that will be regridded.
 
-    :datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary containing relevant regrid parameters
     :type datadict:dict
-    :source: history file type
+    :param source: history file type
     :type source: str
 
     :return: formatted input file name
@@ -161,7 +161,7 @@ def get_remap_file(datadict: dict) -> str:
 
     The remap_file will be read from, or outputted to the remap_dir.
 
-    :datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary containing relevant regrid parameters
     :type datadict: dict
 
     :return: remap filename
@@ -200,7 +200,7 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
     Scalar_fields is a string of comma separated list of variables
     that will be regridded
 
-    :datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary containing relevant regrid parameters
     :type datadict: dict
 
     :return: (string of scalar fields, boolean indicating whether regridding is needed)
@@ -237,7 +237,7 @@ def write_summary(datadict):
     Logs a summary of the component that will be regridded in a human-readable format
     This function will log only if the logging level is set to INFO or lower
 
-    :datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary containing relevant regrid parameters
     :type datadict: dict
     """
 
@@ -267,17 +267,25 @@ def regrid_xy(yamlfile: str,
     """
     Calls fregrid to regrid data in the specified source data file.
 
-    :yamlfile: yaml file containing specifications for yaml["postprocess"]["settings"]["pp_grid_spec"]
-               and yaml["postprocess"]["components"]
-    :input_dir: Name of the input directory containing the input/history files,
-                Fregrid will look for all input history files in input_dir.
-    :output_dir: Name of the output directory where fregrid outputs will be saved
-    :work_dir: Directory that will contain the extracted files from the grid_spec tar
-    :remap_dir: Directory that will contain the generated remap file
-    :Source: The stem of the history file to regrid
-    :Input_date: Datestring where the first 8 characters correspond to YYYYMMDD
-                 Input_date[:8] represents the date prefix in the history files,
-                 e.g., input_date=20250730T0000Z where the history filename is 20250730.atmos_month_aer.tile1.nc
+    :param yamlfile: yaml file containing specifications for yaml["postprocess"]["settings"]["pp_grid_spec"]
+                     and yaml["postprocess"]["components"]
+    :type yamlfile: str
+    :param input_dir: Name of the input directory containing the input/history files,
+                      Fregrid will look for all input history files in input_dir.
+    :type input_dir: str
+    :param output_dir: Name of the output directory where fregrid outputs will be saved
+    :type output_dir: str
+    :param work_dir: Directory that will contain the extracted files from the grid_spec tar
+    :type work_dir: str
+    :param remap_dir: Directory that will contain the generated remap file
+    :type remap_dir: str
+    :param source: The stem of the history file to regrid
+    :type source:str
+    :param input_date: Datestring where the first 8 characters correspond to YYYYMMDD
+                       Input_date[:8] represents the date prefix in the history files,
+                       e.g., input_date=20250730T0000Z where the history filename is 
+                       20250730.atmos_month_aer.tile1.nc
+    :type input_date: str
 
     .. note:  All directories should be in absolute paths
     """
