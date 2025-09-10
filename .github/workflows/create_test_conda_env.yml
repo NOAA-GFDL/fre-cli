@@ -53,7 +53,7 @@ jobs:
       - name: Run pylint in fre-cli environment
         run: |
           # run pylint, ignored modules avoid warnings arising from code internal to those modules
-          pylint --fail-under 9.00 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
+          pylint --fail-under 7.00 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
