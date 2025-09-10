@@ -7,6 +7,7 @@ from cdo import Cdo
 import logging
 import subprocess
 import shutil
+from pathlib import Path
 
 fre_logger = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ class frenctoolsTimeAverager(timeAverager):
         #Recursive call if month is selected for climatology. by Avery Kiihne
         if self.avg_type == 'month':
             monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
-            output_dir = f"monthly_output_files"    #Folder for the results, split by month
+            output_dir = Path(outfile).parent       #Save output in the user-specified location
             os.makedirs(monthly_nc_dir, exist_ok=True)   #create directory if it does not exist
             os.makedirs(output_dir, exist_ok=True)
             #Extract unique months from the infile 
@@ -74,7 +75,7 @@ class frenctoolsTimeAverager(timeAverager):
 
             #Dictionary to store output filenames by month
             nc_month_file_paths = {month_index: os.path.join(monthly_nc_dir, f"all_years.{month_index}.nc") for month_index in month_indices}
-            month_output_file_paths = {month_index: os.path.join(output_dir, f"{outfile}_.{month_index}.nc") for month_index in month_indices}
+            month_output_file_paths = {month_index: os.path.join(output_dir, f"{Path(outfile).stem}.{month_index:02d}.nc") for month_index in month_indices}
 
             cdo = Cdo()
             #Loop through each month and select the corresponding data
