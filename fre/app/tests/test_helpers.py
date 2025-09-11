@@ -46,7 +46,7 @@ def test_get_variables():
                 out2 == expected_dicts[1],
                 out3 == expected_dicts[2]])
              
-def test_get_variables_err():
+def test_get_variables_load_wrong_type():
     """
     Test get_variables() returns an error when given inappropriate input
     """
@@ -66,8 +66,8 @@ def test_get_variables_err():
 def test_get_variables_hist_src(hist_src, var_list):
     '''
     Test get_variables_hist_src()
-    - timeseries all, static all
-    - timeseries varlist, static varlist
+    - timeseries getting back all, static getting back all
+    - timeseries getting back varlist, static getting back varlist
     - hist_src not found in file (xfail)
     '''
     # Load the yaml config
@@ -76,14 +76,11 @@ def test_get_variables_hist_src(hist_src, var_list):
     new_var_list = helpers.get_variables_hist_src(yml, hist_src)
     assert new_var_list == var_list
     
-def test_yaml_load_wrong_type():
+def test_get_var_hist_src_load_wrong_type():
     '''
     Checks that we get the right error raised when we try to read an unloaded yaml
-    for get_variables and get_variables_hist_src
+    for get_variables_hist_src
     '''
-    with pytest.raises( Type Error ) as execinfo:
-        out1 = helpers.get_variables(YAML_EX, 'atmos_scalar_test_vars')
-    assert assert execinfo.type is TypeError
     with pytest.raises( Type Error ) as execinfo2:
         out1 = helpers.get_variables_hist_src(YAML_EX, 'atmos_scalar_test_vars')
     assert assert execinfo2.type is TypeError    

@@ -176,7 +176,7 @@ def histval(history,date_string,warn):
               help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
 @click.option('--split-all-vars', '-a', is_flag=True, default=False,
               help="Whether to ignore other config options and split all vars in the file. Defaults to false. Conflicts with -c, -s and -y options.")
-def split_netcdf_wrapper(inputdir, outputdir,, history_source, use_subdirs, yamlfile, split_all_vars):
+def split_netcdf_wrapper(inputdir, outputdir, history_source, use_subdirs, yamlfile, split_all_vars):
     ''' Splits all netcdf files matching the pattern specified by $history_source in $inputdir
         into files with a single data variable written to $outputdir. If $yamlfile contains
         variable filtering settings under $history_source, only those variables specified will
