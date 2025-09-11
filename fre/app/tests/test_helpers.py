@@ -81,9 +81,9 @@ def test_get_var_hist_src_load_wrong_type():
     Checks that we get the right error raised when we try to read an unloaded yaml
     for get_variables_hist_src
     '''
-    with pytest.raises( Type Error ) as execinfo2:
+    with pytest.raises( TypeError ) as execinfo2:
         out1 = helpers.get_variables_hist_src(YAML_EX, 'atmos_scalar_test_vars')
-    assert assert execinfo2.type is TypeError    
+    assert execinfo2.type is TypeError    
 
 def test_change_directory():
     """
