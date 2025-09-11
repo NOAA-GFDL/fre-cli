@@ -41,6 +41,21 @@ def test_update_calendar_type_success(temp_json_file):
         assert data["calendar"] == new_calendar_type
         assert data["other_field"] == "some_value"
 
+def test_update_calendar_type_valerr_raise(temp_json_file):
+    """
+    Test error raising when the input calendar is None
+    """
+    with pytest.raises(ValueError):
+        update_calendar_type(temp_json_file, None)
+
+def test_update_calendar_type_unknown_err():
+    """
+    Test raising an exception not caught by the other ones
+    """
+    bad_path = 12345
+    with pytest.raises(Exception):
+        update_calendar_type( bad_path, '365_day')
+
 @pytest.fixture
 def temp_keyerr_json_file(tmp_path):
     """
@@ -70,23 +85,25 @@ def test_update_calendar_type_keyerror_raise(temp_keyerr_json_file):
     with pytest.raises(KeyError):
         update_calendar_type(temp_keyerr_json_file,'365_day')
 
+@pytest.fixture
+def temp_jsondecodeerr_json_file(tmp_path):
+   # Create a file with invalid JSON content
+    invalid_json_file = tmp_path / "invalid.json"
+    invalid_content = '{ "calendar": "original_calendar_type", "other_field": "some_value" '  # missing closing }
+    with open(invalid_json_file, "w", encoding="utf-8") as f:
+        f.write(invalid_content)
+    return invalid_json_file
+
+def test_update_calendar_type_jsondecode_raise(temp_jsondecodeerr_json_file):
+    """
+    Test raising a JSONDecodeError
+    """
+    with pytest.raises(json.JSONDecodeError):
+        update_calendar_type(temp_jsondecodeerr_json_file, '365_day')
+
 def test_update_calendar_type_jsonDNE_raise():
     """
     Test error raising when the input experiment json doesn't exist
     """
     with pytest.raises(FileNotFoundError):
         update_calendar_type('DOES_NOT_EXIST.json','365_day')
-
-def test_update_calendar_type_valerr_raise(temp_json_file):
-    """
-    Test error raising when the input calendar is None
-    """
-    with pytest.raises(ValueError):
-        update_calendar_type(temp_json_file, None)
-
-#def test_update_calendar_type_jsondecode_raise():
-#    """
-#    Test raising a JSONDecodeError
-#    """
-#    with pytest.raises(json.JSONDecodeError):
-#        update_calendar_type()
