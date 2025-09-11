@@ -1,22 +1,41 @@
 '''
-TODO- make docstring
+Creates a Dockerfile and container build script
+
+If the build script is executed, a singularity image file (.sif) is generated. 
 '''
 
 import os
-import sys
 import logging
-fre_logger = logging.getLogger(__name__)
 
 import subprocess
-from pathlib import Path
 
-from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 import fre.yamltools.combine_yamls_script as cy
+from typing import Optional
+from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 
-def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer):
-    srcDir="src"
-    checkoutScriptName = "checkout.sh"
-    baremetalRun = False # This is needed if there are no bare metal runs
+fre_logger = logging.getLogger(__name__)
+
+def dockerfile_create(yamlfile:str, platform:str, target:str, execute: Optional[bool] = False, no_format_transfer: Optional[bool] = False):
+    """
+    Creates the dockerfile and container build script for a container build
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE container platform; container platforms are defined in the platforms yaml.
+                     Container platforms can build non-shareable (includes intel compilers) and shareable
+                     (does not include intel compilers) singularity image files. An example of a
+                     non-shareable container platform is "hpcme.2023"
+    :type platform: str
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :type target: str
+    :param execute: Run the created dockerfile to build a container
+    :type execute: bool
+    :param no_format_transfer: Skip the container format conversion to a .sif file.
+    :type no_format_transfer: bool
+    :raises ValueError: Error if platform does not exist in platforms yaml configuration 
+
+    .. note:: To build an image on GFDL's RDHPCS GAEA, please submit a GFDL helpdesk ticket for podman access.
+    """
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target
@@ -42,7 +61,6 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
     modelYaml = yamlfre.freyaml(full_combined,fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
-    fremakeBuildList = []
     ## Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
@@ -52,15 +70,12 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 
-            ## Make the bldDir based on the modelRoot, the platform, and the target
-            srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
             if not platform["container"]:
                 continue
 
             image=modelYaml.platforms.getContainerImage(platformName)
             stage2image = modelYaml.platforms.getContainer2base(platformName)
-            bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
             tmpDir = "tmp/"+platformName
             dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],
@@ -79,15 +94,15 @@ def dockerfile_create(yamlfile, platform, target, execute, skip_format_transfer)
             currDir = os.getcwd()
 
             # create build script for container
-            dockerBuild.createBuildScript(platform, skip_format_transfer)
+            dockerBuild.createBuildScript(platform, skip_format_transfer = no_format_transfer)
 
             former_log_level = fre_logger.level
-            fre_logger.setLevel(logging.INFO)                
+            fre_logger.setLevel(logging.INFO)
             fre_logger.info("\ntmpDir created in " + currDir + "/tmp")
             fre_logger.info("Dockerfile created in " + currDir +"\n")
             fre_logger.info("Container build script created at "+dockerBuild.userScriptPath+"\n\n")
             fre_logger.setLevel(former_log_level)
-                
+
             # run the script if option is given
             if run:
                 subprocess.run(args=[dockerBuild.userScriptPath], check=True)

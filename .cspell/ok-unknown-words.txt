@@ -539,6 +539,11 @@ ymonstddev
 yseasmean
 yseasstddev
 yvalues
+YYYY
+YYYYMM
+YYYYMMDD
+YYYYMMDDHH
+YYYYMMDDHH:mm
 zaxis
 zbounds
 zerovars
@@ -552,3 +557,5 @@ longbourn
 pemberley
 openedfile
 lonxlat
+njobs
+RDHPCS
