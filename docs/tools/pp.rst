@@ -63,7 +63,7 @@
 ------------------------
 
 * Given a directory structure with netcdf files, calls split-netcdf on individual netcdf files
-* Minimal Syntax: ``fre pp split-netcdf-wrapper -i input/ -o output/ [-c yaml_component -s history_source -y yamlfile.yml | --split-all-vars] [--use-subdirs]``
+* Minimal Syntax: ``fre pp split-netcdf-wrapper -i input/ -o output/ [ -s history_source -y yamlfile.yml | --split-all-vars] [--use-subdirs]``
 * Module(s) needed: n/a
 * Example: ``fre pp split-netcdf-wrapper -i input/ -o output/ --split-all-vars --use-subdirs``
 

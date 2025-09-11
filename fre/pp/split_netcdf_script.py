@@ -18,7 +18,8 @@ import yaml
 from itertools import chain
 import logging
 
-from fre.app.helpers import get_variables
+#from fre.app.helpers import get_variables
+from fre.app.helpers import get_variables_hist_src
 
 
 fre_logger = logging.getLogger(__name__)
@@ -80,12 +81,10 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     varlist = "all"
   else:
     ydict = yaml.safe_load(Path(yamlfile).read_text())
-    vardict = get_variables(ydict, component)
-    if vardict is None or history_source not in vardict.keys():
-      fre_logger.error(f"error: either component {component} not defined or source {history_source} not defined under component {component} in yamlfile {yamlfile}.")
-      raise ValueError(f"error: either component {component} not defined or source {history_source} not defined under component {component} in yamlfile {yamlfile}.")
-    else:
-      varlist = vardict[history_source]
+    varlist = get_variables_hist_src(ydict, history_source)
+    if varlist is None:
+      fre_logger.error(f"error: source {history_source} not defined in yamlfile {yamlfile}.")
+      raise ValueError(f"error: source {history_source} not defined in yamlfile {yamlfile}.")
       
   #extend globbing used to find both tiled and non-tiled files
   #all files that contain the current source:history_file name,
