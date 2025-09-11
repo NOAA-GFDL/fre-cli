@@ -105,7 +105,7 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     mocked in this package within the `fre/tests/test_files/ascii_files/mock_archive` directory structure. `cd`'ing
     there and using the command `tree` will reveal the mocked directory structure, something like:
 
-    
+
     <STEM>/<EXP_NAME>/<PLATFORM>-<TARGET>/
 
     └── pp
@@ -122,7 +122,7 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
 
                         └── component.YYYYMM-YYYYMM.var.nc
 
-    
+
     :param bronx_file_path: File path to use as a reference for statics file location.
     :type bronx_file_path: str
     :return: Path to the statics file if found, else None.
@@ -141,9 +141,9 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     fre_logger.debug('going to glob the following path for a statics file: \n%s\n', statics_path)
     fre_logger.debug('the call is going to be:')
     fre_logger.debug(f"\n glob.glob({statics_path+'/*static*.nc'})  \n")
-    
+
     statics_file_glob = glob.glob(statics_path+'/*static*.nc')
-    fre_logger.debug('the output glob looks like: %s', statics_file_glob)    
+    fre_logger.debug('the output glob looks like: %s', statics_file_glob)
     if len(statics_file_glob) == 1:
         return statics_file_glob[0]
     elif len(statics_file_glob) > 1:
