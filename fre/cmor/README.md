@@ -136,8 +136,8 @@ or a list of variablescan be accepted as input.
 
 #### Example and Description
 ```
-fre -v cmor find -r fre/tests/test_files/cmip6-cmor-tables/Tables/ \
-                 -v sos
+fre -v cmor find --table_config_dir fre/tests/test_files/cmip6-cmor-tables/Tables/ \
+                 --opt_var_name sos
 ```
 
 Here, if a MIP table under `cmip6-cmor-tables/Tables` contains a variable entry for `sos`, then the MIP table and the metadata
@@ -153,8 +153,8 @@ variable in the right spot. Each entry in the output list should be unique.
 
 #### Example and Description
 ```
-fre cmor varlist -d fre/tests/test_files/ocean_sos_var_file/ \
-                 -o simple_varlist.txt
+fre cmor varlist --dir_targ fre/tests/test_files/ocean_sos_var_file/ \
+                 --output simple_varlist.txt
 cat simple_varlist.txt # shows the result
 ```
 
