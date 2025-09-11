@@ -196,7 +196,7 @@ def make_simple_varlist( dir_targ: str,
             os.path.basename(file).split('.')[-2]: os.path.basename(file).split('.')[-2] for file in files}
     except Exception as exc:
         fre_logger.error(f'{exc}')
-        fre_logger.error('ERROR: no matching pattern, or not enough info in the filenames'
+        fre_logger.warning('WARNING: no matching pattern, or not enough info in the filenames'
                          ' i am expecting FRE-bronx like filenames!')
         return None
 
