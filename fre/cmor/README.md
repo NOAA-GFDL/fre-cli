@@ -86,11 +86,11 @@ to work. Additionally, the user must provide a variable list and certain pieces 
 #### Example and Description
 ```
 fre cmor run --run_one --grid_label gr --grid_desc FOO_BAR_PLACEHOLD --nom_res '10000 km' \
-               --indir fre/tests/test_files/ocean_sos_var_file/ \
-               --varlist fre/tests/test_files/varlist \
-               --table_config fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json \
-               --exp_config fre/tests/test_files/CMOR_input_example.json \
-               --outdir fre/tests/test_files/outdir
+             --indir fre/tests/test_files/ocean_sos_var_file/ \
+             --varlist fre/tests/test_files/varlist \
+             --table_config fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json \
+             --exp_config fre/tests/test_files/CMOR_input_example.json \
+             --outdir fre/tests/test_files/outdir
 ```
 
 Note- the target input file here is only created after running `pytest fre/cmor/tests fre/tests/test_fre_cmor_cli.py`. These tests
@@ -111,11 +111,11 @@ An input triplet of `--experiment` / `--platform` / `--target` is required to ma
 
 #### Example and Description
 ```
-fre -v cmor yaml -o combined.yaml --run_one --dry_run \
-                 -y fre/yamltools/tests/AM5_example/am5.yaml \
-				 -e c96L65_am5f7b12r1_amip \
-				 -p ncrc5.intel \
-				 -t prod-openmp
+fre -v cmor yaml --run_one --dry_run --output combined.yaml \
+                 --yamlfile fre/yamltools/tests/AM5_example/am5.yaml \
+				 --experiment c96L65_am5f7b12r1_amip \
+				 --platform ncrc5.intel \
+				 --target prod-openmp
 ```
 
 Note- this example is also from this repository's unit-tests.
