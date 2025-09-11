@@ -97,7 +97,7 @@ def from_dis_gimme_dis( from_dis: Dataset,
         fre_logger.warning('I am sorry, I could not not give you this: %s\n returning None!\n', gimme_dis)
         return None
 
-
+# note, the awkward spacing of the docstring below is for the way sphinx renders reStructuredText, do not change!
 def find_statics_file( bronx_file_path: str) -> Optional[str]:
     """
     Attempt to find the corresponding statics file given the path to a FRE-bronx output file. The code assumes
@@ -141,14 +141,18 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     fre_logger.debug('going to glob the following path for a statics file: \n%s\n', statics_path)
     fre_logger.debug('the call is going to be:')
     fre_logger.debug(f"\n glob.glob({statics_path+'/*static*.nc'})  \n")
+    
     statics_file_glob = glob.glob(statics_path+'/*static*.nc')
-    fre_logger.debug('the output glob looks like: %s', statics_file_glob)
-    statics_file = statics_file_glob[0]
-    if Path(statics_file).exists() or statics_file is None:
-        return statics_file
-    else:
-        fre_logger.warning('could not find the statics file! returning None')
-        return None
+    fre_logger.debug('the output glob looks like: %s', statics_file_glob)    
+    if len(statics_file_glob) == 1:
+        return statics_file_glob[0]
+    elif len(statics_file_glob) > 1:
+        fre_logger.warning('WARNING! too many statics files found!'
+                           'returning the first one in the list, make sure it is the right one')
+        return statics_file_glob[0] # TODO this function needs more flexibility to it
+
+    fre_logger.warning('no statics file found, returning None')
+    return None
 
 
 def create_lev_bnds( bound_these: Variable = None,
