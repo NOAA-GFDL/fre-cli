@@ -41,7 +41,7 @@ def get_compile_paths(full_path, yaml_content):
 ## COMPILE CLASS ##
 class InitCompileYaml(MergeCompileYamls):
     """
-    Class holding routines for initalizing and combining compilation yamls
+    Class holding routines for initializing and combining compilation yamls
 
     :ivar str yamlfile: Path to model yaml configuration file
     :ivar str platform: Platform name
@@ -181,7 +181,7 @@ class InitCompileYaml(MergeCompileYamls):
         # Clean the yaml
         try:
             cleaned_yaml = clean_yaml(full_combined)
-        except Excpetion as exc:
+        except Exception as exc:
             raise ValueError("The final YAML could not cleaned.") from exc
 
         return cleaned_yaml
