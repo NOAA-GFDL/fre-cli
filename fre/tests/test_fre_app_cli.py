@@ -99,6 +99,8 @@ def test_cli_fre_app_regrid_test_case_1(capfd):
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
 
+    test_regrid_xy.cleanup_test()
+    
 # fre app remap
 def test_cli_fre_app_remap(capfd):
     """ fre app remap """

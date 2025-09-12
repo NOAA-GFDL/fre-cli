@@ -61,6 +61,15 @@ def setup_test():
                           input_dir_in=str(input_dir))
   generate_files.make_all()
 
+
+def cleanup_test():
+
+  #remove test directories
+  if output_dir.exists(): shutil.rmtree(output_dir)
+  if remap_dir.exists(): shutil.rmtree(remap_dir)
+  if work_dir.exists(): shutil.rmtree(work_dir)
+  generate_files.cleanup()
+
   
 def test_regrid_xy():
 
@@ -106,13 +115,9 @@ def test_regrid_xy():
   remap_file = remap_dir/f"C{nxy}_mosaicX{nxy}by{nxy}_conserve_order2.nc"
   assert remap_file.exists()
 
-  #remove test directories
-  shutil.rmtree(output_dir)
-  shutil.rmtree(remap_dir)
-  shutil.rmtree(work_dir)
-  generate_files.cleanup()
-
-
+  cleanup_test()
+  
+  
 def test_get_input_mosaic():
 
   """
