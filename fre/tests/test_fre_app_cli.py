@@ -79,7 +79,7 @@ def test_cli_fre_app_regrid_opt_dne(capfd):
     _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_regrid_test_case_1(capfd):
-    """ fre cmor run --help """
+    """ fre app regrid_xy --help """
 
     import fre.app.regrid_xy.tests.test_regrid_xy as test_regrid_xy
     test_regrid_xy.setup_test()        
