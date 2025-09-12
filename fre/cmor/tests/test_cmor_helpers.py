@@ -1,8 +1,9 @@
 from pathlib import Path
 
+import numpy as np
 import pytest
 
-from fre.cmor.cmor_helpers import find_statics_file
+from fre.cmor.cmor_helpers import find_statics_file, print_data_minmax
 
 def test_find_statics_file_success():
     ''' what happens when no statics file is found given a bronx directory strucutre '''
@@ -33,3 +34,16 @@ def test_find_statics_file_nothing_found():
                           'mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' + \
                           'gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/land.000101-000512.lai.nc' )
     assert statics_file is None
+
+
+def test_print_data_minmax_no_exception_case1():
+    ''' checks to make sure this doesnt raise an exception '''
+    print_data_minmax(None, None)
+
+def test_print_data_minmax_no_exception_case2():
+    ''' checks to make sure this doesnt raise an exception '''
+    print_data_minmax(np.ma.core.MaskedArray( data=(0, 10, 20, 30) ), None)
+
+def test_print_data_minmax_no_exception_case3():
+    ''' checks to make sure this doesnt raise an exception '''
+    print_data_minmax(np.ma.core.MaskedArray( data=(0, 10, 20, 30) ), 'foo')

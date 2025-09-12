@@ -281,3 +281,11 @@ def test_cli_fre_cmor_find_opt_dne():
     ''' fre cmor find optionDNE '''
     result = runner.invoke(fre.fre, args=["cmor", "find", "optionDNE"])
     assert result.exit_code == 2
+
+
+def test_cli_fre_cmor_find():
+    ''' fre -v cmor find --varlist fre/tests/test_files/varlist --table_config_dir fre/tests/test_files/cmip6-cmor-tables/Tables '''
+    result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
+                                          "--varlist", "fre/tests/test_files/varlist",
+                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables")]
+    assert result.exit_code == 0
