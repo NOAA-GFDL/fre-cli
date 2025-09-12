@@ -75,6 +75,7 @@ You should be able to click around the locally built html and links should work 
           a second time unless the file throwing the warning was changed. To get all the (useful AND useless) build
           output like the first run, simply add ``-E`` or ``--fresh-env`` to the call to avoid using ``sphinx``\'s
           build-cache.
+
 Troubleshooting
 ~~~~~~~~~~~~~~~
 
