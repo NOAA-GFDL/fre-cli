@@ -7,6 +7,7 @@ import xarray as xr
 import fre.app.regrid_xy.regrid_xy as regrid_xy
 import fre.app.regrid_xy.tests.generate_files as generate_files
 
+
 nxy = 20
 date = "20250729"
 
@@ -44,13 +45,23 @@ components.append({"xyInterp": f"{nxy},{nxy}",
                    "postprocess_on": False}
 )
 
-#generate test files
-generate_files.set_test(components_in=components,
-                        date_in=date,
-                        grid_spec_tar_in=str(grid_spec_tar),
-                        yamlfile_in=str(yamlfile),
-                        input_dir_in=str(input_dir))
 
+def setup_test():
+
+  input_dir.mkdir(exist_ok=True)
+  output_dir.mkdir(exist_ok=True)
+  remap_dir.mkdir(exist_ok=True)
+  work_dir.mkdir(exist_ok=True)
+
+  #generate test files
+  generate_files.set_test(components_in=components,
+                          date_in=date,
+                          grid_spec_tar_in=str(grid_spec_tar),
+                          yamlfile_in=str(yamlfile),
+                          input_dir_in=str(input_dir))
+  generate_files.make_all()
+
+  
 def test_regrid_xy():
 
   """
@@ -58,13 +69,8 @@ def test_regrid_xy():
   data is regridded correctly
   """
 
-  input_dir.mkdir(exist_ok=True)
-  output_dir.mkdir(exist_ok=True)
-  remap_dir.mkdir(exist_ok=True)
-  work_dir.mkdir(exist_ok=True)
-
-  generate_files.make_all()
-
+  setup_test()
+  
   #modify generate_files to change sources
   for source_dict in pp_input_files + emma_input_files + here_input_files:
     source = source_dict["history_file"]

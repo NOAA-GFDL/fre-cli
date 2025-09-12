@@ -78,50 +78,23 @@ def test_cli_fre_app_regrid_opt_dne(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
-@pytest.mark.skip(reason="needs rework")
+#@pytest.mark.skip(reason="needs rework")
 def test_cli_fre_app_regrid_test_case_1(capfd):
     """ fre cmor run --help """
 
-    import fre.app.regrid_xy.tests.test_regrid_xy as t_rgxy
-    assert t_rgxy is not None
-
-    # input files for this test are locked up in here as well
-    if not Path( t_rgxy.TEST_DIR+'/in-dir' ).exists():
-        assert Path(t_rgxy.TAR_IN_DIR).exists()
-        ex = [ "tar", "-C", t_rgxy.TEST_DIR, "-zxvf", t_rgxy.TAR_IN_DIR ]
-        sp = subprocess.run( ex )
-        assert all ( [ sp.returncode == 0,
-                       Path(t_rgxy.IN_DIR).exists() ] )
-
-    # for the time being, still a little dependent on rose for configuration value passing
-    if Path(os.getcwd()+'/rose-app-run.conf').exists():
-        Path(os.getcwd()+'/rose-app-run.conf').unlink()
-
-    with open(os.getcwd()+'/rose-app-run.conf','a',encoding='utf-8') as rose_app_run_config:
-        rose_app_run_config.write(  '[command]\n'                    )
-        rose_app_run_config.write(  'default=regrid-xy\n'            )
-        rose_app_run_config.write(  '\n'                             )
-        rose_app_run_config.write( f'[{t_rgxy.COMPONENT}]\n'                )
-        rose_app_run_config.write( f'sources={t_rgxy.SOURCE}\n'             )
-        rose_app_run_config.write( f'inputGrid={t_rgxy.INPUT_GRID}\n'       )
-        rose_app_run_config.write( f'inputRealm={t_rgxy.INPUT_REALM}\n'     )
-        rose_app_run_config.write( f'interpMethod={t_rgxy.INTERP_METHOD}\n' )
-        rose_app_run_config.write( f'outputGridLon={t_rgxy.NLON}\n'         )
-        rose_app_run_config.write( f'outputGridLat={t_rgxy.NLAT}\n'         )
-        rose_app_run_config.write(  '\n'                             )
-    assert Path('./rose-app-run.conf').exists()
-
+    import fre.app.regrid_xy.tests.test_regrid_xy as test_regrid_xy
+    test_regrid_xy.setup_test()        
+    
     args_list = ["app", "regrid",
-                 "--input_dir", f"{t_rgxy.WORK_YYYYMMDD_DIR}",
-                 "--output_dir", f"{t_rgxy.TEST_OUT_DIR}",
-                 "--begin", f"{t_rgxy.YYYYMMDD}T000000",
-                 "--tmp_dir", f"{t_rgxy.TEST_DIR}",
-                 "--remap_dir", f"{t_rgxy.REMAP_DIR}",
-                 "--source", f"{t_rgxy.SOURCE}",
-                 "--grid_spec", f"{t_rgxy.GOLD_GRID_SPEC_NO_TAR}",
-                 "--def_xy_interp", f'"{t_rgxy.NLON},{t_rgxy.NLAT}"' ]
-    click.echo(f'args_list = \n {args_list}')
-    click.echo('fre ' + ' '.join(args_list))
+                 "--yamlfile", str(test_regrid_xy.yamlfile),
+                 "--input_dir", str(test_regrid_xy.input_dir),
+                 "--output_dir", str(test_regrid_xy.output_dir),
+                 "--work_dir", str(test_regrid_xy.work_dir),
+                 "--remap_dir", str(test_regrid_xy.remap_dir),
+                 "--source", "pemberley",
+                 "--input_date", test_regrid_xy.date+"T000000"]
+    click.echo(f"args_list = \n {args_list}")
+    click.echo("fre " + ' '.join(args_list))
 
     result = runner.invoke(fre.fre, args=args_list )
     assert result.exit_code == 0

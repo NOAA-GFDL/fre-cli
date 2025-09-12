@@ -160,5 +160,9 @@ def make_all():
   make_mosaic()
   make_grid()
   make_data()
+
   with tarfile.open(grid_spec_tar, "w") as tar:
     for ifile in tar_list: tar.add(ifile)
+
+  for ifile in tar_list:
+    Path(ifile).unlink()
