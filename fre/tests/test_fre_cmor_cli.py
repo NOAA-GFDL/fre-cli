@@ -59,6 +59,59 @@ def test_cli_fre_cmor_help():
     result = runner.invoke(fre.fre, args=["cmor", "--help"])
     assert result.exit_code == 0
 
+def test_cli_fre_cmor_help_and_debuglog():
+    ''' fre cmor --help '''
+    if Path("TEST_FOO_LOG.log").exists():
+        Path("TEST_FOO_LOG.log").unlink()
+    assert not Path("TEST_FOO_LOG.log").exists()
+
+    result = runner.invoke(fre.fre, args=["-vv", "-l", "TEST_FOO_LOG.log", "cmor", "--help"])
+    assert result.exit_code == 0
+    assert Path("TEST_FOO_LOG.log").exists()
+
+    log_text_line_1='[ INFO:                  fre.py:                 fre] fre_file_handler added to base_fre_logger\n'
+    log_text_line_2='[DEBUG:                  fre.py:                 fre] click entry-point function call done.\n'
+    with open( "TEST_FOO_LOG.log", 'r') as log_text:
+        line_list=log_text.readlines()
+        assert log_text_line_1 in line_list[0]
+        assert log_text_line_2 in line_list[1]
+
+    Path("TEST_FOO_LOG.log").unlink()
+
+def test_cli_fre_cmor_help_and_infolog():
+    ''' fre cmor --help '''
+    if Path("TEST_FOO_LOG.log").exists():
+        Path("TEST_FOO_LOG.log").unlink()
+    assert not Path("TEST_FOO_LOG.log").exists()
+
+    result = runner.invoke(fre.fre, args=["-v", "-l", "TEST_FOO_LOG.log", "cmor", "--help"])
+    assert result.exit_code == 0
+    assert Path("TEST_FOO_LOG.log").exists()
+
+    log_text_line_1='[ INFO:                  fre.py:                 fre] fre_file_handler added to base_fre_logger\n'
+    with open( "TEST_FOO_LOG.log", 'r') as log_text:
+        line_list=log_text.readlines()
+        assert log_text_line_1 in line_list[0]
+
+    Path("TEST_FOO_LOG.log").unlink()
+
+def test_cli_fre_cmor_help_and_quietlog():
+    ''' fre cmor --help '''
+    if Path("TEST_FOO_LOG.log").exists():
+        Path("TEST_FOO_LOG.log").unlink()
+    assert not Path("TEST_FOO_LOG.log").exists()
+
+    result = runner.invoke(fre.fre, args=["-q", "-l", "TEST_FOO_LOG.log", "cmor", "--help"])
+    assert result.exit_code == 0
+    assert Path("TEST_FOO_LOG.log").exists()
+
+    with open( "TEST_FOO_LOG.log", 'r') as log_text:
+        line_list=log_text.readlines()
+        assert line_list == []
+
+    Path("TEST_FOO_LOG.log").unlink()
+
+
 def test_cli_fre_cmor_opt_dne():
     ''' fre cmor optionDNE '''
     result = runner.invoke(fre.fre, args=["cmor", "optionDNE"])
