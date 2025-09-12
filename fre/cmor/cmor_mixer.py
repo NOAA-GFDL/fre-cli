@@ -884,9 +884,16 @@ def cmor_run_subtool(indir: str = None,
     """
     # check req'd inputs
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
-        raise ValueError('all input arguments except opt_var_name are required!\n' #uncovered
+        raise ValueError('the following input arguments are required:\n'
                          '[indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
                          '[%s, %s, %s, %s, %s]', indir, json_var_list, json_table_config, json_exp_config, outdir)
+
+    # do not open, but confirm the existence of the exp-specific metadata file
+    if Path(json_exp_config).exists():
+        json_exp_config = str(Path(json_exp_config).resolve())
+    else:
+        raise FileNotFoundError('ERROR: json_exp_config file cannot be opened.\n'
+                                'json_exp_config = %s', json_exp_config)
 
     # check optional grid/grid_label inputs
     # the function checks the potential error conditions
@@ -901,13 +908,6 @@ def cmor_run_subtool(indir: str = None,
     # the function checks the potential error conditions RE CF compliance.
     if calendar_type is not None:
         update_calendar_type(json_exp_config, calendar_type, output_file_path = None)
-
-    # do not open, but confirm the existence of the exp-specific metadata file
-    if Path(json_exp_config).exists():
-        json_exp_config = str(Path(json_exp_config).resolve())
-    else:
-        raise FileNotFoundError('ERROR: json_exp_config file cannot be opened.\n' #uncovered
-                                'json_exp_config = %s', json_exp_config)
 
     # open CMOR table config file - need it here for checking the TABLE's variable list
     json_table_config = str(Path(json_table_config).resolve())
@@ -928,7 +928,7 @@ def cmor_run_subtool(indir: str = None,
             vars_to_run[opt_var_name] = opt_var_name
             break
         elif var_list[local_var] not in mip_var_cfgs["variable_entry"]:
-            fre_logger.warning('skipping local_var = %s /\n' #uncovered
+            fre_logger.warning('skipping local_var = %s /\n'
                                'target_var = %s\n'
                                'target_var not found in CMOR variable group', local_var, var_list[local_var])
             continue
@@ -939,7 +939,7 @@ def cmor_run_subtool(indir: str = None,
 
     # make sure there's stuff to run, otherwise, exit
     if len(vars_to_run) < 1:
-        raise ValueError('runnable variable list is of length 0' #uncovered
+        raise ValueError('runnable variable list is of length 0'
                          'this means no variables in input variable list are in'
                          'the mip table configuration, so there\'s nothing to process!')
     elif all([opt_var_name is not None, opt_var_name not in list(vars_to_run.keys())]):
