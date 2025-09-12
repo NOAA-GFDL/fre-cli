@@ -81,7 +81,7 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
               required = True)
 @click.option("-w", "--work_dir",
               type = str,
-              help = "`TMPDIR` / `tmp_dir` (env var) temp directory for location of file " + \
+              help = "`TMPDIR` / `workdir_dir` (env var) work directory for location of file " + \
                      "read/writes",
               required = True)
 @click.option("-rd", "--remap_dir",
@@ -97,7 +97,7 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
               required = True)
 @click.option("-id", "--input_date",
               type = str,
-              help = "`begin` / `begin` (env var) ISO8601 datetime format specification for" + \
+              help = "`input_date` / `input_date` (env var) ISO8601 datetime format specification for" + \
                      " starting date of data, part of input target file name")
 def regrid(yamlfile, input_dir, output_dir, work_dir,
            remap_dir, source, input_date):

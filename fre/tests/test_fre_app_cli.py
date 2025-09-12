@@ -78,7 +78,6 @@ def test_cli_fre_app_regrid_opt_dne(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
-#@pytest.mark.skip(reason="needs rework")
 def test_cli_fre_app_regrid_test_case_1(capfd):
     """ fre cmor run --help """
 
