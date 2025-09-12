@@ -90,16 +90,6 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
     an opt_var_name in addition to varlist, only that variable name will be printed out.
     accepts 3 arguments, two of the three required.
     '''
-
-    # if opt_var_name specified, forget the list.
-    if opt_var_name is not None:
-        varlist=None
-
-    # custom arg requirement of "one of the two or both" in click should be implemented with
-    # logic before calling context.invoke( <thingy>, *args )
-    if opt_var_name is None and varlist is None:
-        raise ValueError('opt_var_name and varlist cannot both be None')
-
     cmor_find_subtool(
         json_var_list = varlist,
         json_table_config_dir = table_config_dir,
