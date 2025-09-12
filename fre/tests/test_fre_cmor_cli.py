@@ -287,5 +287,5 @@ def test_cli_fre_cmor_find():
     ''' fre -v cmor find --varlist fre/tests/test_files/varlist --table_config_dir fre/tests/test_files/cmip6-cmor-tables/Tables '''
     result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
                                           "--varlist", "fre/tests/test_files/varlist",
-                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables")]
+                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
     assert result.exit_code == 0
