@@ -31,7 +31,7 @@ repository, and the user directly.
 ### Required User Configuration
 
 - A variable list as a JSON dictionary is required, to assist with targeting the right input files for CMORization. An example
-  in the respository is included [here](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json).
+  in the repository is included [here](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json).
   Additionally, see `fre cmor varlist` and the `--opt_var_name` flag for more information.
 
 - An experiment configuration file as a JSON dictionary, an example provided by PCMDI is included in the repository
@@ -94,11 +94,11 @@ fre cmor run --run_one --grid_label gr --grid_desc FOO_BAR_PLACEHOLD --nom_res '
 ```
 
 Note- the target input file here is only created after running `pytest fre/cmor/tests fre/tests/test_fre_cmor_cli.py`. These tests
-effecively contain this exact example, which is run automatically in as a unit-test in this repository's CI/CD workflows.
+effectively contain this exact example, which is run automatically in as a unit-test in this repository's CI/CD workflows.
 
 Here, `fre cmor run` will process one file before exiting (`--run_one`), use the input gridding information metadata provided by the
 `--grid_label`, `--grid_desc`, and `--nom_res` arguments. `--table_config` is pointing to a specific external configuration table known
-as a MIP table, while `--exp_config` will contain the requisite information on output directory strucutre, calendar, and more. `--varlist`
+as a MIP table, while `--exp_config` will contain the requisite information on output directory structure, calendar, and more. `--varlist`
 specifies which files in `--intdir` will be processed. The output directory structure's final location will be at `--outdir`.
 
 
