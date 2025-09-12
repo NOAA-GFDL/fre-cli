@@ -142,14 +142,10 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     fre_logger.debug('the call is going to be:')
     fre_logger.debug(f"\n glob.glob({statics_path+'/*static*.nc'})  \n")
 
-    statics_file_glob = glob.glob(statics_path+'/*static*.nc')
+    statics_file_glob = glob.glob(statics_path+'/*static*.nc') # update to use component TODO
     fre_logger.debug('the output glob looks like: %s', statics_file_glob)
     if len(statics_file_glob) == 1:
         return statics_file_glob[0]
-    elif len(statics_file_glob) > 1:
-        fre_logger.warning('WARNING! too many statics files found!'
-                           'returning the first one in the list, make sure it is the right one')
-        return statics_file_glob[0] # TODO this function needs more flexibility to it
 
     fre_logger.warning('no statics file found, returning None')
     return None
