@@ -60,7 +60,7 @@ def test_cli_fre_cmor_help():
     assert result.exit_code == 0
 
 def test_cli_fre_cmor_help_and_debuglog():
-    ''' fre cmor --help '''
+    ''' fre -vv -l TEST_FOO_LOG.log cmor --help '''
     if Path("TEST_FOO_LOG.log").exists():
         Path("TEST_FOO_LOG.log").unlink()
     assert not Path("TEST_FOO_LOG.log").exists()
@@ -79,7 +79,7 @@ def test_cli_fre_cmor_help_and_debuglog():
     Path("TEST_FOO_LOG.log").unlink()
 
 def test_cli_fre_cmor_help_and_infolog():
-    ''' fre cmor --help '''
+    ''' fre -v -l TEST_FOO_LOG.log cmor --help '''
     if Path("TEST_FOO_LOG.log").exists():
         Path("TEST_FOO_LOG.log").unlink()
     assert not Path("TEST_FOO_LOG.log").exists()
@@ -96,7 +96,7 @@ def test_cli_fre_cmor_help_and_infolog():
     Path("TEST_FOO_LOG.log").unlink()
 
 def test_cli_fre_cmor_help_and_quietlog():
-    ''' fre cmor --help '''
+    ''' fre -q -l TEST_FOO_LOG.log cmor --help '''
     if Path("TEST_FOO_LOG.log").exists():
         Path("TEST_FOO_LOG.log").unlink()
     assert not Path("TEST_FOO_LOG.log").exists()
@@ -110,7 +110,6 @@ def test_cli_fre_cmor_help_and_quietlog():
         assert line_list == []
 
     Path("TEST_FOO_LOG.log").unlink()
-
 
 def test_cli_fre_cmor_opt_dne():
     ''' fre cmor optionDNE '''

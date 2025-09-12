@@ -9,10 +9,6 @@ target variable/component.
 
 Functions
 ---------
-- ``check_path_existence(some_path)``
-- ``iso_to_bronx_chunk(cmor_chunk_in)``
-- ``conv_mip_to_bronx_freq(cmor_table_freq)``
-- ``get_bronx_freq_from_mip_table(json_table_config)``
 - ``cmor_yaml_subtool(...)``
 """
 
@@ -80,6 +76,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
     .. note:: Delegates actual CMORization to cmor_run_subtool, except in dry-run mode.
     .. note:: All actions and key decisions are logged.
     """
+    check_path_existence(yamlfile)
 
     # ---------------------------------------------------
     # parsing the target model yaml ---------------------
