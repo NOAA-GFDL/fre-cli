@@ -6,15 +6,16 @@ import metomi.isodatetime.parsers
 
 from .. import wrapper
 
+# create_monthly_timeseries:
+# ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198001-198012.alb_sfc.nc
+# ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198101-198112.alb_sfc.nc
+# ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198001-198012.aliq.nc
+# ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198101-198112.aliq.nc
+
 @pytest.fixture()
 def create_monthly_timeseries(tmp_path):
     """
     Create a monthly timeseries input shard directory structure containing two variables and two one-year timeseries.
-
-    ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198001-198012.alb_sfc.nc
-    ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198101-198112.alb_sfc.nc
-    ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198001-198012.aliq.nc
-    ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198101-198112.aliq.nc
     """
     # settings
     cycle_point = '1980-01-01'
@@ -48,15 +49,17 @@ def create_monthly_timeseries(tmp_path):
 
     yield tmp_path
 
+
+# create_annual_timeseries
+# ts/regrid-xy/180_288.conserve_order1/tracer_level/P1Y/P1Y/tracer_level.0002-0002.radon.nc
+# ts/regrid-xy/180_288.conserve_order1/tracer_level/P1Y/P1Y/tracer_level.0002-0002.scale_salt_emis.nc
+# ts/regrid-xy/180_288.conserve_order1/tracer_level/P1Y/P1Y/tracer_level.0003-0003.radon.nc
+# ts/regrid-xy/180_288.conserve_order1/tracer_level/P1Y/P1Y/tracer_level.0003-0003.scale_salt_emis.nc
+
 @pytest.fixture()
 def create_annual_timeseries(tmp_path):
     """
     Create an annual timeseries input shard directory structure containing two variables and two one-year timeseries.
-
-    ts/regrid-xy/180_288.conserve_order1/tracer_level/P1Y/P1Y/tracer_level.0002-0002.radon.nc
-    ts/regrid-xy/180_288.conserve_order1/tracer_level/P1Y/P1Y/tracer_level.0002-0002.scale_salt_emis.nc
-    ts/regrid-xy/180_288.conserve_order1/tracer_level/P1Y/P1Y/tracer_level.0003-0003.radon.nc
-    ts/regrid-xy/180_288.conserve_order1/tracer_level/P1Y/P1Y/tracer_level.0003-0003.scale_salt_emis.nc
     """
     # settings
     cycle_point = '0002-01-01'
