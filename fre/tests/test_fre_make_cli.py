@@ -1,12 +1,12 @@
 """
 CLI Tests for fre make *
-Tests the command-line-interface calls for tools in the fre make suite. 
+Tests the command-line-interface calls for tools in the fre make suite.
 Each tool generally gets 3 tests:
     - fre make , checking for exit code 0 (fails if cli isn't configured right)
     - fre make --help, checking for exit code 0 (fails if the code doesn't run)
-    - fre make --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+    - fre make --optionDNE, checking for exit code 2 (fails if cli isn't configured
       right and thinks the tool has a --optionDNE option)
-      
+
 We also have a set of more complicated tests for fre make testing the checkout
 and container creation (and cleaning up after those operations)
 """
@@ -37,7 +37,7 @@ def test_cli_fre_make_opt_dne():
     assert result.exit_code == 2
 
 def test_cli_fre_make_create_checkout_baremetal():
-    ''' fre make checkout-script -y am5.yaml -p ncrc5.intel23 -t debug'''
+    ''' fre -vv make checkout-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t debug'''
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_baremetal"
 
     # Set paths and click options
@@ -57,7 +57,7 @@ def test_cli_fre_make_create_checkout_baremetal():
     os.environ["HOME"]=str(Path(OUT_PATH))
 
     # run checkout
-    result = runner.invoke(fre.fre, args = [ "make", "checkout-script", 
+    result = runner.invoke(fre.fre, args = [ "-v", "-v", "make", "checkout-script",
                                              "-y", f"{yamlfile}/null_model.yaml",
                                              "-p", platform, "-t", target  ])
 

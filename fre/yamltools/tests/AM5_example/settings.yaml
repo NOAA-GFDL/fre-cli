@@ -3,10 +3,10 @@ fre_properties:
   - &PP_AMIP_CHUNK96    "P1Y"
 
 directories: &shared_directories
-  history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
-  pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
-  analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
-  ptmp_dir:     "/xtmp/$USER/ptmp"
+  history_dir:  !join [fre/tests/test_files/ascii_files/mock_archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
+  pp_dir:       !join [fre/tests/test_files/ascii_files/mock_archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
+  analysis_dir: !join [fre/tests/test_files/ascii_files/mock_nbhome/$USER/, *FRE_STEM, /, *name]
+  ptmp_dir:     "fre/tests/test_files/ascii_files/mock_xtmp/$USER/ptmp"
 #  fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
 
 # shared pp settings

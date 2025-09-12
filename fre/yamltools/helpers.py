@@ -6,7 +6,7 @@ from jsonschema import validate, ValidationError, SchemaError
 import logging
 from . import *
 from pathlib import Path
-import os 
+import os
 
 # set logger level to INFO
 fre_logger = logging.getLogger(__name__)
@@ -15,12 +15,12 @@ fre_logger.setLevel(logging.INFO)
 
 def yaml_load(yamlfile):
     """
-    Load the yamlfile; deserializes YAML file into 
+    Load the yamlfile; deserializes YAML file into
     a usable python object
 
     :param yamlfile: Path to YAML configuration file
     :type yamlfile: str
-    :return: dictionary of YAML content 
+    :return: dictionary of YAML content
     :rtype: dict
     """
     with open(yamlfile, 'r') as yf:
@@ -51,7 +51,7 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
     """
     Check that the experiment given is an experiment listed in the model yaml.
     Extract experiment specific information and file paths.
-    
+
     :param mainyaml_dir: Model YAML file
     :type mainyaml_dir: str
     :param experiment: Post-processing experiment name
@@ -107,7 +107,7 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
                 # prepend the directory containing the yaml
                 ay = Path(os.path.join(mainyaml_dir,a))
                 if not ay.exists():
-                    raise ValueError("Incorrect analysis yaml path given; does not exist.")              
+                    raise ValueError("Incorrect analysis yaml path given; does not exist.")
                 ay_path.append(ay)
 
         return (ey_path, ay_path)
@@ -149,7 +149,7 @@ def validate_yaml(yaml, schema_path):
     :return: True if YAML validation is successful
     :rtype: bool
     """
-    # Validate combined yaml information 
+    # Validate combined yaml information
     with open(schema_path, 'r') as s:
         schema = json.load(s)
 

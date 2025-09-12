@@ -7,7 +7,7 @@ import yaml
 from pathlib import Path
 from fre.pp import configure_script_yaml as csy
 from fre.yamltools import combine_yamls_script as cy
-import pytest 
+import pytest
 from jsonschema import validate, SchemaError, ValidationError
 
 # Set what would be click options
@@ -84,7 +84,7 @@ def test_validate_fail():
                        "name": "exp_name",
                        "platform": "ptest",
                        "target": "ttest",
-                       "directories": {"pp_dir": "/some/path"} 
+                       "directories": {"pp_dir": "/some/path"}
                      }
     with pytest.raises(ValueError, match="Combined yaml is not valid. Please fix the errors and try again.") as execinfo:
         val_fail = csy.validate_yaml(wrong_yml_dict)

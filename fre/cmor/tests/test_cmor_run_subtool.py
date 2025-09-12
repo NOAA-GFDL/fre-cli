@@ -5,6 +5,8 @@ from pathlib import Path
 from datetime import date
 import os
 
+import pytest
+
 from fre.cmor import cmor_run_subtool
 
 
@@ -34,6 +36,12 @@ EXP_CONFIG = f'{ROOTDIR}/CMOR_input_example.json'
 OUTDIR = f'{ROOTDIR}/outdir'
 TMPDIR = f'{OUTDIR}/tmp'
 
+# input file details. if calendar matches data, the dates should be preserved or equiv.
+DATETIMES_INPUTFILE='199301-199302'
+FILENAME = f'reduced_ocean_monthly_1x1deg.{DATETIMES_INPUTFILE}.sos'
+FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
+CALENDAR_TYPE = 'julian'
+
 # determined by cmor_run_subtool
 YYYYMMDD = date.today().strftime('%Y%m%d')
 CMOR_CREATES_DIR = \
@@ -41,11 +49,7 @@ CMOR_CREATES_DIR = \
 FULL_OUTPUTDIR = \
    f"{OUTDIR}/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
 FULL_OUTPUTFILE = \
-f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{GRID_LABEL}_199307-199308.nc"
-
-# FYI but helpful for tests
-FILENAME = 'reduced_ocean_monthly_1x1deg.199307-199308.sos' # unneeded, this is mostly for reference
-FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
+f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{GRID_LABEL}_{DATETIMES_INPUTFILE}.nc"
 
 
 def test_setup_fre_cmor_run_subtool(capfd):
@@ -100,7 +104,8 @@ def test_fre_cmor_run_subtool_case1(capfd):
         run_one_mode = True,
         grid_label = GRID_LABEL,
         grid = GRID,
-        nom_res = NOM_RES
+        nom_res = NOM_RES,
+        calendar_type = CALENDAR_TYPE
     )
 
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
@@ -152,7 +157,7 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
 
 # FYI, but again, helpful for tests
 FILENAME_DIFF = \
-    'reduced_ocean_monthly_1x1deg.199307-199308.sosV2.nc'
+    f'reduced_ocean_monthly_1x1deg.{DATETIMES_INPUTFILE}.sosV2.nc'
 FULL_INPUTFILE_DIFF = \
     f"{INDIR}/{FILENAME_DIFF}"
 VARLIST_DIFF = \
@@ -224,13 +229,15 @@ def test_fre_cmor_run_subtool_case2(capfd):
         run_one_mode = True,
         grid_label = GRID_LABEL,
         grid = GRID,
-        nom_res = NOM_RES
+        nom_res = NOM_RES,
+        calendar_type = CALENDAR_TYPE
     )
 
     # check we ran on the right input file.
     assert all( [ Path(FULL_OUTPUTFILE).exists(),
                   Path(FULL_INPUTFILE_DIFF).exists() ] )
     _out, _err = capfd.readouterr()
+
 
 def test_fre_cmor_run_subtool_case2_output_compare_data(capfd):
     ''' I/O data-only comparison of test case2 '''
@@ -282,12 +289,72 @@ def test_git_cleanup():
       #doesn't run happily in CI and not needed
       assert True
     else:
-      git_cmd = f"git restore {EXP_CONFIG}" 
-      restore = subprocess.run(git_cmd, 
+      git_cmd = f"git restore {EXP_CONFIG}"
+      restore = subprocess.run(git_cmd,
                     shell=True,
                     check=False)
       check_cmd = f"git status | grep {EXP_CONFIG}"
-      check = subprocess.run(check_cmd, 
+      check = subprocess.run(check_cmd,
                              shell = True, check = False)
       #first command completed, second found no file in git status
       assert all([restore.returncode == 0, check.returncode == 1])
+
+def test_cmor_run_subtool_raise_value_error():
+    '''
+    test that ValueError raised when required args are absent
+    '''
+    with pytest.raises(ValueError):
+        cmor_run_subtool( indir = None,
+                          json_var_list = None,
+                          json_table_config = None,
+                          json_exp_config = None,
+                          outdir = None )
+
+def test_fre_cmor_run_subtool_no_exp_config():
+    '''
+    fre cmor run, exception, json_exp_config DNE
+    '''
+
+    # test call, where meat of the workload gets done
+    with pytest.raises(FileNotFoundError):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST_DIFF,
+            json_table_config = TABLE_CONFIG,
+            json_exp_config = 'DOES NOT EXIST',
+            outdir = OUTDIR
+        )
+
+VARLIST_EMPTY = \
+    f'{ROOTDIR}/empty_varlist'
+def test_fre_cmor_run_subtool_empty_varlist(capfd):
+    '''
+    fre cmor run, exception, variable list is empty
+    '''
+
+    # test call, where meat of the workload gets done
+    with pytest.raises(ValueError):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST_EMPTY,
+            json_table_config = TABLE_CONFIG,
+            json_exp_config = EXP_CONFIG,
+            outdir = OUTDIR
+        )
+
+
+@pytest.mark.xfail(reason='TODO req some quick rework of the opt_var_name logic- '
+                          'the current approach doesnt cut it')
+def test_fre_cmor_run_subtool_opt_var_name_not_in_table():
+    ''' fre cmor run, exception,  '''
+
+    # test call, where meat of the workload gets done
+    with pytest.raises(ValueError):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST,
+            json_table_config = TABLE_CONFIG,
+            json_exp_config = EXP_CONFIG,
+            outdir = OUTDIR,
+            opt_var_name="difmxybo"
+        )
