@@ -547,3 +547,5 @@ zfactor
 zonavg
 zsurf
 zxvf
+njobs
+RDHPCS
