@@ -9,10 +9,9 @@ scientific analyses and visualizations.
 Quickstart:
 
 In order to use this tool, two input files are required: a file containing
-a pressure coordinate variable and a data variable that is to be masked.
+a pressure coordinate variable and a data variable that is to be masked. e.g.:
 
 ```
-> ls
 atmos_cmip.200501-200512.ps.nc  atmos_cmip.200501-200512.ua_unmsk.nc
 ```
 

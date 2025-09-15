@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 import xarray as xr
 
-from ..mask_atmos_plevel import mask_atmos_plevel
+from fre.app.mask_atmos_plevel import mask_atmos_plevel
 
 @pytest.fixture()
 def create_input_files(tmp_path):

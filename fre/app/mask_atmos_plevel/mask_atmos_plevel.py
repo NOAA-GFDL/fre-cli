@@ -60,7 +60,7 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
 
     # Write the output file if anything was done
     if ds_out.variables:
-        fre_logger.info(f"Modifed {list(ds_out.variables)} variables, so writing into new file '{outfile}'")
+        fre_logger.info(f"Modified {list(ds_out.variables)} variables, so writing into new file '{outfile}'")
         write_dataset(ds_out, ds_in, outfile)
     else:
         fre_logger.debug(f"No variables modified, so not writing output file '{outfile}'")
