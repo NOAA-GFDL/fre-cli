@@ -68,7 +68,7 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
 
 def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Dataset) -> xr.Dataset:
     """
-    Mask data with pressure larger than surface pressure
+    Mask data with pressure greater than surface pressure
     :param ds: Input dataset to be masked
     :type infile: xarray.Dataset
     :param var: Input variable to be masked

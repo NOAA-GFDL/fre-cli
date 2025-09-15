@@ -8,7 +8,7 @@ scientific analyses and visualizations.
 
 Quickstart:
 
-In order to use this tool, obtain two input files: an input file containing
+In order to use this tool, two input files are required: a file containing
 a pressure coordinate variable and a data variable that is to be masked.
 
 ```
