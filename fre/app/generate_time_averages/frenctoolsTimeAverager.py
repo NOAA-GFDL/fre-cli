@@ -1,6 +1,6 @@
 ''' class for utilizing timavg.csh (aka script to TAVG fortran exe) in frenc-tools '''
 from .timeAverager import timeAverager
-import os 
+import os
 from netCDF4 import Dataset, num2date
 import calendar
 from cdo import Cdo
@@ -51,25 +51,25 @@ class frenctoolsTimeAverager(timeAverager):
 
         if infile is None:
             raise ValueError('Need an input file, specify a value for the infile argument')
-            
+
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
             fre_logger.warning('No output filename given, setting outfile= %s', outfile)
-        
+
         #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
         if shutil.which('timavg.csh') is None:
             raise ValueError('did not find timavg.csh')
-            
+
         from subprocess import Popen, PIPE
 
-        
+
         #Recursive call if month is selected for climatology. by Avery Kiihne
         if self.avg_type == 'month':
             monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
             output_dir = Path(outfile).parent       #Save output in the user-specified location
             os.makedirs(monthly_nc_dir, exist_ok=True)   #create directory if it does not exist
             os.makedirs(output_dir, exist_ok=True)
-            #Extract unique months from the infile 
+            #Extract unique months from the infile
             month_indices = list(range(1, 13))   #serves to track month index and as part of the outfile name
             month_names = [calendar.month_name[i] for i in month_indices]
 
@@ -80,7 +80,7 @@ class frenctoolsTimeAverager(timeAverager):
             cdo = Cdo()
             #Loop through each month and select the corresponding data
             for month_index in month_indices:
-                
+
 
                 month_name = month_names[month_index - 1]
                 nc_monthly_file = nc_month_file_paths[month_index]
@@ -95,20 +95,20 @@ class frenctoolsTimeAverager(timeAverager):
                 with Popen(timavgcsh_command,
                         stdout=PIPE, stderr=PIPE, shell=False) as subp:
                     output=subp.communicate()[0]
-                            
+
 
                     if subp.returncode > 0:
                         raise ValueError('error: timavgcsh command not properly executed')
                     else:
                         fre_logger.info('%s climatology successfully ran',nc_monthly_file)
                         exitstatus=0
-                        
+
                 #Delete files after being used to generate output files
-            shutil.rmtree('monthly_nc_files')    
+            shutil.rmtree('monthly_nc_files')
 
         if self.avg_type == 'month':   #End here if month variable used
             return exitstatus
-        
+
         timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
         exitstatus=1
         with Popen(timavgcsh_command,
