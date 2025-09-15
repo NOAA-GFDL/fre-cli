@@ -17,6 +17,7 @@ def form_bronx_directory_name(frequency: str, interval: str) -> str:
     :type frequency: 'mon' or 'yr'
     :param interval: Interval of the climatology
     :type interval: ISO8601 duration
+    :raises ValueError: Only monthly and annual frequencies allowed
     :return: Corresponding Bronx directory name
     :rtype: str
     """
@@ -38,6 +39,7 @@ def check_glob(target: str) -> None:
 
     :param target: Glob target to resolve
     :type target: str
+    :raises FileNotFoundError: No files found
     :rtype: None
     """
     files = glob.glob(target)
@@ -65,6 +67,7 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end
     :type frequency: 'mon' or 'yr'
     :param interval: Length of the climatology
     :type interval: ISO8601 duration
+    :raises ValueError: Only monthly and annual frequencies allowed
     :rtype: None
     """
     if frequency == "yr":

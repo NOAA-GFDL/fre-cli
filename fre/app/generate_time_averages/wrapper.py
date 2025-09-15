@@ -44,6 +44,8 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
     :type input_interval: ISO8601 duration
     :param frequency: Period to average: 'yr' or 'mon'
     :type frequency: ISO8601 duration
+    :raises ValueError: Only monthly and annual frequencies allowed
+    :raises FileNotFoundError: Missing input timeseries files
     :rtype: None
     """
 
@@ -92,7 +94,7 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                         source_frequency = "P1Y"
                         fre_logger.debug(f"Annual ts to annual climo from source '{source}': {len(variables)} variables")
                     else:
-                        raise Exception(f"Expected files not found in {subdir_yr}")
+                        raise FileNotFoundError(f"Expected files not found in {subdir_yr}")
                 elif subdir_mon.exists():
                     results = glob.glob(str(subdir_mon / f"{source}.{YYYY}01-{ZZZZ}12.*.nc"))
                     if results:
@@ -100,7 +102,7 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                         source_frequency = "P1M"
                         fre_logger.debug(f"monthly ts to annual climo from source '{source}': {len(variables)} variables")
                     else:
-                        raise Exception("Expected files not found")
+                        raise FileNotFoundError(f"Expected files not found in {subdir_mon}")
                 else:
                     fre_logger.debug(f"Skipping {source} as it does not appear to be monthly or annual frequency; neither '{subdir_mon}' nor '{subdir_yr}' exists")
             elif frequency == "mon":
@@ -112,7 +114,7 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                         source_frequency = "P1M"
                         fre_logger.debug(f"monthly ts to monthly climo from source '{source}': {len(variables)} variables")
                     else:
-                        raise Exception("Expected files not found")
+                        raise FileNotFoundError(f"Expected files not found in {subdir}")
                 else:
                     fre_logger.debug(f"Skipping {source} as it does not appear to be monthly frequency; '{subdir_mon}' does not exist")
             else:
