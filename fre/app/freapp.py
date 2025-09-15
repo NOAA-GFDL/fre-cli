@@ -232,6 +232,3 @@ def combine_time_averages(in_dir, out_dir, component, begin, end, frequency, int
     Combine per-variable climatologies into one file
     """
     combine(in_dir, out_dir, component, begin, end, frequency, interval)
-
-if __name__ == "__main__":
-    app_cli()
