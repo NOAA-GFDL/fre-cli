@@ -1,10 +1,7 @@
 import pytest
 import subprocess
 from pathlib import Path
-import xarray as xr
-import metomi.isodatetime.parsers
-
-from .. import wrapper
+from fre.app.generate_time_averages import wrapper
 
 # create_monthly_timeseries:
 # ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198001-198012.alb_sfc.nc

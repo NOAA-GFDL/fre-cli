@@ -1,10 +1,7 @@
 import pytest
 import subprocess
 from pathlib import Path
-import xarray as xr
-#import metomi.isodatetimeparsers.parsers
-
-from .. import combine
+from fre.app.generate_time_averages import combine
 
 @pytest.fixture()
 def create_annual_per_variable_climatologies(tmp_path):
