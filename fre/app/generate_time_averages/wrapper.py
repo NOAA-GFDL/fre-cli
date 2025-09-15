@@ -16,7 +16,7 @@ def extract_variables_from_files(files: list[str]) -> list[str]:
     e.g. 'ocean_annual.1958-1962.evs.nc' will return 'evs'
 
     :param files: List of relative path filenames to parse
-    :param type: list[str]
+    :type files: list[str]
     :return: List of variables
     :rtype: list[str]
     """
@@ -33,17 +33,17 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
     Run climatology tool on a subset of timeseries
 
     :param cycle_point: Beginning of the climatology
-    :param type: ISO8601 time-point
+    :type cycle_point: ISO8601 time-point
     :param dir_: Root shards directory
-    :param type: str
+    :type dir_: str
     :param sources: List of history files to average
-    :param type: list[str]
+    :type sources: list[str]
     :param output_interval: Desired output interval
-    :param type: ISO8601 duration
+    :type output_interval: ISO8601 duration
     :param input_interval: Input timeseries length
-    :param type: ISO8601 duration
+    :type input_interval: ISO8601 duration
     :param frequency: Period to average: 'yr' or 'mon'
-    :param type: ISO8601 duration
+    :type frequency: ISO8601 duration
     :rtype: None
     """
 

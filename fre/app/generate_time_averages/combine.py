@@ -52,19 +52,19 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end
     Combine per-variable climatologies into one file.
 
     :param root_in_dir: Root timeaverage shards directory, up to the "av"
-    :param type: str
+    :type root_in_dir: str
     :param root_out_dir: Root output postprocess directory, up to the "pp"
-    :param type: str
+    :type root_out_dir: str
     :param component: Component to process
-    :param type: str
+    :type component: str
     :param begin: Beginning of the climatology
-    :param type: YYYY
+    :type begin: YYYY
     :param end: Ending of the climatology
-    :param type: YYYY
+    :type end: YYYY
     :param frequency: Sampling type of the climatology
-    :param type: 'mon' or 'yr'
+    :type frequency: 'mon' or 'yr'
     :param interval: Length of the climatology
-    :param type: ISO8601 duration
+    :type interval: ISO8601 duration
     :rtype: None
     """
     if frequency == "yr":
