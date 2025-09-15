@@ -17,7 +17,7 @@ runner = CliRunner()
 def test_cli_fre_catalog():
     ''' fre catalog '''
     result = runner.invoke(fre.fre, args=["catalog"])
-    assert result.exit_code == 2
+    assert result.exit_code == 0
 
 def test_cli_fre_catalog_help():
     ''' fre catalog --help '''

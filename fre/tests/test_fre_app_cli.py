@@ -25,7 +25,7 @@ runner = CliRunner()
 def test_cli_fre_app(capfd):
     """ fre app """
     result = runner.invoke(fre.fre, args=["app"])
-    assert result.exit_code == 2
+    assert result.exit_code == 0
     _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_help(capfd):

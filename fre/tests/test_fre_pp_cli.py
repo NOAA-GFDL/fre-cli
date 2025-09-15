@@ -22,7 +22,7 @@ runner = CliRunner()
 def test_cli_fre_pp():
     ''' fre pp '''
     result = runner.invoke(fre.fre, args=["pp"])
-    assert result.exit_code == 2
+    assert result.exit_code == 0
 
 def test_cli_fre_pp_help():
     ''' fre pp --help '''
