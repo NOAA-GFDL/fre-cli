@@ -1,5 +1,4 @@
 import os
-import netCDF4 as nc
 import xarray as xr
 
 import logging
@@ -87,15 +86,21 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
     plev_extended, _ = xr.broadcast(plev, ds[var])
     ps_extended, _ = xr.broadcast(ds_ps["ps"], ds[var])
 
+    # read the input file's missing_value
+    try:
+        missing_value = ds[var].encoding['missing_value']
+    except KeyError:
+        raise Exception("The input file to be masked does not contain the 'missing_value' variable attribute, which is required.")
+
     # masking do not need looping
-    masked = xr.where(plev_extended > ps_extended, 1.0e20, ds[var])
+    masked = xr.where(plev_extended > ps_extended, missing_value, ds[var])
 
     # copy attributes, but it doesn't include the missing values
     attrs = ds[var].attrs.copy()
 
     # add the missing values back
-    attrs['missing_value'] = 1.0e20
-    attrs['_FillValue'] = 1.0e20
+    attrs['missing_value'] = missing_value
+    attrs['_FillValue'] = missing_value
     masked.attrs = attrs
 
     # transpose dims like the original array
