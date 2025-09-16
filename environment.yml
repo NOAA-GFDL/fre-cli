@@ -25,3 +25,4 @@ dependencies:
   - conda-forge::python-cdo
   - conda-forge::pyyaml
   - conda-forge::xarray
+  - conda-forge::netcdf4
