@@ -59,7 +59,6 @@ def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: b
     :return: output directory structure
     :rtype: str
     """
-
     # Define dir
     if ens is not None:
         if dir_ts is True:
@@ -415,9 +414,8 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
             # Check that pp_components defined matches those in the yaml file
             fre_logger.debug("Is %s in %s?", comp, yaml_components)
             if comp in yaml_components:
-                fre_logger.debug('Yes')
+                fre_logger.info("Component %s found in yaml config!", comp)
             else:
-                fre_logger.warning("WARNING: component %s does not exist in yaml config", comp)
                 continue
 
             # Continue if not looking at correct information for requested component
@@ -547,7 +545,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
 
                             for file in files:
                                 newfile1 = file.split(".",1)[1]
-                                newfile2 = f"{s}.{newfile1}"
+                                newfile2 = f"{comp}.{newfile1}"
                                 # If file exists, remove it
                                 # (would exist if workflow was run previously)
                                 output_file = os.path.join(output_dir, dirs, newfile2)
