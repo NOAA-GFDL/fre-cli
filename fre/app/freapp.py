@@ -124,7 +124,7 @@ def regrid( input_dir, output_dir, begin, tmp_dir,
               type = str,
               required = True)
 def mask_atmos_plevel(infile, psfile, outfile):
-    """Mask pressure-level diagnostic output below land surface"""
+    """Mask diagnostic 'infile' below surface pressure 'psfile'"""
     mask_atmos_plevel_subtool(infile, psfile, outfile)
 
 
