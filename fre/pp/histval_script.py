@@ -1,6 +1,7 @@
 ''' 
 This script will locate all diag_manifest files in a provided directory containing 
-history files then run the nccheck script to validate the number of timesteps in each file
+history files then run the nccheck script to validate the number of timesteps in each file.
+Ran as part of Stage-History task in fre postprocessing workflow.
 '''
 
 import os
@@ -11,10 +12,22 @@ from . import nccheck_script as ncc
 fre_logger = logging.getLogger(__name__)
 
 
-def validate(history,date_string,warn):
-    """ 
+def validate(history: str, date_string: str, warn: bool):
+    """
+ 
     Compares the number of timesteps in each netCDF (.nc) file to the number of expected 
-    timesteps as found in the diag_manifest file(s) 
+    timesteps as found in the diag_manifest file(s). Ran once over the entire history dir. Uses nccheck for comparison.
+
+    :param history: Path to history dir
+    :type history: str
+    :param date_string: Date string of history files in YYYYMMDD format
+    :type date_string: str
+    :param warn: Handle error as an exception and print the error message as a warning
+    :type warn: bool
+    :raises FileNotFoundError: No diag manifest file was found in history directory
+    :raises ValueError: An unexpected number of timesteps was found
+    :return: Returns 0 unless an exception is raised
+    :rtype: int
     """
 
     # Mega manifest sounds cool... it'll just be all of the data from the diag_manifests combined in list form

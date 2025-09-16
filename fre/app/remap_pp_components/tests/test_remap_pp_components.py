@@ -35,7 +35,7 @@ PRODUCT = "ts"
 FREQ = "P1M"
 CHUNK = "P5Y"
 
-# Define static variables 
+# Define static variables
 STATIC_DATA_FILE_CDL = Path("atmos_static_scalar.bk.cdl")      # CDL file to generate static nc file from ncgen
 # static netcdf files to make
 STATIC_DATA_NC_FILES = ["atmos_static_scalar.bk.nc",
@@ -173,8 +173,8 @@ def test_remap_pp_components(capfd):
     out, err = capfd.readouterr()
 
 ## Pytest can utilize monkeypatch fixture, if needed, which can help set/delete attributes, environments, etc.
-## monkeypatch.setenv() used to set/reset specific environment variables in each test, 
-## without resetting them for all tests or the proceeding test (i.e. - wouldn't effect 
+## monkeypatch.setenv() used to set/reset specific environment variables in each test,
+## without resetting them for all tests or the proceeding test (i.e. - wouldn't effect
 ## other test's environment variables defined)
 def test_remap_pp_components_with_ensmem(capfd):
     """
@@ -398,7 +398,7 @@ def test_remap_static_variable_filtering(capfd):
     assert all([Path(f"{remap_static_out}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
                 Path(f"{remap_static_out}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[1]}").exists()])
     out, err = capfd.readouterr()
- 
+
 @pytest.mark.xfail
 def test_remap_variable_filtering_fail(capfd):
     """
@@ -440,7 +440,7 @@ def test_remap_chdir(capfd):
     Test that original directory is the same as final directory.
     The remap tool changes into input_dir, source dir, etc., but
     we need to make sure the the final_dir is the fre-cli root
-    for testing purposes (and that remap does not leave us 
+    for testing purposes (and that remap does not leave us
     somewhere we don't want to be)
     """
     # directory before running remap
@@ -456,13 +456,13 @@ def test_remap_chdir(capfd):
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
                             ts_workaround=True,
-                            ens_mem="") 
+                            ens_mem="")
 
     # directory after remap has completed
     final_dir = Path.cwd()
 
     assert all([original_dir == final_dir])
-    
+
 #to-do:
 # - figure out test for offline diagnostics
 # - test for when product = "av"

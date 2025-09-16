@@ -1,19 +1,16 @@
 """
-Main host file for FRE-CLI program scripts
 authored by Bennett.Chang@noaa.gov | bcc2761
-NOAA | GFDL
-2023-2024
-principal click group for main/fre allows for subgroup functions to
-be called via this script. I.e. 'fre' is the entry point
+principal click group for main/fre allows for subgroup functions to be called via this
+script, with 'fre' as the entry point
 """
 
-from . import version, FORMAT
+import logging
 
 import click
 
+from . import version, FORMAT
 from .lazy_group import LazyGroup
 
-import logging
 fre_logger = logging.getLogger(__name__)
 
 @click.version_option(
@@ -40,12 +37,14 @@ fre_logger = logging.getLogger(__name__)
         fg = 'cyan')
 )
 @click.option( '-v', '--verbose', default = 0, required = False, count = True, type = int,
-               help = "Increment logging verbosity from default (logging.WARNING) to logging.INFO. use -vv for logging.DEBUG. will be overridden by -q/--quiet" )
+               help = "Increment logging verbosity from default (logging.WARNING) to logging.INFO. " + \
+                      "use -vv for logging.DEBUG. will be overridden by -q/--quiet" )
 @click.option( '-q', '--quiet', default = False, required = False, is_flag = True, type = bool,
-               help = "Set logging verbosity from default (logging.WARNING) to logging.ERROR, printing less output to screen. overrides -v[v]/--verbose" )
+               help = "Set logging verbosity from default (logging.WARNING) to logging.ERROR, printing " + \
+                      "less output to screen. overrides -v[v]/--verbose" )
 @click.option( '-l', '--log_file', default = None, required = False, type = str,
-               help = 'Path to log file for all fre calls, the output to screen will still print with the path specified. ' + \
-                      'If the log file already exists, it is appended to.' )
+               help = 'Path to log file for all fre calls, the output to screen will still print with the ' + \
+                      'path specified. If the log file already exists, it is appended to.' )
 def fre(verbose = 0, quiet = False, log_file = None):
     '''
     entry point function to subgroup functions, setting global verbosity/logging formats that all
@@ -76,6 +75,7 @@ def fre(verbose = 0, quiet = False, log_file = None):
         fre_file_handler.setFormatter(fre_log_file_formatter)
 
         base_fre_logger.addHandler(fre_file_handler)
-        fre_logger.info('fre_file_handler added to base_fre_logger') # first message that will appear in the log file if used
-        
+        # first message that will appear in the log file if used
+        fre_logger.info('fre_file_handler added to base_fre_logger')
+
     fre_logger.debug('click entry-point function call done.')

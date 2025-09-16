@@ -30,7 +30,7 @@ def fremake_run(yamlfile:str, platform:str, target:str, nparallel: int = 1, njob
     :param platform: FRE platform; defined in the platforms yaml
                      If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str
-    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
     :param nparallel: Number of concurrent model builds (default 1)
     :type nparallel: int
