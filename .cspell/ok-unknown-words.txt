@@ -539,6 +539,11 @@ ymonstddev
 yseasmean
 yseasstddev
 yvalues
+YYYY
+YYYYMM
+YYYYMMDD
+YYYYMMDDHH
+YYYYMMDDHH:mm
 zaxis
 zbounds
 zerovars
@@ -546,5 +551,11 @@ zfactor
 zonavg
 zsurf
 zxvf
+donwell
+hartfield
+longbourn
+pemberley
+openedfile
+lonxlat
 njobs
 RDHPCS
