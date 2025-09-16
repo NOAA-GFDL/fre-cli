@@ -104,7 +104,7 @@ def regrid(yamlfile, input_dir, output_dir, work_dir,
     ''' regrid target netcdf file '''
     regrid_xy(yamlfile, input_dir, output_dir, work_dir,
               remap_dir, source, input_date)
-    
+
 
 @app_cli.command()
 @click.option("-i", "--infile",
@@ -152,8 +152,7 @@ def mask_atmos_plevel(infile, outfile, psfile):
                      do not support seasonal and monthly averaging.\n")
 def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     """
-    generate time averages for specified set of netCDF files. 
-    Example: generate-time-averages.py /path/to/your/files/
+    generate time averages for specified set of netCDF files.
     """
     start_time = time.perf_counter()
     generate(inf, outf, pkg, var, unwgt, avg_type)
