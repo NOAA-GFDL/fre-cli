@@ -212,11 +212,11 @@ def gen_time_averages_wrapper(cycle_point, dir, sources, output_interval, input_
               required = True,
               help = "Component name to combine")
 @click.option("--begin",
-              type = str,
+              type = int,
               required = True,
               help = "Beginning year")
 @click.option("--end",
-              type = str,
+              type = int,
               required = True,
               help = "Ending year")
 @click.option("--frequency",

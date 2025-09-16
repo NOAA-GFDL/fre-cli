@@ -49,7 +49,7 @@ def check_glob(target: str) -> None:
         raise FileNotFoundError(f"{target} resolves to no files")
 
 
-def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end: str, frequency: str, interval: str) -> None:
+def combine(root_in_dir: str, root_out_dir: str, component: str, begin: int, end: int, frequency: str, interval: str) -> None:
     """
     Combine per-variable climatologies into one file.
 
@@ -60,9 +60,9 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: str, end
     :param component: Component to process
     :type component: str
     :param begin: Beginning of the climatology
-    :type begin: YYYY
+    :type begin: int
     :param end: Ending of the climatology
-    :type end: YYYY
+    :type end: int
     :param frequency: Sampling type of the climatology
     :type frequency: 'mon' or 'yr'
     :param interval: Length of the climatology
