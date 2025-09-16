@@ -107,6 +107,7 @@ distclean
 divc
 DMAXFIELDMETHODS
 DMAXFIELDS
+docstrings
 Dorkey
 dset
 DSPMD

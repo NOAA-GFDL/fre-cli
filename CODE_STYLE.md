@@ -23,7 +23,7 @@ click interface functions with field lists.
 
 Document classes, variables and functions with type hinting.  It is encouraged to document click interface functions
 with type hinting.  Type hinting is when you annotate functions and variables with the expected Python type.
-Annotations are described in [PEP 3107](https://peps.python.org/pep-3107/). 
+Annotations are described in [PEP 3107](https://peps.python.org/pep-3107/).
 
 Useful Resources
  - https://docs.python.org/3/library/typing.html
@@ -67,13 +67,6 @@ def func_with_return_and_optional_param(a: int, c: List[int] = [1,2]) -> Any:
     .. note:: This is a note
     .. warning:: This is a warning
     """
-
-    #this is an example of type hinting a variable
-    child: bool
-    if a < 18:
-        child = True
-    else:
-        child = False
 
     if a > 10:
         raise AssertionError("a is more than 10")
