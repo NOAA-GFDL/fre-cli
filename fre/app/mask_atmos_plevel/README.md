@@ -15,8 +15,13 @@ a pressure coordinate variable and a data variable that is to be masked. e.g.:
 atmos_cmip.200501-200512.ps.nc  atmos_cmip.200501-200512.ua_unmsk.nc
 ```
 
-Add a variable attribute "pressure_mask" to the data variable you wish to mask.
+Additionally, the variable to be masked must have a NetCDF variable attribute `pressure_mask` set to `False`.
+To set the attribute for history files generated in a FMS experiment,
+use the modern diag manager and set the variable attribute
+following the [documentation](https://noaa-gfdl.github.io/FMS/md_diag_manager_diag_yaml_format.html)
 
+To set the attribute for history files previously generated, you can use the NCO tools to add
+the attribute manuallly:
 ```
 module load nco
 
