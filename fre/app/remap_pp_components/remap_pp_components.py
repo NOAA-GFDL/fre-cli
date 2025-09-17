@@ -8,8 +8,8 @@ import subprocess
 import glob
 from pathlib import Path
 import logging
-import yaml
 from typing import List
+import yaml
 from fre.app import helpers
 
 fre_logger = logging.getLogger(__name__)
@@ -197,7 +197,8 @@ def truncate_date(date: str, freq: str) -> str:
 
     return date
 
-def search_files(product: str, var: list, source: str, freq: str, current_chunk: str, begin: str) -> List[str]:
+def search_files(product: str, var: list, source: str, freq: str,
+                 current_chunk: str, begin: str) -> List[str]:
     """
     Pattern match and search for the correct files in the chunk directory
 
