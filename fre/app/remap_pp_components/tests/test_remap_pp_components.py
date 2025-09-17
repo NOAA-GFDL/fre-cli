@@ -19,14 +19,25 @@ REMAP_IN = f"{TEST_OUTDIR}/ncgen-output"
 REMAP_OUT = f"{TEST_OUTDIR}/remap-output"
 
 # Define components, grids, other
-COMPOUT_LIST = ["atmos_scalar", "atmos_scalar_test_vars", "atmos_scalar_test_vars_fail", "atmos_scalar_static_test_vars_fail"]
+####
+###should this actually by SOURCE_LIST???
+####
+SOURCENAME_LIST = ["atmos_scalar", "atmos_scalar_test_vars", "atmos_scalar_test_vars_fail", "atmos_scalar_static_test_vars_fail"]
 NATIVE_GRID = "native"
 REGRID_GRID = "regrid-xy"
 COPY_TOOL = "cp"
 
+
+######
+######FAIL IF COMPOUT NOT RIGHT
+######
+
 # Define non-static variables
 DATA_FILE_CDL = Path("atmos_scalar.198001-198412.co2mass.cdl") # CDL file to generate nc file from ncgen
 # netcdf files to make
+
+
+#######HAS TO BE COMPONENT NAME I THINK
 DATA_NC_FILES = ["atmos_scalar.198001-198412.co2mass.nc",
                  "atmos_scalar_test_vars.198001-198412.co2mass.nc",
                  "atmos_scalar_test_vars_fail.198001-198412.co2mass.nc",
@@ -52,8 +63,8 @@ if Path(TEST_OUTDIR).exists():
 
 ncgen_native_out_paths = []
 ncgen_static_out_paths = []
-# Set up input directories (location previously made in flow.cylc workflow)
-for i in COMPOUT_LIST:
+# Set up input directories (location previously made in flow.cylc workflow for i in COMPOUT_LIST:i
+for i in SOURCENAME_LIST:
     ncgen_native_out = f"{REMAP_IN}/{NATIVE_GRID}/{i}/{FREQ}/{CHUNK}"
     Path(ncgen_native_out).mkdir(parents=True,exist_ok=True)
     ncgen_native_out_paths.append(ncgen_native_out)
@@ -94,9 +105,9 @@ def test_create_ncfile_with_ncgen_cdl(capfd):
     # if name is in path name
     for out_path in ncgen_native_out_paths:
         for nc_fn in DATA_NC_FILES:
-            if nc_fn.split(".")[0] != out_path.split("/")[-3]:
-#                print(f'\n{nc_fn.split(".")[0]} not in {out_path.split("/")[-3]}')
-                continue
+#            if nc_fn.split(".")[0] != out_path.split("/")[-3]:
+##                print(f'\n{nc_fn.split(".")[0]} not in {out_path.split("/")[-3]}')
+#                continue
 
             # NCGEN command: ncgen -o [outputfile] [inputfile]
             ex = [ "ncgen", "-k", "64-bit offset",
@@ -150,6 +161,8 @@ def test_remap_pp_components(capfd):
     the remap-pp-components script as the valid definitions
     are being called by the environment.
     """
+    comp_name = "atmos_scalar_CNAME"
+    output_nc_file = f"{comp_name}.198001-198412.co2mass.nc"
     # run script
     try:
         rmp.remap_pp_components(input_dir=REMAP_IN,
@@ -157,7 +170,7 @@ def test_remap_pp_components(capfd):
                                 begin_date="19800101T0000Z",
                                 current_chunk="P5Y",
                                 product=PRODUCT,
-                                component="atmos_scalar",
+                                component=comp_name,
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
                                 ts_workaround=True,
@@ -168,8 +181,8 @@ def test_remap_pp_components(capfd):
     # Check for
     # 1. creation of output directory structure,
     # 2. link to nc file in output location
-    assert all([Path(f"{REMAP_OUT}/atmos_scalar/{PRODUCT}/monthly/5yr").exists(),
-                Path(f"{REMAP_OUT}/atmos_scalar/{PRODUCT}/monthly/5yr/{DATA_NC_FILES[0]}").exists()])
+    assert all([Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr").exists(),
+                Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr/{output_nc_file}").exists()])
     out, err = capfd.readouterr()
 
 ## Pytest can utilize monkeypatch fixture, if needed, which can help set/delete attributes, environments, etc.
@@ -181,6 +194,9 @@ def test_remap_pp_components_with_ensmem(capfd):
     Checks for success of remapping a file with rose app config using
     the remap-pp-components script when ens_mem is defined.
     """
+    comp_name = "atmos_scalar_CNAME"
+    output_nc_file = f"{comp_name}.198001-198412.co2mass.nc"
+
     # Redefine ens input and output directories
     remap_ens_in = f"{TEST_OUTDIR}/ncgen-ens-output"
     ncgen_ens_out = Path(remap_ens_in) / NATIVE_GRID / "ens_01" / "atmos_scalar" / FREQ / CHUNK
@@ -200,7 +216,7 @@ def test_remap_pp_components_with_ensmem(capfd):
                                 begin_date="19800101T0000Z",
                                 current_chunk="P5Y",
                                 product=PRODUCT,
-                                component="atmos_scalar",
+                                component=comp_name,
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
                                 ts_workaround=True,
@@ -211,8 +227,8 @@ def test_remap_pp_components_with_ensmem(capfd):
     # Check for
     # 1. creation of output directory structure,
     # 2. link to nc file in output location
-    assert all([Path(f"{remap_ens_out}/atmos_scalar/{PRODUCT}/ens_01/monthly/5yr").exists(),
-                Path(f"{remap_ens_out}/atmos_scalar/{PRODUCT}/ens_01/monthly/5yr/{DATA_NC_FILES[0]}").exists()])
+    assert all([Path(f"{remap_ens_out}/{comp_name}/{PRODUCT}/ens_01/monthly/5yr").exists(),
+                Path(f"{remap_ens_out}/{comp_name}/{PRODUCT}/ens_01/monthly/5yr/{output_nc_file}").exists()])
     out, err = capfd.readouterr()
 
 @pytest.mark.xfail
@@ -222,13 +238,16 @@ def test_remap_pp_components_product_failure(capfd):
     the remap-pp-components script when the product is ill-defined.
     (not ts or av)
     """
+    comp_name = "atmos_scalar_CNAME"
+    output_nc_file = f"{comp_name}.198001-198412.co2mass.nc"
+
     # run script
     rmp.remap_pp_components(input_dir=REMAP_IN,
                             output_dir=REMAP_OUT,
                             begin_date="19800101T0000Z",
                             current_chunk="P5Y",
                             product="not-ts-or-av",
-                            component="atmos_scalar",
+                            component=comp_name,
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
                             ts_workaround=True,
@@ -241,23 +260,32 @@ def test_remap_pp_components_begin_date_failure(capfd):
     the remap-pp-components script when the begin variable is
     ill-defined.
     """
+    comp_name = "atmos_scalar_CNAME"
+    output_nc_file = f"{comp_name}.198001-198412.co2mass.nc"
+
     # run script
     rmp.remap_pp_components(input_dir=REMAP_IN,
                             output_dir=REMAP_OUT,
                             begin_date="123456789T0000Z",
                             current_chunk="P5Y",
                             product=PRODUCT,
-                            component="atmos_scalar",
+                            component=comp_name,
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
                             ts_workaround=True,
                             ens_mem="")
 
 ## STATIC SOURCE REMAPPING ##
+#####
+## IS THIS DIRECTORY STRUCTURE RIGHT?? CHECK
+#####
 def test_remap_pp_components_statics(capfd):
     """
     Test static sources are remapped to output location correctly
     """
+    comp_name = "atmos_scalar_CNAME"
+    output_nc_file = f"{comp_name}.bk.nc"
+
     remap_static_out = f"{REMAP_OUT}/static"
     Path(remap_static_out).mkdir(parents=True,exist_ok=True)
 
@@ -268,7 +296,7 @@ def test_remap_pp_components_statics(capfd):
                                 begin_date="19800101T0000Z",
                                 current_chunk="P0Y",
                                 product="static",
-                                component="atmos_scalar",
+                                component=comp_name,
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
                                 ts_workaround=False,
@@ -279,8 +307,8 @@ def test_remap_pp_components_statics(capfd):
     # Check for
     # 1. creation of output directory structure,
     # 2. link to nc file in output location
-    assert all([Path(f"{remap_static_out}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
-                Path(f"{remap_static_out}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}").exists()])
+    assert all([Path(f"{remap_static_out}/{comp_name}/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
+                Path(f"{remap_static_out}/{comp_name}/{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}").exists()])
     out, err = capfd.readouterr()
 
 @pytest.mark.skip(reason="Offline file will not be in same place for everyone here - figure out how to test")
@@ -296,10 +324,12 @@ def test_nccmp_ncgen_remap(capfd):
     This test compares the results of ncgen and rewrite_remap,
     making sure that the remapped files are identical.
     """
+    comp_name = "atmos_scalar_CNAME"
+    output_nc_file = f"{comp_name}.198001-198412.co2mass.nc"
+
     nccmp = [ "nccmp", "-d",
               Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
-              Path(f"{REMAP_OUT}/atmos_scalar/{PRODUCT}/monthly/5yr/{DATA_NC_FILES[0]}") ]
-
+              Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr/{output_nc_file}") ]
     sp = subprocess.run( nccmp, check = False)
     assert sp.returncode == 0
     out, err = capfd.readouterr()
@@ -309,13 +339,16 @@ def test_nccmp_ncgen_remap_ens_mem(capfd):
     This test compares the results of ncgen and rewrite_remap,
     making sure that the remapped files are identical.
     """
+    comp_name = "atmos_scalar_CNAME"
+    output_nc_file = f"{comp_name}.198001-198412.co2mass.nc"
+
     # Redefine ens input and output directories
     remap_ens_in = f"{TEST_OUTDIR}/ncgen-ens-output"
     remap_ens_out = f"{TEST_OUTDIR}/remap-ens-output"
 
     nccmp = [ "nccmp", "-d",
               Path(f"{remap_ens_in}/{NATIVE_GRID}/ens_01/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
-              Path(f"{remap_ens_out}/atmos_scalar/{PRODUCT}/ens_01/monthly/5yr/{DATA_NC_FILES[0]}") ]
+              Path(f"{remap_ens_out}/{comp_name}/{PRODUCT}/ens_01/monthly/5yr/{output_nc_file}") ]
 
     sp = subprocess.run( nccmp, check = False)
     assert sp.returncode == 0
@@ -326,9 +359,12 @@ def test_nccmp_ncgen_remap_statics(capfd):
     This test compares the results of ncgen and remap,
     making sure that the remapped static files are identical.
     """
+    comp_name = "atmos_scalar_CNAME"
+    output_nc_file = f"{comp_name}.bk.nc"
+
     nccmp = [ "nccmp", "-d",
               Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_static_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}"),
-              Path(f"{REMAP_OUT}/static/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}")]
+              Path(f"{REMAP_OUT}/static/{comp_name}/{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}")]
 
     sp = subprocess.run( nccmp, check = False)
     assert sp.returncode == 0
@@ -341,6 +377,8 @@ def test_remap_variable_filtering(capfd):
     - same file should be found as in first regular remap test,
       but component defined specifies variable co2mass
     """
+    comp_name = "atmos_scalar_test_vars_CNAME"
+    output_nc_file = f"{comp_name}.198001-198412.co2mass.nc"
     # Remove previous output and re-create
     if Path(REMAP_OUT).exists():
         shutil.rmtree(REMAP_OUT)
@@ -353,7 +391,7 @@ def test_remap_variable_filtering(capfd):
                                 begin_date="19800101T0000Z",
                                 current_chunk="P5Y",
                                 product=PRODUCT,
-                                component="atmos_scalar_test_vars",
+                                component=comp_name,
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
                                 ts_workaround=True,
@@ -364,8 +402,8 @@ def test_remap_variable_filtering(capfd):
     # Check for
     # 1. creation of output directory structure,
     # 2. link to nc file in output location
-    assert all([Path(f"{REMAP_OUT}/atmos_scalar_test_vars/{PRODUCT}/monthly/5yr").exists(),
-                Path(f"{REMAP_OUT}/atmos_scalar_test_vars/{PRODUCT}/monthly/5yr/{DATA_NC_FILES[1]}").exists()])
+    assert all([Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr").exists(),
+                Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr/{output_nc_file}").exists()])
     out, err = capfd.readouterr()
 
 def test_remap_static_variable_filtering(capfd):
@@ -384,7 +422,7 @@ def test_remap_static_variable_filtering(capfd):
                                 begin_date="19800101T0000Z",
                                 current_chunk="P0Y",
                                 product="static",
-                                component="atmos_scalar_test_vars",
+                                component="atmos_scalar_test_vars_CNAME",
                                 copy_tool=COPY_TOOL,
                                 yaml_config=str(YAML_EX),
                                 ts_workaround=False,
@@ -395,8 +433,8 @@ def test_remap_static_variable_filtering(capfd):
     # Check for
     # 1. creation of output directory structure,
     # 2. link to nc file in output location
-    assert all([Path(f"{remap_static_out}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
-                Path(f"{remap_static_out}/atmos_scalar_test_vars/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[1]}").exists()])
+    assert all([Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
+                Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/{STATIC_FREQ}/{STATIC_CHUNK}/atmos_scalar_test_vars_CNAME.bk.nc").exists()])
     out, err = capfd.readouterr()
 
 @pytest.mark.xfail
@@ -411,7 +449,7 @@ def test_remap_variable_filtering_fail(capfd):
                             begin_date="19800101T0000Z",
                             current_chunk="P5Y",
                             product=PRODUCT,
-                            component="atmos_scalar_test_vars_fail",
+                            component="atmos_scalar_test_vars_fail_CNAME",
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
                             ts_workaround=True,
@@ -429,7 +467,7 @@ def test_remap_static_variable_filtering_fail(capfd):
                             begin_date="19800101T0000Z",
                             current_chunk="P0Y",
                             product="static",
-                            component="atmos_scalar_static_test_vars_fail",
+                            component="atmos_scalar_static_test_vars_fail_CNAME",
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
                             ts_workaround=False,
@@ -452,7 +490,7 @@ def test_remap_chdir(capfd):
                             begin_date="19800101T0000Z",
                             current_chunk="P5Y",
                             product=PRODUCT,
-                            component="atmos_scalar",
+                            component="atmos_scalar_CNAME",
                             copy_tool=COPY_TOOL,
                             yaml_config=str(YAML_EX),
                             ts_workaround=True,
