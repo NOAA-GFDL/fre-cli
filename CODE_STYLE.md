@@ -1,6 +1,21 @@
 # FRE Code Style Guide
 
+Disclaimer: This style guide is still in development.
+
 Follow these Style Guidelines when contributing to the `fre-cli` repository.
+
+## Code Checklist
+
+Checklist before requesting a review:
+
+- [ ] I ran my code
+- [ ] I tried to make my code readable
+- [ ] I tried to comment my code
+- [ ] I wrote a new test, if applicable
+- [ ] I wrote new instructions/documentation, if applicable
+- [ ] I ran pytest and inspected it's output
+- [ ] I ran pylint and attempted to implement some of it's feedback
+- [ ] No print statements; all user-facing info uses logging module
 
 ## General Documentation Tips
 
@@ -60,7 +75,7 @@ def func_with_return_and_optional_param(a: int, c: List[int] = [1,2]) -> Any:
     :type a: int
     :param c: description, defaults to [1,2]
     :type c: list, optional
-    :raises AssertionError: description
+    :raises ValueError: description
     :return: description
     :rtype: type
 
@@ -69,7 +84,7 @@ def func_with_return_and_optional_param(a: int, c: List[int] = [1,2]) -> Any:
     """
 
     if a > 10:
-        raise AssertionError("a is more than 10")
+        raise ValueError("a is more than 10")
     return c
 
 def simple_func(foo: str):
@@ -80,5 +95,5 @@ def simple_func(foo: str):
     :type foo: str
     """
 
-    print(foo)
+    pass
 ```
