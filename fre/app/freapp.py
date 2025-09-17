@@ -62,6 +62,13 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
           product, pp_component, copy_tool, yaml_config,
           ts_workaround, ens_mem):
     ''' Remap netcdf files to an updated output directory structure '''
+    # ts_workaround is a string but must be a boolean
+    if ts_workaround == "True":
+        ts_workaround = True
+    elif ts_workaround == "False":
+        ts_workaround = False
+    else:
+        raise Exception("Something other than True or False")
     remap_pp_components(input_dir, output_dir, begin_date, current_chunk,
                         product, pp_component, copy_tool, yaml_config,
                         ts_workaround, ens_mem)

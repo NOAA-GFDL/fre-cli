@@ -60,6 +60,9 @@ def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: b
     :rtype: str
     """
 
+    # if dir_ts is a string the logic below fails
+    assert isinstance(dir_ts, bool), f"Option 'dir_ts' must be a boolean value, not a '{type(dir_ts)}'"
+
     # Define dir
     if ens is not None:
         if dir_ts is True:
