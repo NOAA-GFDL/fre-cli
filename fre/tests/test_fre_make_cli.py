@@ -24,7 +24,7 @@ OUT_PATH_BASE=f"{TEST_DIR}/test_files/test_fre_make_cli"
 def test_cli_fre_make():
     ''' fre make '''
     result = runner.invoke(fre.fre, args=["make"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_make_help():
     ''' fre make --help '''
