@@ -17,7 +17,12 @@ Checklist before requesting a review:
 - [ ] I ran pylint and attempted to implement some of it's feedback
 - [ ] No print statements; all user-facing info uses logging module
 
-## General Documentation Tips
+## General
+
+- Trim all trailing whitespace from every line
+- Lines must be <= 120 characters long (including comments)
+
+## Documentation Tips
 
 Here are some things to keep in mind when writing documentation:
  - Keep sentences short
@@ -32,7 +37,7 @@ Useful Resources:
 
 ## Inline Python Documentation Requirements
 
-Document classes and functions with docstrings. These doctrings should contain field lists documenting arguments and
+Document classes and functions with docstrings. These docstrings should contain field lists documenting arguments and
 returns.  Field lists are sequences of fields marked up: `:fieldname: Field content`.  You do not need to document
 click interface functions with field lists.
 
@@ -42,7 +47,7 @@ Annotations are described in [PEP 3107](https://peps.python.org/pep-3107/).
 
 Useful Resources
  - https://docs.python.org/3/library/typing.html
- - https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
+ - https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html (Note: fre-cli is not dependent on mypy)
  - https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html#field-lists
  - https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
 
@@ -61,7 +66,7 @@ class MyClass(object):
     :ivar str var2: description, initial value: par2
     """
 
-    var3: ClassVar[str] = "I am a class variable" # class variable
+    var3: ClassVar[str] = "I am a class variable"
 
     def __init__(self, par1: int, par2: int):
         self.var1 = par1 # instance variables
