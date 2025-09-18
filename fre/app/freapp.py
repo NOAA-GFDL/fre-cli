@@ -4,7 +4,7 @@ import time
 
 import click
 
-from .mask_atmos_plevel import mask_atmos_plevel_subtool
+from .mask_atmos_plevel.mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
 from .regrid_xy.regrid_xy import regrid_xy
 from .remap_pp_components.remap_pp_components import remap_pp_components
@@ -65,6 +65,10 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
                         ts_workaround, ens_mem)
 
 @app_cli.command()
+@click.option("--yamlfile",
+              type = str,
+              help = "Path to yaml configuration file",
+              required = True)
 @click.option("-i", "--input_dir",
               type = str,
               help = "`inputDir` / `input_dir` (env var) specifies input directory to regrid, " + \
@@ -75,14 +79,9 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
               help = "`outputDir` / `output_dir` (env var) specifies target location for output" + \
                      " regridded files",
               required = True)
-@click.option("-b", "--begin",
+@click.option("-w", "--work_dir",
               type = str,
-              help = "`begin` / `begin` (env var) ISO8601 datetime format specification for" + \
-                     " starting date of data, part of input target file name",
-              required = True)
-@click.option("-tmp", "--tmp_dir",
-              type = str,
-              help = "`TMPDIR` / `tmp_dir` (env var) temp directory for location of file " + \
+              help = "`TMPDIR` / `workdir_dir` (env var) work directory for location of file " + \
                      "read/writes",
               required = True)
 @click.option("-rd", "--remap_dir",
@@ -96,19 +95,16 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
                      "within input directory to target for regridding. the value for `source` " + \
                      "must be present in at least one component's configuration fields",
               required = True)
-@click.option("-g", "--grid_spec",
+@click.option("-id", "--input_date",
               type = str,
-              help = "`gridSpec` / `grid_spec` (env var) file containing mosaic for regridding",
-              required = True)
-@click.option("--rose_config",
-              type = str,
-              help = "Path to Rose app configuration (to be removed soon)",
-              required = True)
-def regrid( input_dir, output_dir, begin, tmp_dir,
-            remap_dir, source, grid_spec, rose_config ):
+              help = "`input_date` / `input_date` (env var) ISO8601 datetime format specification for" + \
+                     " starting date of data, part of input target file name")
+def regrid(yamlfile, input_dir, output_dir, work_dir,
+           remap_dir, source, input_date):
     ''' regrid target netcdf file '''
-    regrid_xy( input_dir, output_dir, begin, tmp_dir,
-               remap_dir, source, grid_spec, rose_config )
+    regrid_xy(yamlfile, input_dir, output_dir, work_dir,
+              remap_dir, source, input_date)
+
 
 @app_cli.command()
 @click.option("-i", "--infile",
@@ -119,12 +115,13 @@ def regrid( input_dir, output_dir, begin, tmp_dir,
               type = str,
               help = "Output file",
               required = True)
-@click.option("-p", "--psfile", # surface pressure... ps? TODO
+@click.option("-p", "--psfile",
               help = "Input NetCDF file containing surface pressure (ps)",
+              type = str,
               required = True)
-def mask_atmos_plevel(infile, outfile, psfile):
-    """Mask out pressure level diagnostic output below land surface"""
-    mask_atmos_plevel_subtool(infile, outfile, psfile)
+def mask_atmos_plevel(infile, psfile, outfile):
+    """Mask diagnostic 'infile' below surface pressure 'psfile'"""
+    mask_atmos_plevel_subtool(infile, psfile, outfile)
 
 
 @app_cli.command()
@@ -156,8 +153,7 @@ def mask_atmos_plevel(infile, outfile, psfile):
                      do not support seasonal and monthly averaging.\n")
 def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     """
-    generate time averages for specified set of netCDF files. 
-    Example: generate-time-averages.py /path/to/your/files/
+    generate time averages for specified set of netCDF files.
     """
     start_time = time.perf_counter()
     generate(inf, outf, pkg, var, unwgt, avg_type)

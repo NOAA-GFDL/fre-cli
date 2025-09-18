@@ -21,10 +21,10 @@ runner=CliRunner()
 test_dir = osp.realpath("fre/tests/test_files/ascii_files/split_netcdf")
 
 cases = {"ts": {"dir":"atmos_daily.tile3",
-                 "nc": "00010101.atmos_daily.tile3.nc", 
-                 "cdl": "00010101.atmos_daily.tile3.cdl"}, 
-         "static": {"dir": "ocean_static", 
-                     "nc": "00010101.ocean_static.nc", 
+                 "nc": "00010101.atmos_daily.tile3.nc",
+                 "cdl": "00010101.atmos_daily.tile3.cdl"},
+         "static": {"dir": "ocean_static",
+                     "nc": "00010101.ocean_static.nc",
                      "cdl": "00010101.ocean_static.cdl"}}
 
 casedirs = [osp.join(test_dir, el) for el in [cases["ts"]["dir"], cases["static"]["dir"]]]
@@ -60,8 +60,8 @@ def test_split_file_setup():
               cdlf_cmd = ["ncgen3", "-k", "netCDF-4", "-o", cdl_out, cdlf]
               nc_files.append(cdl_out)
               ncgen_commands.append(cdlf_cmd)
-          ncgen_commands.append(["ncgen3", "-k", "netCDF-4", "-o", 
-                                 osp.join(cds, cases[testcase]["nc"]), 
+          ncgen_commands.append(["ncgen3", "-k", "netCDF-4", "-o",
+                                 osp.join(cds, cases[testcase]["nc"]),
                                  osp.join(cds, cases[testcase]["cdl"])])
           for ncg in ncgen_commands:
               print(ncg)
@@ -72,27 +72,27 @@ def test_split_file_setup():
     assert all( [ sp_success + nc_files_exist ] )
 
 #test splitting files
-@pytest.mark.parametrize("workdir,infile,outfiledir,varlist", 
+@pytest.mark.parametrize("workdir,infile,outfiledir,varlist",
                              [pytest.param(casedirs[0], cases["ts"]["nc"],
-                                "new_all_ts_varlist",  "all", 
-                                id="ts_all"), 
-                              pytest.param(casedirs[0], cases["ts"]["nc"], 
+                                "new_all_ts_varlist",  "all",
+                                id="ts_all"),
+                              pytest.param(casedirs[0], cases["ts"]["nc"],
                                 "new_some_ts_varlist",
                                 ",".join(some_ts_varlist),
-                                id="ts_some"), 
-                              pytest.param(casedirs[0], cases["ts"]["nc"], 
-                                "new_none_ts_varlist", 
-                                ",".join(none_ts_varlist), id='none'), 
-                              pytest.param(casedirs[1], cases["static"]["nc"], 
-                                "new_all_static_varlist",  "all", 
-                                id="static_all"), 
-                              pytest.param(casedirs[1], cases["static"]["nc"], 
+                                id="ts_some"),
+                              pytest.param(casedirs[0], cases["ts"]["nc"],
+                                "new_none_ts_varlist",
+                                ",".join(none_ts_varlist), id='none'),
+                              pytest.param(casedirs[1], cases["static"]["nc"],
+                                "new_all_static_varlist",  "all",
+                                id="static_all"),
+                              pytest.param(casedirs[1], cases["static"]["nc"],
                                 "new_some_static_varlist",
                                 ",".join(some_static_varlist),
                                 id="static_some")])
 def test_split_file_run(workdir,infile, outfiledir, varlist):
-    ''' Checks that split-netcdf will run when called from the command line 
-    
+    ''' Checks that split-netcdf will run when called from the command line
+
     :param workdir: subdir all operations are relative to
     :type workdir: string
     :param infile: netcdf file to split into single-var files
@@ -102,9 +102,9 @@ def test_split_file_run(workdir,infile, outfiledir, varlist):
     :param varlist: comma-separated string specifying which variables to write ("all", some_ts_varlist, none_ts_varlist)
     :type varlist: string
     :type origdir: string
-    
+
     Parameters for the 5 tests are based off of the list of variables to filter on plus the type of file:
-    
+
     - all: "all", the default, processes all variables in the input
     - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
     - none: processes a list of variables, none of which are in the input; should produce no files
@@ -113,20 +113,20 @@ def test_split_file_run(workdir,infile, outfiledir, varlist):
     '''
     infile = osp.join(workdir, infile)
     outfiledir = osp.join(workdir, outfiledir)
-    split_netcdf_args = ["pp", "split-netcdf", 
-                                          "--file", infile, 
-                                          "--outputdir", outfiledir, 
+    split_netcdf_args = ["pp", "split-netcdf",
+                                          "--file", infile,
+                                          "--outputdir", outfiledir,
                                           "--variables", varlist]
     print(split_netcdf_args)
     result = runner.invoke(fre.fre, args=split_netcdf_args)
     print(result)
     assert result.exit_code == 0
 
-@pytest.mark.parametrize("workdir,newdir,origdir", 
-                         [pytest.param(casedirs[0],"new_all_ts_varlist", "all_ts_varlist", id='ts_all'), 
+@pytest.mark.parametrize("workdir,newdir,origdir",
+                         [pytest.param(casedirs[0],"new_all_ts_varlist", "all_ts_varlist", id='ts_all'),
                          pytest.param(casedirs[0],"new_some_ts_varlist", "some_ts_varlist", id='ts_some'),
-                         pytest.param(casedirs[1],"new_all_static_varlist", "all_static_varlist", id='static_all'), 
-                         pytest.param(casedirs[1],"new_some_static_varlist", "some_static_varlist", id='static_some')])    
+                         pytest.param(casedirs[1],"new_all_static_varlist", "all_static_varlist", id='static_all'),
+                         pytest.param(casedirs[1],"new_some_static_varlist", "some_static_varlist", id='static_some')])
 def test_split_file_data(workdir,newdir, origdir):
     ''' Checks that the data in the new files match the data in the old files
     :param workdir: dir that all operations are relative to
@@ -135,9 +135,9 @@ def test_split_file_data(workdir,newdir, origdir):
     :type newdir: string
     :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
     :type origdir: string
-    
+
     Parameters for the tests differ based off the variable list from test_split_file_run and the type of file being split:
-    
+
     - all: "all", the default, processes all variables in the input
     - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
     - ts: timeseries files
@@ -153,7 +153,7 @@ def test_split_file_data(workdir,newdir, origdir):
     print(f"orig count: {orig_count}  new count: {new_count}")
     all_files_equal=True
     for sf in split_files:
-        nccmp_cmd = [ 'nccmp', '-d', '--force', 
+        nccmp_cmd = [ 'nccmp', '-d', '--force',
                     osp.join(origdir, sf), osp.join(newdir, sf) ]
         sp = subprocess.run( nccmp_cmd)
         if sp.returncode != 0:
@@ -172,19 +172,19 @@ def test_split_file_data(workdir,newdir, origdir):
 @pytest.mark.parametrize("workdir,newdir,origdir",
                          [pytest.param(casedirs[0],"new_all_ts_varlist", "all_ts_varlist", id='all'),
                          pytest.param(casedirs[0],"new_some_ts_varlist", "some_ts_varlist", id='some'),
-                         pytest.param(casedirs[1],"new_all_static_varlist", "all_static_varlist", id='static_all'), 
+                         pytest.param(casedirs[1],"new_all_static_varlist", "all_static_varlist", id='static_all'),
                          pytest.param(casedirs[1],"new_some_static_varlist", "some_static_varlist", id='static_some')])
 def test_split_file_metadata(workdir,newdir, origdir):
-    ''' Checks that the metadata in the new files match the metadata in the old files 
+    ''' Checks that the metadata in the new files match the metadata in the old files
     :param workdir: dir that all operations are relative to
     :type workdir: string
     :param newdir: the directory containing the newly-written files (new_all_ts_varlist, new_some_ts_varlist)
     :type newdir: string
     :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
     :type origdir: string
-    
+
     Parameters for the tests differ based off the variable list from test_split_file_run and the type of file being split:
-    
+
     - all: "all", the default, processes all variables in the input
     - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
     - ts: timeseries files
@@ -210,7 +210,7 @@ def test_split_file_metadata(workdir,newdir, origdir):
 
 #clean up splitting files
 def test_split_file_cleanup():
-    ''' Cleaning up files and dirs created for this set of tests. 
+    ''' Cleaning up files and dirs created for this set of tests.
         Deletes all netcdf files (*.nc) and all dirs created for this test (new_*)
         '''
     el_list = []

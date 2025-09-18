@@ -1,12 +1,12 @@
 """
 CLI Tests for fre make *
-Tests the command-line-interface calls for tools in the fre make suite. 
+Tests the command-line-interface calls for tools in the fre make suite.
 Each tool generally gets 3 tests:
     - fre make , checking for exit code 0 (fails if cli isn't configured right)
     - fre make --help, checking for exit code 0 (fails if the code doesn't run)
-    - fre make --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+    - fre make --optionDNE, checking for exit code 2 (fails if cli isn't configured
       right and thinks the tool has a --optionDNE option)
-      
+
 We also have a set of more complicated tests for fre make testing the checkout
 and container creation (and cleaning up after those operations)
 """
@@ -24,7 +24,7 @@ OUT_PATH_BASE=f"{TEST_DIR}/test_files/test_fre_make_cli"
 def test_cli_fre_make():
     ''' fre make '''
     result = runner.invoke(fre.fre, args=["make"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_make_help():
     ''' fre make --help '''
@@ -37,7 +37,7 @@ def test_cli_fre_make_opt_dne():
     assert result.exit_code == 2
 
 def test_cli_fre_make_create_checkout_baremetal():
-    ''' fre make checkout -y am5.yaml -p ncrc5.intel23 -t debug'''
+    ''' fre -vv make checkout-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t debug'''
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_baremetal"
 
     # Set paths and click options
@@ -57,7 +57,7 @@ def test_cli_fre_make_create_checkout_baremetal():
     os.environ["HOME"]=str(Path(OUT_PATH))
 
     # run checkout
-    result = runner.invoke(fre.fre, args = [ "make", "checkout-script", 
+    result = runner.invoke(fre.fre, args = [ "-v", "-v", "make", "checkout-script",
                                              "-y", f"{yamlfile}/null_model.yaml",
                                              "-p", platform, "-t", target  ])
 
@@ -70,7 +70,7 @@ def test_cli_fre_make_create_checkout_baremetal():
                  os.access(Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh"), os.X_OK)])
 
 def test_cli_fre_make_create_checkout_baremetal_npc():
-    ''' fre make checkout -y null_model.yaml -p ncrc5.intel23 -t debug -npc'''
+    ''' fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t debug -npc'''
 
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_baremetal_npc"
 
@@ -104,7 +104,7 @@ def test_cli_fre_make_create_checkout_baremetal_npc():
                  os.access(Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh"), os.X_OK)])
 
 def test_cli_fre_make_create_checkout_container():
-    ''' fre make checkout -y null_model.yaml -p hpcme.2023 -t debug'''
+    ''' fre make checkout-script -y null_model.yaml -p hpcme.2023 -t debug'''
 
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_container"
 

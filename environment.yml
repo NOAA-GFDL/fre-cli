@@ -9,7 +9,7 @@ dependencies:
   - noaa-gfdl::catalogbuilder>=2.0.2
   - noaa-gfdl::fre-nctools
   - conda-forge::cftime
-  - conda-forge::click<8.2
+  - conda-forge::click>=8.2
   - conda-forge::cylc-flow>=8.2.0
   - conda-forge::cylc-rose
   - conda-forge::cmor>=3.11.0
@@ -25,3 +25,4 @@ dependencies:
   - conda-forge::python-cdo
   - conda-forge::pyyaml
   - conda-forge::xarray
+  - conda-forge::netcdf4

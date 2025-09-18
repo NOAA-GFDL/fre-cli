@@ -1,25 +1,55 @@
 '''
-Checks out source code
+Creates a checkout script.
+
+When run, the checkout script checks out source code needed to build the model. 
 '''
 
 import os
 import subprocess
 import logging
 import fre.yamltools.combine_yamls_script as cy
+from typing import Optional
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
 # set up logging
 fre_logger = logging.getLogger(__name__)
 
-def checkout_create(yamlfile, platform, target, no_parallel_checkout, jobs, execute, verbose):
+def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_checkout: Optional[bool] = None,
+                    njobs: int = 4, execute: Optional[bool] = False, verbose: Optional[bool] = None):
     """
-    Create the checkout script for bare-metal or container build
+    Creates the checkout script for bare-metal or container build
+    The checkout script will clone component repositories, defined 
+    in the compile yaml, needed to build the model.
+
+    :param yamlfile: Model compile YAML file
+    :type yamlfile: str
+    :param platform: FRE platform; defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
+    :type platform: str
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :type target: str
+    :param no_parallel_checkout: Option to turn off parallel checkouts
+    :type no_parallel_checkout: bool
+    :param njobs: Used in the recursive clone; number of submodules to fetch simultaneously (default 4)
+    :type njobs: int
+    :param execute: Run the created checkout script to check out source code
+    :type execute: bool
+    :param verbose: Increase verbosity output
+    :type verbose: bool
+    :raises ValueError: 
+        - Error if 'jobs' param is not an integer
+        - Error if platform does not exist in platforms yaml configuration
+
+    :raises OSError: Error if checkout script does not run successfully
+
+    .. note:: For a bare-metal build, no_parallel_checkout = True
+              For a container build, no_parallel_checkout = False
     """
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
     run = execute
-    jobs = str(jobs)
+    jobs = str(njobs)
     pcheck = no_parallel_checkout
 
     if isinstance(jobs, bool) and execute:

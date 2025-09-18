@@ -29,21 +29,21 @@ fre_logger = logging.getLogger(__name__)
 #*_bnds, *_bounds: bounds variables. Defines the edges of a coordinate var
 #*_offset: i and j offsets. Constants added to a coordinate var to get
 #   actual coordinate values, used to compress data
-#*_average: calculated averages for a variable. 
+#*_average: calculated averages for a variable.
 #These vars may also be covered by the var_shortvars query, but it doesn't
 #hurt to double-check.
 VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
 
-def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs, 
+def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
                  yamlfile, split_all_vars=False):
   '''
   Given a directory of netcdf files, splits those netcdf files into separate
   files for each data variable and copies the data variable files of interest
   to the output directory
-  
+
   Intended to work with data structured for fre-workflows and fre-workflows file naming conventions
   - Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
-    
+
   :param inputDir: directory containing netcdf files
   :type inputDir: string
   :param outputDir: directory to which to write netcdf files
@@ -59,7 +59,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   :param split_all_vars: Whether to skip parsing the yamlfile and split all available vars in the file. Defaults to False.
   :type split_all_vars: boolean
   '''
-  
+
   #Verify input/output dirs exist and are dirs
   if not (os.path.isdir(inputDir)):
     fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
@@ -73,7 +73,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
 
   curr_dir = os.getcwd()
   workdir = os.path.abspath(inputDir)
-  
+
   #note to self: if CYLC_TASK_PARAM_component isn't doing what we think it's
   #doing, we can also use history_source to get the component but it's
   #going to be a bit of a pain
@@ -81,11 +81,13 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     varlist = "all"
   else:
     ydict = yaml.safe_load(Path(yamlfile).read_text())
-    varlist = get_variables_hist_src(ydict, history_source)
-    if varlist is None:
-      fre_logger.error(f"error: source {history_source} not defined in yamlfile {yamlfile}.")
-      raise ValueError(f"error: source {history_source} not defined in yamlfile {yamlfile}.")
-      
+    vardict = get_variables(ydict, component)
+    if vardict is None or history_source not in vardict.keys():
+      fre_logger.error(f"error: either component {component} not defined or source {history_source} not defined under component {component} in yamlfile {yamlfile}.")
+      raise ValueError(f"error: either component {component} not defined or source {history_source} not defined under component {component} in yamlfile {yamlfile}.")
+    else:
+      varlist = vardict[history_source]
+
   #extend globbing used to find both tiled and non-tiled files
   #all files that contain the current source:history_file name,
   #0-1 instances of "tile" and end in .nc
@@ -97,7 +99,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #  '00020101.atmos_level_cmip.tile4.nc'
   #  '00020101.ocean_cobalt_omip_2d.nc'
   file_regex = f'.*{history_source}(\\.tile.*)?.nc'
-  
+
   #If in sub-dir mode, process the sub-directories instead of the main one
   # and write to $outputdir/$subdir
   if use_subdirs:
@@ -123,25 +125,25 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir} that match pattern {file_regex}; no splitting took place")
       raise OSError
   else:
-      files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None] 
+      files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None]
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
       if len(files) == 0:
         fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
         raise OSError
-    
+
   fre_logger.info("split-netcdf-wrapper call complete")
   sys.exit(0) #check this
 
 def split_file_xarray(infile, outfiledir, var_list='all'):
   '''
-  Given a netcdf infile containing one or more data variables, 
+  Given a netcdf infile containing one or more data variables,
   writes out a separate file for each data variable in the file, including the
-  variable name in the filename. 
-  if var_list if specified, only the vars in var_list are written to file; 
+  variable name in the filename.
+  if var_list if specified, only the vars in var_list are written to file;
   if no vars in the file match the vars in var_list, no files are written.
-  
+
   :param infile: input netcdf file
   :type infile: string
   :param outfiledir: writeable directory to which to write netcdf files
@@ -152,20 +154,20 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   if not os.path.isdir(outfiledir):
     fre_logger.info("creating output directory")
     os.makedirs(outfiledir)
-    
+
   if not os.path.isfile(infile):
     fre_logger.error(f"error: input file {infile} not found. Please check the path.")
     raise OSError(f"error: input file {infile} not found. Please check the path.")
 
   dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False, decode_coords="all")
   allvars = dataset.data_vars.keys()
-  
-  #If you have a file of 3 or more dim vars, 2d-or-fewer vars are likely to be 
+
+  #If you have a file of 3 or more dim vars, 2d-or-fewer vars are likely to be
   #metadata vars; if your file is 2d vars, 1d vars are likely to be metadata.
   max_ndims = get_max_ndims(dataset)
-  if max_ndims >= 3: 
-    varsize = 2 
-  else: 
+  if max_ndims >= 3:
+    varsize = 2
+  else:
     varsize = 1
   #note: netcdf dimensions and xarray coords are NOT ALWAYS THE SAME THING.
   #If they were, I could get away with the following:
@@ -180,8 +182,8 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   var_exclude = list(set(VAR_PATTERNS + [str(el) for el in var_shortvars] ))
   def matchlist(xstr):
     ''' checks a string for matches in a list of patterns
-    
-        xstr: string to search for matches 
+
+        xstr: string to search for matches
         var_exclude: list of patterns defined in VAR_EXCLUDE'''
     allmatch = [re.search(el, xstr)for el in var_exclude]
     #If there's at least one match in the var_exclude list (average_bnds is OK)
@@ -191,7 +193,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   fre_logger.debug(f"metavars: {metavars}")
   fre_logger.debug(f"datavars: {datavars}")
   fre_logger.debug(f"var filter list: {var_list}")
-  
+
   #datavars does 2 things: keep track of which vars to write, and tell xarray
   #which vars to drop. we need to separate those things for the variable filtering.
   if var_list == "all":
@@ -202,7 +204,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
     var_list = list(set(var_list))
     write_vars = [el for el in datavars if el in var_list]
   fre_logger.debug(f"intersection of datavars and var_list: {write_vars}")
-  
+
   if len(write_vars) < 0:
     fre_logger.info(f"No data variables found in {infile}; no writes take place.")
   else:
@@ -214,7 +216,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
       #(seriously, we need the time_bnds)
       data2 = dataset.drop_vars([el for el in datavars if el is not variable])
       v_encode= set_var_encoding(dataset, metavars)
-      #combine 2 dicts into 1 dict - should be no shared keys, 
+      #combine 2 dicts into 1 dict - should be no shared keys,
       #so the merge is straightforward
       var_encode = {**vc_encode, **v_encode}
       fre_logger.debug(f"var_encode settings: {var_encode}")
@@ -229,8 +231,8 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
 def get_max_ndims(dataset):
   '''
   Gets the maximum number of dimensions of a single var in an xarray Dataset object. Excludes coord vars, which should be single-dim anyway.
-  
-  :param dataset: xarray Dataset you want to query 
+
+  :param dataset: xarray Dataset you want to query
   :type dataset: xarray Dataset
   :return: The max dimensions that a single var possesses in the Dataset
   :rtype: int
@@ -238,36 +240,36 @@ def get_max_ndims(dataset):
   allvars = dataset.data_vars.keys()
   ndims = [len(dataset[v].shape) for v in allvars]
   return max(ndims)
-    
+
 def set_coord_encoding(dset, vcoords):
   '''
   Gets the encoding settings needed for xarray to write out the coordinates
   as expected
   we need the list of all vars (varnames) because that's how you get coords
   for the metadata vars (i.e. nv or bnds for time_bnds)
-  
+
   :param dset: xarray Dataset object to query for info
   :type dset: xarray Dataset object
   :param vcoords: list of coordinate variables to write to file
   :type vcoords: list of strings
-  :return: A dictionary where each key is a coordinate in the xarray Dataset and 
+  :return: A dictionary where each key is a coordinate in the xarray Dataset and
            each value is a dictionary where the keys are the encoding information from
            the coordinate variable in the Dataset plus the units (if present)
   :rtype: dict
-  
-  .. note:: 
+
+  .. note::
            This code removes _FillValue from coordinates. CF-compliant files do not
            have _FillValue on coordinates, and xarray does not have a good way to get
-           _FillValue from coordinates. Letting xarray set _FillValue for coordinates 
+           _FillValue from coordinates. Letting xarray set _FillValue for coordinates
            when coordinates *have* a _FillValue gets you wrong metadata, and bad metadata
-           is worse than no metadata. Dropping the attribute if it's present seems to be 
+           is worse than no metadata. Dropping the attribute if it's present seems to be
            the lesser of two evils.
   '''
   fre_logger.debug(f"getting coord encode settings")
   encode_dict = {}
   for vc in vcoords:
     vc_encoding = dset[vc].encoding #dict
-    encode_dict[vc] = {'_FillValue': None, 
+    encode_dict[vc] = {'_FillValue': None,
                               'dtype': dset[vc].encoding['dtype']}
     if "units" in vc_encoding.keys():
       encode_dict[vc]['units'] = dset[vc].encoding['units']
@@ -277,11 +279,11 @@ def set_var_encoding(dset, varnames):
   '''
   Gets the encoding settings needed for xarray to write out the variables
   as expected
-  
+
   mostly addressed to time_bnds, because xarray can drop the units attribute
-  
+
   - https://github.com/pydata/xarray/issues/8368
-    
+
   :param dset: xarray dataset object to query for info
   :type dset: xarray dataset object
   :param varnames: list of variables that will be written to file
@@ -302,16 +304,16 @@ def set_var_encoding(dset, varnames):
 
 def fre_outfile_name(infile, varname):
   '''
-  Builds split  var filenames the way that fre expects them 
+  Builds split  var filenames the way that fre expects them
   (and in a way that should work for any .nc file)
-  
+
    This is expected to work with files formed the following way
-   
+
    - Fre Input format:  date.component(.tileX).nc
    - Fre Output format: date.component.var(.tileX).nc
-   
+
    but it should also work on any file filename.nc
-  
+
   :param infile: name of a file with a . somewhere in the filename
   :type infile: string
   :param varname: string to add to the infile

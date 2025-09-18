@@ -6,7 +6,7 @@ from fre.pp import nccheck_script as ncc
 import subprocess
 
 # Set example input path
-ncgen_input = Path("fre/tests/test_files/reduced_ascii_files/reduced_ocean_monthly_1x1deg.199307-199308.sos.cdl")
+ncgen_input = Path("fre/tests/test_files/reduced_ascii_files/reduced_ocean_monthly_1x1deg.199301-199302.sos.cdl")
 ncgen_output = Path("./nccheck_test_file")
 
 def test_setup_nccheck(capfd):

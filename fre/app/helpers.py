@@ -56,7 +56,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
 
         ##offline statics won't use variables filtering ... yet?
 
-    # If the dictionary is empty (no overlap of pp components and components 
+    # If the dictionary is empty (no overlap of pp components and components
     # in pp yaml) --> error
     if not src_vars:
         raise ValueError(f"PP component, {pp_comp}, not found in pp yaml configuration!")
@@ -129,9 +129,9 @@ def change_directory(new_path: str):
     ## Change into path passed
     os.chdir(new_path)
 
-    ## Execute code within the 'with' block when using this function 
+    ## Execute code within the 'with' block when using this function
     ## ('with change_directories(path):'), then go back to the original
-    ## directory 
+    ## directory
     # 'yield': used to create generators (special types of iterators that allow
     #                                     for lazy value production; produces
     #                                     values at time of iteration)
