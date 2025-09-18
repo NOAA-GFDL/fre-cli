@@ -483,9 +483,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                         chunk = get_chunk(comp_info)  ## might have to be a list ...
                         for c in chunk:
                             if c != current_chunk:
-                                fre_logger.warning("Chunk in directory structure is not
-                                                   equal to the current chunk set! 
-                                                   Skipping component remapping %s", comp)
+                                fre_logger.warning("Chunk in directory structure is not equal to the current chunk set! Skipping component remapping %s", comp)
                                 continue
                             if ens_mem is not None:
                                 os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
