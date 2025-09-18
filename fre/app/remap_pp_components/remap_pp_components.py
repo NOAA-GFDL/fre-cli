@@ -418,7 +418,6 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                 fre_logger.info("Component %s found in yaml config!", comp)
             else:
                 continue
-
             # Continue if not looking at correct information for requested component
             if comp != comp_info.get("type"):
                 fre_logger.warning("Info not associated with component, %s, requested", comp)
@@ -434,6 +433,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                 # Save list of offline sources (if defined) for later
                 for static_info in comp_info.get("static"):
                     if static_info.get("offline_source") is None:
+                        fre_logger.debug("No offline source info")
                         continue
 
                     offline_srcs.append(static_info.get("offline_source"))
@@ -483,6 +483,9 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                         chunk = get_chunk(comp_info)  ## might have to be a list ...
                         for c in chunk:
                             if c != current_chunk:
+                                fre_logger.warning("Chunk in directory structure is not
+                                                   equal to the current chunk set! 
+                                                   Skipping component remapping %s", comp)
                                 continue
                             if ens_mem is not None:
                                 os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
