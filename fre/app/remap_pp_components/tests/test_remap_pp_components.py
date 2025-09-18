@@ -27,17 +27,9 @@ NATIVE_GRID = "native"
 REGRID_GRID = "regrid-xy"
 COPY_TOOL = "cp"
 
-
-######
-######FAIL IF COMPOUT NOT RIGHT
-######
-
 # Define non-static variables
 DATA_FILE_CDL = Path("atmos_scalar.198001-198412.co2mass.cdl") # CDL file to generate nc file from ncgen
-# netcdf files to make
-
-
-#######HAS TO BE COMPONENT NAME I THINK
+# netcdf files to make for remap input
 DATA_NC_FILES = ["atmos_scalar.198001-198412.co2mass.nc",
                  "atmos_scalar_test_vars.198001-198412.co2mass.nc",
                  "atmos_scalar_test_vars_fail.198001-198412.co2mass.nc",
@@ -48,7 +40,7 @@ CHUNK = "P5Y"
 
 # Define static variables
 STATIC_DATA_FILE_CDL = Path("atmos_static_scalar.bk.cdl")      # CDL file to generate static nc file from ncgen
-# static netcdf files to make
+# static netcdf files to make for remap input
 STATIC_DATA_NC_FILES = ["atmos_static_scalar.bk.nc",
                         "atmos_static_scalar_test_vars.bk.nc",
                         "atmos_static_scalar_test_vars_fail.bk.nc"]
