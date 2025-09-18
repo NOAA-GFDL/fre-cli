@@ -19,9 +19,6 @@ REMAP_IN = f"{TEST_OUTDIR}/ncgen-output"
 REMAP_OUT = f"{TEST_OUTDIR}/remap-output"
 
 # Define components, grids, other
-####
-###should this actually by SOURCE_LIST???
-####
 SOURCENAME_LIST = ["atmos_scalar", "atmos_scalar_test_vars", "atmos_scalar_test_vars_fail", "atmos_scalar_static_test_vars_fail"]
 NATIVE_GRID = "native"
 REGRID_GRID = "regrid-xy"
