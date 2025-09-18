@@ -1,8 +1,5 @@
 import os
-from pathlib import Path
-import yaml
 from contextlib import contextmanager
-import sys
 
 # set up logging
 import logging
@@ -108,7 +105,7 @@ def get_variables_hist_src(yml: dict, hist_src: str) -> list:
                 else:
                     src_vars = "all"
                 break
-    #using is_found rather than a check for length on the off chance that the 
+    #using is_found rather than a check for length on the off chance that the
     #variable list is of length 0 without being caught earlier in the config
     if not is_found:
         raise ValueError(f"history_file, {hist_src}, not found in pp yaml configuration {yml}!")

@@ -45,7 +45,7 @@ def test_get_variables():
                 out1 == expected_dicts[0],
                 out2 == expected_dicts[1],
                 out3 == expected_dicts[2]])
-             
+
 def test_get_variables_load_wrong_type():
     """
     Test get_variables() returns an error when given inappropriate input
@@ -53,10 +53,9 @@ def test_get_variables_load_wrong_type():
     with pytest.raises( TypeError ) as execinfo:
         out = helpers.get_variables(yml = YAML_EX, pp_comp = "test_param")
     assert execinfo.type is TypeError
-    
-    
-@pytest.mark.parametrize("hist_src,var_list", 
-                          [ 
+
+@pytest.mark.parametrize("hist_src,var_list",
+                          [
                           pytest.param("atmos_month", "all", id="tseries-all"),
                           pytest.param("atmos_static_scalar", "all", id="static-all"),
                           pytest.param("atmos_scalar_test_vars",["co2mass"], id="tseries-varlist"),
