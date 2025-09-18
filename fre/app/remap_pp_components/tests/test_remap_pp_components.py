@@ -105,10 +105,6 @@ def test_create_ncfile_with_ncgen_cdl(capfd):
     # if name is in path name
     for out_path in ncgen_native_out_paths:
         for nc_fn in DATA_NC_FILES:
-#            if nc_fn.split(".")[0] != out_path.split("/")[-3]:
-##                print(f'\n{nc_fn.split(".")[0]} not in {out_path.split("/")[-3]}')
-#                continue
-
             # NCGEN command: ncgen -o [outputfile] [inputfile]
             ex = [ "ncgen", "-k", "64-bit offset",
                    "-o", Path(out_path) / nc_fn,
