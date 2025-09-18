@@ -52,7 +52,7 @@ if Path(TEST_OUTDIR).exists():
 
 ncgen_native_out_paths = []
 ncgen_static_out_paths = []
-# Set up input directories (location previously made in flow.cylc workflow for i in COMPOUT_LIST:i
+# Set up input directories (location previously made in flow.cylc workflow
 for i in SOURCENAME_LIST:
     ncgen_native_out = f"{REMAP_IN}/{NATIVE_GRID}/{i}/{FREQ}/{CHUNK}"
     Path(ncgen_native_out).mkdir(parents=True,exist_ok=True)
