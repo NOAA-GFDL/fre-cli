@@ -415,7 +415,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
             # Check that pp_components defined matches those in the yaml file
             fre_logger.debug("Is %s in %s?", comp, yaml_components)
             if comp in yaml_components:
-                fre_logger.info("Component %s found in yaml config!", comp)
+                fre_logger.info("Active component found in yaml config: %s", comp)
             else:
                 continue
             # Continue if not looking at correct information for requested component
@@ -483,7 +483,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                         chunk = get_chunk(comp_info)  ## might have to be a list ...
                         for c in chunk:
                             if c != current_chunk:
-                                fre_logger.warning("Chunk in directory structure is not equal to the current chunk set! Skipping component remapping %s", comp)
+                                fre_logger.warning("Chunk in directory structure is not equal to the current chunk set! Skipping component remapping for %s...", comp)
                                 continue
                             if ens_mem is not None:
                                 os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
