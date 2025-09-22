@@ -4,7 +4,7 @@ import time
 
 import click
 
-from .mask_atmos_plevel import mask_atmos_plevel_subtool
+from .mask_atmos_plevel.mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
 from .generate_time_averages.wrapper import generate_wrapper
 from .regrid_xy.regrid_xy import regrid_xy
@@ -106,7 +106,7 @@ def regrid(yamlfile, input_dir, output_dir, work_dir,
     ''' regrid target netcdf file '''
     regrid_xy(yamlfile, input_dir, output_dir, work_dir,
               remap_dir, source, input_date)
-    
+
 
 @app_cli.command()
 @click.option("-i", "--infile",
@@ -117,12 +117,13 @@ def regrid(yamlfile, input_dir, output_dir, work_dir,
               type = str,
               help = "Output file",
               required = True)
-@click.option("-p", "--psfile", # surface pressure... ps? TODO
+@click.option("-p", "--psfile",
               help = "Input NetCDF file containing surface pressure (ps)",
+              type = str,
               required = True)
-def mask_atmos_plevel(infile, outfile, psfile):
-    """Mask out pressure level diagnostic output below land surface"""
-    mask_atmos_plevel_subtool(infile, outfile, psfile)
+def mask_atmos_plevel(infile, psfile, outfile):
+    """Mask diagnostic 'infile' below surface pressure 'psfile'"""
+    mask_atmos_plevel_subtool(infile, psfile, outfile)
 
 
 @app_cli.command()
@@ -154,8 +155,7 @@ def mask_atmos_plevel(infile, outfile, psfile):
                      do not support seasonal and monthly averaging.\n")
 def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     """
-    generate time averages for specified set of netCDF files. 
-    Example: generate-time-averages.py /path/to/your/files/
+    generate time averages for specified set of netCDF files.
     """
     start_time = time.perf_counter()
     generate(inf, outf, pkg, var, unwgt, avg_type)
