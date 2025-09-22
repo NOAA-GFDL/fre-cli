@@ -190,13 +190,17 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
               type = str,
               required = True,
               help = "Frequency of desired climatology: 'mon' or 'yr'")
-def gen_time_averages_wrapper(cycle_point, dir, sources, output_interval, input_interval, grid, frequency):
+@click.option("-p", "--pkg",
+              type = click.Choice(["cdo","fre-nctools","fre-python-tools"]),
+              default = "fre-nctools",
+              help = "Time average approach")
+def gen_time_averages_wrapper(cycle_point, dir, sources, output_interval, input_interval, grid, frequency, pkg):
     """
     Wrapper for climatology tool.
     Timeaverages all variables for a desired cycle point, source, and grid.
     """
     sources_list = sources.split(',')
-    generate_wrapper(cycle_point, dir, sources_list, output_interval, input_interval, grid, frequency)
+    generate_wrapper(cycle_point, dir, sources_list, output_interval, input_interval, grid, frequency, pkg)
 
 @app_cli.command()
 @click.option("--in-dir",
