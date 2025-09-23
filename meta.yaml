@@ -15,6 +15,12 @@ build:
     - cp fre/mkmf/bin/mkmf $PREFIX/bin
     - cp fre/mkmf/bin/list_paths $PREFIX/bin
     - cp fre/mkmf/bin/git-version-string $PREFIX/bin
+    - git clone https://github.com/NOAA-GFDL/FRE-NCtools.git
+    - cd FRE-NCtools
+    - autoreconf -i
+    - ./configure --prefix=$PREFIX
+    - make -j
+    - make install
   number: 1
   noarch: python
 
@@ -31,7 +37,6 @@ requirements:
     - pip
     - noaa-gfdl::analysis_scripts
     - noaa-gfdl::catalogbuilder>=2.0.2
-    - noaa-gfdl::fre-nctools
     - conda-forge::cftime
     - conda-forge::click>=8.2
     - conda-forge::cylc-flow>=8.2.0
