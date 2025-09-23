@@ -34,10 +34,6 @@ class frenctoolsTimeAverager(timeAverager):
             - Cannot find timavg.csh (likely the user is not in an environment with frenctools installed)
             - timavgcsh command is not properly executed
         """
-        assert self.pkg=="fre-nctools"
-        if __debug__:
-            fre_logger.debug(locals()) #input argument details
-
         exitstatus=1
         if self.avg_type not in ['month','all']:
             raise ValueError(f'avg_type= {self.avg_type} not supported by this class at this time.')
@@ -68,7 +64,10 @@ class frenctoolsTimeAverager(timeAverager):
             monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
             output_dir = Path(outfile).parent       #Save output in the user-specified location
             os.makedirs(monthly_nc_dir, exist_ok=True)   #create directory if it does not exist
+            fre_logger.info('created monthly_nc_dir = %s', str(Path(monthly_nc_dir).resolve()))
             os.makedirs(output_dir, exist_ok=True)
+            fre_logger.info('created output_dir = %s', str(Path(monthly_nc_dir).resolve()))
+
             #Extract unique months from the infile
             month_indices = list(range(1, 13))   #serves to track month index and as part of the outfile name
             month_names = [calendar.month_name[i] for i in month_indices]
@@ -91,14 +90,19 @@ class frenctoolsTimeAverager(timeAverager):
                 #Run timavg command for newly created file
                 month_output_file = month_output_file_paths[month_index]
                 timavgcsh_command=['timavg.csh', '-mb','-o', month_output_file, nc_monthly_file]
+                fre_logger.debug( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
                 exitstatus=1
                 with Popen(timavgcsh_command,
                         stdout=PIPE, stderr=PIPE, shell=False) as subp:
-                    output=subp.communicate()[0]
+                    stdout, stderr = subp.communicate()
+                    stdoutput=stdout.decode()
+                    fre_logger.info('output= %s', stdoutput)
+                    stderror=stderr.decode()
+                    #fre_logger.info('error = %s', stderror )
 
-
-                    if subp.returncode > 0:
-                        raise ValueError('error: timavgcsh command not properly executed')
+                    if subp.returncode != 0:
+                        fre_logger.error('stderror  = %s', stderror)
+                        raise ValueError('error: timavgcsh command not properly executed, subp.returncode=%s',subp.returncode)
                     else:
                         fre_logger.info('%s climatology successfully ran',nc_monthly_file)
                         exitstatus=0
@@ -110,14 +114,19 @@ class frenctoolsTimeAverager(timeAverager):
             return exitstatus
 
         timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
+        fre_logger.debug( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
         exitstatus=1
         with Popen(timavgcsh_command,
                    stdout=PIPE, stderr=PIPE, shell=False) as subp:
-            output=subp.communicate()[0]
-            fre_logger.info('output= %s',output)
+            stdout, stderr = subp.communicate()
+            stdoutput=stdout.decode()
+            fre_logger.info('output= %s', stdoutput)
+            stderror=stderr.decode()
+            #fre_logger.info('error = %s', stderror )
 
-            if subp.returncode > 0:
-                raise ValueError('error: timavgcsh command not properly executed')
+            if subp.returncode != 0:
+                fre_logger.error('stderror  = %s', stderror)
+                raise ValueError('error: timavgcsh command not properly executed, subp.returncode=%s',subp.returncode)
             else:
                 fre_logger.info('climatology successfully ran')
                 exitstatus=0

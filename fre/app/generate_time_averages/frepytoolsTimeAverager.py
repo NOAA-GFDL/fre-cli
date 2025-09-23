@@ -30,11 +30,6 @@ class frepytoolsTimeAverager(timeAverager):
         :return: 1 if requested variable is not found, and 0 if function has a clean exit
         :rtype: int
         """
-        assert self.pkg=="fre-python-tools"
-        fre_logger.debug(locals()) #input argument details
-
-        fre_logger.info('calling generate_frepythontools_timavg for file: ' + infile)
-
         if self.avg_type != 'all':
             fre_logger.error(f'avg_type={self.avg_type} not supported at this time.')
             return 1

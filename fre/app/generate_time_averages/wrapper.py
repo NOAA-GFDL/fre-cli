@@ -28,7 +28,8 @@ def extract_variables_from_files(files: list[str]) -> list[str]:
     return variables
 
 
-def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_interval: str, input_interval: str, grid: str, frequency: str) -> None:
+def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_interval: str,
+                     input_interval: str, grid: str, frequency: str, pkg: str = 'fre-nctools') -> None:
     """
     Run climatology tool on a subset of timeseries
 
@@ -44,6 +45,8 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
     :type input_interval: ISO8601 duration
     :param frequency: Period to average: 'yr' or 'mon'
     :type frequency: ISO8601 duration
+    :param pkg: Package to use for time averaging ('fre-nctools', 'cdo', 'fre-python-tools')
+    :type pkg: str
     :raises ValueError: Only monthly and annual frequencies allowed
     :raises FileNotFoundError: Missing input timeseries files
     :rtype: None
@@ -57,6 +60,7 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
     fre_logger.debug(f"input_interval: {input_interval}")
     fre_logger.debug(f"grid: {grid}")
     fre_logger.debug(f"frequency: {frequency}")
+    fre_logger.debug(f"pkg: {pkg}")
 
     dir_ = Path(dir_)
     cycle_point = TimePointParser().parse(cycle_point)
@@ -139,9 +143,9 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                 ZZZZ = TimePointDumper().strftime(dd + input_interval - one_year, "%Y")
 
                 if source_frequency == "P1Y":
-                    input_files.append(subdir / f"{source}.{YYYY}-{ZZZZ}.{var}.nc")
+                    input_files.append(str(subdir / f"{source}.{YYYY}-{ZZZZ}.{var}.nc"))
                 else:
-                    input_files.append(subdir / f"{source}.{YYYY}01-{ZZZZ}12.{var}.nc")
+                    input_files.append(str(subdir / f"{source}.{YYYY}01-{ZZZZ}12.{var}.nc"))
 
             fre_logger.debug(input_files)
 
@@ -157,8 +161,10 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
             subdir.mkdir(parents=True, exist_ok=True)
 
             if frequency == "yr":
-                generate_time_averages.generate_time_average(input_files, output_file, 'fre-nctools', var, False, 'all')
+                generate_time_averages.generate_time_average(infile = input_files, outfile = str(output_file), pkg = pkg,
+                                                             var = var, unwgt = True, avg_type = 'all')
             elif frequency == "mon":
-                generate_time_averages.generate_time_average(input_files, output_file, 'fre-nctools', var, False, 'month')
+                generate_time_averages.generate_time_average(infile = input_files, outfile = str(output_file), pkg = pkg,
+                                                             var = var, unwgt = True, avg_type = 'month')
             else:
                 raise ValueError(f"Output frequency '{frequency}' not recognized")

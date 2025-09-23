@@ -1,5 +1,6 @@
 import pytest
 import subprocess
+import shutil
 from pathlib import Path
 from fre.app.generate_time_averages import wrapper
 
@@ -91,7 +92,7 @@ def create_annual_timeseries(tmp_path):
     yield tmp_path
 
 # will fail until timavg.csh is available
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate annual average from monthly timeseries
@@ -115,7 +116,7 @@ def test_annual_av_from_monthly_ts(create_monthly_timeseries):
         assert file_.exists()
 
 # will fail until timavg.csh is available
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_annual_av_from_annual_ts(create_annual_timeseries):
     """
     Generate annual average from annual timeseries
@@ -139,7 +140,7 @@ def test_annual_av_from_annual_ts(create_annual_timeseries):
         assert file_.exists()
 
 # will fail until timavg.csh is available
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate monthly climatology from monthly timeseries
@@ -162,3 +163,136 @@ def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
         for i in range(1,13):
             file_ = Path(str(f) + f".{i:02d}.nc")
             assert file_.exists()
+
+
+# CDO-based tests
+def test_cdo_annual_av_from_monthly_ts(create_monthly_timeseries):
+    """
+    Generate annual average from monthly timeseries using CDO
+    """
+    cycle_point = '1980-01-01'
+    output_interval = 'P2Y'
+    input_interval  = 'P1Y'
+    grid = '180_288.conserve_order2'
+    sources = ['atmos_month']
+    frequency = 'yr'
+    pkg = 'cdo'
+
+    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
+
+    output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
+    output_files = [
+        output_dir / 'atmos_month.1980-1981.alb_sfc.nc',
+        output_dir / 'atmos_month.1980-1981.aliq.nc'
+    ]
+
+    for file_ in output_files:
+        assert file_.exists()
+
+
+def test_cdo_annual_av_from_annual_ts(create_annual_timeseries):
+    """
+    Generate annual average from annual timeseries using CDO
+    """
+    cycle_point = '0002-01-01'
+    output_interval = 'P2Y'
+    input_interval  = 'P1Y'
+    grid = '180_288.conserve_order1'
+    sources = ['tracer_level']
+    frequency = 'yr'
+    pkg = 'cdo'
+
+    wrapper.generate_wrapper(cycle_point, str(create_annual_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
+
+    output_dir = Path(create_annual_timeseries, 'av', grid, 'tracer_level', 'P1Y', output_interval)
+    output_files = [
+        output_dir / 'tracer_level.0002-0003.radon.nc',
+        output_dir / 'tracer_level.0002-0003.scale_salt_emis.nc'
+    ]
+
+    for file_ in output_files:
+        assert file_.exists()
+
+
+def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
+    """
+    Generate monthly climatology from monthly timeseries using CDO
+    """
+    cycle_point = '1980-01-01'
+    output_interval = 'P2Y'
+    input_interval  = 'P1Y'
+    grid = '180_288.conserve_order2'
+    sources = ['atmos_month']
+    frequency = 'mon'
+    pkg = 'cdo'
+
+    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
+
+    output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1M', output_interval)
+    # CDO's ymonmean produces single files with all monthly climatology, not separate monthly files
+    output_files = [
+        output_dir / 'atmos_month.1980-1981.alb_sfc.nc',
+        output_dir / 'atmos_month.1980-1981.aliq.nc',
+    ]
+    for file_ in output_files:
+        assert file_.exists()
+
+
+# Test for CDO equivalence to fre-nctools when timavg.csh is available
+#@pytest.mark.xfail(reason="timavg.csh present but not working due to libnetcdf issues")
+def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
+    """
+    Test that CDO produces equivalent results to fre-nctools when timavg.csh is available.
+    If timavg.csh is not available, the test will be skipped.
+    """
+    import tempfile
+
+    cycle_point = '1980-01-01'
+    output_interval = 'P2Y'
+    input_interval  = 'P1Y'
+    grid = '180_288.conserve_order2'
+    sources = ['atmos_month']
+    frequency = 'yr'
+
+    # Create a temporary directory for fre-nctools output
+    with tempfile.TemporaryDirectory() as temp_dir_fre:
+        # Copy the test data to a separate directory for fre-nctools
+        fre_dir = Path(temp_dir_fre) / 'fre_test'
+        shutil.copytree(str(create_monthly_timeseries), str(fre_dir))
+
+        output_files = [
+            'atmos_month.1980-1981.alb_sfc.nc',
+            'atmos_month.1980-1981.aliq.nc'
+        ]
+
+        # Run with fre-nctools first, but defile the cdo output directory so we can move the output there for comparison
+        wrapper.generate_wrapper(cycle_point, str(fre_dir), sources, output_interval, input_interval, grid, frequency, 'fre-nctools')
+        output_dir_fre = Path(fre_dir, 'av', grid, 'atmos_month', 'P1Y', output_interval)
+        new_output_dir_fre = Path(create_monthly_timeseries, 'fre_av', grid, 'atmos_month', 'P1Y', output_interval)
+        new_output_dir_fre.mkdir(exist_ok=False,parents=True)
+
+        for file_ in output_files:
+            shutil.move( output_dir_fre / file_ , new_output_dir_fre / file_)
+            assert ( new_output_dir_fre / file_ ).exists()
+
+        # Run with CDO (on original test directory)
+        output_dir_cdo = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
+        wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, 'cdo')
+
+        # Compare outputs
+        for file_ in output_files:
+
+            cdo_file = output_dir_cdo / file_
+            assert cdo_file.exists(), f"CDO output file {cdo_file} does not exist"
+
+            fre_file = new_output_dir_fre / file_
+            assert fre_file.exists(), f"fre-nctools output file {fre_file} does not exist"
+
+            # Use nccmp to compare files if available, otherwise just check they exist
+            #if shutil.which('nccmp'):
+            result = subprocess.run(['nccmp', '-v', file_.split('.')[2], '-d', str(cdo_file), str(fre_file)],
+                                capture_output=True, text=True)
+            stdoutput=result.stdout
+            stderror=result.stderr
+
+            assert result.returncode == 0, stdoutput+'\n'+stderror

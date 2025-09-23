@@ -23,10 +23,7 @@ def generate_time_average(infile = None, outfile = None,
     :return: error message if requested package unknown, otherwise returns climatology
     :rtype: int
     """
-    if __debug__:
-        fre_logger.info(locals()) #input argument details
     exitstatus=1
-
     myavger=None
 
     #Use cdo to merge multiple files if present
@@ -56,7 +53,7 @@ def generate_time_average(infile = None, outfile = None,
                                        avg_type = avg_type)
 
     elif pkg == 'fre-python-tools':   #fre-python-tools addresses var in a unique way, which is addressed here
-      #TO-DO: generate an error message if multiple files exist in infiles, with different results for the var search
+        #TODO: generate an error message if multiple files exist in infiles, with different results for the var search
         if merged == True and var == None:
             var = multi_file[0].split('/').pop().split('.')[-2]
         from .frepytoolsTimeAverager import frepytoolsTimeAverager
@@ -68,12 +65,11 @@ def generate_time_average(infile = None, outfile = None,
         fre_logger.info('requested package unknown. exit.')
         return exitstatus
 
-    if __debug__:
-        fre_logger.info(f'myavger.__repr__={myavger.__repr__}')
     if myavger is not None:
         exitstatus=myavger.generate_timavg(infile=infile, outfile=outfile)
     else:
         fre_logger.info('ERROR: averager is None, check generate_time_average in generate_time_averages.py!')
+
     #remove new file if merged created from multiple infiles
     if merged:   #if multiple files where used, the merged version is now removed
         import os
