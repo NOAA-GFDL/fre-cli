@@ -161,8 +161,10 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
             subdir.mkdir(parents=True, exist_ok=True)
 
             if frequency == "yr":
-                generate_time_averages.generate_time_average(input_files, str(output_file), pkg, var, False, 'all')
+                generate_time_averages.generate_time_average(infile = input_files, outfile = str(output_file), pkg = pkg,
+                                                             var = var, unwgt = True, avg_type = 'all')
             elif frequency == "mon":
-                generate_time_averages.generate_time_average(input_files, str(output_file), pkg, var, False, 'month')
+                generate_time_averages.generate_time_average(infile = input_files, outfile = str(output_file), pkg = pkg,
+                                                             var = var, unwgt = True, avg_type = 'month')
             else:
                 raise ValueError(f"Output frequency '{frequency}' not recognized")

@@ -92,7 +92,7 @@ def create_annual_timeseries(tmp_path):
     yield tmp_path
 
 # will fail until timavg.csh is available
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate annual average from monthly timeseries
@@ -116,7 +116,7 @@ def test_annual_av_from_monthly_ts(create_monthly_timeseries):
         assert file_.exists()
 
 # will fail until timavg.csh is available
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_annual_av_from_annual_ts(create_annual_timeseries):
     """
     Generate annual average from annual timeseries
@@ -140,7 +140,7 @@ def test_annual_av_from_annual_ts(create_annual_timeseries):
         assert file_.exists()
 
 # will fail until timavg.csh is available
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate monthly climatology from monthly timeseries
@@ -166,7 +166,7 @@ def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
 
 
 # CDO-based tests
-def test_annual_av_from_monthly_ts_cdo(create_monthly_timeseries):
+def test_cdo_annual_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate annual average from monthly timeseries using CDO
     """
@@ -190,7 +190,7 @@ def test_annual_av_from_monthly_ts_cdo(create_monthly_timeseries):
         assert file_.exists()
 
 
-def test_annual_av_from_annual_ts_cdo(create_annual_timeseries):
+def test_cdo_annual_av_from_annual_ts(create_annual_timeseries):
     """
     Generate annual average from annual timeseries using CDO
     """
@@ -214,7 +214,7 @@ def test_annual_av_from_annual_ts_cdo(create_annual_timeseries):
         assert file_.exists()
 
 
-def test_monthly_av_from_monthly_ts_cdo(create_monthly_timeseries):
+def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate monthly climatology from monthly timeseries using CDO
     """
@@ -239,7 +239,7 @@ def test_monthly_av_from_monthly_ts_cdo(create_monthly_timeseries):
 
 
 # Test for CDO equivalence to fre-nctools when timavg.csh is available
-@pytest.mark.xfail(reason="timavg.csh present but not working due to libnetcdf issues")
+#@pytest.mark.xfail(reason="timavg.csh present but not working due to libnetcdf issues")
 def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
     """
     Test that CDO produces equivalent results to fre-nctools when timavg.csh is available.
