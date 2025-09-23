@@ -142,9 +142,9 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                 ZZZZ = TimePointDumper().strftime(dd + input_interval - one_year, "%Y")
 
                 if source_frequency == "P1Y":
-                    input_files.append(subdir / f"{source}.{YYYY}-{ZZZZ}.{var}.nc")
+                    input_files.append(str(subdir / f"{source}.{YYYY}-{ZZZZ}.{var}.nc"))
                 else:
-                    input_files.append(subdir / f"{source}.{YYYY}01-{ZZZZ}12.{var}.nc")
+                    input_files.append(str(subdir / f"{source}.{YYYY}01-{ZZZZ}12.{var}.nc"))
 
             fre_logger.debug(input_files)
 
@@ -160,8 +160,8 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
             subdir.mkdir(parents=True, exist_ok=True)
 
             if frequency == "yr":
-                generate_time_averages.generate_time_average(input_files, output_file, pkg, var, False, 'all')
+                generate_time_averages.generate_time_average(input_files, str(output_file), pkg, var, False, 'all')
             elif frequency == "mon":
-                generate_time_averages.generate_time_average(input_files, output_file, pkg, var, False, 'month')
+                generate_time_averages.generate_time_average(input_files, str(output_file), pkg, var, False, 'month')
             else:
                 raise ValueError(f"Output frequency '{frequency}' not recognized")

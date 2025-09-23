@@ -1,5 +1,6 @@
 import pytest
 import subprocess
+import shutil
 from pathlib import Path
 from fre.app.generate_time_averages import wrapper
 
@@ -177,7 +178,7 @@ def test_annual_av_from_monthly_ts_cdo(create_monthly_timeseries):
     frequency = 'yr'
     pkg = 'cdo'
 
-    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources, output_interval, input_interval, grid, frequency, pkg)
+    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
     output_files = [
@@ -201,7 +202,7 @@ def test_annual_av_from_annual_ts_cdo(create_annual_timeseries):
     frequency = 'yr'
     pkg = 'cdo'
 
-    wrapper.generate_wrapper(cycle_point, create_annual_timeseries, sources, output_interval, input_interval, grid, frequency, pkg)
+    wrapper.generate_wrapper(cycle_point, str(create_annual_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_annual_timeseries, 'av', grid, 'tracer_level', 'P1Y', output_interval)
     output_files = [
@@ -225,7 +226,7 @@ def test_monthly_av_from_monthly_ts_cdo(create_monthly_timeseries):
     frequency = 'mon'
     pkg = 'cdo'
 
-    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources, output_interval, input_interval, grid, frequency, pkg)
+    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1M', output_interval)
     output_files = [
@@ -239,19 +240,13 @@ def test_monthly_av_from_monthly_ts_cdo(create_monthly_timeseries):
 
 
 # Test for CDO equivalence to fre-nctools when timavg.csh is available
+@pytest.mark.skipif(not shutil.which('timavg.csh'), reason="timavg.csh not available")
 def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
     """
     Test that CDO produces equivalent results to fre-nctools when timavg.csh is available.
-    If timavg.csh is not available, the test will be marked as xfail.
+    If timavg.csh is not available, the test will be skipped.
     """
-    import subprocess
-    import shutil
-    
-    # Check if timavg.csh is available
-    timavg_available = shutil.which('timavg.csh') is not None
-    
-    if not timavg_available:
-        pytest.xfail("timavg.csh not available")
+    import tempfile
     
     cycle_point = '1980-01-01'
     output_interval = 'P2Y'
@@ -261,18 +256,16 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
     frequency = 'yr'
 
     # Create a temporary directory for fre-nctools output
-    import tempfile
     with tempfile.TemporaryDirectory() as temp_dir_fre:
         # Copy the test data to a separate directory for fre-nctools
-        import shutil
         fre_dir = Path(temp_dir_fre) / 'fre_test'
-        shutil.copytree(create_monthly_timeseries, fre_dir)
+        shutil.copytree(str(create_monthly_timeseries), str(fre_dir))
         
         # Run with fre-nctools
         wrapper.generate_wrapper(cycle_point, str(fre_dir), sources, output_interval, input_interval, grid, frequency, 'fre-nctools')
         
         # Run with CDO (on original test directory)
-        wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources, output_interval, input_interval, grid, frequency, 'cdo')
+        wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, 'cdo')
         
         # Compare outputs
         output_dir_cdo = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
