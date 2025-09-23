@@ -29,6 +29,8 @@ channels:
     - noaa-gfdl
 
 requirements:
+  build:
+    - conda-forge:nco
   host:
     - python=3.11.*
     - pip
