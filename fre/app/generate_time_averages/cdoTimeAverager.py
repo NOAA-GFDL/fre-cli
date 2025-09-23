@@ -2,6 +2,9 @@
 from .timeAverager import timeAverager
 import os
 
+import logging
+fre_logger = logging.getLogger(__name__)
+
 class cdoTimeAverager(timeAverager):
     '''
     class inheriting from abstract base class timeAverager
@@ -20,21 +23,18 @@ class cdoTimeAverager(timeAverager):
         :return: 1 if the instance variable self.avg_typ is unsupported, 0 if function has a clean exit
         :rtype: int
         """
-        assert self.pkg=="cdo"
-        if __debug__:
-            print(locals()) #input argument details
 
         if all([self.avg_type!='all',self.avg_type!='seas',self.avg_type!='month',
                 self.avg_type is not None]):
-            print('ERROR, avg_type requested unknown.')
+            fre_logger.error('ERROR, avg_type requested unknown.')
             return 1
 
         if self.var is not None:
-            print(f'WARNING: variable specification (var={self.var})' + \
+            fre_logger.warning(f'WARNING: variable specification (var={self.var})' + \
                    ' not currently supported for cdo time averaging. ignoring!')
 
         import cdo
-        print(f'python-cdo version is {cdo.__version__}')
+        fre_logger.info(f'python-cdo version is {cdo.__version__}')
         from cdo import Cdo
 
         _cdo=Cdo()
@@ -50,30 +50,30 @@ class cdoTimeAverager(timeAverager):
             wgts = ( numpy.moveaxis(time_bnds,0,-1)[1][:].copy() - \
                      numpy.moveaxis(time_bnds,0,-1)[0][:].copy() )
             wgts_sum=sum(wgts)
-            if __debug__:
-                print(f'wgts_sum={wgts_sum}')
+            
+            fre_logger.debug(f'wgts_sum={wgts_sum}')
 
         if self.avg_type == 'all':
-            print('time average over all time requested.')
+            fre_logger.info('time average over all time requested.')
             if self.unwgt:
                 _cdo.timmean(input=infile, output=outfile, returnCdf=True)
             else:
                 _cdo.divc( str(wgts_sum), input="-timsum -muldpm "+infile, output=outfile)
-            print('done averaging over all time.')
+            fre_logger.info('done averaging over all time.')
 
         elif self.avg_type == 'seas':
-            print('seasonal time-averages requested.')
+            fre_logger.info('seasonal time-averages requested.')
             _cdo.yseasmean(input=infile, output=outfile, returnCdf=True)
-            print('done averaging over seasons.')
+            fre_logger.info('done averaging over seasons.')
 
         elif self.avg_type == 'month':
-            print('monthly time-averages requested.')
+            fre_logger.info('monthly time-averages requested.')
             _cdo.ymonmean(input=infile, output=outfile, returnCdf=True)
-            print('done averaging over months.')
+            fre_logger.info('done averaging over months.')
 
         else:
-            print(f'problem: unknown avg_type={self.avg_type}')
+            fre_logger.error(f'problem: unknown avg_type={self.avg_type}')
             return 1
 
-        print('done averaging')
+        fre_logger.info('done averaging')
         return 0
