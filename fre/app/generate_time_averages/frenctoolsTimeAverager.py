@@ -34,8 +34,6 @@ class frenctoolsTimeAverager(timeAverager):
             - Cannot find timavg.csh (likely the user is not in an environment with frenctools installed)
             - timavgcsh command is not properly executed
         """
-        fre_logger.info('frenctoolsTimeAverager.generate_timavg called')
-
         exitstatus=1
         if self.avg_type not in ['month','all']:
             raise ValueError(f'avg_type= {self.avg_type} not supported by this class at this time.')
