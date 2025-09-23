@@ -26,7 +26,7 @@ class cdoTimeAverager(timeAverager):
 
         if all([self.avg_type!='all',self.avg_type!='seas',self.avg_type!='month',
                 self.avg_type is not None]):
-            fre_logger.error('ERROR, avg_type requested unknown.')
+            fre_logger.error('ERROR, requested unknown avg_type %s.', self.avg_type)
             return 1
 
         if self.var is not None:
