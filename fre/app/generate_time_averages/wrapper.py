@@ -28,7 +28,8 @@ def extract_variables_from_files(files: list[str]) -> list[str]:
     return variables
 
 
-def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_interval: str, input_interval: str, grid: str, frequency: str, pkg: str = 'fre-nctools') -> None:
+def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_interval: str,
+                     input_interval: str, grid: str, frequency: str, pkg: str = 'fre-nctools') -> None:
     """
     Run climatology tool on a subset of timeseries
 
