@@ -246,7 +246,7 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
     If timavg.csh is not available, the test will be skipped.
     """
     import tempfile
-    
+
     cycle_point = '1980-01-01'
     output_interval = 'P2Y'
     input_interval  = 'P1Y'
@@ -259,34 +259,40 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
         # Copy the test data to a separate directory for fre-nctools
         fre_dir = Path(temp_dir_fre) / 'fre_test'
         shutil.copytree(str(create_monthly_timeseries), str(fre_dir))
-        
-        # Run with fre-nctools
-        wrapper.generate_wrapper(cycle_point, str(fre_dir), sources, output_interval, input_interval, grid, frequency, 'fre-nctools')
-        
-        # Run with CDO (on original test directory)
-        wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, 'cdo')
-        
-        # Compare outputs
-        output_dir_cdo = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
-        output_dir_fre = Path(fre_dir, 'av', grid, 'atmos_month', 'P1Y', output_interval)
-        
+
         output_files = [
             'atmos_month.1980-1981.alb_sfc.nc',
             'atmos_month.1980-1981.aliq.nc'
         ]
-        
+
+        # Run with fre-nctools first, but defile the cdo output directory so we can move the output there for comparison
+        wrapper.generate_wrapper(cycle_point, str(fre_dir), sources, output_interval, input_interval, grid, frequency, 'fre-nctools')
+        output_dir_fre = Path(fre_dir, 'av', grid, 'atmos_month', 'P1Y', output_interval)
+        new_output_dir_fre = Path(create_monthly_timeseries, 'fre_av', grid, 'atmos_month', 'P1Y', output_interval)
+        new_output_dir_fre.mkdir(exist_ok=False,parents=True)
+
         for file_ in output_files:
+            shutil.move( output_dir_fre / file_ , new_output_dir_fre / file_)
+            assert ( new_output_dir_fre / file_ ).exists()
+
+        # Run with CDO (on original test directory)
+        output_dir_cdo = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
+        wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, 'cdo')
+
+        # Compare outputs
+        for file_ in output_files:
+
             cdo_file = output_dir_cdo / file_
-            fre_file = output_dir_fre / file_
-            
             assert cdo_file.exists(), f"CDO output file {cdo_file} does not exist"
+
+            fre_file = new_output_dir_fre / file_
             assert fre_file.exists(), f"fre-nctools output file {fre_file} does not exist"
-            
+
             # Use nccmp to compare files if available, otherwise just check they exist
-            if shutil.which('nccmp'):
-                result = subprocess.run(['nccmp', str(cdo_file), str(fre_file)], 
-                                      capture_output=True, text=True)
-                if result.returncode != 0:
-                    # Files differ, but this might be expected due to different algorithms
-                    # At least verify they have the same basic structure
-                    pass
+            #if shutil.which('nccmp'):
+            result = subprocess.run(['nccmp', '-v', file_.split('.')[2], '-d', str(cdo_file), str(fre_file)],
+                                capture_output=True, text=True)
+            stdoutput=result.stdout
+            stderror=result.stderr
+
+            assert result.returncode == 0, stdoutput+'\n'+stderror
