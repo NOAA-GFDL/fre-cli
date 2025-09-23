@@ -47,6 +47,7 @@ requirements:
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
     - conda-forge::nccmp
+    - conda-forge::nco
     - conda-forge::numpy<2
     - conda-forge::pylint
     - conda-forge::pytest
