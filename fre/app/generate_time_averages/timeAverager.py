@@ -1,4 +1,7 @@
 ''' core class structure for this module.'''
+import logging
+
+fre_logger=logging.getLogger(__name__)
 
 class timeAverager:
     '''
@@ -45,8 +48,8 @@ class timeAverager:
                                    var_units == 'years'   ,  'years since'   in var_units  ] )
             return units_is_time
         except:
-            print('variable does not have units')
-            print('PROBABLY not time.')
+            fre_logger.info('variable does not have units')
+            fre_logger.info('PROBABLY not time.')
             return False
 
         #def var_has_time_dims(self, an_nc_var=None):
