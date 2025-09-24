@@ -51,8 +51,8 @@ def app_cli():
               help = "Ensemble member number as XX",
               required = False)
 @click.option("-tsw", "--ts-workaround",
-              type = click.Choice(['True','False']),
-              default = None,
+              is_flag = True,
+              default = False,
               help = "Time series workaround variable",
               required = False)
 
