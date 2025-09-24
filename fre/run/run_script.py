@@ -1,23 +1,10 @@
 ''' fre run script '''
 
 import logging
+import os
+from .drivers.frerun_driver import FrerunDriver
 
-# Use fre_logger only as requested
-fre_logger = logging.getLogger('fre')
-
-def run_test_function(uppercase=None):
-    """
-    Execute fre run test function
-    
-    :param uppercase: Flag to print statement in uppercase, defaults to None
-    :type uppercase: bool
-    """
-    fre_logger.debug("Executing run test function")
-    statement = "testingtestingtestingtesting"
-    if uppercase:
-        statement = statement.upper()
-    print(statement)
-    fre_logger.debug("Run test function completed")
+fre_logger = logging.getLogger(__name__)
 
 def run_script_subtool(platform=None, experiment=None, target=None, submit=False, staging=False, **kwargs):
     """
@@ -48,20 +35,65 @@ def run_script_subtool(platform=None, experiment=None, target=None, submit=False
         fre_logger.error("*FATAL*: Platform must be specified")
         raise ValueError("Platform is required")
     
-    # Log the workflow setup
-    fre_logger.info(f"Setting up workflow for experiment: {experiment}")
-    fre_logger.info(f"Platform: {platform}, Target: {target}")
+    # Determine experiment type based on target
+    experiment_type = _determine_experiment_type(target)
     
+    # Initialize the FrerunDriver with the provided options
+    fre_logger.info(f"Creating FrerunDriver for {platform}/{experiment}")
+    driver = FrerunDriver(platform=platform, experiment=experiment, experiment_type=experiment_type)
+    
+    # Validate experiment and platform
+    if not driver.validate_experiment():
+        fre_logger.error("*FATAL*: Experiment validation failed")
+        raise ValueError("Invalid experiment specification")
+    
+    if not driver.validate_platform():
+        fre_logger.error("*FATAL*: Platform validation failed") 
+        raise ValueError("Invalid platform specification")
+    
+    # Setup the workflow
+    fre_logger.info("Setting up workflow directories and configuration")
+    workflow_dir = driver.setup()
+    fre_logger.info(f"Workflow directory prepared: {workflow_dir}")
+
+    # Enable staging if specified
     if staging:
+        driver.enable_staging()
         fre_logger.info("Output staging enabled")
-    
+
+    # Submit the workflow if specified
     if submit:
-        fre_logger.info("Workflow will be submitted after setup")
+        driver.submit_workflow(workflow_dir)
+        fre_logger.info(f"Workflow submitted from: {workflow_dir}")
     else:
-        fre_logger.info("Workflow setup only - use --submit to submit the job")
-    
-    # TODO: Integrate with uwtools for actual workflow execution
-    # This is where uwtools drivers would be instantiated and executed
-    fre_logger.info("uwtools integration ready - workflow processing complete")
+        # Log the path to the created script (mimicking original frerun output)
+        script_path = os.path.join(workflow_dir, 'scripts/run', os.path.basename(experiment))
+        if os.path.exists(script_path):
+            fre_logger.info(f"The runscript '{script_path}' is ready")
+        else:
+            fre_logger.info(f"Workflow setup complete. To submit, use --submit option")
     
     return True
+
+def _determine_experiment_type(target):
+    """
+    Determine the experiment type based on the target parameter.
+    This mimics the original frerun logic for experiment types.
+    
+    :param target: Target specification (prod, debug, etc.)
+    :type target: str
+    :return: Experiment type string
+    :rtype: str
+    """
+    if not target:
+        return "production"
+    
+    target_lower = target.lower()
+    if 'debug' in target_lower:
+        return "debug"
+    elif 'regr' in target_lower or 'regression' in target_lower:
+        return "regression"
+    elif 'unique' in target_lower:
+        return "unique"
+    else:
+        return "production"

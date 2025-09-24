@@ -93,21 +93,3 @@ class TestRunScriptSubtool:
                                   submit=True,
                                   staging=True)
         assert result is True
-
-
-class TestFrerunLegacyCompatibility:
-    """Test backward compatibility with existing functionality"""
-    
-    def setup_method(self):
-        """Setup for each test"""
-        self.runner = CliRunner()
-    
-    def test_function_command_still_works(self):
-        """Test that the original function command still works"""
-        result = self.runner.invoke(run_cli, ['function'])
-        assert result.exit_code == 1  # Still raises NotImplementedError
-        
-    def test_function_command_uppercase_still_works(self):
-        """Test that the original function command with uppercase still works"""
-        result = self.runner.invoke(run_cli, ['function', '--uppercase'])
-        assert result.exit_code == 1  # Still raises NotImplementedError

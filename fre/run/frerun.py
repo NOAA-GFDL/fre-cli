@@ -3,18 +3,11 @@ entry point for fre run subcommands
 '''
 
 import click
-from .run_script import run_test_function, run_script_subtool
+from .run_script import run_script_subtool
 
-@click.group(help=click.style(" - run subcommands !!!NotImplemented!!!", fg=(164,29,132)))
+@click.group(help=click.style(" - run subcommands", fg=(164,29,132)))
 def run_cli():
     ''' entry point to fre run click commands '''
-
-@run_cli.command()
-@click.option('--uppercase', '-u', is_flag=True, help = 'Print statement in uppercase.')
-def function(uppercase):
-    """ - Execute fre run test """
-    run_test_function(uppercase)
-    raise NotImplementedError('fre run has not been implemented yet!')
 
 @run_cli.command()
 @click.option('--platform', '-p', type=str, help='Target platform name')
