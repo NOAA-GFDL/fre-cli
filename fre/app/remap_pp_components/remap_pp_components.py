@@ -8,8 +8,8 @@ import subprocess
 import glob
 from pathlib import Path
 import logging
-import yaml
 from typing import List
+import yaml
 from fre.app import helpers
 
 fre_logger = logging.getLogger(__name__)
@@ -59,10 +59,6 @@ def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: b
     :return: output directory structure
     :rtype: str
     """
-
-    # if dir_ts is a string the logic below fails
-    assert isinstance(dir_ts, bool), f"Option 'dir_ts' must be a boolean value, not a '{type(dir_ts)}'"
-
     # Define dir
     if ens is not None:
         if dir_ts is True:
@@ -201,7 +197,8 @@ def truncate_date(date: str, freq: str) -> str:
 
     return date
 
-def search_files(product: str, var: list, source: str, freq: str, current_chunk: str, begin: str) -> List[str]:
+def search_files(product: str, var: list, source: str, freq: str,
+                 current_chunk: str, begin: str) -> List[str]:
     """
     Pattern match and search for the correct files in the chunk directory
 
@@ -418,11 +415,9 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
             # Check that pp_components defined matches those in the yaml file
             fre_logger.debug("Is %s in %s?", comp, yaml_components)
             if comp in yaml_components:
-                fre_logger.debug('Yes')
+                fre_logger.info("Active component found in yaml config: %s", comp)
             else:
-                fre_logger.warning("WARNING: component %s does not exist in yaml config", comp)
                 continue
-
             # Continue if not looking at correct information for requested component
             if comp != comp_info.get("type"):
                 fre_logger.warning("Info not associated with component, %s, requested", comp)
@@ -438,6 +433,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                 # Save list of offline sources (if defined) for later
                 for static_info in comp_info.get("static"):
                     if static_info.get("offline_source") is None:
+                        fre_logger.debug("No offline source info")
                         continue
 
                     offline_srcs.append(static_info.get("offline_source"))
@@ -487,6 +483,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                         chunk = get_chunk(comp_info)  ## might have to be a list ...
                         for c in chunk:
                             if c != current_chunk:
+                                fre_logger.warning("Chunk in directory structure is not equal to the current chunk set! Skipping component remapping for %s...", comp)
                                 continue
                             if ens_mem is not None:
                                 os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
@@ -550,7 +547,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
 
                             for file in files:
                                 newfile1 = file.split(".",1)[1]
-                                newfile2 = f"{s}.{newfile1}"
+                                newfile2 = f"{comp}.{newfile1}"
                                 # If file exists, remove it
                                 # (would exist if workflow was run previously)
                                 output_file = os.path.join(output_dir, dirs, newfile2)
