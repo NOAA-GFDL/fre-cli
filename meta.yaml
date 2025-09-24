@@ -21,12 +21,12 @@ build:
 channels:
     - conda-forge
     - noaa-gfdl
+    - ufs-community
 
 requirements:
   host:
     - python=3.11.*
     - pip
-    - conda-forge::uwtools
   run:
     - python=3.11.*
     - pip
@@ -52,6 +52,7 @@ requirements:
     - conda-forge::uwtools
     - conda-forge::xarray
     - conda-forge::netcdf4
+    - ufs-community::uwtools
 
 test:
   source_files:
