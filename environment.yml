@@ -24,5 +24,6 @@ dependencies:
   - conda-forge::pytest-cov
   - conda-forge::python-cdo
   - conda-forge::pyyaml
+  - conda-forge::uwtools
   - conda-forge::xarray
   - conda-forge::netcdf4

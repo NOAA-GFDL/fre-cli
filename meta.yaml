@@ -26,6 +26,7 @@ requirements:
   host:
     - python=3.11.*
     - pip
+    - conda-forge::uwtools
   run:
     - python=3.11.*
     - pip
@@ -48,6 +49,7 @@ requirements:
     - conda-forge::pytest-cov
     - conda-forge::python-cdo
     - conda-forge::pyyaml
+    - conda-forge::uwtools
     - conda-forge::xarray
     - conda-forge::netcdf4
 

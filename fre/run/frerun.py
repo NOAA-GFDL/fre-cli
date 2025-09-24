@@ -3,7 +3,7 @@ entry point for fre run subcommands
 '''
 
 import click
-from .frerunexample import run_test_function
+from .run_script import run_test_function
 
 @click.group(help=click.style(" - run subcommands !!!NotImplemented!!!", fg=(164,29,132)))
 def run_cli():
