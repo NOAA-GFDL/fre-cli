@@ -84,7 +84,7 @@ def test_yaml_ex_exists(capfd):
 def test_create_ncfile_with_ncgen_cdl(capfd):
     """
     Check for the creation of required directories
-    and a \*.nc file from \*.cdl text file using
+    and a *.nc file from *.cdl text file using
     command ncgen. These files will be used as an input
     files for the rewrite remap tests.
     Test checks for success of ncgen command for each
@@ -116,7 +116,7 @@ def test_create_ncfile_with_ncgen_cdl(capfd):
 def test_create_static_ncfile_with_ncgen_cdl(capfd):
     """
     Check for the creation of required directories
-    and a \*.nc file from \*.cdl text file using
+    and a *.nc file from *.cdl text file using
     command ncgen. This file will be used as an input
     file for the rewrite remap tests.
     Test checks for success of ncgen command.
