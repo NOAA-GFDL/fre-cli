@@ -91,8 +91,6 @@ def create_annual_timeseries(tmp_path):
 
     yield tmp_path
 
-# will fail until timavg.csh is available
-#@pytest.mark.xfail
 def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate annual average from monthly timeseries
@@ -115,8 +113,6 @@ def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     for file_ in output_files:
         assert file_.exists()
 
-# will fail until timavg.csh is available
-#@pytest.mark.xfail
 def test_annual_av_from_annual_ts(create_annual_timeseries):
     """
     Generate annual average from annual timeseries
@@ -139,8 +135,6 @@ def test_annual_av_from_annual_ts(create_annual_timeseries):
     for file_ in output_files:
         assert file_.exists()
 
-# will fail until timavg.csh is available
-#@pytest.mark.xfail
 def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate monthly climatology from monthly timeseries

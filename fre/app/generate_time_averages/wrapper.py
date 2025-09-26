@@ -120,7 +120,7 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                     else:
                         raise FileNotFoundError(f"Expected files not found in {subdir}")
                 else:
-                    fre_logger.debug(f"Skipping {source} as it does not appear to be monthly frequency; '{subdir_mon}' does not exist")
+                    fre_logger.debug(f"Skipping {source} as it does not appear to be monthly frequency; '{subdir}' does not exist")
             else:
                 raise ValueError("Frequency '{frequency}' not recognized")
 

@@ -1,7 +1,6 @@
 ''' class using (mostly) cdo functions for time-averages '''
 from .timeAverager import timeAverager
 import os
-
 import logging
 fre_logger = logging.getLogger(__name__)
 
@@ -68,9 +67,14 @@ class cdoTimeAverager(timeAverager):
 
         elif self.avg_type == 'month':
             fre_logger.info('monthly time-averages requested.')
-            _cdo.ymonmean(input=infile, output=outfile, returnCdf=True)
+            _cdo.ymonmean(input=infile, output=str(outfile), returnCdf=True)
             fre_logger.info('done averaging over months.')
 
+            fre_logger.debug("Now split by month")
+            outfile_root = str(outfile).removesuffix(".nc") + '.'
+            _cdo.splitmon(input=str(outfile), output=outfile_root)
+            os.remove(outfile)
+            fre_logger.debug("Done with splitting by month")
         else:
             fre_logger.error(f'problem: unknown avg_type={self.avg_type}')
             return 1

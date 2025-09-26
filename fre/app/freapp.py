@@ -192,7 +192,7 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
               help = "Frequency of desired climatology: 'mon' or 'yr'")
 @click.option("-p", "--pkg",
               type = click.Choice(["cdo","fre-nctools","fre-python-tools"]),
-              default = "fre-nctools",
+              default = "cdo",
               help = "Time average approach")
 def gen_time_averages_wrapper(cycle_point, dir, sources, output_interval, input_interval, grid, frequency, pkg):
     """
