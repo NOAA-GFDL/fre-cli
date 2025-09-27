@@ -223,13 +223,14 @@ def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
     wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1M', output_interval)
-    # CDO's ymonmean produces single files with all monthly climatology, not separate monthly files
     output_files = [
-        output_dir / 'atmos_month.1980-1981.alb_sfc.nc',
-        output_dir / 'atmos_month.1980-1981.aliq.nc',
+        output_dir / 'atmos_month.1980-1981.alb_sfc',
+        output_dir / 'atmos_month.1980-1981.aliq',
     ]
-    for file_ in output_files:
-        assert file_.exists()
+    for f in output_files:
+        for i in range(1,13):
+            file_ = Path(str(f) + f".{i:02d}.nc")
+            assert file_.exists()
 
 
 # Test for CDO equivalence to fre-nctools when timavg.csh is available
