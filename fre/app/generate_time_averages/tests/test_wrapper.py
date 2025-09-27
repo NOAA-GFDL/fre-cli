@@ -91,6 +91,8 @@ def create_annual_timeseries(tmp_path):
 
     yield tmp_path
 
+# FRE-NCtool timavg.csh tests
+@pytest.mark.xfail(reason="no timavg.csh")
 def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate annual average from monthly timeseries
@@ -101,8 +103,9 @@ def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     grid = '180_288.conserve_order2'
     sources = ['atmos_month']
     frequency = 'yr'
+    pkg = 'fre-nctools'
 
-    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources, output_interval, input_interval, grid, frequency)
+    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources, output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
     output_files = [
@@ -113,6 +116,7 @@ def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     for file_ in output_files:
         assert file_.exists()
 
+@pytest.mark.xfail(reason="no timavg.csh")
 def test_annual_av_from_annual_ts(create_annual_timeseries):
     """
     Generate annual average from annual timeseries
@@ -123,8 +127,9 @@ def test_annual_av_from_annual_ts(create_annual_timeseries):
     grid = '180_288.conserve_order1'
     sources = ['tracer_level']
     frequency = 'yr'
+    pkg = 'fre-nctools'
 
-    wrapper.generate_wrapper(cycle_point, create_annual_timeseries, sources, output_interval, input_interval, grid, frequency)
+    wrapper.generate_wrapper(cycle_point, create_annual_timeseries, sources, output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_annual_timeseries, 'av', grid, 'tracer_level', 'P1Y', output_interval)
     output_files = [
@@ -135,6 +140,7 @@ def test_annual_av_from_annual_ts(create_annual_timeseries):
     for file_ in output_files:
         assert file_.exists()
 
+@pytest.mark.xfail(reason="no timavg.csh")
 def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate monthly climatology from monthly timeseries
@@ -145,8 +151,9 @@ def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
     grid = '180_288.conserve_order2'
     sources = ['atmos_month']
     frequency = 'mon'
+    pkg = 'fre-nctools'
 
-    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources, output_interval, input_interval, grid, frequency)
+    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources, output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1M', output_interval)
     output_files = [
