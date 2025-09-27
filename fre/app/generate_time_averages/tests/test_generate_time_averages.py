@@ -4,18 +4,22 @@ import pytest
 import subprocess
 import os
 
-def run_avgtype_pkg_calculations(infile=None,outfile=None, pkg=None, avg_type=None, unwgt=None):
+def run_avgtype_pkg_calculations(infile=None,outfile=None, outfile_call=None, pkg=None, avg_type=None, unwgt=None):
     ''' test-harness function, called by other test functions. '''
     assert all( [infile is not None, outfile is not None,
                  pkg is not None, avg_type is not None,
                  unwgt is not None] )
+    # for monthly output only, the requsted filename and the output filenames are different
+    if outfile_call is None:
+        outfile_call = outfile
     if Path(outfile).exists():
         print('output test file exists. deleting before remaking.')
         Path(outfile).unlink() #delete file so we check that it can be recreated
     from fre.app.generate_time_averages import generate_time_averages as gtas
-    gtas.generate_time_average(infile = infile, outfile = outfile,
+    gtas.generate_time_average(infile = infile, outfile = outfile_call,
                                pkg = pkg, unwgt = unwgt,
                                avg_type = avg_type)
+    print("looking for", Path(outfile))
     return Path(outfile).exists()
 
 ### preamble tests. if these fail, none of the others will succeed. -----------------
@@ -25,6 +29,7 @@ base_file_name='atmos.197901-198312.LWP'
 ncgen_input = (time_avg_file_dir + base_file_name+".cdl")
 ncgen_output = (time_avg_file_dir + base_file_name+".nc")
 test_file_name = 'atmos.197901-198312.LWP.nc'
+test_file_name_month = 'atmos.197901-198312.LWP.01.nc'
 
 ### Also recreate frenctools_timavg_atmos.197901-198312.LWP
 base_file_name_2='frenctools_timavg_atmos.197901-198312.LWP'
@@ -64,7 +69,8 @@ def test_monthly_cdo_time_unwgt_avgs():
     ''' generates an unweighted monthly time averaged file using cdo '''
     assert run_avgtype_pkg_calculations(
         infile  = (time_avg_file_dir+test_file_name),
-        outfile = (time_avg_file_dir+'ymonmean_unwgt_'+test_file_name),
+        outfile = (time_avg_file_dir+'ymonmean_unwgt_'+test_file_name_month),
+        outfile_call = (time_avg_file_dir+'ymonmean_unwgt_'+test_file_name),
         pkg='cdo',avg_type='month',unwgt=True )
 
 def test_seasonal_cdo_time_unwgt_avgs():
@@ -313,6 +319,7 @@ two_test_file_names = ['ocean_1x1.000101-000212.tos.nc','ocean_1x1.000301-000412
 two_test_file_names = [time_avg_file_dir+two_test_file_names[0],time_avg_file_dir+two_test_file_names[1]]
 
 two_out_file_name = 'test_out_double_hist.nc'
+two_out_file_name_month = 'test_out_double_hist.01.nc'
 
 #preamble tests
 def test_time_avg_file_dir_exists_two_files():
@@ -326,7 +333,8 @@ def test_monthly_cdo_time_unwgt_avgs_two_files():
     ''' generates an unweighted monthly time averaged file using cdo '''
     assert run_avgtype_pkg_calculations(
         infile  = two_test_file_names,
-        outfile = (time_avg_file_dir+'ymonmean_unwgt_'+two_out_file_name),
+        outfile = (time_avg_file_dir+'ymonmean_unwgt_'+two_out_file_name_month),
+        outfile_call = (time_avg_file_dir+'ymonmean_unwgt_'+two_out_file_name),
         pkg='cdo',avg_type='month',unwgt=True )
 
 def test_seasonal_cdo_time_unwgt_avgs_two_files():
@@ -356,7 +364,8 @@ def test_monthly_cdo_time_unwgt_stddevs_two_files():
     ''' generates a monthly time averaged file using cdo '''
     assert run_avgtype_pkg_calculations(
         infile  = (two_test_file_names),
-        outfile = (time_avg_file_dir+'ymonstddev1_unwgt_'+two_out_file_name),
+        outfile = (time_avg_file_dir+'ymonstddev1_unwgt_'+two_out_file_name_month),
+        outfile_call = (time_avg_file_dir+'ymonstddev1_unwgt_'+two_out_file_name),
         pkg='cdo',avg_type='month', unwgt=True )
 
 def test_seasonal_cdo_time_unwgt_stddevs_two_files():
