@@ -233,7 +233,7 @@ def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
 
 
 # Test for CDO equivalence to fre-nctools when timavg.csh is available
-#@pytest.mark.xfail(reason="timavg.csh present but not working due to libnetcdf issues")
+@pytest.mark.xfail(reason="no timavg.csh")
 def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
     """
     Test that CDO produces equivalent results to fre-nctools when timavg.csh is available.
