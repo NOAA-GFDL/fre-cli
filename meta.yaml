@@ -21,6 +21,7 @@ build:
 channels:
     - conda-forge
     - noaa-gfdl
+    - ufs-community
 
 requirements:
   host:
@@ -48,8 +49,10 @@ requirements:
     - conda-forge::pytest-cov
     - conda-forge::python-cdo
     - conda-forge::pyyaml
+    - conda-forge::uwtools
     - conda-forge::xarray
     - conda-forge::netcdf4
+    - ufs-community::uwtools
 
 test:
   source_files:
