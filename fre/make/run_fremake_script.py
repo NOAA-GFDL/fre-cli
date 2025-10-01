@@ -4,6 +4,7 @@ For a bare-metal build: Creates and runs the checkout script to check out source
 For a container build: Creates the checkout script and makefile, and creates and runs a dockerfile to generate a singularity image file.
 '''
 import logging
+from typing import Optional
 from fre.make.create_checkout_script import checkout_create 
 from fre.make.create_makefile_script import makefile_create 
 from fre.make.create_compile_script import compile_create
