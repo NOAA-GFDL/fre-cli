@@ -5,9 +5,9 @@ For a container build: Creates the checkout script and makefile, and creates and
 '''
 import logging
 from fre.make.create_checkout_script import checkout_create 
-from fre.make.create_makefile_script import 
-from fre.make.create_compile_script import
-from fre.make.create_docker_script import
+from fre.make.create_makefile_script import makefile_create 
+from fre.make.create_compile_script import compile_create
+from fre.make.create_docker_script import dockerfile_create
 from .gfdlfremake import (
     targetfre, varsfre, yamlfre, checkout,
     makefilefre, buildDocker, buildBaremetal )
