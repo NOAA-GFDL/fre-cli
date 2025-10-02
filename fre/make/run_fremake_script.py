@@ -57,7 +57,7 @@ def fremake_run(yamlfile:str, platform:str, target:str, nparallel: int = 1, njob
         target = targetfre.fretarget(target_name)
 
     # Combine model, compile, and platform yamls
-    full_combined = cy.consolidate_yamls(yamlfile=yml,
+    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
                                          experiment=name,
                                          platform=platform,
                                          target=target,
