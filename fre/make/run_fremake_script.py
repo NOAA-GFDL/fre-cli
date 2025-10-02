@@ -1,24 +1,27 @@
 '''
-For a bare-metal build: Creates and runs the checkout script to check out source code, creates the makefile, and creates the compile script to generate a model executable.
-
-For a container build: Creates the checkout script and makefile, and creates and runs a dockerfile to generate a singularity image file.
+For a bare-metal build: Creates and runs the checkout script to check out source code,
+                        creates the makefile, and creates the compile script to generate
+                        a model executable.
+For a container build: Creates the checkout script and makefile, and creates and runs a
+                       dockerfile to generate a singularity image file.
 '''
 import logging
 from typing import Optional
 import fre.yamltools.combine_yamls_script as cy
-from fre.make.create_checkout_script import checkout_create 
-from fre.make.create_makefile_script import makefile_create 
+from fre.make.create_checkout_script import checkout_create
+from fre.make.create_makefile_script import makefile_create
 from fre.make.create_compile_script import compile_create
 from fre.make.create_docker_script import dockerfile_create
-from .gfdlfremake import (
-    targetfre, varsfre, yamlfre, checkout,
-    makefilefre, buildDocker, buildBaremetal )
+from .gfdlfremake import (varsfre, yamlfre)
 
 fre_logger = logging.getLogger(__name__)
 
-def fremake_run(yamlfile:str, platform:str, target:str, nparallel: int = 1, njobs: int = 4,
-                no_parallel_checkout: Optional[bool] = None, no_format_transfer: Optional[bool] = False,
-                execute: Optional[bool] = False, verbose: Optional[bool] = None):
+def fremake_run(yamlfile:str, platform:str, target:str,
+                nparallel: int = 1, njobs: int = 4,
+                no_parallel_checkout: Optional[bool] = None,
+                no_format_transfer: Optional[bool] = False,
+                execute: Optional[bool] = False,
+                verbose: Optional[bool] = None):
     """
     Runs all of fre make code
 
@@ -31,13 +34,15 @@ def fremake_run(yamlfile:str, platform:str, target:str, nparallel: int = 1, njob
     :type target: str
     :param nparallel: Number of concurrent model builds (default 1)
     :type nparallel: int
-    :param njobs: Number of jobs to run simultaneously; used for parallelism with make and recursive cloning with checking out source code (default 4)
+    :param njobs: Number of jobs to run simultaneously; used for parallelism with make and
+                  recursive cloning with checking out source code (default 4)
     :type njobs: int
     :param no_parallel_checkout: Use this option if you do not want a parallel checkout
     :type no_parallel_checkout: bool
     :param no_format_transfer: Skip the container format conversion to a .sif file
     :type no_format_transfer: bool
-    :param execute: Run the created compile script or dockerfile to create a model executable or container
+    :param execute: Run the created compile script or dockerfile to create a model executable
+                    or container
     :type execute: bool
     :param verbose: Increase verbosity output
     :type verbose: bool
@@ -50,11 +55,6 @@ def fremake_run(yamlfile:str, platform:str, target:str, nparallel: int = 1, njob
     # Define variables
     name = yamlfile.split(".")[0]
     plist = platform
-    tlist = target
-
-    ## Error checking the targets
-    for target_name in tlist:
-        target = targetfre.fretarget(target_name)
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
@@ -68,7 +68,7 @@ def fremake_run(yamlfile:str, platform:str, target:str, nparallel: int = 1, njob
     fre_vars = varsfre.frevars(full_combined)
 
     ## Open the yaml file, validate the yaml, and parse as fremake_yaml
-    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
+    model_yaml = yamlfre.freyaml(full_combined,fre_vars)
 
     #checkout
     fre_logger.info("Running fre make: calling checkout_create")
@@ -79,21 +79,27 @@ def fremake_run(yamlfile:str, platform:str, target:str, nparallel: int = 1, njob
     fre_logger.info("Running fre make: calling makefile_create")
     makefile_create(yamlfile, platform, target)
 
-    for platformName in plist:
-        if not modelYaml.platforms.hasPlatform(platformName):
-            raise ValueError (f"{platformName} does not exist in platforms.yaml")
+    #Filter out container vs non-container platforms
+    bm_platforms = ()
+    container_platforms = ()
+    for platform_name in plist:
+        if not model_yaml.platforms.hasPlatform(platform_name):
+            raise ValueError (f"{platform_name} does not exist in platforms.yaml")
 
-        platform = modelYaml.platforms.getPlatformFromName(platformName)
+        platform_info = model_yaml.platforms.getPlatformFromName(platform_name)
 
-        ## Create the checkout script
-        if not platform["container"]:
-            #compile
-            fre_logger.info("Running fre make: calling compile_create")
-            compile_create(yamlfile, platform, target, njobs, nparallel,
-                           execute, verbose)
+        if not platform_info["container"]:
+            bm_platforms = bm_platforms + (platform_name,)
         else:
-            #container
-            fre_logger.info("Running fre make: calling dockerfile_create")
-            dockerfile_create(yamlfile, platform, target, execute, no_format_transfer)
+            container_platforms = container_platforms + (platform_name,)
+
+    if bm_platforms:
+        #compile
+        fre_logger.info("Running fre make: calling compile_create")
+        compile_create(yamlfile, bm_platforms, target, njobs, nparallel,
+                       execute, verbose)
+    else:
+        fre_logger.info("Running fre make: calling dockerfile_create")
+        dockerfile_create(yamlfile, container_platforms, target, execute, no_format_transfer)
 
     fre_logger.info("Running fre make: DONE")
