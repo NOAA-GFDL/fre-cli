@@ -5,6 +5,7 @@ For a container build: Creates the checkout script and makefile, and creates and
 '''
 import logging
 from typing import Optional
+import fre.yamltools.combine_yamls_script as cy
 from fre.make.create_checkout_script import checkout_create 
 from fre.make.create_makefile_script import makefile_create 
 from fre.make.create_compile_script import compile_create
