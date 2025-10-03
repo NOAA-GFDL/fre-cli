@@ -4,6 +4,7 @@ Creates the Makefile for model compilation
 
 import os
 import logging
+from pathlib import Path
 
 import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
