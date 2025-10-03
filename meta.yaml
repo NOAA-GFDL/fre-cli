@@ -39,16 +39,16 @@ requirements:
     - conda-forge::nccmp
     - conda-forge::netcdf4
     - conda-forge::numpy=1.26.*
-    - conda-forge::pytest
     - conda-forge::python=3.11.*
     - conda-forge::python-cdo
     - conda-forge::pyyaml
     - conda-forge::xarray
-  test:
-    - conda-forge::pytest-cov
-    - conda-forge::pylint
     
 test:
+  requires:
+    - conda-forge::pytest
+    - conda-forge::pytest-cov
+    - conda-forge::pylint
   source_files:
     - fre/
   files:
@@ -65,8 +65,6 @@ test:
     - fre.run
     - fre.yamltools
   commands:
-    - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/ 
-    - pylint --fail-under 7.30 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
     - fre --help
     - fre app --help
     - fre catalog --help
@@ -77,6 +75,8 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
+    - pylint --fail-under 7.30 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
+    - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/ 
 
 
 about:
