@@ -44,9 +44,9 @@ requirements:
     - conda-forge::pyyaml
     - conda-forge::xarray
   test:
-    - conda-forge::pylint
     - conda-forge::pytest
     - conda-forge::pytest-cov
+    - conda-forge::pylint
 
 test:
   source_files:
