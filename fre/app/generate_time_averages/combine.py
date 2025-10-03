@@ -5,6 +5,8 @@ import os
 import subprocess
 import metomi.isodatetime.parsers
 
+from ..helpers import change_directory
+
 fre_logger = logging.getLogger(__name__)
 duration_parser = metomi.isodatetime.parsers.DurationParser()
 
@@ -87,27 +89,28 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: int, end
 
     indir = Path(root_in_dir) / frequency_iso / interval
     fre_logger.debug(f"Input dir = '{indir}'")
-    gotta_go_back_here = os.getcwd()
-    os.chdir(indir)
+    #gotta_go_back_here = os.getcwd()
+    #os.chdir(indir)
 
-    if frequency == 'yr':
-        source = component + '.' + date_string + '.*.nc'
-        target = component + '.' + date_string + '.nc'
-        check_glob(source)
-        subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
-        fre_logger.debug(f"Output file created: {target}")
-        fre_logger.debug(f"Copying to {outdir}")
-        subprocess.run(['cp', '-v', target, outdir], check=True)
-    elif frequency == 'mon':
-        for MM in range(1,13):
-            source = f"{component}.{date_string}.*.{MM:02d}.nc"
-            target = f"{component}.{date_string}.{MM:02d}.nc"
+    with change_directory(indir):
+        if frequency == 'yr':
+            source = component + '.' + date_string + '.*.nc'
+            target = component + '.' + date_string + '.nc'
             check_glob(source)
             subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
             fre_logger.debug(f"Output file created: {target}")
             fre_logger.debug(f"Copying to {outdir}")
             subprocess.run(['cp', '-v', target, outdir], check=True)
-    else:
-        raise ValueError(f"Frequency '{frequency}' not known")
+        elif frequency == 'mon':
+            for MM in range(1,13):
+                source = f"{component}.{date_string}.*.{MM:02d}.nc"
+                target = f"{component}.{date_string}.{MM:02d}.nc"
+                check_glob(source)
+                subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
+                fre_logger.debug(f"Output file created: {target}")
+                fre_logger.debug(f"Copying to {outdir}")
+                subprocess.run(['cp', '-v', target, outdir], check=True)
+        else:
+            raise ValueError(f"Frequency '{frequency}' not known")
 
-    os.chdir(gotta_go_back_here)
+    #os.chdir(gotta_go_back_here)
