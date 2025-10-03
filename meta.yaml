@@ -4,10 +4,8 @@ package:
   name: fre-cli
   version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
 
-# conda-build will always defer to what's specified here
 source:
   path: .
-#  git_url: https://github.com/NOAA-GFDL/fre-cli.git
 
 build:
   script:
@@ -23,33 +21,29 @@ channels:
     - noaa-gfdl
 
 requirements:
-  host:
-    - python=3.11.*
-    - pip
   run:
-    - python=3.11.*
-    - pip
     - noaa-gfdl::analysis_scripts
     - noaa-gfdl::catalogbuilder>=2.0.2
     - noaa-gfdl::fre-nctools
+    - conda-forge::cdo>=2
     - conda-forge::cftime
     - conda-forge::click>=8.2
-    - conda-forge::cylc-flow>=8.2.0
+    - conda-forge::cmor=3.11.*
+    - conda-forge::cylc-flow>=8.2
     - conda-forge::cylc-rose
-    - conda-forge::cmor>=3.11.0
-    - conda-forge::cdo>=2.0.0
-    - conda-forge::jinja2=3.0.*
+    - conda-forge::jinja2>=3
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
     - conda-forge::nccmp
-    - conda-forge::numpy<2
+    - conda-forge::netcdf4
+    - conda-forge::numpy=1.26.*
     - conda-forge::pylint
     - conda-forge::pytest
     - conda-forge::pytest-cov
+    - conda-forge::python=3.11.*
     - conda-forge::python-cdo
     - conda-forge::pyyaml
     - conda-forge::xarray
-    - conda-forge::netcdf4
 
 test:
   source_files:
@@ -68,7 +62,7 @@ test:
     - fre.run
     - fre.yamltools
   commands:
-    - pylint --fail-under 7.10 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
+    - pylint --fail-under 7.30 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
     # run pytest but ignore any tests that require compilation
     - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/ 
     - fre --help
