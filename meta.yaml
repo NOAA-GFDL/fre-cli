@@ -9,7 +9,8 @@ source:
 
 build:
   script:
-    - {{ PYTHON }} -m pip install . -vv
+#    - {{ PYTHON }} -m pip install . -vv
+    - python -m pip install . -vv
     - cp fre/mkmf/bin/mkmf $PREFIX/bin
     - cp fre/mkmf/bin/list_paths $PREFIX/bin
     - cp fre/mkmf/bin/git-version-string $PREFIX/bin
