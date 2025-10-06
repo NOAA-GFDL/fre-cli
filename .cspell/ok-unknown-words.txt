@@ -317,6 +317,7 @@ nncattr
 noaa
 NOAA
 noarch
+nohist
 noleap
 notransfer
 notused
@@ -465,6 +466,7 @@ tasmin
 TAVG
 testingtestingtestingtesting
 thefiles
+thisfile
 timavg
 timavgcsh
 timeaveraged
@@ -482,6 +484,7 @@ topdir
 tripolar
 truncatedate
 truncatedateformat
+tseries
 turb
 twostep
 ucomp
