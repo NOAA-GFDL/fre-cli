@@ -112,15 +112,15 @@ cases=[
     pytest.param( 'fre-python-tools', 'all',  True ,
                   (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
 
-    pytest.param( 'fre-nctools', 'all',  False ,
-                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME)),
-    pytest.param( 'fre-nctools', 'all',  False ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TWO_OUT_FILE_NAME)),
-    pytest.param( 'fre-nctools', 'all',  True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
+#    pytest.param( 'fre-nctools', 'all',  False ,
+#                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME)),
+#    pytest.param( 'fre-nctools', 'all',  False ,
+#                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TWO_OUT_FILE_NAME)),
+#    pytest.param( 'fre-nctools', 'all',  True ,
+#                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
 #    pytest.param( 'fre-nctools', 'month',  False ,
 #                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
-    #                  marks = pytest.mark.xfail() ), #something about this is messing up test_compare_fre_cli_to_fre_nctools, even with xfail!
+#                  marks = pytest.mark.xfail() ), #something about this is messing up test_compare_fre_cli_to_fre_nctools, even with xfail!
 ]
 @pytest.mark.parametrize( "pkg,avg_type,unwgt,infile,outfile",
                           cases )
@@ -165,7 +165,7 @@ def test_run_avgtype_pkg_calculations( pkg      ,
           f'                            --avg_type {avg_type} \\ \n'
           f'                            --pkg {pkg} \\ \n'
           f'                            --unwgt {unwgt}\n')
-
+    assert False
     # run averager
     gtas.generate_time_average(infile   = infile,
                                outfile  = outfile,

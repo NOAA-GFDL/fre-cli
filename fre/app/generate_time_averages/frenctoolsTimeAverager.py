@@ -91,7 +91,7 @@ class frenctoolsTimeAverager(timeAverager):
                 #Run timavg command for newly created file
                 month_output_file = month_output_file_paths[month_index]
                 #timavgcsh_command=['timavg.csh', '-mb','-o', month_output_file, nc_monthly_file]
-                timavgcsh_command=[shutil.which('timavg.csh'), '-mb','-o', month_output_file, nc_monthly_file]
+                timavgcsh_command=[shutil.which('timavg.csh'), '-dmb','-o', month_output_file, nc_monthly_file]
                 fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
                 exitstatus=1
                 with Popen(timavgcsh_command,
@@ -100,7 +100,7 @@ class frenctoolsTimeAverager(timeAverager):
                     stdoutput=stdout.decode()
                     fre_logger.info('output= %s', stdoutput)
                     stderror=stderr.decode()
-                    #fre_logger.info('error = %s', stderror )
+                    fre_logger.info('error = %s', stderror )
 
                     if subp.returncode != 0:
                         fre_logger.error('stderror  = %s', stderror)
@@ -116,7 +116,7 @@ class frenctoolsTimeAverager(timeAverager):
             return exitstatus
 
         #timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
-        timavgcsh_command=[shutil.which('timavg.csh'), '-mb','-o', outfile, infile]
+        timavgcsh_command=[shutil.which('timavg.csh'), '-dmb','-o', outfile, infile]
         fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
         exitstatus=1
         with Popen(timavgcsh_command,
@@ -125,7 +125,7 @@ class frenctoolsTimeAverager(timeAverager):
             stdoutput=stdout.decode()
             fre_logger.info('output= %s', stdoutput)
             stderror=stderr.decode()
-            #fre_logger.info('error = %s', stderror )
+            fre_logger.info('error = %s', stderror )
 
             if subp.returncode != 0:
                 fre_logger.error('stderror  = %s', stderror)
