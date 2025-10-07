@@ -60,7 +60,6 @@ class frenctoolsTimeAverager(timeAverager):
         fre_logger.info(f'timeaverager using: {shutil.which("timavg.csh")}')
 
 
-
         #Recursive call if month is selected for climatology. by Avery Kiihne
         if self.avg_type == 'month':
             monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
@@ -91,11 +90,12 @@ class frenctoolsTimeAverager(timeAverager):
 
                 #Run timavg command for newly created file
                 month_output_file = month_output_file_paths[month_index]
-                timavgcsh_command=['timavg.csh', '-mb','-o', month_output_file, nc_monthly_file]
-                fre_logger.debug( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
+                #timavgcsh_command=['timavg.csh', '-mb','-o', month_output_file, nc_monthly_file]
+                timavgcsh_command=[shutil.which('timavg.csh'), '-mb','-o', month_output_file, nc_monthly_file]
+                fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
                 exitstatus=1
                 with Popen(timavgcsh_command,
-                        stdout=PIPE, stderr=PIPE, shell=False) as subp:
+                           stdout=PIPE, stderr=PIPE, shell=False) as subp:
                     stdout, stderr = subp.communicate()
                     stdoutput=stdout.decode()
                     fre_logger.info('output= %s', stdoutput)
@@ -115,8 +115,9 @@ class frenctoolsTimeAverager(timeAverager):
         if self.avg_type == 'month':   #End here if month variable used
             return exitstatus
 
-        timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
-        fre_logger.debug( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
+        #timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
+        timavgcsh_command=[shutil.which('timavg.csh'), '-mb','-o', outfile, infile]
+        fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
         exitstatus=1
         with Popen(timavgcsh_command,
                    stdout=PIPE, stderr=PIPE, shell=False) as subp:
