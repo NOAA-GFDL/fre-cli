@@ -69,7 +69,7 @@
 * Minimal Syntax: ``fre pp split-netcdf-wrapper -i input/ -o output/ -s history_source -c yaml_component -y yamlfile.yml [--use-subdirs]``
 * Module(s) needed: n/a
 * Example 1: ``fre pp split-netcdf-wrapper -i input/ -o output/ --split-all-vars --use-subdirs``
-* Example 2: ``fre pp split-netcdf-wrapper -i input/ -o output/ -c ocean_cobalt_tracers_year_z -y ./ESM4.5v06_b08_cobv3_mekep_piC.yaml --use-subdirs``
+* Example 2: ``fre pp split-netcdf-wrapper -i input/ -o output/ -c ocean_cobalt_tracers_year_z -y ./ESM4.5v06_b08_cobv3_model_piC.yaml --use-subdirs``
 
 ``nccheck``
 -----------

@@ -4,6 +4,7 @@ allmatch
 allvars
 amip
 AMIP
+analysiscombined
 analysisyaml
 AOGCM
 apidoc
@@ -44,6 +45,7 @@ chdir
 CHDIR
 checkoutscript
 chunkstr
+clendar
 clim
 Clim
 climatologies
@@ -70,6 +72,7 @@ combinedfile
 combinedyaml
 combinefail
 compdir
+compilecombined
 compiledict
 compilefile
 compileinfo
@@ -95,11 +98,13 @@ datavars
 daterange
 datestring
 DCLIMATE
+debuglog
 decsiontree
 defaultxy
 delz
 denit
 DHAVE
+difmxybo
 dimname
 DINTERNAL
 dirstrings
@@ -136,6 +141,7 @@ fcadet
 fcased
 fdet
 ffetot
+filenotfound
 flithdet
 fnfeso
 fnoxic
@@ -206,6 +212,7 @@ Imom
 indexlist
 indir
 INDIR
+infolog
 infile
 infiles
 inputdir
@@ -213,7 +220,9 @@ inputfile
 INPUTFILE
 inputfiles
 intakebuilder
+intercomparison
 intercomparisons
+intdir
 interp
 Interp
 INTERP
@@ -225,7 +234,10 @@ jaon
 jhan
 jhanbigmem
 Jinjafilter
+jsondecode
+jsondecodeerr
 jsonschema
+keyerr
 Kiihne
 Koder
 Laflotte
@@ -308,6 +320,7 @@ nctools's
 ndarray
 ndims
 Nenv
+Nikonov
 Nikonov's
 nlat
 NLAT
@@ -326,6 +339,7 @@ ntimes
 nullyaml
 numpy
 nvariables
+nxyp
 oceangrid
 Oday
 Odec
@@ -366,6 +380,7 @@ posteriori
 postprocesses
 ppan
 PPAN
+ppcombined
 ppcomps
 ppcompstle
 ppcompstyle
@@ -382,6 +397,7 @@ precip
 prereq
 psfile
 pstring
+ptest
 ptmp
 pylint
 pytest
@@ -391,6 +407,7 @@ pythonic
 pytools
 pyyaml
 qpoint
+quietlog
 rainwat
 Rbite
 Rcommander
@@ -480,6 +497,7 @@ TOAR
 toctree
 topdir
 tripolar
+ttest
 truncatedate
 truncatedateformat
 turb
@@ -493,7 +511,9 @@ untar
 untarred
 unwgt
 Utheri
+valerr
 validatefail
+variablescan
 vardict
 varlist
 varnames

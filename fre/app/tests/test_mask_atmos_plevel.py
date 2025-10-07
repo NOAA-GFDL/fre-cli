@@ -20,7 +20,7 @@ def create_input_files(tmp_path):
     tmp_dir = tmp_path
     tmp_dir.mkdir(exist_ok=True)
 
-    # write netcdf files from the cdfs
+    # write netcdf files from the CDL files
     # data (ua)
     assert Path(input_).exists()
     tmp_input = Path(tmp_dir / "input.nc")
