@@ -1,7 +1,16 @@
 ''' class using (mostly) cdo functions for time-averages '''
-from .timeAverager import timeAverager
+
 import os
 import logging
+
+from netCDF4 import Dataset
+import numpy
+
+import cdo
+from cdo import Cdo
+
+from .timeAverager import timeAverager
+
 fre_logger = logging.getLogger(__name__)
 
 class cdoTimeAverager(timeAverager):
@@ -26,22 +35,18 @@ class cdoTimeAverager(timeAverager):
         if all([self.avg_type!='all',self.avg_type!='seas',self.avg_type!='month',
                 self.avg_type is not None]):
             fre_logger.error('ERROR, requested unknown avg_type %s.', self.avg_type)
-            return 1
+            raise ValueError
 
         if self.var is not None:
             fre_logger.warning(f'WARNING: variable specification (var={self.var})' + \
                    ' not currently supported for cdo time averaging. ignoring!')
 
-        import cdo
         fre_logger.info(f'python-cdo version is {cdo.__version__}')
-        from cdo import Cdo
 
         _cdo=Cdo()
 
         wgts_sum=0
         if not self.unwgt: #weighted case, cdo ops alone don't support a weighted time-average.
-            from netCDF4 import Dataset
-            import numpy
 
             nc_fin = Dataset(infile, 'r')
 
@@ -70,14 +75,15 @@ class cdoTimeAverager(timeAverager):
             _cdo.ymonmean(input=infile, output=str(outfile), returnCdf=True)
             fre_logger.info('done averaging over months.')
 
-            fre_logger.debug("Now split by month")
+            fre_logger.warning(" splitting by month")
             outfile_root = str(outfile).removesuffix(".nc") + '.'
-            _cdo.splitmon(input=str(outfile), output=outfile_root)
-            os.remove(outfile)
-            fre_logger.debug("Done with splitting by month")
+            _cdo.splitmon(input=str(outfile), output=outfile_root)            
+            #os.remove(outfile)
+            fre_logger.debug(f"Done with splitting by month, outfile_root = {outfile_root}")
         else:
             fre_logger.error(f'problem: unknown avg_type={self.avg_type}')
-            return 1
+            raise ValueError
 
         fre_logger.info('done averaging')
+        fre_logger.info(f'output file created: {outfile}')
         return 0
