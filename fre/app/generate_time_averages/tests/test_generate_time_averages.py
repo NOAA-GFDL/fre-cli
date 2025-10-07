@@ -1,8 +1,9 @@
-''' for testing fre app generate-time-averages '''
+''' For testing fre app generate-time-averages '''
 from pathlib import Path
 import pytest
 import subprocess
 import os
+import shutil
 
 import numpy as np
 import netCDF4 as nc
@@ -11,35 +12,35 @@ from fre.app.generate_time_averages import generate_time_averages as gtas
 
 ### preamble tests. if these fail, none of the others will succeed. -----------------
 # this test_data dir should probably be put in the typical location (fre/tests/test_files) for such types of data
-TIME_AVG_FILE_DIR=str(Path.cwd())+'/fre/app/generate_time_averages/tests/test_data/'
-VAR='LWP'
-BASE_FILE_NAME='atmos.197901-198312.'+VAR
+TIME_AVG_FILE_DIR = str(Path.cwd()) + '/fre/app/generate_time_averages/tests/test_data/'
+VAR = 'LWP'
+BASE_FILE_NAME = 'atmos.197901-198312.' + VAR
 
-NCGEN_INPUT = (TIME_AVG_FILE_DIR + BASE_FILE_NAME+".cdl")
-NCGEN_OUTPUT = (TIME_AVG_FILE_DIR + BASE_FILE_NAME+".nc")
-TEST_FILE_NAME=BASE_FILE_NAME+'.nc'
-TEST_FILE_NAME_MONTH = BASE_FILE_NAME+'.01.nc'
+NCGEN_INPUT = (TIME_AVG_FILE_DIR + BASE_FILE_NAME + ".cdl")
+NCGEN_OUTPUT = (TIME_AVG_FILE_DIR + BASE_FILE_NAME + ".nc")
+TEST_FILE_NAME = BASE_FILE_NAME + '.nc'
+TEST_FILE_NAME_MONTH = BASE_FILE_NAME + '.01.nc'
 
 ### Also recreate frenctools_timavg_atmos.197901-198312.LWP
-BASE_FILE_NAME_2='frenctools_timavg_'+BASE_FILE_NAME
-NCGEN_INPUT_2 = (TIME_AVG_FILE_DIR + BASE_FILE_NAME_2+".cdl")
-NCGEN_OUTPUT_2 = (TIME_AVG_FILE_DIR + BASE_FILE_NAME_2+".nc")
+BASE_FILE_NAME_2 = 'frenctools_timavg_' + BASE_FILE_NAME
+NCGEN_INPUT_2 = (TIME_AVG_FILE_DIR + BASE_FILE_NAME_2 + ".cdl")
+NCGEN_OUTPUT_2 = (TIME_AVG_FILE_DIR + BASE_FILE_NAME_2 + ".nc")
 
 # Numerics-based tests. these have room for improvement for sure (TODO)
 # compare frepytools, cdo time-average output to fre-nctools where possible
-STR_FRENCTOOLS_INF=TIME_AVG_FILE_DIR+'frenctools_timavg_'+TEST_FILE_NAME # this is now in the repo
-STR_FRE_PYTOOLS_INF=TIME_AVG_FILE_DIR+'frepytools_timavg_'+TEST_FILE_NAME
-STR_CDO_INF=TIME_AVG_FILE_DIR+'timmean_'+TEST_FILE_NAME
-STR_UNWGT_FRE_PYTOOLS_INF=TIME_AVG_FILE_DIR+'frepytools_unwgt_timavg_'+TEST_FILE_NAME
-STR_UNWGT_CDO_INF=TIME_AVG_FILE_DIR+'timmean_unwgt_'+TEST_FILE_NAME
-ALT_STR_FRENCTOOLS_INF= \
+STR_FRENCTOOLS_INF = TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME # this is now in the repo
+STR_FRE_PYTOOLS_INF = TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TEST_FILE_NAME
+STR_CDO_INF = TIME_AVG_FILE_DIR + 'timmean_' + TEST_FILE_NAME
+STR_UNWGT_FRE_PYTOOLS_INF = TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TEST_FILE_NAME
+STR_UNWGT_CDO_INF = TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TEST_FILE_NAME
+ALT_STR_FRENCTOOLS_INF = \
     'tests/time_avg_test_files/fre_nctools_timavg_CLI_test_r8_b_atmos_LWP_1979_5y.nc'
 
 # for testing fre app generate-time-averages with multiple files
 # now test running of time averager with two different files
-OCEAN_BASE_FILE_NAMES=['ocean_1x1.000101-000212.tos','ocean_1x1.000301-000412.tos']
-TWO_TEST_FILE_NAMES = [ TIME_AVG_FILE_DIR + OCEAN_BASE_FILE_NAMES[0]+'.nc',
-                        TIME_AVG_FILE_DIR + OCEAN_BASE_FILE_NAMES[1]+'.nc'  ]
+OCEAN_BASE_FILE_NAMES = ['ocean_1x1.000101-000212.tos','ocean_1x1.000301-000412.tos']
+TWO_TEST_FILE_NAMES = [ TIME_AVG_FILE_DIR + OCEAN_BASE_FILE_NAMES[0] + '.nc',
+                        TIME_AVG_FILE_DIR + OCEAN_BASE_FILE_NAMES[1] + '.nc'  ]
 TWO_OUT_FILE_NAME = 'test_out_double_hist.nc'
 TWO_OUT_FILE_NAME_MONTH = 'test_out_double_hist.01.nc'
 
@@ -64,8 +65,8 @@ def setup_test_files():
 def setup_two_test_files():
     """Generate the two ocean test files needed for multi-file tests."""
     for ocean_base_file_name in OCEAN_BASE_FILE_NAMES:
-        ncgen_input = (TIME_AVG_FILE_DIR + ocean_base_file_name+".cdl")
-        ncgen_output = (TIME_AVG_FILE_DIR + ocean_base_file_name+".nc")
+        ncgen_input = (TIME_AVG_FILE_DIR + ocean_base_file_name + ".cdl")
+        ncgen_output = (TIME_AVG_FILE_DIR + ocean_base_file_name + ".nc")
 
         if Path(ncgen_output).exists():
             Path(ncgen_output).unlink()
@@ -86,51 +87,42 @@ def test_time_avg_file_dir_exists():
 
 cases=[
     pytest.param( 'cdo', 'month', True ,
-                  (TIME_AVG_FILE_DIR+TEST_FILE_NAME), (TIME_AVG_FILE_DIR+'ymonmean_unwgt_'+TEST_FILE_NAME)),
-    pytest.param( 'cdo', 'seas', True ,
-                  (TIME_AVG_FILE_DIR+TEST_FILE_NAME), (TIME_AVG_FILE_DIR+'yseasmean_unwgt_'+TEST_FILE_NAME)),
-    pytest.param( 'cdo', 'all', True ,
-                  (TIME_AVG_FILE_DIR+TEST_FILE_NAME), (TIME_AVG_FILE_DIR+'timmean_unwgt_'+TEST_FILE_NAME)),
-    pytest.param( 'cdo', 'all', False ,
-                  (TIME_AVG_FILE_DIR+TEST_FILE_NAME), (TIME_AVG_FILE_DIR+'timmean_'+TEST_FILE_NAME)),
-    pytest.param( 'fre-python-tools', 'all',  False ,
-                  (TIME_AVG_FILE_DIR+TEST_FILE_NAME), (TIME_AVG_FILE_DIR+'frepytools_timavg_'+TEST_FILE_NAME)),
-    pytest.param( 'fre-python-tools', 'all',  True ,
-                  (TIME_AVG_FILE_DIR+TEST_FILE_NAME), (TIME_AVG_FILE_DIR+'frepytools_unwgt_timavg_'+TEST_FILE_NAME)),
+                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TEST_FILE_NAME)),
     pytest.param( 'cdo', 'month', True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'ymonmean_unwgt_'+TWO_OUT_FILE_NAME)),
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TWO_OUT_FILE_NAME)),
+
     pytest.param( 'cdo', 'seas', True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'yseasmean_unwgt_'+TWO_OUT_FILE_NAME)),
+                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TEST_FILE_NAME)),
+    pytest.param( 'cdo', 'seas', True ,
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TWO_OUT_FILE_NAME)),
+
     pytest.param( 'cdo', 'all', True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'timmean_unwgt_'+TWO_OUT_FILE_NAME)),
+                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TEST_FILE_NAME)),
+    pytest.param( 'cdo', 'all', True ,
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TWO_OUT_FILE_NAME)),
     pytest.param( 'cdo', 'all', False ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'timmean_'+TWO_OUT_FILE_NAME)),
-    pytest.param( 'cdo', 'month',  True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'ymonstddev1_unwgt_'+TWO_OUT_FILE_NAME)),
-    pytest.param( 'cdo', 'seas',  True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'yseasstddev1_unwgt_'+TWO_OUT_FILE_NAME)),
-    pytest.param( 'cdo', 'all',  True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'yseasmean_unwgt_'+TWO_OUT_FILE_NAME)),
+                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'timmean_' + TEST_FILE_NAME)),
+    pytest.param( 'cdo', 'all', False ,
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME)),
+
     pytest.param( 'fre-python-tools', 'all',  False ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'frepytools_timavg_'+TWO_OUT_FILE_NAME)),
+                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TEST_FILE_NAME)),
+    pytest.param( 'fre-python-tools', 'all',  False ,
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TWO_OUT_FILE_NAME)),
     pytest.param( 'fre-python-tools', 'all',  True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'frepytools_unwgt_timavg_'+TWO_OUT_FILE_NAME)),
-    pytest.param( 'fre-python-tools', 'all',  False ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'frepytools_stddev_'+TWO_OUT_FILE_NAME)),
-    pytest.param( 'fre-python-tools', 'all',   True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'frepytools_unwgt_stddev_'+TWO_OUT_FILE_NAME)),
+                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TEST_FILE_NAME)),
+    pytest.param( 'fre-python-tools', 'all',  True ,
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
+
     pytest.param( 'fre-nctools', 'all',  False ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'fre_nctools_timavg_'+TWO_OUT_FILE_NAME)),
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'fre_nctools_timavg_' + TWO_OUT_FILE_NAME)),
     pytest.param( 'fre-nctools', 'all',  True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'fre_nctools_unwgt_timavg_'+TWO_OUT_FILE_NAME)),
-    pytest.param( 'fre-nctools', 'all',   False ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'fre_nctools_stddev_'+TWO_OUT_FILE_NAME)),
-    pytest.param( 'fre-nctools', 'all',   True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR+'fre_nctools_unwgt_stddev_'+TWO_OUT_FILE_NAME)),
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'fre_nctools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
     pytest.param( 'fre-nctools', 'all',  False ,
-                  (TIME_AVG_FILE_DIR+TEST_FILE_NAME), (TIME_AVG_FILE_DIR+'frenctools_timavg_'+TEST_FILE_NAME)),
-    #    pytest.param( 'fre-nctools', 'month',  False ,  # wish i could xfail this case only, how ?
-    #                  (TIME_AVG_FILE_DIR+TEST_FILE_NAME), (TIME_AVG_FILE_DIR+'frenctools_timavg_'+TEST_FILE_NAME)),
+                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME)),
+    pytest.param( 'fre-nctools', 'month',  False ,
+                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
+                  marks = pytest.mark.xfail() ),
 ]
 @pytest.mark.parametrize( "pkg,avg_type,unwgt,infile,outfile",
                           cases )
@@ -142,6 +134,11 @@ def test_run_avgtype_pkg_calculations( pkg      ,
 
     ''' test-harness function, called by other test functions. '''
 
+    # because the conda package for fre-nctools is a bit... special
+    if pkg=='fre-nctools':
+        if shutil.which('timavg.csh') is None:
+            pytest.xfail(reason = 'no timavg.csh!')
+
     # every input is required
     assert None not in [ infile       ,
                          outfile      ,
@@ -151,10 +148,10 @@ def test_run_avgtype_pkg_calculations( pkg      ,
 
     # check again the input file(s) exist before runnig the time averager
     if isinstance(infile, str):
-        assert Path(infile).exists(), f'DNE (string) infile={infile}'
+        assert Path(infile).exists(), f'DNE (string) infile = {infile}'
     if isinstance(infile, list):
         for _file in infile:
-            assert Path(_file).exists(), f'DNE (string) _file={_file} from (list)infile=\n{infile}'
+            assert Path(_file).exists(), f'DNE (string) _file = {_file} from (list)infile = \n{infile}'
 
     # if the output exists already, clobber it so we can check we've remade it properly
     if Path(outfile).exists():
@@ -177,119 +174,119 @@ def test_run_avgtype_pkg_calculations( pkg      ,
 
     # the input files should NOT be clobbered
     if isinstance(infile, str):
-        assert Path(infile).exists(), f'AFTER RUNNING DNE (string) infile={infile}'
+        assert Path(infile).exists(), f'AFTER RUNNING DNE (string) infile = {infile}'
     if isinstance(infile, list):
         for _file in infile:
-            assert Path(_file).exists(), f'AFTER RUNNING DNE (string) _file={_file} from (list)infile=\n{infile}'
+            assert Path(_file).exists(), f'AFTER RUNNING DNE (string) _file = {_file} from (list)infile = \n{infile}'
 
     # the desired outputfile specified by outfile should exist
-    assert Path(outfile).exists(), f'DNE (string) outfile={outfile}'
+    assert Path(outfile).exists(), f'DNE (string) outfile = {outfile}'
 
 def test_compare_fre_cli_to_fre_nctools():
     ''' compares fre_cli pkg answer to fre_nctools pkg answer '''
     assert Path(STR_FRE_PYTOOLS_INF).exists(), f'DNE: STR_FRE_PYTOOLS_INF = {STR_FRE_PYTOOLS_INF}'
-    fre_pytools_inf=nc.Dataset(STR_FRE_PYTOOLS_INF,'r')
-    fre_pytools_timavg=fre_pytools_inf[VAR][:].copy()
+    fre_pytools_inf = nc.Dataset(STR_FRE_PYTOOLS_INF,'r')
+    fre_pytools_timavg = fre_pytools_inf[VAR][:].copy()
 
     assert Path(STR_FRENCTOOLS_INF).exists(), f'DNE: STR_FRENCTOOLS_INF = {STR_FRENCTOOLS_INF}'
-    fre_nctools_inf=nc.Dataset(STR_FRENCTOOLS_INF,'r')
-    fre_nctools_timavg=fre_nctools_inf[VAR][:].copy()
-    
+    fre_nctools_inf = nc.Dataset(STR_FRENCTOOLS_INF,'r')
+    fre_nctools_timavg = fre_nctools_inf[VAR][:].copy()
+
     assert all([ len( fre_pytools_timavg       ) == len( fre_nctools_timavg       ),
                  len( fre_pytools_timavg[0]    ) == len( fre_nctools_timavg[0]    ),
                  len( fre_pytools_timavg[0][0] ) == len( fre_nctools_timavg[0][0] ) ])
 
-    diff_pytools_nctools_timavg=fre_pytools_timavg-fre_nctools_timavg
+    diff_pytools_nctools_timavg = fre_pytools_timavg-fre_nctools_timavg
     for lat in range(0,len(diff_pytools_nctools_timavg[0])):
         for lon in range(0,len(diff_pytools_nctools_timavg[0][0])):
-            print(f'lat={lat},lon={lon}')
-            diff_at_latlon=diff_pytools_nctools_timavg[0][lat][lon]
-            print(f'diff_pytools_nctools_timavg[0][lat][lon]={diff_at_latlon}')
+            print(f'lat = {lat},lon = {lon}')
+            diff_at_latlon = diff_pytools_nctools_timavg[0][lat][lon]
+            print(f'diff_pytools_nctools_timavg[0][lat][lon] = {diff_at_latlon}')
             if lon>10: break
         break
 
-    non_zero_count=np.count_nonzero(diff_pytools_nctools_timavg[:])
+    non_zero_count = np.count_nonzero(diff_pytools_nctools_timavg[:])
     #assert (non_zero_count == 0.) # bad way to check for zero.
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 
-@pytest.mark.xfail(reason='test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
+@pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_fre_cli_to_cdo():
     ''' compares fre_cli pkg answer to cdo pkg answer '''
     assert Path(STR_FRE_PYTOOLS_INF).exists(), f'DNE: STR_FRE_PYTOOLS_INF = {STR_FRE_PYTOOLS_INF}'
-    fre_pytools_inf=nc.Dataset(STR_FRE_PYTOOLS_INF,'r')
-    fre_pytools_timavg=fre_pytools_inf[VAR][:].copy()
+    fre_pytools_inf = nc.Dataset(STR_FRE_PYTOOLS_INF,'r')
+    fre_pytools_timavg = fre_pytools_inf[VAR][:].copy()
 
     assert Path(STR_CDO_INF).exists(), f'DNE: STR_CDO_INF = {STR_CDO_INF}. \nrun cdo tests first?'
-    cdo_inf=nc.Dataset(STR_CDO_INF,'r')
-    cdo_timavg=cdo_inf[VAR][:].copy()
+    cdo_inf = nc.Dataset(STR_CDO_INF,'r')
+    cdo_timavg = cdo_inf[VAR][:].copy()
 
     assert all([ len( fre_pytools_timavg       ) == len(cdo_timavg       ),
                  len( fre_pytools_timavg[0]    ) == len(cdo_timavg[0]    ),
                  len( fre_pytools_timavg[0][0] ) == len(cdo_timavg[0][0] )  ])
 
-    diff_pytools_cdo_timavg=fre_pytools_timavg-cdo_timavg
+    diff_pytools_cdo_timavg = fre_pytools_timavg-cdo_timavg
     for lat in range(0,len(diff_pytools_cdo_timavg[0])):
         for lon in range(0,len(diff_pytools_cdo_timavg[0][0])):
-            print(f'lat={lat},lon={lon}')
-            print(f'diff_pytools_cdo_timavg[0][lat][lon]={diff_pytools_cdo_timavg[0][lat][lon]}')
+            print(f'lat = {lat},lon = {lon}')
+            print(f'diff_pytools_cdo_timavg[0][lat][lon] = {diff_pytools_cdo_timavg[0][lat][lon]}')
             if lon>10: break
         break
 
-    non_zero_count=np.count_nonzero(diff_pytools_cdo_timavg[:])
+    non_zero_count = np.count_nonzero(diff_pytools_cdo_timavg[:])
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 
 def test_compare_unwgt_fre_cli_to_unwgt_cdo():
     ''' compares fre_cli pkg answer to cdo pkg answer '''
     assert Path(STR_UNWGT_FRE_PYTOOLS_INF).exists(), f'DNE: STR_UNWGT_FRE_PYTOOLS_INF = {STR_UNWGT_FRE_PYTOOLS_INF}'
-    fre_pytools_inf=nc.Dataset(STR_UNWGT_FRE_PYTOOLS_INF,'r')
-    fre_pytools_timavg=fre_pytools_inf[VAR][:].copy()
+    fre_pytools_inf = nc.Dataset(STR_UNWGT_FRE_PYTOOLS_INF,'r')
+    fre_pytools_timavg = fre_pytools_inf[VAR][:].copy()
 
     assert Path(STR_UNWGT_CDO_INF).exists(), f'DNE: STR_CDO_INF = {STR_CDO_INF}. \nrun cdo tests first?'
-    cdo_inf=nc.Dataset(STR_UNWGT_CDO_INF,'r')
-    cdo_timavg=cdo_inf[VAR][:].copy()
+    cdo_inf = nc.Dataset(STR_UNWGT_CDO_INF,'r')
+    cdo_timavg = cdo_inf[VAR][:].copy()
 
     assert all([ len( fre_pytools_timavg       ) == len(cdo_timavg       ),
                  len( fre_pytools_timavg[0]    ) == len(cdo_timavg[0]    ),
                  len( fre_pytools_timavg[0][0] ) == len(cdo_timavg[0][0] ) ])
 
-    diff_pytools_cdo_timavg=fre_pytools_timavg-cdo_timavg
+    diff_pytools_cdo_timavg = fre_pytools_timavg-cdo_timavg
     for lat in range(0,len(diff_pytools_cdo_timavg[0])):
         for lon in range(0,len(diff_pytools_cdo_timavg[0][0])):
-            print(f'lat={lat},lon={lon}')
-            print(f'diff_pytools_cdo_timavg[0][lat][lon]={diff_pytools_cdo_timavg[0][lat][lon]}')
+            print(f'lat = {lat},lon = {lon}')
+            print(f'diff_pytools_cdo_timavg[0][lat][lon] = {diff_pytools_cdo_timavg[0][lat][lon]}')
             if lon>10: break
         break
 
-    non_zero_count=np.count_nonzero(diff_pytools_cdo_timavg[:])
+    non_zero_count = np.count_nonzero(diff_pytools_cdo_timavg[:])
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
-@pytest.mark.xfail(reason='test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
+@pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_cdo_to_fre_nctools():
     ''' compares cdo pkg answer to fre_nctools pkg answer '''
 
     assert Path(STR_FRENCTOOLS_INF).exists(), f'DNE: STR_FRENCTOOLS_INF = {STR_FRENCTOOLS_INF}'
-    fre_nctools_inf=nc.Dataset(STR_FRENCTOOLS_INF,'r')
-    fre_nctools_timavg=fre_nctools_inf[VAR][:].copy()
+    fre_nctools_inf = nc.Dataset(STR_FRENCTOOLS_INF,'r')
+    fre_nctools_timavg = fre_nctools_inf[VAR][:].copy()
 
     assert Path(STR_CDO_INF).exists(), f'DNE: STR_CDO_INF = {STR_CDO_INF}. \nrun cdo tests first?'
-    cdo_inf=nc.Dataset(STR_CDO_INF,'r')
-    cdo_timavg=cdo_inf[VAR][:].copy()
-    
+    cdo_inf = nc.Dataset(STR_CDO_INF,'r')
+    cdo_timavg = cdo_inf[VAR][:].copy()
+
     assert all([ len( cdo_timavg       ) == len( fre_nctools_timavg       ),
                  len( cdo_timavg[0]    ) == len( fre_nctools_timavg[0]    ),
                  len( cdo_timavg[0][0] ) == len( fre_nctools_timavg[0][0] ) ])
 
-    diff_cdo_nctools_timavg=cdo_timavg-fre_nctools_timavg
+    diff_cdo_nctools_timavg = cdo_timavg-fre_nctools_timavg
     for lat in range(0,len(diff_cdo_nctools_timavg[0])):
         for lon in range(0,len(diff_cdo_nctools_timavg[0][0])):
-            print(f'lat={lat},lon={lon}')
-            print(f'diff_cdo_nctools_timavg[0][lat][lon]={diff_cdo_nctools_timavg[0][lat][lon]}')
+            print(f'lat = {lat},lon = {lon}')
+            print(f'diff_cdo_nctools_timavg[0][lat][lon] = {diff_cdo_nctools_timavg[0][lat][lon]}')
             if lon>10: break
         break
 
-    non_zero_count=np.count_nonzero(diff_cdo_nctools_timavg[:])
+    non_zero_count = np.count_nonzero(diff_cdo_nctools_timavg[:])
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 # if we use fixtures and tmpdirs, can omit this error prone thing
