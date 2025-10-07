@@ -14,17 +14,17 @@ from fre.app.generate_time_averages import generate_time_averages as gtas
 # this test_data dir should probably be put in the typical location (fre/tests/test_files) for such types of data
 TIME_AVG_FILE_DIR = str(Path.cwd()) + '/fre/app/generate_time_averages/tests/test_data/'
 VAR = 'LWP'
-BASE_FILE_NAME = 'atmos.197901-198312.' + VAR
+ATMOS_FILE_NAME = 'atmos.197901-198312.' + VAR
 
-NCGEN_INPUT = (TIME_AVG_FILE_DIR + BASE_FILE_NAME + ".cdl")
-NCGEN_OUTPUT = (TIME_AVG_FILE_DIR + BASE_FILE_NAME + ".nc")
-TEST_FILE_NAME = BASE_FILE_NAME + '.nc'
-TEST_FILE_NAME_MONTH = BASE_FILE_NAME + '.01.nc'
+NCGEN_INPUT = (TIME_AVG_FILE_DIR + ATMOS_FILE_NAME + ".cdl")
+NCGEN_OUTPUT = (TIME_AVG_FILE_DIR + ATMOS_FILE_NAME + ".nc")
+TEST_FILE_NAME = ATMOS_FILE_NAME + '.nc'
+TEST_FILE_NAME_MONTH = ATMOS_FILE_NAME + '.01.nc'
 
 ### Also recreate frenctools_timavg_atmos.197901-198312.LWP
-BASE_FILE_NAME_2 = 'frenctools_timavg_' + BASE_FILE_NAME
-NCGEN_INPUT_2 = (TIME_AVG_FILE_DIR + BASE_FILE_NAME_2 + ".cdl")
-NCGEN_OUTPUT_2 = (TIME_AVG_FILE_DIR + BASE_FILE_NAME_2 + ".nc")
+FRENC_TAVG_ATMOS_FILE_NAME = 'frenctools_timavg_' + ATMOS_FILE_NAME
+NCGEN_INPUT_2 = (TIME_AVG_FILE_DIR + FRENC_TAVG_ATMOS_FILE_NAME + ".cdl")
+NCGEN_OUTPUT_2 = (TIME_AVG_FILE_DIR + FRENC_TAVG_ATMOS_FILE_NAME + ".nc")
 
 # Numerics-based tests. these have room for improvement for sure (TODO)
 # compare frepytools, cdo time-average output to fre-nctools where possible
@@ -33,8 +33,6 @@ STR_FRE_PYTOOLS_INF = TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TEST_FILE_NAME
 STR_CDO_INF = TIME_AVG_FILE_DIR + 'timmean_' + TEST_FILE_NAME
 STR_UNWGT_FRE_PYTOOLS_INF = TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TEST_FILE_NAME
 STR_UNWGT_CDO_INF = TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TEST_FILE_NAME
-ALT_STR_FRENCTOOLS_INF = \
-    'tests/time_avg_test_files/fre_nctools_timavg_CLI_test_r8_b_atmos_LWP_1979_5y.nc'
 
 # for testing fre app generate-time-averages with multiple files
 # now test running of time averager with two different files
