@@ -115,14 +115,14 @@ cases=[
                   (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
 
     pytest.param( 'fre-nctools', 'all',  False ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'fre_nctools_timavg_' + TWO_OUT_FILE_NAME)),
-    pytest.param( 'fre-nctools', 'all',  True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'fre_nctools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
-    pytest.param( 'fre-nctools', 'all',  False ,
                   (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME)),
-    pytest.param( 'fre-nctools', 'month',  False ,
-                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
-                  marks = pytest.mark.xfail() ),
+    pytest.param( 'fre-nctools', 'all',  False ,
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TWO_OUT_FILE_NAME)),
+    pytest.param( 'fre-nctools', 'all',  True ,
+                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
+#    pytest.param( 'fre-nctools', 'month',  False ,
+#                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
+    #                  marks = pytest.mark.xfail() ), #something about this is messing up test_compare_fre_cli_to_fre_nctools, even with xfail!
 ]
 @pytest.mark.parametrize( "pkg,avg_type,unwgt,infile,outfile",
                           cases )
@@ -136,8 +136,11 @@ def test_run_avgtype_pkg_calculations( pkg      ,
 
     # because the conda package for fre-nctools is a bit... special
     if pkg=='fre-nctools':
-        if shutil.which('timavg.csh') is None:
+        which_timavg=shutil.which('timavg.csh')
+        if which_timavg is None:
             pytest.xfail(reason = 'no timavg.csh!')
+        else:
+            print(f'which_timavg = {which_timavg}')
 
     # every input is required
     assert None not in [ infile       ,

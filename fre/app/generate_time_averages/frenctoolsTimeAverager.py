@@ -1,13 +1,15 @@
 ''' class for utilizing timavg.csh (aka script to TAVG fortran exe) in frenc-tools '''
-from .timeAverager import timeAverager
 import os
-from netCDF4 import Dataset, num2date
 import calendar
-from cdo import Cdo
 import logging
-import subprocess
 import shutil
+import subprocess
+from subprocess import Popen, PIPE        
 from pathlib import Path
+
+from netCDF4 import Dataset, num2date
+from cdo import Cdo
+from .timeAverager import timeAverager
 
 fre_logger = logging.getLogger(__name__)
 
@@ -55,8 +57,8 @@ class frenctoolsTimeAverager(timeAverager):
         #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
         if shutil.which('timavg.csh') is None:
             raise ValueError('did not find timavg.csh')
+        fre_logger.info(f'timeaverager using: {shutil.which("timavg.csh")}')
 
-        from subprocess import Popen, PIPE
 
 
         #Recursive call if month is selected for climatology. by Avery Kiihne
