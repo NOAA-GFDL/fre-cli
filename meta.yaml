@@ -22,10 +22,8 @@ channels:
 requirements:
   host:
     - python=3.11.*
-    - pip
   run:
     - python=3.11.*
-    - pip
     - noaa-gfdl::analysis_scripts==0.0.1
     - noaa-gfdl::catalogbuilder>=2.0.2
     - noaa-gfdl::fre-nctools==2022.02.01
@@ -42,8 +40,8 @@ requirements:
     - conda-forge::numpy=1.26.*
     - conda-forge::python-cdo
     - conda-forge::pyyaml
-    - conda-forge::xarray
-    - conda-forge::netcdf4
+    - conda-forge::xarray>=2024.*
+    - conda-forge::netcdf4=1.7.*
 
 test:
   requires:

@@ -4,7 +4,6 @@ channels:
   - noaa-gfdl
 dependencies:
   - python=3.11.*
-  - pip
   - noaa-gfdl::analysis_scripts==0.0.1
   - noaa-gfdl::catalogbuilder>=2.0.2
   - noaa-gfdl::fre-nctools==2022.02.01
@@ -15,11 +14,11 @@ dependencies:
   - conda-forge::cylc-flow>=8.2
   - conda-forge::cylc-rose
   - conda-forge::jinja2>=3
-  - conda-forge::jsonschema>=3
+  - conda-forge::jsonschema
   - conda-forge::metomi-rose
   - conda-forge::nccmp
   - conda-forge::numpy=1.26.*
   - conda-forge::python-cdo
   - conda-forge::pyyaml
-  - conda-forge::xarray
-  - conda-forge::netcdf4
+  - conda-forge::xarray>=2024.*
+  - conda-forge::netcdf4=1.7.*
