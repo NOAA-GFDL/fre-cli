@@ -26,14 +26,15 @@ jobs:
 
       - name: Create fre-cli environment
         run: |
-          conda config --show
-          conda config --show-sources
-          conda config --show channels
           conda config --remove channels defaults
+          conda config --append channels noaa-gfdl
+          conda config --append channels conda-forge
           conda config --set channel_priority strict
+          conda config --show channels
+          conda config --show channel_priority
 
           # create env holding all deps, the env cant be explicitly activated in CI/CD
-          conda env create -v -v -f environment.yml --name fre-cli
+          conda env create -v -f environment.yml --name fre-cli
 
           # list packages installed in the environment
           conda list -n fre-cli
@@ -55,6 +56,8 @@ jobs:
 
       - name: Run pytest in fre-cli environment
         run: |
+          conda install conda-forge::pytest conda-forge::pylint conda-forge::pytest-cov
+
           # add spack installed binaries to front of path so that conda's netcdf/hdf5 installs don't break compilation tests
           export path_save=$PATH
           export PATH="/opt/views/view/bin:$PATH"

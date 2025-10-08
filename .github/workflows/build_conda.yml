@@ -32,6 +32,7 @@ jobs:
 
           # just in case
           conda config --show channels
+          conda config --show channel_priority
 
           # install conda-build. there is no conda-forge::conda-verify
           conda install conda-forge::conda-build
