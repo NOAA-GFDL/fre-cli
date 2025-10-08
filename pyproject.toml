@@ -36,7 +36,7 @@ dependencies = [
         'netCDF4',
         'numpy<2',
         'pyyaml',
-        'xarray',
+        'xarray>=2025.10',
 ]
 
 classifiers = [

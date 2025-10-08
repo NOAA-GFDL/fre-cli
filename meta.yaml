@@ -42,7 +42,7 @@ requirements:
     - conda-forge::python=3.11.*
     - conda-forge::python-cdo
     - conda-forge::pyyaml
-    - conda-forge::xarray
+    - conda-forge::xarray>=2025.10
     
 test:
   requires:

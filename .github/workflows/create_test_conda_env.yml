@@ -38,6 +38,9 @@ jobs:
           # use *conda environment's pip* to install fre-cli, called w/ full path as module for explicitness
           $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
 
+          # list packages installed in the environment
+          conda list
+
       - name: Run pytest in fre-cli environment
         run: |
           # add spack installed binaries to front of path so that conda's netcdf/hdf5 installs don't break compilation tests
