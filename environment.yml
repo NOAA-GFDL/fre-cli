@@ -3,24 +3,25 @@ channels:
   - conda-forge
   - noaa-gfdl
 dependencies:
+  - python=3.11.*
+  - pip
   - noaa-gfdl::analysis_scripts==0.0.1
-  - noaa-gfdl::catalogbuilder>=2.0.3
+  - noaa-gfdl::catalogbuilder>=2.0.2
   - noaa-gfdl::fre-nctools==2022.02.01
-  - conda-forge::cdo>=2.5
-  - conda-forge::cftime>=1.6
-  - conda-forge::click>=8.3
-  - conda-forge::cmor=3.11.*
-  - conda-forge::cylc-flow>=8.5
-  - conda-forge::cylc-rose>=1.6
+  - conda-forge::cdo>=2
+  - conda-forge::cftime
+  - conda-forge::click>=8.2
+  - conda-forge::cmor>=3.11
+  - conda-forge::cylc-flow>=8.2
+  - conda-forge::cylc-rose
   - conda-forge::jinja2>=3
-  - conda-forge::jsonschema>=4
-  - conda-forge::metomi-rose>=2.5
-  - conda-forge::nccmp>=1.9
+  - conda-forge::jsonschema>=3
+  - conda-forge::metomi-rose
+  - conda-forge::nccmp
   - conda-forge::numpy=1.26.*
-  - conda-forge::pylint>=3
-  - conda-forge::pytest>=7
-  - conda-forge::pytest-cov>=6
-  - conda-forge::python=3.11.*
-  - conda-forge::python-cdo>=1.6
-  - conda-forge::pyyaml>=6
+  - conda-forge::pylint
+  - conda-forge::pytest
+  - conda-forge::pytest-cov
+  - conda-forge::python-cdo
+  - conda-forge::pyyaml
   - conda-forge::xarray>=2025
