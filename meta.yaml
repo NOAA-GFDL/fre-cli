@@ -37,7 +37,6 @@ requirements:
     - conda-forge::jsonschema>=4
     - conda-forge::metomi-rose>=2.5
     - conda-forge::nccmp>=1.9
-    - conda-forge::netcdf4>=1.6
     - conda-forge::numpy=1.26.*
     - conda-forge::python-cdo>=1.6
     - conda-forge::pyyaml>=6
