@@ -185,6 +185,7 @@ def test_run_avgtype_pkg_calculations( pkg      ,
     # the desired outputfile specified by outfile should exist
     assert Path(outfile).exists(), f'DNE (string) outfile = {outfile}'
 
+@pytest.mark.xfail(reason = 'fre-cli seems to not bitwise reproduce frenctools at this time')
 def test_compare_fre_cli_to_fre_nctools():
     ''' compares fre_cli pkg answer to fre_nctools pkg answer '''
     assert Path(STR_FRE_PYTOOLS_INF).exists(), f'DNE: STR_FRE_PYTOOLS_INF = {STR_FRE_PYTOOLS_INF}'
@@ -239,7 +240,7 @@ def test_compare_fre_cli_to_cdo():
     non_zero_count = np.count_nonzero(diff_pytools_cdo_timavg[:])
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
-@pytest.mark.xfail(reason = 'fre-cli seems to not bitwise reproduce frenctools at this time')
+
 def test_compare_unwgt_fre_cli_to_unwgt_cdo():
     ''' compares fre_cli pkg answer to cdo pkg answer '''
     assert Path(STR_UNWGT_FRE_PYTOOLS_INF).exists(), f'DNE: STR_UNWGT_FRE_PYTOOLS_INF = {STR_UNWGT_FRE_PYTOOLS_INF}'
