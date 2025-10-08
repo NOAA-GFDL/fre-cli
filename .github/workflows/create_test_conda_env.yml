@@ -26,13 +26,20 @@ jobs:
 
       - name: Create fre-cli environment
         run: |
+          conda config --show
+          conda config --show-sources
+          conda config --show channels
+          conda config --remove channels defaults
+          conda config --set channel_priority strict
+
           # create env holding all deps, the env cant be explicitly activated in CI/CD
-          conda env create -f environment.yml --name fre-cli
+          conda env create -v -v -f environment.yml --name fre-cli
 
           # list packages installed in the environment
           conda list -n fre-cli
 
           # sets CONDA to wherever it may be on the image
+          cat /root/.bashrc
           source /root/.bashrc
 
           # add conda env's executables and mkmf to github's PATH equiv.

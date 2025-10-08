@@ -42,8 +42,9 @@ requirements:
     - conda-forge::numpy=1.26.*
     - conda-forge::python-cdo
     - conda-forge::pyyaml
-    - conda-forge::xarray>=2025
-    
+    - conda-forge::xarray
+    - conda-forge::netcdf4
+
 test:
   requires:
     - conda-forge::pylint
