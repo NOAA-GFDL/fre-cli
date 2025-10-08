@@ -34,9 +34,9 @@ dependencies = [
         'jsonschema',
         'metomi-rose',
         'netCDF4',
-        'numpy<2',
+        'numpy',
         'pyyaml',
-        'xarray>=2025.10',
+        'xarray',
 ]
 
 classifiers = [
