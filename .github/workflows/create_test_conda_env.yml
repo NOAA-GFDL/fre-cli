@@ -29,6 +29,9 @@ jobs:
           # create env holding all deps, the env cant be explicitly activated in CI/CD
           conda env create -f environment.yml --name fre-cli
 
+          # list packages installed in the environment
+          conda list -n fre-cli
+
           # sets CONDA to wherever it may be on the image
           source /root/.bashrc
 
@@ -36,10 +39,12 @@ jobs:
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
 
           # use *conda environment's pip* to install fre-cli, called w/ full path as module for explicitness
+          which python
+          $CONDA/envs/fre-cli/bin/python --version
           $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
-
-          # list packages installed in the environment
-          conda list
+          
+          # list packages installed in the environment again after the pip install
+          conda list -n fre-cli
 
       - name: Run pytest in fre-cli environment
         run: |

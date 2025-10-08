@@ -84,16 +84,17 @@ def test_time_avg_file_dir_exists():
 
 
 cases=[
+    #cdo cases, monthly, one/multifile, weighted
     pytest.param( 'cdo', 'month', True ,
                   (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TEST_FILE_NAME)),
     pytest.param( 'cdo', 'month', True ,
                   (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TWO_OUT_FILE_NAME)),
-
+    #cdo cases, seasonal, one/multifile, unweighted
     pytest.param( 'cdo', 'seas', True ,
                   (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TEST_FILE_NAME)),
     pytest.param( 'cdo', 'seas', True ,
                   (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TWO_OUT_FILE_NAME)),
-
+    #cdo cases, all, one/multifiles, weighted/unweighted
     pytest.param( 'cdo', 'all', True ,
                   (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TEST_FILE_NAME)),
     pytest.param( 'cdo', 'all', True ,
@@ -102,7 +103,7 @@ cases=[
                   (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'timmean_' + TEST_FILE_NAME)),
     pytest.param( 'cdo', 'all', False ,
                   (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME)),
-
+    #fre-python-tools cases, all, one/multifiles, weighted/unweighted flag
     pytest.param( 'fre-python-tools', 'all',  False ,
                   (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TEST_FILE_NAME)),
     pytest.param( 'fre-python-tools', 'all',  False ,
@@ -111,19 +112,19 @@ cases=[
                   (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TEST_FILE_NAME)),
     pytest.param( 'fre-python-tools', 'all',  True ,
                   (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
-
+#    #fre-nctools cases, all, one/multifiles, weighted/unweighted flag (work on GFDL/PPAN only)
 #    pytest.param( 'fre-nctools', 'all',  False ,
 #                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME)),
 #    pytest.param( 'fre-nctools', 'all',  False ,
 #                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TWO_OUT_FILE_NAME)),
 #    pytest.param( 'fre-nctools', 'all',  True ,
 #                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
+#    #fre-nctools case, monthly, multifiles, weighted (in-progress)
 #    pytest.param( 'fre-nctools', 'month',  False ,
 #                  (TIME_AVG_FILE_DIR + TEST_FILE_NAME), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
 #                  marks = pytest.mark.xfail() ), #something about this is messing up test_compare_fre_cli_to_fre_nctools, even with xfail!
 ]
-@pytest.mark.parametrize( "pkg,avg_type,unwgt,infile,outfile",
-                          cases )
+@pytest.mark.parametrize( "pkg,avg_type,unwgt,infile,outfile", cases )
 def test_run_avgtype_pkg_calculations( pkg      ,
                                        avg_type ,
                                        unwgt    ,
@@ -165,7 +166,8 @@ def test_run_avgtype_pkg_calculations( pkg      ,
           f'                            --avg_type {avg_type} \\ \n'
           f'                            --pkg {pkg} \\ \n'
           f'                            --unwgt {unwgt}\n')
-    assert False
+    #assert False
+    
     # run averager
     gtas.generate_time_average(infile   = infile,
                                outfile  = outfile,
