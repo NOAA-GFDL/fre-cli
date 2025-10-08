@@ -5,12 +5,12 @@ channels:
 dependencies:
   - python=3.11.*
   - noaa-gfdl::analysis_scripts==0.0.1
-  - noaa-gfdl::catalogbuilder>=2.0.2
+  - noaa-gfdl::catalogbuilder==2.0.3
   - noaa-gfdl::fre-nctools==2022.02.01
   - conda-forge::cdo>=2
   - conda-forge::cftime
   - conda-forge::click>=8.2
-  - conda-forge::cmor>=3.11
+  - conda-forge::cmor=3.11.*
   - conda-forge::cylc-flow>=8.2
   - conda-forge::cylc-rose
   - conda-forge::jinja2>=3
