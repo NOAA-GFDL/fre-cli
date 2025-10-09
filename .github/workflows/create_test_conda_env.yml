@@ -26,6 +26,9 @@ jobs:
 
       - name: Create fre-cli environment
         run: |
+          # okiedoke
+          conda init
+
           # remove defaults, append reqd channels
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
@@ -63,7 +66,7 @@ jobs:
           which python
           $CONDA/envs/fre-cli/bin/python --version
           $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
-          
+
           # list packages installed in the environment again after the pip install
           conda list -n fre-cli
 
