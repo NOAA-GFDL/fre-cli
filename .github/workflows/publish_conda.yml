@@ -7,7 +7,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
+      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24_gcc14_v2
     steps:
       - name: Checkout Files
         uses: actions/checkout@v4
@@ -16,11 +16,28 @@ jobs:
 
       - name: Run Conda to Build and Publish
         run: |
+          # remove defaults, append reqd channels
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
           conda config --remove channels defaults
-          conda config --show channels
-          conda install conda-build anaconda-client conda-verify
-          export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
+
+          # set strict channel priority
+          conda config --set channel_priority strict
+
+          # set anaconda uploading to yes
           conda config --set anaconda_upload yes
-          conda build .
+
+          # just in case
+          conda config --show
+
+          # update package channel indices
+          conda update -y conda
+          conda update -y --all --override-channels -c conda-forge
+          conda update -y --all --override-channels -c noaa-gfdl
+
+          # install conda-build, conda-verify, anaconda-client
+          conda install conda-forge::conda-build conda-forge::anaconda-client conda-forge::conda-verify
+          export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
+
+          # conda build
+          conda build --debug .

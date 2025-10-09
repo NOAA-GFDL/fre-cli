@@ -26,19 +26,31 @@ jobs:
 
       - name: Create fre-cli environment
         run: |
-          conda config --remove channels defaults
+          # remove defaults, append reqd channels
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
+          conda config --remove channels defaults
+
+          # set strict channel priority
           conda config --set channel_priority strict
-          conda config --show channels
-          conda config --show channel_priority
-          conda update conda
+
+          # just in case
+          conda config --show
+
+          # update package channel indices
+          conda update -y conda
+          conda update -y --all --override-channels -c conda-forge
+          conda update -y --all --override-channels -c noaa-gfdl
 
           # create env holding all deps, the env cant be explicitly activated in CI/CD
-          conda env create -v -f environment.yml --name fre-cli
+          conda env create -y -v -f environment.yml --name fre-cli
 
           # list packages installed in the environment
+          conda env list
           conda list -n fre-cli
+
+          # gonna try this out one more time
+          conda activate fre-cli
 
           # sets CONDA to wherever it may be on the image
           cat /root/.bashrc
