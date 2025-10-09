@@ -26,67 +26,90 @@ jobs:
 
       - name: Create fre-cli environment
         run: |
-          # remove defaults, append reqd channels
+          echo "removing defaults, appending reqd channels"
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
           conda config --remove channels defaults
 
-          # set strict channel priority
+          echo "setting strict channel priority"
           conda config --set channel_priority strict
 
-          # just in case
+          echo "printing conda config just in case"
           conda config --show
 
       - name: update conda and channel package indices
         run: |
-          # update package channel indices
+          echo "updating conda and package channel indices for conda-forge, noaa-gfdl"
           conda update -y conda
           conda update -y --all --override-channels -c conda-forge
           conda update -y --all --override-channels -c noaa-gfdl
 
       - name: Create fre-cli environment
         run: |
-          # create env holding all deps, the env cant be explicitly activated in CI/CD
-          conda env create -y -v -f environment.yml --name fre-cli
+          echo "creating fre-cli env holding all deps"
+          conda env create -y -f environment.yml --name fre-cli
 
       - name: Activate fre-cli environment
         run: |
-          # sets CONDA relevant defaults, necessary for conda init, and conda activate to work in the pipeline
+          echo "sourcing /some/path/to/conda/etc/profile.d/conda.sh"
           # source /root/.bashrc
           source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
 
-          # okiedoke
+          echo "conda initializing"
           conda init
 
-          # list packages installed in the environment
+          echo "listing packages installed in the fre-cli environment"
           conda env list
           conda list -n fre-cli
 
-          # gonna try this out one more time
+          echo "activating the fre-cli environment"
           conda activate fre-cli
 
           ## add conda env's executables and mkmf to github's PATH equiv.
           # echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
 
-          # use *conda environment's pip* to install fre-cli, called w/ full path as module for explicitness
+          echo "print some pythong details and pip install the local source code directory"
           which python
           python --version
           python -m pip install .
           # $CONDA/envs/fre-cli/bin/python --version
           # $CONDA/envs/fre-cli/bin/python -m pip install --prefix $CONDA/envs/fre-cli .
 
-          # list packages installed in the environment again after the pip install
+          echo "listing packages installed again after pip installing fre-cli"
           conda list -n fre-cli
           which fre
+
+          echo "sanity- what is PATH?"
           echo $PATH
 
       - name: Install pytest, pylint, and pytest-cov into fre-cli environment
         run: |
+          # source /root/.bashrc
+          source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
+
+          echo "conda initializing"
+          conda init
+
+          echo "activating the fre-cli environment"
+          conda activate fre-cli
+
+          echo "sanity- what is PATH?"
           echo $PATH
+
+          echo "conda install testing-reqs"
           conda install conda-forge::pytest conda-forge::pylint conda-forge::pytest-cov
 
       - name: Run pytest in fre-cli environment
         run: |
+          # source /root/.bashrc
+          source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
+
+          echo "conda initializing"
+          conda init
+
+          echo "activating the fre-cli environment"
+          conda activate fre-cli
+
           # add spack installed binaries to front of path so that conda's netcdf/hdf5 installs don't break compilation tests
           echo $PATH
           export path_save=$PATH
@@ -100,6 +123,15 @@ jobs:
 
       - name: Run pylint in fre-cli environment
         run: |
+          # source /root/.bashrc
+          source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
+
+          echo "conda initializing"
+          conda init
+
+          echo "activating the fre-cli environment"
+          conda activate fre-cli
+
           # run pylint, ignored modules avoid warnings arising from code internal to those modules
           pylint --fail-under 7.30 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
 
