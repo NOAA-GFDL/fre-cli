@@ -22,29 +22,29 @@ jobs:
 
       - name: Run Conda to Build
         run: |
-          # remove defaults, append reqd channels
+          echo "removing defaults, appending reqd channels"
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
           conda config --remove channels defaults
 
-          # set strict channel priority
+          echo "setting strict channel priority"
           conda config --set channel_priority strict
 
-          # set anaconda uploading to yes
+          echo "setting anaconda_upload to no"
           conda config --set anaconda_upload no
 
-          # just in case
+          echo "printing conda config just in case"
           conda config --show
 
-          # update package channel indices
+          echo "updating conda and package channel indices for conda-forge, noaa-gfdl"
           conda update -y conda
           conda update -y --all --override-channels -c conda-forge
           conda update -y --all --override-channels -c noaa-gfdl
 
-          # install conda-build, conda-verify, anaconda-client to mimic the publish workflow
+          echo "conda install conda-build"
           conda install conda-forge::conda-build
 
-          # conda build
+          echo "conda building fre-cli package and outputting as a tarball"
           mkdir -p /app/fre-cli-tarball
           conda build --debug --package-format tar.bz2 --output-folder /app/fre-cli-tarball .
 
