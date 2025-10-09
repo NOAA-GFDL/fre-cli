@@ -26,14 +26,6 @@ jobs:
 
       - name: Create fre-cli environment
         run: |
-          # sets CONDA to wherever it may be on the image
-          # cat /root/.bashrc
-          # source /root/.bashrc
-          source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
-
-          # okiedoke
-          conda init
-
           # remove defaults, append reqd channels
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
@@ -57,6 +49,14 @@ jobs:
           # create env holding all deps, the env cant be explicitly activated in CI/CD
           conda env create -y -v -f environment.yml --name fre-cli
 
+      - name: Activate fre-cli environment
+        run: |
+          # sets CONDA relevant defaults, necessary for conda init, and conda activate to work in the pipeline
+          source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
+
+          # okiedoke
+          conda init
+
           # list packages installed in the environment
           conda env list
           conda list -n fre-cli
@@ -75,10 +75,12 @@ jobs:
           # list packages installed in the environment again after the pip install
           conda list -n fre-cli
 
-      - name: Run pytest in fre-cli environment
+      - name: Install pytest, pylint, and pytest-cov into fre-cli environment
         run: |
           conda install conda-forge::pytest conda-forge::pylint conda-forge::pytest-cov
 
+      - name: Run pytest in fre-cli environment
+        run: |
           # add spack installed binaries to front of path so that conda's netcdf/hdf5 installs don't break compilation tests
           export path_save=$PATH
           export PATH="/opt/views/view/bin:$PATH"
