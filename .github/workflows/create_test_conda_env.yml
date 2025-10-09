@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-linux:
+  condaenvcreate:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:miniconda24_gcc14_v2
@@ -62,6 +62,9 @@ jobs:
 
           echo "activating the fre-cli environment"
           conda activate fre-cli
+
+          echo "pip installing fre-cli into the environment"
+          python -m pip install .
 
           echo "listing packages installed again after pip installing fre-cli"
           conda list -n fre-cli
