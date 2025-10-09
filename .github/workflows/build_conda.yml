@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24.7.1_gcc14.2.0
+      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24_gcc14_v2
     steps:
       - name: Checkout Files
         uses: actions/checkout@v4
@@ -28,11 +28,12 @@ jobs:
 
           # remove any default channels
           conda config --remove channels defaults
-          conda config --set channel_priority strict
+          conda config --set channel_priority strict	  
 
           # just in case
           conda config --show channels
           conda config --show channel_priority
+          conda update conda
 
           # install conda-build. there is no conda-forge::conda-verify
           conda install conda-forge::conda-build
