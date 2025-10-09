@@ -42,7 +42,7 @@ jobs:
           conda update -y --all --override-channels -c noaa-gfdl
 
           # install conda-build, conda-verify, anaconda-client to mimic the publish workflow
-          conda install conda-forge::conda-build conda-verify anaconda-client
+          conda install conda-forge::conda-build
 
           # conda build
           mkdir -p /app/fre-cli-tarball

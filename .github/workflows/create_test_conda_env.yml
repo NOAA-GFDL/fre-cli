@@ -27,8 +27,8 @@ jobs:
       - name: Create fre-cli environment
         run: |
           # sets CONDA to wherever it may be on the image
-          cat /root/.bashrc
-          source /root/.bashrc
+          # cat /root/.bashrc
+          # source /root/.bashrc
           source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
 
           # okiedoke
@@ -45,11 +45,15 @@ jobs:
           # just in case
           conda config --show
 
+      - name: update conda and channel package indices
+        run: |
           # update package channel indices
           conda update -y conda
           conda update -y --all --override-channels -c conda-forge
           conda update -y --all --override-channels -c noaa-gfdl
 
+      - name: Create fre-cli environment
+        run: |
           # create env holding all deps, the env cant be explicitly activated in CI/CD
           conda env create -y -v -f environment.yml --name fre-cli
 
