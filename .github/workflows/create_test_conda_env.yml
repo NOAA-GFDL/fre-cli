@@ -26,6 +26,11 @@ jobs:
 
       - name: Create fre-cli environment
         run: |
+          # sets CONDA to wherever it may be on the image
+          cat /root/.bashrc
+          source /root/.bashrc
+          source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
+
           # okiedoke
           conda init
 
@@ -54,10 +59,6 @@ jobs:
 
           # gonna try this out one more time
           conda activate fre-cli
-
-          # sets CONDA to wherever it may be on the image
-          cat /root/.bashrc
-          source /root/.bashrc
 
           # add conda env's executables and mkmf to github's PATH equiv.
           echo $CONDA/envs/fre-cli/bin >> $GITHUB_PATH
