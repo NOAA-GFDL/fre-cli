@@ -72,7 +72,7 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
-    - pylint --fail-under 7.30 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
+    - pylint --fail-under 7.50 --max-line-length 120 --max-args 6 --max-positional-arguments 6 -ry --ignored-modules netCDF4,cmor fre/
     - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/ 
 
 
