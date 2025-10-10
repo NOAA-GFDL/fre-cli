@@ -22,7 +22,7 @@ jobs:
 
       - name: Configure Conda
         run: |
-          echo "removing defaults, appending reqd channels"
+          echo "removing conda default channels, appending open-source ones"
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
           conda config --remove channels defaults

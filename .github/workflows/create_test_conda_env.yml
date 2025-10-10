@@ -51,10 +51,10 @@ jobs:
 
       - name: Activate fre-cli Environment and Install fre-cli
         run: |
-          echo "sourcing /some/path/to/conda/etc/profile.d/conda.sh"
+          echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
           source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
 
-          echo "conda initializing"
+          echo "to activate env, conda init"
           conda init
 
           echo "listing packages installed in the fre-cli environment"
@@ -73,10 +73,10 @@ jobs:
 
       - name: Install pytest, pylint, and pytest-cov into fre-cli Env
         run: |
-          echo "sourcing /some/path/to/conda/etc/profile.d/conda.sh"
+          echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
           source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
 
-          echo "conda initializing"
+          echo "to activate env, conda init"
           conda init
 
           echo "activating the fre-cli environment"
@@ -87,10 +87,10 @@ jobs:
 
       - name: Run pytest In fre-cli Env
         run: |
-          echo "sourcing /some/path/to/conda/etc/profile.d/conda.sh"
+          echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
           source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
 
-          echo "conda initializing"
+          echo "to activate env, conda init"
           conda init
 
           echo "activating the fre-cli environment"
@@ -110,10 +110,10 @@ jobs:
 
       - name: Run pylint On fre/ In fre-cli Env
         run: |
-          echo "sourcing /some/path/to/conda/etc/profile.d/conda.sh"
+          echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
           source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
 
-          echo "conda initializing"
+          echo "to activate env, conda init"
           conda init
 
           echo "activating the fre-cli environment"
