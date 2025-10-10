@@ -73,7 +73,7 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
-    - pylint --rcfile pylintrc
+    - pylint --rcfile pylintrc fre/
     - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/ 
 
 
