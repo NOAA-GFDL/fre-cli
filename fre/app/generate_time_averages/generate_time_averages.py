@@ -16,7 +16,7 @@ fre_logger = logging.getLogger(__name__)
 def generate_time_average(infile: Union[str, List[str]] = None,
                           outfile: str = None,
                           pkg: str = None,
-                          var: str = None,
+                          var: Optional[str] = None,
                           unwgt: Optional[bool] = False,
                           avg_type: Optional[str] = None   ):
     """
@@ -28,7 +28,7 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     :type outfile: str
     :param pkg: which package to use to calculate climatology (cdo, fre-nctools, fre-python-tools)
     :type pkg: str
-    :param var: not currently supported, defaults to none
+    :param var: optional, not currently supported and  defaults to none
     :type var: str
     :param unwgt: optional, whether or not to weight the data, default false
     :type unwgt: bool
@@ -37,8 +37,8 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     :return: error message if requested package unknown, otherwise returns climatology
     :rtype: int
     """
-    if None in [infile, outfile, pkg, var]:
-        raise ValueError('infile, outfile, pkg, and var are required inputs')
+    if None in [infile, outfile, pkg]:
+        raise ValueError('infile, outfile, and pkg are required inputs')
     fre_logger.debug('called generate_time_average')
     exitstatus=1
     myavger=None
