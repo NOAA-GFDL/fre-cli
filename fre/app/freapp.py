@@ -166,7 +166,7 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
               type = str,
               required = True,
               help = "Beginning cycle-point in ISO8601")
-@click.option("--dir",
+@click.option("--dir", 'dir_',
               type = str,
               required = True,
               help = "Root directory containing the shards")
@@ -185,7 +185,8 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
 @click.option("--grid",
               type = str,
               required = True,
-              help = "Grid label corresponding to the shards directory (e.g. 'native' and 'regrid-xy/180_288.conserve_order2'")
+              help = "Grid label corresponding to the shards directory, e.g. native, regrid-xy/180_288.conserve_order2")
+
 @click.option("--frequency",
               type = str,
               required = True,
@@ -194,13 +195,13 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
               type = click.Choice(["cdo","fre-nctools","fre-python-tools"]),
               default = "cdo",
               help = "Time average approach")
-def gen_time_averages_wrapper(cycle_point, dir, sources, output_interval, input_interval, grid, frequency, pkg):
+def gen_time_averages_wrapper(cycle_point, dir_, sources, output_interval, input_interval, grid, frequency, pkg):
     """
     Wrapper for climatology tool.
     Timeaverages all variables for a desired cycle point, source, and grid.
     """
     sources_list = sources.split(',')
-    generate_wrapper(cycle_point, dir, sources_list, output_interval, input_interval, grid, frequency, pkg)
+    generate_wrapper(cycle_point, dir_, sources_list, output_interval, input_interval, grid, frequency, pkg)
 
 @app_cli.command()
 @click.option("--in-dir",
