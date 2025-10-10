@@ -32,8 +32,8 @@ class cdoTimeAverager(timeAverager):
         """
 
         if self.avg_type not in ['all', 'seas', 'month']:
-            fre_logger.error('ERROR, requested unknown avg_type %s.', self.avg_type)
-            raise ValueError
+            fre_logger.error('requested unknown avg_type %s.', self.avg_type)
+            raise ValueError(f'requested unknown avg_type {self.avg_type}')
 
         if self.var is not None:
             fre_logger.warning('WARNING: variable specification not twr supported for cdo time averaging. ignoring!')
@@ -77,9 +77,6 @@ class cdoTimeAverager(timeAverager):
             outfile_root = outfile_str.removesuffix(".nc") + '.'
             _cdo.splitmon(input = outfile_str, output = outfile_root)
             fre_logger.debug('Done with splitting by month, outfile_root = %s', outfile_root)
-        else:
-            fre_logger.error('problem: unknown avg_type = %s', self.avg_type)
-            raise ValueError
 
         fre_logger.info('done averaging')
         fre_logger.info('output file created: %s', outfile)
