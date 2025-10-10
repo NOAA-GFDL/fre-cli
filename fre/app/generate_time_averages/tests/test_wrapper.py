@@ -21,9 +21,7 @@ def create_monthly_timeseries(tmp_path):
     Create a monthly timeseries input shard directory structure containing two variables and two one-year timeseries.
     """
     # settings
-    #cycle_point = '1980-01-01'
-    #output_interval = 'P2Y'
-    input_interval  = 'P1Y'
+    input_interval = 'P1Y'
     grid = '180_288.conserve_order2'
 
     # path to input files
@@ -65,9 +63,7 @@ def create_annual_timeseries(tmp_path):
     Create an annual timeseries input shard directory structure containing two variables and two one-year timeseries.
     """
     # settings
-    #cycle_point = '0002-01-01'
-    #output_interval = 'P2Y'
-    input_interval  = 'P1Y'
+    input_interval = 'P1Y'
     grid = '180_288.conserve_order1'
 
     # path to input files
@@ -104,7 +100,7 @@ def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     """
     cycle_point = '1980-01-01'
     output_interval = 'P2Y'
-    input_interval  = 'P1Y'
+    input_interval = 'P1Y'
     grid = '180_288.conserve_order2'
     sources = ['atmos_month']
     frequency = 'yr'
@@ -129,7 +125,7 @@ def test_annual_av_from_annual_ts(create_annual_timeseries):
     """
     cycle_point = '0002-01-01'
     output_interval = 'P2Y'
-    input_interval  = 'P1Y'
+    input_interval = 'P1Y'
     grid = '180_288.conserve_order1'
     sources = ['tracer_level']
     frequency = 'yr'
@@ -154,7 +150,7 @@ def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
     """
     cycle_point = '1980-01-01'
     output_interval = 'P2Y'
-    input_interval  = 'P1Y'
+    input_interval = 'P1Y'
     grid = '180_288.conserve_order2'
     sources = ['atmos_month']
     frequency = 'mon'
@@ -181,7 +177,7 @@ def test_cdo_annual_av_from_monthly_ts(create_monthly_timeseries):
     """
     cycle_point = '1980-01-01'
     output_interval = 'P2Y'
-    input_interval  = 'P1Y'
+    input_interval = 'P1Y'
     grid = '180_288.conserve_order2'
     sources = ['atmos_month']
     frequency = 'yr'
@@ -206,7 +202,7 @@ def test_cdo_annual_av_from_annual_ts(create_annual_timeseries):
     """
     cycle_point = '0002-01-01'
     output_interval = 'P2Y'
-    input_interval  = 'P1Y'
+    input_interval = 'P1Y'
     grid = '180_288.conserve_order1'
     sources = ['tracer_level']
     frequency = 'yr'
@@ -231,7 +227,7 @@ def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
     """
     cycle_point = '1980-01-01'
     output_interval = 'P2Y'
-    input_interval  = 'P1Y'
+    input_interval = 'P1Y'
     grid = '180_288.conserve_order2'
     sources = ['atmos_month']
     frequency = 'mon'
@@ -261,7 +257,7 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
 
     cycle_point = '1980-01-01'
     output_interval = 'P2Y'
-    input_interval  = 'P1Y'
+    input_interval = 'P1Y'
     grid = '180_288.conserve_order2'
     sources = ['atmos_month']
     frequency = 'yr'
@@ -282,7 +278,7 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
                                  output_interval, input_interval, grid, frequency, 'fre-nctools')
         output_dir_fre = Path(fre_dir, 'av', grid, 'atmos_month', 'P1Y', output_interval)
         new_output_dir_fre = Path(create_monthly_timeseries, 'fre_av', grid, 'atmos_month', 'P1Y', output_interval)
-        new_output_dir_fre.mkdir(exist_ok=False,parents=True)
+        new_output_dir_fre.mkdir(exist_ok = False, parents = True)
 
         for file_ in output_files:
             shutil.move( output_dir_fre / file_ , new_output_dir_fre / file_)
@@ -306,7 +302,7 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
             #if shutil.which('nccmp'):
             result = subprocess.run(['nccmp', '-v', file_.split('.')[2], '-d', str(cdo_file), str(fre_file)],
                                     capture_output = True, text = True, check = False)
-            stdoutput=result.stdout
-            stderror=result.stderr
+            stdoutput = result.stdout
+            stderror = result.stderr
 
             assert result.returncode == 0, stdoutput+'\n'+stderror
