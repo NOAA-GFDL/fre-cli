@@ -13,7 +13,6 @@ from .frepytoolsTimeAverager import frepytoolsTimeAverager
 
 fre_logger = logging.getLogger(__name__)
 
-
 def generate_time_average(infile: Union[str, List[str]] = None,
                           outfile: str = None,
                           pkg: str = None,

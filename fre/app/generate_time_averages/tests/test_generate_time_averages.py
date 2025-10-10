@@ -86,42 +86,58 @@ FULL_TEST_FILE_PATH = TIME_AVG_FILE_DIR + TEST_FILE_NAME
 cases=[
     #cdo cases, monthly, one/multifile, weighted
     pytest.param( 'cdo', 'month', True ,
-                  FULL_TEST_FILE_PATH, (TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TEST_FILE_NAME)),
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'month', True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TWO_OUT_FILE_NAME)),
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TWO_OUT_FILE_NAME),
     #cdo cases, seasonal, one/multifile, unweighted
     pytest.param( 'cdo', 'seas', True ,
-                  FULL_TEST_FILE_PATH, (TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TEST_FILE_NAME)),
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'seas', True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TWO_OUT_FILE_NAME)),
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TWO_OUT_FILE_NAME),
     #cdo cases, all, one/multifiles, weighted/unweighted
     pytest.param( 'cdo', 'all', True ,
-                  FULL_TEST_FILE_PATH, (TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TEST_FILE_NAME)),
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'all', True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TWO_OUT_FILE_NAME)),
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TWO_OUT_FILE_NAME),
     pytest.param( 'cdo', 'all', False ,
-                  FULL_TEST_FILE_PATH, (TIME_AVG_FILE_DIR + 'timmean_' + TEST_FILE_NAME)),
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'timmean_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'all', False ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME)),
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME),
     #fre-python-tools cases, all, one/multifiles, weighted/unweighted flag
     pytest.param( 'fre-python-tools', 'all',  False ,
-                  FULL_TEST_FILE_PATH, (TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TEST_FILE_NAME)),
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TEST_FILE_NAME),
     pytest.param( 'fre-python-tools', 'all',  False ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TWO_OUT_FILE_NAME)),
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TWO_OUT_FILE_NAME),
     pytest.param( 'fre-python-tools', 'all',  True ,
-                  FULL_TEST_FILE_PATH, (TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TEST_FILE_NAME)),
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TEST_FILE_NAME),
     pytest.param( 'fre-python-tools', 'all',  True ,
-                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TWO_OUT_FILE_NAME),
 #    #fre-nctools cases, all, one/multifiles, weighted/unweighted flag (work on GFDL/PPAN only)
 #    pytest.param( 'fre-nctools', 'all',  False ,
-#                  FULL_TEST_FILE_PATH, (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME)),
+#                  FULL_TEST_FILE_PATH,
+#                   TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
 #    pytest.param( 'fre-nctools', 'all',  False ,
-#                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TWO_OUT_FILE_NAME)),
+#                  TWO_TEST_FILE_NAMES,
+#                  TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TWO_OUT_FILE_NAME),
 #    pytest.param( 'fre-nctools', 'all',  True ,
-#                  (TWO_TEST_FILE_NAMES), (TIME_AVG_FILE_DIR + 'frenctools_unwgt_timavg_' + TWO_OUT_FILE_NAME)),
+#                  TWO_TEST_FILE_NAMES,
+#                  TIME_AVG_FILE_DIR + 'frenctools_unwgt_timavg_' + TWO_OUT_FILE_NAME),
 #    #fre-nctools case, monthly, multifiles, weighted (in-progress)
 #    pytest.param( 'fre-nctools', 'month',  False ,
-#                  FULL_TEST_FILE_PATH, (TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
+#                  FULL_TEST_FILE_PATH,
+#                  TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
 #                  marks = pytest.mark.xfail() ), # this making test_compare_fre_cli_to_fre_nctools fail
 ]
 @pytest.mark.parametrize( "pkg,avg_type,unwgt,infile,outfile", cases )
@@ -142,11 +158,11 @@ def test_run_avgtype_pkg_calculations( pkg      ,
             print(f'which_timavg = {which_timavg}')
 
     # every input is required
-    assert None not in [ infile       ,
-                         outfile      ,
-                         pkg          ,
-                         avg_type     ,
-                         unwgt         ]
+    assert None not in [ infile,
+                         outfile,
+                         pkg,
+                         avg_type,
+                         unwgt     ]
 
     # check again the input file(s) exist before runnig the time averager
     if isinstance(infile, str):
@@ -168,10 +184,10 @@ def test_run_avgtype_pkg_calculations( pkg      ,
           f'                            --unwgt {unwgt}\n')
 
     # run averager
-    gtas.generate_time_average(infile   = infile,
-                               outfile  = outfile,
-                               pkg      = pkg,
-                               unwgt    = unwgt,
+    gtas.generate_time_average(infile = infile,
+                               outfile = outfile,
+                               pkg = pkg,
+                               unwgt = unwgt,
                                avg_type = avg_type )
 
     # the input files should NOT be clobbered
@@ -199,17 +215,17 @@ def test_compare_fre_cli_to_fre_nctools():
                  len( fre_pytools_timavg[0]    ) == len( fre_nctools_timavg[0]    ),
                  len( fre_pytools_timavg[0][0] ) == len( fre_nctools_timavg[0][0] ) ])
 
-    diff_pytools_nctools_timavg = fre_pytools_timavg-fre_nctools_timavg
-    for lat in range(0,len(diff_pytools_nctools_timavg[0])):
-        for lon in range(0,len(diff_pytools_nctools_timavg[0][0])):
-            print(f'lat = {lat},lon = {lon}')
+    diff_pytools_nctools_timavg = fre_pytools_timavg - fre_nctools_timavg
+    for lat in range(0, len( diff_pytools_nctools_timavg[0] ) ):
+        for lon in range(0, len( diff_pytools_nctools_timavg[0][0] ) ):
+            print(f'lat = {lat}, lon = {lon}')
             diff_at_latlon = diff_pytools_nctools_timavg[0][lat][lon]
             print(f'diff_pytools_nctools_timavg[0][lat][lon] = {diff_at_latlon}')
-            if lon>10:
+            if lon > 10:
                 break
         break
 
-    non_zero_count = np.count_nonzero(diff_pytools_nctools_timavg[:])
+    non_zero_count = np.count_nonzero( diff_pytools_nctools_timavg[:] )
     #assert (non_zero_count == 0.) # bad way to check for zero.
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
@@ -218,50 +234,50 @@ def test_compare_fre_cli_to_fre_nctools():
 def test_compare_fre_cli_to_cdo():
     ''' compares fre_cli pkg answer to cdo pkg answer '''
     assert Path(STR_FRE_PYTOOLS_INF).exists(), f'DNE: STR_FRE_PYTOOLS_INF = {STR_FRE_PYTOOLS_INF}'
-    fre_pytools_inf = Dataset(STR_FRE_PYTOOLS_INF,'r')
+    fre_pytools_inf = Dataset(STR_FRE_PYTOOLS_INF, 'r')
     fre_pytools_timavg = fre_pytools_inf[VAR][:].copy()
 
     assert Path(STR_CDO_INF).exists(), f'DNE: STR_CDO_INF = {STR_CDO_INF}. \nrun cdo tests first?'
-    cdo_inf = Dataset(STR_CDO_INF,'r')
+    cdo_inf = Dataset(STR_CDO_INF, 'r')
     cdo_timavg = cdo_inf[VAR][:].copy()
 
     assert all([ len( fre_pytools_timavg       ) == len(cdo_timavg       ),
                  len( fre_pytools_timavg[0]    ) == len(cdo_timavg[0]    ),
                  len( fre_pytools_timavg[0][0] ) == len(cdo_timavg[0][0] )  ])
 
-    diff_pytools_cdo_timavg = fre_pytools_timavg-cdo_timavg
-    for lat in range(0,len(diff_pytools_cdo_timavg[0])):
-        for lon in range(0,len(diff_pytools_cdo_timavg[0][0])):
-            print(f'lat = {lat},lon = {lon}')
+    diff_pytools_cdo_timavg = fre_pytools_timavg - cdo_timavg
+    for lat in range(0, len( diff_pytools_cdo_timavg[0] ) ):
+        for lon in range(0, len( diff_pytools_cdo_timavg[0][0] ) ):
+            print(f'lat = {lat}, lon = {lon}')
             print(f'diff_pytools_cdo_timavg[0][lat][lon] = {diff_pytools_cdo_timavg[0][lat][lon]}')
-            if lon>10:
+            if lon > 10:
                 break
         break
 
-    non_zero_count = np.count_nonzero(diff_pytools_cdo_timavg[:])
+    non_zero_count = np.count_nonzero( diff_pytools_cdo_timavg[:] )
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 
 def test_compare_unwgt_fre_cli_to_unwgt_cdo():
     ''' compares fre_cli pkg answer to cdo pkg answer '''
     assert Path(STR_UNWGT_FRE_PYTOOLS_INF).exists(), f'DNE: STR_UNWGT_FRE_PYTOOLS_INF = {STR_UNWGT_FRE_PYTOOLS_INF}'
-    fre_pytools_inf = Dataset(STR_UNWGT_FRE_PYTOOLS_INF,'r')
+    fre_pytools_inf = Dataset(STR_UNWGT_FRE_PYTOOLS_INF, 'r')
     fre_pytools_timavg = fre_pytools_inf[VAR][:].copy()
 
     assert Path(STR_UNWGT_CDO_INF).exists(), f'DNE: STR_CDO_INF = {STR_CDO_INF}. \nrun cdo tests first?'
-    cdo_inf = Dataset(STR_UNWGT_CDO_INF,'r')
+    cdo_inf = Dataset(STR_UNWGT_CDO_INF, 'r')
     cdo_timavg = cdo_inf[VAR][:].copy()
 
     assert all([ len( fre_pytools_timavg       ) == len( cdo_timavg       ),
                  len( fre_pytools_timavg[0]    ) == len( cdo_timavg[0]    ),
                  len( fre_pytools_timavg[0][0] ) == len( cdo_timavg[0][0] ) ])
 
-    diff_pytools_cdo_timavg = fre_pytools_timavg-cdo_timavg
-    for lat in range(0,len(diff_pytools_cdo_timavg[0])):
-        for lon in range(0,len(diff_pytools_cdo_timavg[0][0])):
-            print(f'lat = {lat},lon = {lon}')
+    diff_pytools_cdo_timavg = fre_pytools_timavg - cdo_timavg
+    for lat in range(0, len( diff_pytools_cdo_timavg[0] ) ):
+        for lon in range(0, len( diff_pytools_cdo_timavg[0][0] ) ):
+            print(f'lat = {lat}, lon = {lon}')
             print(f'diff_pytools_cdo_timavg[0][lat][lon] = {diff_pytools_cdo_timavg[0][lat][lon]}')
-            if lon>10:
+            if lon > 10:
                 break
         break
 
@@ -273,23 +289,23 @@ def test_compare_cdo_to_fre_nctools():
     ''' compares cdo pkg answer to fre_nctools pkg answer '''
 
     assert Path(STR_FRENCTOOLS_INF).exists(), f'DNE: STR_FRENCTOOLS_INF = {STR_FRENCTOOLS_INF}'
-    fre_nctools_inf = Dataset(STR_FRENCTOOLS_INF,'r')
+    fre_nctools_inf = Dataset(STR_FRENCTOOLS_INF, 'r')
     fre_nctools_timavg = fre_nctools_inf[VAR][:].copy()
 
     assert Path(STR_CDO_INF).exists(), f'DNE: STR_CDO_INF = {STR_CDO_INF}. \nrun cdo tests first?'
-    cdo_inf = Dataset(STR_CDO_INF,'r')
+    cdo_inf = Dataset(STR_CDO_INF, 'r')
     cdo_timavg = cdo_inf[VAR][:].copy()
 
     assert all([ len( cdo_timavg       ) == len( fre_nctools_timavg       ),
                  len( cdo_timavg[0]    ) == len( fre_nctools_timavg[0]    ),
                  len( cdo_timavg[0][0] ) == len( fre_nctools_timavg[0][0] ) ])
 
-    diff_cdo_nctools_timavg = cdo_timavg-fre_nctools_timavg
-    for lat in range(0,len(diff_cdo_nctools_timavg[0])):
-        for lon in range(0,len(diff_cdo_nctools_timavg[0][0])):
-            print(f'lat = {lat},lon = {lon}')
+    diff_cdo_nctools_timavg = cdo_timavg - fre_nctools_timavg
+    for lat in range(0, len( diff_cdo_nctools_timavg[0] ) ):
+        for lon in range(0, len( diff_cdo_nctools_timavg[0][0] ) ):
+            print(f'lat = {lat}, lon = {lon}')
             print(f'diff_cdo_nctools_timavg[0][lat][lon] = {diff_cdo_nctools_timavg[0][lat][lon]}')
-            if lon>10:
+            if lon > 10:
                 break
         break
 
