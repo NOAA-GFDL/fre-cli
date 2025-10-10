@@ -72,9 +72,9 @@ def combine( root_in_dir: str,
     :type root_out_dir: str
     :param component: Component to process
     :type component: str
-    :param begin: Beginning of the climatology
+    :param begin: Beginning 4-digit year of the climatology
     :type begin: int
-    :param end: Ending of the climatology
+    :param end: Ending 4-digit year of the climatology
     :type end: int
     :param frequency: Sampling type of the climatology
     :type frequency: 'mon' or 'yr'

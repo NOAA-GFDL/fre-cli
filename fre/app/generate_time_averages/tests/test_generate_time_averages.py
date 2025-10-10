@@ -184,7 +184,7 @@ def test_run_avgtype_pkg_calculations( pkg      ,
     # the desired outputfile specified by outfile should exist
     assert Path(outfile).exists(), f'DNE (string) outfile = {outfile}'
 
-@pytest.mark.xfail(reason = 'fre-cli seems to not bitwise reproduce frenctools at this time')
+@pytest.mark.xfail(reason = 'fre-cli seems to not bitwise reproduce frenctools at this time') #TODO
 def test_compare_fre_cli_to_fre_nctools():
     ''' compares fre_cli pkg answer to fre_nctools pkg answer '''
     assert Path(STR_FRE_PYTOOLS_INF).exists(), f'DNE: STR_FRE_PYTOOLS_INF = {STR_FRE_PYTOOLS_INF}'
@@ -252,9 +252,9 @@ def test_compare_unwgt_fre_cli_to_unwgt_cdo():
     cdo_inf = Dataset(STR_UNWGT_CDO_INF,'r')
     cdo_timavg = cdo_inf[VAR][:].copy()
 
-    assert all([ len( fre_pytools_timavg       ) == len(cdo_timavg       ),
-                 len( fre_pytools_timavg[0]    ) == len(cdo_timavg[0]    ),
-                 len( fre_pytools_timavg[0][0] ) == len(cdo_timavg[0][0] ) ])
+    assert all([ len( fre_pytools_timavg       ) == len( cdo_timavg       ),
+                 len( fre_pytools_timavg[0]    ) == len( cdo_timavg[0]    ),
+                 len( fre_pytools_timavg[0][0] ) == len( cdo_timavg[0][0] ) ])
 
     diff_pytools_cdo_timavg = fre_pytools_timavg-cdo_timavg
     for lat in range(0,len(diff_pytools_cdo_timavg[0])):
