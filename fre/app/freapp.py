@@ -1,7 +1,5 @@
 ''' fre app calls '''
 
-import time
-
 import click
 
 from .mask_atmos_plevel.mask_atmos_plevel import mask_atmos_plevel_subtool
@@ -157,9 +155,7 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     """
     generate time averages for specified set of netCDF files.
     """
-    start_time = time.perf_counter()
     generate(inf, outf, pkg, var, unwgt, avg_type)
-    click.echo(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
 
 @app_cli.command()
 @click.option("--cycle-point",
