@@ -234,8 +234,7 @@ class frepytoolsTimeAverager(timeAverager):
 
                 nc_fout.variables[var][:] = [ nc_fin[var][0] ]
                 fre_logger.warning('time variable? %s',
-                                   self.var_has_time_units(
-                                       nc_fin.variables[var] ) )
+                                   self.var_has_time_units( nc_fin.variables[var] ) )
 
         if len(unwritten_var_list)>0:
             fre_logger.warning('some variables\' data (%s) was not written.', unwritten_var_list)

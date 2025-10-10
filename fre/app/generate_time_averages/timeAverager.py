@@ -1,7 +1,7 @@
 ''' core class structure for this module.'''
 import logging
 
-fre_logger=logging.getLogger(__name__)
+fre_logger = logging.getLogger(__name__)
 
 class timeAverager:
     '''
@@ -13,16 +13,19 @@ class timeAverager:
     unwgt: bool
     avg_type: str
 
-    def __init__(self, pkg, var, unwgt,
-                 avg_type):
+    def __init__(self, pkg, var, unwgt, avg_type):
         ''' init method '''
-        arg_list = pkg, var, unwgt, avg_type
+        fre_logger.info('__init__ called')
+        # arg_list = [ pkg, var, unwgt, avg_type ] # TODO
+        arg_list = [ pkg, unwgt, avg_type ]
         if all( arg is None for arg in arg_list ):
+            fre_logger.debug('except maybe var, all args None')
             self.pkg = None
-            self.var = None
+            self.var = var
             self.unwgt = False
             self.avg_type = "all"
         else:
+            fre_logger.debug('except maybe var, no args None')
             self.pkg = pkg
             self.var = var
             self.unwgt = unwgt
@@ -31,15 +34,16 @@ class timeAverager:
 
     def __repr__(self):
         ''' return text representation of object '''
-        return f'{type(self).__name__}( pkg={self.pkg}, \
-                               unwgt={self.unwgt}, \
-                               var={self.var}, \
-                               avg_type={self.avg_type})'
+        return f'{type(self).__name__}( pkg = {self.pkg}, \
+                               unwgt = {self.unwgt}, \
+                               var = {self.var}, \
+                               avg_type = {self.avg_type})'
 
-    def var_has_time_units(self, an_nc_var=None):
+    def var_has_time_units(self, an_nc_var = None):
         ''' checks if variable's units are of time '''
         try:
-            var_units=an_nc_var.units
+            fre_logger.debug('looking at units for netCDF variable %s', an_nc_var)
+            var_units = an_nc_var.units
             units_is_time = False
             units_is_time = any( [ var_units == 'seconds' ,  'seconds since' in var_units ,
                                    var_units == 'minutes' ,  'minutes since' in var_units ,
@@ -48,11 +52,12 @@ class timeAverager:
                                    var_units == 'months'  ,  'months since'  in var_units ,
                                    var_units == 'years'   ,  'years since'   in var_units  ] )
             return units_is_time
-        except ValueError:
+        except AttributeError:
             fre_logger.warning('variable does not have units')
             fre_logger.warning('PROBABLY not time.')
             return False
 
+        # TODO
         #def var_has_time_dims(self, an_nc_var=None):
         #try:
         #    var_dims=an_nc_var.dimensions

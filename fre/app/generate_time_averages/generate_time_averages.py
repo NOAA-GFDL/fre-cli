@@ -2,6 +2,7 @@
 
 import os
 import logging
+import time
 from typing import Optional, List, Union
 
 from cdo import Cdo
@@ -28,9 +29,9 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     :type outfile: str
     :param pkg: which package to use to calculate climatology (cdo, fre-nctools, fre-python-tools)
     :type pkg: str
-    :param var: optional, not currently supported and  defaults to none
+    :param var: optional, not currently supported and defaults to None
     :type var: str
-    :param unwgt: optional, whether or not to weight the data, default false
+    :param unwgt: optional, whether or not to weight the data, default False
     :type unwgt: bool
     :param avg_type: optional, time scale for averaging, accepts ('all','seas','month'). defaults to 'all'
     :type avg_type: str
@@ -40,8 +41,8 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     if None in [infile, outfile, pkg]:
         raise ValueError('infile, outfile, and pkg are required inputs')
     fre_logger.debug('called generate_time_average')
-    exitstatus=1
-    myavger=None
+    exitstatus = 1
+    myavger = None
 
     # multiple files case Use cdo to merge multiple files if present
     merged = False
@@ -116,6 +117,7 @@ def generate(inf = None,
              unwgt= False,
              avg_type = None  ):
     ''' click entrypoint to time averaging routine '''
+    start_time = time.perf_counter()
     fre_logger.debug('generate called')
     exitstatus = generate_time_average( inf, outf,
                                         pkg, var,
@@ -126,3 +128,5 @@ def generate(inf = None,
     else:
         fre_logger.info('time averaging finished successfully')
     fre_logger.debug('generate call finished')
+    fre_logger.info('Finished in total time %s second(s)', round(time.perf_counter() - start_time , 2))
+
