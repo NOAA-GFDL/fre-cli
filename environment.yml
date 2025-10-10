@@ -18,6 +18,9 @@ dependencies:
   - conda-forge::metomi-rose
   - conda-forge::nccmp
   - conda-forge::numpy=1.26.*
+  - conda-forge::pytest
+  - conda-forge::pytest-cov
+  - conda-forge::pylint
   - conda-forge::python-cdo
   - conda-forge::pyyaml
   - conda-forge::xarray>=2024.*
