@@ -13,20 +13,21 @@ class timeAverager:
     unwgt: bool
     avg_type: str
 
-    def __init__(self):
-        ''' init method 1, no inputs given '''
-        self.pkg = None
-        self.var = None
-        self.unwgt = False
-        self.avg_type = "all" #see argparser for options
-
     def __init__(self, pkg, var, unwgt,
                  avg_type):
-        ''' init method 2, all inputs specified '''
-        self.pkg = pkg
-        self.var = var
-        self.unwgt = unwgt
-        self.avg_type = avg_type
+        ''' init method '''
+        arg_list = pkg, var, unwgt, avg_type
+        if all( arg is None for arg in arg_list ):
+            self.pkg = None
+            self.var = None
+            self.unwgt = False
+            self.avg_type = "all"
+        else:
+            self.pkg = pkg
+            self.var = var
+            self.unwgt = unwgt
+            self.avg_type = avg_type
+
 
     def __repr__(self):
         ''' return text representation of object '''
@@ -47,9 +48,9 @@ class timeAverager:
                                    var_units == 'months'  ,  'months since'  in var_units ,
                                    var_units == 'years'   ,  'years since'   in var_units  ] )
             return units_is_time
-        except:
-            fre_logger.info('variable does not have units')
-            fre_logger.info('PROBABLY not time.')
+        except ValueError:
+            fre_logger.warning('variable does not have units')
+            fre_logger.warning('PROBABLY not time.')
             return False
 
         #def var_has_time_dims(self, an_nc_var=None):

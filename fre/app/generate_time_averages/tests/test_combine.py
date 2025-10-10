@@ -1,6 +1,10 @@
-import pytest
+""" tests for fre/app/generate_time_averages/combine.py """
+
 import subprocess
 from pathlib import Path
+
+import pytest
+
 from fre.app.generate_time_averages import combine
 
 @pytest.fixture()

@@ -1,13 +1,10 @@
-''' class for utilizing timavg.csh (aka script to TAVG fortran exe) in frenc-tools '''
+""" class for utilizing timavg.csh (aka script to TAVG fortran exe) in frenc-tools """
 import os
-import calendar
 import logging
 import shutil
-import subprocess
-from subprocess import Popen, PIPE        
+from subprocess import Popen, PIPE
 from pathlib import Path
 
-from netCDF4 import Dataset, num2date
 from cdo import Cdo
 from .timeAverager import timeAverager
 
@@ -57,12 +54,12 @@ class frenctoolsTimeAverager(timeAverager):
         #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
         if shutil.which('timavg.csh') is None:
             raise ValueError('did not find timavg.csh')
-        fre_logger.info(f'timeaverager using: {shutil.which("timavg.csh")}')
+        fre_logger.info('timeaverager using: %s', shutil.which("timavg.csh"))
 
 
         #Recursive call if month is selected for climatology. by Avery Kiihne
         if self.avg_type == 'month':
-            monthly_nc_dir = f"monthly_nc_files"    #Folder that new monthly input files are put 
+            monthly_nc_dir = "monthly_nc_files"    #Folder that new monthly input files are put
             output_dir = Path(outfile).parent       #Save output in the user-specified location
             os.makedirs(monthly_nc_dir, exist_ok=True)   #create directory if it does not exist
             fre_logger.info('created monthly_nc_dir = %s', str(Path(monthly_nc_dir).resolve()))
@@ -71,18 +68,23 @@ class frenctoolsTimeAverager(timeAverager):
 
             #Extract unique months from the infile
             month_indices = list(range(1, 13))   #serves to track month index and as part of the outfile name
-            month_names = [calendar.month_name[i] for i in month_indices]
+            #month_names = [calendar.month_name[i] for i in month_indices]
 
-            #Dictionary to store output filenames by month
-            nc_month_file_paths = {month_index: os.path.join(monthly_nc_dir, f"all_years.{month_index}.nc") for month_index in month_indices}
-            month_output_file_paths = {month_index: os.path.join(output_dir, f"{Path(outfile).stem}.{month_index:02d}.nc") for month_index in month_indices}
+            # Dictionary to store output filenames by month
+            # the keys are the month indicies (ints)
+            nc_month_file_paths = {}
+            month_output_file_paths = {}
+            for month_index in month_indices:
+                nc_month_file_paths[month_index]     = os.path.join( monthly_nc_dir,
+                                                                     f"all_years.{month_index}.nc")
+                month_output_file_paths[month_index] = os.path.join( output_dir,
+                                                                     f"{Path(outfile).stem}.{month_index:02d}.nc")
 
             cdo = Cdo()
             #Loop through each month and select the corresponding data
             for month_index in month_indices:
 
-
-                month_name = month_names[month_index - 1]
+                #month_name = month_names[month_index - 1]
                 nc_monthly_file = nc_month_file_paths[month_index]
 
                 #Select data for the given month
@@ -103,11 +105,11 @@ class frenctoolsTimeAverager(timeAverager):
                     fre_logger.info('error = %s', stderror )
 
                     if subp.returncode != 0:
-                        fre_logger.error('stderror  = %s', stderror)
-                        raise ValueError('error: timavgcsh command not properly executed, subp.returncode=%s',subp.returncode)
-                    else:
-                        fre_logger.info('%s climatology successfully ran',nc_monthly_file)
-                        exitstatus=0
+                        fre_logger.error('stderror = %s', stderror)
+                        raise ValueError(f'error: timavg.csh had a problem, subp.returncode = {subp.returncode}')
+
+                    fre_logger.info('%s climatology successfully ran',nc_monthly_file)
+                    exitstatus=0
 
                 #Delete files after being used to generate output files
             shutil.rmtree('monthly_nc_files')
@@ -115,23 +117,22 @@ class frenctoolsTimeAverager(timeAverager):
         if self.avg_type == 'month':   #End here if month variable used
             return exitstatus
 
-        #timavgcsh_command=['timavg.csh', '-mb','-o', outfile, infile]
-        timavgcsh_command=[shutil.which('timavg.csh'), '-dmb','-o', outfile, infile]
+        exitstatus = 1
         fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
-        exitstatus=1
+        timavgcsh_command = [ shutil.which('timavg.csh'), '-dmb', '-o', outfile, infile]
         with Popen(timavgcsh_command,
-                   stdout=PIPE, stderr=PIPE, shell=False) as subp:
+                   stdout = PIPE, stderr = PIPE, shell = False) as subp:
             stdout, stderr = subp.communicate()
-            stdoutput=stdout.decode()
-            fre_logger.info('output= %s', stdoutput)
-            stderror=stderr.decode()
-            fre_logger.info('error = %s', stderror )
+            stdoutput = stdout.decode()
+            fre_logger.info('output = %s', stdoutput)
+            stderror = stderr.decode()
+            fre_logger.info('error  = %s', stderror )
 
             if subp.returncode != 0:
                 fre_logger.error('stderror  = %s', stderror)
-                raise ValueError('error: timavgcsh command not properly executed, subp.returncode=%s',subp.returncode)
-            else:
-                fre_logger.info('climatology successfully ran')
-                exitstatus=0
+                raise ValueError(f'error: timavgcsh command not properly executed, subp.returncode = {subp.returncode}')
+
+            fre_logger.info('climatology successfully ran')
+            exitstatus = 0
 
         return exitstatus

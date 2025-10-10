@@ -1,7 +1,12 @@
-import pytest
+''' tests for climatology calculation(s) using fre.app.generate_time_averages '''
+
+from pathlib import Path
 import subprocess
 import shutil
-from pathlib import Path
+import tempfile
+
+import pytest
+
 from fre.app.generate_time_averages import wrapper
 
 # create_monthly_timeseries:
@@ -16,8 +21,8 @@ def create_monthly_timeseries(tmp_path):
     Create a monthly timeseries input shard directory structure containing two variables and two one-year timeseries.
     """
     # settings
-    cycle_point = '1980-01-01'
-    output_interval = 'P2Y'
+    #cycle_point = '1980-01-01'
+    #output_interval = 'P2Y'
     input_interval  = 'P1Y'
     grid = '180_288.conserve_order2'
 
@@ -60,8 +65,8 @@ def create_annual_timeseries(tmp_path):
     Create an annual timeseries input shard directory structure containing two variables and two one-year timeseries.
     """
     # settings
-    cycle_point = '0002-01-01'
-    output_interval = 'P2Y'
+    #cycle_point = '0002-01-01'
+    #output_interval = 'P2Y'
     input_interval  = 'P1Y'
     grid = '180_288.conserve_order1'
 
@@ -105,7 +110,8 @@ def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     frequency = 'yr'
     pkg = 'fre-nctools'
 
-    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources, output_interval, input_interval, grid, frequency, pkg)
+    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources,
+                             output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
     output_files = [
@@ -129,7 +135,8 @@ def test_annual_av_from_annual_ts(create_annual_timeseries):
     frequency = 'yr'
     pkg = 'fre-nctools'
 
-    wrapper.generate_wrapper(cycle_point, create_annual_timeseries, sources, output_interval, input_interval, grid, frequency, pkg)
+    wrapper.generate_wrapper(cycle_point, create_annual_timeseries, sources,
+                             output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_annual_timeseries, 'av', grid, 'tracer_level', 'P1Y', output_interval)
     output_files = [
@@ -153,7 +160,8 @@ def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
     frequency = 'mon'
     pkg = 'fre-nctools'
 
-    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources, output_interval, input_interval, grid, frequency, pkg)
+    wrapper.generate_wrapper(cycle_point, create_monthly_timeseries, sources,
+                             output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1M', output_interval)
     output_files = [
@@ -179,7 +187,8 @@ def test_cdo_annual_av_from_monthly_ts(create_monthly_timeseries):
     frequency = 'yr'
     pkg = 'cdo'
 
-    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
+    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources,
+                             output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
     output_files = [
@@ -203,7 +212,8 @@ def test_cdo_annual_av_from_annual_ts(create_annual_timeseries):
     frequency = 'yr'
     pkg = 'cdo'
 
-    wrapper.generate_wrapper(cycle_point, str(create_annual_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
+    wrapper.generate_wrapper(cycle_point, str(create_annual_timeseries), sources,
+                             output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_annual_timeseries, 'av', grid, 'tracer_level', 'P1Y', output_interval)
     output_files = [
@@ -227,7 +237,8 @@ def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
     frequency = 'mon'
     pkg = 'cdo'
 
-    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, pkg)
+    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources,
+                             output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1M', output_interval)
     output_files = [
@@ -247,7 +258,6 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
     Test that CDO produces equivalent results to fre-nctools when timavg.csh is available.
     If timavg.csh is not available, the test will be skipped.
     """
-    import tempfile
 
     cycle_point = '1980-01-01'
     output_interval = 'P2Y'
@@ -268,7 +278,8 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
         ]
 
         # Run with fre-nctools first, but defile the cdo output directory so we can move the output there for comparison
-        wrapper.generate_wrapper(cycle_point, str(fre_dir), sources, output_interval, input_interval, grid, frequency, 'fre-nctools')
+        wrapper.generate_wrapper(cycle_point, str(fre_dir), sources,
+                                 output_interval, input_interval, grid, frequency, 'fre-nctools')
         output_dir_fre = Path(fre_dir, 'av', grid, 'atmos_month', 'P1Y', output_interval)
         new_output_dir_fre = Path(create_monthly_timeseries, 'fre_av', grid, 'atmos_month', 'P1Y', output_interval)
         new_output_dir_fre.mkdir(exist_ok=False,parents=True)
@@ -279,7 +290,8 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
 
         # Run with CDO (on original test directory)
         output_dir_cdo = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
-        wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources, output_interval, input_interval, grid, frequency, 'cdo')
+        wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources,
+                                 output_interval, input_interval, grid, frequency, 'cdo')
 
         # Compare outputs
         for file_ in output_files:
@@ -293,7 +305,7 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
             # Use nccmp to compare files if available, otherwise just check they exist
             #if shutil.which('nccmp'):
             result = subprocess.run(['nccmp', '-v', file_.split('.')[2], '-d', str(cdo_file), str(fre_file)],
-                                capture_output=True, text=True)
+                                    capture_output = True, text = True, check = False)
             stdoutput=result.stdout
             stderror=result.stderr
 

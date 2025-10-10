@@ -1,7 +1,11 @@
+"""
+routines centered around combining monthly climatologies written out as one-month per-file batches
+see wrapper.py for more information
+"""
 import logging
 from pathlib import Path
 import glob
-import os
+
 import subprocess
 import metomi.isodatetime.parsers
 
@@ -10,7 +14,8 @@ from ..helpers import change_directory
 fre_logger = logging.getLogger(__name__)
 duration_parser = metomi.isodatetime.parsers.DurationParser()
 
-def form_bronx_directory_name(frequency: str, interval: str) -> str:
+def form_bronx_directory_name(frequency: str,
+                              interval: str) -> str:
     """
     Form the legacy Bronx timeaverage directory name
     given a frequency and interval.
@@ -46,12 +51,18 @@ def check_glob(target: str) -> None:
     """
     files = glob.glob(target)
     if len(files) >= 1:
-        fre_logger.debug(f"{target} has {len(files)} files")
+        fre_logger.debug("%s has %s files", target, len(files))
     else:
-        raise FileNotFoundError(f"{target} resolves to no files")
+        raise FileNotFoundError(f"target={target} resolves to no files")
 
 
-def combine(root_in_dir: str, root_out_dir: str, component: str, begin: int, end: int, frequency: str, interval: str) -> None:
+def combine( root_in_dir: str,
+             root_out_dir: str,
+             component: str,
+             begin: int,
+             end: int,
+             frequency: str,
+             interval: str) -> None:
     """
     Combine per-variable climatologies into one file.
 
@@ -79,7 +90,7 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: int, end
     else:
         raise ValueError(f"Frequency '{frequency}' not known")
     outdir = Path(root_out_dir) / component / "av" / form_bronx_directory_name(frequency, interval)
-    fre_logger.debug(f"Output dir = '{outdir}'")
+    fre_logger.debug("Output dir = %s", outdir)
     outdir.mkdir(exist_ok=True, parents=True)
 
     if begin == end:
@@ -88,9 +99,7 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: int, end
         date_string = f"{begin:04d}-{end:04d}"
 
     indir = Path(root_in_dir) / frequency_iso / interval
-    fre_logger.debug(f"Input dir = '{indir}'")
-    #gotta_go_back_here = os.getcwd()
-    #os.chdir(indir)
+    fre_logger.debug("Input dir = %s", indir)
 
     with change_directory(indir):
         if frequency == 'yr':
@@ -98,19 +107,20 @@ def combine(root_in_dir: str, root_out_dir: str, component: str, begin: int, end
             target = component + '.' + date_string + '.nc'
             check_glob(source)
             subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
-            fre_logger.debug(f"Output file created: {target}")
-            fre_logger.debug(f"Copying to {outdir}")
+            fre_logger.debug("Output file created: %s", target)
+            fre_logger.debug("Copying to %s", outdir)
             subprocess.run(['cp', '-v', target, outdir], check=True)
         elif frequency == 'mon':
-            for MM in range(1,13):
-                source = f"{component}.{date_string}.*.{MM:02d}.nc"
-                target = f"{component}.{date_string}.{MM:02d}.nc"
+            for month_int in range(1,13):
+                source = f"{component}.{date_string}.*.{month_int:02d}.nc"
+                target = f"{component}.{date_string}.{month_int:02d}.nc"
                 check_glob(source)
+
+                # does there exist a python-cdo way of doing the merge?
                 subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
-                fre_logger.debug(f"Output file created: {target}")
-                fre_logger.debug(f"Copying to {outdir}")
+                fre_logger.debug("Output file created: %s", target)
+                fre_logger.debug("Copying to %s", outdir)
+
                 subprocess.run(['cp', '-v', target, outdir], check=True)
         else:
             raise ValueError(f"Frequency '{frequency}' not known")
-
-    #os.chdir(gotta_go_back_here)

@@ -1,6 +1,5 @@
 ''' class using (mostly) cdo functions for time-averages '''
 
-import os
 import logging
 
 from netCDF4 import Dataset
@@ -38,10 +37,9 @@ class cdoTimeAverager(timeAverager):
             raise ValueError
 
         if self.var is not None:
-            fre_logger.warning(f'WARNING: variable specification (var={self.var})' + \
-                   ' not currently supported for cdo time averaging. ignoring!')
+            fre_logger.warning('WARNING: variable specification not twr supported for cdo time averaging. ignoring!')
 
-        fre_logger.info(f'python-cdo version is {cdo.__version__}')
+        fre_logger.info('python-cdo version is %s', cdo.__version__)
 
         _cdo=Cdo()
 
@@ -54,8 +52,8 @@ class cdoTimeAverager(timeAverager):
             wgts = ( numpy.moveaxis(time_bnds,0,-1)[1][:].copy() - \
                      numpy.moveaxis(time_bnds,0,-1)[0][:].copy() )
             wgts_sum=sum(wgts)
-            
-            fre_logger.debug(f'wgts_sum={wgts_sum}')
+
+            fre_logger.debug('wgts_sum = %s', wgts_sum)
 
         if self.avg_type == 'all':
             fre_logger.info('time average over all time requested.')
@@ -77,13 +75,13 @@ class cdoTimeAverager(timeAverager):
 
             fre_logger.warning(" splitting by month")
             outfile_root = str(outfile).removesuffix(".nc") + '.'
-            _cdo.splitmon(input=str(outfile), output=outfile_root)            
+            _cdo.splitmon(input=str(outfile), output=outfile_root)
             #os.remove(outfile)
-            fre_logger.debug(f"Done with splitting by month, outfile_root = {outfile_root}")
+            fre_logger.debug('Done with splitting by month, outfile_root = %s', outfile_root)
         else:
-            fre_logger.error(f'problem: unknown avg_type={self.avg_type}')
+            fre_logger.error('problem: unknown avg_type = %s', self.avg_type)
             raise ValueError
 
         fre_logger.info('done averaging')
-        fre_logger.info(f'output file created: {outfile}')
+        fre_logger.info('output file created: %s', outfile)
         return 0
