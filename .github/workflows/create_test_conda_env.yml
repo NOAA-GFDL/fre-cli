@@ -49,6 +49,10 @@ jobs:
           echo "creating fre-cli env holding all deps"
           conda env create -y -f environment.yml --name fre-cli
 
+          echo "listing packages installed in the fre-cli environment"
+          conda env list
+          conda list -n fre-cli
+
       - name: Activate fre-cli Environment and Install fre-cli
         run: |
           echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
@@ -57,33 +61,15 @@ jobs:
           echo "to activate env, conda init"
           conda init
 
-          echo "listing packages installed in the fre-cli environment"
-          conda env list
-          conda list -n fre-cli
-
           echo "activating the fre-cli environment"
           conda activate fre-cli
 
           echo "pip installing fre-cli into the environment"
           python -m pip install .
+          which fre
 
           echo "listing packages installed again after pip installing fre-cli"
           conda list -n fre-cli
-          which fre
-
-      - name: Install pytest, pylint, and pytest-cov into fre-cli Env
-        run: |
-          echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
-          source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
-
-          echo "to activate env, conda init"
-          conda init
-
-          echo "activating the fre-cli environment"
-          conda activate fre-cli
-
-          echo "conda install testing-reqs"
-          conda install conda-forge::pytest conda-forge::pylint conda-forge::pytest-cov
 
       - name: Run pytest In fre-cli Env
         run: |

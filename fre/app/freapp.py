@@ -194,7 +194,7 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
 def gen_time_averages_wrapper(cycle_point, dir_, sources, output_interval, input_interval, grid, frequency, pkg):
     """
     Wrapper for climatology tool.
-    Timeaverages all variables for a desired cycle point, source, and grid.
+    Time average all variables for a desired cycle point, source, and grid.
     """
     sources_list = sources.split(',')
     generate_wrapper(cycle_point, dir_, sources_list, output_interval, input_interval, grid, frequency, pkg)

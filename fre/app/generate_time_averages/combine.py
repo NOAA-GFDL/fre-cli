@@ -17,7 +17,7 @@ duration_parser = metomi.isodatetime.parsers.DurationParser()
 def form_bronx_directory_name(frequency: str,
                               interval: str) -> str:
     """
-    Form the legacy Bronx timeaverage directory name
+    Form the legacy Bronx time average directory name
     given a frequency and interval.
 
     :param frequency: Frequency of the climatology
@@ -66,7 +66,7 @@ def combine( root_in_dir: str,
     """
     Combine per-variable climatologies into one file.
 
-    :param root_in_dir: Root timeaverage shards directory, up to the "av"
+    :param root_in_dir: Root time average shards directory, up to the "av"
     :type root_in_dir: str
     :param root_out_dir: Root output postprocess directory, up to the "pp"
     :type root_out_dir: str

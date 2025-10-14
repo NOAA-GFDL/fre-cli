@@ -71,7 +71,7 @@ class frenctoolsTimeAverager(timeAverager):
             #month_names = [calendar.month_name[i] for i in month_indices]
 
             # Dictionary to store output filenames by month
-            # the keys are the month indicies (ints)
+            # the keys are the month indices (ints)
             nc_month_file_paths = {}
             month_output_file_paths = {}
             for month_index in month_indices:
