@@ -306,3 +306,13 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
             stderror = result.stderr
 
             assert result.returncode == 0, stdoutput+'\n'+stderror
+
+def test_freq_not_valid_valueerror():
+    with pytest.raises(ValueError):
+        wrapper.generate_wrapper(dir_ = 'some_in_dir',
+                                 cycle_point = '19800101T0000Z',
+                                 sources = ['source1','source2'],
+                                 input_interval = 'P1Y',
+                                 output_interval = 'P999Y',
+                                 frequency = 'FOO',
+                                 grid = 'BAR')

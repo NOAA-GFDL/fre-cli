@@ -31,8 +31,14 @@ def extract_variables_from_files(files: list[str]) -> list[str]:
     return variables
 
 
-def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_interval: str,
-                     input_interval: str, grid: str, frequency: str, pkg: str = 'fre-nctools') -> None:
+def generate_wrapper(cycle_point: str,
+                     dir_: str,
+                     sources: list[str],
+                     output_interval: str,
+                     input_interval: str,
+                     grid: str,
+                     frequency: str,
+                     pkg: str = 'fre-nctools') -> None:
     """
     Run climatology tool on a subset of timeseries
 
@@ -70,13 +76,14 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
     output_interval = DurationParser().parse(output_interval)
     input_interval = DurationParser().parse(input_interval)
 
+    if frequency not in ["yr", "mon"]:
+        raise ValueError(f"Frequency '{frequency}' not recognized or supported")
+
     # convert frequency 'yr' or 'mon' to ISO8601
     if frequency == 'mon':
         frequency_iso = "P1M"
     elif frequency == 'yr':
         frequency_iso = "P1Y"
-    else:
-        raise ValueError("Frequency '{frequency}' is not a valid frequency")
 
     # loop over the history files
     for source in sources:
@@ -129,8 +136,6 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
                 else:
                     fre_logger.debug("Skipping %s as it does not appear to be monthly frequency", source)
                     fre_logger.debug(" %s does not exist", subdir)
-            else:
-                raise ValueError("Frequency '{frequency}' not recognized")
 
         fre_logger.debug("source_frequency: %s", source_frequency)
         fre_logger.debug("variables: %s", len(variables))
@@ -175,5 +180,3 @@ def generate_wrapper(cycle_point: str, dir_: str, sources: list[str], output_int
             elif frequency == "mon":
                 generate_time_averages.generate_time_average(infile = input_files, outfile = str(output_file),
                                                              pkg = pkg, var = var, unwgt = True, avg_type = 'month')
-            else:
-                raise ValueError(f"Output frequency '{frequency}' not recognized")

@@ -101,3 +101,13 @@ def test_combine_monthly_av(create_monthly_per_variable_climatologies):
     for i in range(1,13):
         output_file = output_dir / f'atmos.1980-1981.{i:02d}.nc'
         assert output_file.exists()
+
+def test_freq_not_valid_valueerror():
+    with pytest.raises(ValueError):
+        combine.combine(
+            root_in_dir = 'some_in_dir',
+            root_out_dir = 'some_out_dir',
+            component = 'component',
+            begin = 0, end = 1,
+            interval = 'P999Y',
+            frequency = 'FOO' )

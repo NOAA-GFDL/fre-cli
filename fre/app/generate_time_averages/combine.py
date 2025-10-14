@@ -34,7 +34,7 @@ def form_bronx_directory_name(frequency: str,
     elif frequency == "yr":
         frequency_label = "annual"
     else:
-        raise ValueError(f"Frequency '{frequency}' not recognized")
+        raise ValueError(f"Frequency '{frequency}' not recognized or supported")
     interval_object = duration_parser.parse(interval)
     return frequency_label + '_' + str(interval_object.years) + 'yr'
 
@@ -83,12 +83,14 @@ def combine( root_in_dir: str,
     :raises ValueError: Only monthly and annual frequencies allowed
     :rtype: None
     """
+    if frequency not in ["yr", "mon"]:
+        raise ValueError(f"Frequency '{frequency}' not recognized or supported")
+    
     if frequency == "yr":
         frequency_iso = "P1Y"
     elif frequency == "mon":
         frequency_iso = "P1M"
-    else:
-        raise ValueError(f"Frequency '{frequency}' not known")
+
     outdir = Path(root_out_dir) / component / "av" / form_bronx_directory_name(frequency, interval)
     fre_logger.debug("Output dir = %s", outdir)
     outdir.mkdir(exist_ok=True, parents=True)
@@ -122,5 +124,3 @@ def combine( root_in_dir: str,
                 fre_logger.debug("Copying to %s", outdir)
 
                 subprocess.run(['cp', '-v', target, outdir], check=True)
-        else:
-            raise ValueError(f"Frequency '{frequency}' not known")
