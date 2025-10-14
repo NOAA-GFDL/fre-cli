@@ -313,10 +313,24 @@ def test_compare_cdo_to_fre_nctools():
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
 
 # if we use fixtures and tmpdirs, can omit this error prone thing
-def test_fre_cli_app_gen_time_avg_cleanup():
+def test_fre_app_gen_time_avg_test_data_cleanup():
     ''' Removes all .nc files in fre/app/generate_time_averages/tests/test_data/ '''
     nc_files = [ Path(os.path.join(TIME_AVG_FILE_DIR, el)) for el in os.listdir(TIME_AVG_FILE_DIR)
                  if el.endswith('.nc')]
     for nc in nc_files:
         nc.unlink()
         assert not nc.exists()
+
+
+value_err_args_cases=[
+    pytest.param( None,             'foo_output_file', 'cdo' ),
+    pytest.param( 'foo_input_file', None,              'cdo' ),
+    pytest.param( 'foo_input_file', 'foo_output_file', None  ),
+    pytest.param( 'foo_input_file', 'foo_output_file', 'DNE' ),]
+@pytest.mark.parametrize( "infile,outfile,pkg", value_err_args_cases )
+def test_no_req_arg_inputfile( infile, outfile, pkg):
+    with pytest.raises(ValueError):
+        gtas.generate_time_average( infile = infile,
+                                    outfile = outfile,
+                                    pkg = pkg )
+

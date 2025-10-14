@@ -37,9 +37,12 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     :return: error message if requested package unknown, otherwise returns climatology
     :rtype: int
     """
+    start_time = time.perf_counter()
+    fre_logger.debug('called generate_time_average')
     if None in [infile, outfile, pkg]:
         raise ValueError('infile, outfile, and pkg are required inputs')
-    fre_logger.debug('called generate_time_average')
+    if pkg not in ['cdo', 'fre-nctools', 'fre-python-tools']:
+        raise ValueError(f'argument pkg = {pkg} not known, must be one of: cdo, fre-nctools, fre-python-tools')
     exitstatus = 1
     myavger = None
 
@@ -89,9 +92,6 @@ def generate_time_average(infile: Union[str, List[str]] = None,
                                           var = var,
                                           unwgt = unwgt,
                                           avg_type = avg_type )
-    else:
-        fre_logger.error('requested package unknown. exit.')
-        raise ValueError
 
     # workload
     if myavger is not None:
@@ -107,6 +107,7 @@ def generate_time_average(infile: Union[str, List[str]] = None,
         os.remove(merged_file)
 
     fre_logger.debug('generate_time_average call finished')
+    fre_logger.info('Finished in total time %s second(s)', round(time.perf_counter() - start_time , 2))
     return exitstatus
 
 def generate(inf = None,
@@ -116,16 +117,14 @@ def generate(inf = None,
              unwgt= False,
              avg_type = None  ):
     ''' click entrypoint to time averaging routine '''
-    start_time = time.perf_counter()
-    fre_logger.debug('generate called')
     exitstatus = generate_time_average( inf, outf,
                                         pkg, var,
                                         unwgt,
                                         avg_type)
     if exitstatus!=0:
-        fre_logger.warning('exitstatus == %s != 0.', exitstatus)
+        fre_logger.warning('time averaging exited non-zero, exitstatus == %s', exitstatus)
     else:
         fre_logger.info('time averaging finished successfully')
-    fre_logger.debug('generate call finished')
-    fre_logger.info('Finished in total time %s second(s)', round(time.perf_counter() - start_time , 2))
+
+
 
