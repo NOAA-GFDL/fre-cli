@@ -78,13 +78,29 @@ def test_combine_annual_av(create_annual_per_variable_climatologies):
     """
     Combine per-variable annual climatologies into combined annual climatology file
     """
+    in_dir = create_annual_per_variable_climatologies / 'in' / 'atmos'
+    out_dir = create_annual_per_variable_climatologies / 'out'
+    component = 'atmos'
+    begin = 1980
+    end = 1981
+    frequency = 'yr'
+    interval = 'P2Y'
+    print(f' fre app combine-time-averages --in-dir  {in_dir} \\ \n'
+          f'                               --out-dir {out_dir} \\ \n'
+          f'                               --component {component} \\ \n'
+          f'                               --begin {begin} \\ \n'
+          f'                               --end {end} \\ \n'
+          f'                               --frequency {frequency} \\ \n'
+          f'                               --interval {interval}\n')
 
-    combine.combine(create_annual_per_variable_climatologies / 'in' / 'atmos',
-                    create_annual_per_variable_climatologies / 'out', 'atmos',
-                    1980, 1981, 'yr', 'P2Y')
 
-    output_dir = Path(create_annual_per_variable_climatologies, 'out', 'atmos', 'av', 'annual_2yr')
-    output_file = output_dir / 'atmos.1980-1981.nc'
+    combine.combine(in_dir, out_dir,
+                    component,
+                    begin, end,
+                    frequency, interval)
+
+    full_out_dir = Path(create_annual_per_variable_climatologies, 'out', 'atmos', 'av', 'annual_2yr')
+    output_file = full_out_dir / 'atmos.1980-1981.nc'
 
     assert output_file.exists()
 
@@ -92,10 +108,25 @@ def test_combine_monthly_av(create_monthly_per_variable_climatologies):
     """
     Combine per-variable monthly climatologies into combined monthly climatology file
     """
+    in_dir = create_monthly_per_variable_climatologies / 'in' / 'atmos'
+    out_dir = create_monthly_per_variable_climatologies / 'out'
+    component = 'atmos'
+    begin = 1980
+    end = 1981
+    frequency = 'mon'
+    interval = 'P2Y'
+    print(f' fre app combine-time-averages --in-dir  {in_dir} \\ \n'
+          f'                               --out-dir {out_dir} \\ \n'
+          f'                               --component {component} \\ \n'
+          f'                               --begin {begin} \\ \n'
+          f'                               --end {end} \\ \n'
+          f'                               --frequency {frequency} \\ \n'
+          f'                               --interval {interval}\n')
 
-    combine.combine(create_monthly_per_variable_climatologies / 'in' / 'atmos',
-                    create_monthly_per_variable_climatologies / 'out', 'atmos',
-                    1980, 1981, 'mon', 'P2Y')
+    combine.combine(in_dir, out_dir,
+                    component,
+                    begin, end,
+                    frequency, interval)
 
     output_dir = Path(create_monthly_per_variable_climatologies, 'out', 'atmos', 'av', 'monthly_2yr')
     for i in range(1,13):

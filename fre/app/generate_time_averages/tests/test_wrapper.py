@@ -182,8 +182,16 @@ def test_cdo_annual_av_from_monthly_ts(create_monthly_timeseries):
     sources = ['atmos_month']
     frequency = 'yr'
     pkg = 'cdo'
-
-    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources,
+    dir_ = create_monthly_timeseries
+    print(f' fre app gen-time-averages-wrapper --cycle_point {cycle_point} \\ \n'
+          f'                                   --input-interval {input_interval} \\ \n'
+          f'                                   --output-interval {output_interval} \\ \n'
+          f'                                   --grid {grid} \\ \n'
+          f'                                   --sources {sources} \\ \n'
+          f'                                   --frequency {frequency} \\ \n'
+          f'                                   --pkg {pkg} \\ \n'
+          f'                                   --dir {dir_}\n')
+    wrapper.generate_wrapper(cycle_point, str(dir_), sources,
                              output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
@@ -207,8 +215,16 @@ def test_cdo_annual_av_from_annual_ts(create_annual_timeseries):
     sources = ['tracer_level']
     frequency = 'yr'
     pkg = 'cdo'
-
-    wrapper.generate_wrapper(cycle_point, str(create_annual_timeseries), sources,
+    dir_ = create_annual_timeseries
+    print(f' fre app gen-time-averages-wrapper --cycle_point {cycle_point} \\ \n'
+          f'                                   --input-interval {input_interval} \\ \n'
+          f'                                   --output-interval {output_interval} \\ \n'
+          f'                                   --grid {grid} \\ \n'
+          f'                                   --sources {sources} \\ \n'
+          f'                                   --frequency {frequency} \\ \n'
+          f'                                   --pkg {pkg} \\ \n'
+          f'                                   --dir {dir_}\n')
+    wrapper.generate_wrapper(cycle_point, str(dir_), sources,
                              output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_annual_timeseries, 'av', grid, 'tracer_level', 'P1Y', output_interval)
@@ -232,8 +248,16 @@ def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
     sources = ['atmos_month']
     frequency = 'mon'
     pkg = 'cdo'
-
-    wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources,
+    dir_ = create_monthly_timeseries
+    print(f' fre app gen-time-averages-wrapper --cycle_point {cycle_point} \\ \n'
+          f'                                   --input-interval {input_interval} \\ \n'
+          f'                                   --output-interval {output_interval} \\ \n'
+          f'                                   --grid {grid} \\ \n'
+          f'                                   --sources {sources} \\ \n'
+          f'                                   --frequency {frequency} \\ \n'
+          f'                                   --pkg {pkg} \\ \n'
+          f'                                   --dir {dir_}\n')
+    wrapper.generate_wrapper(cycle_point, str(dir_), sources,
                              output_interval, input_interval, grid, frequency, pkg)
 
     output_dir = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1M', output_interval)
@@ -274,8 +298,17 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
         ]
 
         # Run with fre-nctools first, but defile the cdo output directory so we can move the output there for comparison
+        print(f' fre app gen-time-averages-wrapper --cycle_point {cycle_point} \\ \n'
+              f'                                   --input-interval {input_interval} \\ \n'
+              f'                                   --output-interval {output_interval} \\ \n'
+              f'                                   --grid {grid} \\ \n'
+              f'                                   --sources {sources} \\ \n'
+              f'                                   --frequency {frequency} \\ \n'
+              f'                                   --pkg fre-nctools \\ \n'
+              f'                                   --dir {fre_dir}\n')
         wrapper.generate_wrapper(cycle_point, str(fre_dir), sources,
                                  output_interval, input_interval, grid, frequency, 'fre-nctools')
+
         output_dir_fre = Path(fre_dir, 'av', grid, 'atmos_month', 'P1Y', output_interval)
         new_output_dir_fre = Path(create_monthly_timeseries, 'fre_av', grid, 'atmos_month', 'P1Y', output_interval)
         new_output_dir_fre.mkdir(exist_ok = False, parents = True)
@@ -285,9 +318,17 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
             assert ( new_output_dir_fre / file_ ).exists()
 
         # Run with CDO (on original test directory)
-        output_dir_cdo = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
+        print(f' fre app gen-time-averages-wrapper --cycle_point {cycle_point} \\ \n'
+              f'                                   --input-interval {input_interval} \\ \n'
+              f'                                   --output-interval {output_interval} \\ \n'
+              f'                                   --grid {grid} \\ \n'
+              f'                                   --sources {sources} \\ \n'
+              f'                                   --frequency {frequency} \\ \n'
+              f'                                   --pkg cdo \\ \n'
+              f'                                   --dir {create_monthly_timeseries}\n')
         wrapper.generate_wrapper(cycle_point, str(create_monthly_timeseries), sources,
                                  output_interval, input_interval, grid, frequency, 'cdo')
+        output_dir_cdo = Path(create_monthly_timeseries, 'av', grid, 'atmos_month', 'P1Y', output_interval)
 
         # Compare outputs
         for file_ in output_files:
