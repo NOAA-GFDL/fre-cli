@@ -1,7 +1,13 @@
+"""
+functionality and routines associated with masking pressure level data
+fre app mask-atmos-plevel
+"""
+
 import os
+import logging
+
 import xarray as xr
 
-import logging
 fre_logger = logging.getLogger(__name__)
 
 def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
@@ -14,13 +20,13 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
     :type psfile: str
     :param outfile: Output NetCDF file containing masked output
     :type outfile: str
-    :raises FileExistsError: Output file already exists
-    :raises FileNotFoundError: Pressure input file does not exist
     :raises ValueError: Pressure input file does not contain ps
     :raises FileNotFound: Input file does not exist
     :rtype: None
 
-    .. note:: Input variables must have an attribute `pressure_mask` that is set to `False`. The resulting output variable will have the attribute set to `True`.
+    .. note:: Input variables must have an attribute `pressure_mask` that is set to `False`, implying the 
+              data has not yet had a pressure mask applied. The resulting output will have this attribute 
+              set to `True`.
     """
     # check if input file exists, raise an error if not
     if not os.path.exists(infile):
@@ -34,7 +40,7 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
 
     # Check if there's a ps dataset to use. if not, there's nothing to mask.
     if not os.path.exists(psfile):
-        fre_logger.warning("Input surface pressure file {psfile} does not exist", psfile)
+        fre_logger.warning("Input surface pressure file %s does not exist", psfile)
         fre_logger.warning("no atmos levels to mask, nothing to do for infile=%s", infile)
         return
 
@@ -42,7 +48,7 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
 
     fre_logger.debug('checking if variable ps is available')
     if "ps" not in list(ds_ps.variables):
-        raise ValueError(f"ERROR: Surface pressure file '{psfile}' does not contain surface pressure.")
+        raise ValueError(f"Surface pressure file {psfile} does not contain surface pressure.")
 
     fre_logger.info('with xarray, opening input file %s', infile)
     ds_in = xr.open_dataset(infile)
@@ -58,18 +64,18 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
             if ds_in[var].attrs['pressure_mask'].lower() == 'false':
                 ds_out[var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
                 ds_out[var].attrs['pressure_mask'] = "True"
-                fre_logger.info(f"Finished processing '{var}' and set 'pressure_mask' to True")
+                fre_logger.info("Finished processing %s, pressure_mask is True", var)
             else:
-                fre_logger.debug(f"Not processing '{var}' (because 'pressure_mask' is not False)")
+                fre_logger.debug("Not processing %s (because 'pressure_mask' is not False)", var)
         else:
-                fre_logger.debug(f"Not processing '{var}' (because it does not have 'pressure_mask'")
+            fre_logger.debug("Not processing %s, it does not have pressure_mask", var)
 
     fre_logger.info('Write the output file if anything was done')
     if ds_out.variables:
-        fre_logger.info(f"Modified {list(ds_out.variables)} variables, so writing into new file '{outfile}'")
+        fre_logger.info("Modified %s variables, so writing into new file %s",list(ds_out.variables),outfile)
         write_dataset(ds_out, ds_in, outfile)
     else:
-        fre_logger.debug(f"No variables modified, so not writing output file '{outfile}'")
+        fre_logger.debug("No variables modified, so not writing output file %s", outfile)
 
 
 def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Dataset) -> xr.Dataset:
@@ -95,8 +101,8 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
     fre_logger.info('reading the input file\'s missing_value')
     try:
         missing_value = ds[var].encoding['missing_value']
-    except KeyError:
-        raise Exception("The input file to be masked does not contain the 'missing_value' variable attribute, which is required.")
+    except Exception as exc:
+        raise KeyError("input file does not contain missing_value, a required variable attribute") from exc
 
     fre_logger.info('masking do not need looping')
     masked = xr.where(plev_extended > ps_extended, missing_value, ds[var])
@@ -111,7 +117,7 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
 
     fre_logger.info('transpose dims like the original array')
     masked = masked.transpose(*ds[var].dims)
-    fre_logger.debug(f"Processed {var}")
+    fre_logger.debug("Processed %s", var)
 
     return masked
 
