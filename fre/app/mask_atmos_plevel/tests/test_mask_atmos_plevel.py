@@ -1,6 +1,13 @@
-import pytest
+"""
+tests for the underlying python module behind fre app mask-atmos-plevel functionality
+"""
+
+
+import shutil
 import subprocess
 from pathlib import Path
+
+import pytest
 import xarray as xr
 
 from fre.app.mask_atmos_plevel import mask_atmos_plevel
@@ -48,7 +55,7 @@ def create_input_files(tmp_path):
     yield tmp_dir
 
 
-def test_mask_atmos_plevel(create_input_files):
+def test_mask_atmos_plevel(create_input_files): # pylint: disable=redefined-outer-name
     """
     Do the pressure masking on the test input file,
     and then compare to a previously generated output file.
@@ -65,3 +72,49 @@ def test_mask_atmos_plevel(create_input_files):
     ds_ref = xr.open_dataset(tmp_ref)
 
     assert ds['ua_unmsk'].values.all() == ds_ref['ua_unmsk'].values.all()
+
+def test_mask_atmos_plevel_recreate_output(create_input_files): # pylint: disable=redefined-outer-name
+    """
+    Do the pressure masking on the test input file, remaking an existing output file
+    and then compare to a previously generated output file.
+    """
+    tmp_input = Path(create_input_files / "input.nc")
+    tmp_ps = Path(create_input_files / "ps.nc")
+    tmp_output = Path(create_input_files / "output.nc")
+    tmp_ref = Path(create_input_files / "ref.nc")
+
+    # copy the reference output to the output path, it should be re-created
+    shutil.copy(str(tmp_ref), str(tmp_output))
+
+    mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input, tmp_ps, tmp_output)
+    assert tmp_output.exists()
+
+    ds = xr.open_dataset(tmp_output)
+    ds_ref = xr.open_dataset(tmp_ref)
+
+    assert ds['ua_unmsk'].values.all() == ds_ref['ua_unmsk'].values.all()
+
+def test_mask_atmos_plevel_nops_noop(create_input_files): # pylint: disable=redefined-outer-name
+    """
+    if the input file exists, but the ps file does not, then no-op gracefully
+    without raising an exception or throwing an error
+    """
+    tmp_input = Path(create_input_files / "input.nc")
+    tmp_ps = Path(create_input_files / "ps.nc")
+    tmp_output = Path(create_input_files / "output.nc")
+
+    # remove the ps file
+    tmp_ps.unlink()
+    assert not tmp_ps.exists()
+
+    mask_atmos_plevel.mask_atmos_plevel_subtool(infile = tmp_input,
+                                                psfile = tmp_ps,
+                                                outfile = tmp_output)
+    assert not tmp_output.exists()
+
+def test_mask_atmos_plevel_exception():
+    """ if the input file doesnt exist, error """
+    with pytest.raises(FileNotFoundError):
+        mask_atmos_plevel.mask_atmos_plevel_subtool(infile = 'Does not exist',
+                                                    psfile = 'does not exist',
+                                                    outfile = 'will not be created')
