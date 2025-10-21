@@ -10,7 +10,10 @@ import xarray as xr
 
 fre_logger = logging.getLogger(__name__)
 
-def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
+def mask_atmos_plevel_subtool(infile: str = None, 
+                              psfile: str = None, 
+                              outfile: str = None,
+                              warn_no_ps: bool = False) -> None:
     """
     Mask pressure-level diagnostic output below land surface
 
@@ -48,7 +51,11 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
 
     fre_logger.debug('checking if variable ps is available')
     if "ps" not in list(ds_ps.variables):
-        raise ValueError(f"Surface pressure file {psfile} does not contain surface pressure.")
+        fre_logger.warning('pressure variable ps not found in target pressure file')
+        if not warn_no_ps:
+            raise ValueError(f"Surface pressure file {psfile} does not contain surface pressure.")
+        fre_logger.warning('... warn_no_ps is True! this means im going to no-op gracefully instead of raising an error')
+        return
 
     fre_logger.info('with xarray, opening input file %s', infile)
     ds_in = xr.open_dataset(infile)
