@@ -10,8 +10,8 @@ import xarray as xr
 
 fre_logger = logging.getLogger(__name__)
 
-def mask_atmos_plevel_subtool(infile: str = None, 
-                              psfile: str = None, 
+def mask_atmos_plevel_subtool(infile: str = None,
+                              psfile: str = None,
                               outfile: str = None,
                               warn_no_ps: bool = False) -> None:
     """
@@ -27,8 +27,8 @@ def mask_atmos_plevel_subtool(infile: str = None,
     :raises FileNotFound: Input file does not exist
     :rtype: None
 
-    .. note:: Input variables must have an attribute `pressure_mask` that is set to `False`, implying the 
-              data has not yet had a pressure mask applied. The resulting output will have this attribute 
+    .. note:: Input variables must have an attribute `pressure_mask` that is set to `False`, implying the
+              data has not yet had a pressure mask applied. The resulting output will have this attribute
               set to `True`.
     """
     # check if input file exists, raise an error if not
@@ -74,6 +74,23 @@ def mask_atmos_plevel_subtool(infile: str = None,
                 fre_logger.info("Finished processing %s, pressure_mask is True", var)
             else:
                 fre_logger.debug("Not processing %s (because 'pressure_mask' is not False)", var)
+        elif '_unmsk' in var:
+            fre_logger.info('_unmsk found in var %s, processing.', var)
+            fre_logger.debug('copying %s', var)
+            ds_out[var] = ds_in[var].copy()
+
+            fre_logger.debug('setting pressure_mask attribute of %s to False', var)
+            ds_out[var].attrs['pressure_mask'] = "False"
+
+            masked_var = var.split('_')[0]
+
+            fre_logger.debug('writing out masked array to %s instead of %s', masked_var, var)
+            ds_out[masked_var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
+
+            fre_logger.debug('setting pressure_mask attribute of %s to True', masked_var)
+            ds_out[masked_var].attrs['pressure_mask'] = "True"
+
+            fre_logger.info("Finished processing %s, wrote %s, pressure_mask is True", var, masked_var)
         else:
             fre_logger.debug("Not processing %s, it does not have pressure_mask", var)
 
