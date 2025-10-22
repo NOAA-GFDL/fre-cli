@@ -122,6 +122,7 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
     plev_extended, _ = xr.broadcast(plev, ds[var])
     ps_extended, _ = xr.broadcast(ds_ps["ps"], ds[var])
 
+    # we might need to be more careful about missing_value v _FillValue
     fre_logger.info('reading the input file\'s missing_value')
     try:
         missing_value = ds[var].encoding['missing_value']
@@ -134,6 +135,7 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
     fre_logger.info('copy attributes, but it doesn\'t include the missing values')
     attrs = ds[var].attrs.copy()
 
+    # we might need to be more careful about missing_value v _FillValue
     fre_logger.info('add the missing values back')
     attrs['missing_value'] = missing_value
     attrs['_FillValue'] = missing_value
