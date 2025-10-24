@@ -215,3 +215,19 @@ def test_mask_atmos_plevel_exception():
         mask_atmos_plevel.mask_atmos_plevel_subtool(infile = 'Does not exist',
                                                     psfile = 'does not exist',
                                                     outfile = 'will not be created')
+
+def test_mask_atmos_plevel_no_missing_val(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disable=redefined-outer-name
+    """
+    Do the pressure masking on the test input file,
+    and then compare to a previously generated output file.
+    """
+    tmp_output = Path(tmp_path / "output.nc")
+
+    in_ds = xr.open_dataset(tmp_input)
+    del in_ds['ua_unmsk'].encoding['missing_value']
+    tmp_input2 = Path(tmp_path / 'tmp_input2.nc')
+    in_ds.to_netcdf(path=tmp_input2, mode='a')
+
+    with pytest.raises(KeyError):
+        mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input2, tmp_ps, tmp_output)
+    assert not tmp_output.exists()
