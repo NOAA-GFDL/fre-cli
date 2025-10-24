@@ -49,37 +49,17 @@ def cmor_cli():
               help=DRY_RUN_HELP,
               required = False)
 @click.option('--start', type=str, default=None,
-              help = START_YEAR_HELP, 
+              help = START_YEAR_HELP,
               required = False)
 @click.option('--stop', type=str, default=None,
               help = STOP_YEAR_HELP,
               required = False)
 def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start, stop):
     """
-    Processes a CMOR (Climate Model Output Rewriter) YAML configuration file.
-
-    This function takes a YAML file and various parameters related to a climate model experiment,
-    and processes the YAML file using the CMOR YAML subtool.
-
-    Parameters:
-        yamlfile (str): Path to the YAML configuration file.
-        experiment (str): Name of the experiment.
-        target (str): Target specification for the CMOR process.
-        platform (str): Platform on which the CMOR process is being run.
-        output (str): Output directory or file for the processed data.
-        run_one (bool): only process one file then exit
-        dry_run (bool): don't call the cmor_mixer subtool, just printout what would be called
-        start (str): optional, year to begin cmorizing, YYYY format only
-        stop  (str): optional year to stop cmorizing, YYYY format only.
-
-    Raises:
-        ValueError: If the yamlfile is not provided.
+    Processes a CMOR (Climate Model Output Rewriter) YAML configuration file. This function takes a YAML file
+    and various parameters related to a climate model experiment, and processes the YAML file using the CMOR
+    YAML subtool.
     """
-
-
-    # if opt_var_name specified, forget the list.
-    if yamlfile is None:
-        raise ValueError('I need a yamlfile!!!') #uncovered
 
     cmor_yaml_subtool(
         yamlfile = yamlfile,
@@ -110,16 +90,6 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
     an opt_var_name in addition to varlist, only that variable name will be printed out.
     accepts 3 arguments, two of the three required.
     '''
-
-    # if opt_var_name specified, forget the list.
-    if opt_var_name is not None:
-        varlist=None
-
-    # custom arg requirement of "one of the two or both" in click should be implemented with
-    # logic before calling context.invoke( <thingy>, *args )
-    if opt_var_name is None and varlist is None:
-        raise ValueError('opt_var_name and varlist cannot both be None')
-
     cmor_find_subtool(
         json_var_list = varlist,
         json_table_config_dir = table_config_dir,
@@ -170,13 +140,16 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
                      'must be one of the entries in the MIP controlled-vocab file.',
               required = False)
 @click.option('--start', type=str, default=None,
-              help = START_YEAR_HELP, 
+              help = START_YEAR_HELP,
               required = False)
 @click.option('--stop', type=str, default=None,
               help = STOP_YEAR_HELP,
               required = False)
+@click.option('--calendar', type=str, default=None,
+              help = 'calendar type, e.g. 360_day, noleap, gregorian... etc',
+              required = False)
 def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
-        grid_label, grid_desc, nom_res, start, stop):
+        grid_label, grid_desc, nom_res, start, stop, calendar):
     # pylint: disable=unused-argument
     """
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
@@ -193,7 +166,8 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         grid_label = grid_label,
         nom_res = nom_res,
         start = start,
-        stop = stop
+        stop = stop,
+        calendar_type = calendar
     )
 
 @cmor_cli.command()

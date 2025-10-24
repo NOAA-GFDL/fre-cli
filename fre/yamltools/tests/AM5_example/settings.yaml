@@ -1,0 +1,29 @@
+#to-do: work on being able to overwrite these if necessary?
+fre_properties:
+  - &PP_AMIP_CHUNK96    "P1Y"
+
+directories: &shared_directories
+  history_dir:  !join [fre/tests/test_files/ascii_files/mock_archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
+  pp_dir:       !join [fre/tests/test_files/ascii_files/mock_archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
+  analysis_dir: !join [fre/tests/test_files/ascii_files/mock_nbhome/$USER/, *FRE_STEM, /, *name]
+  ptmp_dir:     "fre/tests/test_files/ascii_files/mock_xtmp/$USER/ptmp"
+#  fre_analysis_home: "/home/fms/local/opt/fre-analysis/test"
+
+# shared pp settings
+postprocess: 
+  settings: &shared_settings
+    history_segment:    "P1Y"
+    site:               "ppan"
+    pp_start:   *ANA_AMIP_START
+    pp_stop:    *ANA_AMIP_END
+    pp_chunks:
+      - *PP_AMIP_CHUNK96
+    pp_grid_spec: *GRID_SPEC96
+  switches: &shared_switches
+    do_timeavgs:        True
+    clean_work:         True
+    do_refinediag:      False
+    do_atmos_plevel_masking: True
+    do_preanalysis:     False
+    do_analysis:        True
+    do_analysis_only:   False

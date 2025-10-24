@@ -11,7 +11,7 @@ postprocess:
       - source: "atmos_static_cmip"
       postprocess_on: False
 
-    - type: "atmos_scalar"
+    - type: "atmos_scalar_CNAME"
       sources:
         - history_file: "atmos_scalar"
       inputRealm: "atmos"
@@ -20,7 +20,7 @@ postprocess:
       postprocess_on: True
 
     # component used to test variable filtering for history files
-    - type: "atmos_scalar_test_vars"
+    - type: "atmos_scalar_test_vars_CNAME"
       sources:
         - history_file: "atmos_scalar_test_vars"
           variables: ["co2mass"]
@@ -31,7 +31,7 @@ postprocess:
       postprocess_on: True
 
     # component used to test variable filtering failure for history file (variable incorrect)
-    - type: "atmos_scalar_test_vars_fail"
+    - type: "atmos_scalar_test_vars_fail_CNAME"
       sources:
         - history_file: "atmos_scalar_test_vars_fail"
           variables: ["co2mass", "bk", "no_var"]
@@ -39,7 +39,7 @@ postprocess:
       postprocess_on: True
 
     # component used to test variable filtering failure for statics
-    - type: "atmos_scalar_static_test_vars_fail"
+    - type: "atmos_scalar_static_test_vars_fail_CNAME"
       sources:
         - history_file: "atmos_scalar_static_test_vars_fail2"
       inputRealm: "atmos"

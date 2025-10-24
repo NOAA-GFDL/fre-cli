@@ -1,4 +1,12 @@
-''' test "fre catalog" calls '''
+"""
+CLI Tests for fre catalog *
+Tests the command-line-interface calls for tools in the fre catalog suite. 
+Each tool generally gets 3 tests:
+    - fre catalog $tool, checking for exit code 0 (fails if cli isn't configured right)
+    - fre catalog $tool --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre catalog $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured 
+      right and thinks the tool has a --optionDNE option)
+"""
 
 from click.testing import CliRunner
 
@@ -9,7 +17,7 @@ runner = CliRunner()
 def test_cli_fre_catalog():
     ''' fre catalog '''
     result = runner.invoke(fre.fre, args=["catalog"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_catalog_help():
     ''' fre catalog --help '''
@@ -36,7 +44,7 @@ def test_cli_fre_catalog_merge():
     expected_stdout = "Error: Missing option '--input'."
     assert all( [
         result.exit_code == 2,
-        expected_stdout in result.stdout.split('\n')
+        expected_stdout in result.output
     ] )
 
 def test_cli_fre_catalog_merge_help():

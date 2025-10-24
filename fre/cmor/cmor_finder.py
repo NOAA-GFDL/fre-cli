@@ -1,30 +1,29 @@
-''' fre cmor find
+"""
+fre cmor find
+=============
+
 This module provides tools to find and print information about variables in CMIP6 JSON configuration files.
+It is primarily used for inspecting variable entries and generating variable lists for use in FRE CMORization
+workflows.
 
-Functions:
-    print_var_content(table_config_file, var_name):
-        Prints information about a specific variable from a given CMIP6 JSON configuration file.
+Functions
+---------
+- ``print_var_content(table_config_file, var_name)``
+- ``cmor_find_subtool(json_var_list, json_table_config_dir, opt_var_name)``
+- ``make_simple_varlist(dir_targ, output_variable_list)``
 
-    cmor_find_subtool(json_var_list, json_table_config_dir, opt_var_name):
-        Finds and prints information about variables in CMIP6 JSON configuration files located in a specified directory.
-
-    make_simple_varlist(dir_targ, output_variable_list):
-because ian got tired of typing things like the following in bash...
-
-varname=sos; \
-table_files=$(ls fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_*.json); \
-for table_file in $table_files; do \
-    echo $table_file; \
-    cat $table_file | grep -A 10 "\"$varname\""; \
-done;
-
-'''
+Notes
+-----
+These utilities are intended to make it easier to inspect and extract variable information from CMIP6 JSON
+tables, avoiding the need for manual shell scripting and ad-hoc file inspection.
+"""
 
 import glob
 import json
 import logging
 import os
 from pathlib import Path
+from typing import Optional, Dict, IO
 
 fre_logger = logging.getLogger(__name__)
 
@@ -34,10 +33,25 @@ DO_NOT_PRINT_LIST = [
     'valid_min', 'valid_max'
 ]
 
-def print_var_content(table_config_file, var_name): #uncovered
-    ''' outputs info on one variable to the logger looks for info regarding var_name in table_config_file
-    the level of the messaging is INFO, requiring the verbose flag
-    '''
+
+def print_var_content(table_config_file: IO[str],
+                      var_name: str) -> None:
+    """
+    Print information about a specific variable from a given CMIP6 JSON configuration file.
+
+    :param table_config_file: An open file object for a CMIP6 table JSON file. The file should be opened in text mode
+    :type table_config_file: Input buffer/stream of text, usually output by the open() built-in. See python typing doc
+    :param var_name: The name of the variable to look for in the configuration file. 
+    :type var_name: str    
+    :raises Exception: If there is an issue reading the JSON content from the file.
+    :raises KeyError: If the variable is not found in the JSON content.
+    :return: None
+    :rtype: None
+
+    .. note:: Outputs information to the logger at INFO level.
+    .. note:: If the variable is not found, logs a debug message and returns.
+    .. note:: Only prints selected fields, omitting any in DO_NOT_PRINT_LIST.
+    """
     try:
         proj_table_vars = json.load(table_config_file)
     except Exception as exc:
@@ -45,7 +59,7 @@ def print_var_content(table_config_file, var_name): #uncovered
 
     var_content = proj_table_vars.get("variable_entry", {}).get(var_name)
     if var_content is None:
-        fre_logger.warning('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
+        fre_logger.debug('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
         return
 
     table_name = None
@@ -66,18 +80,34 @@ def print_var_content(table_config_file, var_name): #uncovered
         fre_logger.info('    %s: %s', content, var_content[content])
     fre_logger.info('\n')
 
-def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_name=None): #uncovered
-    '''
-    finds tables in the CMIP json config directory containing variable data of interest. prints it
-    out to screen, intended largely as a helper tool for cli users.
-    '''
+
+def cmor_find_subtool( json_var_list: Optional[str] = None,
+                       json_table_config_dir: Optional[str] = None,
+                       opt_var_name: Optional[str] = None) -> None:
+    """
+    Find and print information about variables in CMIP6 JSON configuration files in a specified directory.
+
+    :param json_var_list: Path to a JSON file containing a dictionary of variable names to look up. If None, opt_var_name must be provided.
+    :type json_var_list: str or None, optional
+    :param json_table_config_dir: Directory containing CMIP6 table JSON files.
+    :type json_table_config_dir: str
+    :param opt_var_name: Name of a single variable to look up. If None, json_var_list must be provided.
+    :type opt_var_name: str or None, optional
+    :raises OSError: If the specified directory does not exist or contains no JSON files.
+    :raises ValueError: If neither opt_var_name nor json_var_list is provided.
+    :return: None
+    :rtype: None
+
+    .. note:: This function is intended as a helper tool for CLI users to quickly inspect variable definitions in
+              CMIP6 tables. Information is printed via the logger.
+    """
     if not Path(json_table_config_dir).exists():
-        raise OSError('ERROR directory {} does not exist! exit.'.format(json_table_config_dir))
+        raise OSError(f'ERROR directory {json_table_config_dir} does not exist! exit.')
 
     fre_logger.info('attempting to find and open files in dir: \n %s ', json_table_config_dir)
-    json_table_configs = glob.glob('{}/*.json'.format(json_table_config_dir))
+    json_table_configs = glob.glob(f'{json_table_config_dir}/*.json')
     if not json_table_configs:
-        raise OSError('ERROR directory {} contains no JSON files, exit.'.format(json_table_config_dir))
+        raise OSError(f'ERROR directory {json_table_config_dir} contains no JSON files, exit.')
     fre_logger.info('found content in json_table_config_dir')
 
     var_list = None
@@ -104,37 +134,52 @@ def cmor_find_subtool(json_var_list=None, json_table_config_dir=None, opt_var_na
         fre_logger.error('this line should be unreachable!!!')
         assert False
 
-def make_simple_varlist(dir_targ, output_variable_list):
+
+def make_simple_varlist( dir_targ: str,
+                         output_variable_list: Optional[str]) -> Optional[Dict[str, str]]:
     """
-    Generates a JSON file containing a list of variables from NetCDF files in a specified directory.
-    This function searches for NetCDF files in the given directory, or a subdirectory, "ts/monthly/5yr", 
-    if not already included. then extracts variable names from the filenames, and writes these variable 
+    Generate a JSON file containing a list of variable names from NetCDF files in a specified directory.
+    This function searches for NetCDF files in the given directory, or a subdirectory, "ts/monthly/5yr",
+    if not already included. It then extracts variable names from the filenames, and writes these variable
     names to a JSON file.
 
-    Args:
-        dir_targ (str): The target directory to search for NetCDF files.
-        output_variable_list (str): The path to the output JSON file where the variable list will be saved.
+    :param dir_targ: The target directory to search for NetCDF files.
+    :type dir_targ: str
+    :param output_variable_list: The path to the output JSON file where the variable list will be saved.
+    :type output_variable_list: str
+    :raises OSError: if the outputfile cannot be written
+    :return: Dictionary of variable names (keys and values are the same), or None if no files are found or an error occurs
+    :rtype: dict or None
 
-    Returns:
-        None
+    .. note:: Assumes NetCDF filenames are of the form: <something>.<variable>.<datetime>.nc
+    .. note:: Variable name is assumed to be the second-to-last component when split by periods.
+    .. note:: Logs a warning if only one file is found.
 
-    Raises:
-        Logs errors if no files are found in the directory or if no files match the expected pattern.
-        Logs a warning if only one file is found matching the pattern.
+    .. warning:: Logs errors if no files are found in the directory or if no files match the expected pattern.
 
-    Notes:
-        The function assumes that the filenames of the NetCDF files contain the variable name as the 
-        second-to-last component when split by periods ('.') and a datetime string as the third-to-last component.
     """
-    one_file = next(glob.iglob(os.path.join(dir_targ, "*.nc")), None)
+    # if the variable is in the filename, it's likely delimited by another period.
+    one_file = next(glob.iglob(os.path.join(dir_targ, "*.*.nc")), None)
     if not one_file:
         fre_logger.error("No files found in the directory.") #uncovered
-        return
+        return None
 
-    one_datetime = os.path.basename(one_file).split('.')[-3]
+    one_datetime = None
+    search_pattern = None
+    try:
+        one_datetime = os.path.basename(one_file).split('.')[-3]
+    except IndexError as e:
+        fre_logger.warning(f'{e}')
+        fre_logger.warning('WARNING: cannot find datetime in filenames, moving on and doing the best i can.')
+        pass
+
+    if one_datetime is None:
+        search_pattern = f"*nc"
+    else:
+        search_pattern = f"*{one_datetime}*.nc"
 
     # Find all files in the directory that match the datetime component
-    files = glob.glob(os.path.join(dir_targ, f"*{one_datetime}*.nc"))
+    files = glob.glob(os.path.join(dir_targ, search_pattern))
 
     # Check if any files were found
     if not files:
@@ -146,8 +191,20 @@ def make_simple_varlist(dir_targ, output_variable_list):
         fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
 
     # Create a dictionary of variable names extracted from the filenames
-    var_list = {os.path.basename(file).split('.')[-2]: os.path.basename(file).split('.')[-2] for file in files}
+    try:
+        var_list = {
+            os.path.basename(file).split('.')[-2]: os.path.basename(file).split('.')[-2] for file in files}
+    except Exception as exc:
+        fre_logger.error(f'{exc}')
+        fre_logger.warning('WARNING: no matching pattern, or not enough info in the filenames'
+                         ' i am expecting FRE-bronx like filenames!')
+        return None
 
     # Write the variable list to the output JSON file
-    with open(output_variable_list, 'w') as f:
-        json.dump(var_list, f, indent=4)
+    if output_variable_list is not None:
+        try:
+            with open(output_variable_list, 'w') as f:
+                json.dump(var_list, f, indent=4)
+        except Exception:
+            raise OSError('output variable list created but cannot be written')
+    return var_list

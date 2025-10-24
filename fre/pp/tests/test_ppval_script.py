@@ -51,10 +51,10 @@ def test_ppval(_file,capfd):
         except:
             assert False
 
-    else:    
+    else:
         with pytest.raises(ValueError):
             ppval.validate(f"{test_dir}/{_file}.nc")
-        
+
     Path(f"{test_dir}/{_file}.nc").unlink()
 
     _out, _err = capfd.readouterr()
