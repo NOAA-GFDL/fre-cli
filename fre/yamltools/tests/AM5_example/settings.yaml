@@ -20,7 +20,6 @@ postprocess:
       - *PP_AMIP_CHUNK96
     pp_grid_spec: *GRID_SPEC96
   switches: &shared_switches
-    do_timeavgs:        True
     clean_work:         True
     do_refinediag:      False
     do_atmos_plevel_masking: True

@@ -33,7 +33,7 @@ def test_get_variables():
                       {'atmos_scalar_static_test_vars_fail2': 'all',
                       'atmos_static_scalar_test_vars_fail': ['bk', 'no_var']}]
 
-    components = ["atmos_scalar_test_vars", "atmos_scalar_test_vars_fail", "atmos_scalar_static_test_vars_fail"]
+    components = ["atmos_scalar_test_vars_CNAME", "atmos_scalar_test_vars_fail_CNAME", "atmos_scalar_static_test_vars_fail_CNAME"]
 
     out1 = helpers.get_variables(yml = yml, pp_comp = components[0])
     out2 = helpers.get_variables(yml = yml, pp_comp = components[1])

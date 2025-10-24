@@ -29,7 +29,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     for component_info in yml["postprocess"]["components"]:
         # if component in yaml not an active pp component, skip
         if component_info.get("type") != pp_comp:
-            fre_logger.info(f'Component, %s, in pp yaml config, does not match active pp component: %s', component_info.get("type"), pp_comp)
+            fre_logger.info(f'Component in pp yaml config (%s) does not match active pp component (%s). Skipping component remapping ...', component_info.get("type"), pp_comp)
             continue
 
         # non-static

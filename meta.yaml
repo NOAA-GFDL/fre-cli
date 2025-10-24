@@ -1,13 +1,9 @@
-{% set data = load_setup_py_data() %}
-
 package:
   name: fre-cli
-  version: '{{ environ.get("GIT_DESCRIBE_TAG", data.get("version")) }}'
+  version: '{{ environ.get("GIT_DESCRIBE_TAG", "develop") }}'
 
-# conda-build will always defer to what's specified here
 source:
   path: .
-#  git_url: https://github.com/NOAA-GFDL/fre-cli.git
 
 build:
   script:
@@ -15,7 +11,6 @@ build:
     - cp fre/mkmf/bin/mkmf $PREFIX/bin
     - cp fre/mkmf/bin/list_paths $PREFIX/bin
     - cp fre/mkmf/bin/git-version-string $PREFIX/bin
-  number: 1
   noarch: python
 
 channels:
@@ -25,36 +20,36 @@ channels:
 requirements:
   host:
     - python=3.11.*
-    - pip
   run:
     - python=3.11.*
-    - pip
-    - noaa-gfdl::analysis_scripts
-    - noaa-gfdl::catalogbuilder>=2.0.2
-    - noaa-gfdl::fre-nctools
+    - noaa-gfdl::analysis_scripts==0.0.1
+    - noaa-gfdl::catalogbuilder==2.0.3
+    - noaa-gfdl::fre-nctools==2022.02.01
+    - conda-forge::cdo>=2
     - conda-forge::cftime
     - conda-forge::click>=8.2
-    - conda-forge::cylc-flow>=8.2.0
+    - conda-forge::cmor=3.11.*
+    - conda-forge::cylc-flow>=8.2
     - conda-forge::cylc-rose
-    - conda-forge::cmor>=3.11.0
-    - conda-forge::cdo>=2.0.0
-    - conda-forge::jinja2=3.0.*
+    - conda-forge::jinja2>=3
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
     - conda-forge::nccmp
-    - conda-forge::numpy<2
+    - conda-forge::numpy=1.26.*
+    - conda-forge::python-cdo
+    - conda-forge::pyyaml
+    - conda-forge::xarray>=2024.*
+    - conda-forge::netcdf4=1.7.*
+
+test:
+  requires:
     - conda-forge::pylint
     - conda-forge::pytest
     - conda-forge::pytest-cov
-    - conda-forge::python-cdo
-    - conda-forge::pyyaml
-    - conda-forge::xarray
-    - conda-forge::netcdf4
-
-test:
   source_files:
     - fre/
   files:
+    - pylintrc
     - fre/mkmf/templates/*
   imports:
     - fre
@@ -68,9 +63,6 @@ test:
     - fre.run
     - fre.yamltools
   commands:
-    - pylint --fail-under 7.10 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
-    # run pytest but ignore any tests that require compilation
-    - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/ 
     - fre --help
     - fre app --help
     - fre catalog --help
@@ -81,6 +73,8 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
+    - pylint --rcfile pylintrc fre/
+    - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/ 
 
 
 about:
