@@ -11,11 +11,13 @@ import pytest
 import xarray as xr
 
 from fre.app.mask_atmos_plevel import mask_atmos_plevel
+from fre.app.mask_atmos_plevel.mask_atmos_plevel import pressure_coordinate
 
 @pytest.fixture()
 def tmp_input(tmp_path):
-    # write netcdf files from the cdfs
-    # data (ua)
+    '''
+    write netcdf files from cdl, data (ua_unmsk)
+    '''
     input_ = Path('fre/tests/test_files/reduced_ascii_files/atmos_cmip.ua_unmsk.cdl')
     assert Path(input_).exists()
 
@@ -34,8 +36,9 @@ def tmp_input(tmp_path):
 
 @pytest.fixture()
 def tmp_case2input(tmp_path):
-    # write netcdf files from the cdfs
-    # data (ua)
+    '''
+    write netcdf files from cdl, data (ua_unmsk) no pressure_mask attr
+    '''
     input_ = Path('fre/tests/test_files/reduced_ascii_files/atmos_cmip.ua_unmsk.case2.cdl')
     assert Path(input_).exists()
 
@@ -55,8 +58,9 @@ def tmp_case2input(tmp_path):
 
 @pytest.fixture()
 def tmp_ps(tmp_path):
-    # write netcdf files from the cdfs
-    # data (ps)
+    '''
+    write netcdf files from cdl, data (ps)
+    '''
     ps     = Path('fre/tests/test_files/reduced_ascii_files/atmos_cmip.ps.cdl')
     assert Path(ps).exists()
 
@@ -75,8 +79,9 @@ def tmp_ps(tmp_path):
 
 @pytest.fixture()
 def tmp_ref(tmp_path):
-    # write netcdf files from the cdfs
-    # data (ua)
+    '''
+    write netcdf files from cdl, data (ua) for checking answers
+    '''
     ref = Path('fre/tests/test_files/reduced_ascii_files/atmos_cmip.ua_masked.cdl')
     assert Path(ref).exists()
 
@@ -94,8 +99,9 @@ def tmp_ref(tmp_path):
 
 @pytest.fixture()
 def tmp_case2ref(tmp_path):
-    # write netcdf files from the cdfs
-    # data (ua)
+    '''
+    write netcdf files from cdl, data (ua) for checking answers when there is no pressure_mask attr
+    '''
     ref = Path('fre/tests/test_files/reduced_ascii_files/atmos_cmip.ua_masked.case2.cdl')
     assert Path(ref).exists()
 
@@ -128,7 +134,7 @@ def test_mask_atmos_plevel(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disa
 
 def test_mask_atmos_plevel_case2(tmp_case2input, tmp_ps, tmp_case2ref, tmp_path): # pylint: disable=redefined-outer-name
     """
-    Do the pressure masking on the test input file,
+    Do the pressure masking on the test input file without pressure_mask attribute, but _unmsk in var name
     and then compare to a previously generated output file.
     """
     tmp_output = Path(tmp_path / "output.nc")
@@ -216,7 +222,7 @@ def test_mask_atmos_plevel_exception():
                                                     psfile = 'does not exist',
                                                     outfile = 'will not be created')
 
-def test_mask_atmos_plevel_no_missing_val(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disable=redefined-outer-name
+def test_mask_atmos_plevel_no_missing_val(tmp_input, tmp_ps, tmp_path): # pylint: disable=redefined-outer-name
     """
     Do the pressure masking on the test input file,
     and then compare to a previously generated output file.
@@ -232,7 +238,7 @@ def test_mask_atmos_plevel_no_missing_val(tmp_input, tmp_ps, tmp_ref, tmp_path):
         mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input2, tmp_ps, tmp_output)
     assert not tmp_output.exists()
 
-def test_mask_atmos_plevel_pmask_true(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disable=redefined-outer-name
+def test_mask_atmos_plevel_pmask_true(tmp_input, tmp_ps, tmp_path): # pylint: disable=redefined-outer-name
     """
     Do the pressure masking on the test input file,
     and then compare to a previously generated output file.
@@ -246,3 +252,13 @@ def test_mask_atmos_plevel_pmask_true(tmp_input, tmp_ps, tmp_ref, tmp_path): # p
 
     mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input2, tmp_ps, tmp_output)
     assert not tmp_output.exists()
+
+def test_pressure_coordinate_continue_warning(tmp_input):
+    """
+    tests a clean no-op when the dimension is not stored as a variable/coordinate of the desired data to be masked
+    """
+    in_ds = xr.open_dataset(tmp_input)
+    del in_ds['plev19']
+
+    coord_out = pressure_coordinate(ds = in_ds, varname='ua_unmsk')
+    assert coord_out is None
