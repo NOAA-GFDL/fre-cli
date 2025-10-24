@@ -231,3 +231,34 @@ def test_cli_fre_app_remap_opt_dne(capfd):
     result = runner.invoke(fre.fre, args=["app", "remap", "optionDNE"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
+
+# fre app mask_atmos_plevel
+def test_cli_fre_app_mask_atmos_plevel(capfd):
+    """ fre app mask-atmos-plevel """
+    result = runner.invoke(fre.fre, args=["app", "mask-atmos-plevel"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_mask_atmos_plevel_help(capfd):
+    """ fre app mask-atmos-plevel --help """
+    result = runner.invoke(fre.fre, args=["app", "mask-atmos-plevel", "--help"])
+    assert result.exit_code == 0
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_mask_atmos_plevel_opt_dne(capfd):
+    """ fre app mask-atmos-plevel optionDNE """
+    result = runner.invoke(fre.fre, args=["app", "mask-atmos-plevel", "optionDNE"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+
+def test_cli_fre_app_mask_atmos_plevel_exception():
+    """ fre app mask-atmos-plevel optionDNE """
+    result = runner.invoke(fre.fre,
+                           args=["-vv", "app", "mask-atmos-plevel",
+                                 "--infile", "foo",
+                                 "--outfile", "bar",
+                                 "--psfile", "baz"],
+                           catch_exceptions = True)
+    assert result.exit_code == 1
+    assert result.exception.args[0] == 'ERROR: Input file foo does not exist'
