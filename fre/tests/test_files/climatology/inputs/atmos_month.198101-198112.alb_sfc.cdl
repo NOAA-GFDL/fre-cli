@@ -1,0 +1,113 @@
+netcdf atmos_month.198101-198112.alb_sfc {
+dimensions:
+	time = UNLIMITED ; // (12 currently)
+	lat = 2 ;
+	lon = 2 ;
+	bnds = 2 ;
+variables:
+	float alb_sfc(time, lat, lon) ;
+		alb_sfc:long_name = "Surface Albedo for  Flux" ;
+		alb_sfc:units = "percent" ;
+		alb_sfc:_FillValue = 1.e+20f ;
+		alb_sfc:missing_value = 1.e+20f ;
+		alb_sfc:cell_methods = "time: mean" ;
+		alb_sfc:cell_measures = "area: area" ;
+		alb_sfc:interp_method = "conserve_order1" ;
+	double lat(lat) ;
+		lat:standard_name = "latitude" ;
+		lat:long_name = "latitude" ;
+		lat:units = "degrees_N" ;
+		lat:axis = "Y" ;
+		lat:bounds = "lat_bnds" ;
+	double lat_bnds(lat, bnds) ;
+	double lon(lon) ;
+		lon:standard_name = "longitude" ;
+		lon:long_name = "longitude" ;
+		lon:units = "degrees_E" ;
+		lon:axis = "X" ;
+		lon:bounds = "lon_bnds" ;
+	double lon_bnds(lon, bnds) ;
+	double time(time) ;
+		time:standard_name = "time" ;
+		time:long_name = "time" ;
+		time:bounds = "time_bnds" ;
+		time:units = "days since 1979-01-01 00:00:00" ;
+		time:calendar = "standard" ;
+		time:axis = "T" ;
+	double time_bnds(time, bnds) ;
+
+// global attributes:
+		:CDI = "Climate Data Interface version 2.4.4 (https://mpimet.mpg.de/cdi)" ;
+		:Conventions = "CF-1.6" ;
+		:title = "c96L65_am5f9d8r0_amip" ;
+		:associated_files = "area: 19810101.grid_spec.nc" ;
+		:grid_type = "regular" ;
+		:grid_tile = "N/A" ;
+		:code_release_version = "2024.05" ;
+		:git_hash = "5d306c05d9fe755cab04eedc8fd3de0d3c8355a0" ;
+		:creationtime = "Mon Aug 11 19:59:00 2025" ;
+		:hostname = "pp030" ;
+		:history = "Tue Sep 23 14:27:36 2025: ncks -d lon,0,1 atmos_month.198101-198112.alb_sfc.nc_lat01 atmos_month.198101-198112.alb_sfc.nc_lat01_lon01\n",
+			"Tue Sep 23 14:26:17 2025: ncks -d lat,0,1 atmos_month.198101-198112.alb_sfc.nc atmos_month.198101-198112.alb_sfc.nc_lat01\n",
+			"Mon Aug 11 16:16:23 2025: ncks -d lat,,,10 -d lon,,,10 atmos_month.198101-198112.alb_sfc.nc reduced/atmos_month.198101-198112.alb_sfc.nc\n",
+			"Mon Aug 11 20:01:59 2025: cdo --history splitname 19810101.atmos_month.nc /home/Chris.Blanton/cylc-run/c96L65_am5f9d8r0_amip__gfdl.ncrc5-intel23-classic__prod-openmp/run1/share/cycle/19810101T0000Z/split/regrid-xy/180_288.conserve_order2/19810101.atmos_month.\n",
+			"fregrid --debug --standard_dimension --input_mosaic C96_mosaic.nc --input_dir /home/Chris.Blanton/cylc-run/c96L65_am5f9d8r0_amip__gfdl.ncrc5-intel23-classic__prod-openmp/run1/share/cycle/19810101T0000Z/history/native --input_file 19810101.atmos_month --associated_file_dir /home/Chris.Blanton/cylc-run/c96L65_am5f9d8r0_amip__gfdl.ncrc5-intel23-classic__prod-openmp/run1/share/cycle/19810101T0000Z/history/native --interp_method conserve_order2 --remap_file fregrid_remap_file_288_by_180.nc --nlon 288 --nlat 180 --scalar_field (**please see the field list in this file**) --output_file 19810101.atmos_month.nc" ;
+		:CDO = "Climate Data Operators version 2.4.4 (https://mpimet.mpg.de/cdo)" ;
+		:NCO = "netCDF Operators version 5.3.4 (Homepage = http://nco.sf.net, Code = http://github.com/nco/nco, Citation = 10.1016/j.envsoft.2008.03.004)" ;
+data:
+
+ alb_sfc =
+  76.25285, 76.25285,
+  76.44437, 76.19061,
+  76.47349, 76.47349,
+  73.38937, 73.0288,
+  47.86325, 47.86325,
+  43.60559, 43.56427,
+  0, 0,
+  10.2823, 10.3841,
+  0, 0,
+  0, 0,
+  0, 0,
+  0, 0,
+  0, 0,
+  0, 0,
+  0, 0,
+  2.23983, 2.443991,
+  20.42517, 20.42517,
+  32.94125, 32.81193,
+  76.32105, 76.32105,
+  64.90369, 64.6298,
+  76.29478, 76.29478,
+  76.30904, 76.26852,
+  76.07452, 76.07452,
+  76.23776, 76.06744 ;
+
+ lat = -89.5, -79.5 ;
+
+ lat_bnds =
+  -90, -89,
+  -80, -79 ;
+
+ lon = 0.625, 13.125 ;
+
+ lon_bnds =
+  0, 1.25,
+  12.5, 13.75 ;
+
+ time = 746.5, 776, 805.5, 836, 866.5, 897, 927.5, 958.5, 989, 1019.5, 1050, 
+    1080.5 ;
+
+ time_bnds =
+  731, 762,
+  762, 790,
+  790, 821,
+  821, 851,
+  851, 882,
+  882, 912,
+  912, 943,
+  943, 974,
+  974, 1004,
+  1004, 1035,
+  1035, 1065,
+  1065, 1096 ;
+}

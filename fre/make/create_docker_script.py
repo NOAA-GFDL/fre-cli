@@ -26,7 +26,7 @@ def dockerfile_create(yamlfile:str, platform:str, target:str, execute: Optional[
                      (does not include intel compilers) singularity image files. An example of a
                      non-shareable container platform is "hpcme.2023"
     :type platform: str
-    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
     :param execute: Run the created dockerfile to build a container
     :type execute: bool

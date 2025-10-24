@@ -27,7 +27,7 @@ def test_make_simple_varlist(temp_dir):
     # Check the contents of the output file
     with open(output_file, 'r') as f:
         var_list = json.load(f)
-    
+
     expected_var_list = {
         "var1": "var1",
         "var2": "var2",

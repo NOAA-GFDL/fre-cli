@@ -1,4 +1,12 @@
-""" test "fre app" calls """
+"""
+CLI Tests for fre app *
+Tests the command-line-interface calls for tools in the fre apps.
+Each tool generally gets 3 tests:
+    - fre app $tool, checking for exit code 0 (fails if cli isn't configured right)
+    - fre app $tool --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre app $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured
+      right and thinks the tool has a --optionDNE option)
+"""
 
 import os
 import subprocess
@@ -16,7 +24,7 @@ runner = CliRunner()
 def test_cli_fre_app(capfd):
     """ fre app """
     result = runner.invoke(fre.fre, args=["app"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_help(capfd):
@@ -31,92 +39,179 @@ def test_cli_fre_app_opt_dne(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+
 # fre app gen-time-averages
 def test_cli_fre_app_gen_time_averages(capfd):
-    """ fre cmor run """
+    """ fre app gen-time-averages """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_gen_time_averages_help(capfd):
-    """ fre cmor run --help """
+    """ fre app gen-time-averages --help """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages", "--help"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_gen_time_averages_opt_dne(capfd):
-    """ fre cmor run optionDNE """
+    """ fre app gen-time-averages optionDNE """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages", "optionDNE"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+@pytest.mark.xfail(reason='under-construction/developing') #TODO flesh out argument details, assertions and checks etc
+def test_cli_fre_app_gen_time_averages_case(capfd):
+    """
+    fre app gen-time-averages --inf \
+                              --outf \
+                              --avg_type \
+                              --pkg \
+                              --unwgt
+    """
+    result = runner.invoke(fre.fre, args=["app", "gen-time-averages",
+                                          "--inf",
+                                          "FOO_PLACEHOLD",
+                                          "--outf",
+                                          "BAR_PLACEHOLD",
+                                          "--avg_type", "all",
+                                          "--pkg", "cdo",
+                                          "--unwgt" ])
+    assert result.exit_code == 0
+    _out, _err = capfd.readouterr()
+
+
+# fre app gen-time-averages-wrapper
+def test_cli_fre_app_gen_time_averages_wrapper(capfd):
+    """ fre app gen-time-averages-wrapper """
+    result = runner.invoke(fre.fre, args=["app", "gen-time-averages-wrapper"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_gen_time_averages_wrapper_help(capfd):
+    """ fre app gen-time-averages-wrapper --help """
+    result = runner.invoke(fre.fre, args=["app", "gen-time-averages-wrapper", "--help"])
+    assert result.exit_code == 0
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_gen_time_averages_wrapper_opt_dne(capfd):
+    """ fre app gen-time-averages-wrapper optionDNE """
+    result = runner.invoke(fre.fre, args=["app", "gen-time-averages-wrapper", "optionDNE"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+@pytest.mark.xfail(reason='under-construction/developing') #TODO flesh out argument details, assertions and checks etc
+def test_cli_fre_app_gen_time_averages_wrapper_case(capfd):
+    """
+    fre app gen-time-averages-wrapper \
+            --cycle-point 0002-01-01 \
+            --input-interval P1Y \
+            --output-interval P2Y \
+            --grid 180_288.conserve_order1 \
+            --sources tracer_level \
+            --frequency yr \
+            --pkg cdo \
+            --dir FOO_PLACEHOLD
+    """
+    result = runner.invoke(fre.fre, args=["app", "gen-time-averages-wrapper",
+                                          "--cycle-point", "0002-01-01",
+                                          "--input-interval", "P1Y",
+                                          "--output-interval", "P2Y",
+                                          "--grid", "180_288.conserve_order1",
+                                          "--sources", "tracer_level",
+                                          "--frequency", "yr",
+                                          "--pkg", "cdo",
+                                          "--dir", "FOO_PLACEHOLD", ])
+    assert result.exit_code == 0
+    _out, _err = capfd.readouterr()
+
+
+# fre app combine-time-averages
+def test_cli_fre_app_combine_time_averages(capfd):
+    """ fre app combine-time-averages """
+    result = runner.invoke(fre.fre, args=["app", "combine-time-averages"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_combine_time_averages_help(capfd):
+    """ fre app combine-time-averages --help """
+    result = runner.invoke(fre.fre, args=["app", "combine-time-averages", "--help"])
+    assert result.exit_code == 0
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_combine_time_averages_opt_dne(capfd):
+    """ fre app combine-time-averages optionDNE """
+    result = runner.invoke(fre.fre, args=["app", "combine-time-averages", "optionDNE"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+@pytest.mark.xfail(reason='under-construction/developing') #TODO flesh out argument details, assertions and checks etc
+def test_cli_fre_app_combine_time_averages_case(capfd):
+    """
+    fre app combine-time-averages \
+            --in-dir  /tmp/pytest-of-Ian.Laflotte/pytest-211/test_combine_annual_av0/in/atmos \
+            --out-dir /tmp/pytest-of-Ian.Laflotte/pytest-211/test_combine_annual_av0/out \
+            --component atmos \
+            --begin 1980 \
+            --end 1981 \
+            --frequency yr \
+            --interval P2Y
+    """
+    result = runner.invoke(fre.fre, args=["app", "combine-time-averages",
+                                          "--in-dir",
+                                          "FOO_PLACEHOLD",#"/tmp/pytest-of-Ian.Laflotte/pytest-211/test_combine_annual_av0/in/atmos",
+                                          "--out-dir",
+                                          "BAR_PLACEHOLD",#"/tmp/pytest-of-Ian.Laflotte/pytest-211/test_combine_annual_av0/out",
+                                          "--component", "atmos",
+                                          "--begin", "1980",
+                                          "--end", "1981",
+                                          "--frequency", "yr",
+                                          "--interval", "P2Y",  ])
+    assert result.exit_code == 0
+    _out, _err = capfd.readouterr()
+
+
 # fre app regrid
 def test_cli_fre_app_regrid(capfd):
-    """ fre cmor run """
+    """ fre app regrid """
     result = runner.invoke(fre.fre, args=["app", "regrid"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_regrid_help(capfd):
-    """ fre cmor run --help """
+    """ fre app regrid --help """
     result = runner.invoke(fre.fre, args=["app", "regrid", "--help"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
 
 def test_cli_fre_app_regrid_opt_dne(capfd):
-    """ fre cmor run optionDNE """
+    """ fre app regrid optionDNE """
     result = runner.invoke(fre.fre, args=["app", "regrid", "optionDNE"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
-@pytest.mark.skip(reason="needs rework")
 def test_cli_fre_app_regrid_test_case_1(capfd):
-    """ fre cmor run --help """
+    """ fre app regrid_xy --help """
 
-    import fre.app.regrid_xy.tests.test_regrid_xy as t_rgxy
-    assert t_rgxy is not None
-
-    # input files for this test are locked up in here as well
-    if not Path( t_rgxy.TEST_DIR+'/in-dir' ).exists():
-        assert Path(t_rgxy.TAR_IN_DIR).exists()
-        ex = [ "tar", "-C", t_rgxy.TEST_DIR, "-zxvf", t_rgxy.TAR_IN_DIR ]
-        sp = subprocess.run( ex )
-        assert all ( [ sp.returncode == 0,
-                       Path(t_rgxy.IN_DIR).exists() ] )
-
-    # for the time being, still a little dependent on rose for configuration value passing
-    if Path(os.getcwd()+'/rose-app-run.conf').exists():
-        Path(os.getcwd()+'/rose-app-run.conf').unlink()
-
-    with open(os.getcwd()+'/rose-app-run.conf','a',encoding='utf-8') as rose_app_run_config:
-        rose_app_run_config.write(  '[command]\n'                    )
-        rose_app_run_config.write(  'default=regrid-xy\n'            )
-        rose_app_run_config.write(  '\n'                             )
-        rose_app_run_config.write( f'[{t_rgxy.COMPONENT}]\n'                )
-        rose_app_run_config.write( f'sources={t_rgxy.SOURCE}\n'             )
-        rose_app_run_config.write( f'inputGrid={t_rgxy.INPUT_GRID}\n'       )
-        rose_app_run_config.write( f'inputRealm={t_rgxy.INPUT_REALM}\n'     )
-        rose_app_run_config.write( f'interpMethod={t_rgxy.INTERP_METHOD}\n' )
-        rose_app_run_config.write( f'outputGridLon={t_rgxy.NLON}\n'         )
-        rose_app_run_config.write( f'outputGridLat={t_rgxy.NLAT}\n'         )
-        rose_app_run_config.write(  '\n'                             )
-    assert Path('./rose-app-run.conf').exists()
+    import fre.app.regrid_xy.tests.test_regrid_xy as test_regrid_xy
+    test_regrid_xy.setup_test()
 
     args_list = ["app", "regrid",
-                 "--input_dir", f"{t_rgxy.WORK_YYYYMMDD_DIR}",
-                 "--output_dir", f"{t_rgxy.TEST_OUT_DIR}",
-                 "--begin", f"{t_rgxy.YYYYMMDD}T000000",
-                 "--tmp_dir", f"{t_rgxy.TEST_DIR}",
-                 "--remap_dir", f"{t_rgxy.REMAP_DIR}",
-                 "--source", f"{t_rgxy.SOURCE}",
-                 "--grid_spec", f"{t_rgxy.GOLD_GRID_SPEC_NO_TAR}",
-                 "--def_xy_interp", f'"{t_rgxy.NLON},{t_rgxy.NLAT}"' ]
-    click.echo(f'args_list = \n {args_list}')
-    click.echo('fre ' + ' '.join(args_list))
+                 "--yamlfile", str(test_regrid_xy.yamlfile),
+                 "--input_dir", str(test_regrid_xy.input_dir),
+                 "--output_dir", str(test_regrid_xy.output_dir),
+                 "--work_dir", str(test_regrid_xy.work_dir),
+                 "--remap_dir", str(test_regrid_xy.remap_dir),
+                 "--source", "pemberley",
+                 "--input_date", test_regrid_xy.date+"T000000"]
+    click.echo(f"args_list = \n {args_list}")
+    click.echo("fre " + ' '.join(args_list))
 
     result = runner.invoke(fre.fre, args=args_list )
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
+
+    test_regrid_xy.cleanup_test()
+
 
 # fre app remap
 def test_cli_fre_app_remap(capfd):
@@ -136,4 +231,3 @@ def test_cli_fre_app_remap_opt_dne(capfd):
     result = runner.invoke(fre.fre, args=["app", "remap", "optionDNE"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
-

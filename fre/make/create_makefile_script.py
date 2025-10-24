@@ -19,7 +19,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
     :param platform: FRE platform; defined in the platforms yaml
                      If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str
-    :param target: Predefined FRE targets; options include prod, debug, open-mp, repro
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
     :raises ValueError: Error if platform does not exist in platforms yaml configuration 
 

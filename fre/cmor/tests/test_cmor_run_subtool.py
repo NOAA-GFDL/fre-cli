@@ -5,6 +5,8 @@ from pathlib import Path
 from datetime import date
 import os
 
+import pytest
+
 from fre.cmor import cmor_run_subtool
 
 
@@ -36,7 +38,7 @@ TMPDIR = f'{OUTDIR}/tmp'
 
 # input file details. if calendar matches data, the dates should be preserved or equiv.
 DATETIMES_INPUTFILE='199301-199302'
-FILENAME = f'reduced_ocean_monthly_1x1deg.{DATETIMES_INPUTFILE}.sos' 
+FILENAME = f'reduced_ocean_monthly_1x1deg.{DATETIMES_INPUTFILE}.sos'
 FULL_INPUTFILE=f"{INDIR}/{FILENAME}.nc"
 CALENDAR_TYPE = 'julian'
 
@@ -236,6 +238,7 @@ def test_fre_cmor_run_subtool_case2(capfd):
                   Path(FULL_INPUTFILE_DIFF).exists() ] )
     _out, _err = capfd.readouterr()
 
+
 def test_fre_cmor_run_subtool_case2_output_compare_data(capfd):
     ''' I/O data-only comparison of test case2 '''
     print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
@@ -286,12 +289,72 @@ def test_git_cleanup():
       #doesn't run happily in CI and not needed
       assert True
     else:
-      git_cmd = f"git restore {EXP_CONFIG}" 
-      restore = subprocess.run(git_cmd, 
+      git_cmd = f"git restore {EXP_CONFIG}"
+      restore = subprocess.run(git_cmd,
                     shell=True,
                     check=False)
       check_cmd = f"git status | grep {EXP_CONFIG}"
-      check = subprocess.run(check_cmd, 
+      check = subprocess.run(check_cmd,
                              shell = True, check = False)
       #first command completed, second found no file in git status
       assert all([restore.returncode == 0, check.returncode == 1])
+
+def test_cmor_run_subtool_raise_value_error():
+    '''
+    test that ValueError raised when required args are absent
+    '''
+    with pytest.raises(ValueError):
+        cmor_run_subtool( indir = None,
+                          json_var_list = None,
+                          json_table_config = None,
+                          json_exp_config = None,
+                          outdir = None )
+
+def test_fre_cmor_run_subtool_no_exp_config():
+    '''
+    fre cmor run, exception, json_exp_config DNE
+    '''
+
+    # test call, where meat of the workload gets done
+    with pytest.raises(FileNotFoundError):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST_DIFF,
+            json_table_config = TABLE_CONFIG,
+            json_exp_config = 'DOES NOT EXIST',
+            outdir = OUTDIR
+        )
+
+VARLIST_EMPTY = \
+    f'{ROOTDIR}/empty_varlist'
+def test_fre_cmor_run_subtool_empty_varlist(capfd):
+    '''
+    fre cmor run, exception, variable list is empty
+    '''
+
+    # test call, where meat of the workload gets done
+    with pytest.raises(ValueError):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST_EMPTY,
+            json_table_config = TABLE_CONFIG,
+            json_exp_config = EXP_CONFIG,
+            outdir = OUTDIR
+        )
+
+
+@pytest.mark.xfail(reason='TODO req some quick rework of the opt_var_name logic- '
+                          'the current approach doesnt cut it')
+def test_fre_cmor_run_subtool_opt_var_name_not_in_table():
+    ''' fre cmor run, exception,  '''
+
+    # test call, where meat of the workload gets done
+    with pytest.raises(ValueError):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST,
+            json_table_config = TABLE_CONFIG,
+            json_exp_config = EXP_CONFIG,
+            outdir = OUTDIR,
+            opt_var_name="difmxybo"
+        )

@@ -62,7 +62,7 @@ def test_missing_grid_label_field(temp_json_file):
     new_grid_label = "updated_label"
     new_grid = "updated_grid"
     new_nom_res = "updated_nom_res"
-    
+
     # Act & Assert
     with pytest.raises(KeyError, match="Error while updating 'grid_label'"):
         update_grid_and_label(temp_json_file, new_grid_label, new_grid, new_nom_res)

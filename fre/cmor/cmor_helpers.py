@@ -97,7 +97,7 @@ def from_dis_gimme_dis( from_dis: Dataset,
         fre_logger.warning('I am sorry, I could not not give you this: %s\n returning None!\n', gimme_dis)
         return None
 
-
+# note, the awkward spacing of the docstring below is for the way sphinx renders reStructuredText, do not change!
 def find_statics_file( bronx_file_path: str) -> Optional[str]:
     """
     Attempt to find the corresponding statics file given the path to a FRE-bronx output file. The code assumes
@@ -105,7 +105,7 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     mocked in this package within the `fre/tests/test_files/ascii_files/mock_archive` directory structure. `cd`'ing
     there and using the command `tree` will reveal the mocked directory structure, something like:
 
-    
+
     <STEM>/<EXP_NAME>/<PLATFORM>-<TARGET>/
 
     └── pp
@@ -122,7 +122,7 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
 
                         └── component.YYYYMM-YYYYMM.var.nc
 
-    
+
     :param bronx_file_path: File path to use as a reference for statics file location.
     :type bronx_file_path: str
     :return: Path to the statics file if found, else None.
@@ -141,14 +141,14 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     fre_logger.debug('going to glob the following path for a statics file: \n%s\n', statics_path)
     fre_logger.debug('the call is going to be:')
     fre_logger.debug(f"\n glob.glob({statics_path+'/*static*.nc'})  \n")
-    statics_file_glob = glob.glob(statics_path+'/*static*.nc')
+
+    statics_file_glob = glob.glob(statics_path+'/*static*.nc') # update to use component TODO
     fre_logger.debug('the output glob looks like: %s', statics_file_glob)
-    statics_file = statics_file_glob[0]
-    if Path(statics_file).exists() or statics_file is None:
-        return statics_file
-    else:
-        fre_logger.warning('could not find the statics file! returning None')
-        return None
+    if len(statics_file_glob) == 1:
+        return statics_file_glob[0]
+
+    fre_logger.warning('no statics file found, returning None')
+    return None
 
 
 def create_lev_bnds( bound_these: Variable = None,

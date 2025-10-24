@@ -40,7 +40,7 @@ def print_var_content(table_config_file: IO[str],
     Print information about a specific variable from a given CMIP6 JSON configuration file.
 
     :param table_config_file: An open file object for a CMIP6 table JSON file. The file should be opened in text mode
-    :type table_config_file: input buffer/stream of text, usually output by the open() built-in. see python typing doc
+    :type table_config_file: Input buffer/stream of text, usually output by the open() built-in. See python typing doc
     :param var_name: The name of the variable to look for in the configuration file. 
     :type var_name: str    
     :raises Exception: If there is an issue reading the JSON content from the file.
@@ -196,7 +196,7 @@ def make_simple_varlist( dir_targ: str,
             os.path.basename(file).split('.')[-2]: os.path.basename(file).split('.')[-2] for file in files}
     except Exception as exc:
         fre_logger.error(f'{exc}')
-        fre_logger.error('ERROR: no matching pattern, or not enough info in the filenames'
+        fre_logger.warning('WARNING: no matching pattern, or not enough info in the filenames'
                          ' i am expecting FRE-bronx like filenames!')
         return None
 

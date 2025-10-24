@@ -107,6 +107,7 @@ distclean
 divc
 DMAXFIELDMETHODS
 DMAXFIELDS
+docstrings
 Dorkey
 dset
 DSPMD
@@ -219,6 +220,7 @@ INTERP
 intrafile
 ISMIP
 isodatetime
+ivar
 jaon
 jhan
 jhanbigmem
@@ -285,6 +287,7 @@ MULTIJOB
 myavger
 namenopath
 nbhome
+ncatted
 ncattr
 ncattrs
 ncatts
@@ -437,6 +440,7 @@ spackloads
 SPHINXBUILD
 SPHINXOPTS
 sphum
+splitmon
 srces
 SRCROOT
 srcs
@@ -465,6 +469,7 @@ thefiles
 timavg
 timavgcsh
 timeaveraged
+timeaverager
 timeavgs
 timelevels
 timesteps
@@ -539,6 +544,11 @@ ymonstddev
 yseasmean
 yseasstddev
 yvalues
+YYYY
+YYYYMM
+YYYYMMDD
+YYYYMMDDHH
+YYYYMMDDHH:mm
 zaxis
 zbounds
 zerovars
@@ -546,5 +556,11 @@ zfactor
 zonavg
 zsurf
 zxvf
+donwell
+hartfield
+longbourn
+pemberley
+openedfile
+lonxlat
 njobs
 RDHPCS

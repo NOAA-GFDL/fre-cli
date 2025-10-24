@@ -51,7 +51,7 @@ def mock_json_table_config(tmp_path):
 @patch('fre.cmor.cmor_mixer.cmorize_all_variables_in_dir')
 @patch('fre.cmor.cmor_mixer.glob.glob')
 def test_cmor_run_w_cal_type( mock_glob,
-                              mock_cmorize_all_variables_in_dir, 
+                              mock_cmorize_all_variables_in_dir,
                               mock_update_calendar_type,
                               mock_json_exp_config,
                               mock_json_var_list,
@@ -64,9 +64,9 @@ def test_cmor_run_w_cal_type( mock_glob,
     mock_glob.return_value = [
         str(tmp_path / "mock_test_file.00010101-00041231.temp.nc") ,
         str(tmp_path / "mock_test_file.00010101-00041231.salt.nc")   ]
-    
+
     mock_cmorize_all_variables_in_dir.return_value = 0
-    
+
     indir = str(tmp_path)
     outdir = str(tmp_path / "output")
     calendar_type = "noleap"
@@ -74,7 +74,7 @@ def test_cmor_run_w_cal_type( mock_glob,
     # Act
     cmor_run_subtool(
         indir = indir,
-        json_var_list = mock_json_var_list, 
+        json_var_list = mock_json_var_list,
         json_table_config = mock_json_table_config,
         json_exp_config = mock_json_exp_config,
         outdir = outdir,
@@ -84,14 +84,14 @@ def test_cmor_run_w_cal_type( mock_glob,
     ## Assert
     mock_update_calendar_type.assert_called_once_with(
         mock_json_exp_config, calendar_type, output_file_path=None )
-    
 
-    
+
+
 @patch('fre.cmor.cmor_mixer.update_calendar_type')
 @patch('fre.cmor.cmor_mixer.cmorize_all_variables_in_dir')
 @patch('fre.cmor.cmor_mixer.glob.glob')
 def test_cmor_run_no_cal_type( mock_glob,
-                               mock_cmorize_all_variables_in_dir, 
+                               mock_cmorize_all_variables_in_dir,
                                mock_update_calendar_type,
                                mock_json_exp_config,
                                mock_json_var_list,
@@ -104,22 +104,22 @@ def test_cmor_run_no_cal_type( mock_glob,
     mock_glob.return_value = [
         str(tmp_path / "mock_test_file.00010101-00041231.temp.nc") ,
         str(tmp_path / "mock_test_file.00010101-00041231.salt.nc")   ]
-    
+
     mock_cmorize_all_variables_in_dir.return_value = 0
-    
+
     indir = str(tmp_path)
     outdir = str(tmp_path / "output")
     calendar_type = None
-    
+
     # Act - calendar_type is None (default)
     cmor_run_subtool(
         indir = indir,
-        json_var_list = mock_json_var_list, 
+        json_var_list = mock_json_var_list,
         json_table_config = mock_json_table_config,
         json_exp_config = mock_json_exp_config,
         outdir = outdir,
         calendar_type  =  None
     )
-    
+
     # Assert
     mock_update_calendar_type.assert_not_called()

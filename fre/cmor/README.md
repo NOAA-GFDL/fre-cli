@@ -35,8 +35,8 @@ repository, and the user directly.
   Additionally, see `fre cmor varlist` and the `--opt_var_name` flag for more information.
 
 - An experiment configuration file as a JSON dictionary, an example provided by PCMDI is included in the repository
-  [here](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMOR_input_example.json). Notably it must contain the
-  correct information for the targeted input files' `calendar` and `grid` attributes. It will also define the output directory structure.
+  [here](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMOR_input_example.json). The file must contain info on the
+  targeted input files' `calendar` and `grid` attributes, as well as the desired output directory structure definition.
 
 - If desired, a `fre.cmor`-flavored `yaml` file to encode many `fre cmor run` calls in one `fre cmor yaml` call, with `pp` and
   `model` flavored `yaml` files nearby. See `fre cmor yaml`. The exact structure of these configuration files is currently being actively
@@ -59,10 +59,14 @@ fre cmor run --help
 # higher-level routine to encode many 'run' calls across tables, grids, components, etc.
 fre cmor yaml --help
 
-# convenience / helper function for exploring external table configuration files. brittle!
+# convenience / helper function for exploring external table configuration files
+# helpful for code development, not designed for deployment usage
+# open an issue on github if you'd like more functionality here
 fre cmor find --help
 
-# convenience / helper function for creating variable lists. brittle! 
+# convenience / helper function for creating variable lists
+# helpful for code development, not designed for deployment usage
+# open an issue on github if you'd like more functionality here
 fre cmor varlist --help 
 ```
 
@@ -74,19 +78,19 @@ respective tool's `--help` output at the command line, and consult the
 ### `fre cmor run`
 
 Rewrite climate model output files in a target input directory to be CMIP-compliant. This rewriting process is referred to as
-"CMORization" in the MIP-package ecosystem. It requires external configuration in the form of MIP tables and a controlled vocabulary
-to work. Additionally, it requires from the user a variable list and certain pieces of metadata associated with the experiment (e.g.
+"CMORization" in the MIP-package ecosystem. External configuration is required in the form of MIP tables, and a controlled vocabulary
+to work. Additionally, the user must provide a variable list and certain pieces of metadata associated with the experiment (e.g.
 `calendar`). This tool DOES NOT use `yaml` configuration, and should be considered, i.e. `yaml`-naive and/or independent.
 
 
 #### Example and Description
 ```
 fre cmor run --run_one --grid_label gr --grid_desc FOO_BAR_PLACEHOLD --nom_res '10000 km' \
-               --indir fre/tests/test_files/ocean_sos_var_file/ \
-               --varlist fre/tests/test_files/varlist \
-               --table_config fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json \
-               --exp_config fre/tests/test_files/CMOR_input_example.json \
-               --outdir fre/tests/test_files/outdir
+             --indir fre/tests/test_files/ocean_sos_var_file/ \
+             --varlist fre/tests/test_files/varlist \
+             --table_config fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json \
+             --exp_config fre/tests/test_files/CMOR_input_example.json \
+             --outdir fre/tests/test_files/outdir
 ```
 
 Note- the target input file here is only created after running `pytest fre/cmor/tests fre/tests/test_fre_cmor_cli.py`. These tests
@@ -107,11 +111,11 @@ An input triplet of `--experiment` / `--platform` / `--target` is required to ma
 
 #### Example and Description
 ```
-fre -v cmor yaml -o combined.yaml --run_one --dry_run \
-                 -y fre/yamltools/tests/AM5_example/am5.yaml \
-				 -e c96L65_am5f7b12r1_amip \
-				 -p ncrc5.intel \
-				 -t prod-openmp
+fre -v cmor yaml --run_one --dry_run --output combined.yaml \
+                 --yamlfile fre/yamltools/tests/AM5_example/am5.yaml \
+				 --experiment c96L65_am5f7b12r1_amip \
+				 --platform ncrc5.intel \
+				 --target prod-openmp
 ```
 
 Note- this example is also from this repository's unit-tests.
@@ -126,14 +130,14 @@ files. `--run_one` means only the first call is printed, then the routine will f
 
 ### `fre cmor find`
 
-Search MIP tables for variable definitions and print relevant information to screen. It can search for information on variables
-in a list, or for information on a single variable.
+Search MIP tables for variable definitions and print relevant information to screen. A single variable as a string,
+or a list of variablescan be accepted as input.
 
 
 #### Example and Description
 ```
-fre -v cmor find -r fre/tests/test_files/cmip6-cmor-tables/Tables/ \
-                 -v sos
+fre -v cmor find --table_config_dir fre/tests/test_files/cmip6-cmor-tables/Tables/ \
+                 --opt_var_name sos
 ```
 
 Here, if a MIP table under `cmip6-cmor-tables/Tables` contains a variable entry for `sos`, then the MIP table and the metadata
@@ -149,8 +153,8 @@ variable in the right spot. Each entry in the output list should be unique.
 
 #### Example and Description
 ```
-fre cmor varlist -d fre/tests/test_files/ocean_sos_var_file/ \
-                 -o simple_varlist.txt
+fre cmor varlist --dir_targ fre/tests/test_files/ocean_sos_var_file/ \
+                 --output simple_varlist.txt
 cat simple_varlist.txt # shows the result
 ```
 

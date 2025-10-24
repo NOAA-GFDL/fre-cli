@@ -1,0 +1,84 @@
+netcdf tracer_level.0002-0002.scale_salt_emis {
+dimensions:
+	bnds = 2 ;
+	lat = 2 ;
+	lon = 2 ;
+	time = UNLIMITED ; // (1 currently)
+variables:
+	double bnds(bnds) ;
+		bnds:long_name = "vertex number" ;
+	double lat(lat) ;
+		lat:long_name = "latitude" ;
+		lat:units = "degrees_N" ;
+		lat:axis = "Y" ;
+		lat:bounds = "lat_bnds" ;
+	double lat_bnds(lat, bnds) ;
+		lat_bnds:long_name = "latitude bounds" ;
+		lat_bnds:units = "degrees_N" ;
+		lat_bnds:axis = "Y" ;
+	double lon(lon) ;
+		lon:long_name = "longitude" ;
+		lon:units = "degrees_E" ;
+		lon:axis = "X" ;
+		lon:bounds = "lon_bnds" ;
+	double lon_bnds(lon, bnds) ;
+		lon_bnds:long_name = "longitude bounds" ;
+		lon_bnds:units = "degrees_E" ;
+		lon_bnds:axis = "X" ;
+	float scale_salt_emis(time, lat, lon) ;
+		scale_salt_emis:_FillValue = 1.e+20f ;
+		scale_salt_emis:missing_value = 1.e+20f ;
+		scale_salt_emis:units = "unitless" ;
+		scale_salt_emis:long_name = "scale salt emis" ;
+		scale_salt_emis:interp_method = "conserve_order1" ;
+		scale_salt_emis:cell_methods = "time: mean" ;
+	double time(time) ;
+		time:units = "days since 0001-01-01 00:00:00" ;
+		time:long_name = "time" ;
+		time:axis = "T" ;
+		time:calendar_type = "NOLEAP" ;
+		time:calendar = "noleap" ;
+		time:bounds = "time_bnds" ;
+	double time_bnds(time, bnds) ;
+		time_bnds:units = "days since 0001-01-01 00:00:00" ;
+		time_bnds:long_name = "time axis boundaries" ;
+
+// global attributes:
+		:title = "cm5_c96_am5f7c1r0_b06_piC_galb_noiceinit_alb" ;
+		:grid_type = "regular" ;
+		:grid_tile = "N/A" ;
+		:code_release_version = "2024.02" ;
+		:git_hash = "b86d27037f755a82c586e55073dd575245c144b1" ;
+		:creationtime = "Fri Dec  6 17:15:31 2024" ;
+		:hostname = "pp329" ;
+		:history = "Tue Sep 23 14:27:37 2025: ncks -d lon,0,1 tracer_level.0002-0002.scale_salt_emis.nc_lat01 tracer_level.0002-0002.scale_salt_emis.nc_lat01_lon01\n",
+			"Tue Sep 23 14:26:18 2025: ncks -d lat,0,1 tracer_level.0002-0002.scale_salt_emis.nc tracer_level.0002-0002.scale_salt_emis.nc_lat01\n",
+			"Tue Aug 12 16:31:58 2025: ncks -d lat,,,10 -d lon,,,10 tracer_level.0002-0002.scale_salt_emis.nc reduced/tracer_level.0002-0002.scale_salt_emis.nc\n",
+			"fregrid --standard_dimension --input_mosaic C96_mosaic.nc --input_file 00020101.atmos_tracer --interp_method conserve_order1 --remap_file .fregrid_remap_file_288_by_180.nc --nlon 288 --nlat 180 --scalar_field bk,pk,radon,ssalt1_emis,ssalt2_emis,ssalt3_emis,ssalt4_emis,ssalt5_emis,ssalt1_setl,ssalt2_setl,ssalt3_setl,ssalt4_setl,ssalt5_setl,ssalt1_wet_dep,ssalt2_wet_dep,ssalt3_wet_dep,ssalt4_wet_dep,ssalt5_wet_dep,ssalt1_dvel,ssalt2_dvel,ssalt3_dvel,ssalt4_dvel,ssalt5_dvel,ssalt1_ddep,ssalt2_ddep,ssalt3_ddep,ssalt4_ddep,ssalt5_ddep,scale_salt_emis,time_bnds --output_file out.nc" ;
+		:comment = "FMS time averaging, version 3.0, precision=double" ;
+		:NCO = "netCDF Operators version 5.3.4 (Homepage = http://nco.sf.net, Code = http://github.com/nco/nco, Citation = 10.1016/j.envsoft.2008.03.004)" ;
+data:
+
+ bnds = 1, 2 ;
+
+ lat = -89.5, -79.5 ;
+
+ lat_bnds =
+  -90, -89,
+  -80, -79 ;
+
+ lon = 0.625, 13.125 ;
+
+ lon_bnds =
+  0, 1.25,
+  12.5, 13.75 ;
+
+ scale_salt_emis =
+  1, 1,
+  1, 1 ;
+
+ time = 547.5 ;
+
+ time_bnds =
+  365, 730 ;
+}

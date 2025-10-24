@@ -1,4 +1,15 @@
-''' test "fre cmor" calls '''
+"""
+CLI Tests for fre cmor *
+Tests the command-line-interface calls for tools in the fre cmor suite.
+Each tool generally gets 3 tests:
+    - fre cmor $tool, checking for exit code 0 (fails if cli isn't configured right)
+    - fre cmor $tool --help, checking for exit code 0 (fails if the code doesn't run)
+    - fre cmor $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured
+      right and thinks the tool has a --optionDNE option)
+
+We also have a set of more complicated tests for testing the full set of
+command-line args for fre cmor yaml and fre cmor run.
+"""
 
 from datetime import date
 from pathlib import Path
@@ -41,12 +52,64 @@ def test_setup_test_files():
 def test_cli_fre_cmor():
     ''' fre cmor '''
     result = runner.invoke(fre.fre, args=["cmor"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_cmor_help():
     ''' fre cmor --help '''
     result = runner.invoke(fre.fre, args=["cmor", "--help"])
     assert result.exit_code == 0
+
+def test_cli_fre_cmor_help_and_debuglog():
+    ''' fre -vv -l TEST_FOO_LOG.log cmor --help '''
+    if Path("TEST_FOO_LOG.log").exists():
+        Path("TEST_FOO_LOG.log").unlink()
+    assert not Path("TEST_FOO_LOG.log").exists()
+
+    result = runner.invoke(fre.fre, args=["-vv", "-l", "TEST_FOO_LOG.log", "cmor", "--help"])
+    assert result.exit_code == 0
+    assert Path("TEST_FOO_LOG.log").exists()
+
+    log_text_line_1='[ INFO:                  fre.py:                 fre] fre_file_handler added to base_fre_logger\n'
+    log_text_line_2='[DEBUG:                  fre.py:                 fre] click entry-point function call done.\n'
+    with open( "TEST_FOO_LOG.log", 'r') as log_text:
+        line_list=log_text.readlines()
+        assert log_text_line_1 in line_list[0]
+        assert log_text_line_2 in line_list[1]
+
+    Path("TEST_FOO_LOG.log").unlink()
+
+def test_cli_fre_cmor_help_and_infolog():
+    ''' fre -v -l TEST_FOO_LOG.log cmor --help '''
+    if Path("TEST_FOO_LOG.log").exists():
+        Path("TEST_FOO_LOG.log").unlink()
+    assert not Path("TEST_FOO_LOG.log").exists()
+
+    result = runner.invoke(fre.fre, args=["-v", "-l", "TEST_FOO_LOG.log", "cmor", "--help"])
+    assert result.exit_code == 0
+    assert Path("TEST_FOO_LOG.log").exists()
+
+    log_text_line_1='[ INFO:                  fre.py:                 fre] fre_file_handler added to base_fre_logger\n'
+    with open( "TEST_FOO_LOG.log", 'r') as log_text:
+        line_list=log_text.readlines()
+        assert log_text_line_1 in line_list[0]
+
+    Path("TEST_FOO_LOG.log").unlink()
+
+def test_cli_fre_cmor_help_and_quietlog():
+    ''' fre -q -l TEST_FOO_LOG.log cmor --help '''
+    if Path("TEST_FOO_LOG.log").exists():
+        Path("TEST_FOO_LOG.log").unlink()
+    assert not Path("TEST_FOO_LOG.log").exists()
+
+    result = runner.invoke(fre.fre, args=["-q", "-l", "TEST_FOO_LOG.log", "cmor", "--help"])
+    assert result.exit_code == 0
+    assert Path("TEST_FOO_LOG.log").exists()
+
+    with open( "TEST_FOO_LOG.log", 'r') as log_text:
+        line_list=log_text.readlines()
+        assert line_list == []
+
+    Path("TEST_FOO_LOG.log").unlink()
 
 def test_cli_fre_cmor_opt_dne():
     ''' fre cmor optionDNE '''
@@ -83,14 +146,14 @@ def test_cli_fre_cmor_yaml_case1():
             'fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp'
         ) ).mkdir(parents=True, exist_ok=True)
     if Path('FOO_cmor.yaml').exists():
-        Path('FOO_cmor.yaml').unlink()        
+        Path('FOO_cmor.yaml').unlink()
     result = runner.invoke(fre.fre, args=["-v", "-v", "cmor", "yaml", "--dry_run",
                                           "-y", TEST_AM5_YAML_PATH,
                                           "-e", "c96L65_am5f7b12r1_amip",
                                           "-p", "ncrc5.intel",
                                           "-t", "prod-openmp",
                                           "--output", "FOO_cmor.yaml" ])
-    
+
     assert all ( [ Path(TEST_AM5_YAML_PATH).exists(), # input, unparsed, model-yaml file
                    Path(TEST_CMOR_YAML_PATH).exists(), # input, unparsed, tool-yaml file
                    Path(f'FOO_cmor.yaml').exists(), #output, merged, parsed, model+tool yaml-file
@@ -218,3 +281,11 @@ def test_cli_fre_cmor_find_opt_dne():
     ''' fre cmor find optionDNE '''
     result = runner.invoke(fre.fre, args=["cmor", "find", "optionDNE"])
     assert result.exit_code == 2
+
+
+def test_cli_fre_cmor_find():
+    ''' fre -v cmor find --varlist fre/tests/test_files/varlist --table_config_dir fre/tests/test_files/cmip6-cmor-tables/Tables '''
+    result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
+                                          "--varlist", "fre/tests/test_files/varlist",
+                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
+    assert result.exit_code == 0

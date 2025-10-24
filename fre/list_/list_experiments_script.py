@@ -6,7 +6,7 @@ information to list experiment information.
 import logging
 import yaml
 
-from fre.yamltools import pp_info_parser as ppip
+from fre.yamltools.info_parsers import pp_info_parser as ppip
 
 ## to-do: figure out validation
 # Imports associated with commented block

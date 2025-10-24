@@ -9,10 +9,6 @@ target variable/component.
 
 Functions
 ---------
-- ``check_path_existence(some_path)``
-- ``iso_to_bronx_chunk(cmor_chunk_in)``
-- ``conv_mip_to_bronx_freq(cmor_table_freq)``
-- ``get_bronx_freq_from_mip_table(json_table_config)``
 - ``cmor_yaml_subtool(...)``
 """
 
@@ -80,6 +76,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
     .. note:: Delegates actual CMORization to cmor_run_subtool, except in dry-run mode.
     .. note:: All actions and key decisions are logged.
     """
+    check_path_existence(yamlfile)
 
     # ---------------------------------------------------
     # parsing the target model yaml ---------------------
@@ -171,7 +168,6 @@ def cmor_yaml_subtool( yamlfile: str = None,
         fre_logger.info('json_table_config = %s', json_table_config)
         check_path_existence(json_table_config)
 
-
         # frequency of data ---- the reason this spot looks kind of awkward is because of the case where
         #                        the table if e.g. Ofx and thus the table's frequency field is smth like 'fx'
         #                        if that's the case, we only demand that the freq field is filled out in the yaml
@@ -188,7 +184,6 @@ def cmor_yaml_subtool( yamlfile: str = None,
         elif freq != table_freq and table_freq is not None:
             raise ValueError(
                 'frequency from MIP table is incompatible with requested frequency in cmor yaml for {table_config}')
-        # frequency of data ---- the reason this spot looks kind of
 
         # gridding info of data ---- revisit/TODO
         gridding_dict = table_config['gridding']

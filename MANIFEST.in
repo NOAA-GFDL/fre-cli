@@ -1,3 +1,6 @@
 include README.md
 include LICENSE.md
 recursive-include fre *
+# Exclude Python files from cmip6-cmor-tables submodule that have Python 2 syntax
+exclude fre/tests/test_files/cmip6-cmor-tables/CMIP6_CVs/src/*.py
+exclude fre/tests/test_files/cmip6-cmor-tables/scripts/*.py

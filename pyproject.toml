@@ -7,7 +7,7 @@ name = "fre-cli"
 description = "Command Line Interface for FRE commands"
 readme = "README.md"
 requires-python = "==3.11.*" # loosen this TODO
-license = {text = "Apache License (2.0)"}
+license = "Apache-2.0"
 authors = [
     {name = "MSD Workflow Team", email="oar.gfdl.workflow@noaa.gov"}
 ]
@@ -23,24 +23,24 @@ keywords = [
 # This package also requires some conda packages in the
 # noaa-gfdl channel (e.g., analysis_scripts, catalogbuilder)
 dependencies = [
+        'analysis_scripts',
         'catalogbuilder',
         'cdo',
+        'cftime',
         'click',
         'cmor',
         'cylc-flow',
         'cylc-rose',
-        'pyyaml',
-        'pylint',
-        'pytest',
         'jsonschema',
         'metomi-rose',
+        'netCDF4',
+        'numpy',
+        'pyyaml',
         'xarray',
-        'numpy<2',
 ]
 
 classifiers = [
     "Environment :: Console",
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: POSIX",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -60,6 +60,10 @@ fre = 'fre.fre:fre'
 docs = [
     "sphinx",
     "renku-sphinx-theme",
-    "sphinx-rtd-theme"
+    "sphinx-rtd-theme",
 ]
 
+test = [
+    "pylint",
+    "pytest",
+]

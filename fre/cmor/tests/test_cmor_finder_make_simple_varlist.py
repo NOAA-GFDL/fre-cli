@@ -15,11 +15,11 @@ def temp_netcdf_dir(tmp_path):
         "model.19900101.salt.nc",
         "model.19900101.velocity.nc"
     ]
-    
+
     for filename in netcdf_files:
         file_path = tmp_path / filename
         file_path.touch()  # Create empty files for testing
-    
+
     return tmp_path
 
 @pytest.fixture
@@ -44,10 +44,10 @@ def test_make_simple_varlist_success(temp_netcdf_dir, tmp_path):
     """
     # Arrange
     output_file = tmp_path / "varlist.json"
-    
+
     # Act
     result = make_simple_varlist(str(temp_netcdf_dir), str(output_file))
-    
+
     # Assert
     assert result is not None
     assert isinstance(result, dict)
@@ -57,7 +57,7 @@ def test_make_simple_varlist_success(temp_netcdf_dir, tmp_path):
     assert result["temp"] == "temp"
     assert result["salt"] == "salt"
     assert result["velocity"] == "velocity"
-    
+
     # Verify output file was created
     assert output_file.exists()
     with open(output_file, "r") as f:
@@ -70,7 +70,7 @@ def test_make_simple_varlist_return_value_only(temp_netcdf_dir):
     """
     # Act
     result = make_simple_varlist(str(temp_netcdf_dir), None)
-    
+
     # Assert
     assert result is not None
     assert isinstance(result, dict)
@@ -84,10 +84,10 @@ def test_make_simple_varlist_single_file_warning(temp_netcdf_dir_single_file, tm
     """
     # Arrange
     output_file = tmp_path / "varlist.json"
-    
+
     # Act
     result = make_simple_varlist(str(temp_netcdf_dir_single_file), str(output_file))
-    
+
     # Assert
     assert result is not None
     assert isinstance(result, dict)
@@ -100,7 +100,7 @@ def test_make_simple_varlist_no_files(empty_dir):
     """
     # Act
     result = make_simple_varlist(str(empty_dir), None)
-    
+
     # Assert - function should return None when no files found
     assert result is None
 
@@ -110,7 +110,7 @@ def test_make_simple_varlist_invalid_output_path(temp_netcdf_dir):
     """
     # Arrange - try to write to a directory that doesn't exist
     invalid_output_path = "/nonexistent_directory/varlist.json"
-    
+
     # Act & Assert
     with pytest.raises(OSError, match="output variable list created but cannot be written"):
         make_simple_varlist(str(temp_netcdf_dir), invalid_output_path)
@@ -122,9 +122,9 @@ def test_make_simple_varlist_no_matching_pattern(tmp_path):
     # Arrange - create files that don't follow the expected pattern
     (tmp_path / "random_file.txt").touch()
     (tmp_path / "another_file.nc").touch()  # Missing datetime pattern
-    
+
     # Act
     result = make_simple_varlist(str(tmp_path), None)
-    
+
     # Assert - should return None when no matching files found
     assert result is None
