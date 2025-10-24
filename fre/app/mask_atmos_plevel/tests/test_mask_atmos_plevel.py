@@ -262,3 +262,14 @@ def test_pressure_coordinate_continue_warning(tmp_input):
 
     coord_out = pressure_coordinate(ds = in_ds, varname='ua_unmsk')
     assert coord_out is None
+
+def test_pressure_coordinate_found_no_long_name(tmp_input):
+    """
+    tests that a pressure coordinate can still be found under certain conditions when the long_name attribute
+    isnt as expected
+    """
+    in_ds = xr.open_dataset(tmp_input)
+    in_ds['plev19'].attrs['long_name'] = "foo"
+
+    coord_out = pressure_coordinate(ds = in_ds, varname='ua_unmsk')
+    assert coord_out is not None

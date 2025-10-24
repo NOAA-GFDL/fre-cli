@@ -170,11 +170,21 @@ def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
             fre_logger.warning('dim %s not found in list of ds variables, continue', dim)
             continue
 
-        fre_logger.info('attempting to assign pressure coordinate')
-        if ds[dim].attrs["long_name"] == "pressure":
-            pressure_coord = ds[dim]
-        elif "coordinates" in ds.attrs and ds[dim].attrs["units"] == "Pa":
-            pressure_coord = ds[dim]
+        fre_logger.info('attempting to assign pressure coordinate, checking dim=%s', dim)
+        fre_logger.debug('attributes: %s', list(ds[dim].attrs) )
+        try:
+            if ds[dim].attrs["long_name"] == "pressure":
+                pressure_coord = ds[dim]
+            elif all( ['positive' in list(ds[dim].attrs),
+                       ds[dim].attrs['axis'].lower() == "z",
+                       ds[dim].attrs["units"] == "Pa" ] ) :
+                pressure_coord = ds[dim]
+            else:
+                fre_logger.debug('%s is not assignable as pressure_coordnate', dim)
+        except KeyError:
+            continue
+        if pressure_coord is not None:
+            break
     if pressure_coord is None:
         fre_logger.warning("pressure_coord is None, it could not be assigned!")
     return pressure_coord
