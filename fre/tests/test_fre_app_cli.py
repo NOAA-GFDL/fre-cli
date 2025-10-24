@@ -158,9 +158,9 @@ def test_cli_fre_app_combine_time_averages_case(capfd):
     """
     result = runner.invoke(fre.fre, args=["app", "combine-time-averages",
                                           "--in-dir",
-                                          "FOO_PLACEHOLD",#"/tmp/pytest-of-Ian.Laflotte/pytest-211/test_combine_annual_av0/in/atmos",
+                                          "FOO_PLACEHOLD",
                                           "--out-dir",
-                                          "BAR_PLACEHOLD",#"/tmp/pytest-of-Ian.Laflotte/pytest-211/test_combine_annual_av0/out",
+                                          "BAR_PLACEHOLD",
                                           "--component", "atmos",
                                           "--begin", "1980",
                                           "--end", "1981",

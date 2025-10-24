@@ -33,6 +33,27 @@ def tmp_input(tmp_path):
     yield tmp_input
 
 @pytest.fixture()
+def tmp_case2input(tmp_path):
+    # write netcdf files from the cdfs
+    # data (ua)
+    input_ = Path('fre/tests/test_files/reduced_ascii_files/atmos_cmip.ua_unmsk.case2.cdl')
+    assert Path(input_).exists()
+
+    # create temporary directory
+    tmp_dir = tmp_path
+    tmp_dir.mkdir(exist_ok=True)
+    tmp_case2input = Path(tmp_dir / "input.nc")
+
+    # ncgen
+    command = [ 'ncgen', '-o', tmp_case2input, input_ ]
+    sp = subprocess.run(command, check = True)
+    assert sp.returncode == 0
+    assert tmp_case2input.exists()
+
+    yield tmp_case2input
+
+
+@pytest.fixture()
 def tmp_ps(tmp_path):
     # write netcdf files from the cdfs
     # data (ps)
@@ -71,6 +92,25 @@ def tmp_ref(tmp_path):
 
     yield tmp_ref
 
+@pytest.fixture()
+def tmp_case2ref(tmp_path):
+    # write netcdf files from the cdfs
+    # data (ua)
+    ref = Path('fre/tests/test_files/reduced_ascii_files/atmos_cmip.ua_masked.case2.cdl')
+    assert Path(ref).exists()
+
+    # create temporary directory
+    tmp_dir = tmp_path
+    tmp_dir.mkdir(exist_ok=True)
+    tmp_case2ref = Path(tmp_dir / "case2ref.nc")
+
+    command = [ 'ncgen', '-o', tmp_case2ref, ref ]
+    sp = subprocess.run(command, check = True)
+    assert sp.returncode == 0
+    assert tmp_case2ref.exists()
+
+    yield tmp_case2ref
+
 def test_mask_atmos_plevel(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disable=redefined-outer-name
     """
     Do the pressure masking on the test input file,
@@ -85,6 +125,22 @@ def test_mask_atmos_plevel(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disa
     ds_ref = xr.open_dataset(tmp_ref)
 
     assert ds['ua_unmsk'].values.all() == ds_ref['ua_unmsk'].values.all()
+
+def test_mask_atmos_plevel_case2(tmp_case2input, tmp_ps, tmp_case2ref, tmp_path): # pylint: disable=redefined-outer-name
+    """
+    Do the pressure masking on the test input file,
+    and then compare to a previously generated output file.
+    """
+    tmp_output = Path(tmp_path / "output.nc")
+
+    mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_case2input, tmp_ps, tmp_output)
+    assert tmp_output.exists()
+
+    ds = xr.open_dataset(tmp_output)
+    ds_ref = xr.open_dataset(tmp_case2ref)
+
+    assert ds['ua_unmsk'].values.all() == ds_ref['ua_unmsk'].values.all()
+    assert ds['ua'].values.all() == ds_ref['ua'].values.all()
 
 
 def test_mask_atmos_plevel_recreate_output(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disable=redefined-outer-name
