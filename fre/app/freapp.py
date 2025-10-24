@@ -1,12 +1,12 @@
 ''' fre app calls '''
 
-import time
-
 import click
 
 from .mask_atmos_plevel.mask_atmos_plevel import mask_atmos_plevel_subtool
 from .generate_time_averages.generate_time_averages import generate
+from .generate_time_averages.wrapper import generate_wrapper
 from .regrid_xy.regrid_xy import regrid_xy
+from .generate_time_averages.combine import combine
 from .remap_pp_components.remap_pp_components import remap_pp_components
 
 @click.group(help=click.style(" - app subcommands", fg=(250,154,90)))
@@ -155,6 +155,81 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     """
     generate time averages for specified set of netCDF files.
     """
-    start_time = time.perf_counter()
     generate(inf, outf, pkg, var, unwgt, avg_type)
-    click.echo(f'Finished in total time {round(time.perf_counter() - start_time , 2)} second(s)')
+
+@app_cli.command()
+@click.option("--cycle-point",
+              type = str,
+              required = True,
+              help = "Beginning cycle-point in ISO8601")
+@click.option("--dir", 'dir_',
+              type = str,
+              required = True,
+              help = "Root directory containing the shards")
+@click.option("--sources",
+              type = str,
+              required = True,
+              help = "Sources (history file) input file, comma-separated")
+@click.option("--output-interval",
+              type = str,
+              required = True,
+              help = "ISO interval of the desired climatology")
+@click.option("--input-interval",
+              type = str,
+              required = True,
+              help = "ISO interval of the input timeseries")
+@click.option("--grid",
+              type = str,
+              required = True,
+              help = "Grid label corresponding to the shards directory, e.g. native, regrid-xy/180_288.conserve_order2")
+
+@click.option("--frequency",
+              type = str,
+              required = True,
+              help = "Frequency of desired climatology: 'mon' or 'yr'")
+@click.option("-p", "--pkg",
+              type = click.Choice(["cdo","fre-nctools","fre-python-tools"]),
+              default = "cdo",
+              help = "Time average approach")
+def gen_time_averages_wrapper(cycle_point, dir_, sources, output_interval, input_interval, grid, frequency, pkg):
+    """
+    Wrapper for climatology tool.
+    Time average all variables for a desired cycle point, source, and grid.
+    """
+    sources_list = sources.split(',')
+    generate_wrapper(cycle_point, dir_, sources_list, output_interval, input_interval, grid, frequency, pkg)
+
+@app_cli.command()
+@click.option("--in-dir",
+              type = str,
+              required = True,
+              help = "Input directory")
+@click.option("--out-dir",
+              type = str,
+              required = True,
+              help = "Output directory")
+@click.option("--component",
+              type = str,
+              required = True,
+              help = "Component name to combine")
+@click.option("--begin",
+              type = int,
+              required = True,
+              help = "Beginning year")
+@click.option("--end",
+              type = int,
+              required = True,
+              help = "Ending year")
+@click.option("--frequency",
+              type = str,
+              required = True,
+              help = "Climatology frequency; 'mon' or 'yr'")
+@click.option("--interval",
+              type = str,
+              required = True,
+              help = "Climatology interval in ISO8601")
+def combine_time_averages(in_dir, out_dir, component, begin, end, frequency, interval):
+    """
+    Combine per-variable climatologies into one file
+    """
+    combine(in_dir, out_dir, component, begin, end, frequency, interval)
