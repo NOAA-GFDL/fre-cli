@@ -54,7 +54,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
         fre_logger.warning('pressure variable ps not found in target pressure file')
         if not warn_no_ps:
             raise ValueError(f"Surface pressure file {psfile} does not contain surface pressure.")
-        fre_logger.warning('... warn_no_ps is True! this means im going to no-op gracefully instead of raising an error')
+        fre_logger.warning('warn_no_ps is True! this means im going to no-op gracefully instead of raising an error')
         return
 
     fre_logger.info('with xarray, opening input file %s', infile)
