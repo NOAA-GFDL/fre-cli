@@ -4,6 +4,7 @@ omit =
     fre/app/generate_time_averages/tests/*
     fre/app/regrid_xy/tests/*
     fre/app/remap_pp_components/tests/*
+    fre/app/mask_atmos_plevel/tests/*
     fre/app/tests/*
     fre/catalog/tests/*
     fre/check/*
