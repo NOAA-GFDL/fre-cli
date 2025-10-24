@@ -231,3 +231,18 @@ def test_mask_atmos_plevel_no_missing_val(tmp_input, tmp_ps, tmp_ref, tmp_path):
     with pytest.raises(KeyError):
         mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input2, tmp_ps, tmp_output)
     assert not tmp_output.exists()
+
+def test_mask_atmos_plevel_pmask_true(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disable=redefined-outer-name
+    """
+    Do the pressure masking on the test input file,
+    and then compare to a previously generated output file.
+    """
+    tmp_output = Path(tmp_path / "output.nc")
+
+    in_ds = xr.open_dataset(tmp_input)
+    in_ds['ua_unmsk'].attrs['pressure_mask'] = 'True'
+    tmp_input2 = Path(tmp_path / 'tmp_input2.nc')
+    in_ds.to_netcdf(path=tmp_input2, mode='a')
+
+    mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input2, tmp_ps, tmp_output)
+    assert not tmp_output.exists()
