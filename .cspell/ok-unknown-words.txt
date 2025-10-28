@@ -457,6 +457,7 @@ spackloads
 SPHINXBUILD
 SPHINXOPTS
 sphum
+splitmon
 srces
 SRCROOT
 srcs
@@ -485,6 +486,7 @@ thefiles
 timavg
 timavgcsh
 timeaveraged
+timeaverager
 timeavgs
 timelevels
 timesteps
