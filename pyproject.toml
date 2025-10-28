@@ -23,19 +23,20 @@ keywords = [
 # This package also requires some conda packages in the
 # noaa-gfdl channel (e.g., analysis_scripts, catalogbuilder)
 dependencies = [
+        'analysis_scripts',
         'catalogbuilder',
         'cdo',
+        'cftime',
         'click',
         'cmor',
         'cylc-flow',
         'cylc-rose',
-        'pyyaml',
-        'pylint',
-        'pytest',
         'jsonschema',
         'metomi-rose',
+        'netCDF4',
+        'numpy',
+        'pyyaml',
         'xarray',
-        'numpy<2',
 ]
 
 classifiers = [
@@ -59,6 +60,10 @@ fre = 'fre.fre:fre'
 docs = [
     "sphinx",
     "renku-sphinx-theme",
-    "sphinx-rtd-theme"
+    "sphinx-rtd-theme",
 ]
 
+test = [
+    "pylint",
+    "pytest",
+]
