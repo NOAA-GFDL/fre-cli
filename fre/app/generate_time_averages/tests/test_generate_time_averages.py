@@ -164,7 +164,7 @@ def test_run_avgtype_pkg_calculations( pkg      ,
                          avg_type,
                          unwgt     ]
 
-    # check again the input file(s) exist before runnig the time averager
+    # check again the input file(s) exist before running the time averager
     if isinstance(infile, str):
         assert Path(infile).exists(), f'DNE (string) infile = {infile}'
     if isinstance(infile, list):

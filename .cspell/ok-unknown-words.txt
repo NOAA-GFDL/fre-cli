@@ -18,11 +18,13 @@ averager
 Averager
 avgs
 avgtype
+avgr
 avgvals
 BADOPT
 BADYAMLFILE
 baremetal
 Baremetal
+basenames
 Blanton
 bldsetup
 bnds
@@ -34,6 +36,8 @@ capfd
 caplog
 casedirs
 catalogbuilder
+cdfs
+cdotimavg
 CCYY
 CCYYMM
 CCYYMMDD
@@ -119,6 +123,7 @@ DSPMD
 dunp
 dura
 ecpe
+emis
 Emon
 encodekey
 encodeval
@@ -293,10 +298,13 @@ monniker
 mosaicfile
 moveaxis
 mpicc
+multifile
+multifiles
 muldpm
 multijob
 MULTIJOB
 myavger
+mypy
 namenopath
 nbhome
 ncatted
@@ -313,6 +321,7 @@ NCGEN
 ncks
 ncontact
 ncrc
+netcdfs
 nctool
 nctool's
 nctools
@@ -400,6 +409,7 @@ pstring
 ptest
 ptmp
 pylint
+pylintrc
 pytest
 Pytest
 pytests
@@ -410,6 +420,7 @@ qpoint
 quietlog
 rainwat
 Rbite
+rcfile
 Rcommander
 RDHPCS
 redissolution
@@ -461,8 +472,9 @@ splitmon
 srces
 SRCROOT
 srcs
-Stofferahn
 stddevs
+stdoutput
+Stofferahn
 strat
 subdaily
 subdirs
@@ -494,6 +506,7 @@ Timesteps
 timmean
 timsum
 tmpdirpath
+tmpdirs
 tmpfs
 TOAR
 toctree
