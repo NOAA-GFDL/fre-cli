@@ -99,7 +99,7 @@ effectively contain this exact example, which is run automatically in as a unit-
 Here, `fre cmor run` will process one file before exiting (`--run_one`), use the input gridding information metadata provided by the
 `--grid_label`, `--grid_desc`, and `--nom_res` arguments. `--table_config` is pointing to a specific external configuration table known
 as a MIP table, while `--exp_config` will contain the requisite information on output directory structure, calendar, and more. `--varlist`
-specifies which files in `--intdir` will be processed. The output directory structure's final location will be at `--outdir`.
+specifies which files in `--indir` will be processed. The output directory structure's final location will be at `--outdir`.
 
 
 ### `fre cmor yaml`
