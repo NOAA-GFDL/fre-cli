@@ -1,6 +1,7 @@
 import logging
 import os
 from pathlib import Path
+import pprint
 import subprocess
 import tarfile
 import xarray as xr
@@ -65,22 +66,29 @@ def get_grid_spec(datadict: dict) -> str:
               The grid_spec file is required in order to determine the
               input mosaic filename
     """
+    
+    grid_spec = str(Path("grid_spec.nc").resolve())
+    fre_logger.info('grid spec filename is: %s', grid_spec)
 
-    #grid spec filename
-    grid_spec = "grid_spec.nc"
-
-    #get tar file containing the grid_spec file
     pp_grid_spec_tar = datadict["yaml"]["postprocess"]["settings"]["pp_grid_spec"]
+    fre_logger.info('grid spec tar archive file name is: %s', pp_grid_spec_tar)
 
-    #untar grid_spec tar file into the current work directory
+    fre_logger.debug('checking if %s is a tar file...', pp_grid_spec_tar)
     if tarfile.is_tarfile(pp_grid_spec_tar):
+        
+        fre_logger.debug('it is a tar file! attempting top open %s', pp_grid_spec_tar)
         with tarfile.open(pp_grid_spec_tar, "r") as tar:
+            
+            fre_logger.debug('opened! about to extract all from opened tar file object into %s', os.getcwd())
             tar.extractall()
-
+            fre_logger.debug('everything extracted!')
+            fre_logger.debug('contents extracted are ... %s', str(os.listdir(os.getcwd())) )
+            
     #error if grid_spec file is not found after extracting from tar file
     if not Path(grid_spec).exists():
         raise IOError(f"Cannot find {grid_spec} in tar file {pp_grid_spec_tar}")
-
+    
+    fre_logger.debug('grid_spec = %s exists!', grid_spec)
     return grid_spec
 
 
@@ -290,30 +298,31 @@ def regrid_xy(yamlfile: str,
     .. note:  All directories should be in absolute paths
     """
 
-    #check if input_dir exists
+    fre_logger.debug('checking if input_dir = %s exists', input_dir)
     if not Path(input_dir).exists():
         raise RuntimeError(f"Input directory {input_dir} containing the input data files does not exist")
 
-    #check if output_dir exists
+    fre_logger.debug('checking if output_dir = %s exists', output_dir)
     if not Path(output_dir).exists():
         raise RuntimeError(f"Output directory {output_dir} where regridded data" \
                             "will be outputted does not exist")
 
-    #check if work_dir exists
+    fre_logger.debug('checking if work_dir = %s exists', work_dir)
     if not Path(work_dir).exists():
         raise RuntimeError(f"Specified working directory {work_dir} does not exist")
 
-    #work in working directory
+    fre_logger.debug('cd\'ing to work_dir = %s', work_dir)
     with helpers.change_directory(work_dir):
 
-        #initialize datadict
+        fre_logger.debug('initializing datadict')
         datadict = {}
 
-        # load yamlfile to yamldict
+        fre_logger.info( 'opening yamlfile = %s to read into yamldict', yamlfile )
         with open(yamlfile, "r") as openedfile:
             yamldict = yaml.safe_load(openedfile)
+            fre_logger.debug( 'the yamldict is: \n%s', pprint.pformat(yamldict) )
 
-        # save arguments to datadict
+        fre_logger.debug( 'saving yamldict fields to datadict' ) 
         datadict["yaml"] = yamldict
         datadict["grid_spec"] = get_grid_spec(datadict)
         datadict["input_dir"] = input_dir
@@ -321,22 +330,27 @@ def regrid_xy(yamlfile: str,
         datadict["work_dir"] = work_dir
         datadict["remap_dir"] = remap_dir
         datadict["input_date"] = input_date[:8]
+        fre_logger.info( 'datadict is %s', pprint.pformat(datadict) )
 
+        fre_logger.debug('making component list from yamldict')
         components = []
         for component in yamldict["postprocess"]["components"]:
             for this_source in component["sources"]:
                 if this_source["history_file"] == source:
                     components.append(component)
+        fre_logger.info('components list is: %s', ' '.join(components) )
 
-        # submit fregrid job for each component
+        fre_logger.debug('assembling fregrid call arguments for each component')
         for component in components:
+            fre_logger.debug('component = %s', component)
 
-            # skip component if postprocess_on = False
+            fre_logger.debug('checking postprocess_on field in component dict')
             if not component["postprocess_on"]:
                 fre_logger.warning(f"postprocess_on=False for {source} in component {component['type']}." \
                                     "Skipping {source}")
                 continue
-
+            
+            fre_logger.debug( 'saving component-specific info to datadict' ) 
             datadict["inputRealm"] = component["inputRealm"]
             datadict["input_mosaic"] = get_input_mosaic(datadict)
             datadict["output_nlat"], datadict["output_nlon"] = component["xyInterp"].split(",")
@@ -344,14 +358,16 @@ def regrid_xy(yamlfile: str,
             datadict["remap_file"] = get_remap_file(datadict)
             datadict["input_file"] = get_input_file(datadict, source)
             datadict["scalar_field"], regrid = get_scalar_fields(datadict)
+            fre_logger.info( 'datadict is now %s', pprint.pformat(datadict) )
 
             # skip if there are no variables to regrid
             if regrid:
                 write_summary(datadict)
             else:
+                fre_logger.warning('no variables to regrid, skipping component')
                 continue
 
-            #construct fregrid command
+            fre_logger.debug('constructing fregrid command...')
             fregrid_command = [
                 "fregrid",
                 "--debug",
@@ -366,12 +382,18 @@ def regrid_xy(yamlfile: str,
                 "--scalar_field", datadict["scalar_field"],
                 "--output_dir", output_dir,
             ]
+            fre_logger.info('the fregrid command is: \n %s',
+                            ' '.join(fregrid_command).replace(' --', ' \n    --') )
 
             #execute fregrid command
+            fre_logger.debug('using subprocess.run to execute fregrid...')
             fregrid_job = subprocess.run(fregrid_command, capture_output=True, text=True)
 
             #print job useful information
             if fregrid_job.returncode == 0:
                 fre_logger.info(fregrid_job.stdout.split("\n")[-3:])
             else:
+                fre_logger.error('fregrid return code is nonzero!')
+                fre_logger.error('return code is %s', fregrid_job.returncode)
+                fre_logger.error('before error raise: stdout was %s', fregrid_job.stdout)
                 raise RuntimeError(fregrid_job.stderr)
