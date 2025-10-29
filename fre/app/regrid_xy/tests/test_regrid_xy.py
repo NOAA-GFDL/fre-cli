@@ -124,8 +124,8 @@ def test_get_input_mosaic():
   Tests get_input_mosaic correctly copies the mosaic file to the input directory
   """
 
-  grid_spec = Path("grid_spec.nc")
-  mosaic_file = Path("ocean_mosaic.nc")
+  grid_spec = Path("grid_spec.nc").resolve()
+  mosaic_file = Path("ocean_mosaic.nc").resolve()
 
   generate_files.make_grid_spec()
   mosaic_file.touch()

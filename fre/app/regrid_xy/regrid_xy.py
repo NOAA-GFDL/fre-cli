@@ -108,8 +108,10 @@ def get_input_mosaic(datadict: dict) -> str:
     .. note:: The input mosaic filename is a required input argument for fregrid.
               The input mosaic contains the input grid information.
     """
-
-    grid_spec = datadict["grid_spec"]
+    grid_spec = str(Path(datadict["grid_spec"]).resolve())
+    fre_logger.info('grid_spec is: %s', grid_spec)
+    if not Path(grid_spec).exists():
+        raise FileNotFoundError(f'grid_spec = {grid_spec} does not exist')
 
     #gridspec variable name holding the mosaic filename information
     match datadict["inputRealm"]:
@@ -119,7 +121,13 @@ def get_input_mosaic(datadict: dict) -> str:
 
     #get mosaic filename
     with xr.open_dataset(grid_spec) as dataset:
-        mosaic_file = str(dataset[mosaic_key].data.astype(str))
+        mosaic_file = str(
+            Path(
+                str(
+                    dataset[mosaic_key].data.astype(str)
+                )
+            ).resolve()
+        )
 
     #check if the mosaic file exists in the current directory
     if not Path(mosaic_file).exists():
