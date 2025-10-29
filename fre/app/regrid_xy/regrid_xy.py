@@ -108,7 +108,7 @@ def get_input_mosaic(datadict: dict) -> str:
     .. note:: The input mosaic filename is a required input argument for fregrid.
               The input mosaic contains the input grid information.
     """
-    grid_spec = str(Path(datadict["grid_spec"]).resolve())
+    grid_spec = datadict["grid_spec"]
     fre_logger.info('grid_spec is: %s', grid_spec)
     if not Path(grid_spec).exists():
         raise FileNotFoundError(f'grid_spec = {grid_spec} does not exist')
@@ -136,8 +136,7 @@ def get_input_mosaic(datadict: dict) -> str:
     return mosaic_file
 
 
-def get_input_file(datadict: dict, source: str) -> str:
-
+def get_input_file(datadict: dict, source: str, input_dir: str) -> str:
     """
     Formats the input file name where the input file contains the variable data that will be regridded.
 
@@ -145,8 +144,9 @@ def get_input_file(datadict: dict, source: str) -> str:
     :type datadict:dict
     :param source: history file type
     :type source: str
+    :param input_dir: input file directory
 
-    :return: formatted input file name
+    :return: formatted full path to input file name
     :rtype: str
 
     .. note:: The input filename is a required argument for fregrid and refer to the history files containing
@@ -162,10 +162,17 @@ def get_input_file(datadict: dict, source: str) -> str:
               will return "20250805.atmos_daily_cmip"
               (3) Fregrid will append the tile numbers ("tile1.nc") for reading in the data
     """
-
+    fre_logger.debug('attempting to read input_date key from datadict')
     input_date = datadict["input_date"]
-    return source if input_date is None else f"{input_date}.{source}"
+    if input_date is None:
+        fre_logger.debug('input_date is None, resolve source = %s and return that absolute path', source)
+        input_file = f"{input_dir}/{source}"
+    else:
+        fre_logger.debug('input_date = %s, returning absolute path based on that', input_date)
+        input_file = f"{input_dir}/{input_date}.{source}"
 
+    fre_logger.debug('returning %s', input_file)
+    return input_file
 
 def get_remap_file(datadict: dict) -> str:
 
@@ -237,7 +244,8 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 
     # xarray gives an error if variables in non_regriddable_variables do not exist in the dataset
     # The errors="ignore" overrides the error
-    with xr.open_dataset(input_dir/input_file) as dataset:
+    #with xr.open_dataset(input_dir/input_file) as dataset:
+    with xr.open_dataset(input_file) as dataset:
         regrid_dataset = dataset.drop_vars(non_regriddable_variables, errors="ignore")
 
     if len(regrid_dataset) == 0:
@@ -271,12 +279,12 @@ def write_summary(datadict):
     fre_logger.info(f"FREGRID scalar_fields: {datadict['scalar_field']}")
 
 
-def regrid_xy(yamlfile: str,
-              input_dir: str,
-              output_dir: str,
-              work_dir: str,
-              remap_dir: str,
-              source: str,
+def regrid_xy(yamlfile: str,         
+              input_dir: str,        
+              output_dir: str,       
+              work_dir: str,         
+              remap_dir: str,        
+              source: str,           
               input_date: str = None,
 ):
 
@@ -305,6 +313,14 @@ def regrid_xy(yamlfile: str,
 
     .. note:  All directories should be in absolute paths
     """
+    fre_logger.info(f"yamlfile   = {yamlfile}")
+    fre_logger.info(f"input_dir  = {input_dir}")
+    fre_logger.info(f"output_dir = {output_dir}")
+    fre_logger.info(f"work_dir   = {work_dir}")
+    fre_logger.info(f"remap_dir  = {remap_dir}")
+    fre_logger.info(f"source     = {source}")
+    fre_logger.info(f"input_date = {input_date}")
+    
 
     fre_logger.debug('checking if input_dir = %s exists', input_dir)
     if not Path(input_dir).exists():
@@ -332,7 +348,11 @@ def regrid_xy(yamlfile: str,
 
         fre_logger.debug( 'saving yamldict fields to datadict' ) 
         datadict["yaml"] = yamldict
+        
         datadict["grid_spec"] = get_grid_spec(datadict)
+        if Path(datadict['grid_spec']).exists():
+            fre_logger.info('grid_spec exists here: %s', datadict['grid_spec'])
+        
         datadict["input_dir"] = input_dir
         datadict["output_dir"] = output_dir
         datadict["work_dir"] = work_dir
@@ -360,12 +380,26 @@ def regrid_xy(yamlfile: str,
             
             fre_logger.debug( 'saving component-specific info to datadict' ) 
             datadict["inputRealm"] = component["inputRealm"]
+            
+            fre_logger.debug('calling get_input_mosaic...')
             datadict["input_mosaic"] = get_input_mosaic(datadict)
+            fre_logger.debug('result was %s', datadict["input_mosaic"])
+            
             datadict["output_nlat"], datadict["output_nlon"] = component["xyInterp"].split(",")
             datadict["interp_method"] = component["interpMethod"]
+            
+            fre_logger.debug('calling get_remap_file')
             datadict["remap_file"] = get_remap_file(datadict)
-            datadict["input_file"] = get_input_file(datadict, source)
+            fre_logger.debug('result is %s', datadict["remap_file"])
+
+            fre_logger.debug('calling get_input_file')
+            datadict["input_file"] = get_input_file(datadict, source, input_dir)
+            fre_logger.debug('result is %s', datadict["input_file"])
+
+            fre_logger.debug('calling get_scalar_fields')
             datadict["scalar_field"], regrid = get_scalar_fields(datadict)
+            fre_logger.debug('result is %s', regrid)
+            
             fre_logger.info( 'datadict is now %s', pprint.pformat(datadict) )
 
             # skip if there are no variables to regrid
@@ -382,7 +416,7 @@ def regrid_xy(yamlfile: str,
                 "--standard_dimension",
                 "--input_dir", input_dir,
                 "--input_mosaic", datadict["input_mosaic"],
-                "--input_file", datadict["input_file"],
+                "--input_file", datadict["input_file"].split('/')[-1], # no dir with the input file
                 "--interp_method", datadict["interp_method"],
                 "--remap_file", datadict["remap_file"],
                 "--nlon", datadict["output_nlon"],
@@ -391,7 +425,7 @@ def regrid_xy(yamlfile: str,
                 "--output_dir", output_dir,
             ]
             fre_logger.info('the fregrid command is: \n %s',
-                            ' '.join(fregrid_command).replace(' --', ' \n    --') )
+                            ' '.join(fregrid_command).replace(' --', ' \\\n    --') )
 
             #execute fregrid command
             fre_logger.debug('using subprocess.run to execute fregrid...')

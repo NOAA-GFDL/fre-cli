@@ -70,7 +70,77 @@ def cleanup_test():
   if work_dir.exists(): shutil.rmtree(work_dir)
   generate_files.cleanup()
 
+
+def test_get_input_mosaic():
+
+  """
+  Tests get_input_mosaic correctly copies the mosaic file to the input directory
+  """
+  setup_test()
   
+  grid_spec = Path("grid_spec.nc").resolve()
+  mosaic_file = Path("ocean_mosaic.nc").resolve()
+
+  generate_files.make_grid_spec()
+  mosaic_file.touch()
+
+  datadict=dict(grid_spec=grid_spec, inputRealm="ocean")
+
+  assert regrid_xy.get_input_mosaic(datadict) == str(mosaic_file)
+
+  mosaic_file.unlink()  #clean up
+  grid_spec.unlink()  #clean up
+  cleanup_test()
+
+def test_get_input_file():
+
+  """
+  Tests get_input_file
+  """
+
+  input_dir = os.getcwd()
+  input_date = "20250807"
+  source = "pemberley"
+  datadict = {"input_date": input_date}
+  expected_answer_w_date = f"{input_dir}/{input_date}.{source}"
+  assert regrid_xy.get_input_file(datadict, source, input_dir) == expected_answer_w_date
+
+  datadict["input_date"] = None
+  expected_answer_no_date = f"{input_dir}/{source}"
+  assert regrid_xy.get_input_file(datadict, source, input_dir) == expected_answer_no_date
+
+
+def test_get_remap_file():
+
+  """
+  Tests get_remap_file
+  """
+
+  remap_dir = Path("remap_dir")
+  input_mosaic = "C20_mosaic"
+  nlon = 40
+  nlat = 10
+  interp_method = "conserve_order1"
+
+  datadict = {"remap_dir": remap_dir.name,
+              "input_mosaic": input_mosaic+".nc",
+              "output_nlon": nlon,
+              "output_nlat": nlat,
+              "interp_method": interp_method}
+
+  #check remap file from current directory is copied to input directory
+  remap_file = Path(f"remap_dir/{input_mosaic}X{nlon}by{nlat}_{interp_method}.nc")
+
+  regrid_xy.get_remap_file(datadict) == str(remap_dir/remap_file)
+
+  remap_dir.mkdir(exist_ok=True)
+  remap_file.touch()
+  regrid_xy.get_remap_file(datadict) == str(remap_dir/remap_file)
+
+  Path(remap_file).unlink()
+  shutil.rmtree(remap_dir)
+
+
 def test_regrid_xy():
 
   """
@@ -118,67 +188,3 @@ def test_regrid_xy():
   cleanup_test()
   
   
-def test_get_input_mosaic():
-
-  """
-  Tests get_input_mosaic correctly copies the mosaic file to the input directory
-  """
-
-  grid_spec = Path("grid_spec.nc").resolve()
-  mosaic_file = Path("ocean_mosaic.nc").resolve()
-
-  generate_files.make_grid_spec()
-  mosaic_file.touch()
-
-  datadict=dict(grid_spec=grid_spec, inputRealm="ocean")
-
-  assert regrid_xy.get_input_mosaic(datadict) == str(mosaic_file)
-
-  mosaic_file.unlink()  #clean up
-  grid_spec.unlink()  #clean up
-
-
-def test_get_input_file():
-
-  """
-  Tests get_input_file
-  """
-
-  input_date = "20250807"
-  source = "pemberley"
-  datadict = {"input_date": input_date}
-  assert regrid_xy.get_input_file(datadict, source) == input_date + "." + source
-
-  datadict["input_date"] = None
-  assert regrid_xy.get_input_file(datadict, source) == source
-
-
-def test_get_remap_file():
-
-  """
-  Tests get_remap_file
-  """
-
-  remap_dir = Path("remap_dir")
-  input_mosaic = "C20_mosaic"
-  nlon = 40
-  nlat = 10
-  interp_method = "conserve_order1"
-
-  datadict = {"remap_dir": remap_dir.name,
-              "input_mosaic": input_mosaic+".nc",
-              "output_nlon": nlon,
-              "output_nlat": nlat,
-              "interp_method": interp_method}
-
-  #check remap file from current directory is copied to input directory
-  remap_file = Path(f"remap_dir/{input_mosaic}X{nlon}by{nlat}_{interp_method}.nc")
-
-  regrid_xy.get_remap_file(datadict) == str(remap_dir/remap_file)
-
-  remap_dir.mkdir(exist_ok=True)
-  remap_file.touch()
-  regrid_xy.get_remap_file(datadict) == str(remap_dir/remap_file)
-
-  Path(remap_file).unlink()
-  shutil.rmtree(remap_dir)

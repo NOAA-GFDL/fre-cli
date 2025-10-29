@@ -61,19 +61,26 @@ def set_test(components_in: dict,
     nxy = nxy_in
     nxyp = nxy_in+1
     input_grid = f"C{nxy}"
-  if ntiles_in is not None: ntiles = ntiles_in
-  if date_in is not None: date = date_in
-  if yamlfile_in is not None: yamlfile = yamlfile_in
-  if grid_spec_tar_in is not None: grid_spec_tar = grid_spec_tar_in
-  if input_grid_in is not None: input_grid = input_grid_in
-  if input_mosaic_in is not None: input_mosaic = input_mosaic_in
-  if input_dir_in is not None: input_dir = input_dir_in
+  if ntiles_in is not None:
+    ntiles = ntiles_in
+  if date_in is not None:
+    date = date_in
+  if yamlfile_in is not None:
+    yamlfile = yamlfile_in
+  if grid_spec_tar_in is not None:
+    grid_spec_tar = grid_spec_tar_in
+  if input_grid_in is not None:
+    input_grid = input_grid_in
+  if input_mosaic_in is not None:
+    input_mosaic = input_mosaic_in
+  if input_dir_in is not None:
+    input_dir = input_dir_in
 
   tar_list = []
 
 def make_yaml():
 
-  ppyaml = {}
+  ppyaml= {}
   ppyaml["name"] = yamlfile
 
   directories = ppyaml["directories"] = {}
@@ -133,6 +140,7 @@ def make_grid():
 
     tar_list.append(f"{input_grid}.tile{i}.nc")
 
+  
 
 def make_data():
 
@@ -151,6 +159,7 @@ def make_data():
     for source in component["sources"]:
       history_file = source["history_file"]
       for i in range(1, ntiles+1):
+        #print(f"input_dir is {input_dir}") # input dir is /home/Ian.Laflotte/Working/fre-cli/test_inputs
         dataset.to_netcdf(f"{input_dir}/{date}.{history_file}.tile{i}.nc")
 
 
