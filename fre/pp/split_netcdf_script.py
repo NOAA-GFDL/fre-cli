@@ -1,5 +1,3 @@
- #!/bin/python
-
 # Split NetCDF files by variable
 #
 # Can be tiled or not. Component is optional, defaults to all.
@@ -98,6 +96,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   #  '00020101.atmos_level_cmip.tile4.nc'
   #  '00020101.ocean_cobalt_omip_2d.nc'
   file_regex = f'.*{history_source}(\\.tile.*)?.nc'
+  fre_logger.debug('file_regex= %s', file_regex)
 
   #If in sub-dir mode, process the sub-directories instead of the main one
   # and write to $outputdir/$subdir
@@ -109,28 +108,51 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     sd_string = ",".join(subdirs)
     for sd in subdirs:
       sdw = os.path.join(workdir,sd)
-      files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
+
+      #files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
+      files = []
+      for el in os.listdir(sdw):
+        fre_logger.debug('el = %s', el)
+        if re.match(file_regex, el) is not None:
+          fre_logger.debug('appending file %s', os.path.join(sdw,el) )
+          files.append( os.path.join(sdw,el) )
+
+      fre_logger.debug(f'full contents of {sdw} are {os.listdir(sdw)}')
       if len(files) == 0:
         fre_logger.info(f"No input files found; skipping subdir {subdir}")
-      else:
-        output_subdir = os.path.join(os.path.abspath(outputDir), sd)
-        if not os.path.isdir(output_subdir):
-          os.mkdir(output_subdir)
-        for infile in files:
-          split_file_xarray(infile, output_subdir, varlist)
-          files_split += 1
+        continue
+
+      output_subdir = os.path.join(os.path.abspath(outputDir), sd)
+      if not os.path.isdir(output_subdir):
+        os.mkdir(output_subdir)
+      for infile in files:
+        split_file_xarray(infile, output_subdir, varlist)
+        files_split += 1
+
     fre_logger.info(f"{files_split} files split")
     if files_split == 0:
-      fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir} that match pattern {file_regex}; no splitting took place")
+      fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir}"
+                       f" that match pattern {file_regex}; no splitting took place")
+      fre_logger.error(f'contents of workdir={workdir} are: {os.listdir(workdir)}')
       raise OSError
   else:
-      files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None]
+      #files=[ os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None]
+      files = []
+      for el in os.listdir(workdir):
+        fre_logger.debug('el = %s', el)
+        if re.match(file_regex, el) is not None:
+          fre_logger.debug('appending file %s', os.path.join(workdir, el) )
+          files.append( os.path.join(workdir, el) )
+
+      if len(files) == 0:
+        fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
+        fre_logger.error(f'contents of workdir={workdir} are: {os.listdir(workdir)}')
+        raise OSError
+
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
-      if len(files) == 0:
-        fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
-        raise OSError
+
 
   fre_logger.info("split-netcdf-wrapper call complete")
   sys.exit(0) #check this
@@ -322,5 +344,3 @@ def fre_outfile_name(infile, varname):
   '''
   var_outfile = re.sub(".nc", f".{varname}.nc", infile)
   return(var_outfile)
-
-#Main method invocation
