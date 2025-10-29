@@ -338,7 +338,7 @@ def regrid_xy(yamlfile: str,
             for this_source in component["sources"]:
                 if this_source["history_file"] == source:
                     components.append(component)
-        fre_logger.info('components list is: %s', ' '.join(components) )
+        fre_logger.info('components list is: %s', pprint.pformat(components) )
 
         fre_logger.debug('assembling fregrid call arguments for each component')
         for component in components:
