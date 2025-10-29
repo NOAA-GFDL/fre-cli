@@ -447,6 +447,7 @@ def regrid_xy(yamlfile: str,
                 "--debug",
                 "--standard_dimension",
                 "--input_dir", input_dir,
+                "--associated_file_dir", input_dir,
                 "--input_mosaic", datadict["input_mosaic"],
                 "--input_file", datadict["input_file"].split('/')[-1], # no dir with the input file
                 "--interp_method", datadict["interp_method"],
