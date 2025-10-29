@@ -11,6 +11,12 @@ from fre.app import helpers
 
 fre_logger = logging.getLogger(__name__)
 
+# it appears that fregrid believes the grid_spec file must have a datetime attached to it, like
+#     YYYYMMDD.grid_spec.tile
+# this is behavior in noaa-gfdl::fre-nctools==2022.02.01 that can't be changed, and so must be worked around.
+# hence, "ATTACH_LEGACY_DT"
+ATTACH_LEGACY_DT = True
+
 # list of variables/fields that will not be regridded
 non_regriddable_variables = [
     "geolon_c",
@@ -89,7 +95,32 @@ def get_grid_spec(datadict: dict) -> str:
         raise IOError(f"Cannot find {grid_spec} in tar file {pp_grid_spec_tar}")
     
     fre_logger.debug('grid_spec = %s exists!', grid_spec)
-    return grid_spec
+
+    grid_spec_dt_symlink = None
+    if ATTACH_LEGACY_DT:
+        fre_logger.warning('creating symlink to account for legacy fre-nctools 2022.02.01 behavior')
+        grid_spec_dt_symlink = Path(grid_spec).parent / f'{datadict["input_date"]}.grid_spec.nc'
+        
+        fre_logger.warning('grid_spec_dt_symlink = %s', grid_spec_dt_symlink)
+
+        # what in the ever loving demon magic is going on here???
+        try:
+            grid_spec_dt_symlink.symlink_to(Path(grid_spec))
+        except FileExistsError:
+            pass
+
+        # i am sorry python gods, i have failed out
+        if grid_spec_dt_symlink.exists():
+            fre_logger.warning('great? how did this happen?')
+
+        # continued inexplicable success.
+        if grid_spec_dt_symlink.is_symlink():
+            fre_logger.warning('symlink created: %s', grid_spec_dt_symlink)
+        else:
+            raise Exception('problem with accounting for legacy fregrid/fre-nctools behavior, symbolic link creation '
+                          'as-intended-side-effect failed. consult life choices.')
+        
+    return grid_spec, grid_spec_dt_symlink
 
 
 def get_input_mosaic(datadict: dict) -> str:
@@ -348,17 +379,18 @@ def regrid_xy(yamlfile: str,
 
         fre_logger.debug( 'saving yamldict fields to datadict' ) 
         datadict["yaml"] = yamldict
-        
-        datadict["grid_spec"] = get_grid_spec(datadict)
-        if Path(datadict['grid_spec']).exists():
-            fre_logger.info('grid_spec exists here: %s', datadict['grid_spec'])
-        
         datadict["input_dir"] = input_dir
         datadict["output_dir"] = output_dir
         datadict["work_dir"] = work_dir
         datadict["remap_dir"] = remap_dir
         datadict["input_date"] = input_date[:8]
         fre_logger.info( 'datadict is %s', pprint.pformat(datadict) )
+
+        datadict["grid_spec"], grid_spec_symlink = get_grid_spec(datadict)
+        if Path(datadict['grid_spec']).exists():
+            fre_logger.info('grid_spec exists here: %s', datadict['grid_spec'])
+        
+
 
         fre_logger.debug('making component list from yamldict')
         components = []
@@ -375,7 +407,7 @@ def regrid_xy(yamlfile: str,
             fre_logger.debug('checking postprocess_on field in component dict')
             if not component["postprocess_on"]:
                 fre_logger.warning(f"postprocess_on=False for {source} in component {component['type']}." \
-                                    "Skipping {source}")
+                                    f"Skipping {source}")
                 continue
             
             fre_logger.debug( 'saving component-specific info to datadict' ) 

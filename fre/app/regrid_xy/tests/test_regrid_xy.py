@@ -149,6 +149,7 @@ def test_regrid_xy():
   """
 
   setup_test()
+#  assert False
   
   #modify generate_files to change sources
   for source_dict in pp_input_files + emma_input_files + here_input_files:
