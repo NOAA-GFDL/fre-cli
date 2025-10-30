@@ -44,7 +44,7 @@ def get_file_regex( history_source: str = None ):
     '''
     if history_source is None:
         raise ValueError('history_source cannot be none')
-    return f'\.*{history_source}(\\.tile.*)?.nc'
+    return f'.*{history_source}(\\.tile.*)?.nc'
 
 def split_netcdf( input_dir,
                   output_dir,
@@ -128,7 +128,8 @@ def split_netcdf( input_dir,
             files = []
             for el in os.listdir(sdw):
                 fre_logger.debug('el = %s', el)
-                if re.match(file_regex, el) is not None:
+                if any( [ re.match(file_regex, el) is not None,
+                          f".{history_source}." in el ] ):
                     fre_logger.debug('appending file %s', os.path.join(sdw,el) )
                     files.append( os.path.join(sdw,el) )
 
@@ -156,7 +157,9 @@ def split_netcdf( input_dir,
         files = []
         for el in os.listdir(workdir):
             fre_logger.debug('el = %s', el)
-            if re.match(file_regex, el) is not None:
+            #if re.match(file_regex, el) is not None:
+            if any( [ re.match(file_regex, el) is not None,
+                      f".{history_source}." in el ] ):
                 fre_logger.debug('appending file %s', os.path.join(workdir, el) )
                 files.append( os.path.join(workdir, el) )
 
