@@ -31,7 +31,7 @@ fre_logger = logging.getLogger(__name__)
 # hurt to double-check.
 VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
 
-def get_file_regex(history_source: str = None):
+def get_file_regex( history_source: str = None ):
     '''
     give back a file regex given a history source. all files that contain the current source:history_file name,
     0-1 instances of "tile" and end in .nc under most circumstances, this should match 1 file
@@ -44,10 +44,15 @@ def get_file_regex(history_source: str = None):
     '''
     if history_source is None:
         raise ValueError('history_source cannot be none')
-    return f'.*{history_source}(\\.tile.*)?.nc'
+    return f'\.*{history_source}(\\.tile.*)?.nc'
 
-def split_netcdf(input_dir, output_dir, component, history_source, use_subdirs,
-                 yamlfile, split_all_vars=False):
+def split_netcdf( input_dir,
+                  output_dir,
+                  component,
+                  history_source,
+                  use_subdirs,
+                  yamlfile,
+                  split_all_vars = False ):
     '''
     Given a directory of netcdf files, splits those netcdf files into separate
     files for each data variable and copies the data variable files of interest
@@ -73,6 +78,8 @@ def split_netcdf(input_dir, output_dir, component, history_source, use_subdirs,
                            False.
     :type split_all_vars: boolean
     '''
+    fre_logger.debug('using re version %s', re.__version__)
+    fre_logger.debug('using re spec %s', re.__spec__)
 
     # Verify input/output dirs exist and are dirs
     if not os.path.isdir(input_dir):
@@ -165,7 +172,9 @@ def split_netcdf(input_dir, output_dir, component, history_source, use_subdirs,
     fre_logger.info("split-netcdf-wrapper call complete")
     sys.exit(0) # check this
 
-def split_file_xarray(infile, outfiledir, var_list='all'):
+def split_file_xarray( infile,
+                       outfiledir,
+                       var_list = 'all' ):
     '''
     Given a netcdf infile containing one or more data variables,
     writes out a separate file for each data variable in the file, including the
@@ -267,7 +276,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
             var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
             data2.to_netcdf(var_out, encoding = var_encode)
 
-def get_max_ndims(dataset):
+def get_max_ndims( dataset ):
     '''
     Gets the maximum number of dimensions of a single var in an xarray Dataset object.
     Excludes coord vars, which should be single-dim anyway.
@@ -281,10 +290,10 @@ def get_max_ndims(dataset):
     ndims = [ len(dataset[v].shape) for v in allvars ]
     return max(ndims)
 
-def set_coord_encoding(dset, vcoords):
+def set_coord_encoding( dset,
+                        vcoords ):
     '''
-    Gets the encoding settings needed for xarray to write out the coordinates
-    as expected
+    Gets the encoding settings needed for xarray to write out the coordinates as expected
     we need the list of all vars (varnames) because that's how you get coords
     for the metadata vars (i.e. nv or bnds for time_bnds)
 
@@ -315,13 +324,11 @@ def set_coord_encoding(dset, vcoords):
             encode_dict[vc]['units'] = dset[vc].encoding['units']
     return encode_dict
 
-def set_var_encoding(dset, varnames):
+def set_var_encoding( dset,
+                      varnames ):
     '''
     Gets the encoding settings needed for xarray to write out the variables
-    as expected
-
-    mostly addressed to time_bnds, because xarray can drop the units attribute
-
+    as expected.  mostly addressed to time_bnds, because xarray can drop the units attribute
     - https://github.com/pydata/xarray/issues/8368
 
     :param dset: xarray dataset object to query for info
@@ -342,17 +349,13 @@ def set_var_encoding(dset, varnames):
             encode_dict[v]['units'] = dset[v].encoding['units']
     return encode_dict
 
-def fre_outfile_name(infile, varname):
+def fre_outfile_name( infile,
+                      varname ):
     '''
-    Builds split  var filenames the way that fre expects them
-    (and in a way that should work for any .nc file)
-
-     This is expected to work with files formed the following way
-
+    Builds split  var filenames the way that fre expects them (and in a way that should work for any .nc file)
+    This is expected to work with files formed the following way, but it should also work on any file filename.
      - Fre Input format:  date.component(.tileX).nc
      - Fre Output format: date.component.var(.tileX).nc
-
-     but it should also work on any file filename.nc
 
     :param infile: name of a file with a . somewhere in the filename
     :type infile: string
