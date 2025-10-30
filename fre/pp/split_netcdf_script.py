@@ -150,8 +150,6 @@ def split_netcdf( input_dir,
             raise FileNotFoundError(f"error: no files found in dirs {sd_string} under {workdir}"
                                     f" that match pattern {file_regex}; no splitting took place"
                                     f"contents of workdir={workdir} are: {os.listdir(workdir)}" )
-
-
     else:
         #files=[ os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None]
         files = []
@@ -170,7 +168,6 @@ def split_netcdf( input_dir,
         # Split the files by variable
         for infile in files:
             split_file_xarray(infile, os.path.abspath(output_dir), varlist)
-
 
     fre_logger.info("split-netcdf-wrapper call complete")
     sys.exit(0) # check this
