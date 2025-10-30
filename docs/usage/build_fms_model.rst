@@ -29,9 +29,12 @@ The final combined yaml includes the name of the compile experiment, the platfor
 In regards to container platforms in the YAML file, fre make supports a one and two stage build:
 
   - one-stage build:
+
     - contains the intel compiler
     - this container CANNOT be shared as we do not have the license to distribute
+
   - two-stage build:
+
     - includes platform information with a second container base to build off of
     - strips out the intel compiler and reduces the size of the container, making it shareable and easier to store.
 
