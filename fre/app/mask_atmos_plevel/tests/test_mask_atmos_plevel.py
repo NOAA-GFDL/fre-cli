@@ -23,12 +23,12 @@ def tmp_input(tmp_path):
 
     # create temporary directory
     tmp_dir = tmp_path
-    tmp_dir.mkdir(exist_ok=True)
+    tmp_dir.mkdir( exist_ok = True )
     tmp_input = Path(tmp_dir / "input.nc")
 
     # ncgen
     command = [ 'ncgen', '-o', tmp_input, input_ ]
-    sp = subprocess.run(command, check = True)
+    sp = subprocess.run(command, check = True )
     assert sp.returncode == 0
     assert tmp_input.exists()
 
@@ -44,12 +44,12 @@ def tmp_case2input(tmp_path):
 
     # create temporary directory
     tmp_dir = tmp_path
-    tmp_dir.mkdir(exist_ok=True)
+    tmp_dir.mkdir( exist_ok = True )
     tmp_case2input = Path(tmp_dir / "input.nc")
 
     # ncgen
     command = [ 'ncgen', '-o', tmp_case2input, input_ ]
-    sp = subprocess.run(command, check = True)
+    sp = subprocess.run(command, check = True )
     assert sp.returncode == 0
     assert tmp_case2input.exists()
 
@@ -66,12 +66,12 @@ def tmp_ps(tmp_path):
 
     # create temporary directory
     tmp_dir = tmp_path
-    tmp_dir.mkdir(exist_ok=True)
+    tmp_dir.mkdir( exist_ok = True )
     tmp_ps = Path(tmp_dir / "ps.nc")
 
     # ncgen
     command = [ 'ncgen', '-o', tmp_ps, ps ]
-    sp = subprocess.run(command, check = True)
+    sp = subprocess.run(command, check = True )
     assert sp.returncode == 0
     assert tmp_ps.exists()
 
@@ -87,11 +87,11 @@ def tmp_ref(tmp_path):
 
     # create temporary directory
     tmp_dir = tmp_path
-    tmp_dir.mkdir(exist_ok=True)
+    tmp_dir.mkdir( exist_ok = True )
     tmp_ref = Path(tmp_dir / "ref.nc")
 
     command = [ 'ncgen', '-o', tmp_ref, ref ]
-    sp = subprocess.run(command, check = True)
+    sp = subprocess.run(command, check = True )
     assert sp.returncode == 0
     assert tmp_ref.exists()
 
@@ -107,11 +107,11 @@ def tmp_case2ref(tmp_path):
 
     # create temporary directory
     tmp_dir = tmp_path
-    tmp_dir.mkdir(exist_ok=True)
+    tmp_dir.mkdir( exist_ok = True )
     tmp_case2ref = Path(tmp_dir / "case2ref.nc")
 
     command = [ 'ncgen', '-o', tmp_case2ref, ref ]
-    sp = subprocess.run(command, check = True)
+    sp = subprocess.run(command, check = True )
     assert sp.returncode == 0
     assert tmp_case2ref.exists()
 
@@ -124,7 +124,10 @@ def test_mask_atmos_plevel(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disa
     """
     tmp_output = Path(tmp_path / "output.nc")
 
-    mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input, tmp_ps, tmp_output)
+    mask_atmos_plevel.mask_atmos_plevel_subtool( tmp_input,
+                                                 tmp_ps,
+                                                 tmp_output,
+                                                 warn_no_ps = False )
     assert tmp_output.exists()
 
     ds = xr.open_dataset(tmp_output)
@@ -139,7 +142,10 @@ def test_mask_atmos_plevel_case2(tmp_case2input, tmp_ps, tmp_case2ref, tmp_path)
     """
     tmp_output = Path(tmp_path / "output.nc")
 
-    mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_case2input, tmp_ps, tmp_output)
+    mask_atmos_plevel.mask_atmos_plevel_subtool( tmp_case2input,
+                                                 tmp_ps,
+                                                 tmp_output,
+                                                 warn_no_ps = False )
     assert tmp_output.exists()
 
     ds = xr.open_dataset(tmp_output)
@@ -159,7 +165,10 @@ def test_mask_atmos_plevel_recreate_output(tmp_input, tmp_ps, tmp_ref, tmp_path)
     # copy the reference output to the output path, it should be re-created
     shutil.copy(str(tmp_ref), str(tmp_output))
 
-    mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input, tmp_ps, tmp_output)
+    mask_atmos_plevel.mask_atmos_plevel_subtool( tmp_input,
+                                                 tmp_ps,
+                                                 tmp_output,
+                                                 warn_no_ps = False )
     assert tmp_output.exists()
 
     ds = xr.open_dataset(tmp_output)
@@ -179,9 +188,10 @@ def test_mask_atmos_plevel_nopsfile_noop(tmp_input, tmp_ps, tmp_path): # pylint:
     tmp_ps.unlink()
     assert not tmp_ps.exists()
 
-    mask_atmos_plevel.mask_atmos_plevel_subtool(infile = tmp_input,
-                                                psfile = tmp_ps,
-                                                outfile = tmp_output)
+    mask_atmos_plevel.mask_atmos_plevel_subtool( infile = tmp_input,
+                                                 psfile = tmp_ps,
+                                                 outfile = tmp_output,
+                                                 warn_no_ps = False )
     assert not tmp_output.exists()
 
 
@@ -193,10 +203,10 @@ def test_mask_atmos_plevel_nops_error(tmp_input, tmp_path): # pylint: disable=re
     tmp_output = Path(tmp_path / "output.nc")
 
     with pytest.raises(ValueError):
-        mask_atmos_plevel.mask_atmos_plevel_subtool(infile = tmp_input,
-                                                    psfile = tmp_ps,
-                                                    outfile = tmp_output,
-                                                    warn_no_ps = False)
+        mask_atmos_plevel.mask_atmos_plevel_subtool( infile = tmp_input,
+                                                     psfile = tmp_ps,
+                                                     outfile = tmp_output,
+                                                     warn_no_ps = False )
     assert not tmp_output.exists()
 
 
@@ -208,19 +218,20 @@ def test_mask_atmos_plevel_nops_warn(tmp_input, tmp_path): # pylint: disable=red
     tmp_ps = tmp_input # this is OK, it just has to NOT have ps
     tmp_output = Path(tmp_path / "output.nc")
 
-    mask_atmos_plevel.mask_atmos_plevel_subtool(infile = tmp_input,
-                                                psfile = tmp_ps,
-                                                outfile = tmp_output,
-                                                warn_no_ps = True)
+    mask_atmos_plevel.mask_atmos_plevel_subtool( infile = tmp_input,
+                                                 psfile = tmp_ps,
+                                                 outfile = tmp_output,
+                                                 warn_no_ps = True )
     assert not tmp_output.exists()
 
 
 def test_mask_atmos_plevel_exception():
     """ if the input file doesnt exist, error """
     with pytest.raises(FileNotFoundError):
-        mask_atmos_plevel.mask_atmos_plevel_subtool(infile = 'Does not exist',
-                                                    psfile = 'does not exist',
-                                                    outfile = 'will not be created')
+        mask_atmos_plevel.mask_atmos_plevel_subtool( infile = 'Does not exist',
+                                                     psfile = 'does not exist',
+                                                     outfile = 'will not be created',
+                                                     warn_no_ps = False )
 
 def test_mask_atmos_plevel_no_missing_val(tmp_input, tmp_ps, tmp_path): # pylint: disable=redefined-outer-name
     """
@@ -235,7 +246,10 @@ def test_mask_atmos_plevel_no_missing_val(tmp_input, tmp_ps, tmp_path): # pylint
     in_ds.to_netcdf(path=tmp_input2, mode='a')
 
     with pytest.raises(KeyError):
-        mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input2, tmp_ps, tmp_output)
+        mask_atmos_plevel.mask_atmos_plevel_subtool( tmp_input2,
+                                                     tmp_ps,
+                                                     tmp_output,
+                                                     warn_no_ps = False )
     assert not tmp_output.exists()
 
 def test_mask_atmos_plevel_pmask_true(tmp_input, tmp_ps, tmp_path): # pylint: disable=redefined-outer-name
@@ -250,7 +264,10 @@ def test_mask_atmos_plevel_pmask_true(tmp_input, tmp_ps, tmp_path): # pylint: di
     tmp_input2 = Path(tmp_path / 'tmp_input2.nc')
     in_ds.to_netcdf(path=tmp_input2, mode='a')
 
-    mask_atmos_plevel.mask_atmos_plevel_subtool(tmp_input2, tmp_ps, tmp_output)
+    mask_atmos_plevel.mask_atmos_plevel_subtool( tmp_input2,
+                                                 tmp_ps,
+                                                 tmp_output,
+                                                 warn_no_ps = False )
     assert not tmp_output.exists()
 
 def test_pressure_coordinate_continue_warning(tmp_input):
