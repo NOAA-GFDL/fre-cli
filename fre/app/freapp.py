@@ -119,9 +119,13 @@ def regrid(yamlfile, input_dir, output_dir, work_dir,
               help = "Input NetCDF file containing surface pressure (ps)",
               type = str,
               required = True)
-def mask_atmos_plevel(infile, psfile, outfile):
+@click.option("-wnps", "--warn-no-ps",
+             help = "if pressure variable not found in target psfile, warn and then pass instead of raising an error",
+             is_flag = True, default = False, required = False
+             )
+def mask_atmos_plevel(infile, psfile, outfile, warn_no_ps):
     """Mask diagnostic 'infile' below surface pressure 'psfile'"""
-    mask_atmos_plevel_subtool(infile, psfile, outfile)
+    mask_atmos_plevel_subtool(infile, psfile, outfile, warn_no_ps)
 
 
 @app_cli.command()
