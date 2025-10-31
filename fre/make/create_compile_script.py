@@ -110,7 +110,7 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                     templatePath = platform["mkTemplate"]
                 ## Create a list of compile scripts to run in parallel
                 fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],
-                                                             mkTemplatePath=platform["mkTemplate"],
+                                                             mkTemplatePath=templatePath,
                                                              srcDir=srcDir,
                                                              bldDir=bldDir,
                                                              target=target,

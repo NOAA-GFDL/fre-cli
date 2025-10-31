@@ -4,6 +4,7 @@ Creates the Makefile for model compilation
 
 import os
 import logging
+from pathlib import Path
 
 import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
@@ -75,12 +76,24 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                 bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
                          f'{platformName}-{targetObject.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
+
+                # check if mkTemplate has a / indicating it is a path
+                # if its not, prepend the template name with the mkmf submodule directory
+                if "/" not in platform["mkTemplate"]:
+                    topdir = Path(__file__).resolve().parents[1]
+                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
+                    if not Path(templatePath).exists():
+                        raise ValueError (
+                            f"Error w/ mkmf template. Created path from given filename: {templatePath} does not exist.")
+                else:
+                    templatePath = platform["mkTemplate"]
+
                 ## Create the Makefile
                 freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
-                                             libs = fremakeYaml["baremetal_linkerflags"],
-                                             srcDir = srcDir,
-                                             bldDir = bldDir,
-                                             mkTemplatePath = platform["mkTemplate"])
+                                                   libs = fremakeYaml["baremetal_linkerflags"],
+                                                   srcDir = srcDir,
+                                                   bldDir = bldDir,
+                                                   mkTemplatePath = templatePath)
                 # Loop through components and send the component name, requires, and overrides for the Makefile
                 for c in fremakeYaml['src']:
                     freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
@@ -92,11 +105,19 @@ def makefile_create(yamlfile: str, platform: str, target:str):
             else:
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "./tmp/"+platformName
+
+                # check if mkTemplate has a / indicating it is a path
+                # if its not, prepend the template name with the mkmf submodule directory
+                if "/" not in platform["mkTemplate"]:
+                    templatePath = platform["modelRoot"]+"/mkmf/templates/"+platform["mkTemplate"]
+                else:
+                    templatePath = platform["mkTemplate"]
+
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
                                                       libs = fremakeYaml["container_addlibs"],
                                                       srcDir = srcDir,
                                                       bldDir = bldDir,
-                                                      mkTemplatePath = platform["mkTemplate"],
+                                                      mkTemplatePath = templatePath,
                                                       tmpDir = tmpDir)
 
                 # Loop through components and send the component name and requires for the Makefile
