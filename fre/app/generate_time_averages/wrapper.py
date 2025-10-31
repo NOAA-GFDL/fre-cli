@@ -15,7 +15,7 @@ one_year = DurationParser().parse('P1Y')
 def extract_variables_from_files(files: list[str]) -> list[str]:
     """
     Utility to extract "variable" part of a list of input files,
-    outputing a list of variables.
+    outputting a list of variables.
     e.g. 'ocean_annual.1958-1962.evs.nc' will return 'evs'
 
     :param files: List of relative path filenames to parse

@@ -69,7 +69,7 @@ def temp_keyerr_json_file(tmp_path):
     """
     # Sample data for testing
     test_json_content = {
-        "clendar": "original_calendar_type", #oops spelling error
+        "clendar": "original_calendar_type", #oops spelling error  # cspell:disable-line
         "other_field": "some_value"
     }
 

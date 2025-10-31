@@ -84,21 +84,21 @@ def test_time_avg_file_dir_exists():
 
 FULL_TEST_FILE_PATH = TIME_AVG_FILE_DIR + TEST_FILE_NAME
 cases=[
-    #cdo cases, monthly, one/multifile, weighted
+    #cdo cases, monthly, one/multiple files, weighted
     pytest.param( 'cdo', 'month', True ,
                   FULL_TEST_FILE_PATH,
                   TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'month', True ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TWO_OUT_FILE_NAME),
-    #cdo cases, seasonal, one/multifile, unweighted
+    #cdo cases, seasonal, one/multiple files, unweighted
     pytest.param( 'cdo', 'seas', True ,
                   FULL_TEST_FILE_PATH,
                   TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'seas', True ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TWO_OUT_FILE_NAME),
-    #cdo cases, all, one/multifiles, weighted/unweighted
+    #cdo cases, all, one/multiple files, weighted/unweighted
     pytest.param( 'cdo', 'all', True ,
                   FULL_TEST_FILE_PATH,
                   TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TEST_FILE_NAME),
@@ -111,7 +111,7 @@ cases=[
     pytest.param( 'cdo', 'all', False ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME),
-    #fre-python-tools cases, all, one/multifiles, weighted/unweighted flag
+    #fre-python-tools cases, all, one/multiple files, weighted/unweighted flag
     pytest.param( 'fre-python-tools', 'all',  False ,
                   FULL_TEST_FILE_PATH,
                   TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TEST_FILE_NAME),
@@ -124,7 +124,7 @@ cases=[
     pytest.param( 'fre-python-tools', 'all',  True ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TWO_OUT_FILE_NAME),
-#    #fre-nctools cases, all, one/multifiles, weighted/unweighted flag (work on GFDL/PPAN only)
+#    #fre-nctools cases, all, one/multiple files, weighted/unweighted flag (work on GFDL/PPAN only)
 #    pytest.param( 'fre-nctools', 'all',  False ,
 #                  FULL_TEST_FILE_PATH,
 #                   TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
@@ -134,7 +134,7 @@ cases=[
 #    pytest.param( 'fre-nctools', 'all',  True ,
 #                  TWO_TEST_FILE_NAMES,
 #                  TIME_AVG_FILE_DIR + 'frenctools_unwgt_timavg_' + TWO_OUT_FILE_NAME),
-#    #fre-nctools case, monthly, multifiles, weighted (in-progress)
+#    #fre-nctools case, monthly, multiple files, weighted (in-progress)
 #    pytest.param( 'fre-nctools', 'month',  False ,
 #                  FULL_TEST_FILE_PATH,
 #                  TIME_AVG_FILE_DIR + 'frenctools_timavg_' + TEST_FILE_NAME),
@@ -164,7 +164,7 @@ def test_run_avgtype_pkg_calculations( pkg      ,
                          avg_type,
                          unwgt     ]
 
-    # check again the input file(s) exist before runnig the time averager
+    # check again the input file(s) exist before running the time averager
     if isinstance(infile, str):
         assert Path(infile).exists(), f'DNE (string) infile = {infile}'
     if isinstance(infile, list):
