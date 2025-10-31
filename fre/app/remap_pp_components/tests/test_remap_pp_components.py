@@ -92,7 +92,7 @@ def test_yaml_ex_exists():
 def test_create_ncfile_with_ncgen_cdl():
     """
     Check for the creation of required directories
-    and a *.nc file from *.cdl text file using
+    and a `*.nc` file from `*.cdl` text file using
     command ncgen. These files will be used as an input
     files for the rewrite remap tests.
     Test checks for success of ncgen command for each
@@ -119,7 +119,7 @@ def test_create_ncfile_with_ncgen_cdl():
 def test_create_static_ncfile_with_ncgen_cdl():
     """
     Check for the creation of required directories
-    and a *.nc file from *.cdl text file using
+    and a `*.nc` file from `*.cdl` text file using
     command ncgen. This file will be used as an input
     file for the rewrite remap tests.
     Test checks for success of ncgen command.
@@ -384,6 +384,7 @@ def test_nccmp_ncgen_remap_statics():
 def test_remap_variable_filtering():
     """
     Test variable filtering capabilities
+
     - same file should be found as in first regular remap test,
       but component defined specifies variable co2mass
     """
@@ -418,6 +419,7 @@ def test_remap_variable_filtering():
 def test_remap_static_variable_filtering():
     """
     Test variable filtering capabilities
+
     - same file should be found as in static remap test,
       but component, defined specifies variable bk
     """
