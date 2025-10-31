@@ -193,7 +193,7 @@ def pressure_coordinate(ds: xr.Dataset,
                 pressure_coord = ds[dim]
                 break
 
-            PRESSURE_UNIT_LIST = ["Pa", "kPa", "mmHg", "atm" ] # to be expanded as necessary.
+            pressure_unit_list = ["Pa", "kPa", "mmHg", "atm" ] # to be expanded as necessary.
             if all( [ 'positive' in list(ds[dim].attrs),
                       ds[dim].attrs['axis'].lower() == "z",
                       ds[dim].attrs["units"] in pressure_unit_list ] ) :
