@@ -10,12 +10,25 @@ import xarray as xr
 
 fre_logger = logging.getLogger(__name__)
 
+
+
 def mask_atmos_plevel_subtool(infile: str = None,
                               psfile: str = None,
                               outfile: str = None,
                               warn_no_ps: bool = False) -> None:
     """
-    Mask pressure-level diagnostic output below land surface
+    Mask pressure-level diagnostic output below land surface. One of two possible triggers for applying a pressure mask
+    to the data must pass.
+
+    The first trigger is input variables must have a string-valued attribute `pressure_mask` that
+    is a case-insensitive match for `false`, implying the data has not yet had a pressure mask applied. The data will
+    then be masked, and the `pressure_mask` attribute set to `true`. if `false` does not match, the variable is skipped
+    for processing.
+
+    The second trigger is only checked in the absence of a `pressure_mask` attribute, i.e. the first trigger takes
+    precedence over the second. If the variable name ends in `_unmsk`, the data is assumed to be unmasked, a copy of the
+    dataset variable is created without `_unmsk` in the name, the data is masked, and the `pressure_mask` attribute is
+    added accordingly.
 
     :param infile: Input NetCDF file containing pressure-level output to be masked
     :type infile: str
@@ -26,10 +39,6 @@ def mask_atmos_plevel_subtool(infile: str = None,
     :raises ValueError: Pressure input file does not contain ps
     :raises FileNotFound: Input file does not exist
     :rtype: None
-
-    .. note:: Input variables must have an attribute `pressure_mask` that is set to `False`, implying the
-              data has not yet had a pressure mask applied. The resulting output will have this attribute
-              set to `True`.
     """
     # check if input file exists, raise an error if not
     if not os.path.exists(infile):
@@ -63,18 +72,20 @@ def mask_atmos_plevel_subtool(infile: str = None,
     fre_logger.info('with xarray, creating a Dataset object')
     ds_out = xr.Dataset()
 
-    fre_logger.debug('The trigger for atmos masking is a variable attribute "pressure_mask = False".')
-    fre_logger.debug('After the masking is done, change the attribute to True.')
-    fre_logger.debug('Note: these are string types called True and False, not boolean types.')
+    fre_logger.debug('looping over vars, checking two triggers for masking. ')
     for var in list(ds_in.variables):
+        fre_logger.debug('for var = %s', var)
         if 'pressure_mask' in ds_in[var].attrs:
             if ds_in[var].attrs['pressure_mask'].lower() == 'false':
+                fre_logger.debug('first pressure masking trigger passed. processing data.')
                 ds_out[var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
                 ds_out[var].attrs['pressure_mask'] = "True"
                 fre_logger.info("Finished processing %s, pressure_mask is True", var)
             else:
-                fre_logger.debug("Not processing %s (because 'pressure_mask' is not False)", var)
+                fre_logger.debug("Not processing %s, 'pressure_mask' is not False, checking second trigger condition", var)
+
         elif '_unmsk' in var:
+            fre_logger.debug('second pressure masking trigger passed, \'_unmsk\' in variable name. processing data.')
             fre_logger.info('_unmsk found in var %s, processing.', var)
             fre_logger.debug('copying %s', var)
             ds_out[var] = ds_in[var].copy()
@@ -94,7 +105,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
         else:
             fre_logger.debug("Not processing %s, it does not have pressure_mask", var)
 
-    fre_logger.info('Write the output file if anything was done')
+    fre_logger.info('Write the output file if any unmasked variables were masked')
     if ds_out.variables:
         fre_logger.info("Modified %s variables, so writing into new file %s",list(ds_out.variables),outfile)
         write_dataset(ds_out, ds_in, outfile)
@@ -104,7 +115,8 @@ def mask_atmos_plevel_subtool(infile: str = None,
 
 def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Dataset) -> xr.Dataset:
     """
-    Mask data with pressure greater than surface pressure
+    Mask data with pressure greater than surface pressure. Requires the target variable's encoding for `'missing_value'`
+
     :param ds: Input dataset to be masked
     :type infile: xarray.Dataset
     :param var: Input variable to be masked
@@ -113,6 +125,7 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
     :rtype: xrray.Dataset
 
     .. note:: Missing values are set to 1.0e20.
+    .. error:: if the `'missing_value'` key does not exist within the variable's encoding.
     """
 
     fre_logger.info('retrieve the pressure coordinate variable')
@@ -148,10 +161,14 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
     return masked
 
 
-def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
+def pressure_coordinate(ds: xr.Dataset,
+                        varname: str) -> xr.DataArray:
     """
-    Return the pressure coordinate of the Dataset or None if
-    the Dataset does not have a pressure coordinate.
+    Return the pressure coordinate of the Dataset or None if the Dataset does not have a pressure coordinate. A
+    coordinate is deemed a pressure coordinate if `long_name` attribute is `'pressure'`, or if a variable with units
+    of pressure is described as a z-axis with an attribute named `'positive'`. The first variable looped over found to
+    match these criteria are returned.
+
     :param ds: Input dataset to inspect
     :type ds: xarray.Dataset
     :param var: Input variable name to inspect
@@ -161,7 +178,6 @@ def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
 
     .. warning:: Returns None if no pressure coordinate variable can be found
     """
-
     pressure_coord = None
     for dim in list(ds[varname].dims):
 
@@ -173,18 +189,21 @@ def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
         fre_logger.info('attempting to assign pressure coordinate, checking dim=%s', dim)
         fre_logger.debug('attributes: %s', list(ds[dim].attrs) )
         try:
-            if ds[dim].attrs["long_name"] == "pressure":
+            if ds[dim].attrs["long_name"].lower() == "pressure":
                 pressure_coord = ds[dim]
-            elif all( ['positive' in list(ds[dim].attrs),
-                       ds[dim].attrs['axis'].lower() == "z",
-                       ds[dim].attrs["units"] == "Pa" ] ) :
+                break
+
+            PRESSURE_UNIT_LIST = ["Pa", "kPa", "mmHg", "atm" ] # to be expanded as necessary.
+            if all( [ 'positive' in list(ds[dim].attrs),
+                      ds[dim].attrs['axis'].lower() == "z",
+                      ds[dim].attrs["units"] in pressure_unit_list ] ) :
                 pressure_coord = ds[dim]
-            else:
-                fre_logger.debug('%s is not assignable as pressure_coordnate', dim)
+                break
+
+            fre_logger.debug('%s is not assignable as pressure_coordnate', dim)
+
         except KeyError:
             continue
-        if pressure_coord is not None:
-            break
     if pressure_coord is None:
         fre_logger.warning("pressure_coord is None, it could not be assigned!")
     return pressure_coord
