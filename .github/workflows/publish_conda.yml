@@ -7,8 +7,6 @@ on:
 
 
 
-
-
 jobs:
   condapublish:
     runs-on: ubuntu-latest
@@ -46,7 +44,7 @@ jobs:
       - name: Conda install conda-build
         run: |
           echo "conda install conda-build"
-          conda install conda-forge::conda-build
+          conda install conda-forge::conda-build conda-forge::anaconda-client
 
       - name: Build fre-cli Conda Package
         run: |
