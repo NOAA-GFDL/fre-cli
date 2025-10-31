@@ -4,15 +4,21 @@ allmatch
 allvars
 amip
 AMIP
+analyse
+analysed
+Analyse
 analysiscombined
 analysisyaml
 AOGCM
+abstractproperty
 apidoc
 apptainer
 arag
+argparse
 archivcl
 areacello
 argparser
+asdict
 atleast
 averager
 Averager
@@ -30,6 +36,7 @@ bldsetup
 bnds
 BNDS
 bndvar
+booleaness
 BUILDROOT
 bytedate
 capfd
@@ -49,6 +56,7 @@ chdir
 CHDIR
 checkoutscript
 chunkstr
+classmethod
 clendar
 clim
 Clim
@@ -87,6 +95,8 @@ compp
 compval
 contactslist
 Containerzation
+contextlib
+contextmanager
 conv
 CPLD
 cppdefs
@@ -218,6 +228,7 @@ indexlist
 indir
 INDIR
 infolog
+inlinevar
 infile
 infiles
 inputdir
@@ -234,7 +245,9 @@ INTERP
 intrafile
 ISMIP
 isodatetime
+isort
 ivar
+ixin
 jaon
 jhan
 jhanbigmem
@@ -276,9 +289,11 @@ matchlist
 mdtf
 MDTF
 meke
+mekep
 mentees
 mergetime
 meshgrid
+metaclass
 metavars
 metomi
 microphys
@@ -298,12 +313,15 @@ monniker
 mosaicfile
 moveaxis
 mpicc
+msvs
+muldpm
 multifile
 multifiles
-muldpm
 multijob
 MULTIJOB
 myavger
+mymodule
+mypackage
 mypy
 namenopath
 nbhome
@@ -340,6 +358,8 @@ noaa
 NOAA
 noarch
 noleap
+noqa
+nosec
 notransfer
 notused
 nparallel
@@ -356,6 +376,7 @@ omip
 Omon
 openmp
 OPENMP
+optparse
 origdir
 orog
 outf
@@ -365,7 +386,9 @@ outputdir
 OUTPUTDIR
 outputfile
 OUTPUTFILE
+overgeneral
 parallelizations
+parseable
 parseyaml
 pathlib
 pathnames
@@ -408,6 +431,7 @@ psfile
 pstring
 ptest
 ptmp
+pygtk
 pylint
 pylintrc
 pytest
@@ -440,6 +464,7 @@ relaces
 renku
 reqstring
 retstat
+rgxs
 rgxy
 Rization
 Rize
@@ -517,6 +542,8 @@ truncatedate
 truncatedateformat
 turb
 twostep
+typealias
+typevar
 ucomp
 Umip
 underbaked
