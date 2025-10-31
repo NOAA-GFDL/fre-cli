@@ -4,9 +4,6 @@ allmatch
 allvars
 amip
 AMIP
-analyse
-analysed
-Analyse
 analysiscombined
 analysisyaml
 AOGCM
@@ -43,7 +40,6 @@ capfd
 caplog
 casedirs
 catalogbuilder
-cdfs
 cdotimavg
 CCYY
 CCYYMM
@@ -57,7 +53,6 @@ CHDIR
 checkoutscript
 chunkstr
 classmethod
-clendar
 clim
 Clim
 climatologies
@@ -238,7 +233,6 @@ inputfiles
 intakebuilder
 intercomparison
 intercomparisons
-intdir
 interp
 Interp
 INTERP
@@ -316,7 +310,6 @@ mpicc
 msvs
 muldpm
 multifile
-multifiles
 multijob
 MULTIJOB
 myavger
