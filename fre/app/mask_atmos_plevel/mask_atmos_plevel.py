@@ -82,7 +82,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
                 ds_out[var].attrs['pressure_mask'] = "True"
                 fre_logger.info("Finished processing %s, pressure_mask is True", var)
             else:
-                fre_logger.debug("Not processing %s, 'pressure_mask' is not False, checking second trigger condition", var)
+                fre_logger.debug("Not processing %s, 'pressure_mask', checking second trigger condition", var)
 
         elif '_unmsk' in var:
             fre_logger.debug('second pressure masking trigger passed, \'_unmsk\' in variable name. processing data.')

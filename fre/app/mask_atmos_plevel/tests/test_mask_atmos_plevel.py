@@ -24,7 +24,7 @@ def tmp_input(tmp_path):
     # create temporary directory
     tmp_dir = tmp_path
     tmp_dir.mkdir( exist_ok = True )
-    tmp_input = Path(tmp_dir / "input.nc")
+    tmp_input = Path(tmp_dir / "input.nc") # pylint: disable=redefined-outer-name
 
     # ncgen
     command = [ 'ncgen', '-o', tmp_input, input_ ]
@@ -45,7 +45,7 @@ def tmp_case2input(tmp_path):
     # create temporary directory
     tmp_dir = tmp_path
     tmp_dir.mkdir( exist_ok = True )
-    tmp_case2input = Path(tmp_dir / "input.nc")
+    tmp_case2input = Path(tmp_dir / "input.nc") # pylint: disable=redefined-outer-name
 
     # ncgen
     command = [ 'ncgen', '-o', tmp_case2input, input_ ]
@@ -67,7 +67,7 @@ def tmp_ps(tmp_path):
     # create temporary directory
     tmp_dir = tmp_path
     tmp_dir.mkdir( exist_ok = True )
-    tmp_ps = Path(tmp_dir / "ps.nc")
+    tmp_ps = Path(tmp_dir / "ps.nc") # pylint: disable=redefined-outer-name
 
     # ncgen
     command = [ 'ncgen', '-o', tmp_ps, ps ]
@@ -88,7 +88,7 @@ def tmp_ref(tmp_path):
     # create temporary directory
     tmp_dir = tmp_path
     tmp_dir.mkdir( exist_ok = True )
-    tmp_ref = Path(tmp_dir / "ref.nc")
+    tmp_ref = Path(tmp_dir / "ref.nc") # pylint: disable=redefined-outer-name
 
     command = [ 'ncgen', '-o', tmp_ref, ref ]
     sp = subprocess.run(command, check = True )
@@ -108,7 +108,7 @@ def tmp_case2ref(tmp_path):
     # create temporary directory
     tmp_dir = tmp_path
     tmp_dir.mkdir( exist_ok = True )
-    tmp_case2ref = Path(tmp_dir / "case2ref.nc")
+    tmp_case2ref = Path(tmp_dir / "case2ref.nc") # pylint: disable=redefined-outer-name
 
     command = [ 'ncgen', '-o', tmp_case2ref, ref ]
     sp = subprocess.run(command, check = True )
@@ -197,9 +197,10 @@ def test_mask_atmos_plevel_nopsfile_noop(tmp_input, tmp_ps, tmp_path): # pylint:
 
 def test_mask_atmos_plevel_nops_error(tmp_input, tmp_path): # pylint: disable=redefined-outer-name
     """
-    if the input and ps files exist, but the ps file does not have ps within it, raise ValueError
+    if the input and ps files exist, but the ps file does not have ps within it, raise ValueErro
+    using the input file itself as the ps file is OK, it just has to NOT have ps
     """
-    tmp_ps = tmp_input # this is OK, it just has to NOT have ps
+    tmp_ps = tmp_input # pylint: disable=redefined-outer-name
     tmp_output = Path(tmp_path / "output.nc")
 
     with pytest.raises(ValueError):
@@ -214,8 +215,9 @@ def test_mask_atmos_plevel_nops_warn(tmp_input, tmp_path): # pylint: disable=red
     """
     if the input file exists, but the ps file does not, then no-op gracefully
     without raising an exception or throwing an error while warn_no_ps = True
+    using the input file itself as the ps file is OK, it just has to NOT have ps
     """
-    tmp_ps = tmp_input # this is OK, it just has to NOT have ps
+    tmp_ps = tmp_input # pylint: disable=redefined-outer-name
     tmp_output = Path(tmp_path / "output.nc")
 
     mask_atmos_plevel.mask_atmos_plevel_subtool( infile = tmp_input,
@@ -270,7 +272,7 @@ def test_mask_atmos_plevel_pmask_true(tmp_input, tmp_ps, tmp_path): # pylint: di
                                                  warn_no_ps = False )
     assert not tmp_output.exists()
 
-def test_pressure_coordinate_continue_warning(tmp_input):
+def test_pressure_coordinate_continue_warning(tmp_input): # pylint: disable=redefined-outer-name
     """
     tests a clean no-op when the dimension is not stored as a variable/coordinate of the desired data to be masked
     """
@@ -280,7 +282,7 @@ def test_pressure_coordinate_continue_warning(tmp_input):
     coord_out = pressure_coordinate(ds = in_ds, varname='ua_unmsk')
     assert coord_out is None
 
-def test_pressure_coordinate_found_no_long_name(tmp_input):
+def test_pressure_coordinate_found_no_long_name(tmp_input): # pylint: disable=redefined-outer-name
     """
     tests that a pressure coordinate can still be found under certain conditions when the long_name attribute
     isnt as expected
