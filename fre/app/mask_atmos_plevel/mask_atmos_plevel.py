@@ -211,9 +211,12 @@ def pressure_coordinate(ds: xr.Dataset,
     return pressure_coord
 
 
-def write_dataset(ds: xr.Dataset, template: xr.Dataset, outfile: str) -> None:
+def write_dataset(ds: xr.Dataset,
+                  template: xr.Dataset,
+                  outfile: str) -> None:
     """
     Prepare the dataset and write NetCDF file
+
     :param ds: Input dataset to write to disk
     :type infile: xarray.Dataset
     :param template: Remainder dataset to also write to disk
