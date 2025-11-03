@@ -53,7 +53,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
     # Check if there's a ps dataset to use. if not, there's nothing to mask.
     if not os.path.exists(psfile):
         fre_logger.warning("Input surface pressure file %s does not exist", psfile)
-        fre_logger.warning("no atmos levels to mask, nothing to do for infile=%s", infile)
+        fre_logger.warning("no atmos levels to mask, nothing to do for infile = %s", infile)
         return
 
     ds_ps = xr.open_dataset(psfile)
@@ -63,7 +63,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
         fre_logger.warning('pressure variable ps not found in target pressure file')
         if not warn_no_ps:
             raise ValueError(f"Surface pressure file {psfile} does not contain surface pressure.")
-        fre_logger.warning('warn_no_ps is True! this means im going to no-op gracefully instead of raising an error')
+        fre_logger.warning('warn_no_ps is True! this means I\'m going to no-op gracefully instead of raising an error')
         return
 
     fre_logger.info('with xarray, opening input file %s', infile)
@@ -82,7 +82,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
                 ds_out[var].attrs['pressure_mask'] = "True"
                 fre_logger.info("Finished processing %s, pressure_mask is True", var)
             else:
-                fre_logger.debug("Not processing %s, 'pressure_mask', checking second trigger condition", var)
+                fre_logger.debug("Not processing %s, 'pressure_mask' was not False.", var)
 
         elif '_unmsk' in var:
             fre_logger.debug('second pressure masking trigger passed, \'_unmsk\' in variable name. processing data.')
@@ -103,17 +103,19 @@ def mask_atmos_plevel_subtool(infile: str = None,
 
             fre_logger.info("Finished processing %s, wrote %s, pressure_mask is True", var, masked_var)
         else:
-            fre_logger.debug("Not processing %s, it does not have pressure_mask", var)
+            fre_logger.debug("Not processing %s, no pressure_mask attr, nor _unmsk in the variable name", var)
 
     fre_logger.info('Write the output file if any unmasked variables were masked')
     if ds_out.variables:
-        fre_logger.info("Modified %s variables, so writing into new file %s",list(ds_out.variables),outfile)
+        fre_logger.info("Modified %s variables, so writing into new file %s", list(ds_out.variables), outfile)
         write_dataset(ds_out, ds_in, outfile)
     else:
         fre_logger.debug("No variables modified, so not writing output file %s", outfile)
 
 
-def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Dataset) -> xr.Dataset:
+def mask_field_above_surface_pressure(ds: xr.Dataset,
+                                      var: str,
+                                      ds_ps: xr.Dataset) -> xr.Dataset:
     """
     Mask data with pressure greater than surface pressure. Requires the target variable's encoding for `'missing_value'`
 
@@ -121,11 +123,11 @@ def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Datase
     :type infile: xarray.Dataset
     :param var: Input variable to be masked
     :type var: str
-    :return:Output masked dataset
-    :rtype: xrray.Dataset
+    :return: Output masked dataset
+    :rtype: xarray.Dataset
 
     .. note:: Missing values are set to 1.0e20.
-    .. error:: if the `'missing_value'` key does not exist within the variable's encoding.
+    .. error:: if the `missing_value` key does not exist within the variable's encoding.
     """
 
     fre_logger.info('retrieve the pressure coordinate variable')
@@ -174,7 +176,7 @@ def pressure_coordinate(ds: xr.Dataset,
     :param var: Input variable name to inspect
     :type var: str
     :return: Pressure coordinate variable
-    :rtype xarray.DataArray
+    :rtype: xarray.DataArray
 
     .. warning:: Returns None if no pressure coordinate variable can be found
     """
