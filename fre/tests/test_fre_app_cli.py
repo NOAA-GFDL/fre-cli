@@ -1,11 +1,13 @@
 """
 CLI Tests for fre app *
+
 Tests the command-line-interface calls for tools in the fre apps.
 Each tool generally gets 3 tests:
-    - fre app $tool, checking for exit code 0 (fails if cli isn't configured right)
-    - fre app $tool --help, checking for exit code 0 (fails if the code doesn't run)
-    - fre app $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured
-      right and thinks the tool has a --optionDNE option)
+
+- fre app $tool, checking for exit code 0 (fails if cli isn't configured right)
+- fre app $tool --help, checking for exit code 0 (fails if the code doesn't run)
+- fre app $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured
+  right and thinks the tool has a --optionDNE option)
 """
 
 import os
