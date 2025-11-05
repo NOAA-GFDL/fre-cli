@@ -172,7 +172,7 @@ def get_input_file(datadict: dict,
     Formats the input file name where the input file contains the variable data that will be regridded.
 
     :param datadict: dictionary containing relevant regrid parameters
-    :type datadict:dict
+    :type datadict: dict
     :param source: history file type
     :type source: str
     :param input_dir: input file directory
@@ -331,14 +331,14 @@ def regrid_xy(yamlfile: str,
     :param remap_dir: Directory that will contain the generated remap file
     :type remap_dir: str
     :param source: The stem of the history file to regrid
-    :type source:str
+    :type source: str
     :param input_date: Datestring where the first 8 characters correspond to YYYYMMDD
                        Input_date[:8] represents the date prefix in the history files,
                        e.g., input_date=20250730T0000Z where the history filename is
                        20250730.atmos_month_aer.tile1.nc
     :type input_date: str
 
-    .. note:  All directories should be in absolute paths
+    .. note:: All directories should be in absolute paths
     """
     fre_logger.info(f"yamlfile   = {yamlfile}")
     fre_logger.info(f"input_dir  = {input_dir}")

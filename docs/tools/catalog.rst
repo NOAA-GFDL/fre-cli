@@ -19,8 +19,8 @@ Generate a catalog.
 Validate a catalog
 
 * Runs the comprehensive validator tool (validates vocabulary and ensures catalogs were generated properly)
-* Minimal Syntax: ``fre catalog validate [json_path] --vocab     OR
-                    fre catalog validate [json_path] --proper_generation``
+* Minimal Syntax: ``fre catalog validate [json_path] --vocab`` OR
+                    ``fre catalog validate [json_path] --proper_generation``
 * Module(s) needed: n/a
 * Example: ``fre catalog validate ~/example_catalog.json --vocab``
 
