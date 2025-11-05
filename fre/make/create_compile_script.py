@@ -10,7 +10,7 @@ from multiprocessing.dummy import Pool
 
 import fre.yamltools.combine_yamls_script as cy
 from typing import Optional
-from fre.make.make_helpers import get_mktemplate_path
+import fre.make.make_helpers as mh
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
 fre_logger = logging.getLogger(__name__)
@@ -110,7 +110,7 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
 #                else:
 #                    templatePath = platform["mkTemplate"]
                 print(platform["container"])
-                template_path = make_helpers.get_mktemplate_path(mk_template = platform["mk_template"],
+                template_path = mh.get_mktemplate_path(mk_template = platform["mk_template"],
                                                                 model_root = platform["model_root"],
                                                                 container_flag = platform["container"])
                 print(template_path)
