@@ -10,6 +10,7 @@ from multiprocessing.dummy import Pool
 
 import fre.yamltools.combine_yamls_script as cy
 from typing import Optional
+from fre.make.make_helpers import get_mktemplate_path
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
 fre_logger = logging.getLogger(__name__)
@@ -97,20 +98,26 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                 bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
                          f'{platformName}-{target.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
-                # check if mkTemplate has a / indicating it is a path
-                # if its not, prepend the template name with the mkmf submodule directory
-                if "/" not in platform["mkTemplate"]:
-                    topdir = Path(__file__).resolve().parents[1]
-                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
-                    if not Path(templatePath).exists():
-                        raise ValueError (
-                            "Error with mkmf template. Created path from given file name: "
-                            f"{templatePath} does not exist.")
-                else:
-                    templatePath = platform["mkTemplate"]
+#                # check if mkTemplate has a / indicating it is a path
+#                # if its not, prepend the template name with the mkmf submodule directory
+#                if "/" not in platform["mkTemplate"]:
+#                    topdir = Path(__file__).resolve().parents[1]
+#                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
+#                    if not Path(templatePath).exists():
+#                        raise ValueError (
+#                            "Error with mkmf template. Created path from given file name: "
+#                            f"{templatePath} does not exist.")
+#                else:
+#                    templatePath = platform["mkTemplate"]
+                print(platform["container"])
+                template_path = make_helpers.get_mktemplate_path(mk_template = platform["mk_template"],
+                                                                model_root = platform["model_root"],
+                                                                container_flag = platform["container"])
+                print(template_path)
+
                 ## Create a list of compile scripts to run in parallel
                 fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],
-                                                             mkTemplatePath=templatePath,
+                                                             mkTemplatePath=template_path,
                                                              srcDir=srcDir,
                                                              bldDir=bldDir,
                                                              target=target,

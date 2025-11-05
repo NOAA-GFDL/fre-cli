@@ -11,6 +11,7 @@ import subprocess
 
 import fre.yamltools.combine_yamls_script as cy
 from typing import Optional
+import fre.make.make_helpers as mh
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 
 fre_logger = logging.getLogger(__name__)
@@ -78,19 +79,22 @@ def dockerfile_create(yamlfile:str, platform:str, target:str, execute: Optional[
             stage2image = modelYaml.platforms.getContainer2base(platformName)
             tmpDir = "tmp/"+platformName
 
-            # check if mkTemplate has a / indicating it is a path
-            # if its not, prepend the template name with the mkmf submodule directory
-            if "/" not in platform["mkTemplate"]:
-                templatePath = platform["modelRoot"]+"/mkmf/templates/"+platform["mkTemplate"]
-            else:
-                templatePath = platform["mkTemplate"]
+#            # check if mkTemplate has a / indicating it is a path
+#            # if its not, prepend the template name with the mkmf submodule directory
+#            if "/" not in platform["mkTemplate"]:
+#                templatePath = platform["modelRoot"]+"/mkmf/templates/"+platform["mkTemplate"]
+#            else:
+#                templatePath = platform["mkTemplate"]
+            template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
+                                                   model_root = platform["modelRoot"],
+                                                   container_flag = platform["container"])
 
             dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],
                                               libs = fremakeYaml["container_addlibs"],
                                               RUNenv = platform["RUNenv"],
                                               target = targetObject,
-                                              mkTemplate = templatePath,
+                                              mkTemplate = template_path,
                                               stage2base = stage2image)
             dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
             dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
