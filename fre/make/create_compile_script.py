@@ -110,7 +110,7 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
 #                else:
 #                    templatePath = platform["mkTemplate"]
                 print(platform["container"])
-                template_path = mh.get_mktemplate_path(mk_template = platform["mk_template"],
+                template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                                 model_root = platform["model_root"],
                                                                 container_flag = platform["container"])
                 print(template_path)
