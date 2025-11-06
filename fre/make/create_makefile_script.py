@@ -102,7 +102,6 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                 template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                        model_root = platform["modelRoot"],
                                                        container_flag = platform["container"])
-                print(template_path)
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
                                                       libs = fremakeYaml["container_addlibs"],
                                                       srcDir = srcDir,
