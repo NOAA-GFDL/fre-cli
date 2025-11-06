@@ -235,7 +235,7 @@ class container():
         registry_tag = self.e.lower()
         platform_tag = self.target.gettargetName().lower()
 
-        self.userScript = ["#!/bin/bash\n"]
+        self.userScript = ["#!/bin/bash\n", "set -ex\n"]
         self.userScript.append(f"{containerBuild} build -f Dockerfile -t {registry_tag}:{platform_tag}\n")
 
         if not skip_format_transfer:
