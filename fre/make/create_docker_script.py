@@ -79,15 +79,11 @@ def dockerfile_create(yamlfile:str, platform:str, target:str, execute: Optional[
             stage2image = modelYaml.platforms.getContainer2base(platformName)
             tmpDir = "tmp/"+platformName
 
-#            # check if mkTemplate has a / indicating it is a path
-#            # if its not, prepend the template name with the mkmf submodule directory
-#            if "/" not in platform["mkTemplate"]:
-#                templatePath = platform["modelRoot"]+"/mkmf/templates/"+platform["mkTemplate"]
-#            else:
-#                templatePath = platform["mkTemplate"]
             template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                    model_root = platform["modelRoot"],
                                                    container_flag = platform["container"])
+
+            ## to-do?: add check IN container for if mkTemplate path exists
 
             dockerBuild = buildDocker.container(base = image,
                                               exp = fremakeYaml["experiment"],

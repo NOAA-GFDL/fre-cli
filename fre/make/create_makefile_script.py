@@ -78,22 +78,9 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                          f'{platformName}-{targetObject.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
 
-#                # check if mkTemplate has a / indicating it is a path
-#                # if its not, prepend the template name with the mkmf submodule directory
-#                if "/" not in platform["mkTemplate"]:
-#                    topdir = Path(__file__).resolve().parents[1]
-#                    templatePath = str(topdir)+ "/mkmf/templates/"+ platform["mkTemplate"]
-#                    if not Path(templatePath).exists():
-#                        raise ValueError (
-#                            f"Error w/ mkmf template. Created path from given filename: {templatePath} does not exist.")
-#                else:
-#                    templatePath = platform["mkTemplate"]
-
-                print(platform["container"])
                 template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                        model_root = platform["modelRoot"],
                                                        container_flag = platform["container"])
-                print(template_path)
                 ## Create the Makefile
                 freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
                                                    libs = fremakeYaml["baremetal_linkerflags"],
@@ -112,14 +99,6 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "./tmp/"+platformName
 
-#                # template_path could either be a path to the mkTemplate or just the name of the template
-#                templatePath = platform["mkTemplate"]
-#
-#                # check if mkTemplate has a /, indicating it is a path
-#                # if not, prepend the template name with the mkmf submodule directory
-#                if "/" not in templatePath:
-#                    templatePath = platform["modelRoot"]+"/mkmf/templates/"+platform["mkTemplate"]
-                print(platform["container"])
                 template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                        model_root = platform["modelRoot"],
                                                        container_flag = platform["container"])
