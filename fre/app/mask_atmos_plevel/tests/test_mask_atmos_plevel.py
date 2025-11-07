@@ -211,7 +211,7 @@ def test_mask_atmos_plevel_no_ps_error(tmp_input, tmp_path): # pylint: disable=r
     assert not tmp_output.exists()
 
 
-def test_mask_atmos_plevel_nops_warn(tmp_input, tmp_path): # pylint: disable=redefined-outer-name
+def test_mask_atmos_plevel_no_ps_warn(tmp_input, tmp_path): # pylint: disable=redefined-outer-name
     """
     if the input file exists, but the ps file does not, then no-op gracefully
     without raising an exception or throwing an error while warn_no_ps = True
