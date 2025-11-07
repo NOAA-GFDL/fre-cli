@@ -28,7 +28,7 @@ def create_annual_per_variable_climatologies(tmp_path):
     output_dir = Path(tmp_path, 'in', 'atmos', 'P1Y', 'P2Y')
     output_dir.mkdir(parents=True)
 
-    # write netcdfs from the cdfs
+    # write netcdfs from the CDL files
     for file_ in input_files:
         output_file = output_dir / file_.stem
         output_file = Path(str(output_file) + '.nc')

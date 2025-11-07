@@ -123,6 +123,7 @@ def mask_field_above_surface_pressure(ds: xr.Dataset,
     :type infile: xarray.Dataset
     :param var: Input variable to be masked
     :type var: str
+
     :return: Output masked dataset
     :rtype: xarray.Dataset
 

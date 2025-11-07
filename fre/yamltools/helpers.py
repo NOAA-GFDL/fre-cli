@@ -119,7 +119,7 @@ def clean_yaml(yml_dict):
     :return: cleaned dictionary of YAML content
     :rtype: dict
 
-    ..note:: Keys (along with assocated values) that are removed from the combined YAML file include
+    ..note:: Keys (along with associated values) that are removed from the combined YAML file include
              those that are no longer necessary for parsing of information (post-yaml-combination)
     """
     # Clean the yaml

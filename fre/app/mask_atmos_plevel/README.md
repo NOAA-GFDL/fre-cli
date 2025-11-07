@@ -21,7 +21,7 @@ use the modern diag manager and set the variable attribute
 following the [documentation](https://noaa-gfdl.github.io/FMS/md_diag_manager_diag_yaml_format.html)
 
 To set the attribute for history files previously generated, you can use the NCO tools to add
-the attribute manuallly:
+the attribute manually:
 ```
 module load nco
 
