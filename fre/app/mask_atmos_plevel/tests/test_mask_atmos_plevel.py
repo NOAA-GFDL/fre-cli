@@ -177,7 +177,7 @@ def test_mask_atmos_plevel_recreate_output(tmp_input, tmp_ps, tmp_ref, tmp_path)
     assert ds['ua_unmsk'].values.all() == ds_ref['ua_unmsk'].values.all()
 
 
-def test_mask_atmos_plevel_nopsfile_noop(tmp_input, tmp_ps, tmp_path): # pylint: disable=redefined-outer-name
+def test_mask_atmos_plevel_no_ps_file_noop(tmp_input, tmp_ps, tmp_path): # pylint: disable=redefined-outer-name
     """
     if the input file exists, but the ps file does not, then no-op gracefully
     without raising an exception or throwing an error
@@ -195,9 +195,9 @@ def test_mask_atmos_plevel_nopsfile_noop(tmp_input, tmp_ps, tmp_path): # pylint:
     assert not tmp_output.exists()
 
 
-def test_mask_atmos_plevel_nops_error(tmp_input, tmp_path): # pylint: disable=redefined-outer-name
+def test_mask_atmos_plevel_no_ps_error(tmp_input, tmp_path): # pylint: disable=redefined-outer-name
     """
-    if the input and ps files exist, but the ps file does not have ps within it, raise ValueErro
+    if the input and ps files exist, but the ps file does not have ps within it, raise ValueError
     using the input file itself as the ps file is OK, it just has to NOT have ps
     """
     tmp_ps = tmp_input # pylint: disable=redefined-outer-name
@@ -228,7 +228,7 @@ def test_mask_atmos_plevel_nops_warn(tmp_input, tmp_path): # pylint: disable=red
 
 
 def test_mask_atmos_plevel_exception():
-    """ if the input file doesnt exist, error """
+    """ if the input file doesn't exist, error """
     with pytest.raises(FileNotFoundError):
         mask_atmos_plevel.mask_atmos_plevel_subtool( infile = 'Does not exist',
                                                      psfile = 'does not exist',
@@ -254,7 +254,7 @@ def test_mask_atmos_plevel_no_missing_val(tmp_input, tmp_ps, tmp_path): # pylint
                                                      warn_no_ps = False )
     assert not tmp_output.exists()
 
-def test_mask_atmos_plevel_pmask_true(tmp_input, tmp_ps, tmp_path): # pylint: disable=redefined-outer-name
+def test_mask_atmos_plevel_pressure_mask_true(tmp_input, tmp_ps, tmp_path): # pylint: disable=redefined-outer-name
     """
     Do the pressure masking on the test input file,
     and then compare to a previously generated output file.
@@ -285,7 +285,7 @@ def test_pressure_coordinate_continue_warning(tmp_input): # pylint: disable=rede
 def test_pressure_coordinate_found_no_long_name(tmp_input): # pylint: disable=redefined-outer-name
     """
     tests that a pressure coordinate can still be found under certain conditions when the long_name attribute
-    isnt as expected
+    isn't as expected
     """
     in_ds = xr.open_dataset(tmp_input)
     in_ds['plev19'].attrs['long_name'] = "foo"

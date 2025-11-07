@@ -203,7 +203,7 @@ def pressure_coordinate(ds: xr.Dataset,
                 pressure_coord = ds[dim]
                 break
 
-            fre_logger.debug('%s is not assignable as pressure_coordnate', dim)
+            fre_logger.debug('%s is not assignable as pressure_coordinate', dim)
 
         except KeyError:
             continue
