@@ -19,7 +19,7 @@ fre_logger = logging.getLogger(__name__)
 ## PP CLASS ##
 class InitPPYaml(MergePPANYamls):
     """ 
-    Class holding routines for initalizing and combining post-processing yamls
+    Class holding routines for initializing and combining post-processing yamls
 
     :ivar str yamlfile: Path to the model yaml configuration
     :ivar str experiment: Post-processing experiment name
@@ -216,9 +216,9 @@ class InitPPYaml(MergePPANYamls):
             - if model yaml info, name, platform, target, and
               settings yaml info could not be merged with pp
               yaml
-            - if multiple combined yaml dicttionaries can not be
+            - if multiple combined yaml dictionaries can not be
               merged together
-            - if the final combined yaml dictinary can not be cleaned
+            - if the final combined yaml dictionary can not be cleaned
         :return: combined yaml dictionary with the fre_properties
                  and experiments sections removed
         :rtype: dict

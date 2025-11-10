@@ -17,7 +17,7 @@ fre_logger = logging.getLogger(__name__)
 
 class InitAnalysisYaml(MergePPANYamls):
     """
-    Class holding routines for initalizing and combining post-processing yamls
+    Class holding routines for initializing and combining post-processing yamls
 
     :ivar str yamlfile: Path to the model yaml configuration
     :ivar str experiment: Post-processing experiment name
@@ -201,9 +201,9 @@ class InitAnalysisYaml(MergePPANYamls):
             - if model yaml info, name, platform, target, and
               settings yaml info could not be merged with analysis
               yaml
-            - if multiple combined yaml dicttionaries can not be
+            - if multiple combined yaml dictionaries can not be
               merged together
-            - if the final combined yaml dictinary can not be cleaned
+            - if the final combined yaml dictionary can not be cleaned
         :return: cleaned, combined yaml dictionary
         :rtype: dict
         """

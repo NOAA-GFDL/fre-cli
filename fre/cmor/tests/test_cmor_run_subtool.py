@@ -344,7 +344,7 @@ def test_fre_cmor_run_subtool_empty_varlist(capfd):
 
 
 @pytest.mark.xfail(reason='TODO req some quick rework of the opt_var_name logic- '
-                          'the current approach doesnt cut it')
+                          'the current approach doesn\'t cut it')
 def test_fre_cmor_run_subtool_opt_var_name_not_in_table():
     ''' fre cmor run, exception,  '''
 
