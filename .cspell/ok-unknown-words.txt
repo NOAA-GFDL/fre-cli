@@ -617,3 +617,4 @@ openedfile
 lonxlat
 njobs
 RDHPCS
+wnps
