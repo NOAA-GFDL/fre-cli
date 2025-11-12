@@ -21,8 +21,9 @@ class MockMakefileObject:
 
 def test_linklineBuild_container_path():
     """
-    Test linklineBuild when filePath contains 'tmp' (container path)
-    This tests line 50: fh.write("sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(LL) \\2|' $MF_PATH\n")
+    Test linklineBuild when filePath contains 'tmp' (container path).
+    
+    This tests line 50 which contains the fh.write() call with the sed pattern.
     """
     # Create a temporary directory for testing
     with tempfile.TemporaryDirectory() as temp_dir:

@@ -1,11 +1,13 @@
 """
 CLI Tests for fre app *
+
 Tests the command-line-interface calls for tools in the fre apps.
 Each tool generally gets 3 tests:
-    - fre app $tool, checking for exit code 0 (fails if cli isn't configured right)
-    - fre app $tool --help, checking for exit code 0 (fails if the code doesn't run)
-    - fre app $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured
-      right and thinks the tool has a --optionDNE option)
+
+- fre app $tool, checking for exit code 0 (fails if cli isn't configured right)
+- fre app $tool --help, checking for exit code 0 (fails if the code doesn't run)
+- fre app $tool --optionDNE, checking for exit code 2 (fails if cli isn't configured
+  right and thinks the tool has a --optionDNE option)
 """
 
 import os
@@ -158,9 +160,9 @@ def test_cli_fre_app_combine_time_averages_case(capfd):
     """
     result = runner.invoke(fre.fre, args=["app", "combine-time-averages",
                                           "--in-dir",
-                                          "FOO_PLACEHOLD",#"/tmp/pytest-of-Ian.Laflotte/pytest-211/test_combine_annual_av0/in/atmos",
+                                          "FOO_PLACEHOLD",
                                           "--out-dir",
-                                          "BAR_PLACEHOLD",#"/tmp/pytest-of-Ian.Laflotte/pytest-211/test_combine_annual_av0/out",
+                                          "BAR_PLACEHOLD",
                                           "--component", "atmos",
                                           "--begin", "1980",
                                           "--end", "1981",
@@ -231,3 +233,34 @@ def test_cli_fre_app_remap_opt_dne(capfd):
     result = runner.invoke(fre.fre, args=["app", "remap", "optionDNE"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
+
+# fre app mask_atmos_plevel
+def test_cli_fre_app_mask_atmos_plevel(capfd):
+    """ fre app mask-atmos-plevel """
+    result = runner.invoke(fre.fre, args=["app", "mask-atmos-plevel"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_mask_atmos_plevel_help(capfd):
+    """ fre app mask-atmos-plevel --help """
+    result = runner.invoke(fre.fre, args=["app", "mask-atmos-plevel", "--help"])
+    assert result.exit_code == 0
+    _out, _err = capfd.readouterr()
+
+def test_cli_fre_app_mask_atmos_plevel_opt_dne(capfd):
+    """ fre app mask-atmos-plevel optionDNE """
+    result = runner.invoke(fre.fre, args=["app", "mask-atmos-plevel", "optionDNE"])
+    assert result.exit_code == 2
+    _out, _err = capfd.readouterr()
+
+
+def test_cli_fre_app_mask_atmos_plevel_exception():
+    """ fre app mask-atmos-plevel optionDNE """
+    result = runner.invoke(fre.fre,
+                           args=["-vv", "app", "mask-atmos-plevel",
+                                 "--infile", "foo",
+                                 "--outfile", "bar",
+                                 "--psfile", "baz"],
+                           catch_exceptions = True)
+    assert result.exit_code == 1
+    assert result.exception.args[0] == 'ERROR: Input file foo does not exist'

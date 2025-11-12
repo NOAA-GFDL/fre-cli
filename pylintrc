@@ -1,9 +1,9 @@
 [MAIN]
 
-# Analyse import fallback blocks. This can be used to support both Python 2 and
+# Analyze import fallback blocks. This can be used to support both Python 2 and
 # 3 compatible code, which means that the block might have code that exists
-# only in one or another interpreter, leading to false positives when analysed.
-analyse-fallback-blocks=no
+# only in one or another interpreter, leading to false positives when analyzed.
+analyse-fallback-blocks=no # cspell:disable-line
 
 # Clear in-memory caches upon conclusion of linting. Useful if running pylint
 # in a server-like mode.
@@ -39,7 +39,7 @@ extension-pkg-whitelist=
 fail-on=
 
 # Specify a score threshold under which the program will exit with error.
-fail-under=7.50
+fail-under=7.80
 
 # Interpret the stdin as a python script, whose filename needs to be passed as
 # the module_or_package argument.

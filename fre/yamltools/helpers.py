@@ -8,10 +8,7 @@ from . import *
 from pathlib import Path
 import os
 
-# set logger level to INFO
 fre_logger = logging.getLogger(__name__)
-former_log_level = fre_logger.level
-fre_logger.setLevel(logging.INFO)
 
 def yaml_load(yamlfile):
     """
@@ -122,7 +119,7 @@ def clean_yaml(yml_dict):
     :return: cleaned dictionary of YAML content
     :rtype: dict
 
-    ..note:: Keys (along with assocated values) that are removed from the combined YAML file include
+    ..note:: Keys (along with associated values) that are removed from the combined YAML file include
              those that are no longer necessary for parsing of information (post-yaml-combination)
     """
     # Clean the yaml
@@ -153,6 +150,8 @@ def validate_yaml(yaml, schema_path):
     with open(schema_path, 'r') as s:
         schema = json.load(s)
 
+    former_log_level = fre_logger.level
+    fre_logger.setLevel(logging.INFO)
     fre_logger.info("")
     fre_logger.info("Validating YAML information...")
     try:
@@ -161,3 +160,5 @@ def validate_yaml(yaml, schema_path):
         return True
     except:
         raise ValueError("    YAML dictionary NOT VALID.\n")
+    finally:
+        fre_logger.setLevel(former_log_level)

@@ -156,7 +156,7 @@ def create_lev_bnds( bound_these: Variable = None,
     """
     Create a vertical level bounds array for a set of levels.
 
-    :param bound_these: netCDF4 Variable with a numpy array representing veritcal levels
+    :param bound_these: netCDF4 Variable with a numpy array representing vertical levels
     :type bound_these: netCDF4.Variable
     :param with_these: netCDF4 Variable with a numpy array representing level bounds, one longer than bound_these
     :type with_these: netCDF4.Variable

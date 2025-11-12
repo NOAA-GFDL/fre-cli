@@ -1,12 +1,34 @@
+"""
+functionality and routines associated with masking pressure level data
+fre app mask-atmos-plevel
+"""
+
 import os
+import logging
+
 import xarray as xr
 
-import logging
 fre_logger = logging.getLogger(__name__)
 
-def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
+
+
+def mask_atmos_plevel_subtool(infile: str = None,
+                              psfile: str = None,
+                              outfile: str = None,
+                              warn_no_ps: bool = False) -> None:
     """
-    Mask pressure-level diagnostic output below land surface
+    Mask pressure-level diagnostic output below land surface. One of two possible triggers for applying a pressure mask
+    to the data must pass.
+
+    The first trigger is input variables must have a string-valued attribute `pressure_mask` that
+    is a case-insensitive match for `false`, implying the data has not yet had a pressure mask applied. The data will
+    then be masked, and the `pressure_mask` attribute set to `true`. if `false` does not match, the variable is skipped
+    for processing.
+
+    The second trigger is only checked in the absence of a `pressure_mask` attribute, i.e. the first trigger takes
+    precedence over the second. If the variable name ends in `_unmsk`, the data is assumed to be unmasked, a copy of the
+    dataset variable is created without `_unmsk` in the name, the data is masked, and the `pressure_mask` attribute is
+    added accordingly.
 
     :param infile: Input NetCDF file containing pressure-level output to be masked
     :type infile: str
@@ -14,131 +36,188 @@ def mask_atmos_plevel_subtool(infile: str, psfile: str, outfile: str) -> None:
     :type psfile: str
     :param outfile: Output NetCDF file containing masked output
     :type outfile: str
-    :raises FileExistsError: Output file already exists
-    :raises FileNotFoundError: Pressure input file does not exist
     :raises ValueError: Pressure input file does not contain ps
     :raises FileNotFound: Input file does not exist
     :rtype: None
-
-    .. note:: Input variables must have an attribute `pressure_mask` that is set to `False`. The resulting output variable will have the attribute set to `True`.
     """
-
-    # Error if outfile exists
-    if os.path.exists(outfile):
-        raise FileExistsError(f"ERROR: Output file {outfile} already exists")
-
-    # Open ps dataset
-    if not os.path.exists(psfile):
-        raise FileNotFoundError(f"ERROR: Input surface pressure file {psfile} does not exist")
-    ds_ps = xr.open_dataset(psfile)
-
-    # Exit with message if "ps" not available
-    if "ps" not in list(ds_ps.variables):
-        raise ValueError(f"ERROR: Surface pressure file '{psfile}' does not contain surface pressure.")
-
-    # Open input dataset
+    # check if input file exists, raise an error if not
     if not os.path.exists(infile):
         raise FileNotFoundError(f"ERROR: Input file {infile} does not exist")
+
+    # Warn if outfile exists, but continue and recreate
+    if os.path.exists(outfile):
+        #raise FileExistsError(f"ERROR: Output file {outfile} already exists")
+        fre_logger.warning("Output file %s already exists", outfile)
+        fre_logger.warning("it will be recreated i hope")
+
+    # Check if there's a ps dataset to use. if not, there's nothing to mask.
+    if not os.path.exists(psfile):
+        fre_logger.warning("Input surface pressure file %s does not exist", psfile)
+        fre_logger.warning("no atmos levels to mask, nothing to do for infile = %s", infile)
+        return
+
+    ds_ps = xr.open_dataset(psfile)
+
+    fre_logger.debug('checking if variable ps is available')
+    if "ps" not in list(ds_ps.variables):
+        fre_logger.warning('pressure variable ps not found in target pressure file')
+        if not warn_no_ps:
+            raise ValueError(f"Surface pressure file {psfile} does not contain surface pressure.")
+        fre_logger.warning('warn_no_ps is True! this means I\'m going to no-op gracefully instead of raising an error')
+        return
+
+    fre_logger.info('with xarray, opening input file %s', infile)
     ds_in = xr.open_dataset(infile)
 
+    fre_logger.info('with xarray, creating a Dataset object')
     ds_out = xr.Dataset()
 
-    # The trigger for atmos masking is a variable attribute "pressure_mask = False".
-    # After the masking is done, change the attribute to True.
-    # Note: these are string types called True and False, not boolean types.
+    fre_logger.debug('looping over vars, checking two triggers for masking. ')
     for var in list(ds_in.variables):
+        fre_logger.debug('for var = %s', var)
         if 'pressure_mask' in ds_in[var].attrs:
             if ds_in[var].attrs['pressure_mask'].lower() == 'false':
+                fre_logger.debug('first pressure masking trigger passed. processing data.')
                 ds_out[var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
                 ds_out[var].attrs['pressure_mask'] = "True"
-                fre_logger.info(f"Finished processing '{var}' and set 'pressure_mask' to True")
+                fre_logger.info("Finished processing %s, pressure_mask is True", var)
             else:
-                fre_logger.debug(f"Not processing '{var}' (because 'pressure_mask' is not False)")
-        else:
-                fre_logger.debug(f"Not processing '{var}' (because it does not have 'pressure_mask'")
+                fre_logger.debug("Not processing %s, 'pressure_mask' was not False.", var)
 
-    # Write the output file if anything was done
+        elif '_unmsk' in var:
+            fre_logger.debug('second pressure masking trigger passed, \'_unmsk\' in variable name. processing data.')
+            fre_logger.info('_unmsk found in var %s, processing.', var)
+            fre_logger.debug('copying %s', var)
+            ds_out[var] = ds_in[var].copy()
+
+            fre_logger.debug('setting pressure_mask attribute of %s to False', var)
+            ds_out[var].attrs['pressure_mask'] = "False"
+
+            masked_var = var.split('_')[0]
+
+            fre_logger.debug('writing out masked array to %s instead of %s', masked_var, var)
+            ds_out[masked_var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
+
+            fre_logger.debug('setting pressure_mask attribute of %s to True', masked_var)
+            ds_out[masked_var].attrs['pressure_mask'] = "True"
+
+            fre_logger.info("Finished processing %s, wrote %s, pressure_mask is True", var, masked_var)
+        else:
+            fre_logger.debug("Not processing %s, no pressure_mask attr, nor _unmsk in the variable name", var)
+
+    fre_logger.info('Write the output file if any unmasked variables were masked')
     if ds_out.variables:
-        fre_logger.info(f"Modified {list(ds_out.variables)} variables, so writing into new file '{outfile}'")
+        fre_logger.info("Modified %s variables, so writing into new file %s", list(ds_out.variables), outfile)
         write_dataset(ds_out, ds_in, outfile)
     else:
-        fre_logger.debug(f"No variables modified, so not writing output file '{outfile}'")
+        fre_logger.debug("No variables modified, so not writing output file %s", outfile)
 
 
-def mask_field_above_surface_pressure(ds: xr.Dataset, var: str, ds_ps: xr.Dataset) -> xr.Dataset:
+def mask_field_above_surface_pressure(ds: xr.Dataset,
+                                      var: str,
+                                      ds_ps: xr.Dataset) -> xr.Dataset:
     """
-    Mask data with pressure greater than surface pressure
+    Mask data with pressure greater than surface pressure. Requires the target variable's encoding for `'missing_value'`
+
     :param ds: Input dataset to be masked
     :type infile: xarray.Dataset
     :param var: Input variable to be masked
     :type var: str
-    :return:Output masked dataset
-    :rtype: xrray.Dataset
+
+    :return: Output masked dataset
+    :rtype: xarray.Dataset
 
     .. note:: Missing values are set to 1.0e20.
+    .. error:: if the `missing_value` key does not exist within the variable's encoding.
     """
 
-    # retrieve the pressure coordinate variable
+    fre_logger.info('retrieve the pressure coordinate variable')
     plev = pressure_coordinate(ds, var)
 
-    # broadcast pressure coordinate and surface pressure to
-    # the dimensions of the variable to mask
+    fre_logger.info('broadcasting pressure coordinate and surface pressure to the dimensions of the variable to mask')
     plev_extended, _ = xr.broadcast(plev, ds[var])
     ps_extended, _ = xr.broadcast(ds_ps["ps"], ds[var])
 
-    # read the input file's missing_value
+    # we might need to be more careful about missing_value v _FillValue
+    fre_logger.info('reading the input file\'s missing_value')
     try:
         missing_value = ds[var].encoding['missing_value']
-    except KeyError:
-        raise Exception("The input file to be masked does not contain the 'missing_value' variable attribute, which is required.")
+    except Exception as exc:
+        raise KeyError("input file does not contain missing_value, a required variable attribute") from exc
 
-    # masking do not need looping
+    fre_logger.info('masking do not need looping')
     masked = xr.where(plev_extended > ps_extended, missing_value, ds[var])
 
-    # copy attributes, but it doesn't include the missing values
+    fre_logger.info('copy attributes, but it doesn\'t include the missing values')
     attrs = ds[var].attrs.copy()
 
-    # add the missing values back
+    # we might need to be more careful about missing_value v _FillValue
+    fre_logger.info('add the missing values back')
     attrs['missing_value'] = missing_value
     attrs['_FillValue'] = missing_value
     masked.attrs = attrs
 
-    # transpose dims like the original array
+    fre_logger.info('transpose dims like the original array')
     masked = masked.transpose(*ds[var].dims)
-    fre_logger.debug(f"Processed {var}")
+    fre_logger.debug("Processed %s", var)
 
     return masked
 
 
-def pressure_coordinate(ds: xr.Dataset, varname: str) -> xr.DataArray:
+def pressure_coordinate(ds: xr.Dataset,
+                        varname: str) -> xr.DataArray:
     """
-    Return the pressure coordinate of the Dataset or None if
-    the Dataset does not have a pressure coordinate.
+    Return the pressure coordinate of the Dataset or None if the Dataset does not have a pressure coordinate. A
+    coordinate is deemed a pressure coordinate if `long_name` attribute is `'pressure'`, or if a variable with units
+    of pressure is described as a z-axis with an attribute named `'positive'`. The first variable looped over found to
+    match these criteria are returned.
+
     :param ds: Input dataset to inspect
     :type ds: xarray.Dataset
     :param var: Input variable name to inspect
     :type var: str
     :return: Pressure coordinate variable
-    :rtype xarray.DataArray
+    :rtype: xarray.DataArray
 
     .. warning:: Returns None if no pressure coordinate variable can be found
     """
-
     pressure_coord = None
-
     for dim in list(ds[varname].dims):
-        if dim in list(ds.variables):  # dim needs to have values in file
-            if ds[dim].attrs["long_name"] == "pressure":
-                pressure_coord = ds[dim]
-            elif "coordinates" in ds.attrs and ds[dim].attrs["units"] == "Pa":
-                pressure_coord = ds[dim]
 
+        fre_logger.debug('dim needs to have values in file, checking list of ds variables')
+        if dim not in list(ds.variables):
+            fre_logger.warning('dim %s not found in list of ds variables, continue', dim)
+            continue
+
+        fre_logger.info('attempting to assign pressure coordinate, checking dim=%s', dim)
+        fre_logger.debug('attributes: %s', list(ds[dim].attrs) )
+        try:
+            if ds[dim].attrs["long_name"].lower() == "pressure":
+                pressure_coord = ds[dim]
+                break
+
+            pressure_unit_list = ["Pa", "kPa", "mmHg", "atm" ] # to be expanded as necessary.
+            if all( [ 'positive' in list(ds[dim].attrs),
+                      ds[dim].attrs['axis'].lower() == "z",
+                      ds[dim].attrs["units"] in pressure_unit_list ] ) :
+                pressure_coord = ds[dim]
+                break
+
+            fre_logger.debug('%s is not assignable as pressure_coordinate', dim)
+
+        except KeyError:
+            continue
+    if pressure_coord is None:
+        fre_logger.warning("pressure_coord is None, it could not be assigned!")
     return pressure_coord
 
 
-def write_dataset(ds: xr.Dataset, template: xr.Dataset, outfile: str) -> None:
+def write_dataset(ds: xr.Dataset,
+                  template: xr.Dataset,
+                  outfile: str) -> None:
     """
     Prepare the dataset and write NetCDF file
+
     :param ds: Input dataset to write to disk
     :type infile: xarray.Dataset
     :param template: Remainder dataset to also write to disk
@@ -146,16 +225,16 @@ def write_dataset(ds: xr.Dataset, template: xr.Dataset, outfile: str) -> None:
     :rtype: None
     """
 
-    # copy global attributes
+    fre_logger.info('copying global attributes')
     ds.attrs = template.attrs.copy()
 
-    # copy all variables and their attributes
-    # except those already processed
+    fre_logger.info('copying all variables and their attributes')
+    fre_logger.info('... except those already processed!')
     for var in list(template.variables):
         if var in list(ds.variables):
             continue
         ds[var] = template[var]
         ds[var].attrs = template[var].attrs.copy()
 
-    # write to file
+    fre_logger.info('writing to file %s', outfile)
     ds.to_netcdf(outfile, unlimited_dims="time")
