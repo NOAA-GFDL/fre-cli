@@ -58,8 +58,8 @@ def generate_time_average(infile: Union[str, List[str]] = None,
         merged_file = "merged_output.nc"
 
         fre_logger.info('calling cdo mergetime')
-        fre_logger.debug(f' output: {merged_file}')
-        fre_logger.debug( 'inputs: \n %s', ' '.join(infile_str) )
+        fre_logger.debug('output: %s', merged_file)
+        fre_logger.debug('inputs: \n %s', ' '.join(infile_str) )
         _cdo.mergetime(input = ' '.join(infile_str), output = merged_file)
 
         # preserve the original file names for later
