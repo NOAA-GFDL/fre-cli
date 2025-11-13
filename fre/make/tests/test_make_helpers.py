@@ -76,11 +76,10 @@ def test_mktemplatepath_dne_with_path():
     template_path = "/path/does/not/exist/dummy.mk"
     error_msg = ("Error w/ mkmf template. Created path from given filename: "
                  f"{template_path} does not exist.")
-    with pytest.raises(ValueError, match = error_msg) as execinfo:
+    with pytest.raises(ValueError, match = error_msg):
         make_helpers.get_mktemplate_path(mk_template = template_path,
                                          model_root = None,
                                          container_flag = False)
-#    assert execinfo.type is ValueError
 
 def test_mktemplatepath_dne_with_name(test_variables):
     """
@@ -90,8 +89,7 @@ def test_mktemplatepath_dne_with_name(test_variables):
     template_path = "dummy.mk"
     error_msg = (f"Error w/ mkmf template. Created path from given filename: "
                  f"{test_variables['fre_path']}/mkmf/templates/{template_path} does not exist.")
-    with pytest.raises(ValueError, match = error_msg) as execinfo:
+    with pytest.raises(ValueError, match = error_msg):
         make_helpers.get_mktemplate_path(mk_template = template_path,
                                          model_root = None,
                                          container_flag = False)
-    assert execinfo.type is ValueError
