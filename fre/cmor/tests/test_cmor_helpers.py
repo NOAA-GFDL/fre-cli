@@ -6,7 +6,7 @@ import pytest
 from fre.cmor.cmor_helpers import find_statics_file, print_data_minmax
 
 def test_find_statics_file_success():
-    ''' what happens when no statics file is found given a bronx directory strucutre '''
+    ''' what happens when no statics file is found given a bronx directory structure '''
     target_file_path = 'fre/tests/test_files/ascii_files/mock_archive/' + \
                        'USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' + \
                        'gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/ocean_monthly.000101-000102.sos.nc'
@@ -28,7 +28,7 @@ def test_find_statics_file_success():
 
 
 def test_find_statics_file_nothing_found():
-    ''' what happens when a statics file is found given a bronx directory strucutre '''
+    ''' what happens when a statics file is found given a bronx directory structure '''
     statics_file = find_statics_file(
         bronx_file_path = 'fre/tests/test_files/ascii_files/' + \
                           'mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' + \
@@ -37,13 +37,13 @@ def test_find_statics_file_nothing_found():
 
 
 def test_print_data_minmax_no_exception_case1():
-    ''' checks to make sure this doesnt raise an exception '''
+    ''' checks to make sure this doesn't raise an exception '''
     print_data_minmax(None, None)
 
 def test_print_data_minmax_no_exception_case2():
-    ''' checks to make sure this doesnt raise an exception '''
+    ''' checks to make sure this doesn't raise an exception '''
     print_data_minmax(np.ma.core.MaskedArray( data=(0, 10, 20, 30) ), None)
 
 def test_print_data_minmax_no_exception_case3():
-    ''' checks to make sure this doesnt raise an exception '''
+    ''' checks to make sure this doesn't raise an exception '''
     print_data_minmax(np.ma.core.MaskedArray( data=(0, 10, 20, 30) ), 'foo')

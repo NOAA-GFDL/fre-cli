@@ -39,7 +39,7 @@ def create_monthly_timeseries(tmp_path):
     output_dir = Path(tmp_path, 'ts', grid, 'atmos_month', 'P1M', input_interval)
     output_dir.mkdir(parents=True)
 
-    # write netcdfs from the cdfs
+    # write netcdfs from the CDL files
     for file_ in input_files:
         output_file = output_dir / file_.stem
         output_file = Path(str(output_file) + '.nc')
@@ -81,7 +81,7 @@ def create_annual_timeseries(tmp_path):
     output_dir = Path(tmp_path, 'ts', grid, 'tracer_level', 'P1Y', input_interval)
     output_dir.mkdir(parents=True)
 
-    # write netcdfs from the cdfs
+    # write netcdfs from the CDL files
     for file_ in input_files:
         output_file = output_dir / file_.stem
         output_file = Path(str(output_file) + '.nc')

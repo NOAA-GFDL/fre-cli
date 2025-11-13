@@ -11,7 +11,7 @@ Guide
   # Clone fre-workflows repository into ~/cylc-src/[experiment name]__[platform name]__[target name]
   fre pp checkout -e [experiment name] -p [platform] -t [target]
 
-  # Create/confiugre the combined yaml file, rose-suite.conf, and any necessary rose-app.conf files
+  # Create/configure the combined yaml file, rose-suite.conf, and any necessary rose-app.conf files
   fre pp configure-yaml -y [model yaml file] -e [experiment name] -p [platform] -t [target]
 
   # Validate the rose experiment configuration files
@@ -45,7 +45,7 @@ Users can also run all fre pp subtools in one command:
   # Clone fre-workflows repository into ~/cylc-src/[experiment name]__[platform name]__[target name]
   fre pp checkout -e [experiment name] -p [platform] -t [target] -b [branch or tag name]
 
-  # Create/confiugre the combined yaml file, rose-suite.conf, and any necessary rose-app.conf files
+  # Create/configure the combined yaml file, rose-suite.conf, and any necessary rose-app.conf files
   fre pp configure-yaml -y [model yaml file] -e [experiment name] -p [platform] -t [target]
 
   # Validate the rose experiment configuration files

@@ -241,7 +241,7 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     .. note:: In this function, outfile is defined and used with consolidate_yamls.
               This will create a final, combined yaml file in the ~/cylc-src/[workflow_id]
               directory. Additionally, rose-suite, regrid-xy rose-app, and remap rose-app
-              information is being dumped into their own confirugation files in the cylc-src
+              information is being dumped into their own configuration files in the cylc-src
               directory.
     """
     fre_logger.info('Starting')
