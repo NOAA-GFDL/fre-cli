@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 
 import fre.yamltools.combine_yamls_script as cy
-import fre.make.make_helpers as mh 
+from fre.make.make_helpers import get_mktemplate_path 
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 
 fre_logger = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                          f'{platformName}-{targetObject.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
 
-                template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
+                template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                        model_root = platform["modelRoot"],
                                                        container_flag = platform["container"])
                 ## Create the Makefile
@@ -99,7 +99,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
                 tmpDir = "./tmp/"+platformName
 
-                template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
+                template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                        model_root = platform["modelRoot"],
                                                        container_flag = platform["container"])
                 freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],

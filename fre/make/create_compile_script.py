@@ -10,7 +10,7 @@ from multiprocessing.dummy import Pool
 
 import fre.yamltools.combine_yamls_script as cy
 from typing import Optional
-import fre.make.make_helpers as mh
+from fre.make.make_helpers import get_mktemplate_path
 from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
 fre_logger = logging.getLogger(__name__)
@@ -99,9 +99,9 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                          f'{platformName}-{target.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
 
-                template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
-                                                                model_root = platform["modelRoot"],
-                                                                container_flag = platform["container"])
+                template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
+                                                    model_root = platform["modelRoot"],
+                                                    container_flag = platform["container"])
 
                 ## Create a list of compile scripts to run in parallel
                 fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],

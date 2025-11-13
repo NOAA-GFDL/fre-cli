@@ -116,9 +116,9 @@ def test_run_fremake_cleanup():
     assert all(tp_remove)
 
 def test_run_fremake_container_build_fail():
-    ''' check createContainer script would fail and exit if one step failed '''
+    ''' check createContainer script would fail and exit if one step failed (incorrect Dockerfile name)'''
     if Path(f"{currPath}/createContainer.sh").exists():
-        os.remove(Path(f"{currPath}/createContainer.sh"))
+        os.remove(f"{currPath}/createContainer.sh")
 
     # Create the createContainer.sh script but do not run
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
@@ -127,10 +127,8 @@ def test_run_fremake_container_build_fail():
     assert Path(f"{currPath}/createContainer.sh").exists()
 
     # Alter script to fail
-    with open(Path(f"{currPath}/createContainer.sh"), "r") as f:
+    with open(Path(f"{currPath}/createContainer.sh"), "r+") as f:
         lines = f.readlines()
-
-    with open(Path(f"{currPath}/createContainer.sh"), "w") as f:
         for line in lines:
             f.write(line.replace("Dockerfile", "Dockerfile-wrong"))
 

@@ -30,7 +30,7 @@ def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: Opti
 
     # check if mk_template has a /, indicating it is a path
     # if not, prepend the template name with the mkmf submodule directory
-    if container_flag is False:
+    if not container_flag:
         if "/" not in mk_template:
             topdir = Path(__file__).resolve().parents[1]
             template_path = str(topdir)+ "/mkmf/templates/"+mk_template

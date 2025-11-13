@@ -11,7 +11,7 @@ import subprocess
 
 import fre.yamltools.combine_yamls_script as cy
 from typing import Optional
-import fre.make.make_helpers as mh
+from fre.make.make_helpers import get_mktemplate_path
 from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
 
 fre_logger = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ def dockerfile_create(yamlfile:str, platform:str, target:str, execute: Optional[
             stage2image = modelYaml.platforms.getContainer2base(platformName)
             tmpDir = "tmp/"+platformName
 
-            template_path = mh.get_mktemplate_path(mk_template = platform["mkTemplate"],
+            template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                    model_root = platform["modelRoot"],
                                                    container_flag = platform["container"])
 
