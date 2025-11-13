@@ -4,11 +4,6 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-# set logger level to INFO
-fre_logger = logging.getLogger(__name__)
-former_log_level = fre_logger.level
-fre_logger.setLevel(logging.INFO)
-
 def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: Optional[str]=None) -> str:
     """
     Save the full path to the mk_template.
