@@ -3,9 +3,7 @@ on:
   push:
     branches:
       - main
-
-
-
+      - conda.package.install.bug
 
 jobs:
   condapublish:
