@@ -114,7 +114,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       sdw = os.path.join(workdir,sd)
       files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
       if len(files) == 0:
-        fre_logger.info(f"No input files found; skipping subdir {subdir}")
+        fre_logger.info(f"No input files found; skipping subdir {sd}")
       else:
         output_subdir = os.path.join(os.path.abspath(outputDir), sd)
         if not os.path.isdir(output_subdir):
