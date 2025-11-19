@@ -355,6 +355,10 @@ def regrid_xy(yamlfile: str,
             else:
                 continue
 
+            # create the output dir
+            output_subdir = Path(output_dir) / datadict["interp_method"]
+            output_subdir.mkdir(parents=True, exist_ok=True)
+
             #construct fregrid command
             fregrid_command = [
                 "fregrid",
@@ -368,7 +372,7 @@ def regrid_xy(yamlfile: str,
                 "--nlon", datadict["output_nlon"],
                 "--nlat", datadict["output_nlat"],
                 "--scalar_field", datadict["scalar_field"],
-                "--output_dir", output_dir,
+                "--output_dir", output_subdir,
                 "--associated_file_dir", input_dir
             ]
             fre_logger.debug(f"fregrid command: {fregrid_command}")
