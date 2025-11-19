@@ -73,6 +73,9 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   curr_dir = os.getcwd()
   workdir = os.path.abspath(inputDir)
 
+  fre_logger.debug(f"input dir: {inputDir}")
+  fre_logger.debug(f"output dir: {outputDir}")
+
   #note to self: if CYLC_TASK_PARAM_component isn't doing what we think it's
   #doing, we can also use history_source to get the component but it's
   #going to be a bit of a pain
@@ -124,15 +127,17 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
       fre_logger.error(f"error: no files found in dirs {sd_string} under {workdir} that match pattern {file_regex}; no splitting took place")
       raise OSError
   else:
+      files_split = 0
       files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None]
       # Split the files by variable
       for infile in files:
         split_file_xarray(infile, os.path.abspath(outputDir), varlist)
+        files_split += 1
       if len(files) == 0:
         fre_logger.error(f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place")
         raise OSError
 
-  fre_logger.info("split-netcdf-wrapper call complete")
+  fre_logger.info(f"split-netcdf-wrapper call complete, having split {files_split} files")
   sys.exit(0) #check this
 
 def split_file_xarray(infile, outfiledir, var_list='all'):
@@ -168,11 +173,12 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
     varsize = 2
   else:
     varsize = 1
+  fre_logger.debug(f"varsize: {varsize}")
   #note: netcdf dimensions and xarray coords are NOT ALWAYS THE SAME THING.
   #If they were, I could get away with the following:
   #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
   #instead of this:
-  var_shortvars = [v for v in allvars if (len(dataset[v].shape) <= varsize) and v not in dataset._coord_names]
+  var_shortvars = [v for v in allvars if (len(dataset[v].shape) < varsize) and v not in dataset._coord_names]
   #having a variable listed as both a metadata var and a coordinate var seems to
   #lead to the weird adding a _FillValue behavior
   fre_logger.info(f"var patterns: {VAR_PATTERNS}")
@@ -204,7 +210,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
     write_vars = [el for el in datavars if el in var_list]
   fre_logger.debug(f"intersection of datavars and var_list: {write_vars}")
 
-  if len(write_vars) < 0:
+  if len(write_vars) <= 0:
     fre_logger.info(f"No data variables found in {infile}; no writes take place.")
   else:
     vc_encode = set_coord_encoding(dataset, dataset._coord_names)
@@ -226,6 +232,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
       var_outfile = fre_outfile_name(os.path.basename(infile), variable)
       var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
       data2.to_netcdf(var_out, encoding = var_encode)
+      fre_logger.debug(f"Wrote '{var_out}'")
 
 def get_max_ndims(dataset):
   '''
