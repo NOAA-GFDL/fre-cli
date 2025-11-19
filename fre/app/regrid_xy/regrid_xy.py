@@ -71,6 +71,7 @@ def get_grid_spec(datadict: dict) -> str:
 
     #get tar file containing the grid_spec file
     pp_grid_spec_tar = datadict["yaml"]["postprocess"]["settings"]["pp_grid_spec"]
+    fre_logger.debug(f"Going to untar this grid spec tarfile: {pp_grid_spec_tar}")
 
     #untar grid_spec tar file into the current work directory
     if tarfile.is_tarfile(pp_grid_spec_tar):
@@ -81,6 +82,9 @@ def get_grid_spec(datadict: dict) -> str:
     if not Path(grid_spec).exists():
         raise IOError(f"Cannot find {grid_spec} in tar file {pp_grid_spec_tar}")
 
+    fre_logger.debug(f"Current directory: {Path.cwd()}")
+
+    fre_logger.debug(f"Found grid_spec file: {grid_spec}")
     return grid_spec
 
 
@@ -365,7 +369,9 @@ def regrid_xy(yamlfile: str,
                 "--nlat", datadict["output_nlat"],
                 "--scalar_field", datadict["scalar_field"],
                 "--output_dir", output_dir,
+                "--associated_file_dir", input_dir
             ]
+            fre_logger.debug(f"fregrid command: {fregrid_command}")
 
             #execute fregrid command
             fregrid_job = subprocess.run(fregrid_command, capture_output=True, text=True)
