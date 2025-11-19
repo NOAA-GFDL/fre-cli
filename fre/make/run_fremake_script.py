@@ -21,6 +21,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
                 no_parallel_checkout: Optional[bool] = None,
                 no_format_transfer: Optional[bool] = False,
                 execute: Optional[bool] = False,
+                force_checkout: Optional[bool] = False,
                 verbose: Optional[bool] = None):
     """
     Runs all of fre make code
@@ -44,6 +45,8 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     :param execute: Run the created compile script or dockerfile to create a model executable
                     or container
     :type execute: bool
+    :param force_checkout: Re-create the checkout script if changes were made to configurations
+    :type force_checkout: bool
     :param verbose: Increase verbosity output
     :type verbose: bool
     """
@@ -73,7 +76,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     #checkout
     fre_logger.info("Running fre make: calling checkout_create")
     checkout_create(yamlfile, platform, target, no_parallel_checkout,
-                    njobs, execute, verbose)
+                    njobs, execute, force_checkout, verbose)
 
     #makefile
     fre_logger.info("Running fre make: calling makefile_create")
