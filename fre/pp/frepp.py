@@ -168,8 +168,6 @@ def histval(history,date_string,warn):
               help='Path to a directory in which to search for netcdf files to split. Files matching the pattern in $history-source will be split.')
 @click.option('-o', '--outputdir', required=True,
              help='Path to a directory to which to write split netcdf files.')
-@click.option('-c', '--component', required=False, default=None,
-              help='component specified in yamlfile under postprocess:components. Needs to be the same component that contains the sources:history-file. Conflicts with --split-all-vars.')
 @click.option('-s', '--history-source', required=True, default=None,
               help='history-file specification under postprocess:components:type=component:sources in the fre postprocess config yamlfile. Used to match files in inputdir.')
 @click.option('-y', '--yamlfile', required=False, default=None,
@@ -178,10 +176,10 @@ def histval(history,date_string,warn):
               help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
 @click.option('--split-all-vars', '-a', is_flag=True, default=False,
               help="Whether to ignore other config options and split all vars in the file. Defaults to false. Conflicts with -c, -s and -y options.")
-def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars):
+def split_netcdf_wrapper(inputdir, outputdir, history_source, use_subdirs, yamlfile, split_all_vars):
     ''' Splits all netcdf files matching the pattern specified by $history_source in $inputdir
         into files with a single data variable written to $outputdir. If $yamlfile contains
-        variable filtering settings under $component, only those variables specified will
+        variable filtering settings under $history_source, only those variables specified will
         be split into files for $outdir. If no variables in the variable filtering match
         vars in the netcdf files, no files will be written to $outdir. If --use-subdirs
         is set, netcdf files will be searched for in subdirs under $outdir.
@@ -189,12 +187,11 @@ def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_sub
         This tool is intended for use in fre-workflows and assumes files to split have
         fre-specific naming conventions. For a more general tool, look at split-netcdf.'''
     if split_all_vars:
-        none_args = [component, yamlfile]
+        none_args = [yamlfile]
         if any([el is not None for el in none_args]):
-            fre_logger.error('''Error in split_netcdf_wrapper arg parsing: --split-all-vars was set and one or more of
-mutually exclusive options --component and --yamlfile was also set!
+            fre_logger.error('''Error in split_netcdf_wrapper arg parsing: --split-all-vars was set and --yamlfile was also set!
 Either unset --split-all-vars or parse the varlist from the yaml - do not try do do both!''')
-    split_netcdf_script.split_netcdf(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars)
+    split_netcdf_script.split_netcdf(inputdir, outputdir, history_source, use_subdirs, yamlfile, split_all_vars)
 
 #fre pp split-netcdf
 @pp_cli.command()
