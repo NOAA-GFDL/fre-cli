@@ -3,7 +3,6 @@ on:
   pull_request:
     branches:
       - main
-      - 677.safe-fixes
 
 # cancel running jobs if theres a newer push
 concurrency:
