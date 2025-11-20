@@ -356,7 +356,7 @@ def regrid_xy(yamlfile: str,
                 continue
 
             # create the output dir
-            output_subdir = Path(output_dir) / datadict["interp_method"]
+            output_subdir = Path(output_dir) / f"{datadict['output_nlat']}_{datadict['output_nlon']}.{datadict['interp_method']}"
             output_subdir.mkdir(parents=True, exist_ok=True)
 
             #construct fregrid command
