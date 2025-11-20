@@ -6,18 +6,18 @@ dimensions:
 	xq = 15 ;
 	yh = 10 ;
 variables:
-	double time(time) ;
-		time:units = "days since 0001-01-01 00:00:00" ;
-		time:long_name = "time" ;
-		time:axis = "T" ;
-		time:calendar_type = "NOLEAP" ;
-		time:calendar = "noleap" ;
 	float wet_v(yq, xh) ;
 		wet_v:_FillValue = 1.e+20f ;
 		wet_v:missing_value = 1.e+20f ;
 		wet_v:long_name = "0 if land, 1 if ocean at meridional velocity (Cv) points" ;
 		wet_v:cell_methods = "time: point" ;
 		wet_v:interp_method = "none" ;
+	double time(time) ;
+		time:units = "days since 0001-01-01 00:00:00" ;
+		time:long_name = "time" ;
+		time:axis = "T" ;
+		time:calendar_type = "NOLEAP" ;
+		time:calendar = "noleap" ;
 	double xh(xh) ;
 		xh:units = "degrees_east" ;
 		xh:long_name = "h point nominal longitude" ;
@@ -43,8 +43,6 @@ variables:
 		:NCO = "netCDF Operators version 5.1.9 (Homepage = http://nco.sf.net, Code = http://github.com/nco/nco, Citation = 10.1016/j.envsoft.2008.03.004)" ;
 data:
 
- time = 0 ;
-
  wet_v =
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -56,6 +54,8 @@ data:
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ;
+
+ time = 0 ;
 
  xh = -166.875, -166.625, -166.375, -166.125, -165.875, -165.625, -165.375, 
     -165.125, -164.875, -164.625, -164.375, -164.125, -163.875, -163.625, 
