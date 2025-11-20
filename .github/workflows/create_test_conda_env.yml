@@ -4,11 +4,11 @@ on:
   pull_request:
     branches:
       - main
-      - update-tests-for-regrid-and-split-netcdf
+      - 677.safe-fixes
   push:
     branches:
       - main
-      - update-tests-for-regrid-and-split-netcdf
+      - 677.safe-fixes
 
 # cancel running jobs if theres a newer push
 concurrency:
