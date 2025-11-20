@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - main
+      - update-tests-for-regrid-and-split-netcdf
 
 # cancel running jobs if theres a newer push
 concurrency:
