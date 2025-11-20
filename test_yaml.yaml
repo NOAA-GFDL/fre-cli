@@ -1,0 +1,32 @@
+name: /home/runner/work/fre-cli/fre-cli/test_yaml.yaml
+directories:
+  history_dir: ./
+  pp_dir: ./
+postprocess:
+  settings:
+    pp_grid_spec: /home/runner/work/fre-cli/fre-cli/grid_spec.tar
+  components:
+  - xyInterp: 20,20
+    interpMethod: conserve_order2
+    inputRealm: atmos
+    type: pride_and_prejudice
+    sources:
+    - history_file: pemberley
+    - history_file: longbourn
+    postprocess_on: true
+  - xyInterp: 20,20
+    interpMethod: conserve_order2
+    inputRealm: atmos
+    type: emma
+    sources:
+    - history_file: hartfield
+    - history_file: donwell_abbey
+    postprocess_on: true
+  - xyInterp: 20,20
+    interpMethod: conserve_order2
+    inputRealm: atmos
+    type: here
+    sources:
+    - history_file: gfdl
+    - history_file: princeton
+    postprocess_on: false
