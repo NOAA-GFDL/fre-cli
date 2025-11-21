@@ -43,8 +43,10 @@ def test_checkout_script_exists():
                                            PLATFORM,
                                            TARGET,
                                            no_parallel_checkout = False,
-                                           njobs = False, execute = False,
-                                           verbose = False)
+                                           njobs = False,
+                                           execute = False,
+                                           verbose = False,
+                                           force_checkout = False)
     #assert result.exit_code == 0
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
@@ -58,7 +60,8 @@ def test_checkout_verbose():
                                            no_parallel_checkout = False,
                                            njobs = False,
                                            execute = False,
-                                           verbose = True)
+                                           verbose = True,
+                                           force_checkout = False)
 
 def test_checkout_execute():
     """
@@ -71,7 +74,8 @@ def test_checkout_execute():
                                            no_parallel_checkout = False,
                                            njobs = 2,
                                            execute = True,
-                                           verbose = False)
+                                           verbose = False,
+                                           force_checkout = False)
 
 def test_checkout_no_parallel_checkout():
     """
@@ -83,4 +87,49 @@ def test_checkout_no_parallel_checkout():
                                            no_parallel_checkout = True,
                                            njobs = False,
                                            execute = False,
-                                           verbose = False)
+                                           verbose = False,
+                                           force_checkout = False)
+
+def test_checkout_force_checkout(caplog):
+    """
+    Test re-creation of checkout script if --force-checkout is passed.
+    """
+    shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
+    ## Mock checkout script with some content we can check
+    # create come checkout script
+    mcs = Path(f"{OUT}/fremake_canopy/test/null_model_full/src")
+    mcs.mkdir(parents = True)
+    with open(f"{mcs}/checkout.sh", 'w') as f:
+        f.write("mock checkout content")
+
+    # Check mock script was created correctly
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
+    # Check mock content
+    with open(f"{mcs}/checkout.sh", 'r') as f:
+        assert f.read() == "mock checkout content"
+
+    # Re-create checkout script
+    create_checkout_script.checkout_create(YAMLFILE,
+                                           PLATFORM,
+                                           TARGET,
+                                           no_parallel_checkout = True,
+                                           njobs = False,
+                                           execute = False,
+                                           verbose = False,
+                                           force_checkout = True)
+
+    # Check it exists, check output, check content
+    assert ([Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists(),
+             "Checkout script PREVIOUSLY created" in caplog.text,
+             "*** REMOVING CHECKOUT SCRIPT ***" in caplog.text,
+             "Checkout script created" in caplog.text])
+
+    expected_line = "git clone --recursive --jobs=False https://github.com/NOAA-GFDL/FMS.git -b main FMS"
+    # Check one expected line is now populating the re-created checkout script
+    with open(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh", 'r') as f2:
+        assert expected_line in f2.read()
+
+###either mock checkout script or change yaml slightly to have 2 different checkout script results
+##check content of previous checkout script
+##change yaml slightly/rerun
+##checkout content of new checkout script
