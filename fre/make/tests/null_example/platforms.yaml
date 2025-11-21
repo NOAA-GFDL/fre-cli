@@ -20,7 +20,7 @@ platforms:
      mkTemplate: "/apps/mkmf/templates/hpcme-intel21.mk"
    - name: ci.gnu
      compiler: gnu
-     mkTemplate: linux-ubuntu-xenial-gnu.mk
+     mkTemplate: "linux-ubuntu-xenial-gnu.mk"
      modelRoot: ${TEST_BUILD_DIR}/fremake_canopy/test
    - name: hpcmini.2025
      compiler: gnu 

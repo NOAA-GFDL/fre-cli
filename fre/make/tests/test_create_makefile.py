@@ -10,7 +10,7 @@ from fre.make import create_makefile_script
 TEST_DIR = Path("fre/make/tests")
 NM_EXAMPLE = Path("null_example")
 YAMLFILE = "null_model.yaml"
-BM_PLATFORM = ["ncrc5.intel23"]
+BM_PLATFORM = ["ci.gnu"]
 CONTAINER_PLATFORM = ["hpcme.2023"]
 CONTAINER_PLAT2 = ["con.twostep"]
 TARGET = ["debug"]
@@ -47,13 +47,12 @@ def test_platformyaml_exists():
     """
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/platforms.yaml").exists()
 
-def test_bm_makefile_creation():
+def test_bm_makefile_creation(monkeypatch):
     """
     Check the makefile is created when a bare-metal platform is used
     """
     # Set output directory as home for fre make output
-    def_home = str(os.environ["HOME"])
-    os.environ["HOME"]=OUT#str(Path(OUT))
+    monkeypatch.setenv("TEST_BUILD_DIR", OUT) #str(Path(OUT))
 
     bm_plat = BM_PLATFORM[0]
     targ = TARGET[0]
@@ -62,8 +61,6 @@ def test_bm_makefile_creation():
     create_makefile_script.makefile_create(yamlfile_path,BM_PLATFORM,TARGET)
 
     assert Path(f"{OUT}/fremake_canopy/test/{EXPERIMENT}/{bm_plat}-{targ}/exec/Makefile").exists()
-    os.environ["HOME"] = def_home
-    assert os.environ["HOME"] == def_home
 
 def test_container_makefile_creation():
     """

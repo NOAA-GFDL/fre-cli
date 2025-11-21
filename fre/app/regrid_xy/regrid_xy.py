@@ -78,6 +78,7 @@ def get_grid_spec(datadict: dict) -> str:
     pp_grid_spec_tar = datadict["yaml"]["postprocess"]["settings"]["pp_grid_spec"]
     fre_logger.info('grid spec tar archive file name is: %s', pp_grid_spec_tar)
 
+
     fre_logger.debug('checking if %s is a tar file...', pp_grid_spec_tar)
     if tarfile.is_tarfile(pp_grid_spec_tar):
 
@@ -93,7 +94,10 @@ def get_grid_spec(datadict: dict) -> str:
     if not Path(grid_spec).exists():
         raise IOError(f"Cannot find {grid_spec} in tar file {pp_grid_spec_tar}")
 
+    fre_logger.debug(f"Current directory: {Path.cwd()}")
     fre_logger.debug('grid_spec = %s exists!', grid_spec)
+
+    return grid_spec
 
     grid_spec_dt_symlink = None
     if ATTACH_LEGACY_DT:
@@ -437,6 +441,12 @@ def regrid_xy(yamlfile: str,
                 fre_logger.warning('no variables to regrid, skipping component')
                 continue
 
+            # create the output dir
+            output_subdir = Path(output_dir) / f"{datadict['output_nlat']}_{datadict['output_nlon']}.{datadict['interp_method']}"
+            fre_logger.debug('creating output_subdir... %s', output_subdir)
+            output_subdir.mkdir(parents=True, exist_ok=True)
+
+            #construct fregrid command
             fre_logger.debug('constructing fregrid command...')
             fregrid_command = [
                 "fregrid",
@@ -451,8 +461,10 @@ def regrid_xy(yamlfile: str,
                 "--nlon", datadict["output_nlon"],
                 "--nlat", datadict["output_nlat"],
                 "--scalar_field", datadict["scalar_field"],
-                "--output_dir", output_dir,
+                "--output_dir", output_subdir,
+                "--associated_file_dir", input_dir
             ]
+
             fre_logger.info('the fregrid command is: \n %s',
                             ' '.join(fregrid_command).replace(' --', ' \\\n    --') )
 

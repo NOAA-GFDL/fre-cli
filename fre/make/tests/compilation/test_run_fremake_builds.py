@@ -114,4 +114,27 @@ def test_run_fremake_cleanup():
             print(tp + " not found for deletion. Something may have gone wrong elsewhere.")
     tp_remove = [not Path(el).exists() for el in test_paths]
     assert all(tp_remove)
-    
+
+def test_run_fremake_container_build_fail():
+    ''' check createContainer script would fail and exit if one step failed (incorrect Dockerfile name)'''
+    if Path(f"{currPath}/createContainer.sh").exists():
+        os.remove(f"{currPath}/createContainer.sh")
+
+    # Create the createContainer.sh script but do not run
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
+        nparallel=False, njobs=1, no_parallel_checkout=True,
+        no_format_transfer=False, execute=False, verbose=VERBOSE)
+    assert Path(f"{currPath}/createContainer.sh").exists()
+
+    # Alter script to fail
+    with open(Path(f"{currPath}/createContainer.sh"), "r+") as f:
+        lines = f.readlines()
+        for line in lines:
+            f.write(line.replace("Dockerfile", "Dockerfile-wrong"))
+
+    # Run altered script and compare error
+    run = subprocess.run(Path(f"{currPath}/createContainer.sh"), capture_output=True)
+    stderr = run.stderr
+
+    fail_step = "podman build -f Dockerfile-wrong"
+    assert fail_step in str(stderr)
