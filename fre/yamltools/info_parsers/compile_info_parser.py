@@ -121,9 +121,9 @@ class InitCompileYaml(MergeCompileYamls):
         :param yaml_content: string of yaml information including name, platform,
                              target, model, and compile yaml content
         :type yaml_content: str
-        :return: dictionary of yaml information including name, platform,
-                 target, model, compile, and platform yaml content
-        :rtype: dict
+        :return: string of yaml information including name, platform,
+                 target, model, and compile yaml content
+        :rtype: str
         """
         self.mainyaml_dir = os.path.dirname(self.yml)
 
@@ -139,12 +139,9 @@ class InitCompileYaml(MergeCompileYamls):
         # Combine information as strings
         yaml_content += platform_content
 
-        # Load string as yaml
-        yml = yaml.load(yaml_content, Loader = yaml.Loader)
-
         # Return the combined string and loaded yaml
         fre_logger.info(f"   platforms yaml: {py_path}")
-        return yml
+        return yaml_content
 
     def combine(self):
         """
@@ -168,19 +165,22 @@ class InitCompileYaml(MergeCompileYamls):
 
         # Merge compile into combined file to create updated yaml_content/yaml
         try:
-            yaml_content = self.combine_compile(yaml_content)
+            yaml_content = self.combine_platforms(yaml_content)
         except Exception as exc:
             raise ValueError("ERR: Could not merge compile yaml config with model config.") from exc
 
         # Merge platforms.yaml into combined file
         try:
-            full_combined = self.combine_platforms(yaml_content)
+            full_combined = self.combine_compile(yaml_content)
         except Exception as exc:
             raise ValueError("ERR: Could not merge platform yaml config with model and compile configs.") from exc
 
+        # Load string as yaml
+        yml = yaml.load(full_combined, Loader = yaml.Loader)
+
         # Clean the yaml
         try:
-            cleaned_yaml = clean_yaml(full_combined)
+            cleaned_yaml = clean_yaml(yml)
         except Exception as exc:
             raise ValueError("The final YAML could not cleaned.") from exc
 
