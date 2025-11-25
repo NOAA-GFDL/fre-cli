@@ -129,6 +129,11 @@ def clean_yaml(yml_dict):
         if kc in yml_dict.keys():
             del yml_dict[kc]
 
+    # Clean up any fre_properties in the platforms
+    for platform in yml_dict['platforms']:
+        if "fre_properties" in platform:
+            del platform['fre_properties']
+
     # Dump cleaned dictionary back into combined yaml file
     #cleaned_yaml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
     return yml_dict
