@@ -167,13 +167,13 @@ class InitCompileYaml(MergeCompileYamls):
         try:
             yaml_content = self.combine_platforms(yaml_content)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge compile yaml config with model config.") from exc
+            raise ValueError("ERR: Could not merge platform yaml config with model config.") from exc
 
         # Merge platforms.yaml into combined file
         try:
             full_combined = self.combine_compile(yaml_content)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge platform yaml config with model and compile configs.") from exc
+            raise ValueError("ERR: Could not merge compile yaml config with model and platform configs.") from exc
 
         # Load string as yaml
         yml = yaml.load(full_combined, Loader = yaml.Loader)
