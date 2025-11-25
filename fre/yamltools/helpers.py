@@ -130,7 +130,7 @@ def clean_yaml(yml_dict):
             del yml_dict[kc]
 
     # Clean up any fre_properties in the platforms
-    for platform in yml_dict['platforms']:
+    for platform in yml_dict.get('platforms', []):
         if "fre_properties" in platform:
             del platform['fre_properties']
 
