@@ -123,16 +123,16 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
         if model_yaml.platforms.hasPlatform(platform_name):
             pass
         else:
-            raise ValueError (platform_name + " does not exist in platforms.yaml")
+            raise ValueError (f"{platform_name} does not exist in platforms.yaml")
 
         platform = model_yaml.platforms.getPlatformFromName(platform_name)
 
         # create the source directory for the platform
         if not platform["container"]:
-            src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
+            src_dir = f'{platform["modelRoot"]}/{fremake_yaml["experiment"]}/src'
             # if the source directory does not exist, it is created
             if not os.path.exists(src_dir):
-                os.system("mkdir -p " + src_dir)
+                os.system(f"mkdir -p {src_dir}")
             # if the checkout script does not exist, it is created
             if not os.path.exists(f"{src_dir}/checkout.sh"):
                 # Create and run (if --execute passed) the checkout script
@@ -158,11 +158,11 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
                     return
 
         else:
-            src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
-            tmp_dir = "tmp/"+platform_name
+            src_dir = f'{platform["modelRoot"]}/{fremake_yaml["experiment"]}/src'
+            tmp_dir = f"tmp/{platform_name}"
             pc = "" #Set this way because containers do not support the parallel checkout
             if not os.path.exists(tmp_dir):
-                os.system("mkdir -p " + tmp_dir)
+                os.system(f"mkdir -p {tmp_dir}")
             # If checkout script does not exist, it is created
             if not os.path.exists(f"{tmp_dir}/checkout.sh"):
                 container_checkout_write(model_yaml, src_dir, tmp_dir, jobs, pc)
