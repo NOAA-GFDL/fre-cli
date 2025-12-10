@@ -28,8 +28,6 @@ def baremetal_checkout_write(model_yaml, src_dir, jobs, pc, execute):
 
     if execute:
         fre_checkout.run()
-    else:
-        return
 
 def container_checkout_write(model_yaml, src_dir, tmp_dir, jobs, pc):
     """
@@ -172,7 +170,7 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
                 fre_logger.info("*** REMOVING CHECKOUT SCRIPT ***")
                 # remove
                 os.remove(f"{tmp_dir}/checkout.sh")
-                # recreate 
+                # recreate
                 container_checkout_write(model_yaml, src_dir, tmp_dir, jobs, pc)
             # If checkout script exists but force_checkout is not used
             elif os.path.exists(f"{tmp_dir}/checkout.sh") and not force_checkout:
