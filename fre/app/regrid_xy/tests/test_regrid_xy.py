@@ -93,7 +93,9 @@ def test_regrid_xy():
 
   #check answers
   for source_dict in pp_input_files + emma_input_files:
-    outfile = output_dir/f"{date}.{source_dict['history_file']}.nc"
+    # Files are now output to a subdirectory based on grid size and interpolation method
+    output_subdir = output_dir/f"{nxy}_{nxy}.conserve_order2"
+    outfile = output_subdir/f"{date}.{source_dict['history_file']}.nc"
 
     test = xr.load_dataset(outfile)
 
