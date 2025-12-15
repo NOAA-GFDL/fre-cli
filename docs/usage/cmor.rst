@@ -75,6 +75,11 @@ Brief rundown of commands also provided below:
 * ``fre/setup.py`` allows ``fre/fre.py`` to be ran as ``fre`` on the command line by defining it as an
   *entry point*. Without it, the call would be instead, something like ``python fre/fre.py``
 
+Workflow Cookbook
+-----------------
+
+For practical examples and step-by-step workflows, see the :doc:`cmor_cookbook`.
+
 Additional Resources
 --------------------
 
