@@ -28,3 +28,5 @@ The model.yaml can follow the structure below:
            - "path/to/post-processing/yaml for that experiment in relation to model yaml" (string)
          analysis: 
            - "path/to/analysis/yaml for that experiment in relation to model yaml"        (string)
+         cmor:
+           - "path/to/cmor/yaml for that experiment in relation to model yaml"            (string)
