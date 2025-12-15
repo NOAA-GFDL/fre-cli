@@ -26,8 +26,8 @@ Configuration
    
    - Required, external, MIP tables (e.g., `cmip6-cmor-tables <https://github.com/pcmdi/cmip6-cmor-tables>`_)
    - Required, external, controlled vocabulary files (e.g., `CMIP6_CVs <https://github.com/WCRP-CMIP/CMIP6_CVs>`_)
-   - Required, user-edited, experiment configuration JSON file (an `example <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMOR_input_example.json>`_ within ``fre-cli``)
-   - Required (usually), a list of target variables for CMORization in the form of a JSON-dictionary (an `example <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json>`_ within ``fre-cli``)
+   - Required, user-edited, experiment configuration JSON file (an `experiment config example <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMOR_input_example.json>`_ within ``fre-cli``)
+   - Required (usually), a list of target variables for CMORization in the form of a JSON-dictionary (a `varlist example <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json>`_ within ``fre-cli``)
 
 
 Functionalities
@@ -78,7 +78,7 @@ Brief rundown of commands also provided below:
 Workflow Cookbook
 -----------------
 
-For practical examples and step-by-step workflows, see the :doc:`cmor_cookbook`.
+.. include:: /usage/cmor_cookbook.rst
 
 Additional Resources
 --------------------
