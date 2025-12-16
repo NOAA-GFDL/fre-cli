@@ -1,8 +1,5 @@
-CMOR Workflow Cookbook
-======================
-
-This cookbook provides practical examples and workflows for using ``fre cmor`` to CMORize climate model output. 
-It demonstrates the relationship between the different subcommands and provides guidance on debugging CMORization workflows.
+This cookbook provides practical examples and procedures for using ``fre cmor`` to CMORize climate model output. 
+It demonstrates the relationship between the different subcommands and provides guidance on debugging CMORization processes.
 
 .. contents:: Contents
    :local:
@@ -11,121 +8,92 @@ It demonstrates the relationship between the different subcommands and provides 
 Overview
 --------
 
-The ``fre cmor`` workflow typically follows this pattern:
+The ``fre cmor`` process typically follows this pattern:
 
-1. **Preparation**: Identify your experiment parameters (experiment name, platform, target) and output directories
-2. **YAML Validation**: Use ``fre yamltools combine-yamls`` to validate YAML configuration
-3. **CMORization**: Use ``fre cmor yaml`` for batch processing or ``fre cmor run`` for individual directories
-4. **Debugging**: Use ``fre cmor find`` and ``fre cmor varlist`` as needed for troubleshooting
+1. Setup and Configuration - Identify your experiment parameters, create variable lists, and prepare experiment configuration
+2. CMORization - Use ``fre cmor run`` to process individual directories or ``fre cmor yaml`` for bulk processing
+3. Troubleshooting - Diagnose issues as needed (note: ``fre yamltools combine-yamls --use cmor`` can help debug YAML configurations)
 
-Setting Up Your Workflow
--------------------------
+Setup and Configuration
+-----------------------
 
 Before beginning CMORization, gather the following information:
 
-* **Experiment name** (``-e``): The name of your experiment as defined in the model YAML
-* **Platform** (``-p``): The platform configuration (e.g., ``gfdl.ncrc6-intel23``, ``ncrc5.intel``)
-* **Target** (``-t``): The compilation target (e.g., ``prod-openmp``, ``debug``)
-* **Post-processing directory**: Location of your model's post-processed output (e.g., ``/archive/user/experiment/pp/``)
-* **Output directory**: Where CMORized output should be written
+* Experiment name (``-e``) - The name of your experiment as defined in the model YAML
+* Platform (``-p``) - The platform configuration (e.g., ``gfdl.ncrc6-intel23``, ``ncrc5.intel``)
+* Target (``-t``) - The compilation target (e.g., ``prod-openmp``, ``debug``)
+* Post-processing directory - Location of your model's post-processed output (e.g., ``/archive/user/experiment/pp/``)
+* Output directory - Where CMORized output should be written
 
 Identifying Parameters from FRE Output
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you have existing FRE workflow output, you can extract the required parameters:
-
-From a post-processing stdout file path like::
-
-    /path/to/stdout/postProcess/experiment_name_component_YYYYMMDD.o12345678
-
-You can identify:
-
-* ``experiment`` = experiment_name
-* ``platform`` = extracted from the parent directory structure
-* ``target`` = extracted from the parent directory structure
-
-The corresponding post-processing directory is typically::
+If you have existing FRE output, you can extract the required parameters from the directory structure. The post-processing directory is typically located at::
 
     /archive/username/experiment/platform-target/pp/
 
-Primary Workflows
------------------
+From this path, you can identify:
 
-Workflow 1: YAML-Driven CMORization
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* ``experiment`` = experiment (the experiment name)
+* ``platform-target`` = the combined platform and target string (e.g., ``ncrc5.intel-prod-openmp``)
 
-This is the recommended approach for CMORizing multiple components and MIP tables.
+You will need to split the platform-target string appropriately to extract the individual ``platform`` and ``target`` values for use with ``fre cmor`` commands.
 
-**Step 1: Validate YAML Configuration**
+Creating Variable Lists
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-First, verify your YAML configuration combines correctly:
-
-.. code-block:: bash
-
-   fre -v yamltools combine-yamls \
-       -y /path/to/model.yaml \
-       -e EXPERIMENT_NAME \
-       -p PLATFORM \
-       -t TARGET \
-       --use cmor \
-       --output combined_cmor.yaml
-
-If this command fails, ``fre cmor yaml`` will also fail. Review the output YAML file to verify:
-
-* All required directories are correctly specified
-* CMOR table paths are accessible
-* Variable lists are properly defined
-* Grid configurations are present (if required)
-
-**Step 2: Run CMORization with Dry Run**
-
-Test the workflow without actually CMORizing files:
+Variable lists map your local variable names to MIP table variable names. Generate a variable list from a directory of netCDF files:
 
 .. code-block:: bash
 
-   fre -v -v cmor yaml \
-       -y /path/to/model.yaml \
-       -e EXPERIMENT_NAME \
-       -p PLATFORM \
-       -t TARGET \
-       --output combined_cmor.yaml \
-       --dry_run \
-       --run_one
+   fre cmor varlist \
+       -d /path/to/component/output \
+       -o generated_varlist.json
 
-This prints the ``fre cmor run`` commands that would be executed, allowing you to verify:
+This tool examines filenames to extract variable names. It assumes FRE-style naming conventions 
+(e.g., ``component.YYYYMMDD.variable.nc``). Review the generated file and edit as needed to map 
+local variable names to target MIP variable names.
 
-* Input directories are correct
-* Output paths are as expected
-* Variable lists are found
-* MIP tables are accessible
-
-**Step 3: Process One File for Testing**
-
-Process only one file to verify the workflow:
+To verify variables exist in MIP tables, search for variable definitions:
 
 .. code-block:: bash
 
-   fre -v -v cmor yaml \
-       -y /path/to/model.yaml \
-       -e EXPERIMENT_NAME \
-       -p PLATFORM \
-       -t TARGET \
-       --run_one
+   fre -v cmor find \
+       -r /path/to/cmip6-cmor-tables/Tables/ \
+       -v variable_name
 
-**Step 4: Full CMORization**
-
-Once validated, remove ``--run_one`` for full processing:
+Or search for all variables in a varlist:
 
 .. code-block:: bash
 
-   fre -v cmor yaml \
-       -y /path/to/model.yaml \
-       -e EXPERIMENT_NAME \
-       -p PLATFORM \
-       -t TARGET
+   fre -v cmor find \
+       -r /path/to/cmip6-cmor-tables/Tables/ \
+       -l /path/to/varlist.json
 
-Workflow 2: Direct CMORization with ``fre cmor run``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This displays which MIP table contains the variable and its metadata requirements.
+
+Preparing Experiment Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The experiment configuration JSON file contains required metadata for CMORization (e.g., ``CMOR_input_example.json``). 
+This file should include:
+
+* Experiment metadata (``experiment_id``, ``activity_id``, ``source_id``, etc.)
+* Institution and contact information
+* Grid information (``grid_label``, ``nominal_resolution``)
+* Variant labels (``realization_index``, ``initialization_index``, etc.)
+* Parent experiment information (if applicable)
+* Calendar type
+
+Refer to CMIP6 controlled vocabularies and your project's requirements when filling in these fields.
+
+Running Your CMORization
+------------------------
+
+CMORizing One Table/Variable List in a Directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``fre cmor run`` command is the fundamental building block for CMORization. It processes netCDF files from a single input directory according to a specified MIP table and variable list.
 
 For processing individual directories or debugging specific issues, use ``fre cmor run`` directly:
 
@@ -161,66 +129,94 @@ Optional but recommended:
 * ``--stop``: Stop year (YYYY format)
 * ``--calendar``: Calendar type (e.g., ``julian``, ``noleap``, ``360_day``)
 
-Debugging and Helper Tools
----------------------------
+Bulk CMORization Over Many Tables and Directories
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Creating Variable Lists
-~~~~~~~~~~~~~~~~~~~~~~~
+The ``fre cmor yaml`` command provides a higher-level interface for CMORizing multiple components and MIP tables. 
+It works by first calling ``fre yamltools combine-yamls`` to parse the YAML configuration, then generates and executes 
+a set of ``fre cmor run`` commands based on that configuration.
 
-Generate a variable list from a directory of netCDF files:
+This is the recommended approach for CMORizing multiple components and MIP tables in a systematic way.
 
-.. code-block:: bash
+**Step 1: Test with Dry Run**
 
-   fre cmor varlist \
-       -d /path/to/component/output \
-       -o generated_varlist.json
-
-This tool examines filenames to extract variable names. It assumes FRE-style naming conventions 
-(e.g., ``component.YYYYMMDD.variable.nc``). Review the generated file and edit as needed to map 
-local variable names to target MIP variable names.
-
-Finding Variables in MIP Tables
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Search MIP tables for variable definitions:
+Test the process without actually CMORizing files:
 
 .. code-block:: bash
 
-   fre -v cmor find \
-       -r /path/to/cmip6-cmor-tables/Tables/ \
-       -v variable_name
+   fre -v -v cmor yaml \
+       -y /path/to/model.yaml \
+       -e EXPERIMENT_NAME \
+       -p PLATFORM \
+       -t TARGET \
+       --dry_run \
+       --run_one
 
-Or search for all variables in a varlist:
+This prints the ``fre cmor run`` commands that would be executed, allowing you to verify:
+
+* Input directories are correct
+* Output paths are as expected
+* Variable lists are found
+* MIP tables are accessible
+
+**Step 2: Process One File for Testing**
+
+Process only one file to verify the process:
 
 .. code-block:: bash
 
-   fre -v cmor find \
-       -r /path/to/cmip6-cmor-tables/Tables/ \
-       -l /path/to/varlist.json
+   fre -v -v cmor yaml \
+       -y /path/to/model.yaml \
+       -e EXPERIMENT_NAME \
+       -p PLATFORM \
+       -t TARGET \
+       --run_one
 
-This displays which MIP table contains the variable and its metadata requirements.
+**Step 3: Full CMORization**
+
+Once validated, remove ``--run_one`` for full processing:
+
+.. code-block:: bash
+
+   fre -v cmor yaml \
+       -y /path/to/model.yaml \
+       -e EXPERIMENT_NAME \
+       -p PLATFORM \
+       -t TARGET
 
 Common Issues and Solutions
 ----------------------------
 
-YAML Combination Fails
-~~~~~~~~~~~~~~~~~~~~~~~
+``fre cmor yaml`` Fails at YAML Combination Step
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Symptom**: ``fre yamltools combine-yamls --use cmor`` fails with key errors or anchor errors.
+``fre cmor yaml`` fails with key errors or anchor errors during the YAML combination step.
 
-**Solutions**:
+To debug this issue, manually run the YAML combination step:
 
-* Verify all referenced YAML files exist and are readable
-* Check that anchors referenced in CMOR YAML are defined in the model YAML
-* Ensure the ``cmor:`` section exists in the experiment definition
-* Verify the CMOR YAML path is relative to the model YAML location
+.. code-block:: bash
+
+   fre -v yamltools combine-yamls \
+       -y /path/to/model.yaml \
+       -e EXPERIMENT_NAME \
+       -p PLATFORM \
+       -t TARGET \
+       --use cmor \
+       --output combined_cmor.yaml
+
+Then verify:
+
+* All referenced YAML files exist and are readable
+* Anchors referenced in CMOR YAML are defined in the model YAML
+* The ``cmor:`` section exists in the experiment definition
+* The CMOR YAML path is relative to the model YAML location
 
 No Files Found in Input Directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Symptom**: ``fre cmor run`` reports no files matching the variable list.
+``fre cmor run`` reports no files matching the variable list.
 
-**Solutions**:
+Solutions:
 
 * Verify ``--indir`` points to the correct directory
 * Check that files follow expected naming conventions
@@ -230,9 +226,9 @@ No Files Found in Input Directory
 Grid Metadata Issues
 ~~~~~~~~~~~~~~~~~~~~~
 
-**Symptom**: Errors about missing or invalid grid labels or nominal resolution.
+Errors about missing or invalid grid labels or nominal resolution.
 
-**Solutions**:
+Solutions:
 
 * Ensure ``--grid_label`` matches controlled vocabulary (typically ``gn`` or ``gr``)
 * Verify ``--nom_res`` is in the controlled vocabulary for your MIP
@@ -242,9 +238,9 @@ Grid Metadata Issues
 Calendar or Date Range Issues
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Symptom**: Files are skipped or errors related to calendar types.
+Files are skipped or errors related to calendar types.
 
-**Solutions**:
+Solutions:
 
 * Specify ``--calendar`` if the automatic detection fails
 * Use ``--start`` and ``--stop`` to limit the date range processed
@@ -256,7 +252,7 @@ Example: Ocean Monthly Data CMORization
 
 This example demonstrates CMORizing ocean monthly output for multiple components:
 
-**1. Prepare the model YAML** (excerpt from ``experiments`` section):
+Prepare the model YAML (excerpt from ``experiments`` section):
 
 .. code-block:: yaml
 
@@ -270,7 +266,7 @@ This example demonstrates CMORizing ocean monthly output for multiple components
        grid_yaml:
          - "grid_yamls/ocean_grids.yaml"
 
-**2. Prepare the CMOR YAML** (``cmor_yamls/ocean_cmor.yaml``):
+Prepare the CMOR YAML (``cmor_yamls/ocean_cmor.yaml``):
 
 .. code-block:: yaml
 
@@ -297,7 +293,7 @@ This example demonstrates CMORizing ocean monthly output for multiple components
              data_series_type: "ts"
              chunk: "P1Y"
 
-**3. Validate configuration**:
+Validate configuration:
 
 .. code-block:: bash
 
@@ -309,7 +305,7 @@ This example demonstrates CMORizing ocean monthly output for multiple components
        --use cmor \
        --output test_ocean.yaml
 
-**4. Test with dry run**:
+Test with dry run:
 
 .. code-block:: bash
 
@@ -320,7 +316,7 @@ This example demonstrates CMORizing ocean monthly output for multiple components
        -t prod-openmp \
        --dry_run
 
-**5. Process one file**:
+Process one file:
 
 .. code-block:: bash
 
@@ -331,7 +327,7 @@ This example demonstrates CMORizing ocean monthly output for multiple components
        -t prod-openmp \
        --run_one
 
-**6. Full processing**:
+Full processing:
 
 .. code-block:: bash
 
@@ -341,26 +337,15 @@ This example demonstrates CMORizing ocean monthly output for multiple components
        -p ncrc5.intel \
        -t prod-openmp
 
-Best Practices
---------------
+Tips
+----
 
-1. **Always validate YAML first**: Use ``fre yamltools combine-yamls`` before attempting CMORization
-2. **Test with --dry_run**: Review the planned operations before executing
-3. **Use --run_one for testing**: Process a single file to catch issues early
-4. **Increase verbosity when debugging**: Use ``-v -v`` to see detailed logging
-5. **Start with one component**: CMORize one component/table combination before scaling up
-6. **Version control your YAML files**: Track changes to your CMORization configuration
-7. **Document your variable mappings**: Maintain clear variable lists with comments
-8. **Check controlled vocabulary**: Verify grid labels and nominal resolutions are CV-compliant
-9. **Review experiment config**: Ensure all required metadata fields are populated
-10. **Test date ranges**: Use ``--start`` and ``--stop`` to limit initial runs
+* Use ``fre yamltools combine-yamls`` before attempting CMORization to help figure out YAML issues
+* Use ``--dry_run`` with ``fre cmor yaml`` to preview the equivalent ``fre cmor run`` calls before execution
+* Use ``--run_one`` with ``fre cmor run`` for testing to only process a single file and catch issues early
+* Use ``--run_one`` with ``fre cmor yaml`` to process a single file per ``fre cmor run`` call for quicker debugging
+* Increase verbosity when debugging - Use ``-v`` to see ``INFO`` logging, and ``-vv`` (or ``-v -v``) for ``DEBUG`` logging
+* Version control your YAML files - Track changes to your CMORization configuration and commit them to git!
+* Check controlled vocabulary - Verify grid labels and nominal resolutions are CV-compliant
+* Review experiment config - Ensure all required metadata fields are populated
 
-Additional Resources
---------------------
-
-* **MIP Tables**: `CMIP6 Tables <https://github.com/pcmdi/cmip6-cmor-tables>`_
-* **Controlled Vocabulary**: `CMIP6 CVs <https://github.com/WCRP-CMIP/CMIP6_CVs>`_
-* **PCMDI CMOR Documentation**: `CMOR User Guide <http://cmor.llnl.gov/>`_
-* **FRE-CLI Documentation**: `Main Documentation <https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/>`_
-* **fre cmor README**: `GitHub README <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/cmor/README.md>`_
-* **Project Board**: `CMOR Development <https://github.com/orgs/NOAA-GFDL/projects/35>`_
