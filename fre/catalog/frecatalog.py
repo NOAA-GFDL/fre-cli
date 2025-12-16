@@ -5,7 +5,7 @@ entry point for fre catalog subcommands
 import click
 
 from catalogbuilder.scripts import gen_intake_gfdl
-from catalogbuilder.tests import compval
+from catalogbuilder.scripts import compval
 from catalogbuilder.scripts import combine_cats
 
 
