@@ -9,8 +9,8 @@ import os
 from shutil  import rmtree
 from pathlib import Path
 
-import pytest
 import subprocess
+import pytest
 
 from fre.make import run_fremake_script
 
@@ -127,14 +127,19 @@ def test_run_fremake_container_build_fail():
     assert Path(f"{currPath}/createContainer.sh").exists()
 
     # Alter script to fail
-    with open(Path(f"{currPath}/createContainer.sh"), "r+") as f:
+    new_script = []
+    with open(Path(f"{currPath}/createContainer.sh"), "r") as f:
         lines = f.readlines()
         for line in lines:
-            f.write(line.replace("Dockerfile", "Dockerfile-wrong"))
+            new_script.append(line.replace("Dockerfile", "Dockerfile-wrong"))
+
+    with open(Path(f"{currPath}/createContainer.sh"), "w") as f2:
+        f2.writelines(new_script)
 
     # Run altered script and compare error
-    run = subprocess.run(Path(f"{currPath}/createContainer.sh"), capture_output=True)
+    run = subprocess.run(Path(f"{currPath}/createContainer.sh"), capture_output=True, check=False)
     stderr = run.stderr
 
+    #Check that the incorrect line specifically prints in the stderr
     fail_step = "podman build -f Dockerfile-wrong"
     assert fail_step in str(stderr)
