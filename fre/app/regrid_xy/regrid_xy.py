@@ -326,11 +326,18 @@ def regrid_xy(yamlfile: str,
         datadict["remap_dir"] = remap_dir
         datadict["input_date"] = input_date[:8]
 
+        # add temporal and static history files
         components = []
         for component in yamldict["postprocess"]["components"]:
-            for this_source in component["sources"]:
-                if this_source["history_file"] == source:
+            for temporal_history in component["sources"]:
+                if temporal_history["history_file"] == source:
                     components.append(component)
+            try:
+                for static_history in component["static"]:
+                    if static_history["source"] == source:
+                        components.append(component)
+            except KeyError:
+                pass
 
         # submit fregrid job for each component
         for component in components:
