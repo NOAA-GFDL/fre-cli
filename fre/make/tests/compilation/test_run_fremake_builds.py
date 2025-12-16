@@ -115,6 +115,7 @@ def test_run_fremake_cleanup():
     tp_remove = [not Path(el).exists() for el in test_paths]
     assert all(tp_remove)
 
+@pytest.mark.skipif(not has_podman, reason="missing podman")
 def test_run_fremake_container_build_fail():
     ''' check createContainer script would fail and exit if one step failed (incorrect Dockerfile name)'''
     if Path(f"{currPath}/createContainer.sh").exists():
