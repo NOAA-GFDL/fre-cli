@@ -62,7 +62,7 @@ def merge_netcdfs(source: str, target: str) -> None:
         raise FileExistsError(f"Output file '{target}' already exists")
 
     ds = xr.open_mfdataset(input_files, compat='override', coords='minimal')
-    ds.to_netcdf(target)
+    ds.to_netcdf(target, unlimited_dims=['time'])
 
 
 def combine( root_in_dir: str,
