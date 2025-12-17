@@ -41,8 +41,8 @@ Postprocess FMS history output
 .. include:: usage/postprocess.rst
 .. include:: usage/guides/fre_pp_guide.rst
 
-CMORize postprocessed output
-============================
+CMORize Postprocessed Output
+=============================
 .. include:: usage/cmor.rst
 
 Generate data catalogs
