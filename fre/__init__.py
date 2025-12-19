@@ -10,7 +10,7 @@ import logging
 
 fre_logger = logging.getLogger(__name__)
 
-FORMAT = "[%(levelname)5s:%(filename)24s:%(funcName)20s] %(message)s"
+FORMAT = "[%(levelname)5s:%(filename)24s:%(funcName)24s] %(message)s"
 logging.basicConfig(level = logging.WARNING,
                     format = FORMAT,
                     filename = None,
