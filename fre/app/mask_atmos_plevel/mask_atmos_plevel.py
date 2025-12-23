@@ -76,7 +76,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
     for var in list(ds_in.variables):
         fre_logger.debug('for var = %s', var)
         if 'pressure_mask' in ds_in[var].attrs:
-            if ds_in[var].attrs['pressure_mask'].lower() == '.false.':
+            if ds_in[var].attrs['pressure_mask'].lower() == 'false':
                 fre_logger.debug('first pressure masking trigger passed. processing data.')
                 ds_out[var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
                 ds_out[var].attrs['pressure_mask'] = "True"
