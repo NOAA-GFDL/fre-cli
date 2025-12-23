@@ -50,7 +50,7 @@ variables:
 		ua_unmsk:cell_measures = "area: area" ;
 		ua_unmsk:standard_name = "eastward_wind" ;
 		ua_unmsk:interp_method = "conserve_order2" ;
-        ua_unmsk:pressure_mask = ".false." ;
+        ua_unmsk:pressure_mask = "False" ;
 
 // global attributes:
 		:title = "c96L65_am5f9d7r0_amip" ;
