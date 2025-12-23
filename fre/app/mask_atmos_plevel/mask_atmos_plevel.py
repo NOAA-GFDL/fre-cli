@@ -103,7 +103,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
 
             fre_logger.info("Finished processing %s, wrote %s, pressure_mask is True", var, masked_var)
         else:
-            fre_logger.debug("Not processing %s, no pressure_mask attr, nor _unmsk in the variable name", var)
+            fre_logger.debug("Not processing '%s', no 'pressure_mask' attribute", var)
 
     fre_logger.info('Write the output file if any unmasked variables were masked')
     if ds_out.variables:
