@@ -80,7 +80,6 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
     else:
         pc = " &"
 
-    fre_logger.setLevel(level = logging.INFO)
     src_dir="src"
 
     ## Split and store the platforms and targets in a list
@@ -106,6 +105,7 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
     for target_name in tlist:
         target = targetfre.fretarget(target_name)
 
+    fre_logger.setLevel(level = logging.INFO)
     ## Loop through the platforms specified on the command line
     ## If the platform is a baremetal platform, write the checkout script and run it once
     ## This should be done separately and serially because bare metal platforms should all be using
