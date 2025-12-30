@@ -46,6 +46,7 @@ class platforms ():
                 p["container2step"] = False
                 p["container2base"] = ""
                 p["containerOutputLocation"] = ""
+                p["volume"] = ""
             if p["container"]:
                 ## Check the container builder
                 try:
@@ -84,6 +85,11 @@ class platforms ():
                     p["RUNenv"]
                 except:
                     p["RUNenv"] = ""
+                ## Check the location of the volume that should be mounted
+                try:
+                    p["volume"]
+                except:
+                    p["volume"] = "" 
                 ## Check the container runner
                 try:
                     p["containerRun"]

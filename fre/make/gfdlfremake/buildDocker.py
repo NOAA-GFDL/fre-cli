@@ -230,13 +230,17 @@ class container():
         containerName = f"{self.e}-{self.target.gettargetName()}"
         containerBuild = platform["containerBuild"]
         containerRun = platform["containerRun"]
+        container_volume = platform["volume"]
         containerOutputLocation = platform["containerOutputLocation"]
         # Container tag must be all lowercase
         registry_tag = self.e.lower()
         platform_tag = self.target.gettargetName().lower()
 
         self.userScript = ["#!/bin/bash\n", "set -ex\n"]
-        self.userScript.append(f"{containerBuild} build -f Dockerfile -t {registry_tag}:{platform_tag}\n")
+        if container_volume:
+            self.userScript.append(f"{containerBuild} build --volume {container_volume}:{container_volume} -f Dockerfile -t {registry_tag}:{platform_tag}\n")
+        else:
+            self.userScript.append(f"{containerBuild} build -f Dockerfile -t {registry_tag}:{platform_tag}\n")
 
         if not skip_format_transfer:
             # Remove any previously generated images, if they exist
