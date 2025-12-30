@@ -39,8 +39,7 @@ def container_checkout_write(model_yaml, src_dir, tmp_dir, jobs, pc):
     fre_logger.info("Checkout script created in ./%s/checkout.sh", tmp_dir)
 
 def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_checkout: Optional[bool] = None,
-                    njobs: int = 4, execute: Optional[bool] = False, verbose: Optional[bool] = None,
-                    force_checkout: Optional[bool] = False):
+                    njobs: int = 4, execute: Optional[bool] = False, force_checkout: Optional[bool] = False):
     """
     Creates the checkout script for bare-metal or container build
     The checkout script will clone component repositories, defined 
@@ -59,8 +58,6 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
     :type njobs: int
     :param execute: Run the created checkout script to check out source code
     :type execute: bool
-    :param verbose: Increase verbosity output
-    :type verbose: bool
     :raises ValueError: 
         - Error if 'jobs' param is not an integer
         - Error if platform does not exist in platforms yaml configuration
@@ -83,11 +80,7 @@ def checkout_create(yamlfile: str, platform: str, target: str, no_parallel_check
     else:
         pc = " &"
 
-    if verbose:
-        fre_logger.setLevel(level = logging.DEBUG)
-    else:
-        fre_logger.setLevel(level = logging.INFO)
-
+    fre_logger.setLevel(level = logging.INFO)
     src_dir="src"
 
     ## Split and store the platforms and targets in a list
