@@ -50,7 +50,6 @@ def test_checkout_script_exists(monkeypatch):
                                            no_parallel_checkout = False,
                                            njobs = 1,
                                            execute = False,
-                                           verbose = False,
                                            force_checkout = False)
     #assert result.exit_code == 0
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
@@ -74,13 +73,14 @@ def test_checkout_execute(monkeypatch):
                                            no_parallel_checkout = False,
                                            njobs = 2,
                                            execute = True,
-                                           verbose = False,
                                            force_checkout = False)
-    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
-    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/FMS").is_dir()
-    assert any(Path(f"{OUT}/fremake_canopy/test/null_model_full/src/FMS").iterdir())
-    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").is_dir()
-    assert any(Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").iterdir())
+
+    # Check for checkout script and for some resulting folders from running the script
+    assert all([Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists(),
+                Path(f"{OUT}/fremake_canopy/test/null_model_full/src/FMS").is_dir(),
+                any(Path(f"{OUT}/fremake_canopy/test/null_model_full/src/FMS").iterdir()),
+                Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").is_dir(),
+                any(Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").iterdir())])
 
 def test_checkout_no_parallel_checkout(monkeypatch):
     """
@@ -96,7 +96,6 @@ def test_checkout_no_parallel_checkout(monkeypatch):
                                            no_parallel_checkout = True,
                                            njobs = 2,
                                            execute = False,
-                                           verbose = False,
                                            force_checkout = False)
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
@@ -140,7 +139,6 @@ def test_bm_checkout_force_checkout(caplog, monkeypatch):
                                            no_parallel_checkout = False,
                                            njobs = 2,
                                            execute = False,
-                                           verbose = False,
                                            force_checkout = True)
 
     # Check it exists, check output, check content
@@ -188,7 +186,6 @@ def test_container_checkout_force_checkout(caplog):
                                            no_parallel_checkout = True,
                                            njobs = 2,
                                            execute = False,
-                                           verbose = False,
                                            force_checkout = True)
 
     # Check it mock checkout script exists
