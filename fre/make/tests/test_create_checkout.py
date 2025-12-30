@@ -2,9 +2,7 @@
 Test fre make checkout-script
 """
 from pathlib import Path
-import os
 import shutil
-import pytest
 from fre.make import create_checkout_script
 
 # Set example yaml paths, input directory
@@ -38,8 +36,6 @@ def test_checkout_script_exists(monkeypatch):
     Test checkout-script was successful and that file exists.
     Also checks that the default behavior is a parallel checkout.
     """
-#    os.environ["TEST_BUILD_DIR"] = OUT # env vars seem to be carrying over from other tests, need to set it again
-
     # Set output directory as home for fre make output
     monkeypatch.setenv("TEST_BUILD_DIR", OUT)
 
@@ -64,7 +60,7 @@ def test_checkout_execute(monkeypatch):
     check if --execute option works
     """
     # Set output directory as home for fre make output
-    monkeypatch.setenv("TEST_BUILD_DIR", OUT) 
+    monkeypatch.setenv("TEST_BUILD_DIR", OUT)
 
     shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
     create_checkout_script.checkout_create(YAMLFILE,
@@ -87,7 +83,7 @@ def test_checkout_no_parallel_checkout(monkeypatch):
     check if --no_parallel_checkout option works
     """
     # Set output directory as home for fre make output
-    monkeypatch.setenv("TEST_BUILD_DIR", OUT) 
+    monkeypatch.setenv("TEST_BUILD_DIR", OUT)
 
     shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
     create_checkout_script.checkout_create(YAMLFILE,
@@ -112,7 +108,7 @@ def test_bm_checkout_force_checkout(caplog, monkeypatch):
     Test re-creation of checkout script if --force-checkout is passed.
     """
     # Set output directory as home for fre make output
-    monkeypatch.setenv("TEST_BUILD_DIR", OUT) 
+    monkeypatch.setenv("TEST_BUILD_DIR", OUT)
 
     # Remove if previously created
     shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
