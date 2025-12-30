@@ -296,6 +296,7 @@ minmax
 mkmf
 Mkmf
 mkmfclone
+mktemplate
 mocsy
 modelyaml
 modindex
