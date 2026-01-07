@@ -4,7 +4,7 @@ from pathlib import Path
 from subprocess import run
 from tempfile import TemporaryDirectory
 
-from analysis_scripts import available_plugins, run_plugin, VirtualEnvManager
+from .plugins.subtools import available_plugins, run_plugin
 from yaml import safe_load
 
 
@@ -72,43 +72,31 @@ def list_plugins(library_directory=None):
         return available_plugins()
 
 
-def run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
-                 library_directory=None):
-    """Runs the analysis script and writes the paths to the created figures to a yaml file.
+def run_analysis(yaml, name, date_range, scripts_dir, output_dir, output_yaml):
+    """Runs the analysis and generates all plots and associated datasets.
 
     Args:
-        name: String name of the analysis script.
-        catalog: Path to the data catalog.
-        output_directory: Path to the output directory.
-        output_yaml:  Path to the output yaml.
-        experiment: Path to the experiment yaml.
-        library_directory: Directory where the analysis package is installed.
+        yaml: Path to a model yaml
+        name: Name of the analysis as specified in the yaml
+        date_range: Time span to use for analysis (YYYY-MM-DD,YYYY-MM-DD)
+        scripts_dir: Path to a directory to save intermediate scripts
+        output_dir: Path to a directory to save figures
+        output_yaml: Path to use as an structured output yaml file
     """
 
-    # Create the directory for the figures.
-    Path(output_directory).mkdir(parents=True, exist_ok=True)
+    # Create the directory for the figures, scripts, and output yaml
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    Path(scripts_dir).mkdir(parents=True, exist_ok=True)
+    Path(output_yaml).parent.mkdir(parents=True, exist_ok=True)
 
-    # Parse the configuration out of the experiment yaml file.
-    with open(experiment_yaml) as file_:
+    # Parse the pass-through configuration out of the experiment yaml file.
+    with open(yaml) as file_:
         config_yaml = safe_load(file_)
-        try:
-            configuration = config_yaml["analysis"][name]["required"]
-        except KeyError:
-            configuration = None
+        specific_config = config_yaml["analysis"][name]["specific_config"]
+        script_type = config_yaml["analysis"][name]["script_type"]
 
     # Run the analysis.
-    if library_directory:
-        env = VirtualEnvManager(library_directory)
-        figure_paths = env.run_analysis_plugin(name, catalog, output_directory,
-                                               config=configuration)
-    else:
-        figure_paths = run_plugin(name, catalog, output_directory, config=configuration)
-
-    # Write out the figure paths to a file.
-    with open(output_yaml, "w") as output:
-        output.write("figure_paths:\n")
-        for path in figure_paths:
-            output.write(f"  -{Path(path).resolve()}\n")
+    figure_paths = run_plugin(script_type, name, specific_config, date_range, scripts_dir, output_dir, output_yaml)
 
 
 def uninstall_analysis_package(name, library_directory=None):
