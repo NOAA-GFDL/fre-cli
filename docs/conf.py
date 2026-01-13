@@ -25,6 +25,31 @@ release = pkg_version   # type: ignore
 extensions = ['sphinx.ext.autodoc']
 exclude_patterns = ['fre/tests/test_files/ascii_files/*']
 
+# Mock imports for dependencies not needed during doc build
+# This allows Sphinx to build docs without installing heavy dependencies
+autodoc_mock_imports = [
+    'catalogbuilder',
+    'cdo',
+    'cftime',
+    'cmor',
+    'cylc',
+    'cylc-flow',
+    'cylc-rose',
+    'metomi-rose',
+    'netCDF4',
+    'numpy',
+    'xarray',
+    'pandas',
+    'intake',
+    'intake-esm',
+    'dask',
+    'zarr',
+    'boto3',
+    'pytest',
+    'metomi',
+    'analysis_scripts',
+]
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 html_theme = 'renku'

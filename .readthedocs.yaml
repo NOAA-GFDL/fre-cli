@@ -3,38 +3,24 @@
 # Required
 version: 2
 
-# environment
-conda:
-  environment: environment.yml
-
-# install
-# Optionally, but recommended,
-# declare the Python requirements required to build your documentation
-# See https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html
-python:
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
-
-sphinx:
-  configuration: docs/conf.py
-
-
-# # build
-# See https://docs.readthedocs.com/platform/stable/builds.html
-# See https://docs.readthedocs.com/platform/stable/build-customization.html
-# Set the OS, Python version, and other tools you might need
+# Build documentation using lightweight Python environment
+# Heavy dependencies (netCDF4, cmor, xarray, etc.) are mocked in docs/conf.py
+# This significantly speeds up builds and reduces complexity
 build:
   os: ubuntu-24.04
   tools:
-    python: "mambaforge-latest"
+    python: "3.11"
   jobs:
-    pre_create_environment:
-      - conda update --yes --quiet --name=base --channel=conda-forge conda
+    pre_install:
+      # Install minimal dependencies needed for doc build
+      - pip install sphinx renku-sphinx-theme sphinx-rtd-theme click pyyaml jsonschema
     pre_build:
+      # Generate API documentation from source
       - sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
+
+# Configure Sphinx
+sphinx:
+  configuration: docs/conf.py
 
 
 
