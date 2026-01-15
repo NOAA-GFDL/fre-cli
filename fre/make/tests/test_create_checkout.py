@@ -16,7 +16,9 @@ TARGET = ["debug"]
 
 # Set output directory
 OUT = f"{TEST_DIR}/checkout_out"
-#os.environ["TEST_BUILD_DIR"] = OUT
+
+# Set expected line that should be in checkout script
+EXPECTED_LINE = "git clone --recursive --jobs=2 https://github.com/NOAA-GFDL/FMS.git -b 2025.04 FMS"
 
 def test_nullyaml_exists():
     """
@@ -44,16 +46,17 @@ def test_checkout_script_exists(monkeypatch):
                                            PLATFORM,
                                            TARGET,
                                            no_parallel_checkout = False,
-                                           njobs = 1,
+                                           njobs = 2,
                                            execute = False,
                                            force_checkout = False)
     #assert result.exit_code == 0
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
-    # A parallel checkout is done by default - check for subshells (parallellism in script)
-    expected_line = "(git clone --recursive --jobs=1 https://github.com/NOAA-GFDL/FMS.git -b main FMS) &"
+    # A parallel checkout is done by default - check for subshells (parallelism in script)
+    expected_line = f"({EXPECTED_LINE}) &"
     with open(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh", 'r') as f1:
-        assert expected_line in f1.read()
+        content = f1.read()
+    assert expected_line in content
 
 def test_checkout_execute(monkeypatch):
     """
@@ -95,7 +98,7 @@ def test_checkout_no_parallel_checkout(monkeypatch):
                                            force_checkout = False)
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists()
 
-    expected_line = "git clone --recursive --jobs=2 https://github.com/NOAA-GFDL/FMS.git -b main FMS"
+    expected_line = EXPECTED_LINE
     with open(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh", 'r') as f:
         content = f.read()
 
@@ -144,7 +147,7 @@ def test_bm_checkout_force_checkout(caplog, monkeypatch):
                 "Checkout script created" in caplog.text])
 
     # Check one expected line is now populating the re-created checkout script
-    expected_line = "(git clone --recursive --jobs=2 https://github.com/NOAA-GFDL/FMS.git -b main FMS) &"
+    expected_line = f"({EXPECTED_LINE}) &"
 
     with open(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh", 'r') as f2:
         content = f2.read()
@@ -196,7 +199,8 @@ def test_container_checkout_force_checkout(caplog):
     # Check for an expected line that should be populating the re-created checkout script
     # Check no parenthesis (no parallel checkouts)
     # Check content did not just append (no previous content)
-    expected_line = "git clone --recursive --jobs=2 https://github.com/NOAA-GFDL/FMS.git -b main FMS"
+
+    expected_line = EXPECTED_LINE
     with open(f"./tmp/{CONTAINER_PLATFORM[0]}/checkout.sh", "r") as f2:
         content = f2.read()
 
