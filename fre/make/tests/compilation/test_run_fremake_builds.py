@@ -9,8 +9,8 @@ import os
 from shutil  import rmtree
 from pathlib import Path
 
-import pytest
 import subprocess
+import pytest
 
 from fre.make import run_fremake_script
 
@@ -59,18 +59,18 @@ def test_run_fremake_serial_compile():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
-        nparallel=False, njobs=1, no_parallel_checkout=False,
+        nparallel=1, njobs=1, no_parallel_checkout=False,
         no_format_transfer=True, execute=True, verbose=VERBOSE)
     assert Path(
         f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
-# same test with a parallel build
+# same test with a multiple jobs running simultaneously
 @pytest.mark.skipif(not can_compile, reason="missing GNU compiler, mpi, netcdf, or mkmf in PATH")
 def test_run_fremake_multijob_compile():
     ''' test run-fremake parallel compile with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
-        nparallel=True, njobs=4, no_parallel_checkout=False,
+        nparallel=1, njobs=4, no_parallel_checkout=False,
         no_format_transfer=False, execute=True, verbose=VERBOSE)
     assert Path(
         f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
@@ -80,7 +80,7 @@ def test_run_fremake_multijob_compile():
 def test_run_fremake_container_build():
     ''' checks image creation for the container build'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
-        nparallel=False, njobs=1, no_parallel_checkout=True,
+        nparallel=1, njobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=True, verbose=VERBOSE)
     assert Path("null_model_full-debug.sif").exists()
 
@@ -89,18 +89,18 @@ def test_run_fremake_container_build_specified_out():
     ''' checks that the image was copied to the correct specified output location'''
     os.environ["TEST_BUILD_DIR"] = CONTAINER_BUILD_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM_2, TARGET,
-        nparallel=False, njobs=1, no_parallel_checkout=True,
+        nparallel=1, njobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=True, verbose=VERBOSE)
     assert Path(
         f"{CONTAINER_BUILD_TEST_PATH}/fremake_canopy/test/null_model_full-debug.sif").exists()
 
-@pytest.mark.skipif(not has_podman, reason="missing podman")
+@pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
 def test_run_fremake_container_build_notransfer():
     ''' checks image creation with the .sif transfer turned off '''
     if Path("createContainer.sh").exists():
         os.remove("createContainer.sh")
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
-        nparallel=False, njobs=1, no_parallel_checkout=True,
+        nparallel=1, njobs=1, no_parallel_checkout=True,
         no_format_transfer=True, execute=True, verbose=VERBOSE)
 
 def test_run_fremake_cleanup():
@@ -115,6 +115,7 @@ def test_run_fremake_cleanup():
     tp_remove = [not Path(el).exists() for el in test_paths]
     assert all(tp_remove)
 
+@pytest.mark.skipif(not has_podman, reason="missing podman")
 def test_run_fremake_container_build_fail():
     ''' check createContainer script would fail and exit if one step failed (incorrect Dockerfile name)'''
     if Path(f"{currPath}/createContainer.sh").exists():
@@ -122,19 +123,24 @@ def test_run_fremake_container_build_fail():
 
     # Create the createContainer.sh script but do not run
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
-        nparallel=False, njobs=1, no_parallel_checkout=True,
+        nparallel=1, njobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE)
     assert Path(f"{currPath}/createContainer.sh").exists()
 
     # Alter script to fail
-    with open(Path(f"{currPath}/createContainer.sh"), "r+") as f:
+    new_script = []
+    with open(Path(f"{currPath}/createContainer.sh"), "r") as f:
         lines = f.readlines()
         for line in lines:
-            f.write(line.replace("Dockerfile", "Dockerfile-wrong"))
+            new_script.append(line.replace("Dockerfile", "Dockerfile-wrong"))
+
+    with open(Path(f"{currPath}/createContainer.sh"), "w") as f2:
+        f2.writelines(new_script)
 
     # Run altered script and compare error
-    run = subprocess.run(Path(f"{currPath}/createContainer.sh"), capture_output=True)
+    run = subprocess.run(Path(f"{currPath}/createContainer.sh"), capture_output=True, check=False)
     stderr = run.stderr
 
+    #Check that the incorrect line specifically prints in the stderr
     fail_step = "podman build -f Dockerfile-wrong"
     assert fail_step in str(stderr)
