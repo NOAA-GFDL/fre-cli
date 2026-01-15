@@ -1,6 +1,7 @@
 import logging
 import os
 from pathlib import Path
+import pprint
 import subprocess
 import tarfile
 import xarray as xr
@@ -9,6 +10,12 @@ import yaml
 from fre.app import helpers
 
 fre_logger = logging.getLogger(__name__)
+
+# it appears that fregrid believes the grid_spec file must have a datetime attached to it, like
+#     YYYYMMDD.grid_spec.tile
+# this is behavior in noaa-gfdl::fre-nctools==2022.02.01 that can't be changed, and so must be worked around.
+# hence, "ATTACH_LEGACY_DT"
+ATTACH_LEGACY_DT = True
 
 # list of variables/fields that will not be regridded
 non_regriddable_variables = [
@@ -47,7 +54,6 @@ non_regriddable_variables = [
 
 
 def get_grid_spec(datadict: dict) -> str:
-
     """
     Gets the grid_spec.nc file from the tar file specified in
     yaml["postprocess"]["settings"]["pp_grid_spec"]
@@ -66,30 +72,61 @@ def get_grid_spec(datadict: dict) -> str:
               input mosaic filename
     """
 
-    #grid spec filename
-    grid_spec = "grid_spec.nc"
+    grid_spec = str(Path("grid_spec.nc").resolve())
+    fre_logger.info('grid spec filename is: %s', grid_spec)
 
-    #get tar file containing the grid_spec file
     pp_grid_spec_tar = datadict["yaml"]["postprocess"]["settings"]["pp_grid_spec"]
-    fre_logger.debug(f"Going to untar this grid spec tarfile: {pp_grid_spec_tar}")
+    fre_logger.info('grid spec tar archive file name is: %s', pp_grid_spec_tar)
 
-    #untar grid_spec tar file into the current work directory
+
+    fre_logger.debug('checking if %s is a tar file...', pp_grid_spec_tar)
     if tarfile.is_tarfile(pp_grid_spec_tar):
+
+        fre_logger.debug('it is a tar file! attempting top open %s', pp_grid_spec_tar)
         with tarfile.open(pp_grid_spec_tar, "r") as tar:
+
+            fre_logger.debug('opened! about to extract all from opened tar file object into %s', os.getcwd())
             tar.extractall()
+            fre_logger.debug('everything extracted!')
+            fre_logger.debug('contents extracted are ... %s', str(os.listdir(os.getcwd())) )
 
     #error if grid_spec file is not found after extracting from tar file
     if not Path(grid_spec).exists():
         raise IOError(f"Cannot find {grid_spec} in tar file {pp_grid_spec_tar}")
 
     fre_logger.debug(f"Current directory: {Path.cwd()}")
+    fre_logger.debug('grid_spec = %s exists!', grid_spec)
 
-    fre_logger.debug(f"Found grid_spec file: {grid_spec}")
     return grid_spec
+
+    grid_spec_dt_symlink = None
+    if ATTACH_LEGACY_DT:
+        fre_logger.warning('creating symlink to account for legacy fre-nctools 2022.02.01 behavior')
+        grid_spec_dt_symlink = Path(grid_spec).parent / f'{datadict["input_date"]}.grid_spec.nc'
+
+        fre_logger.warning('grid_spec_dt_symlink = %s', grid_spec_dt_symlink)
+
+        # what in the ever loving demon magic is going on here???
+        try:
+            grid_spec_dt_symlink.symlink_to(Path(grid_spec))
+        except FileExistsError:
+            pass
+
+        # i am sorry python gods, i have failed out
+        if grid_spec_dt_symlink.exists():
+            fre_logger.warning('great? how did this happen?')
+
+        # continued inexplicable success.
+        if grid_spec_dt_symlink.is_symlink():
+            fre_logger.warning('symlink created: %s', grid_spec_dt_symlink)
+        else:
+            raise Exception('problem with accounting for legacy fregrid/fre-nctools behavior, symbolic link creation '
+                          'as-intended-side-effect failed. consult life choices.')
+
+    return grid_spec, grid_spec_dt_symlink
 
 
 def get_input_mosaic(datadict: dict) -> str:
-
     """
     Gets the input mosaic filename from the grid_spec file.
 
@@ -104,8 +141,10 @@ def get_input_mosaic(datadict: dict) -> str:
     .. note:: The input mosaic filename is a required input argument for fregrid.
               The input mosaic contains the input grid information.
     """
-
     grid_spec = datadict["grid_spec"]
+    fre_logger.info('grid_spec is: %s', grid_spec)
+    if not Path(grid_spec).exists():
+        raise FileNotFoundError(f'grid_spec = {grid_spec} does not exist')
 
     #gridspec variable name holding the mosaic filename information
     match datadict["inputRealm"]:
@@ -115,7 +154,13 @@ def get_input_mosaic(datadict: dict) -> str:
 
     #get mosaic filename
     with xr.open_dataset(grid_spec) as dataset:
-        mosaic_file = str(dataset[mosaic_key].data.astype(str))
+        mosaic_file = str(
+            Path(
+                str(
+                    dataset[mosaic_key].data.astype(str)
+                )
+            ).resolve()
+        )
 
     #check if the mosaic file exists in the current directory
     if not Path(mosaic_file).exists():
@@ -124,8 +169,9 @@ def get_input_mosaic(datadict: dict) -> str:
     return mosaic_file
 
 
-def get_input_file(datadict: dict, source: str) -> str:
-
+def get_input_file(datadict: dict,
+                   source: str,
+                   input_dir: str) -> str:
     """
     Formats the input file name where the input file contains the variable data that will be regridded.
 
@@ -133,8 +179,9 @@ def get_input_file(datadict: dict, source: str) -> str:
     :type datadict: dict
     :param source: history file type
     :type source: str
+    :param input_dir: input file directory
 
-    :return: formatted input file name
+    :return: formatted full path to input file name
     :rtype: str
 
     .. note:: The input filename is a required argument for fregrid and refer to the history files containing
@@ -150,13 +197,20 @@ def get_input_file(datadict: dict, source: str) -> str:
               will return "20250805.atmos_daily_cmip"
               (3) Fregrid will append the tile numbers ("tile1.nc") for reading in the data
     """
-
+    fre_logger.debug('attempting to read input_date key from datadict')
     input_date = datadict["input_date"]
-    return source if input_date is None else f"{input_date}.{source}"
+    if input_date is None:
+        fre_logger.debug('input_date is None, resolve source = %s and return that absolute path', source)
+        input_file = f"{input_dir}/{source}"
+    else:
+        fre_logger.debug('input_date = %s, returning absolute path based on that', input_date)
+        input_file = f"{input_dir}/{input_date}.{source}"
+
+    fre_logger.debug('returning %s', input_file)
+    return input_file
 
 
 def get_remap_file(datadict: dict) -> str:
-
     """
     Determines the remap filename based on the input mosaic filename, output grid size, and
     conservative order.  For example, this function will return the name
@@ -198,7 +252,6 @@ def get_remap_file(datadict: dict) -> str:
 
 
 def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
-
     """
     Returns the scalar_fields argument for fregrid.
     Scalar_fields is a string of comma separated list of variables
@@ -215,7 +268,7 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
               will be regridded.
     """
 
-    input_dir = Path(datadict["input_dir"])
+    #input_dir = Path(datadict["input_dir"])
     mosaic_file = datadict["input_mosaic"]
     input_file = datadict["input_file"]
 
@@ -225,7 +278,8 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 
     # xarray gives an error if variables in non_regriddable_variables do not exist in the dataset
     # The errors="ignore" overrides the error
-    with xr.open_dataset(input_dir/input_file) as dataset:
+    #with xr.open_dataset(input_dir/input_file) as dataset:
+    with xr.open_dataset(input_file) as dataset:
         regrid_dataset = dataset.drop_vars(non_regriddable_variables, errors="ignore")
 
     if len(regrid_dataset) == 0:
@@ -236,7 +290,6 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 
 
 def write_summary(datadict):
-
     """
     Logs a summary of the component that will be regridded in a human-readable format
     This function will log only if the logging level is set to INFO or lower
@@ -265,9 +318,7 @@ def regrid_xy(yamlfile: str,
               work_dir: str,
               remap_dir: str,
               source: str,
-              input_date: str = None,
-):
-
+              input_date: str = None):
     """
     Calls fregrid to regrid data in the specified source data file.
 
@@ -287,86 +338,124 @@ def regrid_xy(yamlfile: str,
     :type source: str
     :param input_date: Datestring where the first 8 characters correspond to YYYYMMDD
                        Input_date[:8] represents the date prefix in the history files,
-                       e.g., input_date=20250730T0000Z where the history filename is 
+                       e.g., input_date=20250730T0000Z where the history filename is
                        20250730.atmos_month_aer.tile1.nc
     :type input_date: str
 
     .. note:: All directories should be in absolute paths
     """
+    fre_logger.info(f"yamlfile   = {yamlfile}")
+    fre_logger.info(f"input_dir  = {input_dir}")
+    fre_logger.info(f"output_dir = {output_dir}")
+    fre_logger.info(f"work_dir   = {work_dir}")
+    fre_logger.info(f"remap_dir  = {remap_dir}")
+    fre_logger.info(f"source     = {source}")
+    fre_logger.info(f"input_date = {input_date}")
 
-    #check if input_dir exists
+
+    fre_logger.debug('checking if input_dir = %s exists', input_dir)
     if not Path(input_dir).exists():
         raise RuntimeError(f"Input directory {input_dir} containing the input data files does not exist")
 
-    #check if output_dir exists
+    fre_logger.debug('checking if output_dir = %s exists', output_dir)
     if not Path(output_dir).exists():
         raise RuntimeError(f"Output directory {output_dir} where regridded data" \
                             "will be outputted does not exist")
 
-    #check if work_dir exists
+    fre_logger.debug('checking if work_dir = %s exists', work_dir)
     if not Path(work_dir).exists():
         raise RuntimeError(f"Specified working directory {work_dir} does not exist")
 
-    #work in working directory
+    fre_logger.debug('cd\'ing to work_dir = %s', work_dir)
     with helpers.change_directory(work_dir):
 
-        #initialize datadict
+        fre_logger.debug('initializing datadict')
         datadict = {}
 
-        # load yamlfile to yamldict
+        fre_logger.info( 'opening yamlfile = %s to read into yamldict', yamlfile )
         with open(yamlfile, "r") as openedfile:
             yamldict = yaml.safe_load(openedfile)
+            fre_logger.debug( 'the yamldict is: \n%s', pprint.pformat(yamldict) )
 
-        # save arguments to datadict
+        fre_logger.debug( 'saving yamldict fields to datadict' )
         datadict["yaml"] = yamldict
-        datadict["grid_spec"] = get_grid_spec(datadict)
         datadict["input_dir"] = input_dir
         datadict["output_dir"] = output_dir
         datadict["work_dir"] = work_dir
         datadict["remap_dir"] = remap_dir
         datadict["input_date"] = input_date[:8]
+        fre_logger.info( 'datadict is %s', pprint.pformat(datadict) )
 
+        datadict["grid_spec"], grid_spec_symlink = get_grid_spec(datadict)
+        if Path(datadict['grid_spec']).exists():
+            fre_logger.info('grid_spec exists here: %s', datadict['grid_spec'])
+
+
+
+        fre_logger.debug('making component list from yamldict')
         components = []
         for component in yamldict["postprocess"]["components"]:
             for this_source in component["sources"]:
                 if this_source["history_file"] == source:
                     components.append(component)
+        fre_logger.info('components list is: %s', pprint.pformat(components) )
 
-        # submit fregrid job for each component
+        fre_logger.debug('assembling fregrid call arguments for each component')
         for component in components:
+            fre_logger.debug('component = %s', component)
 
-            # skip component if postprocess_on = False
+            fre_logger.debug('checking postprocess_on field in component dict')
             if not component["postprocess_on"]:
                 fre_logger.warning(f"postprocess_on=False for {source} in component {component['type']}." \
-                                    "Skipping {source}")
+                                    f"Skipping {source}")
                 continue
 
+            fre_logger.debug( 'saving component-specific info to datadict' )
             datadict["inputRealm"] = component["inputRealm"]
+
+            fre_logger.debug('calling get_input_mosaic...')
             datadict["input_mosaic"] = get_input_mosaic(datadict)
+            fre_logger.debug('result was %s', datadict["input_mosaic"])
+
             datadict["output_nlat"], datadict["output_nlon"] = component["xyInterp"].split(",")
             datadict["interp_method"] = component["interpMethod"]
+
+            fre_logger.debug('calling get_remap_file')
             datadict["remap_file"] = get_remap_file(datadict)
-            datadict["input_file"] = get_input_file(datadict, source)
+            fre_logger.debug('result is %s', datadict["remap_file"])
+
+            fre_logger.debug('calling get_input_file')
+            datadict["input_file"] = get_input_file(datadict, source, input_dir)
+            fre_logger.debug('result is %s', datadict["input_file"])
+
+            fre_logger.debug('calling get_scalar_fields')
             datadict["scalar_field"], regrid = get_scalar_fields(datadict)
+            fre_logger.debug('result is %s', regrid)
+
+            fre_logger.info( 'datadict is now %s', pprint.pformat(datadict) )
 
             # skip if there are no variables to regrid
             if regrid:
                 write_summary(datadict)
             else:
+                fre_logger.warning('no variables to regrid, skipping component')
                 continue
 
             # create the output dir
             output_subdir = Path(output_dir) / f"{datadict['output_nlat']}_{datadict['output_nlon']}.{datadict['interp_method']}"
+            fre_logger.debug('creating output_subdir... %s', output_subdir)
             output_subdir.mkdir(parents=True, exist_ok=True)
 
             #construct fregrid command
+            fre_logger.debug('constructing fregrid command...')
             fregrid_command = [
                 "fregrid",
                 "--debug",
                 "--standard_dimension",
                 "--input_dir", input_dir,
+                "--associated_file_dir", input_dir,
                 "--input_mosaic", datadict["input_mosaic"],
-                "--input_file", datadict["input_file"],
+                "--input_file", datadict["input_file"].split('/')[-1], # no dir with the input file
                 "--interp_method", datadict["interp_method"],
                 "--remap_file", datadict["remap_file"],
                 "--nlon", datadict["output_nlon"],
@@ -375,13 +464,19 @@ def regrid_xy(yamlfile: str,
                 "--output_dir", output_subdir,
                 "--associated_file_dir", input_dir
             ]
-            fre_logger.debug(f"fregrid command: {fregrid_command}")
+
+            fre_logger.info('the fregrid command is: \n %s',
+                            ' '.join(fregrid_command).replace(' --', ' \\\n    --') )
 
             #execute fregrid command
+            fre_logger.debug('using subprocess.run to execute fregrid...')
             fregrid_job = subprocess.run(fregrid_command, capture_output=True, text=True)
 
             #print job useful information
             if fregrid_job.returncode == 0:
                 fre_logger.info(fregrid_job.stdout.split("\n")[-3:])
             else:
+                fre_logger.error('fregrid return code is nonzero!')
+                fre_logger.error('return code is %s', fregrid_job.returncode)
+                fre_logger.error('before error raise: stdout was %s', fregrid_job.stdout)
                 raise RuntimeError(fregrid_job.stderr)
