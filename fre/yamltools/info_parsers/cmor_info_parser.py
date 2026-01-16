@@ -177,7 +177,7 @@ class CMORYaml():
         self.target = target
 
         # Path to the main model yaml
-        self.mainyaml_dir = os.path.dirname(self.yml)
+        self.mainyaml_dir = Path(yamlfile).parent
 
         # Create combined pp yaml
         fre_logger.info("CMORYaml initialized!")
