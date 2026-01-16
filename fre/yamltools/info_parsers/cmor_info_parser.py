@@ -236,10 +236,12 @@ class CMORYaml():
                 continue
             settings = i.get("settings")
 
-        with open(f"{self.mainyaml_dir}/{settings}", 'r') as f:
-            settings_content = f.read()
-
-        yaml_content_str += settings_content
+        try:
+            with open(f"{self.mainyaml_dir}/{settings}", 'r') as f:
+                settings_content = f.read()
+                yaml_content_str += settings_content
+        except FileNotFoundError:
+            fre_logger.info(f"   settings yaml: Not used")
 
         # Return the combined string and loaded yaml
         former_log_level = fre_logger.level
