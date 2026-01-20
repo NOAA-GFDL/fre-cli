@@ -127,7 +127,7 @@ def plugin_requirements(name):
     return _plugin_object(name).requires()
 
 
-def run_plugin(script_type, name, config, date_range, scripts_dir, output_dir, output_yaml):
+def run_plugin(script_type, name, config, date_range, scripts_dir, output_dir, output_yaml, pp_dir):
     """Runs the plugin's analysis.
 
     Args:
@@ -136,8 +136,9 @@ def run_plugin(script_type, name, config, date_range, scripts_dir, output_dir, o
         png_dir: Directory where the output figures will be stored.
         config: Dictionary of configuration values.
         catalog: Path to the catalog of reference data.
+        pp_dir: Directory to input pp files
 
     Returns:
         A list of png figure files that were created by the analysis.
     """
-    return _plugin_object(script_type).run_analysis(config, name, date_range, scripts_dir, output_dir, output_yaml)
+    return _plugin_object(script_type).run_analysis(config, name, date_range, scripts_dir, output_dir, output_yaml, pp_dir)

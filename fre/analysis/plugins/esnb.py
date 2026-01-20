@@ -14,7 +14,7 @@ class freanalysis_esnb(AnalysisScript):
         self.description = "Wrapper to access analysis framework for ESNB scripts"
         self.title = "ESNB"
 
-    def run_analysis(self, config, name, date_range, scripts_dir, output_dir, output_yaml):
+    def run_analysis(self, config, name, date_range, scripts_dir, output_dir, output_yaml, pp_dir):
         """Runs the ESNB analysis specified in the yaml and the runtime options
 
         Args:
@@ -24,6 +24,7 @@ class freanalysis_esnb(AnalysisScript):
             scripts_dir: Path to a directory to save intermediate scripts
             output_dir: Path to a directory to save figures
             output_yaml: Path to use as an structured output yaml file
+            pp_dir: Path to input postprocessed files
         """
 
         # save notebook to scripts_dir
@@ -48,9 +49,14 @@ class freanalysis_esnb(AnalysisScript):
         }
 
         # create case_settings dictionary
+        split_date = date_range.split(",")
+        case_settings = {
+            'PP_DIR': pp_dir,
+            'date_range': split_date
+        }
 
         # write the python script that runs the notebook
-        python_script = esnb.engine.canopy_launcher(run_settings, verbose=True) 
+        python_script = esnb.engine.canopy_launcher(run_settings, case_settings, verbose=True)
         fre_logger.debug(f"ESNB python wrapper saved to '{python_script}'")
 
         # run the python script

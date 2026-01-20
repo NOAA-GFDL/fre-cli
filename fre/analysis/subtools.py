@@ -94,9 +94,10 @@ def run_analysis(yaml, name, date_range, scripts_dir, output_dir, output_yaml):
         config_yaml = safe_load(file_)
         specific_config = config_yaml["analysis"][name]["specific_config"]
         script_type = config_yaml["analysis"][name]["script_type"]
+        pp_dir = config_yaml["directories"]["pp_dir"]
 
     # Run the analysis.
-    figure_paths = run_plugin(script_type, name, specific_config, date_range, scripts_dir, output_dir, output_yaml)
+    figure_paths = run_plugin(script_type, name, specific_config, date_range, scripts_dir, output_dir, output_yaml, pp_dir)
 
 
 def uninstall_analysis_package(name, library_directory=None):
