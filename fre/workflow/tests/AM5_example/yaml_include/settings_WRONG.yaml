@@ -1,0 +1,32 @@
+#workflow repositories
+workflow:
+  run_workflow:
+    repo: "https://github.com/NOAA-GFDL"
+    version: "tbd"
+  pp_workflow:
+    repo: 
+    version: "main"
+
+#c96_amip_directories:
+directories:
+  history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
+  pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
+  analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
+  ptmp_dir:     "/xtmp/$USER/ptmp"
+
+#c96_amip_postprocess:
+postprocess:
+  settings:
+    history_segment:    "P1Y"
+    site:               "ppan"
+    pp_start:   *ANA_AMIP_START
+    pp_stop:    *ANA_AMIP_END
+    pp_chunks:  [*PP_AMIP_CHUNK96]
+    pp_grid_spec: *GRID_SPEC96
+  switches:
+    clean_work:         True
+    do_refinediag:      False
+    do_atmos_plevel_masking: True
+    do_preanalysis:     False
+    do_analysis:        True
+    do_analysis_only:   False
