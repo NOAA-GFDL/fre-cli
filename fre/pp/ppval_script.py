@@ -41,38 +41,43 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
     if chunk_type == 'yearly':
         enot = int(date_end[1]) - int(date_start[1])+ 1
 
-    if chunk_type == 'monthly':
+    elif chunk_type == 'monthly':
         enot = (int(date_end[1]) * 12 + int(date_end[2])) - (int(date_start[1]) * 12 + int(date_start[2]))+ 1
 
-    if chunk_type == 'daily':
+    elif chunk_type == 'daily':
         start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')),calendar = cal)
         end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')),calendar = cal)
         diff = end - start
         enot = diff.days + 1
 
-    if chunk_type == '4xdaily':
-        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]))
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]))
+    elif chunk_type == '4xdaily':
+        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]),calendar = cal)
+        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]),calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 4
 
-    if chunk_type == '8xdaily':
-        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]))
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]))
+    elif chunk_type == '8xdaily':
+        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]),calendar = cal)
+        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]),calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 8
 
-    if chunk_type == 'hourly':
-        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]))
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]))
+    elif chunk_type == 'hourly':
+        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]),calendar = cal)
+        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]),calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 24
 
-    if chunk_type == '30minute':
-        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]))
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]), minute = int(date_end[5]))
+    elif chunk_type == '30minute':
+        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]),calendar = cal)
+        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]), minute = int(date_end[5]),calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 48
+
+    else:
+        raise ValueError(f"Unknown chunk_type '{chunk_type}'")
+
+    fre_logger.debug(f"date start: {date_start}; date end: {date_end}; chunk_type: {chunk_type}; calendar: {cal}; timesteps: {enot}")
  
     return enot
 
@@ -108,6 +113,8 @@ def validate(filepath: str):
     d_regex = re.compile(r"(\d{4})(\d{2})?(\d{2})?(\d{2})?(?::(\d{2}))?")
     date_end = d_regex.search(date_range[2])
     date_start = d_regex.search(date_range[1])
+    date_length = len(date_start.group())
+    fre_logger.debug(f"date_start: {date_start}; date_end: {date_end}; date_length: {date_length}")
 
     # Get calendar type from metadata and make sure it's valid
     # dataset is a netCDF4 Dataset object created from the given file
@@ -131,20 +138,19 @@ def validate(filepath: str):
     enot = None
 
     # YEARLY
-    if date_end.lastindex == 1:
+    if date_length == 4:
         enot = getenot(date_start,date_end,'yearly',cal)
 
     # MONTHLY
-    if date_end.lastindex == 2:
+    elif date_length == 6:
         enot = getenot(date_start,date_end,'monthly',cal)
 
     # DAILY
-    if date_end.lastindex == 3:
+    elif date_length == 8:
         enot = getenot(date_start,date_end,'daily',cal)
 
-    # If the file seems to be subdaily...
-    if enot == None:
-
+    # Sub-daily to hourly
+    elif date_length == 10:
         # We would rather not check filepaths but it's necessary for sub-daily files
         # Path elements contains the directories from the filepath.. we use this to determine frequency/chunk_size in sub-daily files
         path_elements = os.path.abspath(filepath).split('/')
@@ -170,10 +176,15 @@ def validate(filepath: str):
         if all(freq not in path_elements for freq in expected_frequencies):
             raise ValueError(f" Cannot determine frequency from {filepath}. Sub-daily files must at minimum be placed in a directory corresponding to data frequency: '6hr, 'PT6H', '3hr, 'PT3H', '1hr, 'PT1H', '30min, 'PT30M, 'PT0.5H'")
 
+    elif date_length == 12:
+        enot = getenot(date_start, date_end, '30minute', cal)
+
+    else:
+        raise ValueError(f"Cannot determine frequency for date '{date_start}'")
+
     try:
         ncc.check(filepath, enot)
     except:
-        raise ValueError
-        fre_logger.error(f" Timesteps found in {filepath} differ from expectation")
+        raise ValueError(f"Timesteps found in {filepath} differ from expectation")
 
     return 0
