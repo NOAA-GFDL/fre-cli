@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - noaa-gfdl
 dependencies:
-  - python<=3.11.*
+  - python>=3.11.*
   - noaa-gfdl::analysis_scripts==0.0.1
   - noaa-gfdl::catalogbuilder==2025.01.01
   - noaa-gfdl::fre-nctools==2022.02.01
