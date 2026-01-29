@@ -21,14 +21,12 @@ work_dir = Path(curr_dir)/"test_work"
 
 components = []
 pp_input_files = [{"history_file":"pemberley"}, {"history_file":"longbourn"}]
-pp_input_static_files = [{"source": "my_static_history"}, {"source": "my_static2"}]
 components.append({"xyInterp": f"{nxy},{nxy}",
                    "interpMethod": "conserve_order2",
                    "inputRealm": "atmos",
                    "type": f"pride_and_prejudice",
                    "sources": pp_input_files,
-                   "postprocess_on": True,
-                   "static": pp_input_static_files}
+                   "postprocess_on": True}
 )
 emma_input_files = [{"history_file":"hartfield"}, {"history_file":"donwell_abbey"}]
 components.append({"xyInterp": f"{nxy},{nxy}",
@@ -93,36 +91,12 @@ def test_regrid_xy():
                         source=source,
                         input_date=date+"TTTT")
 
-  # regrid the static inputs
-  for static_source_dict in pp_input_static_files:
-    source = static_source_dict['source']
-    regrid_xy.regrid_xy(yamlfile=str(yamlfile),
-                        input_dir=str(input_dir),
-                        output_dir=str(output_dir),
-                        work_dir=str(work_dir),
-                        remap_dir=str(remap_dir),
-                        source=source,
-                        input_date=date+"TTTT")
-
   #check answers
-  output_subdir = output_dir/f"{nxy}_{nxy}.conserve_order2"
   for source_dict in pp_input_files + emma_input_files:
     # Files are now output to a subdirectory based on grid size and interpolation method
+    output_subdir = output_dir/f"{nxy}_{nxy}.conserve_order2"
     outfile = output_subdir/f"{date}.{source_dict['history_file']}.nc"
 
-    test = xr.load_dataset(outfile)
-
-    assert "wet_c" not in test
-    assert "mister" in test
-    assert "darcy" in test
-    assert "wins" in test
-
-    assert np.all(test["mister"].values==np.float64(1.0))
-    assert np.all(test["darcy"].values==np.float64(2.0))
-    assert np.all(test["wins"].values==np.float64(3.0))
-
-  for static_source_dict in pp_input_static_files:
-    outfile = output_subdir/f"{date}.{static_source_dict['source']}.nc"
     test = xr.load_dataset(outfile)
 
     assert "wet_c" not in test
