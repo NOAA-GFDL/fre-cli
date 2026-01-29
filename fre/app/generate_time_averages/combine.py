@@ -40,29 +40,29 @@ def form_bronx_directory_name(frequency: str,
     return frequency_label + '_' + str(interval_object.years) + 'yr'
 
 
-def merge_netcdfs(source: str, target: str) -> None:
+def merge_netcdfs(input_file_glob: str, output_file: str) -> None:
     """
-    Merge a glob string identifying a group of NetCDF files
+    Merge a group of NetCDF files identified by a glob string
     into one combined NetCDF file.
 
-    :param source: Glob target of input files
+    :param input_file_glob: Glob string used to form input file list
     :type source: str
-    :param target: Output file
+    :param output_file: Merged output NetCDF file
     :type source: str
     :raises FileNotFoundError: Input files not found
     :raises FileExistsError: Output file already exists
     :rtype: None
     """
-    input_files = glob.glob(source)
+    input_files = glob.glob(input_file_glob)
     if len(input_files) >= 1:
-        fre_logger.debug(f"'{source}' has {len(input_files)} files")
+        fre_logger.debug(f"Input file search string '{input_file_glob}' matched {len(input_files)} files")
     else:
-        raise FileNotFoundError(f"'{source}' resolves to no files")
-    if Path(target).exists():
-        raise FileExistsError(f"Output file '{target}' already exists")
+        raise FileNotFoundError(f"'{input_file_glob}' resolves to no files")
+    if Path(output_file).exists():
+        raise FileExistsError(f"Output file '{output_file}' already exists")
 
     ds = xr.open_mfdataset(input_files, compat='override', coords='minimal')
-    ds.to_netcdf(target, unlimited_dims=['time'])
+    ds.to_netcdf(output_file, unlimited_dims=['time'])
 
 
 def combine( root_in_dir: str,
