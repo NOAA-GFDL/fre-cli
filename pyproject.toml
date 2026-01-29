@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "fre-cli"
 description = "Command Line Interface for FRE commands"
 readme = "README.md"
-requires-python = "==3.11.*" # loosen this TODO
+requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [
     {name = "MSD Workflow Team", email="oar.gfdl.workflow@noaa.gov"}
