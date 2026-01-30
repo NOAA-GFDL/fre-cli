@@ -67,6 +67,11 @@ conda config --append channels noaa-gfdl
 conda config --append channels conda-forge
 conda create --name fre-2025.04 --channel noaa-gfdl --channel conda-forge fre-cli::2025.04
 conda activate fre-2025.04
+# optional: install or load fre-nctools to gain access to regridding and certain time-averaging routines
+# add to your path like: export PATH=/path/to/your/fre-nctools/build/bin:$PATH
+# or if you have lmod/modules: module load fre-nctools/<version>
+# or compile/install from source: see github.comNOAA-GDFL/FRE-NCTools documentation on compilation/installation
+# DO NOT USE noaa-gfdl::fre-nctools==2022.01 at this time, it is being deprecated
 ```
 
 ## GFDL/RDHPCS deployment notes
