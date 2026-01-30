@@ -1,7 +1,9 @@
-import numpy as np
 import os
 from pathlib import Path
 import shutil
+from shutil import which
+
+import numpy as np
 import xarray as xr
 
 import fre.app.regrid_xy.regrid_xy as regrid_xy
@@ -70,7 +72,8 @@ def cleanup_test():
   if work_dir.exists(): shutil.rmtree(work_dir)
   generate_files.cleanup()
 
-  
+@pytest.mark.skipif(which('fregrid') is None, 
+                    reason='fregrid not in env. it was removed from package reqs. you must load it externally')
 def test_regrid_xy():
 
   """

@@ -12,11 +12,14 @@ Each tool generally gets 3 tests:
 
 import os
 import subprocess
+import shutil
+from shutil import which
 from pathlib import Path
-import pytest
 
 import click
 from click.testing import CliRunner
+import pytest
+
 
 from fre import fre
 
@@ -191,6 +194,8 @@ def test_cli_fre_app_regrid_opt_dne(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+@pytest.mark.skipif(which('fregrid') is None, 
+                    reason='fregrid not in env. it was removed from package reqs. you must load it externally')
 def test_cli_fre_app_regrid_test_case_1(capfd):
     """ fre app regrid_xy --help """
 

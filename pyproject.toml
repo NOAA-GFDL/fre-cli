@@ -11,17 +11,14 @@ license = "Apache-2.0"
 authors = [
     {name = "MSD Workflow Team", email="oar.gfdl.workflow@noaa.gov"}
 ]
+
 keywords = [
     "gfdl",
     "workflow",
     "fre",
     "fms",
 ]
-# Some of these are conda dependencies (e.g., cdo, cmor)
-# We should find out a better way to indicate those instead
-# of listing them here.
-# This package also requires some conda packages in the
-# noaa-gfdl channel (e.g., analysis_scripts, catalogbuilder)
+
 dependencies = [
         'analysis_scripts',
         'catalogbuilder',
@@ -50,11 +47,14 @@ dynamic = [
     "version",
 ]
 
+
 [tool.setuptools.dynamic]
 version = {attr = "fre.__version__"}
 
+
 [project.scripts]
 fre = 'fre.fre:fre'
+
 
 [project.optional-dependencies]
 docs = [
