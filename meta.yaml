@@ -80,7 +80,7 @@ test:
     - fre run --help
     - fre yamltools --help
     - pylint --rcfile pylintrc fre/
-    - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/ 
+    - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/
 
 
 about:

@@ -112,14 +112,12 @@ cases=[
     pytest.param( 'cdo', 'all', True ,
                   FULL_TEST_FILE_PATH,
                   STR_UNWGT_CDO_INF),
-#                  TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'all', True ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TWO_OUT_FILE_NAME),
     pytest.param( 'cdo', 'all', False ,
                   FULL_TEST_FILE_PATH,
                   STR_CDO_INF),
-#                  TIME_AVG_FILE_DIR + 'timmean_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'all', False ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME),
@@ -127,14 +125,12 @@ cases=[
     pytest.param( 'fre-python-tools', 'all',  False ,
                   FULL_TEST_FILE_PATH,
                   STR_FRE_PYTOOLS_INF),
-#                  TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TEST_FILE_NAME),
     pytest.param( 'fre-python-tools', 'all',  False ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TWO_OUT_FILE_NAME),
     pytest.param( 'fre-python-tools', 'all',  True ,
                   FULL_TEST_FILE_PATH,
                   STR_UNWGT_FRE_PYTOOLS_INF),
-#                  TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TEST_FILE_NAME),
     pytest.param( 'fre-python-tools', 'all',  True ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TWO_OUT_FILE_NAME),
@@ -160,7 +156,6 @@ def test_run_avgtype_pkg_calculations( pkg      ,
                                        unwgt    ,
                                        infile   ,
                                        outfile  ):
-
     '''
     test-harness function, called by other test functions.
     '''
@@ -245,7 +240,7 @@ def test_compare_fre_cli_to_fre_nctools():
 
     non_zero_count = np.count_nonzero( diff_pytools_nctools_timavg[:] )
     #assert (non_zero_count == 0.) # bad way to check for zero.
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between frepy / frenctools were found"
 
 
 @pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
@@ -275,7 +270,7 @@ def test_compare_fre_cli_to_cdo():
         break
 
     non_zero_count = np.count_nonzero( diff_pytools_cdo_timavg[:] )
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frepytools were found"
 
 
 def test_compare_unwgt_fre_cli_to_unwgt_cdo():
@@ -304,7 +299,7 @@ def test_compare_unwgt_fre_cli_to_unwgt_cdo():
         break
 
     non_zero_count = np.count_nonzero(diff_pytools_cdo_timavg[:])
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frepytools were found"
 
 @pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_cdo_to_fre_nctools():
@@ -334,7 +329,7 @@ def test_compare_cdo_to_fre_nctools():
         break
 
     non_zero_count = np.count_nonzero(diff_cdo_nctools_timavg[:])
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frenctools were found"
 
 # if we use fixtures and tmpdirs, can omit this error prone thing
 def test_fre_app_gen_time_avg_test_data_cleanup():
