@@ -1,4 +1,4 @@
-name: fre-cli-nofrenctools2
+name: fre-cli
 channels:
   - conda-forge
   - noaa-gfdl
