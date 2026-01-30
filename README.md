@@ -27,6 +27,30 @@ means, read the graphic below:
 ![Screenshot from 2024-04-18
 13-42-04](https://github.com/NOAA-GFDL/fre-cli/assets/98476720/43c028a6-4e6a-42fe-8bec-008b6758ea9b)
 
+## **Requirements**
+
+`fre-cli` requires:
+- **Python** >= 3.11 (currently tested and developed on Python 3.12)
+- **CMOR** >= 3.14 (upgraded from 3.11 for latest PCMDI/cmor features)
+
+### Optional External Dependencies
+
+Some `fre` subtools require external dependencies that are **not** included in the conda package:
+
+- **fregrid** (from fre-nctools): Required for `fre app regrid_xy` operations
+  - Must be loaded separately via module system or installed independently
+  - Tests for regrid_xy functionality will be automatically skipped if not available
+
+**On GFDL/Gaea systems:**
+```bash
+module load fre-nctools
+```
+
+**Or install separately:**
+```bash
+conda install -c noaa-gfdl fre-nctools
+```
+
 ## **Quickstart**
 
 `fre-cli` is conda-installable from the “noaa-gfdl” anaconda channel (https://anaconda.org/NOAA-GFDL/fre-cli) and is
