@@ -3,6 +3,7 @@ from pathlib import Path
 import shutil
 from shutil import which
 
+import pytest
 import numpy as np
 import xarray as xr
 
