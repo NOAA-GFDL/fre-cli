@@ -42,8 +42,6 @@ loading fre-cli into a user's environment.
 ```
 module use -a /ncrc/home2/fms/local/modulefiles
 module load fre/2025.04
-# optional: load fre-nctools into your PATH to gain access to regridding and certain time-averaging routines
-# module load fre-nctools
 ```
 
 #### Activate a shared conda environment:
@@ -52,15 +50,11 @@ module load fre/2025.04
 ```
 module load miniforge
 conda activate /nbhome/fms/conda/envs/fre-2025.04
-# optional: load fre-nctools into your PATH to gain access to regridding and certain time-averaging routines
-# module load fre-nctools
 ```
 - Gaea:
 ```
 module use /usw/conda/modulefiles
 module load miniforge conda activate /ncrc/home2/fms/.conda/envs/fre-2025.04
-# optional: load fre-nctools into your PATH to gain access to regridding and certain time-averaging routines
-# module load fre-nctools
 ```
 
 ## Install via Conda
@@ -73,8 +67,11 @@ conda config --append channels noaa-gfdl
 conda config --append channels conda-forge
 conda create --name fre-2025.04 --channel noaa-gfdl --channel conda-forge fre-cli::2025.04
 conda activate fre-2025.04
-# optional: install fre-nctools to gain access to regridding and certain time-averaging routines
-# conda install -c noaa-gfdl fre-nctools
+# optional: install or load fre-nctools to gain access to regridding and certain time-averaging routines
+# add to your path like: export PATH=/path/to/your/fre-nctools/build/bin:$PATH
+# or if you have lmod/modules: module load fre-nctools/<version>
+# or compile/install from source: see github.comNOAA-GDFL/FRE-NCTools documentation on compilation/installation
+# DO NOT USE noaa-gfdl::fre-nctools==2022.01 at this time, it is being deprecated
 ```
 
 ## GFDL/RDHPCS deployment notes
