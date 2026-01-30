@@ -42,3 +42,6 @@ Assuming one has ``conda`` in their path, then do the following::
   # now we pip install the local code under the `fre/` directory
   # the -e flag makes re-installing the code after editing not necessary
   pip install -e .
+
+  # optional: load fre-nctools into your PATH to gain access to regridding and certain time-averaging routines
+  # module load fre-nctools
