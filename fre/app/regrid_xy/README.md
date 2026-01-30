@@ -2,36 +2,7 @@
 
 `regrid_xy.py` remaps scalar and/or vector fields from one kind of lat/lon grid to another.  It can remap between different grids of the same type (e.g. spherical), and between grids of different types (e.g. spherical to tripolar). By default, it uses an O(1) conservative interpolation scheme to accomplish the regridding, except under certain conditions [defined within `fregrid`](https://github.com/NOAA-GFDL/FRE-NCtools/blob/master/tools/fregrid/fregrid.c#L915-L920) the underlying CLI tool which does the heavy lifting.
 
-## Prerequisites
-
-**Important:** As of fre-cli version 2025.04+, `fregrid` from `fre-nctools` is **no longer bundled** as a package dependency and must be available in your environment separately.
-
-### Required in PATH
-- **fregrid** - Must be loaded externally from fre-nctools
-  
-  To check if fregrid is available:
-  ```bash
-  which fregrid
-  ```
-  
-  If not available, on GFDL/Gaea systems:
-  ```bash
-  module load fre-nctools
-  ```
-  
-  Or install separately:
-  ```bash
-  conda install -c noaa-gfdl fre-nctools
-  ```
-
-### Python Requirements
-- Python >= 3.11 (tested/developed with Python 3.12)
-- `netCDF4` python module
-- `xarray` python module
-- `pytest` and `nccmp` for running tests
-- `pylint` recommended for developers
-
-**Note:** Without `fregrid` in your PATH, regrid_xy operations will fail, and related tests will be automatically skipped. 
+requires `fregrid` to be in one's `PATH` variable (`fre-nctools` no longer bundled; load via `module load fre-nctools`), and `python3` >= 3.11 (tested/developed with python 3.12). there should be `netCDF4` and `xarray` python modules in one's python environment for imports. `pytest` and `nccmp` is required for tests. `pylint` recommended for future developers working on this tool. 
 
 
 # INPUT PARAMETERS (mandatory, env vars)

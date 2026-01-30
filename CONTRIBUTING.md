@@ -6,37 +6,6 @@
     - Test as a normal user would use the CLI
 * Create a GitHub issue to reflect your contribution's background and reference it with Git commits
 
-### **Development Environment Setup**
-
-#### Python Version Support
-`fre-cli` supports Python >= 3.11. The package is currently tested and developed on Python 3.12. When setting up your development environment, ensure you use a compatible Python version.
-
-#### External Dependencies
-Some functionality requires external tools not included in the conda package dependencies:
-
-- **fregrid** (from fre-nctools): Required for `fre app regrid_xy` operations
-  - Must be loaded separately via module or environment
-  - Tests for this functionality will be automatically skipped if `fregrid` is not in your PATH
-  - Use `which fregrid` to check availability
-
-**Testing with Optional Dependencies:**
-When running tests, you may see some tests skipped with messages like:
-```
-SKIPPED [1] fre/app/regrid_xy/tests/test_regrid_xy.py:85: fregrid not in env. it was removed from package reqs. you must load it externally
-```
-
-This is expected behavior when optional dependencies are not available. To run all tests:
-```bash
-# On GFDL/Gaea systems
-module load fre-nctools
-pytest
-```
-
-#### Key Dependency Versions
-- CMOR >= 3.14 (latest PCMDI/cmor features)
-- numpy == 1.26.4 (pinned for stability)
-- netcdf4 >= 1.7.*
-
 ### **Opening Pull Requests and Issues**
 Please use one of the templates present in this repository to open a PR or an issue, and fill out the template to the best of your ability.
 
