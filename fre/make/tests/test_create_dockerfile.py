@@ -8,7 +8,6 @@ from click.testing import CliRunner
 
 import pytest
 
-from fre import fre
 from fre.make import create_docker_script
 
 runner=CliRunner()
@@ -30,36 +29,53 @@ MODEL_ROOT = "/apps"
 
 # yaml file checks
 def test_modelyaml_exists():
+    """
+    Test model yaml exists
+    """
     assert Path(f"{YAMLDIR}/{YAMLFILE}").exists()
 
 def test_compileyaml_exists():
+    """
+    Test compile yaml exists
+    """
     assert Path(f"{YAMLDIR}/compile.yaml").exists()
 
 def test_platformyaml_exists():
+    """
+    Test platform yaml exists
+    """
     assert Path(f"{YAMLDIR}/platforms.yaml").exists()
 
 # expected failures for incorrect options
 @pytest.mark.xfail()
 def test_bad_platform_option():
-    ''' test -fremake with a invalid platform option'''
+    """
+    Test -fremake with a invalid platform option
+    """
     create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET,
     	execute=False, no_format_transfer=False)
 
 @pytest.mark.xfail()
 def test_bad_target_option():
-    ''' test create-dockerfile with a invalid target option'''
+    """
+    Test create-dockerfile with a invalid target option
+    """
     create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, BADOPT,
     	execute=False, no_format_transfer=False)
 
 @pytest.mark.xfail()
 def test_bad_yamlpath_option():
-    ''' test create-dockerfile with a invalid target option'''
+    """
+    Test create-dockerfile with a invalid target option
+    """
     create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET,
     	execute=False, no_format_transfer=False)
 
 
 def test_no_op_platform():
-    '''test create-dockerfile will do nothing if non-container platform is given'''
+    """
+    Test create-dockerfile will do nothing if non-container platform is given
+    """
     if Path(os.getcwd()+"/tmp").exists():
         rmtree(os.getcwd()+"/tmp") # clear out any past runs
     create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET,
@@ -68,28 +84,40 @@ def test_no_op_platform():
 
 # tests container build script/makefile/dockerfile creation
 def test_create_dockerfile():
-    '''run create-dockerfile with options for containerized build'''
+    """
+    Run create-dockerfile with options for containerized build
+    """
     create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET,
     	execute=False, no_format_transfer=False)
 
 def test_container_dir_creation():
-    '''check directories are created'''
+    """
+    Check directories are created
+    """
     assert Path(f"./tmp/{PLATFORM[0]}").exists()
 
 def test_container_build_script_creation():
-    ''' checks container build script creation from previous test '''
+    """
+    Checks container build script creation from previous test
+    """
     assert Path("createContainer.sh").exists()
 
 def test_runscript_creation():
-    ''' checks (internal) container run script creation from previous test '''
+    """ 
+    Checks (internal) container run script creation from previous test
+    """
     assert Path(f"tmp/{PLATFORM[0]}/execrunscript.sh").exists()
 
 def test_dockerfile_creation():
-    ''' checks dockerfile creation from previous test '''
+    """
+    Checks dockerfile creation from previous test
+    """
     assert Path("Dockerfile").exists()
 
 def test_dockerfile_contents():
-    ''' checks dockerfile contents from previous test'''
+    """
+    Checks dockerfile contents from previous test
+    """
 
     # for simplicity's sake just checks COPY commands for created files on the host
     with open('Dockerfile', 'r') as f:
@@ -105,3 +133,21 @@ def test_dockerfile_contents():
 
     line = copy_lines[2].strip().split()
     assert line == ["COPY", f"tmp/{PLATFORM[0]}/execrunscript.sh", f"{MODEL_ROOT}/{EXPERIMENT}/exec/execrunscript.sh"]
+
+def test_build_script_contents():
+    """
+    Checks container build script contents from previous test. 
+    Specifically - testing the volume mount is added correctly. 
+    """
+    # Open container build script
+    with open('createContainer.sh', 'r') as f:
+        lines = f.readlines()
+
+    expected_volume_mount = "podman build --volume /gpfs/f5:/gpfs/f5 -f Dockerfile -t null_model_full:debug"
+
+    # strip off '\n'
+    container_build_script = []
+    for line in lines:
+        container_build_script.append(line.rstrip("\n"))
+
+    assert expected_volume_mount in container_build_script

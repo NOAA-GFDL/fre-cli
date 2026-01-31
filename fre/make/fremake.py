@@ -19,7 +19,7 @@ the mkmf template file (referenced in buildDocker.py). Possible predefined targe
 """
 PARALLEL_OPT_HELP = """Number of concurrent model compiles (default 1)
 """
-JOBS_OPT_HELP = """Number of jobs to run simultaneously. Used for make -jJOBS (parallelism with make) and git clone recursive --njobs=JOBS (# of submodules fetched simultaneously)
+JOBS_OPT_HELP = """Number of jobs to run simultaneously; default=4. Used for make -jJOBS (parallelism with make) and git clone recursive --njobs=JOBS (# of submodules fetched simultaneously)
 """
 NO_PARALLEL_CHECKOUT_OPT_HELP =  """Use this option if you do not want a parallel checkout.
 The default is to have parallel checkouts.
@@ -75,14 +75,17 @@ def make_cli():
               is_flag = True,
               default = False,
               help = "Use this to run the created compilation script.")
+@click.option("--force-checkout",
+              is_flag = True,
+              help = "Force checkout in case the source directory exists.")
 @click.option("-v",
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose):
+def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout):
     """ - Perform all fre make functions; run checkout and compile scripts to create model executable or container"""
     run_fremake_script.fremake_run(
-        yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose)
+        yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout)
 
 @make_cli.command()
 @click.option("-y",
@@ -115,14 +118,13 @@ def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_f
               is_flag = True,
               default = False,
               help = "Use this to run the created checkout script.")
-@click.option("-v",
-              "--verbose",
+@click.option("--force-checkout",
               is_flag = True,
-              help = VERBOSE_OPT_HELP)
-def checkout_script(yamlfile, platform, target, no_parallel_checkout, njobs, execute, verbose):
+              help = "Force checkout in case the source directory exists.")
+def checkout_script(yamlfile, platform, target, no_parallel_checkout, njobs, execute, force_checkout):
     """ - Write the checkout script """
     create_checkout_script.checkout_create(
-        yamlfile, platform, target, no_parallel_checkout, njobs, execute, verbose)
+        yamlfile, platform, target, no_parallel_checkout, njobs, execute, force_checkout)
 
 @make_cli.command
 @click.option("-y",
