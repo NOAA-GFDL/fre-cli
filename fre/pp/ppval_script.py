@@ -3,19 +3,23 @@ This script will determine an estimated number of timesteps from a postprocessed
 Ran during time-series file creation during rename-split-to-pp and make-timeseries tasks in fre postprocessing workflow. 
 '''
 
-import os
 import logging
+import os
 import re
+
 import cftime
 import netCDF4
+
 from . import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
 
-# Get estimated number of timesteps
-def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
-    """
 
+def getenot(date_start: str, 
+            date_end:str, 
+            chunk_type:str, 
+            cal: str):
+    """
     Returns the estimated number of timesteps using elapsed time (calculated using date_start/date_end) and data frequency (provided in chunk_type argument).
     Date string formats must be YYYY,YYYYMM,YYYYMMDD,YYYYMMDDHH,or YYYYMMDDHH:mm
     
@@ -120,10 +124,9 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
  
     return enot
 
-# Filepath is the path to the time-series file to be checked
+
 def validate(filepath: str):
     """
-
     Compares the number of timesteps in a postprocessed time-series netCDF (.nc) file to the number of expected timesteps as calculated using elapsed time and data frequency.
     Runs nccheck on every timeseries file in pp dir.
  
