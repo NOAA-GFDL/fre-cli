@@ -28,31 +28,31 @@ output_dir = Path(curr_dir)/"test_outputs"
 remap_dir= Path(curr_dir)/"test_remap"
 work_dir = Path(curr_dir)/"test_work"
 
-components = []
-pp_input_files = [{"history_file":"pemberley"}, {"history_file":"longbourn"}]
-components.append({"xyInterp": f"{nxy},{nxy}",
-                   "interpMethod": "conserve_order2",
-                   "inputRealm": "atmos",
-                   "type": f"pride_and_prejudice",
-                   "sources": pp_input_files,
-                   "postprocess_on": True}
-)
-emma_input_files = [{"history_file":"hartfield"}, {"history_file":"donwell_abbey"}]
-components.append({"xyInterp": f"{nxy},{nxy}",
-                   "interpMethod": "conserve_order2",
-                   "inputRealm": "atmos",
-                   "type": f"emma",
-                   "sources": emma_input_files,
-                   "postprocess_on": True}
-)
-here_input_files = [{"history_file":"gfdl"}, {"history_file":"princeton"}]
-components.append({"xyInterp": f"{nxy},{nxy}",
-                   "interpMethod": "conserve_order2",
-                   "inputRealm": "atmos",
-                   "type": "here",
-                   "sources": here_input_files,
-                   "postprocess_on": False}
-)
+input_files             = [{"history_file":"pemberley"}, {"history_file":"longbourn"}]
+input_files_donotregrid = [{"history_file":"nope"}]
+input_files_static      = [{"source": "my_static_history"}]
+
+components = [
+    {"xyInterp": f"{nxy},{nxy}",
+     "interpMethod": "conserve_order2",
+     "inputRealm": "atmos",
+     "type": f"pride_and_prejudice",
+     "sources": input_files,
+     "postprocess_on": True},
+    {"xyInterp": f"{nxy},{nxy}",
+     "interpMethod": "conserve_order2",
+     "inputRealm": "atmos",
+     "type": f"my_component",
+     "sources": input_files,
+     "static": input_files_static,
+     "postprocess_on": True},
+    {"xyInterp": f"{nxy},{nxy}",
+     "interpMethod": "conserve_order2",
+     "inputRealm": "atmos",
+     "type": f"this_comp_is_off",
+     "sources": input_files_donotregrid,
+     "postprocess_on": False}
+]
 
 
 def setup_test():
@@ -84,16 +84,64 @@ def cleanup_test():
 @pytest.mark.skipif(not HAVE_FREGRID,
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
 def test_regrid_xy():
+  """
+  Tests the main function regrid_xy and ensures
+  data is regridded correctly
+  """
+
+  setup_test()
+  
+  #modify generate_files to change sources
+  for source_dict in input_files:
+    source = source_dict["history_file"]
+    regrid_xy.regrid_xy(yamlfile=str(yamlfile),
+                        input_dir=str(input_dir),
+                        output_dir=str(output_dir),
+                        work_dir=str(work_dir),
+                        remap_dir=str(remap_dir),
+                        source=source,
+                        input_date=date+"TTTT")
+
+  #check answers
+  for source_dict in input_files:
+    # Files are now output to a subdirectory based on grid size and interpolation method
+    output_subdir = output_dir/f"{nxy}_{nxy}.conserve_order2"
+    outfile = output_subdir/f"{date}.{source_dict['history_file']}.nc"
+
+    test = xr.load_dataset(outfile)
+
+    assert "wet_c" not in test
+    assert "mister" in test
+    assert "darcy" in test
+    assert "wins" in test
+
+    assert np.all(test["mister"].values==np.float64(1.0))
+    assert np.all(test["darcy"].values==np.float64(2.0))
+    assert np.all(test["wins"].values==np.float64(3.0))
+
+  #check answers, these shouldn't have been regridded
+  for source_dict in input_files_donotregrid:
+    ifile = source_dict["history_file"]
+    assert not (output_dir/f"{date}.{ifile}.nc").exists()
+
+    #check remap_file exists and is not empty
+    remap_file = remap_dir/f"C{nxy}_mosaicX{nxy}by{nxy}_conserve_order2.nc"
+    assert remap_file.exists()
+
+  cleanup_test()
+
+@pytest.mark.skipif(not HAVE_FREGRID,
+                    reason='fregrid not in env. it was removed from package reqs. you must load it externally')
+def test_regrid_xy_static():
     """
-    Tests the main function regrid_xy and ensures
-    data is regridded correctly
+    Same as test_regrid_xy but flavored for statics
     """
 
     setup_test()
 
-    #modify generate_files to change sources
-    for source_dict in pp_input_files + emma_input_files + here_input_files:
-        source = source_dict["history_file"]
+    # regrid the static history file
+    for source_dict in input_files_static:
+        source = source_dict["source"]
         regrid_xy.regrid_xy(yamlfile=str(yamlfile),
                             input_dir=str(input_dir),
                             output_dir=str(output_dir),
@@ -102,11 +150,11 @@ def test_regrid_xy():
                             source=source,
                             input_date=date+"TTTT")
 
-    #check answers
-    for source_dict in pp_input_files + emma_input_files:
+    # check the regridded history file
+    for source_dict in input_files_static:
         # Files are now output to a subdirectory based on grid size and interpolation method
         output_subdir = output_dir/f"{nxy}_{nxy}.conserve_order2"
-        outfile = output_subdir/f"{date}.{source_dict['history_file']}.nc"
+        outfile = output_subdir/f"{date}.{source_dict['source']}.nc"
 
         test = xr.load_dataset(outfile)
 
@@ -119,19 +167,17 @@ def test_regrid_xy():
         assert np.all(test["darcy"].values==np.float64(2.0))
         assert np.all(test["wins"].values==np.float64(3.0))
 
-    #check answers, these shouldn't have been regridded
-    for source_dict in here_input_files:
-        ifile = source_dict["history_file"]
-        assert not (output_dir/f"{date}.{ifile}.nc").exists()
-
     #check remap_file exists and is not empty
     remap_file = remap_dir/f"C{nxy}_mosaicX{nxy}by{nxy}_conserve_order2.nc"
     assert remap_file.exists()
 
     cleanup_test()
+  
+  
 
 @pytest.mark.skipif(not HAVE_FREGRID,
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
+
 def test_get_input_mosaic():
     """
     Tests get_input_mosaic correctly copies the mosaic file to the input directory
@@ -186,11 +232,11 @@ def test_get_remap_file():
 
     #check remap file from current directory is copied to input directory
     remap_file = Path(f"remap_dir/{input_mosaic}X{nlon}by{nlat}_{interp_method}.nc")
-    assert regrid_xy.get_remap_file(datadict) == str(remap_dir/remap_file)
+    assert regrid_xy.get_remap_file(datadict) == str(remap_file)
 
     remap_dir.mkdir(exist_ok=True)
     remap_file.touch()
-    assert regrid_xy.get_remap_file(datadict) == str(remap_dir/remap_file)
+    assert regrid_xy.get_remap_file(datadict) == str(remap_file)
 
     Path(remap_file).unlink()
     shutil.rmtree(remap_dir)
