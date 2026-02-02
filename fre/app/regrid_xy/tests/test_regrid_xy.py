@@ -130,7 +130,8 @@ def test_regrid_xy():
 
   cleanup_test()
 
-
+@pytest.mark.skipif(not HAVE_FREGRID,
+                    reason='fregrid not in env. it was removed from package reqs. you must load it externally')
 def test_regrid_xy_static():
     """
     Same as test_regrid_xy but flavored for statics
