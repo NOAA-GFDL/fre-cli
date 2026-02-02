@@ -49,21 +49,54 @@ local sphinx build
 
 This is good for deep debugging of the documentation build.
 
-prereq: local conda environment and ``fre-cli``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-First, get a local conda
-`env <https://noaa-gfdl.github.io/fre-cli/setup.html#create-environment-from-github-repo-clone>`_ of
-``fre-cli`` going. This is required because ``sphinx`` uses python's ``importlib`` functionality to
-auto-generate a clickable module-index from doc-strings.
+lightweight approach (recommended for docs-only)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you only need to build documentation and don't need the full ``fre-cli`` environment,
+you can use a minimal setup. This approach uses ``autodoc_mock_imports`` in ``docs/conf.py``
+to mock heavy dependencies like ``netCDF4``, ``cmor``, ``xarray``, etc.
 
-
-install ``sphinx`` and related packages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-From the root-directory of your local repository copy, issue the following commands.
+From the root-directory of your local repository copy:
 
 .. code-block:: console
 
+ # Create a lightweight docs-only environment
+ conda create -n fre-cli-docs python=3.11 -y
+ conda activate fre-cli-docs
+ 
+ # Install minimal dependencies
+ pip install sphinx renku-sphinx-theme sphinx-rtd-theme click pyyaml jsonschema
+ 
+ # Set PYTHONPATH so Sphinx can find the fre modules
+ export PYTHONPATH="${PWD}:${PYTHONPATH}"
+ 
+ # Generate API docs and build
+ sphinx-apidoc --output-dir docs fre/ --separate
+ sphinx-build docs build
+
+This will produce warnings about missing ``pytest`` and ``metomi`` imports from test modules,
+but the build will succeed. To view the result, open ``build/index.html`` in your browser.
+
+full environment approach
+~~~~~~~~~~~~~~~~~~~~~~~~~
+If you're also developing/testing ``fre-cli`` functionality, get a local conda
+`env <https://noaa-gfdl.github.io/fre-cli/setup.html#create-environment-from-github-repo-clone>`_ of
+``fre-cli`` going. This provides all dependencies and allows ``sphinx`` to use python's
+``importlib`` functionality to auto-generate a clickable module-index from doc-strings.
+
+From the root-directory of your local repository copy:
+
+.. code-block:: console
+
+ # Activate your fre-cli environment
+ conda activate fre-cli
+ 
+ # optional: load fre-nctools into your PATH to gain access to regridding and certain time-averaging routines
+ # module load fre-nctools
+ 
+ # Install documentation dependencies
  pip install .[docs]
+ 
+ # Generate API docs and build
  sphinx-apidoc --output-dir docs fre/ --separate
  sphinx-build docs build
 

@@ -44,7 +44,6 @@ def print_var_content(table_config_file: IO[str],
     :param var_name: The name of the variable to look for in the configuration file. 
     :type var_name: str    
     :raises Exception: If there is an issue reading the JSON content from the file.
-    :raises KeyError: If the variable is not found in the JSON content.
     :return: None
     :rtype: None
 
@@ -151,7 +150,7 @@ def make_simple_varlist( dir_targ: str,
     :return: Dictionary of variable names (keys and values are the same), or None if no files are found or an error occurs
     :rtype: dict or None
 
-    .. note:: Assumes NetCDF filenames are of the form: <something>.<variable>.<datetime>.nc
+    .. note:: Assumes NetCDF filenames are of the form: <something>.<datetime>.<variable>.nc
     .. note:: Variable name is assumed to be the second-to-last component when split by periods.
     .. note:: Logs a warning if only one file is found.
 

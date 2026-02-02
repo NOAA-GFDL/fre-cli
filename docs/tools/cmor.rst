@@ -1,88 +1,80 @@
-.. last updated Nov 2024
+.. last updated Dec 2024
+
+CMOR Subcommands Overview
+-------------------------
+
+``fre cmor`` rewrites climate model output files with CMIP-compliant metadata. Available subcommands:
+
+* ``fre cmor run`` - Rewrite individual directories of netCDF files
+* ``fre cmor yaml`` - Process multiple directories/tables using YAML configuration
+* ``fre cmor find`` - Search MIP tables for variable definitions
+* ``fre cmor varlist`` - Generate variable lists from netCDF files
 
 ``run``
 -------
 
-``fre cmor run`` rewrites climate model output files in a target directory in a CMIP-compliant manner
-for downstream publishing. It accepts 6 arguments, only one being optional. A brief description of each:
+* Rewrites netCDF files in a directory to be CMIP-compliant
+* Requires MIP tables and controlled vocabulary configuration
+* Minimal Syntax: ``fre cmor run -d [indir] -l [varlist] -r [table_config] -p [exp_config] -o [outdir] [options]``
+* Required Options:
+   - ``-d, --indir TEXT`` - Input directory with netCDF files
+   - ``-l, --varlist TEXT`` - Variable list dictionary mapping local to MIP variable names
+   - ``-r, --table_config TEXT`` - MIP table JSON configuration
+   - ``-p, --exp_config TEXT`` - Experiment/model metadata JSON
+   - ``-o, --outdir TEXT`` - Output directory prefix
+* Optional:
+   - ``-v, --opt_var_name TEXT`` - Target specific variable
+   - ``--run_one`` - Process one file for testing
+   - ``-g, --grid_label TEXT`` - Grid type (e.g. "gn", "gr")
+   - ``--grid_desc TEXT`` - Grid description
+   - ``--nom_res TEXT`` - Nominal resolution
+   - ``--start TEXT`` - Minimum year (YYYY)
+   - ``--stop TEXT`` - Maximum year (YYYY)
+   - ``--calendar TEXT`` - Calendar type
+* Example: ``fre cmor run --run_one -g gr --nom_res "10000 km" -d input/ -l varlist.json -r CMIP6_Omon.json -p exp_config.json -o output/``
 
+``yaml``
+--------
 
-arguments
-~~~~~~~~~
+* Processes YAML configuration to CMORize multiple directories/tables
+* Requires FRE-flavored YAML files with experiment configuration
+* Minimal Syntax: ``fre cmor yaml -y [yamlfile] -e [experiment] -p [platform] -t [target] [options]``
+* Required Options:
+   - ``-y, --yamlfile TEXT`` - YAML file to parse
+   - ``-e, --experiment TEXT`` - Experiment name
+   - ``-p, --platform TEXT`` - Platform name
+   - ``-t, --target TEXT`` - Target name
+* Optional:
+   - ``-o, --output TEXT`` - Output file
+   - ``--run_one`` - Process one file for testing
+   - ``--dry_run`` - Print planned calls without executing
+   - ``--start TEXT`` - Minimum year (YYYY)
+   - ``--stop TEXT`` - Maximum year (YYYY)
+* Example: ``fre cmor yaml -y am5.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel -t prod-openmp --dry_run``
 
-* (required) ``-d, --indir TEXT``, input directory containing netCDF files to CMORize.
+``find``
+--------
 
-  - all netCDF files within ``indir`` will have their filename checked for local variables
-    specified in ``varlist`` as keys, and ISO datetime strings extracted and kept in a list
-    for later iteration over target files
+* Searches MIP tables for variable definitions
+* Minimal Syntax: ``fre cmor find -r [table_config_dir] [options]``
+* Required Options:
+   - ``-r, --table_config_dir TEXT`` - Directory with MIP tables
+* Optional:
+   - ``-l, --varlist TEXT`` - Variable list file
+   - ``-v, --opt_var_name TEXT`` - Specific variable to search
+* Example: ``fre cmor find -r cmip6-cmor-tables/Tables/ -v sos``
 
-  - a debugging-oriented boolean flag constant at the top of ``cmor_mixer.py``, if ``True``
-    will process one file of all files found within ``indir`` and cease processing for that
-    variable after succeeding on one file
+``varlist``
+-----------
 
-* (required) ``-l, --varlist TEXT``, path to variable list dictionary.
+* Generates variable list from netCDF files in a directory
+* Minimal Syntax: ``fre cmor varlist -d [dir_targ] -o [output_file]``
+* Required Options:
+   - ``-d, --dir_targ TEXT`` - Target directory
+   - ``-o, --output_variable_list TEXT`` - Output file path
+* Example: ``fre cmor varlist -d ocean_data/ -o varlist.json``
 
-  - each entry in the variable list dictionary corresponds to a key/value pair
-
-  - the key (local variable) is used for ID'ing files within ``indir`` to be processed
-
-  - associated with the key (local variable), is the value (target variable), which should
-    be the label attached to the data within the targeted file(s)
-
-* (required) ``-r, --table_config TEXT``, path to MIP json configuration holding variable
-  metadata.
-
-  - typically, this is to be provided by a data-request associated with the MIP and
-    participating experiments
-
-* (required) ``-p, --exp_config TEXT``, path to json configuration holding experiment/model
-  metadata
-
-  - contains e.g. ``grid_label``, and points to other important configuration files
-    associated with the MIP
-
-  - the other configuration files are typically housing metadata associated with ``coordinates``,
-    ``formula_terms``, and controlled-vocabulary (``CV``).
-
-* (required) ``-o, --outdir TEXT``, path-prefix in which the output directory structure is created.
-
-  - further output-directories and structure/template information is specified specified in ``exp_config``
-
-  - in addition to the output-structure/template used, an additional directory corresponding to the
-    date the CMORizing was done is created near the end of the directory tree structure
-
-* (optional) ``-v, --opt_var_name TEXT``, a specific variable to target for processing
-
-  - largely a debugging convenience functionality, this can be helpful for targeting more specific
-    input files as desired. 
-
-
-examples
-~~~~~~~~
-with a local clone of ``fre-cli``, the following call should work out-of-the-box from
-the root directory of the repository.
-
-.. code-block:: python
-
-                fre cmor run \
-                   -d fre/tests/test_files/ocean_sos_var_file \
-                   -l fre/tests/test_files/varlist \
-                   -r fre/tests/test_files/cmip6-cmor-tables/Tables/CMIP6_Omon.json \
-                   -p fre/tests/test_files/CMOR_input_example.json \
-                   -o fre/tests/test_files/outdir
-
-background
-~~~~~~~~~~
-
-The bulk of this routine is housed in ``fre/cmor/cmor_mixer.py``, which is a rewritten version of
-Sergey Nikonov's original ``CMORcommander.py`` script, utilized during GFDL's CMIP6 publishing run.
-
-This code is dependent on two primary json configuration files- a MIP
-variable table and another containing experiment (i.e. model) specific metadata (e.g. grid) to append
-to the output netCDF file headers, in addition to other configuration options such as output directory
-name specification, output path templates, and specification of other json configuration files containing
-controlled-vocabulary (CV), coordinate, and formula term conventions for rewriting the output metadata.
-
+For comprehensive documentation, see `CMORize Postprocessed Output <https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#cmorize-postprocessed-output>`_.
 
 
 

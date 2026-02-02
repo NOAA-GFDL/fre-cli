@@ -183,7 +183,8 @@ def test_check_expected_platformyamlcontent():
                                 'containerBuild': 'podman',
                                 'containerRun': 'apptainer',
                                 'containerBase': 'docker.io/ecpe4s/noaa-intel-prototype:2023.09.25',
-                                'mkTemplate': '/apps/mkmf/templates/hpcme-intel21.mk'}
+                                'mkTemplate': '/apps/mkmf/templates/hpcme-intel21.mk',
+                                'volume': '/gpfs/f5'}
 
     for key,value in yml_dict.items():
         if key == "platforms":
