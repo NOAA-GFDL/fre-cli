@@ -16,8 +16,8 @@ fre_logger = logging.getLogger(__name__)
 
 
 def getenot(date_start: str, 
-            date_end:str, 
-            chunk_type:str, 
+            date_end: str, 
+            chunk_type: str, 
             cal: str):
     """
     Returns the estimated number of timesteps using elapsed time (calculated using date_start/date_end) and data frequency (provided in chunk_type argument).
@@ -181,15 +181,15 @@ def validate(filepath: str):
 
     # YEARLY
     if date_length == 4:
-        enot = getenot(date_start,date_end,'yearly',cal)
+        enot = getenot(date_start, date_end, 'yearly', cal)
 
     # MONTHLY
     elif date_length == 6:
-        enot = getenot(date_start,date_end,'monthly',cal)
+        enot = getenot(date_start, date_end, 'monthly', cal)
 
     # DAILY
     elif date_length == 8:
-        enot = getenot(date_start,date_end,'daily',cal)
+        enot = getenot(date_start, date_end, 'daily', cal)
 
     # Sub-daily to hourly
     elif date_length == 10:
