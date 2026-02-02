@@ -3,19 +3,23 @@ This script will determine an estimated number of timesteps from a postprocessed
 Ran during time-series file creation during rename-split-to-pp and make-timeseries tasks in fre postprocessing workflow. 
 '''
 
-import os
 import logging
+import os
 import re
+
 import cftime
 import netCDF4
+
 from . import nccheck_script as ncc
 
 fre_logger = logging.getLogger(__name__)
 
-# Get estimated number of timesteps
-def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
-    """
 
+def getenot(date_start: str, 
+            date_end: str, 
+            chunk_type: str, 
+            cal: str):
+    """
     Returns the estimated number of timesteps using elapsed time (calculated using date_start/date_end) and data frequency (provided in chunk_type argument).
     Date string formats must be YYYY,YYYYMM,YYYYMMDD,YYYYMMDDHH,or YYYYMMDDHH:mm
     
@@ -39,38 +43,77 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
     #start/end are cf datetime objects representing the start and end time of the data chunk
     #diff represents the time difference between start and stop
     if chunk_type == 'yearly':
-        enot = int(date_end[1]) - int(date_start[1])+ 1
+        enot = int(date_end[1]) - int(date_start[1]) + 1
 
     elif chunk_type == 'monthly':
-        enot = (int(date_end[1]) * 12 + int(date_end[2])) - (int(date_start[1]) * 12 + int(date_start[2]))+ 1
+        enot = (int(date_end[1]) * 12 + int(date_end[2])) - (int(date_start[1]) * 12 + int(date_start[2])) + 1
 
     elif chunk_type == 'daily':
-        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')),calendar = cal)
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')),calendar = cal)
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                calendar = cal)
         diff = end - start
         enot = diff.days + 1
 
     elif chunk_type == '4xdaily':
-        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]),calendar = cal)
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]),calendar = cal)
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                hour = int(date_start[4]),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                hour = int(date_end[4]),
+                                calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 4
 
     elif chunk_type == '8xdaily':
-        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]),calendar = cal)
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]),calendar = cal)
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                hour = int(date_start[4]),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                hour = int(date_end[4]),
+                                calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 8
 
     elif chunk_type == 'hourly':
-        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]),calendar = cal)
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]),calendar = cal)
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                hour = int(date_start[4]),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                hour = int(date_end[4]),
+                                calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 24
 
     elif chunk_type == '30minute':
-        start = cftime.datetime(int(date_start[1]),int(date_start[2].lstrip('0')),int(date_start[3].lstrip('0')), hour = int(date_start[4]),calendar = cal)
-        end = cftime.datetime(int(date_end[1]),int(date_end[2].lstrip('0')),int(date_end[3].lstrip('0')), hour = int(date_end[4]), minute = int(date_end[5]),calendar = cal)
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                hour = int(date_start[4]),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                hour = int(date_end[4]),
+                                minute = int(date_end[5]),
+                                calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 48
 
@@ -81,10 +124,9 @@ def getenot(date_start: str, date_end:str, chunk_type:str, cal: str):
  
     return enot
 
-# Filepath is the path to the time-series file to be checked
+
 def validate(filepath: str):
     """
-
     Compares the number of timesteps in a postprocessed time-series netCDF (.nc) file to the number of expected timesteps as calculated using elapsed time and data frequency.
     Runs nccheck on every timeseries file in pp dir.
  
@@ -139,15 +181,15 @@ def validate(filepath: str):
 
     # YEARLY
     if date_length == 4:
-        enot = getenot(date_start,date_end,'yearly',cal)
+        enot = getenot(date_start, date_end, 'yearly', cal)
 
     # MONTHLY
     elif date_length == 6:
-        enot = getenot(date_start,date_end,'monthly',cal)
+        enot = getenot(date_start, date_end, 'monthly', cal)
 
     # DAILY
     elif date_length == 8:
-        enot = getenot(date_start,date_end,'daily',cal)
+        enot = getenot(date_start, date_end, 'daily', cal)
 
     # Sub-daily to hourly
     elif date_length == 10:
