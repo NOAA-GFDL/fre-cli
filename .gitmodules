@@ -7,3 +7,7 @@
 [submodule "fre/tests/test_files/cmip6-cmor-tables"]
 	path = fre/tests/test_files/cmip6-cmor-tables
 	url = https://github.com/pcmdi/cmip6-cmor-tables
+[submodule "fre/tests/test_files/cmip7-cmor-tables"]
+	path = fre/tests/test_files/cmip7-cmor-tables
+	url = https://github.com/WCRP-CMIP/cmip7-cmor-tables.git
+	branch = main
