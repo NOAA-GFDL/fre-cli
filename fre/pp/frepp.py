@@ -286,4 +286,4 @@ def rename_split(input_dir, output_dir, component, use_subdirs):
     """
     Create per-variable timeseries from shards
     """
-    rename_split_script.rename_split_script(input_dir, output_dir, component, use_subdirs)
+    rename_split_script.rename_split(input_dir, output_dir, component, use_subdirs)
