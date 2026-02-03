@@ -39,8 +39,7 @@ def get_freq_and_format_from_two_dates(date1, date2):
     else:
         raise ValueError(f"Cannot determine frequency and format from '{date1}' and '{date2}'")
 
-    fre_logger.debug(f"Comparing '{date1}' and '{date2}'")
-    fre_logger.debug(f"Frequency '{iso_freq}' and format '{format_}'")
+    fre_logger.debug(f"Comparing '{date1}' and '{date2}': returning frequency '{iso_freq}' and format '{format_}'")
 
     return iso_freq, format_
 
@@ -51,18 +50,19 @@ def get_duration_from_two_dates(date1, date2):
     duration = abs(date2 - date1)
     days = duration.total_seconds() / 86400
     if days > 27 and days < 32:
-        return 'P1M'
+        duration = 'P1M'
     elif days > 179 and days < 186:
-        return 'P6M'
+        duration = 'P6M'
     else:
         years_round = round(days / 365.0)
         years_frac = days / 365.0 - years_round
-        print("blah", days, years_round, years_frac)
         if years_frac < 0.04:
-            return f"P{years_round}Y"
+            duration = f"P{years_round}Y"
         else:
             raise ValueError(f"Could not determine ISO8601 duration between '{date1}' and '{date2}'")
-    fre_logger.debug(f"Comparing '{date1}' and '{date2}'")
+
+    fre_logger.debug(f"Comparing '{date1}' and '{date2}': returning duration '{duration}'")
+    return duration
 
 def rename_file(file_):
     """
@@ -85,6 +85,7 @@ def rename_file(file_):
         var = parts[2]
     else:
         raise Exception(f"File '{file}' cannot be parsed")
+
     # open the nc file
     ds = xr.open_dataset(file_)
     number_of_timesteps = ds.sizes['time']
@@ -127,11 +128,23 @@ def rename_file(file_):
         second_timestep = ds.time.values[1]
         freq_label, format_ = get_freq_and_format_from_two_dates(first_timestep, second_timestep)
         freq = second_timestep - first_timestep
+        date1 = first_timestep
+        date2 = date1 + (number_of_timesteps-1) * freq
+        duration = get_duration_from_two_dates(date1, date2)
     else:
-        raise Exception('last part')
+        time_bounds_name = ds.time.attrs.get('bounds')
+        if time_bounds_name:
+            time_bounds = ds[time_bounds_name]
+            first_timestep = time_bounds[0].values[0]
+            second_timestep = time_bounds[0].values[1]
+            freq_label, format_ = get_freq_and_format_from_two_dates(first_timestep, second_timestep)
+            freq = second_timestep - first_timestep
+            date1 = first_timestep
+            date2 = date1 + (number_of_timesteps-1) * freq
+            duration = get_duration_from_two_dates(date1, date2 - freq)
+        else:
+            raise Exception('last part')
 
-    date1 = first_timestep
-    date2 = date1 + (number_of_timesteps-1) * freq
     date1_str = date1.strftime(format_)
     date2_str = date2.strftime(format_)
 
@@ -140,7 +153,6 @@ def rename_file(file_):
     except NameError:
         newfile_base = f"{label}.{date1_str}-{date2_str}.{var}.nc"
 
-    duration = get_duration_from_two_dates(date1, date2)
     newfile = Path(label) / freq_label / duration / newfile_base
 
     return newfile
