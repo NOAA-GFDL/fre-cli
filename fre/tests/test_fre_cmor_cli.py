@@ -306,18 +306,18 @@ def test_cli_fre_cmor_run_cmip7_case1():
     table_config = f'{ROOTDIR}/cmip7-cmor-tables/tables/CMIP7_ocean.json'
     exp_config = f'{ROOTDIR}/CMOR_CMIP7_input_example.json'
     outdir = f'{ROOTDIR}/outdir'
-    grid_label = 'gr'
+    grid_label = 'g99'#'gr' #TEMP TODO REVISIT
     grid_desc = 'FOO_BAR_PLACEHOLD'
     nom_res = '10000 km'
     calendar='julian'
 
     # determined by cmor_run_subtool
     cmor_creates_dir = \
-        f'CMIP7/CMIP7/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/{grid_label}'
+        f'CMIP7/CMIP7/CMIP/CCCma/CanESM6-MR/esm-piControl/r3i1p1f3/ocean/sos/{grid_label}'
     full_outputdir = \
         f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldn't be
     full_outputfile = \
-        f"{full_outputdir}/sos_ocean_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199301-199302.nc" # i think this is the output, DOUBLE CHECK TODO
+        f"{full_outputdir}/sos_ocean_CanESM6-MR_esm-piControl_r3i1p1f3_{grid_label}_199301-199302.nc" # i think this is the output, DOUBLE CHECK TODO
 
     # FYI
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc' # unneeded, this is mostly for reference
