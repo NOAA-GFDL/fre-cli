@@ -42,7 +42,8 @@ import netCDF4 as nc
 
 from .cmor_helpers import ( print_data_minmax, from_dis_gimme_dis, find_statics_file, create_lev_bnds,
                             get_iso_datetime_ranges, check_dataset_for_ocean_grid, get_vertical_dimension,
-                            create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type )
+                            create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type,
+                            get_exp_cfg_mip_era )
 
 fre_logger = logging.getLogger(__name__)
 
@@ -59,14 +60,13 @@ CMOR_EXIT_CTL=cmor.CMOR_NORMAL#.CMOR_EXIT_ON_WARNING#.CMOR_EXIT_ON_MAJOR#
 CMOR_MK_SUBDIRS=1
 CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
 
-
 def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                              local_var: str = None,
                              netcdf_file: str = None,
                              target_var: str = None,
                              json_exp_config: str = None,
                              json_table_config: str = None,
-                             prev_path: Optional[str] = None) -> str:
+                             prev_path: Optional[str] = None ) -> str:
     """
     Rewrite the input NetCDF file for a target variable in a CMIP-compliant manner and write output using CMOR.
 
@@ -93,6 +93,9 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     .. note:: This function performs extensive setup of axes and metadata, and conditionally handles tripolar
               ocean grids.
     """
+    if GLOBAL_MIP_ERA is None:
+        raise Exception('i told you globals were a bad idea, ian')
+
     fre_logger.info("input data:")
     fre_logger.info("     local_var = %s", local_var)
     fre_logger.info("    target_var = %s", target_var)
@@ -101,8 +104,21 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     fre_logger.info("opening %s", netcdf_file)
     ds = nc.Dataset(netcdf_file, 'r+')
 
-    # CMORizing ocean grids are implemented only for scalar quantities valued
-    # at the central T/h-point of the grid cell.
+    # read the input variable data
+    fre_logger.info('attempting to read variable data, %s', target_var)
+    var = from_dis_gimme_dis(from_dis=ds, gimme_dis=target_var)
+
+    ## var type
+    #var_dtype = var.dtype
+
+    # var missing_value, in numpy masked_array land, called the fill_value
+    var_missing_val = var.fill_value
+
+    # grab var_dim
+    var_dim = len(var.shape)
+    fre_logger.info("var_dim = %d, local_var = %s", var_dim, local_var)
+
+    # CMORizing ocean grids are implemented only for scalar quantities valued at the central T/h-point of the grid cell.
     # https://en.wikipedia.org/wiki/Arakawa_grids heavily consulted for this work.
     # we also need to do:
     # - ice tripolar cases
@@ -116,10 +132,38 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
             ' native tripolar grid. i may treat this differently than other files!'
         )
 
-    # try to read what coordinate(s) we're going to be expecting for the variable
+    # check for cmip7 case and extract possible brands here
+    var_brand = None
+
+    if GLOBAL_MIP_ERA == 'CMIP7':
+        brands = []
+        for var in mip_var_cfgs["variable_entry"].keys():
+            if all([ target_var == var.split('_')[0],
+                     var_dim == len(mip_var_cfgs["variable_entry"][var]['dimensions']) ]):
+                brands.append(var.split('_')[1])
+
+        if len(brands)>0:
+            if len(brands)==1:
+                var_brand=brands[0]
+                fre_logger.debug('cmip7 case, extracted brand %s',var_brand)
+            else:
+                fre_logger.warning('cmip7 case, extracted multiple brand %s',brands)
+                fre_logger.error('should not happen')
+                raise ValueError
+        else:
+            fre_logger.error('cmip7 case detected but no brands found in the CMOR mip table config had the right dimensions. nothing to do for this var!')
+            raise ValueError
+    else:
+        fre_logger.debug('non-cmip7 case detected, skipping variable brands')
+
+    # try to read what coordinate(s) we're going to be expecting for the variable according to the mip table and compare
     expected_mip_coord_dims = None
     try:
-        expected_mip_coord_dims = mip_var_cfgs["variable_entry"][target_var]["dimensions"]
+        if GLOBAL_MIP_ERA == 'CMIP7':
+            expected_mip_coord_dims = mip_var_cfgs["variable_entry"][f'{target_var}_{var_brand}']["dimensions"]
+        else:
+            expected_mip_coord_dims = mip_var_cfgs["variable_entry"][target_var]["dimensions"]
+
         fre_logger.info(
             'I am hoping to find data for the following coordinate dimensions:\n'
             '    expected_mip_coord_dims = %s\n',
@@ -132,7 +176,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
             target_var, json_table_config, exc
         )
 
-    # Attempt to read lat coordinates
+    # Attempt to read lat/lon coordinates and bnds. will check for none later
     fre_logger.info('attempting to read coordinate, lat')
     lat = from_dis_gimme_dis(from_dis=ds, gimme_dis="lat")
     fre_logger.info('attempting to read coordinate BNDS, lat_bnds')
@@ -175,20 +219,6 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     # read in time_bnds, if present
     fre_logger.info('attempting to read coordinate BNDS, time_bnds')
     time_bnds = from_dis_gimme_dis(from_dis=ds, gimme_dis='time_bnds')
-
-    # read the input variable data
-    fre_logger.info('attempting to read variable data, %s', target_var)
-    var = from_dis_gimme_dis(from_dis=ds, gimme_dis=target_var)
-
-    ## var type
-    #var_dtype = var.dtype
-
-    # var missing_value, in numpy masked_array land, called the fill_value
-    var_missing_val = var.fill_value
-
-    # grab var_dim
-    var_dim = len(var.shape)
-    fre_logger.info("var_dim = %d, local_var = %s", var_dim, local_var)
 
     # determine the vertical dimension by looping over netcdf variables
     vert_dim = get_vertical_dimension(ds, target_var)  # returns int(0) if not present
@@ -374,7 +404,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     # if ocean tripolar grid, we need the CMIP grids configuration file. load it but don't set the table yet.
     json_grids_config, loaded_cmor_grids_cfg = None, None
     if process_tripolar_data:
-        json_grids_config = str(Path(json_table_config).parent) + '/CMIP6_grids.json'
+        json_grids_config = str(Path(json_table_config).parent) + '/'+GLOBAL_MIP_ERA+'_grids.json'
         fre_logger.info('cmor is loading/opening %s', json_grids_config)
         loaded_cmor_grids_cfg = cmor.load_table(json_grids_config)
         cmor.set_table(loaded_cmor_grids_cfg)
@@ -651,6 +681,9 @@ def cmorize_target_var_files(indir: str = None,
 
     .. note:: Copies files to a temporary directory, runs CMORization, moves results to output, cleans up temp files.
     """
+    if GLOBAL_MIP_ERA is None:
+        raise Exception('i told you globals were a bad idea, ian')
+
     fre_logger.info("local_var = %s to be used for file-targeting.\n"
                     "target_var = %s to be used for reading the data \n"
                     "from the file\n"
@@ -719,6 +752,7 @@ def cmorize_target_var_files(indir: str = None,
             fre_logger.warning('finally, changing directory to: \n%s', gotta_go_back_here)
             os.chdir(gotta_go_back_here)
 
+        #assert False, "made it to break-point for current work, good job"
         # now that CMOR has rewritten things... we can take our post-rewriting actions
         # first, remove /tmp/ from the output path.
         if not Path(local_file_name).is_absolute():
@@ -802,6 +836,8 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
 
     .. note:: Errors for individual variables are logged and processing continues (except for run_one_mode).
     """
+    if GLOBAL_MIP_ERA is None:
+        raise Exception('i told you globals were a bad idea, ian')
 
     # loop over local-variable:target-variable pairs in vars_to_run
     return_status = -1
@@ -822,11 +858,14 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
         except Exception as exc: #uncovered
             return_status = 1
             fre_logger.warning('!!!EXCEPTION CAUGHT!!!   !!!READ THE NEXT LINE!!!')
+            #if str(exc) == "made it to break-point for current work, good job": # inl: annoying and i did this to myself
+                #assert False, "made it to break-point for current work, good job"
             fre_logger.warning('exc=%s', exc)
+            fre_logger.warning('this message came from within cmorize_target_var_files')
             fre_logger.warning('COULD NOT PROCESS: %s/%s...moving on', local_var, target_var)
             # log an omitted variable here...
 
-        if run_one_mode:  # TEMP DELETEME TODO
+        if run_one_mode:
             fre_logger.warning('run_one_mode is True. breaking vars_to_run loop')
             break
     return return_status
@@ -882,21 +921,39 @@ def cmor_run_subtool(indir: str = None,
     .. note:: Updates grid, label, and calendar fields in experiment config if needed.
     .. note:: Loads variable mapping and MIP table, filters variables, and orchestrates file processing.
     """
-    # check req'd inputs
+    # CHECK req'd inputs
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
         raise ValueError('the following input arguments are required:\n'
                          '[indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
                          '[%s, %s, %s, %s, %s]', indir, json_var_list, json_table_config, json_exp_config, outdir)
 
-    # do not open, but confirm the existence of the exp-specific metadata file
+    # CHECK existence of the exp-specific metadata file
     if Path(json_exp_config).exists():
         json_exp_config = str(Path(json_exp_config).resolve())
     else:
         raise FileNotFoundError('ERROR: json_exp_config file cannot be opened.\n'
                                 'json_exp_config = %s', json_exp_config)
 
-    # check optional grid/grid_label inputs
-    # the function checks the potential error conditions
+    # CHECK mip_era entry of exp config exists, needed ?
+    try:
+        exp_cfg_mip_era = get_json_file_data(json_exp_config)['mip_era']
+    except KeyError as exc:
+        raise KeyError('no mip_era entry in experimental metadata configuration, the file is noncompliant!') from exc
+    fre_logger.debug('exp_cfg_mip_era = %s', exp_cfg_mip_era)
+    cmip7_case = exp_cfg_mip_era == 'CMIP7'
+    cmip6_case = exp_cfg_mip_era == 'CMIP6'
+    assert cmip7_case != cmip6_case # dont keep this assert, TEMP TODO
+
+    global GLOBAL_MIP_ERA
+    GLOBAL_MIP_ERA = exp_cfg_mip_era # i don't care that i'm changing a "constant", it's more like a static class member
+    if GLOBAL_MIP_ERA is None:
+        raise Exception('CMOR input experimental configuration must contain a field called "mip_era"')
+    fre_logger.debug('GLOBAL_MIP_EREA=%s',GLOBAL_MIP_ERA)
+
+    if cmip7_case:
+        fre_logger.warning('CMIP7 configuration detected, will be expecting and enforcing variable brands.')
+
+    # CHECK optional grid/grid_label/nom_res inputs from exp config, the function raises the potential error conditions
     if any( [ grid_label is not None,
               grid is not None,
               nom_res is not None ] ):
@@ -904,30 +961,53 @@ def cmor_run_subtool(indir: str = None,
                               grid_label, grid, nom_res,
                               output_file_path = None)
 
-    # check optional grid/grid_label inputs
-    # the function checks the potential error conditions RE CF compliance.
+    # CHECK optional grid/grid_label inputs, the function checks the potential error conditions RE CF compliance.
     if calendar_type is not None:
         update_calendar_type(json_exp_config, calendar_type, output_file_path = None)
+
 
     # open CMOR table config file - need it here for checking the TABLE's variable list
     json_table_config = str(Path(json_table_config).resolve())
     fre_logger.info('loading json_table_config = \n%s', json_table_config)
+
     mip_var_cfgs = get_json_file_data(json_table_config)
-    fre_logger.debug('keys of mip_var_cfgs["variable_entry"] is = \n %s',mip_var_cfgs["variable_entry"].keys())
+    mip_fullvar_list = mip_var_cfgs["variable_entry"].keys()
+    fre_logger.debug('the following variables were read from the table: %s', mip_fullvar_list)
+    mip_var_list = None
+    mip_var_brand_list = None
+    if cmip7_case:
+        fre_logger.warning('cmip7 capabilities in-development now. extracting brands from variables within MIP cmor table configs')
+        mip_var_list = [ var.split('_')[0] for var in mip_fullvar_list ] 
+        fre_logger.debug('the following unbranded variables were read from the table: %s', mip_var_list)
+        mip_var_brand_list = [ var.split('_')[1] for var in mip_fullvar_list ]
+        fre_logger.debug('the following brands were extracted from the variables: %s', mip_var_brand_list)
+        if len(mip_var_list) != len(mip_var_brand_list):
+            raise ValueError('the number of brands is not one-to-one with the number of variables. check config.')
+    elif cmip6_case:
+        mip_var_list = mip_fullvar_list
+    #else:
+    #    raise ValueError('uh oh')
+
+    fre_logger.debug('variables in mip_var_cfgs["variable_entry"] is = \n %s', mip_var_list)
 
     # open input variable list, generally created by the user
+    # this should not have variable brands in it, because this is really for input file targeting, and the filenames
+    # do not have the brands.
     json_var_list = str(Path(json_var_list).resolve())
-    fre_logger.info('loading json_var_list = \n%s', json_var_list)
+    fre_logger.debug('loading json_var_list = \n%s', json_var_list)
+
     var_list = get_json_file_data(json_var_list)
     fre_logger.debug('var_list is = \n %s', var_list)
 
-    # here, make a list of variables in the table, compare to var_list data.
+    # CHECK that the user's input variables make sense against those in the targeted table
+    # if the check(s) pass, the final list of variables to run is stored in vars_to_run
+    # if opt_var_name is specified, the routinue is short-circuited to care only about opt_var_name
     vars_to_run = {}
     for local_var in var_list:
-        if opt_var_name is not None:
+        if opt_var_name is not None and opt_var_name in mip_var_list:
             vars_to_run[opt_var_name] = opt_var_name
             break
-        elif var_list[local_var] not in mip_var_cfgs["variable_entry"]:
+        elif var_list[local_var] not in mip_var_list: #mip_var_cfgs["variable_entry"]:
             fre_logger.warning('skipping local_var = %s /\n'
                                'target_var = %s\n'
                                'target_var not found in CMOR variable group', local_var, var_list[local_var])
@@ -937,13 +1017,13 @@ def cmor_run_subtool(indir: str = None,
         vars_to_run[local_var] = var_list[local_var]
     fre_logger.info('vars_to_run = %s', vars_to_run)
 
-    # make sure there's stuff to run, otherwise, exit
+    # CHECK that there's at least one variable to run after comparing use inputs vars to MIP config input vars
     if len(vars_to_run) < 1:
-        raise ValueError('runnable variable list is of length 0'
-                         'this means no variables in input variable list are in'
+        raise ValueError('runnable variable list is of length 0 '
+                         'this means no variables in input variable list are in '
                          'the mip table configuration, so there\'s nothing to process!')
     elif all([opt_var_name is not None, opt_var_name not in list(vars_to_run.keys())]):
-        raise ValueError('opt_var_name is not None! (== %s)' #uncovered
+        raise ValueError('opt_var_name is not None! (== %s)'
                          '... but the variable is not contained in the target mip table'
                          '... there\'s nothing to process, exit', opt_var_name)
 
@@ -966,11 +1046,11 @@ def cmor_run_subtool(indir: str = None,
     iso_datetime_range_arr = []
     get_iso_datetime_ranges(indir_filenames, iso_datetime_range_arr, start, stop)
     fre_logger.info('\nfound iso datetimes = %s', iso_datetime_range_arr)
-    #assert False
 
     # no longer needed.
     del indir_filenames
 
+    # now we descend into more CPU-heavy work here
     return cmorize_all_variables_in_dir( vars_to_run,
                                          indir, iso_datetime_range_arr, name_of_set, json_exp_config,
                                          outdir, mip_var_cfgs, json_table_config, run_one_mode        )
