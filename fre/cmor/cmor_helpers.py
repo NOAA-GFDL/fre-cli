@@ -351,6 +351,15 @@ def get_json_file_data( json_file_path: Optional[str] = None) -> dict:
         ) from exc
 
 
+def get_exp_cfg_mip_era(json_file_path: Optional[str] = None) -> str:
+    """
+    :param json_file_path: Path to the experiment metadata JSON file.
+    :type json_file_path: str
+    :return: string representing mip era for which the JSON file is intended
+    :rtype: str
+    """
+    mip_era=get_json_file_data(json_file_path)['mip_era']
+
 def update_grid_and_label( json_file_path: str,
                            new_grid_label: str,
                            new_grid: str,
