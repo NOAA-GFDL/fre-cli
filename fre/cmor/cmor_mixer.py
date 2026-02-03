@@ -56,7 +56,7 @@ DEPTH_COORDS = ["z_l"]
 
 CMOR_NC_FILE_ACTION=cmor.CMOR_REPLACE#.CMOR_APPEND#.CMOR_PRESERVE#
 CMOR_VERBOSITY=cmor.CMOR_NORMAL#.CMOR_QUIET#
-CMOR_EXIT_CTL=cmor.CMOR_NORMAL#.CMOR_EXIT_ON_WARNING#.CMOR_EXIT_ON_MAJOR#
+CMOR_EXIT_CTL=cmor.CMOR_EXIT_ON_WARNING#.CMOR_EXIT_ON_MAJOR#.CMOR_NORMAL#
 CMOR_MK_SUBDIRS=1
 CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
 
@@ -137,10 +137,10 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
 
     if GLOBAL_MIP_ERA == 'CMIP7':
         brands = []
-        for var in mip_var_cfgs["variable_entry"].keys():
-            if all([ target_var == var.split('_')[0],
-                     var_dim == len(mip_var_cfgs["variable_entry"][var]['dimensions']) ]):
-                brands.append(var.split('_')[1])
+        for mip_var in mip_var_cfgs["variable_entry"].keys():
+            if all([ target_var == mip_var.split('_')[0],
+                     var_dim == len(mip_var_cfgs["variable_entry"][mip_var]['dimensions']) ]):
+                brands.append(mip_var.split('_')[1])
 
         if len(brands)>0:
             if len(brands)==1:
@@ -455,25 +455,39 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     ntimes_passed = None
     fre_logger.info('assigning cmor_time')
     try:
-        fre_logger.info(
-            "Executing cmor.axis('time', \n"
-            "    coord_vals = \n%s, \n"
-            "    cell_bounds = %s, units = %s)",
-            time_coords, time_bnds, time_coord_units
-        )
         fre_logger.info('assigning cmor_time using time_bnds...')
-        cmor_time = cmor.axis("time", coord_vals=time_coords,
-                              cell_bounds=time_bnds, units=time_coord_units)
         ntimes_passed=len(time_coords)
-    except ValueError as exc: #uncovered
-        fre_logger.info(
-            "cmor_time = cmor.axis('time', \n"
-            "    coord_vals = %s, units = %s)",
-            time_coords, time_coord_units
+        fre_logger.debug("Executing: \n"
+            "cmor.axis('time', \n"
+            "    coord_vals = %s, \n"
+            "    length = %s, \n"
+            "    cell_bounds = %s, units = %s)",
+            time_coords, ntimes_passed, time_bnds, time_coord_units
         )
+        cmor_time = cmor.axis("time",
+                              units=time_coord_units,
+                              length=ntimes_passed,
+                              coord_vals=time_coords,
+                              cell_bounds=time_bnds,
+                              interval=None)#interval='mon')#
+    except Exception as exc: #ValueError as exc: #uncovered
+        fre_logger.error('exc is %s', str(exc))
         fre_logger.info('assigning cmor_time WITHOUT time_bnds...')
-        cmor_time = cmor.axis("time", coord_vals=time_coords, units=time_coord_units)
         ntimes_passed=len(time_coords)
+        fre_logger.debug("Executing: \n"
+            "cmor_time = cmor.axis('time', \n"
+            "    coord_vals = %s, \n"
+            "    length = %s, \n"
+            "    cell_bounds = None, units = %s)",
+            time_coords, ntimes_passed, time_coord_units
+        )
+        cmor_time = cmor.axis("time",
+                              units=time_coord_units,
+                              length=ntimes_passed,
+                              coord_vals=time_coords,
+                              cell_bounds=None,
+                              interval=None)#interval='mon')
+
     fre_logger.info('DONE assigning cmor_time')
 
     # other vertical-axis-relevant initializations
@@ -600,19 +614,36 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
             fre_logger.info('axes now = %s', axes)
 
     # read positive/units attribute and create cmor_var
-    units = mip_var_cfgs["variable_entry"][target_var]["units"]
+    #units = mip_var_cfgs["variable_entry"][target_var]["units"]
+    if GLOBAL_MIP_ERA == 'CMIP7':
+        units = mip_var_cfgs["variable_entry"][f'{target_var}_{var_brand}']["units"]
+    else:
+        units = mip_var_cfgs["variable_entry"][target_var]["units"]
     fre_logger.info("units = %s", units)
 
-    positive = mip_var_cfgs["variable_entry"][target_var]["positive"]
+    #positive = mip_var_cfgs["variable_entry"][target_var]["positive"] 
+    if GLOBAL_MIP_ERA == 'CMIP7':
+       positive = mip_var_cfgs["variable_entry"][f'{target_var}_{var_brand}']["positive"]
+    else:
+        positive = mip_var_cfgs["variable_entry"][target_var]["positive"]
     fre_logger.info("positive = %s", positive)
 
-    fre_logger.info('cmor.variable call: for target_var = %s ',target_var)
-    cmor_var = cmor.variable(target_var, units, axes,
-                             missing_value = var_missing_val,
-                             positive = positive)
-    fre_logger.info('DONE cmor.variable call: for target_var = %s ',target_var)
+    if GLOBAL_MIP_ERA == 'CMIP7':
+        fre_logger.info('cmor.variable call: for cmip7_target_var = %s ', f'{target_var}_{var_brand}')
+        cmor_var = cmor.variable(f'{target_var}_{var_brand}', units, axes,
+                                 missing_value = var_missing_val,
+                                 positive = positive)
+        fre_logger.info('DONE cmor.variable call: for cmip7_target_var = %s ',f'{target_var}_{var_brand}')
+
+    else:
+        fre_logger.info('cmor.variable call: for target_var = %s ',target_var)
+        cmor_var = cmor.variable(target_var, units, axes,
+                                 missing_value = var_missing_val,
+                                 positive = positive)
+        fre_logger.info('DONE cmor.variable call: for target_var = %s ',target_var)
 
     # Write the output to disk
+    #fre_logger.debug('var is: %s', var)
     fre_logger.info("cmor.write call: for var data into cmor_var")
     cmor.write(cmor_var, var)
     fre_logger.info("DONE cmor.write call: for var data into cmor_var")
@@ -752,7 +783,8 @@ def cmorize_target_var_files(indir: str = None,
             fre_logger.warning('finally, changing directory to: \n%s', gotta_go_back_here)
             os.chdir(gotta_go_back_here)
 
-        #assert False, "made it to break-point for current work, good job"
+        assert False, "made it to break-point for current work, good job"
+
         # now that CMOR has rewritten things... we can take our post-rewriting actions
         # first, remove /tmp/ from the output path.
         if not Path(local_file_name).is_absolute():
@@ -858,8 +890,8 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
         except Exception as exc: #uncovered
             return_status = 1
             fre_logger.warning('!!!EXCEPTION CAUGHT!!!   !!!READ THE NEXT LINE!!!')
-            #if str(exc) == "made it to break-point for current work, good job": # inl: annoying and i did this to myself
-                #assert False, "made it to break-point for current work, good job"
+            if str(exc) == "made it to break-point for current work, good job": # inl: annoying and i did this to myself
+                assert False, "made it to break-point for current work, good job"
             fre_logger.warning('exc=%s', exc)
             fre_logger.warning('this message came from within cmorize_target_var_files')
             fre_logger.warning('COULD NOT PROCESS: %s/%s...moving on', local_var, target_var)
@@ -977,7 +1009,7 @@ def cmor_run_subtool(indir: str = None,
     mip_var_brand_list = None
     if cmip7_case:
         fre_logger.warning('cmip7 capabilities in-development now. extracting brands from variables within MIP cmor table configs')
-        mip_var_list = [ var.split('_')[0] for var in mip_fullvar_list ] 
+        mip_var_list = [ var.split('_')[0] for var in mip_fullvar_list ]
         fre_logger.debug('the following unbranded variables were read from the table: %s', mip_var_list)
         mip_var_brand_list = [ var.split('_')[1] for var in mip_fullvar_list ]
         fre_logger.debug('the following brands were extracted from the variables: %s', mip_var_brand_list)
