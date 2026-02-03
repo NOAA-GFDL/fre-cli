@@ -317,7 +317,7 @@ def test_cli_fre_cmor_run_cmip7_case1():
     full_outputdir = \
         f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldn't be
     full_outputfile = \
-        f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199301-199302.nc"
+        f"{full_outputdir}/sos_ocean_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199301-199302.nc" # i think this is the output, DOUBLE CHECK TODO
 
     # FYI
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc' # unneeded, this is mostly for reference
