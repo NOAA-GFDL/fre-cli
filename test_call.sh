@@ -26,7 +26,7 @@ fre -vv cmor run \
 	--exp_config fre/tests/test_files/CMOR_CMIP7_input_example.json \
 	--outdir outdir \
 	--calendar 'julian' \
-	--grid_label 'gr' \
+	--grid_label 'g99' \
 	--grid_desc 'foo bar placehold' \
 	--nom_res '10000 km'
 #   --opt_var_name sos_tavg-u-hxy-sea
