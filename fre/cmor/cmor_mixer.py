@@ -783,7 +783,7 @@ def cmorize_target_var_files(indir: str = None,
             fre_logger.warning('finally, changing directory to: \n%s', gotta_go_back_here)
             os.chdir(gotta_go_back_here)
 
-        assert False, "made it to break-point for current work, good job"
+#        assert False, "made it to break-point for current work, good job"
 
         # now that CMOR has rewritten things... we can take our post-rewriting actions
         # first, remove /tmp/ from the output path.
@@ -890,8 +890,8 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
         except Exception as exc: #uncovered
             return_status = 1
             fre_logger.warning('!!!EXCEPTION CAUGHT!!!   !!!READ THE NEXT LINE!!!')
-            if str(exc) == "made it to break-point for current work, good job": # inl: annoying and i did this to myself
-                assert False, "made it to break-point for current work, good job"
+#            if str(exc) == "made it to break-point for current work, good job": # inl: annoying and i did this to myself
+#                assert False, "made it to break-point for current work, good job"
             fre_logger.warning('exc=%s', exc)
             fre_logger.warning('this message came from within cmorize_target_var_files')
             fre_logger.warning('COULD NOT PROCESS: %s/%s...moving on', local_var, target_var)
