@@ -13,11 +13,13 @@ from os import path as osp
 import subprocess
 import re
 import pprint
+from pathlib import Path
+from fre.pp.rename_split_script import rename_split
 
-ROOTDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOTDIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 print("Root directory: " + ROOTDIR)
 
-TEST_DATA_DIR = os.path.join(ROOTDIR, "tests/test-data")
+TEST_DATA_DIR = os.path.join(ROOTDIR, "tests/test_files/rename-split")
 print(TEST_DATA_DIR)
 INDIR = os.path.join(TEST_DATA_DIR, "input")
 OUTDIR = os.path.join(TEST_DATA_DIR, "output")
@@ -135,30 +137,23 @@ def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
     if not osp.exists(outputDir):
       os.makedirs(outputDir)
 
-    cmd = osp.join(ROOTDIR, "bin/rename-split-to-pp")
-    out0 = subprocess.run(cmd, capture_output=True)
-    if out0.returncode == 0:
-      #check for 2 things:
-      #are there files at the output dir path
-      #is there a file in output dir path for each file in orig-output
-      expected_files = [os.path.join(origDir, el) for el in os.listdir(origDir)]
-      expected_files = [el for el in expected_files if el.endswith(".nc")]
-      out_files = [re.sub(OG, OUTDIR, el) for el in expected_files]
-      files_there = len(out_files) > 0
-      if files_there:
+    # run the tool
+    rename_split(inputDir, outputDir, hist_source, do_regrid)
+
+    # check for expected output filepaths
+    expected_files = [os.path.join(origDir, el) for el in os.listdir(origDir)]
+    expected_files = [el for el in expected_files if el.endswith(".nc")]
+    out_files = [re.sub(OG, OUTDIR, el) for el in expected_files]
+    files_there = len(out_files) > 0
+    if files_there:
         outdir = os.path.dirname(out_files[0])
         actual_out_files = [os.path.join(outdir,el) for el in os.listdir(outdir) if el.endswith(".nc")]
         out_files.sort()
         actual_out_files.sort()
         files_paired = all([el[0] == el[1] for el in zip(out_files, actual_out_files)])
-      else:
-        files_paired = False
-      assert all([files_there, files_paired])
     else:
-      pprint.pp(out0.stdout.split(b"\n"), width=240)
-      pprint.pp(out0.stderr.split(b"\n"), width=240)
-      print("nonzero returncode")
-      assert False
+        files_paired = False
+    assert all([files_there, files_paired])
 
 def test_rename_split_to_pp_cleanup():
     '''
