@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import pathlib
 from pathlib import Path
 import xarray as xr
 import cftime
@@ -8,7 +9,8 @@ from datetime import timedelta
 
 fre_logger = logging.getLogger(__name__)
 
-def get_freq_and_format_from_two_dates(date1, date2):
+
+def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) -> (str, str):
     """
     Accept two dates and returns frequency string in ISO8601 and associated format string.
     """
@@ -40,15 +42,16 @@ def get_freq_and_format_from_two_dates(date1, date2):
         raise ValueError(f"Cannot determine frequency and format from '{date1}' and '{date2}'")
 
     fre_logger.debug(f"Comparing '{date1}' and '{date2}': returning frequency '{iso_freq}' and format '{format_}'")
-
     return iso_freq, format_
 
-def get_duration_from_two_dates(date1, date2):
+
+def get_duration_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) -> str:
     """
     Accept two dates and output duration in ISO8601.
     """
     duration = abs(date2 - date1)
     days = duration.total_seconds() / 86400
+
     if days > 27 and days < 32:
         duration = 'P1M'
     elif days > 179 and days < 186:
@@ -64,7 +67,8 @@ def get_duration_from_two_dates(date1, date2):
     fre_logger.debug(f"Comparing '{date1}' and '{date2}': returning duration '{duration}'")
     return duration
 
-def rename_file(file_):
+
+def rename_file(input_file: str) -> pathlib.PosixPath:
     """
     Accept an input netCDF file that is the result of split-netcdf, e.g.
         00010101.atmos_daily.tile1.temp.nc
@@ -72,8 +76,9 @@ def rename_file(file_):
     and beginning and ending dates, e.g.
         P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc
     """
-    fre_logger.debug(f"Examining '{file_}'")
-    parts = file_.stem.split('.')
+    fre_logger.debug(f"Examining '{input_file}'")
+    parts = input_file.stem.split('.')
+
     if len(parts) == 4:
         date = parts[0]
         label = parts[1]
@@ -83,11 +88,12 @@ def rename_file(file_):
         date = parts[0]
         label = parts[1]
         var = parts[2]
+        tile = None
     else:
-        raise Exception(f"File '{file}' cannot be parsed")
+        raise ValueError(f"File '{input_file}' cannot be parsed")
 
     # open the nc file
-    ds = xr.open_dataset(file_)
+    ds = xr.open_dataset(input_file)
     number_of_timesteps = ds.sizes['time']
     fre_logger.debug(f"Number of timesteps: {number_of_timesteps}")
 
@@ -117,12 +123,11 @@ def rename_file(file_):
     # 4. If the variable has one timestep and is time-point, the diag manifest is needed
 
     if is_static:
-        try:
+        if tile is not None:
             newfile_base = f"{label}.{var}.{tile}.nc"
-        except NameError:
+        else:
             newfile_base = f"{label}.{var}.nc"
-        newfile = Path(label) / 'P0Y' / 'P0Y' / newfile_base
-        return newfile
+        return Path(label) / 'P0Y' / 'P0Y' / newfile_base
     elif number_of_timesteps >= 2:
         first_timestep = ds.time.values[0]
         second_timestep = ds.time.values[1]
@@ -148,16 +153,15 @@ def rename_file(file_):
     date1_str = date1.strftime(format_)
     date2_str = date2.strftime(format_)
 
-    try:
+    if tile is not None:
         newfile_base = f"{label}.{date1_str}-{date2_str}.{var}.{tile}.nc"
-    except NameError:
+    else:
         newfile_base = f"{label}.{date1_str}-{date2_str}.{var}.nc"
 
-    newfile = Path(label) / freq_label / duration / newfile_base
+    return Path(label) / freq_label / duration / newfile_base
 
-    return newfile
 
-def link_or_copy(source, destination):
+def link_or_copy(source: str, destination:str) -> None:
     """
     Create a hard link including creating destination directory parents.
     If hard linking is not available, copy instead.
@@ -183,7 +187,8 @@ def link_or_copy(source, destination):
         shutil.copy2(source, destination)
         fre_logger.debug(f"File copied: {destination}")
 
-def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: bool):
+
+def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: bool) -> None:
     """
     Accept a flat directory of NetCDF files and output a nested directory structure
     containing frequency and time interval.
@@ -194,18 +199,16 @@ def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: b
     input_dir = Path(input_dir)
     if use_subdirs:
         fre_logger.info("Using subdirs")
-        subdirs = [x for x in input_dir.iterdir() if x.is_dir()]
-        for subdir in subdirs:
-            print("woo", subdir)
+        for subdir in [x for x in input_dir.iterdir() if x.is_dir()]:
             files = subdir.glob(f"*.{component}.*.nc")
             for input_file in files:
                 output_file = Path(output_dir) / subdir.name / rename_file(input_file)
-                fre_logger.debug(f"Linking '{input_file}' to '{output_file}'")
+                fre_logger.info(f"Linking '{input_file}' to '{output_file}'")
                 link_or_copy(input_file, output_file)
     else:
         fre_logger.info("Not using subdirs")
         files = input_dir.glob(f"*.{component}.*.nc")
         for input_file in files:
             output_file = Path(output_dir) / rename_file(input_file)
-            fre_logger.debug(f"Linking '{input_file}' to '{output_file}'")
+            fre_logger.info(f"Linking '{input_file}' to '{output_file}'")
             link_or_copy(input_file, output_file)
