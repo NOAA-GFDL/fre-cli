@@ -972,8 +972,10 @@ def cmor_run_subtool(indir: str = None,
     except KeyError as exc:
         raise KeyError('no mip_era entry in experimental metadata configuration, the file is noncompliant!') from exc
     fre_logger.debug('exp_cfg_mip_era = %s', exp_cfg_mip_era)
-    cmip7_case = exp_cfg_mip_era == 'CMIP7'
-    cmip6_case = exp_cfg_mip_era == 'CMIP6'
+    cmip7_case = exp_cfg_mip_era.upper() == 'CMIP7'
+    fre_logger.debug('cmip7_case = %s', cmip7_case)
+    cmip6_case = exp_cfg_mip_era.upper() == 'CMIP6'
+    fre_logger.debug('cmip6_case = %s', cmip6_case)
     assert cmip7_case != cmip6_case # dont keep this assert, TEMP TODO
 
     global GLOBAL_MIP_ERA
