@@ -28,6 +28,15 @@ def test_get_freq_and_format_from_two_dates():
     assert ("PT6.0H", "%Y%m%d%H")   == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0),    cftime.datetime(2009, 1, 1, 6))
     assert ("PT0.5H", "%Y%m%d%H")   == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0, 0), cftime.datetime(2009, 1, 1, 0, 30))
 
+def test_get_duration_from_two_dates():
+    """
+    Lookup some durations between two dates
+    """
+    assert "P1M" == get_duration_from_two_dates(cftime.datetime(2009, 1, 1), cftime.datetime(2009, 2, 1))
+    assert "P6M" == get_duration_from_two_dates(cftime.datetime(2009, 1, 1), cftime.datetime(2009, 7, 1))
+    assert "P1Y" == get_duration_from_two_dates(cftime.datetime(2009, 1, 1), cftime.datetime(2010, 1, 1))
+    assert "P5Y" == get_duration_from_two_dates(cftime.datetime(2000, 1, 1), cftime.datetime(2005, 1, 1))
+
 ROOTDIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 print("Root directory: " + ROOTDIR)
 
