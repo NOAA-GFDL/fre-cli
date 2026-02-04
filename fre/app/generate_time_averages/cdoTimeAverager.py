@@ -52,8 +52,10 @@ class cdoTimeAverager(timeAverager):
             # NumPy 2.0 changed type promotion rules (NEP 50), so explicit casting
             # is needed to avoid precision differences
             time_bnds = np.asarray(time_bnds, dtype=np.float64)
-            wgts = ( np.moveaxis(time_bnds, 0, -1)[1][:].copy() - \
-                     np.moveaxis(time_bnds, 0, -1)[0][:].copy() )
+            # Transpose once to avoid redundant operations
+            time_bnds_transposed = np.moveaxis(time_bnds, 0, -1)
+            wgts = (time_bnds_transposed[1][:].copy() -
+                    time_bnds_transposed[0][:].copy())
             # Use numpy.sum for consistent dtype handling across numpy versions
             wgts_sum = np.sum(wgts, dtype=np.float64)
 
