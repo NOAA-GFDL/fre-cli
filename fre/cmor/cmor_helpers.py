@@ -43,11 +43,11 @@ readability, maintainability, and robustness.
 import glob
 import json
 import logging
-import numpy as np
 import os
 from pathlib import Path
-from typing import Optional, Any, List, Union
+from typing import Optional, List, Union
 
+import numpy as np
 from netCDF4 import Dataset, Variable
 
 fre_logger = logging.getLogger(__name__)
@@ -351,15 +351,6 @@ def get_json_file_data( json_file_path: Optional[str] = None) -> dict:
         ) from exc
 
 
-def get_exp_cfg_mip_era(json_file_path: Optional[str] = None) -> str:
-    """
-    :param json_file_path: Path to the experiment metadata JSON file.
-    :type json_file_path: str
-    :return: string representing mip era for which the JSON file is intended
-    :rtype: str
-    """
-    mip_era=get_json_file_data(json_file_path)['mip_era']
-
 def update_grid_and_label( json_file_path: str,
                            new_grid_label: str,
                            new_grid: str,
@@ -419,7 +410,7 @@ def update_grid_and_label( json_file_path: str,
             fre_logger.info('Updated "nominal_resolution": %s', data["nominal_resolution"])
         except KeyError as e:
             fre_logger.error("Failed to update 'nominal_resolution': %s", e)
-            raise KeyError("Error while updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from e
+            raise KeyError("Error updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from e
 
         output_file_path = output_file_path or json_file_path
 
@@ -554,7 +545,7 @@ def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
     if bronx_freq is None:
-        fre_logger.warning(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent')
+        fre_logger.warning('MIP table frequency = %s does not have a FRE-bronx equivalent', cmor_table_freq)
     if cmor_table_freq not in cmor_to_bronx_dict.keys():
         raise KeyError(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency')
     return bronx_freq

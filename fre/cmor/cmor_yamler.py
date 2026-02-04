@@ -225,7 +225,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
                                  f'    calendar_type={calendar_type} '
                                   ')\n' )
                 continue
-            cmor_run_subtool(
+            cmor_run_subtool( #uncovered
                 indir = indir ,
                 json_var_list = json_var_list ,
                 json_table_config = json_table_config ,

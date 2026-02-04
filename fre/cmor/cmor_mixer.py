@@ -42,8 +42,7 @@ import netCDF4 as nc
 
 from .cmor_helpers import ( print_data_minmax, from_dis_gimme_dis, find_statics_file, create_lev_bnds,
                             get_iso_datetime_ranges, check_dataset_for_ocean_grid, get_vertical_dimension,
-                            create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type,
-                            get_exp_cfg_mip_era )
+                            create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type )
 
 fre_logger = logging.getLogger(__name__)
 
@@ -151,7 +150,8 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                 fre_logger.error('should not happen')
                 raise ValueError
         else:
-            fre_logger.error('cmip7 case detected but no brands found in the CMOR mip table config had the right dimensions. nothing to do for this var!')
+            fre_logger.error('cmip7 case detected, but dimensions of input data do not match '
+                             'any of those found for the associated brands.')
             raise ValueError
     else:
         fre_logger.debug('non-cmip7 case detected, skipping variable brands')
@@ -621,9 +621,9 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
         units = mip_var_cfgs["variable_entry"][target_var]["units"]
     fre_logger.info("units = %s", units)
 
-    #positive = mip_var_cfgs["variable_entry"][target_var]["positive"] 
+    #positive = mip_var_cfgs["variable_entry"][target_var]["positive"]
     if GLOBAL_MIP_ERA == 'CMIP7':
-       positive = mip_var_cfgs["variable_entry"][f'{target_var}_{var_brand}']["positive"]
+        positive = mip_var_cfgs["variable_entry"][f'{target_var}_{var_brand}']["positive"]
     else:
         positive = mip_var_cfgs["variable_entry"][target_var]["positive"]
     fre_logger.info("positive = %s", positive)
@@ -890,8 +890,6 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
         except Exception as exc: #uncovered
             return_status = 1
             fre_logger.warning('!!!EXCEPTION CAUGHT!!!   !!!READ THE NEXT LINE!!!')
-#            if str(exc) == "made it to break-point for current work, good job": # inl: annoying and i did this to myself
-#                assert False, "made it to break-point for current work, good job"
             fre_logger.warning('exc=%s', exc)
             fre_logger.warning('this message came from within cmorize_target_var_files')
             fre_logger.warning('COULD NOT PROCESS: %s/%s...moving on', local_var, target_var)
@@ -976,16 +974,19 @@ def cmor_run_subtool(indir: str = None,
     fre_logger.debug('cmip7_case = %s', cmip7_case)
     cmip6_case = exp_cfg_mip_era.upper() == 'CMIP6'
     fre_logger.debug('cmip6_case = %s', cmip6_case)
-    assert cmip7_case != cmip6_case # dont keep this assert, TEMP TODO
+
+    if exp_cfg_mip_era is None:
+        raise Exception('CMOR input experimental configuration must contain a field called "mip_era"')
+
+    if exp_cfg_mip_era.upper() not in ['CMIP6', 'CMIP7']:
+        raise ValueError('cmor_mixer only supports CMIP6 and CMIP7 cases')
+
+    if exp_cfg_mip_era.upper() == 'CMIP7':
+        fre_logger.warning('CMIP7 configuration detected, will be expecting and enforcing variable brands.')
 
     global GLOBAL_MIP_ERA
-    GLOBAL_MIP_ERA = exp_cfg_mip_era # i don't care that i'm changing a "constant", it's more like a static class member
-    if GLOBAL_MIP_ERA is None:
-        raise Exception('CMOR input experimental configuration must contain a field called "mip_era"')
+    GLOBAL_MIP_ERA = exp_cfg_mip_era.upper() # maybe, change to yet another input arg for down-stream function calls ?
     fre_logger.debug('GLOBAL_MIP_EREA=%s',GLOBAL_MIP_ERA)
-
-    if cmip7_case:
-        fre_logger.warning('CMIP7 configuration detected, will be expecting and enforcing variable brands.')
 
     # CHECK optional grid/grid_label/nom_res inputs from exp config, the function raises the potential error conditions
     if any( [ grid_label is not None,
@@ -1003,24 +1004,21 @@ def cmor_run_subtool(indir: str = None,
     # open CMOR table config file - need it here for checking the TABLE's variable list
     json_table_config = str(Path(json_table_config).resolve())
     fre_logger.info('loading json_table_config = \n%s', json_table_config)
-
     mip_var_cfgs = get_json_file_data(json_table_config)
     mip_fullvar_list = mip_var_cfgs["variable_entry"].keys()
     fre_logger.debug('the following variables were read from the table: %s', mip_fullvar_list)
-    mip_var_list = None
-    mip_var_brand_list = None
-    if cmip7_case:
-        fre_logger.warning('cmip7 capabilities in-development now. extracting brands from variables within MIP cmor table configs')
+    mip_var_list, mip_var_brand_list = None, None
+    if GLOBAL_MIP_ERA == 'CMIP7':
+        fre_logger.warning('cmip7 capabilities in-development now. extracting brands from variables '
+                           'within MIP cmor table configs')
         mip_var_list = [ var.split('_')[0] for var in mip_fullvar_list ]
         fre_logger.debug('the following unbranded variables were read from the table: %s', mip_var_list)
         mip_var_brand_list = [ var.split('_')[1] for var in mip_fullvar_list ]
         fre_logger.debug('the following brands were extracted from the variables: %s', mip_var_brand_list)
         if len(mip_var_list) != len(mip_var_brand_list):
             raise ValueError('the number of brands is not one-to-one with the number of variables. check config.')
-    elif cmip6_case:
+    elif GLOBAL_MIP_ERA == "CMIP6":
         mip_var_list = mip_fullvar_list
-    #else:
-    #    raise ValueError('uh oh')
 
     fre_logger.debug('variables in mip_var_cfgs["variable_entry"] is = \n %s', mip_var_list)
 
