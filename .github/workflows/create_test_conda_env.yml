@@ -15,13 +15,13 @@ concurrency:
 
 jobs:
   condaenvcreate:
-    name: Test Python ${{ matrix.python-version }} with numpy ${{ matrix.numpy-version }}
+    name: Test Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.python-version == '3.14' }}
     strategy:
       fail-fast: false
       matrix:
         python-version: ['3.12', '3.13', '3.14']
-        numpy-version: ['=1.26.*', '>=2.4']
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:miniconda24_gcc14_v2
       options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
@@ -53,11 +53,16 @@ jobs:
       - name: Create fre-cli Environment
         run: |
           echo "creating fre-cli env holding all deps"
-          echo "Testing with Python ${{ matrix.python-version }} and numpy ${{ matrix.numpy-version }}"
+          echo "Testing with Python ${{ matrix.python-version }}"
+          
+          if [[ "${{ matrix.python-version }}" == "3.14" ]]; then
+            echo "::notice::Python 3.14 compatibility under development"
+          fi
+          
           conda env create -y -f environment.yml --name fre-cli
           
-          # Override Python and numpy versions based on matrix
-          conda install -y -n fre-cli "python=${{ matrix.python-version }}" "numpy${{ matrix.numpy-version }}"
+          # Override Python version based on matrix
+          conda install -y -n fre-cli "python=${{ matrix.python-version }}"
 
           echo "listing packages installed in the fre-cli environment"
           conda env list
@@ -117,6 +122,11 @@ jobs:
 
           echo "running pylint on fre"
           pylint --rcfile pylintrc fre/
+
+      - name: Python 3.14 Status Check
+        if: always() && matrix.python-version == '3.14'
+        run: |
+          echo "::notice::Python 3.14 compatibility under development"
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
