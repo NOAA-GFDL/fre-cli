@@ -77,7 +77,7 @@ def test_rename_split_to_pp_multiply():
     for name in files:
       if name.endswith(".nc") and re.search(t1, name) is not None:
         nc_tile_files.append(osp.join(path, name))
-  assert len(nc_tile_files) == 4 #1 tile case (daily) * (input,orig_output) * (regrid,native)
+  assert len(nc_tile_files) == 8 #2 tile cases (daily,mon) * input,orig_output *regrid,native
   tp_files = []
   for nct in nc_tile_files:
     for tp in tile_patterns:
@@ -89,7 +89,15 @@ def test_rename_split_to_pp_multiply():
 @pytest.mark.parametrize("hist_source,do_regrid,og_suffix", 
                           [ 
                           pytest.param("atmos_daily", False, "P1D/P6M/", id="day-native"),
-                          pytest.param("atmos_daily", True, "P1D/P6M/", id="day-regrid") ])
+                          pytest.param("atmos_daily", True, "P1D/P6M/", id="day-regrid"),
+                          pytest.param("river_month", False, "P1M/P1Y/", id="mon-native"),
+                          pytest.param("river_month", True, "P1M/P1Y/", id="mon-regrid"),
+                          pytest.param("ocean_annual", False, "P1Y/P1Y/", id="year-native"),
+                          pytest.param("ocean_annual", True, "P1Y/P1Y/", id="year-regrid"),
+                          pytest.param("ocean_static", False, "P0Y/P0Y/", id="static-native"),
+                          pytest.param("ocean_static", True, "P0Y/P0Y/", id="static-regrid"),
+                          pytest.param("fail_filenames", False, "", id="fail-badfilename", marks=pytest.mark.xfail()),
+                          pytest.param("fail_nofiles", False, "", id="fail-noinput", marks=pytest.mark.xfail()) ])
 def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
     '''
     Tests the running of rename-split-to-pp, which takes 3 input args:
