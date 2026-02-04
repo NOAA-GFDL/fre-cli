@@ -48,9 +48,14 @@ class cdoTimeAverager(timeAverager):
             nc_fin = Dataset(infile, 'r')
 
             time_bnds = nc_fin['time_bnds'][:].copy()
+            # Ensure float64 precision for consistent results across numpy versions
+            # NumPy 2.0 changed type promotion rules (NEP 50), so explicit casting
+            # is needed to avoid precision differences
+            time_bnds = np.asarray(time_bnds, dtype=np.float64)
             wgts = ( np.moveaxis(time_bnds, 0, -1)[1][:].copy() - \
                      np.moveaxis(time_bnds, 0, -1)[0][:].copy() )
-            wgts_sum = sum(wgts)
+            # Use numpy.sum for consistent dtype handling across numpy versions
+            wgts_sum = np.sum(wgts, dtype=np.float64)
 
             fre_logger.debug('wgts_sum = %s', wgts_sum)
 
