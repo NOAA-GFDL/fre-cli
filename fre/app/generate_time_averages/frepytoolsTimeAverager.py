@@ -81,15 +81,12 @@ class frepytoolsTimeAverager(timeAverager):
         fin_dims = nc_fin.dimensions
         num_time_bnds = fin_dims['time'].size
         if not self.unwgt: #compute sum of weights
-            # Ensure float64 precision for consistent results across numpy versions
-            # NumPy 2.0 changed type promotion rules (NEP 50), so explicit casting
-            # is needed to avoid precision differences
+            # Cast to float64 for consistent results across numpy versions (NEP 50 type promotion changes)
             time_bnds = numpy.asarray(time_bnds, dtype=numpy.float64)
             # Transpose once to avoid redundant operations
             time_bnds_transposed = numpy.moveaxis(time_bnds, 0, -1)
             wgts = time_bnds_transposed[1] - time_bnds_transposed[0]
             # Use numpy.ma.sum only if there are actually masked values in time_bnds
-            # For consistency across numpy versions, use explicit dtype
             if has_masked_time_bnds:
                 wgts_sum = numpy.ma.sum(wgts, dtype=numpy.float64)
             else:
