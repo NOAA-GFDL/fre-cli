@@ -37,7 +37,7 @@
     "sub_experiment": "none",
     "institution": "",
     "source": "CanESM6-MR:",
-    "_controlled_vocabulary_file": "../test/cmor-cvs.json",
+    "_controlled_vocabulary_file": "../tables-cvs/cmor-cvs.json",
     "_AXIS_ENTRY_FILE": "CMIP7_coordinate.json",
     "_FORMULA_VAR_FILE": "CMIP7_formula_terms.json",
     "_cmip7_option": 1,
