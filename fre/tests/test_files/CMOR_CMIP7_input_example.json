@@ -1,5 +1,5 @@
 {
-    "#note": " **** The following are set correctly for CMIP7 and should not normally need editing",
+    "#note": " **** These keys are set for unit-test functionality of fre.cmor for CMIP7, they will change in the near future",
     "drs_specs": "MIP-DRS7",
     "license_id": "CC-BY-4-0",
     "source_type": "AOGCM ISM AER",
