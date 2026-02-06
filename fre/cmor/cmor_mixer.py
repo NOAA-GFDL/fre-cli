@@ -192,14 +192,14 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     # check the calendar of the input netcdf file time coordinate, if present
     time_coords_calendar=None
     try: # first attempt
-        time_coords_calendar = ds['time'].calendar
+        time_coords_calendar = ds['time'].calendar.lower()
     except:
         fre_logger.debug("could not find calendar attribute on time axis. moving on.")
         pass
 
     if time_coords_calendar is None:
         try: # second attempt if first didn't work
-            time_coords_calendar=ds['time'].calendar_type
+            time_coords_calendar=ds['time'].calendar_type.lower()
         except:
             fre_logger.debug("could not find calendar_type attribute on time axis. moving on.")
             pass
@@ -210,10 +210,10 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                            "this output could have the wrong calendar!")
     else:
         with open(json_exp_config, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            if data['calendar'] != time_coords_calendar.lower():
+            exp_cfg_calendar = json.load(file)['calendar']
+            if exp_cfg_calendar != time_coords_calendar:
                 raise ValueError(f"data calendar type {time_coords_calendar} "
-                                 f"does not match input config calendar type: {data['calendar']}")
+                                 f"does not match input config calendar type: {exp_cfg_calendar}")
 
     # read in time_bnds, if present
     fre_logger.info('attempting to read coordinate BNDS, time_bnds')
@@ -515,8 +515,13 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                                    units=lev_units)
 
         elif vert_dim in DEPTH_COORDS:
-            lev_bnds = create_lev_bnds(bound_these=lev, with_these=ds['z_i'])
-            fre_logger.info('created lev_bnds...')
+            try:
+                lev_bnds = create_lev_bnds(bound_these=lev, with_these=ds['z_i'])
+                fre_logger.info('created lev_bnds...')
+            except:
+                fre_logger.error("the cmor module always requires vertical levels to have bounds.")
+                raise KeyError("the input data appears to be missing vertical bounds!")
+
             fre_logger.info('lev_bnds = \n%s', lev_bnds)
             cmor_z = cmor.axis('depth_coord',
                                coord_vals=lev[:],
