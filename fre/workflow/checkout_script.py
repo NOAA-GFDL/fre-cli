@@ -3,15 +3,58 @@ import os
 import subprocess
 from pathlib import Path
 import logging
+import shutil 
 
 import fre.yamltools.combine_yamls_script as cy
 from fre.app.helpers import change_directory
 #from . import make_workflow_name
+from jsonschema import validate, SchemaError, ValidationError
 
 fre_logger = logging.getLogger(__name__)
 
 FRE_PP_WORKFLOW = "https://github.com/NOAA-GFDL/fre-workflows.git"
 FRE_RUN_WORKFLOW = "https://github.com/NOAA-GFDL/fre-workflows.git"
+
+######VALIDATE#####
+def validate_yaml(yamlfile: dict, application: str) -> None:
+    """
+    Validate the format of the yaml file based
+    on the schema.json in gfdl_msd_schemas
+
+    :param yamlfile: Model, settings, pp, and analysis yaml
+                     information combined into a dictionary
+    :type yamlfile: dict
+    :param application: ------------------------------------------------
+    :type application: string
+    :raises ValueError:
+        - if gfdl_mdf_schema path is not valid
+        - combined yaml is not valid
+        - unclear error in validation
+    :return: None
+    :rtype: None
+    """
+    schema_dir = Path(__file__).resolve().parents[1]
+    schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', f'fre_{application}.json')
+    fre_logger.info("Using yaml schema '%s'", schema_path)
+    # Load the json schema: .load() (vs .loads()) reads and parses the json in one)
+    try:
+        with open(schema_path,'r', encoding='utf-8') as s:
+            schema = json.load(s)
+    except:
+        fre_logger.error("Schema '%s' is not valid. Contact the FRE team.", schema_path)
+        raise
+
+    # Validate yaml
+    # If the yaml is not valid, the schema validation will raise errors and exit
+    try:
+        validate(instance = yamlfile,schema=schema)
+        fre_logger.info("Combined yaml valid")
+    except SchemaError as exc:
+        raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.") from exc
+    except ValidationError as exc:
+        raise ValueError("Combined yaml is not valid. Please fix the errors and try again.") from exc
+    except Exception as exc:
+        raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 def workflow_checkout(yamlfile: str = None, experiment = None,
                       application = None, branch = None):
@@ -51,6 +94,7 @@ def workflow_checkout(yamlfile: str = None, experiment = None,
                                     target=target,
                                     use="run",
                                     output=None)
+        #validate_yaml(yamlfile = yaml, application = "run")
         workflow_info = yaml.get("workflow").get("run_workflow")
     elif application == "pp":
         # will probably be taken out and put above is "use"
@@ -60,7 +104,8 @@ def workflow_checkout(yamlfile: str = None, experiment = None,
                                     platform=platform,
                                     target=target,
                                     use="pp",
-                                    output=None)
+                                    output=f"config.yaml")
+        #validate_yaml(yamlfile = yaml, application = "pp")
         workflow_info = yaml.get("workflow").get("pp_workflow")
 
     repo = workflow_info.get("repo")
@@ -118,3 +163,9 @@ def workflow_checkout(yamlfile: str = None, experiment = None,
                 fre_logger.error(
                     "ERROR: Current branch: '%s', Current tag-describe: '%s'", current_branch, current_tag)
                 raise ValueError('Neither tag nor branch matches the git clone branch arg')
+
+    ## Move combined yaml to cylc-src location
+    cylc_src_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{experiment}")
+#    outfile = os.path.join(cylc_src_dir, f"{experiment}.yaml")
+    shutil.move(f"config.yaml", cylc_src_dir)
+    fre_logger.info("Combined yaml file moved to ~/cylc-src/%s", experiment)
