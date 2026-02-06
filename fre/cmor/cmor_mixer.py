@@ -194,12 +194,14 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     try: # first attempt
         time_coords_calendar = ds['time'].calendar
     except:
+        fre_logger.debug("could not find calendar attribute on time axis. moving on.")
         pass
 
     if time_coords_calendar is None:
         try: # second attempt if first didn't work
             time_coords_calendar=ds['time'].calendar_type
         except:
+            fre_logger.debug("could not find calendar_type attribute on time axis. moving on.")
             pass
 
     # if it's still None, give a warning and move on.
