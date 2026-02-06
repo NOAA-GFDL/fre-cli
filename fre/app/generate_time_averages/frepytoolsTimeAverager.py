@@ -81,13 +81,16 @@ class frepytoolsTimeAverager(timeAverager):
         fin_dims = nc_fin.dimensions
         num_time_bnds = fin_dims['time'].size
         if not self.unwgt: #compute sum of weights
-            wgts = ( numpy.moveaxis( time_bnds, 0, -1 )[1][:].copy() - \
-                     numpy.moveaxis( time_bnds, 0, -1 )[0][:].copy() )
+            # Cast to float64 for consistent results across numpy versions (NEP 50 type promotion changes)
+            time_bnds = numpy.asarray(time_bnds, dtype=numpy.float64)
+            # Transpose once to avoid redundant operations
+            time_bnds_transposed = numpy.moveaxis(time_bnds, 0, -1)
+            wgts = time_bnds_transposed[1] - time_bnds_transposed[0]
             # Use numpy.ma.sum only if there are actually masked values in time_bnds
             if has_masked_time_bnds:
-                wgts_sum = numpy.ma.sum(wgts)
+                wgts_sum = numpy.ma.sum(wgts, dtype=numpy.float64)
             else:
-                wgts_sum = sum(wgts)
+                wgts_sum = numpy.sum(wgts, dtype=numpy.float64)
 
             fre_logger.debug('wgts_sum = %s', wgts_sum)
 
@@ -123,8 +126,8 @@ class frepytoolsTimeAverager(timeAverager):
                     if has_masked_data:
                         avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array * wgts) / wgts_sum
                     else:
-                        avgvals[0][lat][lon] = sum( (tim_val_array[tim] * wgts[tim] )
-                                                  for tim in range(num_time_bnds) ) / wgts_sum
+                        # Use numpy.sum for consistent dtype handling across numpy versions
+                        avgvals[0][lat][lon] = numpy.sum(tim_val_array * wgts, dtype=numpy.float64) / wgts_sum
 
                     del tim_val_array
                 del lon_val_array
@@ -139,9 +142,8 @@ class frepytoolsTimeAverager(timeAverager):
                     if has_masked_data:
                         avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array) / num_time_bnds
                     else:
-                        avgvals[0][lat][lon] = sum( # no time sum needed here, b.c. unweighted, so sum
-                            tim_val_array[tim] for tim in range(num_time_bnds)
-                                   ) / num_time_bnds
+                        # Use numpy.sum for consistent dtype handling across numpy versions
+                        avgvals[0][lat][lon] = numpy.sum(tim_val_array, dtype=numpy.float64) / num_time_bnds
 
                     del tim_val_array
                 del lon_val_array

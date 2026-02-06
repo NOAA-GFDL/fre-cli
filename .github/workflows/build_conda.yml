@@ -1,8 +1,6 @@
 name: build_conda
 on:
   pull_request:
-    branches:
-      - main
 
 # cancel running jobs if theres a newer push
 concurrency:
