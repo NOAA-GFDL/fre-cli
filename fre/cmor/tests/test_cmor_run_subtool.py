@@ -1,4 +1,6 @@
-''' tests for fre.cmor.cmor_run_subtool '''
+'''
+tests for fre.cmor.cmor_run_subtool
+'''
 import subprocess
 import shutil
 from pathlib import Path
@@ -20,7 +22,9 @@ TABLE_CONFIG = \
     f'{CMIP6_TABLE_REPO_PATH}/Tables/CMIP6_Omon.json'
 
 def test_setup_cmor_cmip_table_repo():
-    ''' setup routine, make sure the recursively cloned tables exist '''
+    '''
+    setup routine, make sure the recursively cloned tables exist
+    '''
     assert all( [ Path(CMIP6_TABLE_REPO_PATH).exists(),
                   Path(TABLE_CONFIG).exists()
                   ] )
@@ -53,7 +57,8 @@ f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{GRID_LABE
 
 
 def test_setup_fre_cmor_run_subtool(capfd):
-    ''' The routine generates a netCDF file from an ascii (cdl) file. It also checks for a ncgen
+    '''
+    The routine generates a netCDF file from an ascii (cdl) file. It also checks for a ncgen
     output file from prev pytest runs, removes it if it's present, and ensures the new file is
     created without error.
     '''
@@ -285,19 +290,18 @@ def test_git_cleanup():
     git's record of changed files. It's supposed to change as part of the test.
     '''
     is_ci = os.environ.get("GITHUB_WORKSPACE") is not None
-    if is_ci:
-      #doesn't run happily in CI and not needed
-      assert True
-    else:
-      git_cmd = f"git restore {EXP_CONFIG}"
-      restore = subprocess.run(git_cmd,
-                    shell=True,
-                    check=False)
-      check_cmd = f"git status | grep {EXP_CONFIG}"
-      check = subprocess.run(check_cmd,
-                             shell = True, check = False)
-      #first command completed, second found no file in git status
-      assert all([restore.returncode == 0, check.returncode == 1])
+    if not is_ci:
+        git_cmd = f"git restore {EXP_CONFIG}"
+        restore = subprocess.run(git_cmd,
+                                 shell=True,
+                                 check=False)
+        check_cmd = f"git status | grep {EXP_CONFIG}"
+        check = subprocess.run(check_cmd,
+                               shell = True,
+                               check = False)
+        #first command completed, second found no file in git status
+        assert all([restore.returncode == 0,
+                    check.returncode == 1])
 
 def test_cmor_run_subtool_raise_value_error():
     '''
@@ -343,8 +347,6 @@ def test_fre_cmor_run_subtool_empty_varlist(capfd):
         )
 
 
-@pytest.mark.xfail(reason='TODO req some quick rework of the opt_var_name logic- '
-                          'the current approach doesn\'t cut it')
 def test_fre_cmor_run_subtool_opt_var_name_not_in_table():
     ''' fre cmor run, exception,  '''
 

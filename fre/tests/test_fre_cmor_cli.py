@@ -36,7 +36,7 @@ COPIED_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg
 ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
 
 def test_setup_test_files():
-    "set-up test: copy and rename NetCDF file created in test_fre_cmor_run_subtool.py"
+    """ set-up test: copy and rename NetCDF file created in test_fre_cmor_run_subtool.py """
 
     assert Path(ORIGINAL_NC_FILEPATH).exists()
 
@@ -46,7 +46,7 @@ def test_setup_test_files():
 
     shutil.copy(Path(ORIGINAL_NC_FILEPATH), Path(COPIED_NC_FILEPATH))
 
-    assert (Path(COPIED_NC_FILEPATH).exists())
+    assert Path(COPIED_NC_FILEPATH).exists()
 
 
 
@@ -196,12 +196,12 @@ def test_cli_fre_cmor_run_case1():
     cmor_creates_dir = \
         f'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/{grid_label}'
     full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldn't be
+        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
     full_outputfile = \
         f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199301-199302.nc"
 
-    # FYI
-    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc' # unneeded, this is mostly for reference
+    # FYI/unneeded, this is mostly for reference
+    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
     full_inputfile=f"{indir}/{filename}"
 
     # clean up, lest we fool ourselves
@@ -223,6 +223,7 @@ def test_cli_fre_cmor_run_case1():
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
 
+
 def test_cli_fre_cmor_run_case2():
     ''' fre cmor run, test-use case '''
 
@@ -241,12 +242,12 @@ def test_cli_fre_cmor_run_case2():
     cmor_creates_dir = \
         f'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/{grid_label}'
     full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}" # yay no more 'fre' where it shouldn't be
+        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
     full_outputfile = \
         f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199301-199302.nc"
 
-    # FYI
-    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc' # unneeded, this is mostly for reference
+    # FYI/unneeded, this is mostly for reference
+    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
     full_inputfile=f"{indir}/{filename}"
 
     # clean up, lest we fool ourselves
@@ -291,3 +292,96 @@ def test_cli_fre_cmor_find():
                                           "--varlist", "fre/tests/test_files/varlist",
                                           "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
     assert result.exit_code == 0
+
+
+def test_cli_fre_cmor_run_cmip7_case1():
+    ''' fre cmor run, test-use case for cmip7 '''
+
+    # explicit inputs to tool
+    indir = f'{ROOTDIR}/ocean_sos_var_file/'
+    varlist = f'{ROOTDIR}/varlist'
+    table_config = f'{ROOTDIR}/cmip7-cmor-tables/tables/CMIP7_ocean.json'
+    exp_config = f'{ROOTDIR}/CMOR_CMIP7_input_example.json'
+    outdir = f'{ROOTDIR}/outdir'
+    grid_label = 'g99'
+    grid_desc = 'FOO_BAR_PLACEHOLD'
+    nom_res = '10000 km'
+    calendar='julian'
+
+    # determined by cmor_run_subtool
+    cmor_creates_dir = \
+        f'CMIP/CanESM6-MR/esm-piControl/r3i1p1f3/sos/tavg-u-hxy-sea/{grid_label}'
+    full_outputdir = \
+        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
+    full_outputfile = \
+        f"{full_outputdir}/sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
+
+    # FYI/unneeded, this is mostly for reference
+    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc' 
+    full_inputfile=f"{indir}/{filename}"
+
+    # clean up, lest we fool ourselves
+    if Path(full_outputfile).exists():
+        Path(full_outputfile).unlink()
+
+    result = runner.invoke(fre.fre, args = [ "-v", "-v",
+                                             "cmor", "run", "--run_one",
+                                             "--indir", indir,
+                                             "--varlist", varlist,
+                                             "--table_config", table_config,
+                                             "--exp_config", exp_config,
+                                             "--outdir",  outdir,
+                                             "--calendar", calendar,
+                                             "--grid_label", grid_label,
+                                             "--grid_desc", grid_desc,
+                                             "--nom_res", nom_res ] )
+    assert all ( [ result.exit_code == 0,
+                   Path(full_outputfile).exists(),
+                   Path(full_inputfile).exists() ] )
+
+
+def test_cli_fre_cmor_run_cmip7_case2():
+    ''' fre cmor run, test-use case for cmip7 '''
+
+    # explicit inputs to tool
+    indir = f'{ROOTDIR}/ocean_sos_var_file/'
+    varlist = f'{ROOTDIR}/varlist_local_target_vars_differ'
+    table_config = f'{ROOTDIR}/cmip7-cmor-tables/tables/CMIP7_ocean.json'
+    exp_config = f'{ROOTDIR}/CMOR_CMIP7_input_example.json'
+    outdir = f'{ROOTDIR}/outdir'
+    grid_label = 'g99'
+    grid_desc = 'FOO_BAR_PLACEHOLD'
+    nom_res = '10000 km'
+    calendar='julian'
+
+    # determined by cmor_run_subtool
+    cmor_creates_dir = \
+        f'CMIP/CanESM6-MR/esm-piControl/r3i1p1f3/sos/tavg-u-hxy-sea/{grid_label}'
+    full_outputdir = \
+        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
+    full_outputfile = \
+        f"{full_outputdir}/sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
+
+    # FYI/unneeded, this is mostly for reference
+    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
+    full_inputfile=f"{indir}/{filename}"
+
+    # clean up, lest we fool ourselves
+    if Path(full_outputfile).exists():
+        Path(full_outputfile).unlink()
+
+    result = runner.invoke(fre.fre, args = [ "-v", "-v",
+                                             "cmor", "run", "--run_one",
+                                             "--indir", indir,
+                                             "--varlist", varlist,
+                                             "--table_config", table_config,
+                                             "--exp_config", exp_config,
+                                             "--outdir",  outdir,
+                                             "--calendar", calendar,
+                                             "--grid_label", grid_label,
+                                             "--grid_desc", grid_desc,
+                                             "--nom_res", nom_res ] )
+    assert all ( [ result.exit_code == 0,
+                   Path(full_outputfile).exists(),
+                   Path(full_inputfile).exists() ] )
+

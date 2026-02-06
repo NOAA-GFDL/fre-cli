@@ -10,6 +10,7 @@ def mock_json_exp_config(tmp_path):
     Create a mock JSON experiment config file for testing.
     """
     config_data = {
+        "mip_era": "cmip6",
         "calendar": "360_day",
         "grid": "test_grid",
         "grid_label": "gn",

@@ -1,6 +1,12 @@
+'''
+unit tests for cmor_helpers.update_grid_and_label
+'''
+
 import json
-import pytest
+
 from pathlib import Path
+import pytest
+
 from fre.cmor.cmor_helpers import update_grid_and_label
 
 # Sample data for testing
