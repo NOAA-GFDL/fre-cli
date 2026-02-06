@@ -6,8 +6,8 @@ fre_logger = logging.getLogger(__name__)
 
 #fre tools
 from . import checkout_script
-from . import install_script
-from . import run_script
+#from . import install_script
+#from . import run_script
 
 @click.group(help=click.style(" - workflow subcommands", fg=(57,139,210)))
 def workflow_cli():
