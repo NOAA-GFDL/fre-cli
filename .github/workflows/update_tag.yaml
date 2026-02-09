@@ -8,6 +8,9 @@ on:
 jobs:
   tag-update:
     runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.get_tag.outputs.tag }}
+      old_tag: ${{ steps.get_prev_tag.outputs.prev_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -50,3 +53,19 @@ jobs:
           delete-branch: true          # delete afer merge
           title: Update refs to version number post-release
           body: automated change, replaces references to the old version number with the new version number upon releases. This PR will need to be closed and reopened to run CI testing.
+
+  send-repository-dispatch:
+    needs: [tag-update]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send repository_dispatch to external repo
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.EXTERNAL_REPO_TOKEN }}
+          repository: NOAA-GFDL/HPC-ME
+          event-type: receive_tag
+          client-payload: |
+            {
+              "new_tag": "${{ needs.tag-update.outputs.new_tag }}",
+              "old_tag": "${{ needs.tag-update.outputs.old_tag }}"
+            }
