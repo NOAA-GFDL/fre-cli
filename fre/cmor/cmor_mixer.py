@@ -144,7 +144,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                 fre_logger.debug('cmip7 case, extracted brand %s',var_brand)
             else:
                 fre_logger.warning('cmip7 case, extracted multiple brand %s',brands)
-                fre_logger.error('should not happen')
+                fre_logger.error('multiple brands are possible')
                 raise ValueError
         else:
             fre_logger.error('cmip7 case detected, but dimensions of input data do not match '
