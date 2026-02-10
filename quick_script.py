@@ -104,7 +104,7 @@ for mip_table in mip_tables:
             lines.append( "      gridding:")
             lines.append( "        <<: *g99")
             lines.append( "      target_components:")
-            lines.append(f"        - componment_name: '{Path(entry).name}'")
+            lines.append(f"        - component_name: '{component_name}'")
             lines.append(f"          data_series_type: 'ts'")
             lines.append(f"          chunk: *PP_CMIP_CHUNK")
 
