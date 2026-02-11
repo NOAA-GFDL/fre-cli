@@ -1,25 +1,34 @@
 """
 This module defines the click interface for the fre make tool
 fre make's subtools include:
-    - all
-    - checkout-script
-    - compile-script
-    - dockerfile
-    - makefile
+
+* all
+* checkout-script
+* compile-script
+* dockerfile
+* makefile
+
 fre make is the component of fre that will check out model code and build the model. fre make subtools 
 are capable of running independently of each other and there is an "all" option that will execute the 
 fre make subtools in an appropriate order to fully compile a model. Fre make also has the functionality 
 to build a container of a model. 
+
 fre make ingests the model.yaml configuration file, specifically using information in the:
-    - platforms.yaml (this configuration file specifies the software needed to compile a model)
-    - compile.yaml (this configuration file specifies code repositories and versions to checkout)
+
+* platforms.yaml (this configuration file specifies the software needed to compile a model)
+* compile.yaml (this configuration file specifies code repositories and versions to checkout)
+
 To checkout model code: fre make checkout-script
+
 To compile model code (after the model code has been checked out):
-    - First, create a makefile: fre make makefile
-    - Then, compile the model: fre make compile-script
+
+* First, create a makefile: fre make makefile
+* Then, compile the model: fre make compile-script
+
 To create a container which will package the compiled model executable and the environment:
-    - First, create a makefile: fre make makefile
-    - Then, build the model in a container: fre make dockerfile
+
+* First, create a makefile: fre make makefile
+* Then, build the model in a container: fre make dockerfile
 """
 
 import click
