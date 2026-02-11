@@ -65,13 +65,13 @@ def make_cli():
 @click.option("-y",
               "--yamlfile",
               type = str,
-              help = __YAMLFILE_OPT_HELP,
+              help = _YAMLFILE_OPT_HELP,
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
-              help = PLATFORM_OPT_HELP, required = True)
+              help = _PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
               multiple = True,
               type = str,
@@ -125,7 +125,7 @@ def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_f
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
-              help = PLATFORM_OPT_HELP,
+              help = _PLATFORM_OPT_HELP,
               required = True)
 @click.option("-t", "--target",
               multiple = True, # replaces nargs = -1, since click.option()
@@ -164,7 +164,7 @@ def checkout_script(yamlfile, platform, target, no_parallel_checkout, njobs, exe
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
-              help = PLATFORM_OPT_HELP, required = True)
+              help = _PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
@@ -184,7 +184,7 @@ def makefile(yamlfile, platform, target):
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
-              help = PLATFORM_OPT_HELP, required = True)
+              help = _PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
@@ -224,7 +224,7 @@ def compile_script(yamlfile, platform, target, njobs, nparallel, execute, verbos
               "--platform",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
-              help = PLATFORM_OPT_HELP, required = True)
+              help = _PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
               multiple = True,
               type = str,
