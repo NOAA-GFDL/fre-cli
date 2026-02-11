@@ -161,11 +161,6 @@ def cmor_yaml_subtool( yamlfile: str = None,
         table_name = cmor_yaml_table_target['table_name']
         fre_logger.info('table_name = %s', table_name)
 
-        json_var_list = os.path.expandvars(
-            cmor_yaml_table_target['variable_list']
-        )
-        fre_logger.info('json_var_list = %s', json_var_list)
-
         json_mip_table_config = f'{cmip_cmor_table_dir}/{mip_era}_{table_name}.json'
         fre_logger.info('json_mip_table_config = %s', json_mip_table_config)
         check_path_existence(json_mip_table_config)
@@ -208,6 +203,12 @@ def cmor_yaml_subtool( yamlfile: str = None,
 
         table_components_list = cmor_yaml_table_target['target_components']
         for targ_comp_config in table_components_list:
+
+            json_var_list = os.path.expandvars(
+                targ_comp_config['variable_list']
+            )
+            fre_logger.info('json_var_list = %s', json_var_list)
+
             component = targ_comp_config['component_name']
             bronx_chunk = iso_to_bronx_chunk(targ_comp_config['chunk'])
             data_series_type = targ_comp_config['data_series_type']
