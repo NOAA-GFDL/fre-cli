@@ -1,72 +1,108 @@
-#!/usr/bin/env python3
+"""
+a different approach to configuring a workload/workflow for fre.cmor
+
+prototype command module, cmor_writer, cli call 'fre cmor write'
+"""
 
 import getpass
 import glob
 from pathlib import Path
-from pprint import pprint
+from pprint import pprint, pformat
 
 import logging
 
-logger=logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
-
 from fre.cmor.cmor_finder import make_simple_varlist
-TEST_PRINT=True
 
-input_exp_config='/home/inl/Working/fre-cli/fre/tests/test_files/CMOR_CMIP7_input_example.json'
-output_cmor_yaml_path='/home/inl/Working/ESM45xml/yaml_workflow/esm45-v14/TEST_CMOR_YAML_WRITER_PROTOTYPE.yaml'
+logger=logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
-chunk='5yr'
-freq='monthly'
-targdir='/archive/oar.gfdl.bgrp-account/CMIP7/ESM4/DECK/ESM4.5-picontrol/gfdl.ncrc6-intel25-prod-openmp'
-
+TEST_PRINT=False
+logger.debug('TEST_PRINT=%s',TEST_PRINT)
+REMAKE_LISTS=True
+logger.debug('REMAKE_LISTS=%s',REMAKE_LISTS)
 
 input_system='/archive'
 input_user='oar.gfdl.bgrp-account'
-output_system='/home'
+chunk='5yr'
+freq='monthly'
+grid='g99'
+targdir='/archive/oar.gfdl.bgrp-account/CMIP7/ESM4/DECK/ESM4.5-picontrol/gfdl.ncrc6-intel25-prod-openmp'
+
+
+output_cmor_yaml_path='/home/inl/Working/ESM45xml/yaml_workflow/esm45-v14/test_cmor_yaml_writer_prototype.yaml'
+#output_system='/home'
+#output_system='/net'
+output_system='/net2'
 output_user=getpass.getuser()
 output_dir=f'{output_system}/{output_user}/Working/fre-cli/ESM45xml/test_cmor_output'
-config_dir_out='/home/inl/Working/ESM45xml/yaml_workflow/esm45-v14/variable_lists'
-mip_tables_dir='/home/inl/Working/fre-cli/fre/tests/test_files/cmip7-cmor-tables/tables/'
+config_dir_out=f'/home/{output_user}/Working/ESM45xml/yaml_workflow/esm45-v14/variable_lists'
 ppcompdirs = glob.glob(f'{targdir}/pp/*')
+
+input_exp_config='/home/inl/Working/fre-cli/fre/tests/test_files/CMOR_CMIP7_input_example.json'
+mip_tables_dir=f'/home/{output_user}/Working/fre-cli/fre/tests/test_files/cmip7-cmor-tables/tables'
 mip_era='cmip7'
 mip_tables=glob.glob(f'{mip_tables_dir}/{mip_era.upper()}_*.json')
+logger.debug('mip_tables = \n %s', pformat(mip_tables))
+def try_remove_except_pass(input_list, entry_to_remove):
+    '''
+    tries to remove an element from a list based on exact match.
+    
+    if it can't, s'ok... move on.
+    '''
+    logger.info('trying to remove unnecessary mip table entries')
+    logger.debug('entry to remove is: %s', entry_to_remove)
+    try:
+        input_list.remove(entry_to_remove)
+    except:
+        logger.warning('couldnt remove, nbd, move on')
+try_remove_except_pass(mip_tables, f'{mip_tables_dir}/{mip_era.upper()}_long_name_overrides.json')
+try_remove_except_pass(mip_tables, f'{mip_tables_dir}/{mip_era.upper()}_grids.json')
+try_remove_except_pass(mip_tables, f'{mip_tables_dir}/{mip_era.upper()}_formula_terms.json')
+try_remove_except_pass(mip_tables, f'{mip_tables_dir}/{mip_era.upper()}_coordinate.json')
+try_remove_except_pass(mip_tables, f'{mip_tables_dir}/{mip_era.upper()}_cell_measures.json')
 
+assert False
+
+logger.debug('appending initial lines to CMOR yaml')
 lines=[]
 lines.append( "")
-lines.append(f"cmor:")
-lines.append(f"  start:")
-lines.append(f"    *CMOR_START")
-lines.append(f"  stop:")
-lines.append(f"    *CMOR_STOP")
-lines.append(f"  calendar_type:")
-lines.append(f"    'noleap'")
-lines.append(f"  mip_era:")
+lines.append( "cmor:")
+lines.append( "  start:")
+lines.append( "    *CMOR_START")
+lines.append( "  stop:")
+lines.append( "    *CMOR_STOP")
+lines.append( "  calendar_type:")
+lines.append( "    'noleap'")
+lines.append( "  mip_era:")
 lines.append(f"    '{mip_era}'")
-lines.append(f"  exp_json:")
+lines.append( "  exp_json:")
 lines.append(f"    '{input_exp_config}'")
-lines.append(f"  directories:")
+lines.append( "  directories:")
 lines.append(f"    history_dir: !join [{input_system}/{input_user}/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]")
 lines.append(f"    pp_dir: !join [{input_system}/{input_user}/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]")
-lines.append(f"    table_dir: &table_dir")
+lines.append( "    table_dir: &table_dir")
 lines.append(f"      '{mip_tables_dir}'")
-lines.append(f"    outdir:")
+lines.append( "    outdir:")
 lines.append(f"      '{output_dir}'")
-lines.append(f"  table_targets:")
+lines.append( "  table_targets:")
 
 
-
+logger.debug('starting loop over %s mip_tables targets', len(mip_tables))
 for mip_table in mip_tables:
-    table_name = str(Path(mip_table).name).split('.')[0].split('_')[1]
+    #table_name = str(Path(mip_table).name).split('.')[0].split('_')[1]
+    table_name = str(Path(mip_table).name).split('.', maxsplit=1)[0]
     logger.debug(f'doing mip_table = {table_name}')
 
-
+    appended_table_header=False
+    logger.debug('starting loop over %s ppcompdirs targets', len(ppcompdirs))
     for entry in ppcompdirs:
         component_name = Path(entry).name
-        
+
         variable_list = f'{config_dir_out}/CMIP7_{table_name}_{component_name}.list'
         if Path(variable_list).exists():
-            Path(variable_list).unlink()
+            if REMAKE_LISTS:
+                Path(variable_list).unlink()
+
 
         if not Path(entry).is_dir():
             logger.debug('content of pp-component not a directory, continue')
@@ -86,7 +122,7 @@ for mip_table in mip_tables:
         if len( glob.glob( f'{dir_targ}/*nc' ) ) < 1:
             logger.debug('directory target has no files ending in *nc, continue')
             continue
-            
+
         try:
             make_simple_varlist( dir_targ = dir_targ,
                                  output_variable_list = variable_list,
@@ -94,17 +130,20 @@ for mip_table in mip_tables:
         except:
             logger.warning(f'variable list creation FAILED for %s %s %s', dir_targ,variable_list,mip_table)
             pass
-                
+
         if Path(variable_list).exists():
-            lines.append( "")
-            lines.append(f"    - table_name: '{table_name}'")
-            lines.append( "      variable_list:")
-            lines.append(f"        '{variable_list}'")
-            lines.append( "      freq: 'monthly'")
-            lines.append( "      gridding:")
-            lines.append( "        <<: *g99")
-            lines.append( "      target_components:")
+
+            if not appended_table_header:
+                lines.append( "")
+                lines.append(f"    - table_name: '{table_name}'")
+                lines.append(f"      freq: '{freq}'")
+                lines.append( "      gridding:")
+                lines.append(f"        <<: *{grid}")
+                lines.append( "      target_components:")
+                appended_table_header=True
+
             lines.append(f"        - component_name: '{component_name}'")
+            lines.append(f"          variable_list: '{variable_list}'")
             lines.append(f"          data_series_type: 'ts'")
             lines.append(f"          chunk: *PP_CMIP_CHUNK")
 
