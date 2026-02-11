@@ -65,7 +65,7 @@ def make_cli():
 @click.option("-y",
               "--yamlfile",
               type = str,
-              help = YAMLFILE_OPT_HELP,
+              help = __YAMLFILE_OPT_HELP,
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
@@ -75,24 +75,24 @@ def make_cli():
 @click.option("-t", "--target",
               multiple = True,
               type = str,
-              help = TARGET_OPT_HELP,
+              help = _TARGET_OPT_HELP,
               required = True)
 @click.option("-n",
               "--nparallel",
               type = int,
               metavar = '',
               default = 1,
-              help = PARALLEL_OPT_HELP)
+              help = _PARALLEL_OPT_HELP)
 @click.option("-j",
               "--njobs",
               type = int,
               metavar = '',
               default = 4,
-              help = JOBS_OPT_HELP)
+              help = _JOBS_OPT_HELP)
 @click.option("-npc",
               "--no-parallel-checkout",
               is_flag = True,
-              help = NO_PARALLEL_CHECKOUT_OPT_HELP)
+              help = _NO_PARALLEL_CHECKOUT_OPT_HELP)
 @click.option("-nft",
               "--no-format-transfer",
               is_flag = True,
@@ -109,7 +109,7 @@ def make_cli():
 @click.option("-v",
               "--verbose",
               is_flag = True,
-              help = VERBOSE_OPT_HELP)
+              help = _VERBOSE_OPT_HELP)
 def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout):
     """ - Perform all fre make functions; run checkout and compile scripts to create model executable or container"""
     run_fremake_script.fremake_run(
@@ -119,7 +119,7 @@ def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_f
 @click.option("-y",
               "--yamlfile",
               type = str,
-              help = YAMLFILE_OPT_HELP,
+              help = _YAMLFILE_OPT_HELP,
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
@@ -130,18 +130,18 @@ def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_f
 @click.option("-t", "--target",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
-              help = TARGET_OPT_HELP,
+              help = _TARGET_OPT_HELP,
               required = True)
 @click.option("-j",
               "--njobs",
               type = int,
               metavar = '',
               default = 4,
-              help = JOBS_OPT_HELP)
+              help = _JOBS_OPT_HELP)
 @click.option("-npc",
               "--no-parallel-checkout",
               is_flag = True,
-              help = NO_PARALLEL_CHECKOUT_OPT_HELP)
+              help = _NO_PARALLEL_CHECKOUT_OPT_HELP)
 @click.option("--execute",
               is_flag = True,
               default = False,
@@ -158,7 +158,7 @@ def checkout_script(yamlfile, platform, target, no_parallel_checkout, njobs, exe
 @click.option("-y",
               "--yamlfile",
               type = str,
-              help = YAMLFILE_OPT_HELP,
+              help = _YAMLFILE_OPT_HELP,
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
@@ -168,7 +168,7 @@ def checkout_script(yamlfile, platform, target, no_parallel_checkout, njobs, exe
 @click.option("-t", "--target",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
-              help = TARGET_OPT_HELP,
+              help = _TARGET_OPT_HELP,
               required = True)
 def makefile(yamlfile, platform, target):
     """ - Write the makefile """
@@ -178,7 +178,7 @@ def makefile(yamlfile, platform, target):
 @click.option("-y",
               "--yamlfile",
               type = str,
-              help = YAMLFILE_OPT_HELP,
+              help = _YAMLFILE_OPT_HELP,
               required = True) # use click.option() over click.argument(), we want help statements
 @click.option("-p",
               "--platform",
@@ -188,19 +188,19 @@ def makefile(yamlfile, platform, target):
 @click.option("-t", "--target",
               multiple = True, # replaces nargs = -1, since click.option()
               type = str,
-              help = TARGET_OPT_HELP,
+              help = _TARGET_OPT_HELP,
               required = True)
 @click.option("-j",
               "--njobs",
               type = int,
               metavar = '',
               default = 4,
-              help = JOBS_OPT_HELP)
+              help = _JOBS_OPT_HELP)
 @click.option("-n",
               "--nparallel",
               type = int,
               metavar = '', default = 1,
-              help = PARALLEL_OPT_HELP)
+              help = _PARALLEL_OPT_HELP)
 @click.option("--execute",
               is_flag = True,
               default = False,
@@ -208,7 +208,7 @@ def makefile(yamlfile, platform, target):
 @click.option("-v",
               "--verbose",
               is_flag = True,
-              help = VERBOSE_OPT_HELP)
+              help = _VERBOSE_OPT_HELP)
 def compile_script(yamlfile, platform, target, njobs, nparallel, execute, verbose):
     """ - Write the compile script """
     create_compile_script.compile_create(
@@ -218,7 +218,7 @@ def compile_script(yamlfile, platform, target, njobs, nparallel, execute, verbos
 @click.option("-y",
               "--yamlfile",
               type = str,
-              help = YAMLFILE_OPT_HELP,
+              help = _YAMLFILE_OPT_HELP,
               required = True)
 @click.option("-p",
               "--platform",
@@ -228,7 +228,7 @@ def compile_script(yamlfile, platform, target, njobs, nparallel, execute, verbos
 @click.option("-t", "--target",
               multiple = True,
               type = str,
-              help = TARGET_OPT_HELP,
+              help = _TARGET_OPT_HELP,
               required = True)
 @click.option("-nft",
               "--no-format-transfer",
