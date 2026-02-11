@@ -1,3 +1,27 @@
+"""
+This module defines the click interface for the fre make tool
+fre make's subtools include:
+    - all
+    - checkout-script
+    - compile-script
+    - dockerfile
+    - makefile
+fre make is the component of fre that will check out model code and build the model. fre make subtools 
+are capable of running independently of each other and there is an "all" option that will execute the 
+fre make subtools in an appropriate order to fully compile a model. Fre make also has the functionality 
+to build a container of a model. 
+fre make ingests the model.yaml configuration file, specifically using information in the:
+    - platforms.yaml (this configuration file specifies the software needed to compile a model)
+    - compile.yaml (this configuration file specifies code repositories and versions to checkout)
+To checkout model code: fre make checkout-script
+To compile model code (after the model code has been checked out):
+    - First, create a makefile: fre make makefile
+    - Then, compile the model: fre make compile-script
+To create a container which will package the compiled model executable and the environment:
+    - First, create a makefile: fre make makefile
+    - Then, build the model in a container: fre make dockerfile
+"""
+
 import click
 from fre.make import create_checkout_script
 from fre.make import create_makefile_script
@@ -5,26 +29,30 @@ from fre.make import create_compile_script
 from fre.make import create_docker_script
 from fre.make import run_fremake_script
 
-YAMLFILE_OPT_HELP = """Experiment yaml compile FILE
+
+# Command Help Messages
+_YAMLFILE_OPT_HELP = """Model configuration yaml FILENAME (required)"""
+_PLATFORM_OPT_HELP = """List of FRE platform strings (required)
+The name of the platform from platforms.yaml.
 """
-EXPERIMENT_OPT_HELP = """Name of experiment"""
-PLATFORM_OPT_HELP = """Hardware and software FRE platform string.
-This sets platform-specific data and instructions
+_TARGET_OPT_HELP   = """List of mkmf Target strings (required)
+The mkmf targets correspond to macros in the template file specified by platforms.yaml. 
+Users must provide a single optimization target: either prod, repro, or debug. 
+To enable supplementary features such as openmp or lto, append them to the primary target using a hyphen separator.
 """
-TARGET_OPT_HELP   = """String that defines compilation settings and
-linkage directives for experiments. Predefined targets refer to groups of directives that exist in
-the mkmf template file (referenced in buildDocker.py). Possible predefined targets include 'prod',
-'openmp', 'repro', 'debug, 'hdf5'; however 'prod', 'repro', and 'debug' are mutually exclusive
-(cannot not use more than one of these in the target list). Any number of targets can be used.
+_PARALLEL_OPT_HELP = """Number of concurrent compile scripts to execute (optional) (default 1)
+This option is only used when --execute/-x is also defined.
 """
-PARALLEL_OPT_HELP = """Number of concurrent model compiles (default 1)
+_JOBS_OPT_HELP = """Number of make jobs to run simultaneously (optional) (default4)
+make -jJOBS which enables make to compile multiple source files simultaneously
+
+and git clone recursive --njobs=JOBS (# of submodules fetched simultaneously)
 """
-JOBS_OPT_HELP = """Number of jobs to run simultaneously; default=4. Used for make -jJOBS (parallelism with make) and git clone recursive --njobs=JOBS (# of submodules fetched simultaneously)
+_NO_PARALLEL_CHECKOUT_OPT_HELP =  """Turns off parallel git checkouts
+By default, fre make will checkout each git repository defined in the compile.yaml configuration file 
+in parallel.
 """
-NO_PARALLEL_CHECKOUT_OPT_HELP =  """Use this option if you do not want a parallel checkout.
-The default is to have parallel checkouts.
-"""
-VERBOSE_OPT_HELP = """Get verbose messages (repeat the option to increase verbosity level)
+_VERBOSE_OPT_HELP = """Turns on debug level logging
 """
 
 
