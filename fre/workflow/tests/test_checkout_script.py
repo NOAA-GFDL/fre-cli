@@ -77,7 +77,7 @@ def test_pp_workflow_checkout(fake_home, caplog):
     assert all([Path(f"{fake_home}/cylc-src/{EXPERIMENT}").exists(),
                 Path(f"{fake_home}/cylc-src/{EXPERIMENT}").is_dir(),
                 Path(f"{fake_home}/cylc-src/{EXPERIMENT}/flow.cylc").exists(),
-                Path(f"{fake_home}/cylc-src/{EXPERIMENT}/config.yaml").exists()
+                Path(f"{fake_home}/cylc-src/{EXPERIMENT}/config.yaml").exists(),
                 f"({expected_repo}):({expected_tag}) check out ==> SUCCESSFUL" in caplog.text])
 
 def test_pp_workflow_checkout_exists_already(fake_home, caplog):
