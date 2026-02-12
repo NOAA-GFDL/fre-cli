@@ -35,7 +35,7 @@ def test_cylc_src_creation_fail(fake_home):
         if os.geteuid == 0: # if running as root
             pytest.skip("Cannot test premission errors when running as root")
             print("RUNNING AS ROOT")
-
+        AH
 #    # run checkout to create cylc-src
 #    directory = Path(f"{fake_home}/cylc-src")
 #    expected_error = f"(checkoutScript) directory {directory} wasn't able to be created. exit!"
