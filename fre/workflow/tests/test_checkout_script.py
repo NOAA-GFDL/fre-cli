@@ -32,7 +32,7 @@ def test_cylc_src_creation_fail(fake_home):
     os.chmod(fake_home, stat.S_IREAD)
 
     # run checkout to create cylc-src
-    directory = f"{fake_home}/cylc-src"
+    directory = Path(f"{fake_home}/cylc-src")
     expected_error = f"(checkoutScript) directory {directory} wasn't able to be created. exit!"
     with pytest.raises(OSError, match = re.escape(expected_error)):
         checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",

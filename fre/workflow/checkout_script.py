@@ -143,6 +143,12 @@ def workflow_checkout(yamlfile: str = None, experiment = None,
                                         capture_output = True, text = True, check = True)
         fre_logger.debug(clone_output)
         fre_logger.warning("(%s):(%s) check out ==> SUCCESSFUL", repo, tag)
+
+        ## Move combined yaml to cylc-src location
+        cylc_src_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{experiment}")
+        current_dir = Path.cwd()
+        shutil.move(Path(f"{current_dir}/config.yaml"), cylc_src_dir)
+        fre_logger.info("Combined yaml file moved to ~/cylc-src/%s", experiment)
     else:
         # the repo checkout does exist, scenarios 3 and 4.
         with change_directory(f"{directory}/{workflow_name}"):
@@ -163,9 +169,3 @@ def workflow_checkout(yamlfile: str = None, experiment = None,
                 fre_logger.error(
                     "ERROR: Current branch: '%s', Current tag-describe: '%s'", current_branch, current_tag)
                 raise ValueError('Neither tag nor branch matches the git clone branch arg')
-
-    ## Move combined yaml to cylc-src location
-    cylc_src_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{experiment}")
-#    outfile = os.path.join(cylc_src_dir, f"{experiment}.yaml")
-    shutil.move(f"config.yaml", cylc_src_dir)
-    fre_logger.info("Combined yaml file moved to ~/cylc-src/%s", experiment)
