@@ -98,32 +98,68 @@ def from_dis_gimme_dis( from_dis: Dataset,
         return None
 
 import subprocess
-ARCHIVE_GOLD_DATA_DIR='/archive/gold/datasets'
-def find_gold_ocean_statics_file(put_copy_here=None):
-    ARCHIVE_GOLD_FILE=f'{ARCHIVE_GOLD_DATA_DIR}/OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
-    fre_logger.debug('ARCHIVE_GOLD_DATA_DIR=%s',ARCHIVE_GOLD_DATA_DIR)
-    fre_logger.debug('ARCHIVE_GOLD_FILE=%s',ARCHIVE_GOLD_FILE)
-    
-    try:
-        new_dir_tree='/'.join(ARCHIVE_GOLD_FILE.split('/')[3:])
-        fre_logger.debug('new_dir_tree=%s',new_dir_tree)
-    except:
-        fre_logger.error('problem')
-        assert False
+ARCHIVE_GOLD_DATA_DIR = '/archive/gold/datasets'
+def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optional[str]:
+    """
+    Locate (and if necessary copy) the gold-standard OM5_025 ocean_static.nc file
+    from the GFDL archive into a user-writable directory.
+
+    :param put_copy_here: Directory root under which a mirror of the archive
+        sub-path will be created and the file copied into.
+    :type put_copy_here: str or None
+    :return: Absolute path to the local working copy of ocean_static.nc,
+        or None if the file could not be obtained.
+    :rtype: str or None
+
+    .. note:: The archive path is hard-coded to the OM5_025 dataset on GFDL systems.
+    """
+    archive_gold_file = (
+        f'{ARCHIVE_GOLD_DATA_DIR}/OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
+    )
+    fre_logger.debug('ARCHIVE_GOLD_DATA_DIR=%s', ARCHIVE_GOLD_DATA_DIR)
+    fre_logger.debug('archive_gold_file=%s', archive_gold_file)
+
+    if put_copy_here is None:
+        fre_logger.warning('put_copy_here is None, cannot stage gold ocean statics file')
         return None
-    working_copy_dir=f'{put_copy_here}/{new_dir_tree}'
-    Path(working_copy_dir).mkdir( parents=True, exist_ok=True )
-    working_copy=f'{working_copy_dir}/ocean_static.nc'
-    if not Path(working_copy).exists():        
-        fre_logger.warning('copying archived golden statics file to \n %s', working_copy)
-        result = subprocess.run( ['cp', ARCHIVE_GOLD_FILE, working_copy ], shell = False, check = True)
 
-    if Path(working_copy).exists():
-        return f'{put_copy_here}/ocean_static.nc'
+    # mirror the archive sub-path under put_copy_here
+    # e.g.  /archive/gold/datasets/OM5_025/…  ->  datasets/OM5_025/…
+    try:
+        new_dir_tree = '/'.join(archive_gold_file.split('/')[3:])
+        fre_logger.debug('new_dir_tree=%s', new_dir_tree)
+    except Exception:
+        fre_logger.error('could not derive sub-path from archive_gold_file')
+        return None
 
-    assert False
+    working_copy_dir = f'{put_copy_here}/{Path(new_dir_tree).parent}'
+    Path(working_copy_dir).mkdir(parents=True, exist_ok=True)
+    working_copy = f'{working_copy_dir}/{Path(archive_gold_file).name}'
+
+    # guard: if a stale directory exists where the file should be (from a prior buggy mkdir),
+    # remove it so the copy can succeed
+    if Path(working_copy).is_dir():
+        fre_logger.warning('removing stale directory at working_copy path: %s', working_copy)
+        import shutil as _shutil
+        _shutil.rmtree(working_copy)
+
+    if not Path(working_copy).is_file():
+        if not Path(archive_gold_file).exists():
+            fre_logger.warning('gold archive file does not exist: %s', archive_gold_file)
+            return None
+        fre_logger.info('copying archived golden statics file to\n  %s', working_copy)
+        try:
+            subprocess.run(['cp', archive_gold_file, working_copy], shell=False, check=True)
+        except subprocess.CalledProcessError as exc:
+            fre_logger.warning('cp of gold statics file failed: %s', exc)
+            return None
+
+    if Path(working_copy).is_file():
+        fre_logger.info('gold ocean statics file available at %s', working_copy)
+        return working_copy
+
+    fre_logger.warning('gold ocean statics file not available after copy attempt')
     return None
-    
 
 # note, the awkward spacing of the docstring below is for the way sphinx renders reStructuredText, do not change!
 def find_statics_file( bronx_file_path: str) -> Optional[str]:
