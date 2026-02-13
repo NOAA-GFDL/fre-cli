@@ -17,6 +17,7 @@ from datetime import date
 from pathlib import Path
 import shutil
 import os
+import json
 
 import pytest
 
@@ -137,13 +138,9 @@ def test_cli_fre_cmor_yaml_opt_dne():
 TEST_AM5_YAML_PATH=f"fre/yamltools/tests/AM5_example/am5.yaml"
 TEST_CMOR_YAML_PATH=f"fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
 def test_cli_fre_cmor_yaml_case1():
-    ''' fre cmor yaml -y '''
-    Path( os.path.expandvars(
-            'fre/tests/test_files/ascii_files/mock_nbhome/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip'
-        ) ).mkdir(parents=True, exist_ok=True)
-    Path( os.path.expandvars(
-            'fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/history'
-        ) ).mkdir(parents=True, exist_ok=True)
+    ''' fre cmor yaml --dry_run -y TEST_AM5_YAML_PATH ... --output FOO_cmor.yaml '''
+    # only pp_dir is needed by cmor_yamler; history/analysis dirs came from settings.yaml
+    # which is now deprecated for the cmor path
     Path( os.path.expandvars(
             'fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp'
         ) ).mkdir(parents=True, exist_ok=True)
@@ -385,3 +382,187 @@ def test_cli_fre_cmor_run_cmip7_case2():
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
 
+
+# fre cmor config
+def test_cli_fre_cmor_config():
+    ''' fre cmor config '''
+    result = runner.invoke(fre.fre, args=["cmor", "config"])
+    assert result.exit_code == 2
+
+def test_cli_fre_cmor_config_help():
+    ''' fre cmor config --help '''
+    result = runner.invoke(fre.fre, args=["cmor", "config", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_cmor_config_opt_dne():
+    ''' fre cmor config optionDNE '''
+    result = runner.invoke(fre.fre, args=["cmor", "config", "optionDNE"])
+    assert result.exit_code == 2
+
+
+def test_cli_fre_cmor_config_case1():
+    '''
+    fre cmor config -- generate a CMOR YAML config from a mock pp directory tree.
+    Uses the ocean_sos_var_file test data with a mock pp layout.
+    '''
+    # set up a mock pp directory tree that the writer can scan
+    mock_pp_dir = Path(f'{ROOTDIR}/mock_pp_writer')
+    comp_ts_dir = mock_pp_dir / 'ocean' / 'ts' / 'monthly' / '5yr'
+    comp_ts_dir.mkdir(parents=True, exist_ok=True)
+
+    # symlink the test nc file into the mock tree
+    src_nc = Path(f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc')
+    dst_nc = comp_ts_dir / src_nc.name
+    if dst_nc.exists() or dst_nc.is_symlink():
+        dst_nc.unlink()
+    dst_nc.symlink_to(src_nc.resolve())
+
+    varlist_out_dir = Path(f'{ROOTDIR}/mock_writer_varlists')
+    output_yaml = Path(f'{ROOTDIR}/mock_writer_output.yaml')
+    output_data_dir = Path(f'{ROOTDIR}/mock_writer_outdir')
+
+    # clean up previous runs
+    for p in [output_yaml]:
+        if p.exists():
+            p.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "-v", "-v",
+        "cmor", "config",
+        "--pp_dir", str(mock_pp_dir),
+        "--mip_tables_dir", f'{ROOTDIR}/cmip6-cmor-tables/Tables',
+        "--mip_era", "cmip6",
+        "--exp_config", f'{ROOTDIR}/CMOR_input_example.json',
+        "--output_yaml", str(output_yaml),
+        "--output_dir", str(output_data_dir),
+        "--varlist_dir", str(varlist_out_dir),
+        "--freq", "monthly",
+        "--chunk", "5yr",
+        "--grid", "gn",
+        "--overwrite"
+    ])
+    assert result.exit_code == 0, f'config failed: {result.output}'
+    assert output_yaml.exists(), 'output YAML was not created'
+
+    # basic sanity: the written file should contain "cmor:" and "table_targets:"
+    yaml_text = output_yaml.read_text()
+    assert 'cmor:' in yaml_text
+    assert 'table_targets:' in yaml_text
+
+    # clean up
+    if dst_nc.is_symlink():
+        dst_nc.unlink()
+    shutil.rmtree(mock_pp_dir, ignore_errors=True)
+    shutil.rmtree(varlist_out_dir, ignore_errors=True)
+    if output_yaml.exists():
+        output_yaml.unlink()
+
+
+# fre cmor varlist
+def test_cli_fre_cmor_varlist():
+    ''' fre cmor varlist '''
+    result = runner.invoke(fre.fre, args=["cmor", "varlist"])
+    assert result.exit_code == 2
+
+def test_cli_fre_cmor_varlist_help():
+    ''' fre cmor varlist --help '''
+    result = runner.invoke(fre.fre, args=["cmor", "varlist", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_cmor_varlist_opt_dne():
+    ''' fre cmor varlist optionDNE '''
+    result = runner.invoke(fre.fre, args=["cmor", "varlist", "optionDNE"])
+    assert result.exit_code == 2
+
+
+def test_cli_fre_cmor_varlist_no_table_filter():
+    '''
+    fre cmor varlist — no MIP table filter.
+    creates a variable list from the ocean_sos_var_file test data without a MIP table,
+    so both sos and sosV2 should appear.
+    '''
+    indir = f'{ROOTDIR}/ocean_sos_var_file'
+    output_varlist = Path(f'{ROOTDIR}/test_varlist_no_filter.json')
+
+    if output_varlist.exists():
+        output_varlist.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "-v", "-v",
+        "cmor", "varlist",
+        "--dir_targ", indir,
+        "--output_variable_list", str(output_varlist)
+    ])
+    assert result.exit_code == 0, f'varlist failed: {result.output}'
+    assert output_varlist.exists(), 'output variable list was not created'
+
+    with open(output_varlist, 'r') as f:
+        var_list = json.load(f)
+
+    assert 'sos' in var_list
+    assert 'sosV2' in var_list
+    assert len(var_list) == 2
+
+    output_varlist.unlink()
+
+
+def test_cli_fre_cmor_varlist_cmip6_table_filter():
+    '''
+    fre cmor varlist — with CMIP6 Omon MIP table filter.
+    only sos should survive; sosV2 is not in the CMIP6 Omon table.
+    '''
+    indir = f'{ROOTDIR}/ocean_sos_var_file'
+    mip_table = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
+    output_varlist = Path(f'{ROOTDIR}/test_varlist_cmip6_filter.json')
+
+    if output_varlist.exists():
+        output_varlist.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "-v", "-v",
+        "cmor", "varlist",
+        "--dir_targ", indir,
+        "--output_variable_list", str(output_varlist),
+        "--mip_table", mip_table
+    ])
+    assert result.exit_code == 0, f'varlist failed: {result.output}'
+    assert output_varlist.exists(), 'output variable list was not created'
+
+    with open(output_varlist, 'r') as f:
+        var_list = json.load(f)
+
+    assert 'sos' in var_list, 'sos should be in the CMIP6-filtered list'
+    assert 'sosV2' not in var_list, 'sosV2 should NOT be in the CMIP6-filtered list'
+
+    output_varlist.unlink()
+
+
+def test_cli_fre_cmor_varlist_cmip7_table_filter():
+    '''
+    fre cmor varlist — with CMIP7 ocean MIP table filter.
+    sos should survive (sos_tavg-u-hxy-sea splits to sos); sosV2 should not.
+    '''
+    indir = f'{ROOTDIR}/ocean_sos_var_file'
+    mip_table = f'{ROOTDIR}/cmip7-cmor-tables/tables/CMIP7_ocean.json'
+    output_varlist = Path(f'{ROOTDIR}/test_varlist_cmip7_filter.json')
+
+    if output_varlist.exists():
+        output_varlist.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "-v", "-v",
+        "cmor", "varlist",
+        "--dir_targ", indir,
+        "--output_variable_list", str(output_varlist),
+        "--mip_table", mip_table
+    ])
+    assert result.exit_code == 0, f'varlist failed: {result.output}'
+    assert output_varlist.exists(), 'output variable list was not created'
+
+    with open(output_varlist, 'r') as f:
+        var_list = json.load(f)
+
+    assert 'sos' in var_list, 'sos should be in the CMIP7-filtered list'
+    assert 'sosV2' not in var_list, 'sosV2 should NOT be in the CMIP7-filtered list'
+
+    output_varlist.unlink()

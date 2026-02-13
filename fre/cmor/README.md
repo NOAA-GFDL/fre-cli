@@ -1,8 +1,8 @@
 # CMOR Subtools in `fre-cli`
 
 These notes describe how to use the refactored `fre cmor` tool for rewriting climate model output with CMIP-compliant metadata,
-also known as the process of "CMORization". This README will only refer to CMIP6-flavored examples, but the tool can be used for
-any kind of MIP as long as the right configuration files are accessible.
+also known as the process of "CMORization". Both CMIP6 and CMIP7 workflows are supported. The examples below use CMIP6
+configuration, but the tool can be used for any MIP era as long as the right configuration files are accessible.
 
 
 ## Documentation
@@ -67,7 +67,11 @@ fre cmor find --help
 # convenience / helper function for creating variable lists
 # helpful for code development, not designed for deployment usage
 # open an issue on github if you'd like more functionality here
-fre cmor varlist --help 
+fre cmor varlist --help
+
+# generate a cmor yaml configuration file from a post-processing directory tree
+# scans pp components and cross-references against MIP tables
+fre cmor config --help
 ```
 
 Below are short descriptions and a practical example for each of the `fre cmor` subcommands. For more information, consult each
@@ -125,7 +129,10 @@ Here, `fre cmor yaml`, targeting the `am5.yaml` model-`yaml`, will seek out rele
 `-o` flag target, `combined.yaml`, which can be utilized for debugging any issues that come up while the code runs. `--dry_run` here
 means the `cmor run` tool is not called, and instead, prints out the call to `run` subtool that is created from the input configuration
 files. `--run_one` means only the first call is printed, then the routine will finish. The `--experiment/-e`, `--platform/-p`, and
-`--target/-t` triplet of flags, characteristic to FRE, assist with the selection of configuration information pointed to by `-y`. 
+`--target/-t` triplet of flags, characteristic to FRE, assist with the selection of configuration information pointed to by `-y`.
+
+In dry-run mode, the default output shows the equivalent `fre cmor run` CLI invocation. Pass `--no-print_cli_call` to instead print
+the Python `cmor_run_subtool(...)` call, which can be useful for debugging. 
 
 
 ### `fre cmor find`
@@ -160,3 +167,33 @@ cat simple_varlist.txt # shows the result
 
 Here, `simple_varlist.txt` will be a simple JSON file, containing a dictionary with the variable(s) `sos` and `sosV2` listed.
 Note that `sosV2` is made-up variable for software testing purposes only.
+
+Optionally, pass `--mip_table` with a path to a MIP table JSON file to filter the generated variable list so that only variables
+present in the MIP table are included.
+
+
+### `fre cmor config`
+
+Generate a CMOR YAML configuration file from a post-processing directory tree. This scans the `pp` directory for available
+components and time-series data, cross-references found variables against MIP tables, creates per-component variable list files,
+and writes the structured YAML that `fre cmor yaml` expects.
+
+
+#### Example and Description
+```
+fre cmor config --pp_dir /path/to/pp \
+                --mip_tables_dir /path/to/cmip7-cmor-tables/tables \
+                --mip_era cmip7 \
+                --exp_config /path/to/CMOR_input.json \
+                --output_yaml cmor_config.yaml \
+                --output_dir /path/to/cmor_output \
+                --varlist_dir /path/to/varlists \
+                --freq monthly --chunk 5yr --grid gn \
+                --calendar noleap
+```
+
+Here, `fre cmor config` scans `--pp_dir` for components (e.g. `ocean_monthly_1x1deg`), finds time-series files under each, and
+matches their variable names against all MIP tables in `--mip_tables_dir`. For each component/table combination where variables
+match, a variable list JSON file is written to `--varlist_dir`, and a corresponding entry is added to the output YAML at
+`--output_yaml`. The generated YAML can then be fed directly to `fre cmor yaml`. Pass `--overwrite` to regenerate existing
+variable list files.

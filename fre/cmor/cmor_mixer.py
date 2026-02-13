@@ -27,6 +27,8 @@ Functions
           nothing, suggested "cmor mixer", not truly understanding why. Chris and Sergey decided to go with it.
 """
 
+
+import getpass
 import glob
 import json
 import logging
@@ -42,22 +44,13 @@ import netCDF4 as nc
 
 from .cmor_helpers import ( print_data_minmax, from_dis_gimme_dis, find_statics_file, create_lev_bnds,
                             get_iso_datetime_ranges, check_dataset_for_ocean_grid, get_vertical_dimension,
-                            create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type )
+                            create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type,
+                            update_outpath, find_gold_ocean_statics_file, filter_brands )
+from .cmor_constants import ( ACCEPTED_VERT_DIMS, NON_HYBRID_SIGMA_COORDS, ALT_HYBRID_SIGMA_COORDS,
+                              DEPTH_COORDS, CMOR_NC_FILE_ACTION, CMOR_VERBOSITY,
+                              CMOR_EXIT_CTL, CMOR_MK_SUBDIRS, CMOR_LOG )
 
 fre_logger = logging.getLogger(__name__)
-
-# Constants
-ACCEPTED_VERT_DIMS = ["z_l", "landuse", "plev39", "plev30", "plev19", "plev8",
-                      "height2m", "level", "lev", "levhalf"]
-NON_HYBRID_SIGMA_COORDS = ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]
-ALT_HYBRID_SIGMA_COORDS = ["level", "lev", "levhalf"]
-DEPTH_COORDS = ["z_l"]
-
-CMOR_NC_FILE_ACTION=cmor.CMOR_REPLACE#.CMOR_APPEND#.CMOR_PRESERVE#
-CMOR_VERBOSITY=cmor.CMOR_NORMAL#.CMOR_QUIET#
-CMOR_EXIT_CTL=cmor.CMOR_NORMAL#.CMOR_EXIT_ON_WARNING#.CMOR_EXIT_ON_MAJOR#
-CMOR_MK_SUBDIRS=1
-CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
 
 def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                              local_var: str = None,
@@ -143,9 +136,13 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                 var_brand=brands[0]
                 fre_logger.debug('cmip7 case, extracted brand %s',var_brand)
             else:
-                fre_logger.warning('cmip7 case, extracted multiple brand %s',brands)
-                fre_logger.error('should not happen')
-                raise ValueError
+                fre_logger.warning('cmip7 case, extracted multiple brands %s, attempting disambiguation',
+                                   brands)
+                var_brand = filter_brands(
+                    brands, target_var, mip_var_cfgs,
+                    has_time_bnds = 'time_bnds' in ds.variables,
+                    input_vert_dim = get_vertical_dimension(ds, target_var)
+                )
         else:
             fre_logger.error('cmip7 case detected, but dimensions of input data do not match '
                              'any of those found for the associated brands.')
@@ -192,14 +189,14 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     # check the calendar of the input netcdf file time coordinate, if present
     time_coords_calendar=None
     try: # first attempt
-        time_coords_calendar = ds['time'].calendar
+        time_coords_calendar = ds['time'].calendar.lower()
     except:
         fre_logger.debug("could not find calendar attribute on time axis. moving on.")
         pass
 
     if time_coords_calendar is None:
         try: # second attempt if first didn't work
-            time_coords_calendar=ds['time'].calendar_type
+            time_coords_calendar=ds['time'].calendar_type.lower()
         except:
             fre_logger.debug("could not find calendar_type attribute on time axis. moving on.")
             pass
@@ -210,10 +207,10 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                            "this output could have the wrong calendar!")
     else:
         with open(json_exp_config, "r", encoding="utf-8") as file:
-            data = json.load(file)
-            if data['calendar'] != time_coords_calendar.lower():
+            exp_cfg_calendar = json.load(file)['calendar']
+            if exp_cfg_calendar != time_coords_calendar:
                 raise ValueError(f"data calendar type {time_coords_calendar} "
-                                 f"does not match input config calendar type: {data['calendar']}")
+                                 f"does not match input config calendar type: {exp_cfg_calendar}")
 
     # read in time_bnds, if present
     fre_logger.info('attempting to read coordinate BNDS, time_bnds')
@@ -242,7 +239,16 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     if process_tripolar_data:
         try:
             fre_logger.info('netcdf_file is %s', netcdf_file)
-            statics_file_path = find_statics_file(prev_path)
+
+            # first, try the gold-standard archived ocean statics file
+            statics_file_path = find_gold_ocean_statics_file(
+                put_copy_here=f'/net2/{getpass.getuser()}')
+
+            # fall back to the legacy FRE-bronx directory convention
+            if statics_file_path is None:
+                fre_logger.info('gold statics not available, falling back to find_statics_file')
+                statics_file_path = find_statics_file(prev_path)
+
             fre_logger.info('statics_file_path is %s', statics_file_path)
         except Exception as exc: #uncovered
             fre_logger.warning(
@@ -515,8 +521,13 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                                    units=lev_units)
 
         elif vert_dim in DEPTH_COORDS:
-            lev_bnds = create_lev_bnds(bound_these=lev, with_these=ds['z_i'])
-            fre_logger.info('created lev_bnds...')
+            try:
+                lev_bnds = create_lev_bnds(bound_these=lev, with_these=ds['z_i'])
+                fre_logger.info('created lev_bnds...')
+            except:
+                fre_logger.error("the cmor module always requires vertical levels to have bounds.")
+                raise KeyError("the input data appears to be missing vertical bounds!")
+
             fre_logger.info('lev_bnds = \n%s', lev_bnds)
             cmor_z = cmor.axis('depth_coord',
                                coord_vals=lev[:],
@@ -979,6 +990,8 @@ def cmor_run_subtool(indir: str = None,
         update_grid_and_label(json_exp_config,
                               grid_label, grid, nom_res,
                               output_file_path = None)
+
+    update_outpath(json_exp_config, outdir)
 
     # CHECK optional grid/grid_label inputs, the function checks the potential error conditions RE CF compliance.
     if calendar_type is not None:
