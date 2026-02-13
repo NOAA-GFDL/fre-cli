@@ -46,21 +46,11 @@ from .cmor_helpers import ( print_data_minmax, from_dis_gimme_dis, find_statics_
                             get_iso_datetime_ranges, check_dataset_for_ocean_grid, get_vertical_dimension,
                             create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type,
                             update_outpath, find_gold_ocean_statics_file, filter_brands )
+from .cmor_constants import ( ACCEPTED_VERT_DIMS, NON_HYBRID_SIGMA_COORDS, ALT_HYBRID_SIGMA_COORDS,
+                              DEPTH_COORDS, CMOR_NC_FILE_ACTION, CMOR_VERBOSITY,
+                              CMOR_EXIT_CTL, CMOR_MK_SUBDIRS, CMOR_LOG )
 
 fre_logger = logging.getLogger(__name__)
-
-# Constants
-ACCEPTED_VERT_DIMS = ["z_l", "landuse", "plev39", "plev30", "plev19", "plev8",
-                      "height2m", "level", "lev", "levhalf"]
-NON_HYBRID_SIGMA_COORDS = ["landuse", "plev39", "plev30", "plev19", "plev8", "height2m"]
-ALT_HYBRID_SIGMA_COORDS = ["level", "lev", "levhalf"]
-DEPTH_COORDS = ["z_l"]
-
-CMOR_NC_FILE_ACTION=cmor.CMOR_REPLACE#.CMOR_APPEND#.CMOR_PRESERVE#
-CMOR_VERBOSITY=cmor.CMOR_NORMAL#.CMOR_QUIET#
-CMOR_EXIT_CTL=cmor.CMOR_NORMAL#.CMOR_EXIT_ON_WARNING#.CMOR_EXIT_ON_MAJOR#
-CMOR_MK_SUBDIRS=1
-CMOR_LOG=None#'TEMP_CMOR_LOG.log'#
 
 def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                              local_var: str = None,
