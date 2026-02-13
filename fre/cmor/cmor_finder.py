@@ -10,7 +10,7 @@ Functions
 ---------
 - ``print_var_content(table_config_file, var_name)``
 - ``cmor_find_subtool(json_var_list, json_table_config_dir, opt_var_name)``
-- ``make_simple_varlist(dir_targ, output_variable_list)``
+- ``make_simple_varlist(dir_targ, output_variable_list, json_mip_table)``
 
 Notes
 -----

@@ -5,6 +5,7 @@ import click
 from . import cmor_find_subtool
 from . import cmor_run_subtool
 from . import cmor_yaml_subtool
+from . import cmor_config_subtool
 from .cmor_finder import make_simple_varlist
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
@@ -181,3 +182,51 @@ def varlist(dir_targ, output_variable_list, mip_table):
     make_simple_varlist(dir_targ = dir_targ,
                         output_variable_list = output_variable_list,
                         json_mip_table = mip_table)
+
+
+@cmor_cli.command()
+@click.option("-p", "--pp_dir", type=str, required=True,
+              help="Root post-processing directory containing per-component subdirectories.")
+@click.option("-t", "--mip_tables_dir", type=str, required=True,
+              help="Directory containing MIP table JSON files.")
+@click.option("-m", "--mip_era", type=str, required=True,
+              help="MIP era identifier, e.g. 'cmip6' or 'cmip7'.")
+@click.option("-e", "--exp_config", type=str, required=True,
+              help="Path to JSON experiment/input configuration file expected by CMOR.")
+@click.option("-o", "--output_yaml", type=str, required=True,
+              help="Path for the output CMOR YAML configuration file.")
+@click.option("-d", "--output_dir", type=str, required=True,
+              help="Root output directory for CMORized data.")
+@click.option("-l", "--varlist_dir", type=str, required=True,
+              help="Directory in which per-component variable list JSON files are written.")
+@click.option("--freq", type=str, default="monthly",
+              help="Temporal frequency string, e.g. 'monthly', 'daily'. Default 'monthly'.")
+@click.option("--chunk", type=str, default="5yr",
+              help="Time chunk string, e.g. '5yr', '10yr'. Default '5yr'.")
+@click.option("--grid", type=str, default="g99",
+              help="Grid label anchor name, e.g. 'g99', 'gn'. Default 'g99'.")
+@click.option("--overwrite", is_flag=True, default=False,
+              help="Overwrite existing variable list files.")
+@click.option("--calendar", type=str, default="noleap",
+              help="Calendar type, e.g. 'noleap', '360_day'. Default 'noleap'.")
+def config(pp_dir, mip_tables_dir, mip_era, exp_config, output_yaml,
+           output_dir, varlist_dir, freq, chunk, grid, overwrite, calendar):
+    """
+    Generate a CMOR YAML configuration file from a post-processing directory tree.
+    Scans pp_dir for components and time-series data, cross-references against MIP tables,
+    and writes a YAML configuration that 'fre cmor yaml' can consume.
+    """
+    cmor_config_subtool(
+        pp_dir=pp_dir,
+        mip_tables_dir=mip_tables_dir,
+        mip_era=mip_era,
+        exp_config=exp_config,
+        output_yaml=output_yaml,
+        output_dir=output_dir,
+        varlist_dir=varlist_dir,
+        freq=freq,
+        chunk=chunk,
+        grid=grid,
+        overwrite=overwrite,
+        calendar_type=calendar
+    )

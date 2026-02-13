@@ -385,3 +385,77 @@ def test_cli_fre_cmor_run_cmip7_case2():
                    Path(full_outputfile).exists(),
                    Path(full_inputfile).exists() ] )
 
+
+# fre cmor config
+def test_cli_fre_cmor_config():
+    ''' fre cmor config '''
+    result = runner.invoke(fre.fre, args=["cmor", "config"])
+    assert result.exit_code == 2
+
+def test_cli_fre_cmor_config_help():
+    ''' fre cmor config --help '''
+    result = runner.invoke(fre.fre, args=["cmor", "config", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_cmor_config_opt_dne():
+    ''' fre cmor config optionDNE '''
+    result = runner.invoke(fre.fre, args=["cmor", "config", "optionDNE"])
+    assert result.exit_code == 2
+
+
+def test_cli_fre_cmor_config_case1():
+    '''
+    fre cmor config -- generate a CMOR YAML config from a mock pp directory tree.
+    Uses the ocean_sos_var_file test data with a mock pp layout.
+    '''
+    # set up a mock pp directory tree that the writer can scan
+    mock_pp_dir = Path(f'{ROOTDIR}/mock_pp_writer')
+    comp_ts_dir = mock_pp_dir / 'ocean' / 'ts' / 'monthly' / '5yr'
+    comp_ts_dir.mkdir(parents=True, exist_ok=True)
+
+    # symlink the test nc file into the mock tree
+    src_nc = Path(f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc')
+    dst_nc = comp_ts_dir / src_nc.name
+    if dst_nc.exists() or dst_nc.is_symlink():
+        dst_nc.unlink()
+    dst_nc.symlink_to(src_nc.resolve())
+
+    varlist_out_dir = Path(f'{ROOTDIR}/mock_writer_varlists')
+    output_yaml = Path(f'{ROOTDIR}/mock_writer_output.yaml')
+    output_data_dir = Path(f'{ROOTDIR}/mock_writer_outdir')
+
+    # clean up previous runs
+    for p in [output_yaml]:
+        if p.exists():
+            p.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "-v", "-v",
+        "cmor", "config",
+        "--pp_dir", str(mock_pp_dir),
+        "--mip_tables_dir", f'{ROOTDIR}/cmip6-cmor-tables/Tables',
+        "--mip_era", "cmip6",
+        "--exp_config", f'{ROOTDIR}/CMOR_input_example.json',
+        "--output_yaml", str(output_yaml),
+        "--output_dir", str(output_data_dir),
+        "--varlist_dir", str(varlist_out_dir),
+        "--freq", "monthly",
+        "--chunk", "5yr",
+        "--grid", "gn",
+        "--overwrite"
+    ])
+    assert result.exit_code == 0, f'config failed: {result.output}'
+    assert output_yaml.exists(), 'output YAML was not created'
+
+    # basic sanity: the written file should contain "cmor:" and "table_targets:"
+    yaml_text = output_yaml.read_text()
+    assert 'cmor:' in yaml_text
+    assert 'table_targets:' in yaml_text
+
+    # clean up
+    if dst_nc.is_symlink():
+        dst_nc.unlink()
+    shutil.rmtree(mock_pp_dir, ignore_errors=True)
+    shutil.rmtree(varlist_out_dir, ignore_errors=True)
+    if output_yaml.exists():
+        output_yaml.unlink()
