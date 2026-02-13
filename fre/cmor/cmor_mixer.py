@@ -45,7 +45,7 @@ import netCDF4 as nc
 from .cmor_helpers import ( print_data_minmax, from_dis_gimme_dis, find_statics_file, create_lev_bnds,
                             get_iso_datetime_ranges, check_dataset_for_ocean_grid, get_vertical_dimension,
                             create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type,
-                            update_outpath, find_gold_ocean_statics_file )
+                            update_outpath, find_gold_ocean_statics_file, filter_brands )
 
 fre_logger = logging.getLogger(__name__)
 
@@ -146,9 +146,13 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                 var_brand=brands[0]
                 fre_logger.debug('cmip7 case, extracted brand %s',var_brand)
             else:
-                fre_logger.warning('cmip7 case, extracted multiple brand %s',brands)
-                fre_logger.error('multiple brands are possible')
-                raise ValueError
+                fre_logger.warning('cmip7 case, extracted multiple brands %s, attempting disambiguation',
+                                   brands)
+                var_brand = filter_brands(
+                    brands, target_var, mip_var_cfgs,
+                    has_time_bnds = 'time_bnds' in ds.variables,
+                    input_vert_dim = get_vertical_dimension(ds, target_var)
+                )
         else:
             fre_logger.error('cmip7 case detected, but dimensions of input data do not match '
                              'any of those found for the associated brands.')
