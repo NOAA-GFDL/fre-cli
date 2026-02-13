@@ -17,6 +17,7 @@ from datetime import date
 from pathlib import Path
 import shutil
 import os
+import json
 
 import pytest
 
@@ -455,3 +456,113 @@ def test_cli_fre_cmor_config_case1():
     shutil.rmtree(varlist_out_dir, ignore_errors=True)
     if output_yaml.exists():
         output_yaml.unlink()
+
+
+# fre cmor varlist
+def test_cli_fre_cmor_varlist():
+    ''' fre cmor varlist '''
+    result = runner.invoke(fre.fre, args=["cmor", "varlist"])
+    assert result.exit_code == 2
+
+def test_cli_fre_cmor_varlist_help():
+    ''' fre cmor varlist --help '''
+    result = runner.invoke(fre.fre, args=["cmor", "varlist", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_cmor_varlist_opt_dne():
+    ''' fre cmor varlist optionDNE '''
+    result = runner.invoke(fre.fre, args=["cmor", "varlist", "optionDNE"])
+    assert result.exit_code == 2
+
+
+def test_cli_fre_cmor_varlist_no_table_filter():
+    '''
+    fre cmor varlist — no MIP table filter.
+    creates a variable list from the ocean_sos_var_file test data without a MIP table,
+    so both sos and sosV2 should appear.
+    '''
+    indir = f'{ROOTDIR}/ocean_sos_var_file'
+    output_varlist = Path(f'{ROOTDIR}/test_varlist_no_filter.json')
+
+    if output_varlist.exists():
+        output_varlist.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "-v", "-v",
+        "cmor", "varlist",
+        "--dir_targ", indir,
+        "--output_variable_list", str(output_varlist)
+    ])
+    assert result.exit_code == 0, f'varlist failed: {result.output}'
+    assert output_varlist.exists(), 'output variable list was not created'
+
+    with open(output_varlist, 'r') as f:
+        var_list = json.load(f)
+
+    assert 'sos' in var_list
+    assert 'sosV2' in var_list
+    assert len(var_list) == 2
+
+    output_varlist.unlink()
+
+
+def test_cli_fre_cmor_varlist_cmip6_table_filter():
+    '''
+    fre cmor varlist — with CMIP6 Omon MIP table filter.
+    only sos should survive; sosV2 is not in the CMIP6 Omon table.
+    '''
+    indir = f'{ROOTDIR}/ocean_sos_var_file'
+    mip_table = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
+    output_varlist = Path(f'{ROOTDIR}/test_varlist_cmip6_filter.json')
+
+    if output_varlist.exists():
+        output_varlist.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "-v", "-v",
+        "cmor", "varlist",
+        "--dir_targ", indir,
+        "--output_variable_list", str(output_varlist),
+        "--mip_table", mip_table
+    ])
+    assert result.exit_code == 0, f'varlist failed: {result.output}'
+    assert output_varlist.exists(), 'output variable list was not created'
+
+    with open(output_varlist, 'r') as f:
+        var_list = json.load(f)
+
+    assert 'sos' in var_list, 'sos should be in the CMIP6-filtered list'
+    assert 'sosV2' not in var_list, 'sosV2 should NOT be in the CMIP6-filtered list'
+
+    output_varlist.unlink()
+
+
+def test_cli_fre_cmor_varlist_cmip7_table_filter():
+    '''
+    fre cmor varlist — with CMIP7 ocean MIP table filter.
+    sos should survive (sos_tavg-u-hxy-sea splits to sos); sosV2 should not.
+    '''
+    indir = f'{ROOTDIR}/ocean_sos_var_file'
+    mip_table = f'{ROOTDIR}/cmip7-cmor-tables/tables/CMIP7_ocean.json'
+    output_varlist = Path(f'{ROOTDIR}/test_varlist_cmip7_filter.json')
+
+    if output_varlist.exists():
+        output_varlist.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "-v", "-v",
+        "cmor", "varlist",
+        "--dir_targ", indir,
+        "--output_variable_list", str(output_varlist),
+        "--mip_table", mip_table
+    ])
+    assert result.exit_code == 0, f'varlist failed: {result.output}'
+    assert output_varlist.exists(), 'output variable list was not created'
+
+    with open(output_varlist, 'r') as f:
+        var_list = json.load(f)
+
+    assert 'sos' in var_list, 'sos should be in the CMIP7-filtered list'
+    assert 'sosV2' not in var_list, 'sosV2 should NOT be in the CMIP7-filtered list'
+
+    output_varlist.unlink()
