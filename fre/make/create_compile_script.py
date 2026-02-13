@@ -7,6 +7,8 @@ import logging
 
 from pathlib import Path
 from multiprocessing.dummy import Pool
+import filecmp 
+#import difflib
 
 import fre.yamltools.combine_yamls_script as cy
 from typing import Optional
@@ -15,9 +17,26 @@ from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
 
 fre_logger = logging.getLogger(__name__)
 
+def compile_call(fremakeYaml, template_path, srcDir, bldDir, target, platform, jobs, fremakeBuildList, execute):
+    """
+    """
+    fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],
+                                                 mkTemplatePath=template_path,
+                                                 srcDir=srcDir,
+                                                 bldDir=bldDir,
+                                                 target=target,
+                                                 env_setup=platform["envSetup"],
+                                                 jobs=jobs)
+    for c in fremakeYaml['src']:
+        fremakeBuild.writeBuildComponents(c)
+    fremakeBuild.writeScript()
+    fremakeBuildList.append(fremakeBuild)
+    fre_logger.info("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
+
 def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                    nparallel: int = 1, execute: Optional[bool] = False,
-                   verbose: Optional[bool] = None):
+                   verbose: Optional[bool] = None,
+                   force_compile: Optional[bool] = None):
     """
     Creates the compile script for bare-metal build
 
@@ -36,6 +55,8 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
     :type execute: bool
     :param verbose: Increase verbosity output
     :type verbose: bool
+    :param force_compile: Re-create compile script if specified
+    :type force_compile: bool
     :raises ValueError:
         - Error if platform does not exist in platforms yaml configuration 
         - Error if the mkmf template defined in platforms yaml does not exist
@@ -97,26 +118,51 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                 baremetalRun = True
                 bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
                          f'{platformName}-{target.gettargetName()}/exec'
-                os.system("mkdir -p " + bldDir)
+#                os.system("mkdir -p " + bldDir)
+                Path(bldDir).mkdir(parents=True, exist_ok=True)
 
                 template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                     model_root = platform["modelRoot"],
                                                     container_flag = platform["container"])
 
-                ## Create a list of compile scripts to run in parallel
-                fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],
-                                                             mkTemplatePath=template_path,
-                                                             srcDir=srcDir,
-                                                             bldDir=bldDir,
-                                                             target=target,
-                                                             env_setup=platform["envSetup"],
-                                                             jobs=jobs)
+                if not Path(f"{bldDir}/compile.sh").exists():
+                    ## Create a list of compile scripts to run in parallel
+                    fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],
+                                                                 mkTemplatePath=template_path,
+                                                                 srcDir=srcDir,
+                                                                 bldDir=bldDir,
+                                                                 target=target,
+                                                                 env_setup=platform["envSetup"],
+                                                                 jobs=jobs)
+                elif Path(f"{bldDir}/compile.sh").exists() and force_compile:
+                    # Remove old compile script
+                    fre_logger.info("Compile script PREVIOUSLY created here: %s/compile.sh", bldDir)
+                    fre_logger.info("*** REMOVING COMPILE SCRIPT ***")
+                    Path(f"{bldDir}/compile.sh").unlink()
+                    
+                    # Re-create compile script
+                    fremakeBuild = buildBaremetal.buildBaremetal(exp=fremakeYaml["experiment"],
+                                                                 mkTemplatePath=template_path,
+                                                                 srcDir=srcDir,
+                                                                 bldDir=bldDir,
+                                                                 target=target,
+                                                                 env_setup=platform["envSetup"],
+                                                                 jobs=jobs)
+                elif Path(f"{bldDir}/compile.sh").exists() and not force_compile:
+                    fre_logger.warning("Compile script PREVIOUSLY created here: %s/compile.sh", bldDir)
+                    ###COMPARE THE TWO TO SEE IF IT'S CHANGED###--> filecmp or difflib
+                    ###IF CHANGED, THROW ERROR###
+                    ###SHOULD IT ALSO BE RE-CREATED IF CHECKOUT RE-CREATED?? --> I THINK THIS WILL BE FOR "ALL" SUBTOOL###
+                    fremakeBuildList.append(f"{bldDir}/compile.sh")
+
                 for c in fremakeYaml['src']:
                     fremakeBuild.writeBuildComponents(c)
                 fremakeBuild.writeScript()
                 fremakeBuildList.append(fremakeBuild)
+                print(fremakeBuildList)
+                ah
                 fre_logger.info("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
-
+#
     if execute:
         if baremetalRun:
             pool = Pool(processes=nparallel)  # Create a multiprocessing Pool
