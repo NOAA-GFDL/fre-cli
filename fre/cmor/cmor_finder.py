@@ -26,13 +26,9 @@ from pathlib import Path
 from typing import Optional, Dict, IO
 from .cmor_helpers import get_json_file_data
 
-fre_logger = logging.getLogger(__name__)
+from .cmor_constants import DO_NOT_PRINT_LIST
 
-DO_NOT_PRINT_LIST = [
-    'comment',
-    'ok_min_mean_abs', 'ok_max_mean_abs',
-    'valid_min', 'valid_max'
-]
+fre_logger = logging.getLogger(__name__)
 
 
 def print_var_content(table_config_file: IO[str],

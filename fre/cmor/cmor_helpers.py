@@ -99,7 +99,8 @@ def from_dis_gimme_dis( from_dis: Dataset,
         return None
 
 import subprocess
-ARCHIVE_GOLD_DATA_DIR = '/archive/gold/datasets'
+from .cmor_constants import ARCHIVE_GOLD_DATA_DIR, INPUT_TO_MIP_VERT_DIM
+
 def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optional[str]:
     """
     Locate (and if necessary copy) the gold-standard OM5_025 ocean_static.nc file
@@ -675,17 +676,6 @@ def update_outpath( json_file_path: str,
     except Exception as e:
         fre_logger.error("An unexpected error occurred: %s", e)
         raise
-
-
-# Mapping from input netCDF vertical dimension names to CMIP7 MIP table dimension names.
-# Entries where the names already match (e.g. plev39, height2m) are not needed;
-# the disambiguation logic falls back to using the input name directly.
-INPUT_TO_MIP_VERT_DIM = {
-    "z_l":      "olevel",
-    "level":    "alevel",
-    "lev":      "alevel",
-    "levhalf":  "alevhalf",
-}
 
 
 def filter_brands( brands: list,
