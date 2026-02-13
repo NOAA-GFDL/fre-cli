@@ -20,17 +20,9 @@ from pathlib import Path
 from typing import Optional
 
 from .cmor_finder import make_simple_varlist
+from .cmor_constants import EXCLUDED_TABLE_SUFFIXES
 
 fre_logger = logging.getLogger(__name__)
-
-# MIP table filenames to exclude (non-variable-entry tables)
-EXCLUDED_TABLE_SUFFIXES = [
-    'long_name_overrides',
-    'grids',
-    'formula_terms',
-    'coordinate',
-    'cell_measures',
-]
 
 
 def _filter_mip_tables(mip_tables_dir: str, mip_era: str):

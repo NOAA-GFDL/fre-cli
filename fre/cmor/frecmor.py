@@ -55,7 +55,11 @@ def cmor_cli():
 @click.option('--stop', type=str, default=None,
               help = STOP_YEAR_HELP,
               required = False)
-def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start, stop):
+@click.option('--print_cli_call/--no-print_cli_call', default=True,
+              help = 'In dry-run mode, print the equivalent CLI invocation (default) '
+                     'or the Python cmor_run_subtool() call.',
+              required = False)
+def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start, stop, print_cli_call):
     """
     Processes a CMOR (Climate Model Output Rewriter) YAML configuration file. This function takes a YAML file
     and various parameters related to a climate model experiment, and processes the YAML file using the CMOR
@@ -71,7 +75,8 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start
         run_one_mode = run_one,
         dry_run_mode = dry_run,
         start = start,
-        stop = stop
+        stop = stop,
+        print_cli_call = print_cli_call
     )
 
 @cmor_cli.command()

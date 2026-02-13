@@ -28,8 +28,6 @@ from .cmor_helpers import ( check_path_existence, iso_to_bronx_chunk, conv_mip_t
 
 fre_logger = logging.getLogger(__name__)
 
-PRINT_CLI_CALL = True
-
 def cmor_yaml_subtool( yamlfile: str = None,
                        exp_name: str = None,
                        platform: str = None,
@@ -40,7 +38,8 @@ def cmor_yaml_subtool( yamlfile: str = None,
                        dry_run_mode: bool = False,
                        start: Optional[str] = None,
                        stop: Optional[str] = None,
-                       calendar_type: Optional[str] = None):
+                       calendar_type: Optional[str] = None,
+                       print_cli_call: bool = True):
     """
     Main driver for CMORization using model YAML configuration files.
     This routine parses the model YAML, combines configuration, resolves and checks all required
@@ -69,6 +68,10 @@ def cmor_yaml_subtool( yamlfile: str = None,
     :type stop: str, optional
     :param calendar_type: CF-compliant calendar type.
     :type calendar_type: str, optional
+    :param print_cli_call: When True and dry_run_mode is enabled, print
+        the equivalent ``fre cmor run`` CLI invocation; when False, print
+        the Python ``cmor_run_subtool(...)`` call instead.
+    :type print_cli_call: bool
     :raises FileNotFoundError: If required paths do not exist.
     :raises OSError: If output directories cannot be created.
     :raises ValueError: If required configuration is missing or inconsistent.
@@ -229,7 +232,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
 
 
             if dry_run_mode:
-                if PRINT_CLI_CALL:
+                if print_cli_call:
                     fre_logger.info(  '--DRY RUN CLI CALL---\n'
                                       'fre -v -v cmor run \\ \n'
                                       f'    --indir {indir} \\ \n'
