@@ -13,9 +13,10 @@ cmor:
     'fre/tests/test_files/CMOR_input_example.json'
 
   # these fields are for global directory configuration
+  # note: cmor yamls are self-contained and do NOT import settings.yaml
   # -------------------------------------------------------------------------------------  
   directories:
-    <<: *shared_directories
+    pp_dir: !join [fre/tests/test_files/ascii_files/mock_archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
     table_dir: &table_dir
       "fre/tests/test_files/cmip6-cmor-tables/Tables"
     outdir:
@@ -27,8 +28,6 @@ cmor:
 
     # -----------------------------------------------------------------------------------
     - table_name: 'Amon' 
-      variable_list:
-        'fre/tests/test_files/varlist'
       freq: #optional, if not specified we try to figure it out from the MIP table entries
 #      gridding: #optional, if empty or not present, use grid info in exp_json as-is
       gridding: #optional, a grids.yaml is necessary to specify grid info this way
@@ -40,9 +39,11 @@ cmor:
         
       target_components:
         - component_name: 'atmos_cmip'
+          variable_list: 'fre/tests/test_files/varlist'
           data_series_type: 'ts'
           chunk: *PP_CPLD_CHUNK_A
           
         - component_name: 'atmos_level_cmip'
+          variable_list: 'fre/tests/test_files/varlist'
           data_series_type: 'ts'
           chunk: *PP_CPLD_CHUNK_A

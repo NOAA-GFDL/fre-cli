@@ -172,22 +172,32 @@ def cmor_yaml_subtool( yamlfile: str = None,
 
         # check frequency info from user
         freq = cmor_yaml_table_target['freq']
-        if freq is None:
-            raise ValueError(
-                f'not enough frequency information to process variables for {cmor_yaml_table_target}')
-        fre_logger.info('freq = %s', freq)
 
-        ## check frequency info in table target
-        #if mip_era == 'CMIP6':
-        #    mip_table_freq = get_bronx_freq_from_mip_table(json_mip_table_config)
-        #elif mip_era == 'CMIP7':
-        #    #mip_table_freq assigned from input experiment/user config for CMOR
-        #
-        #if mip_table_freq is None:
-        #    fre_logger.warning('could not read frequency from input MIP tables or user config, will not check against user input freq from cmor yaml')
-        #elif freq != mip_table_freq:
-        #    raise ValueError(
-        #        'frequency from MIP table is incompatible with requested frequency in cmor yaml for {cmor_yaml_table_target}')
+        # if freq not supplied, behavior depends on MIP era
+        if freq is None:
+            if mip_era == 'CMIP7':
+                # CMIP7 tables do not carry frequency — the user must always specify it
+                raise ValueError(
+                    f'freq is required for CMIP7 but was not specified for table target {table_name}.\n'
+                    f'  CMIP7 MIP tables do not contain frequency metadata.\n'
+                    f'  please set freq explicitly (e.g. "monthly", "daily") in the cmor yaml.')
+            # CMIP6 tables carry frequency — attempt to derive it
+            fre_logger.info('freq not specified in cmor yaml for table %s, '
+                            'attempting to derive from CMIP6 MIP table', table_name)
+            try:
+                freq = get_bronx_freq_from_mip_table(json_mip_table_config)
+            except (KeyError, TypeError):
+                freq = None
+            if freq is None:
+                raise ValueError(
+                    f'not enough frequency information to process variables for {table_name}.\n'
+                    f'  freq was not specified in the cmor yaml, and could not be derived from the MIP table.\n'
+                    f'  please set freq explicitly (e.g. "monthly", "daily") in the cmor yaml.')
+            fre_logger.info('derived freq = %s from MIP table %s', freq, json_mip_table_config)
+
+        # update the table target dict so downstream code sees the resolved freq
+        cmor_yaml_table_target['freq'] = freq
+        fre_logger.info('freq = %s', freq)
 
         # gridding info of data ---- revisit/TODO
         gridding_dict = cmor_yaml_table_target['gridding']
@@ -203,15 +213,14 @@ def cmor_yaml_subtool( yamlfile: str = None,
 
         table_components_list = cmor_yaml_table_target['target_components']
         for targ_comp_config in table_components_list:
+            component = targ_comp_config['component_name']
+            bronx_chunk = iso_to_bronx_chunk(targ_comp_config['chunk'])
+            data_series_type = targ_comp_config['data_series_type']
 
             json_var_list = os.path.expandvars(
                 targ_comp_config['variable_list']
             )
             fre_logger.info('json_var_list = %s', json_var_list)
-
-            component = targ_comp_config['component_name']
-            bronx_chunk = iso_to_bronx_chunk(targ_comp_config['chunk'])
-            data_series_type = targ_comp_config['data_series_type']
             indir = f'{pp_dir}/{component}/{data_series_type}/{freq}/{bronx_chunk}'
             fre_logger.info('indir = %s', indir)
 

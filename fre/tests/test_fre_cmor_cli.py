@@ -137,13 +137,9 @@ def test_cli_fre_cmor_yaml_opt_dne():
 TEST_AM5_YAML_PATH=f"fre/yamltools/tests/AM5_example/am5.yaml"
 TEST_CMOR_YAML_PATH=f"fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
 def test_cli_fre_cmor_yaml_case1():
-    ''' fre cmor yaml -y '''
-    Path( os.path.expandvars(
-            'fre/tests/test_files/ascii_files/mock_nbhome/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip'
-        ) ).mkdir(parents=True, exist_ok=True)
-    Path( os.path.expandvars(
-            'fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/history'
-        ) ).mkdir(parents=True, exist_ok=True)
+    ''' fre cmor yaml --dry_run -y TEST_AM5_YAML_PATH ... --output FOO_cmor.yaml '''
+    # only pp_dir is needed by cmor_yamler; history/analysis dirs came from settings.yaml
+    # which is now deprecated for the cmor path
     Path( os.path.expandvars(
             'fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp'
         ) ).mkdir(parents=True, exist_ok=True)
