@@ -413,6 +413,113 @@ def test_outdir_creation_when_missing(mock_consolidate, tmp_path):
 
 
 @patch('fre.cmor.cmor_yamler.consolidate_yamls')
+def test_outdir_creation_failure_raises_oserror(mock_consolidate, tmp_path):
+    '''
+    OSError when cmorized_outdir does not exist and Path.mkdir fails.
+    Covers the except branch in the outdir-creation block.
+    '''
+    dummy_yaml = tmp_path / 'model.yaml'
+    dummy_yaml.write_text('placeholder')
+    local_exp = tmp_path / 'exp.json'
+    shutil.copy(EXP_CONFIG, local_exp)
+    pp_dir = tmp_path / 'pp'
+    pp_dir.mkdir()
+    # pick a path that does NOT exist so the mkdir branch is entered
+    outdir = tmp_path / 'impossible_outdir'
+
+    mock_consolidate.return_value = _build_cmor_dict(
+        pp_dir=str(pp_dir),
+        table_dir=CMIP6_TABLE_DIR,
+        outdir=str(outdir),
+        exp_config=str(local_exp),
+        varlist=VARLIST,
+    )
+
+    # mock Path.mkdir to raise so the except branch is hit
+    with patch.object(Path, 'mkdir', side_effect=PermissionError('no permission')):
+        with pytest.raises(OSError, match='could not create cmorized_outdir'):
+            cmor_yaml_subtool(
+                yamlfile=str(dummy_yaml),
+                exp_name='x', platform='x', target='x',
+                dry_run_mode=True)
+
+
+@patch('fre.cmor.cmor_yamler.consolidate_yamls')
+def test_start_stop_calendar_missing_from_yaml(mock_consolidate, tmp_path):
+    '''
+    When start, stop, and calendar_type are None on the CLI AND absent
+    from the YAML dict, the function should log warnings and continue
+    (dry-run mode).  Covers the KeyError branches for start/stop/calendar_type.
+    '''
+    dummy_yaml = tmp_path / 'model.yaml'
+    dummy_yaml.write_text('placeholder')
+    local_exp = tmp_path / 'exp.json'
+    shutil.copy(EXP_CONFIG, local_exp)
+    pp_dir = tmp_path / 'pp'
+    pp_dir.mkdir()
+    outdir = tmp_path / 'out'
+    outdir.mkdir()
+
+    cmor_dict = _build_cmor_dict(
+        pp_dir=str(pp_dir),
+        table_dir=CMIP6_TABLE_DIR,
+        outdir=str(outdir),
+        exp_config=str(local_exp),
+        varlist=VARLIST,
+    )
+    # remove the keys so the KeyError branches fire
+    del cmor_dict['cmor']['start']
+    del cmor_dict['cmor']['stop']
+    del cmor_dict['cmor']['calendar_type']
+
+    mock_consolidate.return_value = cmor_dict
+
+    # should not raise — the warnings are logged, dry-run continues
+    cmor_yaml_subtool(
+        yamlfile=str(dummy_yaml),
+        exp_name='x', platform='x', target='x',
+        dry_run_mode=True,
+        start=None,
+        stop=None,
+        calendar_type=None)
+
+
+@patch('fre.cmor.cmor_yamler.consolidate_yamls')
+def test_cmip6_freq_none_derivation_succeeds(mock_consolidate, tmp_path):
+    '''
+    When mip_era=CMIP6 and freq is None, but the MIP table carries a
+    derivable frequency (e.g. Omon → "mon" → "monthly"), the function
+    should successfully derive freq and continue (dry-run mode).
+    Covers the successful get_bronx_freq_from_mip_table path.
+    '''
+    dummy_yaml = tmp_path / 'model.yaml'
+    dummy_yaml.write_text('placeholder')
+    local_exp = tmp_path / 'exp.json'
+    shutil.copy(EXP_CONFIG, local_exp)
+    pp_dir = tmp_path / 'pp'
+    pp_dir.mkdir()
+    outdir = tmp_path / 'out'
+    outdir.mkdir()
+
+    mock_consolidate.return_value = _build_cmor_dict(
+        pp_dir=str(pp_dir),
+        table_dir=CMIP6_TABLE_DIR,
+        outdir=str(outdir),
+        exp_config=str(local_exp),
+        varlist=VARLIST,
+        mip_era='CMIP6',
+        table_name='Omon',
+        freq=None,              # force derivation from the MIP table
+    )
+
+    # Omon has frequency "mon" → bronx "monthly"; should not raise
+    cmor_yaml_subtool(
+        yamlfile=str(dummy_yaml),
+        exp_name='x', platform='x', target='x',
+        dry_run_mode=True)
+
+
+@patch('fre.cmor.cmor_yamler.consolidate_yamls')
 def test_dry_run_prints_cli_call(mock_consolidate, tmp_path, capfd):
     '''
     dry_run_mode=True with print_cli_call=True should log the CLI
