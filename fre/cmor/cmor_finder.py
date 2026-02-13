@@ -126,9 +126,6 @@ def cmor_find_subtool( json_var_list: Optional[str] = None,
             for json_table_config in json_table_configs:
                 with open(json_table_config, "r", encoding="utf-8") as table_config_file:
                     print_var_content(table_config_file, str(var_list[var]))
-    else:
-        fre_logger.error('this line should be unreachable!!!')
-        raise
 
 
 def make_simple_varlist( dir_targ: str,
