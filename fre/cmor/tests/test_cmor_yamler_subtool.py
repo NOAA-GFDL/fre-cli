@@ -349,6 +349,51 @@ def test_cmip6_freq_none_no_derivation_raises(mock_consolidate, tmp_path):
 
 
 @patch('fre.cmor.cmor_yamler.consolidate_yamls')
+def test_cmip6_freq_none_derivation_exception_caught(mock_consolidate, tmp_path):
+    '''
+    When mip_era=CMIP6, freq is None, and get_bronx_freq_from_mip_table
+    raises a KeyError (e.g. the MIP table JSON has no variable_entry key),
+    the except (KeyError, TypeError) branch catches it, sets freq = None,
+    and the subsequent check raises ValueError.
+    Covers the except branch around get_bronx_freq_from_mip_table.
+    '''
+    dummy_yaml = tmp_path / 'model.yaml'
+    dummy_yaml.write_text('placeholder')
+    local_exp = tmp_path / 'exp.json'
+    shutil.copy(EXP_CONFIG, local_exp)
+    pp_dir = tmp_path / 'pp'
+    pp_dir.mkdir()
+    outdir = tmp_path / 'out'
+    outdir.mkdir()
+
+    # Create a MIP table that is missing the 'variable_entry' key entirely,
+    # so get_bronx_freq_from_mip_table raises KeyError
+    fake_table_dir = tmp_path / 'tables'
+    fake_table_dir.mkdir()
+    fake_table = fake_table_dir / 'CMIP6_FakeBad.json'
+    fake_table.write_text(json.dumps({
+        'Header': {'table_id': 'Table FakeBad'}
+    }))
+
+    mock_consolidate.return_value = _build_cmor_dict(
+        pp_dir=str(pp_dir),
+        table_dir=str(fake_table_dir),
+        outdir=str(outdir),
+        exp_config=str(local_exp),
+        varlist=VARLIST,
+        mip_era='CMIP6',
+        table_name='FakeBad',
+        freq=None,
+    )
+
+    with pytest.raises(ValueError, match='not enough frequency information'):
+        cmor_yaml_subtool(
+            yamlfile=str(dummy_yaml),
+            exp_name='x', platform='x', target='x',
+            dry_run_mode=True)
+
+
+@patch('fre.cmor.cmor_yamler.consolidate_yamls')
 def test_gridding_dict_has_none_value_raises(mock_consolidate, tmp_path):
     ''' ValueError when a gridding field is None '''
     dummy_yaml = tmp_path / 'model.yaml'
