@@ -245,8 +245,16 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     if process_tripolar_data:
         try:
             fre_logger.info('netcdf_file is %s', netcdf_file)
-#            statics_file_path = find_statics_file(prev_path)
-            statics_file_path = find_gold_ocean_statics_file(put_copy_here=f'/net2/{getpass.getuser()}')
+
+            # first, try the gold-standard archived ocean statics file
+            statics_file_path = find_gold_ocean_statics_file(
+                put_copy_here=f'/net2/{getpass.getuser()}')
+
+            # fall back to the legacy FRE-bronx directory convention
+            if statics_file_path is None:
+                fre_logger.info('gold statics not available, falling back to find_statics_file')
+                statics_file_path = find_statics_file(prev_path)
+
             fre_logger.info('statics_file_path is %s', statics_file_path)
         except Exception as exc: #uncovered
             fre_logger.warning(

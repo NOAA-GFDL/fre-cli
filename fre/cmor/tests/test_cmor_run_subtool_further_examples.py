@@ -74,10 +74,16 @@ ESM4_DEV_PP_DIR='USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/gfdl.ncrc5-intel23-pro
                   'Lmon',    'lai',       'gr1','0001','noleap', id='Lmon_lai_gr1' ),
   ] )
 
-def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar):
+def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar,monkeypatch):
     '''
     Should be iterating over the test dictionary
     '''
+
+    # for native-grid ocean tests, prevent the gold statics lookup from finding
+    # /archive files so the test uses its own locally-generated statics file
+    if grid_label == 'gn':
+        monkeypatch.setattr(
+            'fre.cmor.cmor_mixer.find_gold_ocean_statics_file', lambda **kw: None)
 
     # define inputs to the cmor run tool
     indir = testfile_dir
