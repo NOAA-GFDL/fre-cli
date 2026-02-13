@@ -211,9 +211,7 @@ def make_simple_varlist( dir_targ: str,
             if mip_vars is not None and var_name not in mip_vars:
                 fre_logger.debug('var_name %s not in mip_vars, omitting', var_name)
                 continue
-            if var_name in quick_vlist:
-                fre_logger.debug('var_name %s already in target varlist, skip', var_name)
-                continue
+
             quick_vlist.append(var_name)
 
         if len(quick_vlist) > 0:
