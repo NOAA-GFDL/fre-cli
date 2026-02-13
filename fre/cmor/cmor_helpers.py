@@ -97,6 +97,34 @@ def from_dis_gimme_dis( from_dis: Dataset,
         fre_logger.warning('I am sorry, I could not not give you this: %s\n returning None!\n', gimme_dis)
         return None
 
+import subprocess
+ARCHIVE_GOLD_DATA_DIR='/archive/gold/datasets'
+def find_gold_ocean_statics_file(put_copy_here=None):
+    ARCHIVE_GOLD_FILE=f'{ARCHIVE_GOLD_DATA_DIR}/OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
+    fre_logger.debug('ARCHIVE_GOLD_DATA_DIR=%s',ARCHIVE_GOLD_DATA_DIR)
+    fre_logger.debug('ARCHIVE_GOLD_FILE=%s',ARCHIVE_GOLD_FILE)
+    
+    try:
+        new_dir_tree='/'.join(ARCHIVE_GOLD_FILE.split('/')[3:])
+        fre_logger.debug('new_dir_tree=%s',new_dir_tree)
+    except:
+        fre_logger.error('problem')
+        assert False
+        return None
+    working_copy_dir=f'{put_copy_here}/{new_dir_tree}'
+    Path(working_copy_dir).mkdir( parents=True, exist_ok=True )
+    working_copy=f'{working_copy_dir}/ocean_static.nc'
+    if not Path(working_copy).exists():        
+        fre_logger.warning('copying archived golden statics file to \n %s', working_copy)
+        result = subprocess.run( ['cp', ARCHIVE_GOLD_FILE, working_copy ], shell = False, check = True)
+
+    if Path(working_copy).exists():
+        return f'{put_copy_here}/ocean_static.nc'
+
+    assert False
+    return None
+    
+
 # note, the awkward spacing of the docstring below is for the way sphinx renders reStructuredText, do not change!
 def find_statics_file( bronx_file_path: str) -> Optional[str]:
     """

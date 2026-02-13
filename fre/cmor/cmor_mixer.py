@@ -27,6 +27,8 @@ Functions
           nothing, suggested "cmor mixer", not truly understanding why. Chris and Sergey decided to go with it.
 """
 
+
+import getpass
 import glob
 import json
 import logging
@@ -43,7 +45,7 @@ import netCDF4 as nc
 from .cmor_helpers import ( print_data_minmax, from_dis_gimme_dis, find_statics_file, create_lev_bnds,
                             get_iso_datetime_ranges, check_dataset_for_ocean_grid, get_vertical_dimension,
                             create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type,
-                            update_outpath)
+                            update_outpath, find_gold_ocean_statics_file )
 
 fre_logger = logging.getLogger(__name__)
 
@@ -243,7 +245,8 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     if process_tripolar_data:
         try:
             fre_logger.info('netcdf_file is %s', netcdf_file)
-            statics_file_path = find_statics_file(prev_path)
+#            statics_file_path = find_statics_file(prev_path)
+            statics_file_path = find_gold_ocean_statics_file(put_copy_here=f'/net2/{getpass.getuser()}')
             fre_logger.info('statics_file_path is %s', statics_file_path)
         except Exception as exc: #uncovered
             fre_logger.warning(

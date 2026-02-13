@@ -216,6 +216,8 @@ def cmor_yaml_subtool( yamlfile: str = None,
             fre_logger.info('indir = %s', indir)
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
+            cmor_run_call_outdir=f'{cmorized_outdir}/{component}/{table_name}'            
+
 
             if dry_run_mode:
                 if PRINT_CLI_CALL:
@@ -225,7 +227,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
                                       f'    --varlist {json_var_list} \\ \n'
                                       f'    --table_config {json_mip_table_config} \\ \n'
                                       f'    --exp_config {json_exp_config} \\ \n'
-                                      f'    --outdir {cmorized_outdir} \\ \n'
+                                      f'    --outdir {cmor_run_call_outdir} \\ \n'
                                       f'    --run_one \\ \n'
 #                                      f'    --opt_var_name {opt_var_name} \\ \n'
                                       f'    --grid_desc "{grid_desc}" \\ \n'
@@ -242,7 +244,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
                                       f'    json_var_list = {json_var_list} ,\n'
                                       f'    json_table_config = {json_mip_table_config} ,\n'
                                       f'    json_exp_config = {json_exp_config} ,\n'
-                                      f'    outdir = {cmorized_outdir} ,\n'
+                                      f'    outdir = {cmor_run_call_outdir} ,\n'
                                       f'    run_one_mode = {run_one_mode} ,\n'
                                       f'    opt_var_name = {opt_var_name} ,\n'
                                       f'    grid = {grid_desc} ,\n'
@@ -258,7 +260,8 @@ def cmor_yaml_subtool( yamlfile: str = None,
                 json_var_list = json_var_list ,
                 json_table_config = json_mip_table_config ,
                 json_exp_config = json_exp_config ,
-                outdir = cmorized_outdir ,
+#                outdir = cmorized_outdir ,
+                outdir = cmor_run_call_outdir ,
                 run_one_mode = run_one_mode ,
                 opt_var_name = opt_var_name ,
                 grid = grid_desc ,
