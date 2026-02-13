@@ -7,14 +7,33 @@
 
 import subprocess
 import os
+from pathlib import Path
 
+### TODO run as a batch job on the login cluster
 def fremake_parallel(fremakeBuildList):
     """
     Brief: Called for parallel execution purposes.  Runs the builds.
     Param:
         - fremakeBuildList : fremakeBuild object list passes by pool.map
     """
-    fremakeBuildList.run()
+    bldDir = Path(fremakeBuildList).parent
+
+    # Run compile script
+    p1 = subprocess.Popen(fremakeBuildList, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+
+    # Direct output to log file as well
+    p2 = subprocess.Popen(["tee",f"{bldDir}/log.compile"], stdin=p1.stdout)
+
+    # Allow process1 to receive SIGPIPE is process2 exits
+    p1.stdout.close()
+    p2.communicate()
+
+    # wait for process1 to finish before checking return code
+    p1.wait()
+    if p1.returncode != 0:
+        return {1: (f"{bldDir}/compile.sh", f"{bldDir}/log.compile")}
+    else:
+        return {0: (f"{bldDir}/compile.sh", f"{bldDir}/log.compile")} 
 
 class buildBaremetal():
     """
@@ -122,30 +141,3 @@ class buildBaremetal():
 
         # Make compile script executable
         os.chmod(self.bld+"/compile.sh", 0o744)
-
-## TODO run as a batch job on the login cluster
-    def run(self):
-        """
-        Brief: Run the build script
-        Param:
-            - self : The dockerfile object
-        """
-        command = [self.bld+"/compile.sh"]
-
-        # Run compile script
-        p1 = subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-
-        # Direct output to log file as well
-        p2 = subprocess.Popen(["tee",self.bld+"/log.compile"], stdin=p1.stdout)
-
-        # Allow process1 to receive SIGPIPE is process2 exits
-        p1.stdout.close()
-        p2.communicate()
-
-        # wait for process1 to finish before checking return code
-        p1.wait()
-        if p1.returncode != 0:
-            print(f"\nThere was an error running {self.bld}/compile.sh")
-            print(f"Check the log file: {self.bld}/log.compile")
-        else:
-            print(f"\nSuccessful run of {self.bld}/compile.sh")
