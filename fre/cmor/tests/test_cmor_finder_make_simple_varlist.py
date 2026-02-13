@@ -128,3 +128,47 @@ def test_make_simple_varlist_no_matching_pattern(tmp_path):
 
     # Assert - should return None when no matching files found
     assert result is None
+
+
+# ---- duplicate var_name skip coverage ----
+
+def test_make_simple_varlist_deduplicates(tmp_path):
+    """
+    When multiple files share the same var_name, the result should contain
+    the variable only once (duplicate skip path).
+    """
+    # Two files with var_name "temp" and one with "salt"
+    (tmp_path / "model.19900101.temp.nc").touch()
+    (tmp_path / "model.19900201.temp.nc").touch()  # duplicate var_name
+    (tmp_path / "model.19900101.salt.nc").touch()
+
+    result = make_simple_varlist(str(tmp_path), None)
+
+    assert result is not None
+    assert result == {"temp": "temp", "salt": "salt"}
+
+
+# ---- mip-table filtering coverage ----
+
+def test_make_simple_varlist_mip_table_filter(tmp_path):
+    """
+    When a json_mip_table is provided, only variables present in the MIP table
+    should appear in the result.
+    """
+    # create data files
+    (tmp_path / "model.19900101.sos.nc").touch()
+    (tmp_path / "model.19900101.notinmip.nc").touch()
+
+    # create a minimal MIP table with only "sos"
+    mip_table = tmp_path / "Omon.json"
+    mip_table.write_text(json.dumps({
+        "variable_entry": {
+            "sos": {"frequency": "mon"}
+        }
+    }))
+
+    result = make_simple_varlist(str(tmp_path), None, json_mip_table=str(mip_table))
+
+    assert result is not None
+    assert "sos" in result
+    assert "notinmip" not in result
