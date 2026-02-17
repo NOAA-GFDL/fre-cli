@@ -56,13 +56,15 @@ in parallel.
 """
 _VERBOSE_OPT_HELP = """Turns on debug level logging."""
 
+class OrderedGroup(click.Group):
+    def list_commands(self, ctx):
+        return self.commands.keys()
 
-
-@click.group(help=click.style(" - make subcommands", fg=(57,139,210)))
+@click.group(cls=OrderedGroup, help=click.style(" - make subcommands", fg=(57,139,210)))
 def make_cli():
     pass
 
-@make_cli.command()
+@make_cli.command('all', short_help=" - Perform all fre make functions")
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -109,8 +111,8 @@ def make_cli():
               "--execute",
               is_flag = True,
               default = False,
-              help = "Execute the checkout and compile scripts immediately following their generation.
-              The default behavior is to generate the scripts, but not execute.")
+              help = """Execute the checkout and compile scripts immediately following their generation.
+              The default behavior is to generate the scripts, but not execute.""")
 @click.option("--force-checkout",
               is_flag = True,
               help = "Force a git checkout if the source directory already exists.")
@@ -128,7 +130,7 @@ def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_ch
         yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_checkout, no_format_transfer, execute,
         verbose, force_checkout)
 
-@make_cli.command()
+@make_cli.command('checkout-script')
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -158,8 +160,8 @@ def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_ch
 @click.option("--execute",
               is_flag = True,
               default = False,
-              help = "Execute the checkout script immediately following its generation.
-              The default behavior is to generate the script, but not execute.")
+              help = """Execute the checkout script immediately following its generation.
+              The default behavior is to generate the script, but not execute.""")
 @click.option("--force-checkout",
               is_flag = True,
               help = "Force a git checkout if the source directory already exists.")
@@ -168,7 +170,7 @@ def checkout_script(yamlfile, platform, target, no_parallel_checkout, gitjobs, e
     create_checkout_script.checkout_create(
         yamlfile, platform, target, no_parallel_checkout, gitjobs, execute, force_checkout)
 
-@make_cli.command
+@make_cli.command('makefile')
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -188,7 +190,7 @@ def makefile(yamlfile, platform, target):
     """ - Write the makefile """
     create_makefile_script.makefile_create(yamlfile, platform, target)
 
-@make_cli.command
+@make_cli.command('compile-script')
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -218,8 +220,8 @@ def makefile(yamlfile, platform, target):
 @click.option("--execute",
               is_flag = True,
               default = False,
-              help = "Execute the compile script immediately following its generation.
-              The default behavior is to generate the script, but not execute.")
+              help = """Execute the compile script immediately following its generation.
+              The default behavior is to generate the script, but not execute.""")
 @click.option("-v",
               "--verbose",
               is_flag = True,
@@ -229,7 +231,7 @@ def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, ver
     create_compile_script.compile_create(
         yamlfile, platform, target, makejobs, nparallel, execute, verbose)
 
-@make_cli.command
+@make_cli.command('dockerfile')
 @click.option("-y",
               "--yamlfile",
               type = str,
@@ -253,8 +255,8 @@ def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, ver
 @click.option("--execute",
               is_flag = True,
               default = False,
-              help = "Execute the createContainer script immediately following its generation.
-              The default behavior is to generate the script, but not execute.")
+              help = """Execute the createContainer script immediately following its generation.
+              The default behavior is to generate the script, but not execute.""")
 def dockerfile(yamlfile, platform, target, no_format_transfer, execute):
-    """ - Write the Dockerfile and createContainer script""
+    """ - Write the Dockerfile and createContainer script"""
     create_docker_script.dockerfile_create(yamlfile, platform, target, no_format_transfer, execute)
