@@ -14,7 +14,7 @@ def fremake_parallel(fremakeBuildList):
     """
     Brief: Called for parallel execution purposes.  Runs the builds.
     Param:
-        - fremakeBuildList : fremakeBuild object list passes by pool.map
+        - fremakeBuildList : list of compile scripts to execute
     """
     bldDir = Path(fremakeBuildList).parent
 
@@ -31,9 +31,9 @@ def fremake_parallel(fremakeBuildList):
     # wait for process1 to finish before checking return code
     p1.wait()
     if p1.returncode != 0:
-        return {1: (f"{bldDir}/compile.sh", f"{bldDir}/log.compile")}
+        return {1: f"{bldDir}/log.compile"}
     else:
-        return {0: (f"{bldDir}/compile.sh", f"{bldDir}/log.compile")} 
+        return {0: f"{bldDir}/log.compile"} 
 
 class buildBaremetal():
     """

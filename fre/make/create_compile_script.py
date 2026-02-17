@@ -7,7 +7,7 @@ import logging
 
 from pathlib import Path
 from multiprocessing.dummy import Pool
-import filecmp 
+#import filecmp
 #import difflib
 
 import fre.yamltools.combine_yamls_script as cy
@@ -46,7 +46,8 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
     :type platform: str
     :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
-    :param njobs: Used for parallelism with make; number of files to build simultaneously; on a per-build basis (default 4)
+    :param njobs: Used for parallelism with make; number of files to build simultaneously;
+                  on a per-build basis (default 4)
     :type njobs: int
     :param nparallel: Number of concurrent model builds (default 1)
     :type nparallel: int
@@ -67,10 +68,10 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
     nparallel = nparallel
     jobs = str(njobs)
 
-#    if verbose:
-#        fre_logger.setLevel(level=logging.DEBUG)
-#    else:
-#        fre_logger.setLevel(level=logging.INFO)
+    if verbose:
+        fre_logger.setLevel(level=logging.DEBUG)
+    else:
+        fre_logger.setLevel(level=logging.INFO)
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yml,
@@ -87,14 +88,16 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
     modelYaml = yamlfre.freyaml(full_combined, fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
+    plist = platform
+    tlist = target
     ## Error checking the targets
-    for targetName in target:
-        targetfre.fretarget(targetName)
+    for targetName in tlist:
+        target = targetfre.fretarget(targetName)
 
     fremakeBuildList = []
     ## Loop through platforms and targets
     for platformName in platform:
-        for targetName in target:
+        for targetName in tlist:
             target = targetfre.fretarget(targetName)
             if not modelYaml.platforms.hasPlatform(platformName):
                 raise ValueError(f"{platformName} does not exist in platforms.yaml")
@@ -115,41 +118,55 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
 
                 if not Path(f"{bldDir}/compile.sh").exists():
                     ## Create a list of compile scripts to run in parallel
-                    compile_call(fremakeYaml, template_path,
-                                 srcDir, bldDir, target,
-                                 platform, jobs)
+                    compile_call(fremakeYaml = fremakeYaml,
+                                 template_path = template_path,
+                                 srcDir = srcDir,
+                                 bldDir = bldDir,
+                                 target = target,
+                                 platform = platform,
+                                 jobs = jobs)
                     fremakeBuildList.append(f"{bldDir}/compile.sh")
                 elif Path(f"{bldDir}/compile.sh").exists() and force_compile:
                     # Remove old compile script
-                    fre_logger.info("Compile script PREVIOUSLY created: %s/compile.sh", bldDir)
-                    fre_logger.info("*** REMOVING COMPILE SCRIPT ***")
+                    fre_logger.warning("Compile script PREVIOUSLY created: %s/compile.sh", bldDir)
+                    fre_logger.warning("*** REMOVING COMPILE SCRIPT ***")
                     Path(f"{bldDir}/compile.sh").unlink()
 
                     # Re-create compile script
-                    compile_call(fremakeYaml, template_path,
-                                 srcDir, bldDir, target,
-                                 platform, jobs)
+                    compile_call(fremakeYaml = fremakeYaml,
+                                 template_path = template_path,
+                                 srcDir = srcDir,
+                                 bldDir = bldDir,
+                                 target = target,
+                                 platform = platform,
+                                 jobs = jobs)
+
                     fremakeBuildList.append(f"{bldDir}/compile.sh")
                 elif Path(f"{bldDir}/compile.sh").exists() and not force_compile:
                     fre_logger.warning("Compile script PREVIOUSLY created: %s/compile.sh", bldDir)
                     fremakeBuildList.append(f"{bldDir}/compile.sh")
                     ###COMPARE THE TWO TO SEE IF IT'S CHANGED###--> filecmp or difflib
                     ###IF CHANGED, THROW ERROR###
-                    ###SHOULD IT ALSO BE RE-CREATED IF CHECKOUT RE-CREATED?? --> I THINK THIS WILL BE FOR "ALL" SUBTOOL###
+                    ###SHOULD IT ALSO BE RE-CREATED IF CHECKOUT RE-CREATED?? -->
+                    ### I THINK THIS WILL BE FOR "ALL" SUBTOOL###
 
-    fre_logger.info(f"Compile scripts to be run: ")
+    fre_logger.info("")
+    fre_logger.info("Compile scripts to be run: ")
     for i in fremakeBuildList:
         fre_logger.info(f"  - {i}")
 
+    # Returns the exit status for multiprocessing pool command
     if execute:
         if baremetalRun:
-            pool = Pool(processes=nparallel)  # Create a multiprocessing Pool
-            results = pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)  # process data_inputs iterable with pool
+            # Create a multiprocessing Pool
+            pool = Pool(processes=nparallel)
+            # process data_inputs iterable with pool
+            results = pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)
 
-    for r in results:
-        for key,value in r.items():
-            if key == 1:
-                fre_logger.info(f"ERROR: {value[0]} NOT successful")
-                fre_logger.info(f"Generated log file: {value[1]}")
-            elif key == 0:
-                fre_logger.info(f"Successful run of {value[0]}")
+        for r in results:
+            for key,value in r.items():
+                if key == 1:
+                    fre_logger.error("ERROR: compile NOT successful")
+                    fre_logger.error(f"Check the generated log: {value}")
+                elif key == 0:
+                    fre_logger.info(f"Compile successful")

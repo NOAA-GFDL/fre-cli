@@ -5,6 +5,9 @@ import yaml
 from jsonschema import validate, ValidationError, SchemaError
 from . import platformfre
 
+import logging
+fre_logger = logging.getLogger(__name__)
+
 def parseCompile(fname,v):
     """
     Brief: Open the yaml file and parse as fremakeYaml
@@ -163,7 +166,7 @@ class freyaml():
         schema = json.loads(s)
 
         validate(instance=self.freyaml,schema=schema)
-        print("\nCOMBINED YAML VALID")
+        fre_logger.info(" *** COMBINED YAML VALID ***")
 
     def getCompileYaml(self):
         """
