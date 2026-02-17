@@ -2,7 +2,7 @@
 fre cmor find
 =============
 
-This module provides tools to find and print information about varables in CMIP6 JSON configuration files.
+This module provides tools to find and print information about variables in CMIP6 JSON configuration files.
 It is primarily used for inspecting variable entries and generating variable lists for use in FRE CMORization
 workflows.
 
@@ -38,8 +38,8 @@ def print_var_content(table_config_file: IO[str],
 
     :param table_config_file: An open file object for a CMIP6 table JSON file. The file should be opened in text mode
     :type table_config_file: Input buffer/stream of text, usually output by the open() built-in. See python typing doc
-    :param var_name: The name of the variable to look for in the configuration file. 
-    :type var_name: str    
+    :param var_name: The name of the variable to look for in the configuration file.
+    :type var_name: str
     :raises Exception: If there is an issue reading the JSON content from the file.
     :return: None
     :rtype: None
@@ -190,17 +190,17 @@ def make_simple_varlist( dir_targ: str,
     if json_mip_table is not None:
         try:
             # read in mip vars to check against later
-            fre_logger.debug('attempting to make mip variable list')
-            try:
-                full_mip_vars_list=get_json_file_data(json_mip_table)["variable_entry"].keys()
-            except Exception as exc:
-                raise Exception('problem opening mip table and getting variable entry data.'
-                                'exc = %s', exc)
-                
-            mip_vars=[ key.split('_')[0] for key in full_mip_vars_list ]
-            fre_logger.info('mip vars extracted for comparison when making var list: %s', mip_vars)
-        except:
-            raise
+            fre_logger.debug('attempting to read in variable entries in specified mip table')
+            full_mip_vars_list=get_json_file_data(json_mip_table)["variable_entry"].keys()
+
+        except Exception as exc:
+            raise Exception( 'problem opening mip table and getting variable entry data.'
+                            f'exc = {exc}')
+
+        fre_logger.debug('attempting to make mip variable list')
+        mip_vars=[ key.split('_')[0] for key in full_mip_vars_list ]
+        fre_logger.info('mip vars extracted for comparison when making var list: %s', mip_vars)
+
 
     # Create a dictionary of variable names extracted from the filenames
     var_list = {}
