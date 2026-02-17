@@ -640,9 +640,9 @@ def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
     return bronx_freq
 
 def update_outpath( json_file_path: str,
-                   output_file_path: Optional[str] = None) -> None:
+                    output_file_path: Optional[str] = None) -> None:
     """
-    Update the "calendar" field in a JSON experiment config file.
+    Update the "outpath" field in a JSON experiment config file.
 
     :param json_file_path: Path to the input JSON file.
     :type json_file_path: str
@@ -660,13 +660,21 @@ def update_outpath( json_file_path: str,
         with open(json_file_path, "r", encoding="utf-8") as file:
             data = json.load(file)
 
-            try:
-                fre_logger.info('Original "outpath": %s', data["outpath"])
-                data["outpath"] = output_file_path
-                fre_logger.info('Updated "outpath": %s', data["outpath"])
-            except KeyError as e:
-                fre_logger.error("Failed to update 'outpath': %s", e)
-                raise KeyError("Error while updating 'outpath'. Ensure the field exists and is modifiable.") from e
+        try:
+            fre_logger.info('Original "outpath": %s', data["outpath"])
+            data["outpath"] = output_file_path
+            fre_logger.info('Updated "outpath": %s', data["outpath"])
+        except KeyError as e:
+            fre_logger.error("Failed to update 'outpath': %s", e)
+            raise KeyError("Error while updating 'outpath'. Ensure the field exists and is modifiable.") from e
+
+        output_file_path = output_file_path or json_file_path
+
+        with open(output_file_path, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4)
+
+        fre_logger.info('Successfully updated fields and saved to %s', output_file_path)
+
     except FileNotFoundError:
         fre_logger.error("The file '%s' does not exist.", json_file_path)
         raise

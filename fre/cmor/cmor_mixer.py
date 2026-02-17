@@ -524,9 +524,9 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
             try:
                 lev_bnds = create_lev_bnds(bound_these=lev, with_these=ds['z_i'])
                 fre_logger.info('created lev_bnds...')
-            except:
+            except Exception as exc:
                 fre_logger.error("the cmor module always requires vertical levels to have bounds.")
-                raise KeyError("the input data appears to be missing vertical bounds!")
+                raise KeyError("CMOR requires the input data have vertical level boundaries (bnds)") from exc
 
             fre_logger.info('lev_bnds = \n%s', lev_bnds)
             cmor_z = cmor.axis('depth_coord',
