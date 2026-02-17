@@ -1,10 +1,13 @@
 import json
-import pytest
 import os
 import glob as glob_module
 from pathlib import Path
 from unittest.mock import patch
+
+import pytest
+
 from fre.cmor.cmor_finder import make_simple_varlist
+
 
 @pytest.fixture
 def temp_netcdf_dir(tmp_path):
@@ -24,6 +27,7 @@ def temp_netcdf_dir(tmp_path):
 
     return tmp_path
 
+
 @pytest.fixture
 def temp_netcdf_dir_single_file(tmp_path):
     """
@@ -33,12 +37,14 @@ def temp_netcdf_dir_single_file(tmp_path):
     file_path.touch()
     return tmp_path
 
+
 @pytest.fixture
 def empty_dir(tmp_path):
     """
     Fixture to create an empty temporary directory.
     """
     return tmp_path
+
 
 def test_make_simple_varlist_success(temp_netcdf_dir, tmp_path):
     """
@@ -66,6 +72,7 @@ def test_make_simple_varlist_success(temp_netcdf_dir, tmp_path):
         saved_data = json.load(f)
         assert saved_data == result
 
+
 def test_make_simple_varlist_return_value_only(temp_netcdf_dir):
     """
     Test make_simple_varlist with output_variable_list=None returns var_list.
@@ -79,6 +86,7 @@ def test_make_simple_varlist_return_value_only(temp_netcdf_dir):
     assert "temp" in result
     assert "salt" in result
     assert "velocity" in result
+
 
 def test_make_simple_varlist_single_file_warning(temp_netcdf_dir_single_file, tmp_path):
     """
@@ -96,6 +104,7 @@ def test_make_simple_varlist_single_file_warning(temp_netcdf_dir_single_file, tm
     assert "temp" in result
     assert result["temp"] == "temp"
 
+
 def test_make_simple_varlist_no_files(empty_dir):
     """
     Test behavior when no NetCDF files are found in directory.
@@ -105,6 +114,7 @@ def test_make_simple_varlist_no_files(empty_dir):
 
     # Assert - function should return None when no files found
     assert result is None
+
 
 def test_make_simple_varlist_invalid_output_path(temp_netcdf_dir):
     """
@@ -116,6 +126,7 @@ def test_make_simple_varlist_invalid_output_path(temp_netcdf_dir):
     # Act & Assert
     with pytest.raises(OSError, match="output variable list created but cannot be written"):
         make_simple_varlist(str(temp_netcdf_dir), invalid_output_path)
+
 
 def test_make_simple_varlist_no_matching_pattern(tmp_path):
     """
@@ -133,7 +144,6 @@ def test_make_simple_varlist_no_matching_pattern(tmp_path):
 
 
 # ---- duplicate var_name skip coverage ----
-
 def test_make_simple_varlist_deduplicates(tmp_path):
     """
     When multiple files share the same var_name, the result should contain
@@ -151,7 +161,6 @@ def test_make_simple_varlist_deduplicates(tmp_path):
 
 
 # ---- mip-table filtering coverage ----
-
 def test_make_simple_varlist_mip_table_filter(tmp_path):
     """
     When a json_mip_table is provided, only variables present in the MIP table
@@ -177,7 +186,6 @@ def test_make_simple_varlist_mip_table_filter(tmp_path):
 
 
 # ---- IndexError on datetime extraction (monkeypatched) ----
-
 def test_make_simple_varlist_index_error_on_datetime(tmp_path):
     """
     When os.path.basename(one_file).split('.')[-3] raises IndexError
@@ -219,7 +227,6 @@ def test_make_simple_varlist_index_error_on_datetime(tmp_path):
 
 
 # ---- no files matching search pattern ----
-
 def test_make_simple_varlist_no_files_matching_pattern(tmp_path):
     """
     When the initial probe finds a file but the subsequent glob with the
@@ -238,7 +245,6 @@ def test_make_simple_varlist_no_files_matching_pattern(tmp_path):
 
 
 # ---- single file warning path ----
-
 def test_make_simple_varlist_single_file_hits_warning(tmp_path):
     """
     When exactly one file matches the search pattern, the function should
@@ -254,7 +260,6 @@ def test_make_simple_varlist_single_file_hits_warning(tmp_path):
 
 
 # ---- duplicate var_name skip with datetime grouping ----
-
 def test_make_simple_varlist_dedup_across_datetimes(tmp_path):
     """
     Files with different datetime stamps but the same variable name
@@ -275,7 +280,6 @@ def test_make_simple_varlist_dedup_across_datetimes(tmp_path):
 
 
 # ---- mip table filtering: no variables match ----
-
 def test_make_simple_varlist_mip_table_no_match(tmp_path):
     """
     When a MIP table is provided but none of the file variables are in it,
@@ -295,4 +299,3 @@ def test_make_simple_varlist_mip_table_no_match(tmp_path):
 
     # No variables matched, so var_list is {}
     assert result == {}
-

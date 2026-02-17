@@ -15,11 +15,13 @@ from unittest.mock import patch
 
 import pytest
 
+import fre
 from fre.cmor.cmor_yamler import cmor_yaml_subtool
 
 
 # ---- paths to the existing repo test fixtures ----
-ROOTDIR = 'fre/tests/test_files'
+#ROOTDIR = 'fre/tests/test_files'
+ROOTDIR = str( Path( fre.__file__ ).parent ) + '/tests/test_files'
 CMIP6_TABLE_DIR = f'{ROOTDIR}/cmip6-cmor-tables/Tables'
 CMIP6_TABLE_CONFIG = f'{CMIP6_TABLE_DIR}/CMIP6_Omon.json'
 VARLIST = f'{ROOTDIR}/varlist'

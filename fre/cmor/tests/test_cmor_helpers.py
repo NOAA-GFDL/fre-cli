@@ -5,12 +5,12 @@ from unittest.mock import patch, MagicMock
 import numpy as np
 import pytest
 
-from fre.cmor.cmor_helpers import (find_statics_file, print_data_minmax,
+from fre.cmor.cmor_helpers import ( find_statics_file, print_data_minmax,
                                     find_gold_ocean_statics_file,
                                     create_lev_bnds, get_iso_datetime_ranges,
                                     create_tmp_dir, get_json_file_data,
                                     update_grid_and_label, get_bronx_freq_from_mip_table,
-                                    update_outpath, filter_brands)
+                                    update_outpath, filter_brands )
 
 def test_find_statics_file_success():
     ''' what happens when no statics file is found given a bronx directory structure '''
