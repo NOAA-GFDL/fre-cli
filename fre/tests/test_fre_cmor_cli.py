@@ -14,12 +14,10 @@ command-line args for fre cmor yaml and fre cmor run.
 """
 
 from datetime import date
+import json
+import os
 from pathlib import Path
 import shutil
-import os
-import json
-
-import pytest
 
 from click.testing import CliRunner
 
@@ -28,7 +26,8 @@ from fre import fre
 runner = CliRunner()
 
 # where are we? we're running pytest from the base directory of this repo
-ROOTDIR = 'fre/tests/test_files'
+#ROOTDIR = 'fre/tests/test_files'
+ROOTDIR = str( Path( fre.__file__ ).parent ) + '/tests/test_files'
 
 # these unit tests should be more about the cli, rather than the workload
 YYYYMMDD=date.today().strftime('%Y%m%d')
@@ -46,7 +45,6 @@ def test_setup_test_files():
     assert not Path(COPIED_NC_FILEPATH).exists()
 
     shutil.copy(Path(ORIGINAL_NC_FILEPATH), Path(COPIED_NC_FILEPATH))
-
     assert Path(COPIED_NC_FILEPATH).exists()
 
 
@@ -72,9 +70,9 @@ def test_cli_fre_cmor_help_and_debuglog():
     assert result.exit_code == 0
     assert Path("TEST_FOO_LOG.log").exists()
 
-    log_text_line_1='[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n'
-    log_text_line_2='[DEBUG:                  fre.py:                     fre] click entry-point function call done.\n'
-    with open( "TEST_FOO_LOG.log", 'r') as log_text:
+    log_text_line_1='[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n' # pylint: disable=line-too-long
+    log_text_line_2='[DEBUG:                  fre.py:                     fre] click entry-point function call done.\n' # pylint: disable=line-too-long
+    with open( "TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
         line_list=log_text.readlines()
         assert log_text_line_1 in line_list[0]
         assert log_text_line_2 in line_list[1]
@@ -91,8 +89,8 @@ def test_cli_fre_cmor_help_and_infolog():
     assert result.exit_code == 0
     assert Path("TEST_FOO_LOG.log").exists()
 
-    log_text_line_1='[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n'
-    with open( "TEST_FOO_LOG.log", 'r') as log_text:
+    log_text_line_1='[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n' # pylint: disable=line-too-long
+    with open( "TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
         line_list=log_text.readlines()
         assert log_text_line_1 in line_list[0]
 
@@ -108,7 +106,7 @@ def test_cli_fre_cmor_help_and_quietlog():
     assert result.exit_code == 0
     assert Path("TEST_FOO_LOG.log").exists()
 
-    with open( "TEST_FOO_LOG.log", 'r') as log_text:
+    with open( "TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
         line_list=log_text.readlines()
         assert line_list == []
 
@@ -135,14 +133,15 @@ def test_cli_fre_cmor_yaml_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "yaml", "optionDNE"])
     assert result.exit_code == 2
 
-TEST_AM5_YAML_PATH=f"fre/yamltools/tests/AM5_example/am5.yaml"
-TEST_CMOR_YAML_PATH=f"fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
+TEST_AM5_YAML_PATH="fre/yamltools/tests/AM5_example/am5.yaml"
+TEST_CMOR_YAML_PATH="fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml --dry_run -y TEST_AM5_YAML_PATH ... --output FOO_cmor.yaml '''
     # only pp_dir is needed by cmor_yamler; history/analysis dirs came from settings.yaml
     # which is now deprecated for the cmor path
     Path( os.path.expandvars(
-            'fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp'
+        'fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/' + \
+        'ncrc5.intel-prod-openmp/pp'
         ) ).mkdir(parents=True, exist_ok=True)
     if Path('FOO_cmor.yaml').exists():
         Path('FOO_cmor.yaml').unlink()
@@ -155,7 +154,7 @@ def test_cli_fre_cmor_yaml_case1():
 
     assert all ( [ Path(TEST_AM5_YAML_PATH).exists(), # input, unparsed, model-yaml file
                    Path(TEST_CMOR_YAML_PATH).exists(), # input, unparsed, tool-yaml file
-                   Path(f'FOO_cmor.yaml').exists(), #output, merged, parsed, model+tool yaml-file
+                   Path('FOO_cmor.yaml').exists(), #output, merged, parsed, model+tool yaml-file
                    result.exit_code == 0 ] )
 
 
@@ -283,8 +282,8 @@ def test_cli_fre_cmor_find_opt_dne():
     assert result.exit_code == 2
 
 
-def test_cli_fre_cmor_find():
-    ''' fre -v cmor find --varlist fre/tests/test_files/varlist --table_config_dir fre/tests/test_files/cmip6-cmor-tables/Tables '''
+def test_cli_fre_cmor_find_cmip6_case():
+    ''' fre cmor find, test-use case searching for variables in cmip7 tables '''
     result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
                                           "--varlist", "fre/tests/test_files/varlist",
                                           "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
@@ -310,11 +309,11 @@ def test_cli_fre_cmor_run_cmip7_case1():
         f'CMIP/CanESM6-MR/esm-piControl/r3i1p1f3/sos/tavg-u-hxy-sea/{grid_label}'
     full_outputdir = \
         f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
-    full_outputfile = \
-        f"{full_outputdir}/sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
+    full_outputfile = f"{full_outputdir}/" + \
+        f"sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
 
     # FYI/unneeded, this is mostly for reference
-    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc' 
+    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
     full_inputfile=f"{indir}/{filename}"
 
     # clean up, lest we fool ourselves
@@ -356,8 +355,8 @@ def test_cli_fre_cmor_run_cmip7_case2():
         f'CMIP/CanESM6-MR/esm-piControl/r3i1p1f3/sos/tavg-u-hxy-sea/{grid_label}'
     full_outputdir = \
         f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
-    full_outputfile = \
-        f"{full_outputdir}/sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
+    full_outputfile = f"{full_outputdir}/" + \
+        f"sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
 
     # FYI/unneeded, this is mostly for reference
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
@@ -445,7 +444,7 @@ def test_cli_fre_cmor_config_case1():
     assert output_yaml.exists(), 'output YAML was not created'
 
     # basic sanity: the written file should contain "cmor:" and "table_targets:"
-    yaml_text = output_yaml.read_text()
+    yaml_text = output_yaml.read_text(encoding='utf-8')
     assert 'cmor:' in yaml_text
     assert 'table_targets:' in yaml_text
 
@@ -496,7 +495,7 @@ def test_cli_fre_cmor_varlist_no_table_filter():
     assert result.exit_code == 0, f'varlist failed: {result.output}'
     assert output_varlist.exists(), 'output variable list was not created'
 
-    with open(output_varlist, 'r') as f:
+    with open(output_varlist, 'r', encoding='utf-8') as f:
         var_list = json.load(f)
 
     assert 'sos' in var_list
@@ -528,7 +527,7 @@ def test_cli_fre_cmor_varlist_cmip6_table_filter():
     assert result.exit_code == 0, f'varlist failed: {result.output}'
     assert output_varlist.exists(), 'output variable list was not created'
 
-    with open(output_varlist, 'r') as f:
+    with open(output_varlist, 'r', encoding='utf-8') as f:
         var_list = json.load(f)
 
     assert 'sos' in var_list, 'sos should be in the CMIP6-filtered list'
@@ -559,7 +558,7 @@ def test_cli_fre_cmor_varlist_cmip7_table_filter():
     assert result.exit_code == 0, f'varlist failed: {result.output}'
     assert output_varlist.exists(), 'output variable list was not created'
 
-    with open(output_varlist, 'r') as f:
+    with open(output_varlist, 'r', encoding='utf-8') as f:
         var_list = json.load(f)
 
     assert 'sos' in var_list, 'sos should be in the CMIP7-filtered list'

@@ -640,19 +640,22 @@ def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
     return bronx_freq
 
 def update_outpath( json_file_path: str,
+                    outpath: str,
                     output_file_path: Optional[str] = None) -> None:
     """
     Update the "outpath" field in a JSON experiment config file.
 
     :param json_file_path: Path to the input JSON file.
     :type json_file_path: str
-    :param output_file_path:
+    :param outpath: key in input experiment config for managing target output directory, required
+    :type outpath: str
+    :param output_file_path: path to write the updated experiment config file to, if desired.
     :type output_file_path: str, optional
     """
 
-    if None in [json_file_path, output_file_path]:
+    if None in [json_file_path, outpath]:
         fre_logger.error(
-            'outpath updating requested for exp_config file, but one of them is None\n'
+            'a required input argument is None\n'
             'bailing...!')
         raise ValueError
 
@@ -662,7 +665,7 @@ def update_outpath( json_file_path: str,
 
         try:
             fre_logger.info('Original "outpath": %s', data["outpath"])
-            data["outpath"] = output_file_path
+            data["outpath"] = outpath
             fre_logger.info('Updated "outpath": %s', data["outpath"])
         except KeyError as e:
             fre_logger.error("Failed to update 'outpath': %s", e)

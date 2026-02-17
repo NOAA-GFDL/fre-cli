@@ -991,7 +991,7 @@ def cmor_run_subtool(indir: str = None,
                               grid_label, grid, nom_res,
                               output_file_path = None)
 
-    update_outpath(json_exp_config, outdir)
+    #update_outpath(json_exp_config, outpath = outdir, output_file_path = None)
 
     # CHECK optional grid/grid_label inputs, the function checks the potential error conditions RE CF compliance.
     if calendar_type is not None:
