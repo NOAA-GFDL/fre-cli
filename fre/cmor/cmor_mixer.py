@@ -794,13 +794,13 @@ def cmorize_target_var_files(indir: str = None,
 #        assert False, "made it to break-point for current work, good job"
 
         # now that CMOR has rewritten things... we can take our post-rewriting actions
-        # first, remove /tmp/ from the output path.
+        # first, remove /CMOR_tmp/ from the output path.
         if not Path(local_file_name).is_absolute():
             raise ValueError(f'local_file_name should be an absolute path, not a relative one. \n '
                              f'local_file_name = {local_file_name}')
 
         fre_logger.info('local_file_name = %s', local_file_name)
-        filename = local_file_name.replace('/tmp/','/')
+        filename = local_file_name.replace('/CMOR_tmp/','/')
         fre_logger.info("filename = %s", filename)
 
         # the final output file directory will be...

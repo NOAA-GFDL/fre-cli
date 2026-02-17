@@ -381,7 +381,7 @@ def create_tmp_dir( outdir: str,
                 fre_logger.warning(
                     'could not read outdir from json_exp_config. the cmor module will throw a toothless warning')
 
-    tmp_dir = str(Path("{}/tmp/".format(outdir)).resolve())
+    tmp_dir = str(Path("{}/CMOR_tmp/".format(outdir)).resolve())
     try:
         os.makedirs(tmp_dir, exist_ok=True)
         if outdir_from_exp_config is not None:
