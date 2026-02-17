@@ -36,24 +36,25 @@ from fre.make import run_fremake_script
 
 
 # Command Help Messages
-_YAMLFILE_OPT_HELP = """Model configuration yaml FILENAME (required)"""
-_PLATFORM_OPT_HELP = """Comma-separated list of FRE platform strings (min 1 required)\n
+_YAMLFILE_OPT_HELP = """Model configuration yaml FILENAME."""
+_PLATFORM_OPT_HELP = """FRE platform string. Define multiple platforms by repeating this argument.
+fre make generates one compile script per platform argument.
 See https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/glossary.html#term-platform
 """
-_TARGET_OPT_HELP   = """Comma-separated list of mkmf target strings (min 1 required)\n
+_TARGET_OPT_HELP   = """mkmf target string. Define multiple targets by repeating this argument.
+fre make generates one compile script per target argument.
 See https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/glossary.html#term-target
 """
-_PARALLEL_OPT_HELP = """Number of concurrent compile scripts to execute (optional) (default 1)\n
-fre make generates one compile script per permutation of items in the target and platform lists.
+_PARALLEL_OPT_HELP = """Number of concurrent compile scripts to execute. (optional) (default 1).
 This option is ignored when the argument --execute/-x is missing.
 """
-_MAKE_JOBS_OPT_HELP = """Number of make recipes to compile simultaneously (optional) (default 4)"""
-_GIT_JOBS_OPT_HELP = """Number of git submodules to clone simultaneously (optional) (default 4)"""
-_NO_PARALLEL_CHECKOUT_OPT_HELP =  """Turns off parallel git checkouts
+_MAKE_JOBS_OPT_HELP = """Number of make recipes to compile simultaneously. (optional) (default 4)"""
+_GIT_JOBS_OPT_HELP = """Number of git submodules to clone simultaneously. (optional) (default 4)"""
+_NO_PARALLEL_CHECKOUT_OPT_HELP =  """Turns off parallel git checkouts.
 By default, fre make will checkout each git repository defined in the compile.yaml configuration file
 in parallel.
 """
-_VERBOSE_OPT_HELP = """Turns on debug level logging"""
+_VERBOSE_OPT_HELP = """Turns on debug level logging."""
 
 
 
@@ -66,10 +67,10 @@ def make_cli():
               "--yamlfile",
               type = str,
               help = _YAMLFILE_OPT_HELP,
-              required = True) # use click.option() over click.argument(), we want help statements
+              required = True)
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = _PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
@@ -103,22 +104,26 @@ def make_cli():
               "--no-format-transfer",
               is_flag = True,
               default = False,
-              help = "Use this to skip the container format conversion to a .sif file.")
+              help = "Skip the container format conversion to a Singularity Image File.")
 @click.option("-e",
               "--execute",
               is_flag = True,
               default = False,
-              help = "Use this to run the created compilation script.")
+              help = "Execute the checkout and compile scripts immediately following their generation.
+              The default behavior is to generate the scripts, but not execute.")
 @click.option("--force-checkout",
               is_flag = True,
-              help = "Force checkout in case the source directory exists.")
+              help = "Force a git checkout if the source directory already exists.")
 @click.option("-v",
               "--verbose",
               is_flag = True,
               help = _VERBOSE_OPT_HELP)
 def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_checkout, no_format_transfer, execute,
         verbose, force_checkout):
-    """ - Perform all fre make functions; run checkout and compile scripts to create model executable or container"""
+    """
+    - Perform all fre make functions; for baremetal platforms: create checkout script, makefile, and compile scripts;
+    for container platforms: create checkout script, makefile, Dockerfile, and createContainer script
+    """
     run_fremake_script.fremake_run(
         yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_checkout, no_format_transfer, execute,
         verbose, force_checkout)
@@ -128,15 +133,15 @@ def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_ch
               "--yamlfile",
               type = str,
               help = _YAMLFILE_OPT_HELP,
-              required = True) # use click.option() over click.argument(), we want help statements
+              required = True)
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = _PLATFORM_OPT_HELP,
               required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = _TARGET_OPT_HELP,
               required = True)
@@ -153,10 +158,11 @@ def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_ch
 @click.option("--execute",
               is_flag = True,
               default = False,
-              help = "Use this to run the created checkout script.")
+              help = "Execute the checkout script immediately following its generation.
+              The default behavior is to generate the script, but not execute.")
 @click.option("--force-checkout",
               is_flag = True,
-              help = "Force checkout in case the source directory exists.")
+              help = "Force a git checkout if the source directory already exists.")
 def checkout_script(yamlfile, platform, target, no_parallel_checkout, gitjobs, execute, force_checkout):
     """ - Write the checkout script """
     create_checkout_script.checkout_create(
@@ -167,14 +173,14 @@ def checkout_script(yamlfile, platform, target, no_parallel_checkout, gitjobs, e
               "--yamlfile",
               type = str,
               help = _YAMLFILE_OPT_HELP,
-              required = True) # use click.option() over click.argument(), we want help statements
+              required = True)
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = _PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = _TARGET_OPT_HELP,
               required = True)
@@ -187,14 +193,14 @@ def makefile(yamlfile, platform, target):
               "--yamlfile",
               type = str,
               help = _YAMLFILE_OPT_HELP,
-              required = True) # use click.option() over click.argument(), we want help statements
+              required = True)
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = _PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = _TARGET_OPT_HELP,
               required = True)
@@ -212,7 +218,8 @@ def makefile(yamlfile, platform, target):
 @click.option("--execute",
               is_flag = True,
               default = False,
-              help = "Use this to run the created checkout script.")
+              help = "Execute the compile script immediately following its generation.
+              The default behavior is to generate the script, but not execute.")
 @click.option("-v",
               "--verbose",
               is_flag = True,
@@ -230,7 +237,7 @@ def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, ver
               required = True)
 @click.option("-p",
               "--platform",
-              multiple = True, # replaces nargs = -1, since click.option()
+              multiple = True,
               type = str,
               help = _PLATFORM_OPT_HELP, required = True)
 @click.option("-t", "--target",
@@ -242,11 +249,12 @@ def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, ver
               "--no-format-transfer",
               is_flag = True,
               default = False,
-              help = "Use this to skip the container format conversion to a .sif file.")
+              help = "Skip the container format conversion to a Singularity Image File.")
 @click.option("--execute",
               is_flag = True,
               default = False,
-              help = "Build Dockerfile that has been generated by create-docker.")
+              help = "Execute the createContainer script immediately following its generation.
+              The default behavior is to generate the script, but not execute.")
 def dockerfile(yamlfile, platform, target, no_format_transfer, execute):
-    """ - Write the dockerfile """
+    """ - Write the Dockerfile and createContainer script""
     create_docker_script.dockerfile_create(yamlfile, platform, target, no_format_transfer, execute)
