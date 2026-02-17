@@ -11,7 +11,7 @@ Functions
 ---------
 - ``cmor_yaml_subtool(...)``
 
-.. note:: "yamler" is a portmanteau of "yaml" and "reader". 
+.. note:: "yamler" is a portmanteau of "yaml" and "reader".
 """
 
 import json
@@ -228,7 +228,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
             fre_logger.info('indir = %s', indir)
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
-            cmor_run_call_outdir=f'{cmorized_outdir}/{component}/{table_name}'            
+            cmor_run_call_outdir=f'{cmorized_outdir}/{component}/{table_name}'
 
 
             if dry_run_mode:
@@ -241,7 +241,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
                                       f'    --exp_config {json_exp_config} \\ \n'
                                       f'    --outdir {cmor_run_call_outdir} \\ \n'
                                       f'    --run_one \\ \n'
-#                                      f'    --opt_var_name {opt_var_name} \\ \n'
+                                      f'    --opt_var_name {opt_var_name} ,\n'
                                       f'    --grid_desc "{grid_desc}" \\ \n'
                                       f'    --grid_label {grid_label} \\ \n'
                                       f'    --nom_res "{nom_res}" \\ \n'
@@ -272,13 +272,13 @@ def cmor_yaml_subtool( yamlfile: str = None,
                 json_var_list = json_var_list ,
                 json_table_config = json_mip_table_config ,
                 json_exp_config = json_exp_config ,
-#                outdir = cmorized_outdir ,
                 outdir = cmor_run_call_outdir ,
                 run_one_mode = run_one_mode ,
                 opt_var_name = opt_var_name ,
                 grid = grid_desc ,
                 grid_label = grid_label ,
                 nom_res = nom_res ,
-                start = start,
-                stop = stop
+                start = start ,
+                stop = stop ,
+                calendar_type = calendar_type
             )
