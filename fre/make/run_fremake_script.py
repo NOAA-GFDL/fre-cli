@@ -103,7 +103,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
         fre_logger.info("Running fre make: calling compile_create")
         compile_create(yamlfile, bm_platforms, target, njobs, nparallel,
                        execute, verbose)
-    else:
+    elif container_platforms:
         fre_logger.info("Running fre make: calling dockerfile_create")
         dockerfile_create(yamlfile, container_platforms, target, execute, no_format_transfer)
 
