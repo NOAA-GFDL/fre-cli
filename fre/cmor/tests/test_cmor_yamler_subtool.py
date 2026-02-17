@@ -134,13 +134,11 @@ def test_cmor_yaml_subtool_dry_run_false(mock_consolidate, yamler_env):
     Full end-to-end: cmor_yaml_subtool with dry_run_mode=False should
     call cmor_run_subtool and produce at least one CMOR-ised .nc file.
     '''
-    mock_consolidate.return_value = _build_cmor_dict(
-        pp_dir=yamler_env['pp_dir'],
-        table_dir=yamler_env['table_dir'],
-        outdir=yamler_env['outdir'],
-        exp_config=yamler_env['exp_config'],
-        varlist=yamler_env['varlist'],
-    )
+    mock_consolidate.return_value = _build_cmor_dict( pp_dir=yamler_env['pp_dir'],
+                                                      table_dir=yamler_env['table_dir'],
+                                                      outdir=yamler_env['outdir'],
+                                                      exp_config=yamler_env['exp_config'],
+                                                      varlist=yamler_env['varlist'],   )
 
     cmor_yaml_subtool(
         yamlfile=yamler_env['yamlfile'],
@@ -151,9 +149,13 @@ def test_cmor_yaml_subtool_dry_run_false(mock_consolidate, yamler_env):
         run_one_mode=True,
     )
 
+    #print( Path(yamler_env['outdir']) )
+    #print( Path(yamler_env['outdir']).rglob('*.nc') )
+    #print( list(Path(yamler_env['outdir']).rglob('*.nc'))[0] )
     output_nc_files = list(Path(yamler_env['outdir']).rglob('*.nc'))
     assert len(output_nc_files) > 0, \
         'cmor_yaml_subtool with dry_run=False produced no output'
+    #assert False
 
 
 # ================================================================
