@@ -1,6 +1,6 @@
 """
-This module defines the click interface for the fre make tool
-fre make's subtools include:
+fremake.py defines the `click interface <click link_>`_ for the **fre make** tool
+**fre make**'s subtools include:
 
 * all
 * checkout-script
@@ -8,27 +8,23 @@ fre make's subtools include:
 * dockerfile
 * makefile
 
-fre make is the component of fre that will check out model code and build the model. fre make subtools 
+**fre make** is the component of **fre** that will check out model code and compile model code. **fre make** subtools 
 are capable of running independently of each other and there is an "all" option that will execute the 
-fre make subtools in an appropriate order to fully compile a model. Fre make also has the functionality 
-to build a container of a model. 
+fre make subtools in an appropriate order to fully compile a model. **fre make** also has the functionality 
+to build a container of a model.
 
-fre make ingests the model.yaml configuration file, specifically using information in the:
+**fre make** ingests the `model.yaml <myaml link_>`_ configuration file, specifically using information in the:
 
-* platforms.yaml (this configuration file specifies the software needed to compile a model)
-* compile.yaml (this configuration file specifies code repositories and versions to checkout)
+* `platforms.yaml <pyaml link_>`_
+* `compile.yaml <cyaml link_>`_
 
-To checkout model code: fre make checkout-script
+For a quickstart on **fre make**, please refer to the README.md at `fre-cli/fre/make/README.md <readme link_>`_
 
-To compile model code (after the model code has been checked out):
-
-* First, create a makefile: fre make makefile
-* Then, compile the model: fre make compile-script
-
-To create a container which will package the compiled model executable and the environment:
-
-* First, create a makefile: fre make makefile
-* Then, build the model in a container: fre make dockerfile
+.. _click link: https://click.palletsprojects.com/en/stable/
+.. _myaml link: https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#model-yaml
+.. _pyaml link: https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#platform-yaml
+.. _cyaml link: https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#compile-yaml
+.. _readme link: https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/make/README.md
 """
 
 import click
@@ -41,28 +37,23 @@ from fre.make import run_fremake_script
 
 # Command Help Messages
 _YAMLFILE_OPT_HELP = """Model configuration yaml FILENAME (required)"""
-_PLATFORM_OPT_HELP = """List of FRE platform strings (required)
-The name of the platform from platforms.yaml.
+_PLATFORM_OPT_HELP = """Comma-separated list of FRE platform strings (min 1 required)\n
+See https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/glossary.html#term-platform
 """
-_TARGET_OPT_HELP   = """List of mkmf Target strings (required)
-The mkmf targets correspond to macros in the template file specified by platforms.yaml. 
-Users must provide a single optimization target: either prod, repro, or debug. 
-To enable supplementary features such as openmp or lto, append them to the primary target using a hyphen separator.
+_TARGET_OPT_HELP   = """Comma-separated list of mkmf target strings (min 1 required)\n
+See https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/glossary.html#term-target
 """
-_PARALLEL_OPT_HELP = """Number of concurrent compile scripts to execute (optional) (default 1)
-This option is only used when --execute/-x is also defined.
+_PARALLEL_OPT_HELP = """Number of concurrent compile scripts to execute (optional) (default 1)\n
+fre make generates one compile script per permutation of items in the target and platform lists.
+This option is ignored when the argument --execute/-x is missing.
 """
-_JOBS_OPT_HELP = """Number of make jobs to run simultaneously (optional) (default4)
-make -jJOBS which enables make to compile multiple source files simultaneously
-
-and git clone recursive --njobs=JOBS (# of submodules fetched simultaneously)
-"""
+_MAKE_JOBS_OPT_HELP = """Number of make recipes to compile simultaneously (optional) (default 4)"""
+_GIT_JOBS_OPT_HELP = """Number of git submodules to clone simultaneously (optional) (default 4)"""
 _NO_PARALLEL_CHECKOUT_OPT_HELP =  """Turns off parallel git checkouts
-By default, fre make will checkout each git repository defined in the compile.yaml configuration file 
+By default, fre make will checkout each git repository defined in the compile.yaml configuration file
 in parallel.
 """
-_VERBOSE_OPT_HELP = """Turns on debug level logging
-"""
+_VERBOSE_OPT_HELP = """Turns on debug level logging"""
 
 
 
@@ -92,12 +83,18 @@ def make_cli():
               metavar = '',
               default = 1,
               help = _PARALLEL_OPT_HELP)
-@click.option("-j",
-              "--njobs",
+@click.option("-mj",
+              "--makejobs",
               type = int,
               metavar = '',
               default = 4,
-              help = _JOBS_OPT_HELP)
+              help = _MAKE_JOBS_OPT_HELP)
+@click.option("-gj",
+              "--gitjobs",
+              type = int,
+              metavar = '',
+              default = 4,
+              help = _GIT_JOBS_OPT_HELP)
 @click.option("-npc",
               "--no-parallel-checkout",
               is_flag = True,
@@ -119,10 +116,12 @@ def make_cli():
               "--verbose",
               is_flag = True,
               help = _VERBOSE_OPT_HELP)
-def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout):
+def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_checkout, no_format_transfer, execute,
+        verbose, force_checkout):
     """ - Perform all fre make functions; run checkout and compile scripts to create model executable or container"""
     run_fremake_script.fremake_run(
-        yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout)
+        yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_checkout, no_format_transfer, execute,
+        verbose, force_checkout)
 
 @make_cli.command()
 @click.option("-y",
@@ -141,12 +140,12 @@ def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_f
               type = str,
               help = _TARGET_OPT_HELP,
               required = True)
-@click.option("-j",
-              "--njobs",
+@click.option("-gj",
+              "--gitjobs",
               type = int,
               metavar = '',
               default = 4,
-              help = _JOBS_OPT_HELP)
+              help = _GIT_JOBS_OPT_HELP)
 @click.option("-npc",
               "--no-parallel-checkout",
               is_flag = True,
@@ -158,10 +157,10 @@ def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_f
 @click.option("--force-checkout",
               is_flag = True,
               help = "Force checkout in case the source directory exists.")
-def checkout_script(yamlfile, platform, target, no_parallel_checkout, njobs, execute, force_checkout):
+def checkout_script(yamlfile, platform, target, no_parallel_checkout, gitjobs, execute, force_checkout):
     """ - Write the checkout script """
     create_checkout_script.checkout_create(
-        yamlfile, platform, target, no_parallel_checkout, njobs, execute, force_checkout)
+        yamlfile, platform, target, no_parallel_checkout, gitjobs, execute, force_checkout)
 
 @make_cli.command
 @click.option("-y",
@@ -199,12 +198,12 @@ def makefile(yamlfile, platform, target):
               type = str,
               help = _TARGET_OPT_HELP,
               required = True)
-@click.option("-j",
-              "--njobs",
+@click.option("-mj",
+              "--makejobs",
               type = int,
               metavar = '',
               default = 4,
-              help = _JOBS_OPT_HELP)
+              help = _MAKE_JOBS_OPT_HELP)
 @click.option("-n",
               "--nparallel",
               type = int,
@@ -218,10 +217,10 @@ def makefile(yamlfile, platform, target):
               "--verbose",
               is_flag = True,
               help = _VERBOSE_OPT_HELP)
-def compile_script(yamlfile, platform, target, njobs, nparallel, execute, verbose):
+def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, verbose):
     """ - Write the compile script """
     create_compile_script.compile_create(
-        yamlfile, platform, target, njobs, nparallel, execute, verbose)
+        yamlfile, platform, target, makejobs, nparallel, execute, verbose)
 
 @make_cli.command
 @click.option("-y",
