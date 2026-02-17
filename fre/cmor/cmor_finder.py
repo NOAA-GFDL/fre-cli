@@ -83,7 +83,7 @@ def cmor_find_subtool( json_var_list: Optional[str] = None,
     """
     Find and print information about variables in CMIP6 JSON configuration files in a specified directory.
 
-    :param json_var_list: Path to a JSON file containing a dictionary of variable names to look up. If None, opt_var_name must be provided.
+    :param json_var_list: path to JSON file containing variable names to look up in tables.
     :type json_var_list: str or None, optional
     :param json_table_config_dir: Directory containing CMIP6 table JSON files.
     :type json_table_config_dir: str
@@ -141,10 +141,10 @@ def make_simple_varlist( dir_targ: str,
     :type dir_targ: str
     :param output_variable_list: The path to the output JSON file where the variable list will be saved.
     :type output_variable_list: str
-    :param json_mip_table: The target table to use for making the variable list. if a found var isn't in the mip table, it's excluded
+    :param json_mip_table: target table for making the var list. found variables are included if they are in the table
     :type json_mip_table: str
     :raises OSError: if the outputfile cannot be written
-    :return: Dictionary of variable names (keys and values are the same), or None if no files are found or an error occurs
+    :return: Dictionary of variable names (keys == values), or None if no files are found or an error occurs
     :rtype: dict or None
 
     .. note:: Assumes NetCDF filenames are of the form: <something>.<datetime>.<variable>.nc
@@ -165,12 +165,11 @@ def make_simple_varlist( dir_targ: str,
     try:
         one_datetime = os.path.basename(one_file).split('.')[-3]
     except IndexError as e:
-        fre_logger.warning(f'{e}')
+        fre_logger.warning(' e = %s', e)
         fre_logger.warning('WARNING: cannot find datetime in filenames, moving on and doing the best i can.')
-        pass
 
     if one_datetime is None:
-        search_pattern = f"*nc"
+        search_pattern =  "*nc"
     else:
         search_pattern = f"*{one_datetime}*.nc"
 
@@ -180,11 +179,12 @@ def make_simple_varlist( dir_targ: str,
     # Check if any files were found
     if not files:
         fre_logger.error("No files found matching the pattern.") #uncovered
-        return
-    elif len(files) == 1:
+        return None
+
+    if len(files) == 1:
         fre_logger.warning("Warning: Only one file found matching the pattern.") #uncovered
-    else:
-        fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
+
+    fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
 
     mip_vars = None
     if json_mip_table is not None:
@@ -195,7 +195,7 @@ def make_simple_varlist( dir_targ: str,
 
         except Exception as exc:
             raise Exception( 'problem opening mip table and getting variable entry data.'
-                            f'exc = {exc}')
+                            f'exc = {exc}') from exc
 
         fre_logger.debug('attempting to make mip variable list')
         mip_vars=[ key.split('_')[0] for key in full_mip_vars_list ]
@@ -218,20 +218,19 @@ def make_simple_varlist( dir_targ: str,
             var_list = { _var_name : _var_name for _var_name in quick_vlist }
         else:
             fre_logger.warning('no variables in target mip table found.')
-            pass
 
     except Exception as exc:
-        fre_logger.error(f'{exc}')
+        fre_logger.error('exc = %s', exc)
         fre_logger.warning('WARNING: no matching pattern, or not enough info in the filenames'
-                         ' i am expecting FRE-bronx like filenames!')
+                           ' i am expecting FRE-bronx like filenames!')
         return None
 
     # Write the variable list to the output JSON file
     if output_variable_list is not None and len(var_list)>0:
         try:
             fre_logger.debug('writing output variable list, %s', output_variable_list)
-            with open(output_variable_list, 'w') as f:
+            with open(output_variable_list, 'w', encoding='utf-8') as f:
                 json.dump(var_list, f, indent=4)
-        except Exception:
-            raise OSError('output variable list created but cannot be written')
+        except Exception as exc:
+            raise OSError('output variable list created but cannot be written') from exc
     return var_list

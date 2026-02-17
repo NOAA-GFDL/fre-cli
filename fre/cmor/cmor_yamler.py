@@ -14,16 +14,15 @@ Functions
 .. note:: "yamler" is a portmanteau of "yaml" and "reader".
 """
 
-import json
 from pathlib import Path
 import pprint
 import logging
 import os
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional
 
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 from .cmor_mixer import cmor_run_subtool
-from .cmor_helpers import ( check_path_existence, iso_to_bronx_chunk, conv_mip_to_bronx_freq,
+from .cmor_helpers import ( check_path_existence, iso_to_bronx_chunk, #conv_mip_to_bronx_freq,
                             get_bronx_freq_from_mip_table )
 
 fre_logger = logging.getLogger(__name__)

@@ -23,6 +23,7 @@ START_YEAR_HELP = 'string representing the minimum calendar year CMOR should sta
 STOP_YEAR_HELP = 'string representing the maximum calendar year CMOR should stop processing for. ' + \
                   'currently, only YYYY format is supported.'
 
+
 @click.group(help=click.style(" - cmor subcommands", fg=(232,91,204)))
 def cmor_cli():
     ''' entry point to fre cmor click commands '''
@@ -65,7 +66,6 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start
     and various parameters related to a climate model experiment, and processes the YAML file using the CMOR
     YAML subtool.
     """
-
     cmor_yaml_subtool(
         yamlfile = yamlfile,
         exp_name = experiment,
@@ -78,6 +78,7 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start
         stop = stop,
         print_cli_call = print_cli_call
     )
+
 
 @cmor_cli.command()
 @click.option("-l", "--varlist", type = str,
@@ -101,7 +102,6 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
         json_table_config_dir = table_config_dir,
         opt_var_name = opt_var_name
     )
-
 
 
 @cmor_cli.command()
@@ -175,6 +175,7 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         stop = stop,
         calendar_type = calendar
     )
+
 
 @cmor_cli.command()
 @click.option("-d", "--dir_targ", type=str, required=True, help="Target directory")
