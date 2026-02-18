@@ -28,21 +28,18 @@ def test_cylc_src_creation_fail(fake_home):
 
     This test simulates a permission error in HOME.
     """
-    # Temporarily change fake_home permissions to read-only, so cylc-src creation will fail
-    os.chmod(fake_home, stat.S_IREAD)
-
     try:
-        if os.geteuid == 0: # if running as root
-            pytest.skip("Cannot test premission errors when running as root")
-            print("RUNNING AS ROOT")
-            AH
-#    # run checkout to create cylc-src
-#    directory = Path(f"{fake_home}/cylc-src")
-#    expected_error = f"(checkoutScript) directory {directory} wasn't able to be created. exit!"
-#    with pytest.raises(OSError, match = re.escape(expected_error)):
-#        checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
-#                                          experiment = EXPERIMENT,
-#                                          application = "pp")
+        # Temporarily change fake_home permissions to read-only for usr/owner
+        # If read-only, cylc-src dir creation should fail
+        Path(fake_home).chmod(stat.S_IRUSR)
+
+        # run checkout to create cylc-src
+        directory = Path(f"{fake_home}/cylc-src")
+        expected_error = f"(checkoutScript) directory {directory} wasn't able to be created. exit!"
+        with pytest.raises(OSError, match = re.escape(expected_error)):
+            checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
+                                              experiment = EXPERIMENT,
+                                              application = "pp")
     finally:
         os.chmod(fake_home, stat.S_IRWXU)
 
