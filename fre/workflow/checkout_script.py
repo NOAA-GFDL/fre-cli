@@ -56,8 +56,7 @@ def validate_yaml(yamlfile: dict, application: str) -> None:
     except Exception as exc:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
-def workflow_checkout(yamlfile: str = None, experiment = None,
-                      application = None, branch = None):
+def workflow_checkout(yamlfile: str = None, experiment = None, application = None):
     """
     Create a directory and clone the workflow template files from a defined repo.
 
@@ -67,19 +66,11 @@ def workflow_checkout(yamlfile: str = None, experiment = None,
                        yaml displayed by fre list exps -y $yamlfile 
                        (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str
-    :param platform: The location + compiler that was used to run the model
-                     (e.g. gfdl.ncrc5-deploy), default None
-    :type platform: str
-    :param target: Options used for the model compiler (e.g. prod-openmp), default None
-    :type target: str
-    :param branch: which git branch to pull from, default None
-    :type branch: str
     :param application: Which workflow will be used/cloned
     :type application: str
     :raises OSError: why checkout script was not able to be created
     :raises ValueError:
         -if experiment or platform or target is None
-        -if branch argument cannot be found as a branch or tag
     """
     # Used in consolidate_yamls function for now
     platform = None
@@ -110,12 +101,8 @@ def workflow_checkout(yamlfile: str = None, experiment = None,
 
     repo = workflow_info.get("repo")
 
-    if not branch:
-        tag = workflow_info.get("version")
-        fre_logger.info("Default tag ==> '%s'", tag)
-    else:
-        tag = branch
-        fre_logger.info("Requested branch/tag ==> '%s'", tag)
+    tag = workflow_info.get("version")
+    fre_logger.info("Defined tag ==> '%s'", tag)
 
     if None in [repo, tag]:
         raise ValueError(f"One of these are None: repo / tag = {repo} / {tag}")

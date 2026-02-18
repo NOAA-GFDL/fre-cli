@@ -20,18 +20,15 @@ def workflow_cli():
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
               required=True)
-@click.option("-b", "--branch", type =str,
-              required=False, default = None,
-              help="fre-workflows branch/tag to clone; default is $(fre --version)")
 @click.option("-a", "--application",
               type=click.Choice(['run', 'pp']),
               help="Use case for checked out workflow",
               required=True)
-def checkout(yamlfile, experiment, application, branch=None):
+def checkout(yamlfile, experiment, application):
     """
     Checkout/extract fre workflow
     """
-    checkout_script.workflow_checkout(yamlfile, experiment, application, branch)
+    checkout_script.workflow_checkout(yamlfile, experiment, application)
 
 #@workflow_cli.command()
 #@click.option("-e", "--experiment", type=str,
