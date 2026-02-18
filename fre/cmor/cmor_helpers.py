@@ -46,10 +46,13 @@ import json
 import logging
 import os
 from pathlib import Path
+import subprocess
 from typing import Optional, List, Union
 
 import numpy as np
 from netCDF4 import Dataset, Variable
+
+from .cmor_constants import ARCHIVE_GOLD_DATA_DIR, INPUT_TO_MIP_VERT_DIM
 
 fre_logger = logging.getLogger(__name__)
 
@@ -98,8 +101,6 @@ def from_dis_gimme_dis( from_dis: Dataset,
         fre_logger.warning('I am sorry, I could not not give you this: %s\n returning None!\n', gimme_dis)
         return None
 
-import subprocess
-from .cmor_constants import ARCHIVE_GOLD_DATA_DIR, INPUT_TO_MIP_VERT_DIM
 
 def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optional[str]:
     """

@@ -53,6 +53,26 @@ def test_update_grid_label_and_grid_success(temp_json_file):
         assert data["nominal_resolution"] == new_nom_res
         assert data["other_field"] == "some_value"  # Ensure other fields are untouched
 
+def test_missing_nom_res_field(temp_json_file):
+    """
+    Test behavior when the 'nominal_resolution' field is missing in the JSON file.
+    """
+    # Arrange
+    with open(temp_json_file, "r+", encoding="utf-8") as file:
+        data = json.load(file)
+        del data["nominal_resolution"]  # Remove the 'nominal_resolution' field
+        file.seek(0)
+        json.dump(data, file, indent=4)
+        file.truncate()
+
+    new_grid_label = "updated_label"
+    new_grid = "updated_grid"
+    new_nom_res = "updated_nom_res"
+
+    # Act & Assert
+    with pytest.raises(KeyError, match="Error while updating 'nominal_resolution'"):
+        update_grid_and_label(temp_json_file, new_grid_label, new_grid, new_nom_res)
+
 def test_missing_grid_label_field(temp_json_file):
     """
     Test behavior when the 'grid_label' field is missing in the JSON file.
