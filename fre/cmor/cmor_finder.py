@@ -203,25 +203,20 @@ def make_simple_varlist( dir_targ: str,
 
     # Create a dictionary of variable names extracted from the filenames
     var_list = {}
-    try:
-        quick_vlist=[]
-        for targetfile in files:
-            var_name=os.path.basename(targetfile).split('.')[-2]
-            if mip_vars is not None and var_name not in mip_vars:
-                fre_logger.debug('var_name %s not in mip_vars, omitting', var_name)
-                continue
+    quick_vlist=[]
+    for targetfile in files:
+        var_name=os.path.basename(targetfile).split('.')[-2]
+        if mip_vars is not None and var_name not in mip_vars:
+            fre_logger.debug('var_name %s not in mip_vars, omitting', var_name)
+            continue
 
-            quick_vlist.append(var_name)
+        quick_vlist.append(var_name)
 
-        if len(quick_vlist) > 0:
-            var_list = { _var_name : _var_name for _var_name in quick_vlist }
-        else:
-            fre_logger.warning('no variables in target mip table found.')
-
-    except Exception as exc:
-        fre_logger.error('exc = %s', exc)
-        fre_logger.warning('WARNING: no matching pattern, or not enough info in the filenames'
-                           ' i am expecting FRE-bronx like filenames!')
+    if len(quick_vlist) > 0:
+        var_list = { _var_name : _var_name for _var_name in quick_vlist }
+    else:
+        fre_logger.warning('WARNING: no variables in target mip table found, or no matching pattern,'
+                           ' or not enough info in the filenames (i am expecting FRE-bronx like filenames)')
         return None
 
     # Write the variable list to the output JSON file
