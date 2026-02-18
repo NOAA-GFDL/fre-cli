@@ -97,8 +97,8 @@ def test_find_gold_ocean_statics_file_mock_copy(tmp_path):
     exercise the full copy path by creating a fake archive gold file in tmp_path
     and monkeypatching ARCHIVE_GOLD_DATA_DIR so the function finds it.
     '''
-    import fre.cmor.cmor_helpers as _helpers_mod
-    import fre.cmor.cmor_constants as _const_mod
+    import fre.cmor.cmor_helpers as _helpers_mod # pylint: disable=import-outside-toplevel
+    import fre.cmor.cmor_constants as _const_mod # pylint: disable=import-outside-toplevel
 
     # build a fake archive layout:  <tmp>/gold/datasets/OM5_025/.../ocean_static.nc
     fake_archive_root = tmp_path / 'fake_archive' / 'gold' / 'datasets'

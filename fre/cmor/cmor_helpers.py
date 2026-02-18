@@ -46,13 +46,15 @@ import json
 import logging
 import os
 from pathlib import Path
+import shutil
 import subprocess
 from typing import Optional, List, Union
 
 import numpy as np
 from netCDF4 import Dataset, Variable
 
-from .cmor_constants import ARCHIVE_GOLD_DATA_DIR, INPUT_TO_MIP_VERT_DIM
+from .cmor_constants import ( ARCHIVE_GOLD_DATA_DIR, CMIP7_GOLD_OCEAN_FILE_STUB, CMIP6_GOLD_OCEAN_FILE_STUB,
+                              INPUT_TO_MIP_VERT_DIM )
 
 fre_logger = logging.getLogger(__name__)
 
@@ -116,10 +118,19 @@ def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optiona
     .. note:: The archive path is hard-coded to the OM5_025 dataset on GFDL systems.
     """
     archive_gold_file = (
-        f'{ARCHIVE_GOLD_DATA_DIR}/OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
+        f'{ARCHIVE_GOLD_DATA_DIR}/{CMIP7_GOLD_OCEAN_FILE_STUB}'
+        #f'{ARCHIVE_GOLD_DATA_DIR}/OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
     )
     fre_logger.debug('ARCHIVE_GOLD_DATA_DIR=%s', ARCHIVE_GOLD_DATA_DIR)
     fre_logger.debug('archive_gold_file=%s', archive_gold_file)
+
+    if not Path(archive_gold_file).exists():
+        fre_logger.error('ERROR gold archive file does not exist: %s', archive_gold_file)
+        fre_logger.error('ERROR this file should probably exist.')
+        fre_logger.warning('WARNING i will fallback to using buggy ocean_statics'
+                           ' files in pp directories out of desperation')
+        return None
+
 
     if put_copy_here is None:
         fre_logger.warning('put_copy_here is None, cannot stage gold ocean statics file')
@@ -127,12 +138,12 @@ def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optiona
 
     # mirror the archive sub-path under put_copy_here
     # e.g.  /archive/gold/datasets/OM5_025/…  ->  datasets/OM5_025/…
-    try:
-        new_dir_tree = '/'.join(archive_gold_file.split('/')[3:])
-        fre_logger.debug('new_dir_tree=%s', new_dir_tree)
-    except Exception:
-        fre_logger.error('could not derive sub-path from archive_gold_file')
-        return None
+    #try:
+    new_dir_tree = CMIP7_GOLD_OCEAN_FILE_STUB # '/'.join(archive_gold_file.split('/')[3:])
+    fre_logger.debug('new_dir_tree=%s', new_dir_tree)
+    #except Exception:
+    #    fre_logger.error('could not derive sub-path from archive_gold_file')
+    #    return None
 
     working_copy_dir = f'{put_copy_here}/{Path(new_dir_tree).parent}'
     Path(working_copy_dir).mkdir(parents=True, exist_ok=True)
@@ -140,15 +151,16 @@ def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optiona
 
     # guard: if a stale directory exists where the file should be (from a prior buggy mkdir),
     # remove it so the copy can succeed
-    if Path(working_copy).is_dir():
-        fre_logger.warning('removing stale directory at working_copy path: %s', working_copy)
-        import shutil as _shutil
-        _shutil.rmtree(working_copy)
+    if Path(working_copy).exists():
+        if Path(working_copy).is_dir():
+            fre_logger.warning('prior buggy mkdir suspected- removing directory instead of the expected file')
+            shutil.rmtree(working_copy)
+            fre_logger.warning('dir removed, moving on')
+        else:
+            fre_logger.warning('a previous copy of the ocean statics file exists, not re-copying!')
+            return working_copy
 
     if not Path(working_copy).is_file():
-        if not Path(archive_gold_file).exists():
-            fre_logger.warning('gold archive file does not exist: %s', archive_gold_file)
-            return None
         fre_logger.info('copying archived golden statics file to\n  %s', working_copy)
         try:
             subprocess.run(['cp', archive_gold_file, working_copy], shell=False, check=True)
