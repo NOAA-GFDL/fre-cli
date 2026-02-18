@@ -1,12 +1,13 @@
 '''
 tests for fre.cmor.cmor_run_subtool
 '''
+
+from datetime import date
 import json
+import os
+from pathlib import Path
 import subprocess
 import shutil
-from pathlib import Path
-from datetime import date
-import os
 
 import pytest
 
@@ -189,6 +190,7 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
             print(f'WARNING: TMPDIR={TMPDIR} could not be removed.')
             print( '         this does not matter that much, but is unfortunate.')
             print( '         suspicion: something the cmor module is using is not being closed')
+            print(f'         exc = {exc}')
 
     #assert not Path(TMPDIR).exists()    # VERY ANNOYING !!! FYI WARNING TODO
 
@@ -200,6 +202,7 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
             print(f'WARNING: OUTDIR={OUTDIR} could not be removed.')
             print( '         this does not matter that much, but is unfortunate.')
             print( '         suspicion: something the cmor module is using is not being closed')
+            print(f'         exc = {exc}')
 
     #assert not Path(OUTDIR).exists()    # VERY ANNOYING !!! FYI WARNING TODO
 
@@ -332,7 +335,7 @@ def test_fre_cmor_run_subtool_no_exp_config():
 
 VARLIST_EMPTY = \
     f'{ROOTDIR}/empty_varlist'
-def test_fre_cmor_run_subtool_empty_varlist(capfd):
+def test_fre_cmor_run_subtool_empty_varlist():
     '''
     fre cmor run, exception, variable list is empty
     '''

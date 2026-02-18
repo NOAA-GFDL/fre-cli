@@ -13,8 +13,10 @@ mocked so the tests focus exclusively on the calendar-type routing logic.
 """
 
 import json
-import pytest
 from unittest.mock import patch
+
+import pytest
+
 from fre.cmor.cmor_mixer import cmor_run_subtool
 
 
