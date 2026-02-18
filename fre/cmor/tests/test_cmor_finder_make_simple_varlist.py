@@ -1,7 +1,9 @@
+'''
+tests for fre.cmor.cmor_finder.make_simple_varlist
+'''
+
 import json
-import os
 import glob as glob_module
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
