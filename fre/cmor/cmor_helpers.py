@@ -639,54 +639,54 @@ def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
 
-def update_outpath( json_file_path: str,
-                    outpath: str,
-                    output_file_path: Optional[str] = None) -> None:
-    """
-    Update the "outpath" field in a JSON experiment config file.
-
-    :param json_file_path: Path to the input JSON file.
-    :type json_file_path: str
-    :param outpath: key in input experiment config for managing target output directory, required
-    :type outpath: str
-    :param output_file_path: path to write the updated experiment config file to, if desired.
-    :type output_file_path: str, optional
-    """
-
-    if None in [json_file_path, outpath]:
-        fre_logger.error(
-            'a required input argument is None\n'
-            'bailing...!')
-        raise ValueError
-
-    try:
-        with open(json_file_path, "r", encoding="utf-8") as file:
-            data = json.load(file)
-
-        try:
-            fre_logger.info('Original "outpath": %s', data["outpath"])
-            data["outpath"] = outpath
-            fre_logger.info('Updated "outpath": %s', data["outpath"])
-        except KeyError as e:
-            fre_logger.error("Failed to update 'outpath': %s", e)
-            raise KeyError("Error while updating 'outpath'. Ensure the field exists and is modifiable.") from e
-
-        output_file_path = output_file_path or json_file_path
-
-        with open(output_file_path, "w", encoding="utf-8") as file:
-            json.dump(data, file, indent=4)
-
-        fre_logger.info('Successfully updated fields and saved to %s', output_file_path)
-
-    except FileNotFoundError:
-        fre_logger.error("The file '%s' does not exist.", json_file_path)
-        raise
-    except json.JSONDecodeError:
-        fre_logger.error("Failed to decode JSON from the file '%s'.", json_file_path)
-        raise
-    except Exception as e:
-        fre_logger.error("An unexpected error occurred: %s", e)
-        raise
+#def update_outpath( json_file_path: str,
+#                    outpath: str,
+#                    output_file_path: Optional[str] = None) -> None:
+#    """
+#    Update the "outpath" field in a JSON experiment config file.
+#
+#    :param json_file_path: Path to the input JSON file.
+#    :type json_file_path: str
+#    :param outpath: key in input experiment config for managing target output directory, required
+#    :type outpath: str
+#    :param output_file_path: path to write the updated experiment config file to, if desired.
+#    :type output_file_path: str, optional
+#    """
+#
+#    if None in [json_file_path, outpath]:
+#        fre_logger.error(
+#            'a required input argument is None\n'
+#            'bailing...!')
+#        raise ValueError
+#
+#    try:
+#        with open(json_file_path, "r", encoding="utf-8") as file:
+#            data = json.load(file)
+#
+#        try:
+#            fre_logger.info('Original "outpath": %s', data["outpath"])
+#            data["outpath"] = outpath
+#            fre_logger.info('Updated "outpath": %s', data["outpath"])
+#        except KeyError as e:
+#            fre_logger.error("Failed to update 'outpath': %s", e)
+#            raise KeyError("Error while updating 'outpath'. Ensure the field exists and is modifiable.") from e
+#
+#        output_file_path = output_file_path or json_file_path
+#
+#        with open(output_file_path, "w", encoding="utf-8") as file:
+#            json.dump(data, file, indent=4)
+#
+#        fre_logger.info('Successfully updated fields and saved to %s', output_file_path)
+#
+#    except FileNotFoundError:
+#        fre_logger.error("The file '%s' does not exist.", json_file_path)
+#        raise
+#    except json.JSONDecodeError:
+#        fre_logger.error("Failed to decode JSON from the file '%s'.", json_file_path)
+#        raise
+#    except Exception as e:
+#        fre_logger.error("An unexpected error occurred: %s", e)
+#        raise
 
 
 def filter_brands( brands: list,
