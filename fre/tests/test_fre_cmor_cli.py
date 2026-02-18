@@ -418,6 +418,24 @@ def test_cli_fre_cmor_config_case1():
     comp_ts_dir = mock_pp_dir / 'ocean' / 'ts' / 'monthly' / '5yr'
     comp_ts_dir.mkdir(parents=True, exist_ok=True)
 
+    # make an ice component dir with no chunk-dir to skip accordingly
+    (mock_pp_dir / 'ice' / 'ts' / 'monthly' ).mkdir(parents=True, exist_ok=True)
+
+    # make a land component dir with no ts dir to skip accordingly
+    (mock_pp_dir / 'land' / 'av').mkdir(parents=True, exist_ok=True)
+
+    # make an empty atmos component dir with no netcdf files to make sure we skip a dir with no nc files
+    (mock_pp_dir / 'atmos' / 'ts' / 'monthly' / '5yr').mkdir(parents=True, exist_ok=True)
+
+    # create random file that's not a directory in the pp_dir that we should skip over gracefully
+    (mock_pp_dir / 'foo.json').touch()
+
+    # put an av directory in to make sure we're nmot targeting that at the moment
+    (mock_pp_dir / 'ocean' / 'av').mkdir(parents=True, exist_ok=True)
+
+    # put an annual directory in to make sure we're not targeting that at the moment
+    (mock_pp_dir / 'ocean' / 'ts' / 'annual').mkdir(parents=True, exist_ok=True)
+    
     # symlink the test nc file into the mock tree
     src_nc = Path(f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc')
     dst_nc = comp_ts_dir / src_nc.name
@@ -426,6 +444,12 @@ def test_cli_fre_cmor_config_case1():
     dst_nc.symlink_to(src_nc.resolve())
 
     varlist_out_dir = Path(f'{ROOTDIR}/mock_writer_varlists')
+    varlist_out_dir.mkdir(exist_ok=True)
+
+    # create an empty variable list of one we want to create. it should be remade. 
+    (varlist_out_dir / 'CMIP6_CMIP6_Omon_ocean.list').touch()
+    assert (varlist_out_dir / 'CMIP6_CMIP6_Omon_ocean.list').exists(), 'pre-existing variable list failed to be created for tests'
+
     output_yaml = Path(f'{ROOTDIR}/mock_writer_output.yaml')
     output_data_dir = Path(f'{ROOTDIR}/mock_writer_outdir')
 
@@ -433,6 +457,9 @@ def test_cli_fre_cmor_config_case1():
     for p in [output_yaml]:
         if p.exists():
             p.unlink()
+
+    # recreate the yaml to make sure it's recreated
+    output_yaml.touch()
 
     result = runner.invoke(fre.fre, args=[
         "-v", "-v",
@@ -451,6 +478,7 @@ def test_cli_fre_cmor_config_case1():
     ])
     assert result.exit_code == 0, f'config failed: {result.output}'
     assert output_yaml.exists(), 'output YAML was not created'
+    assert (varlist_out_dir / 'CMIP6_CMIP6_Omon_ocean.list').exists(), 'CMIP6_CMIP6_Omon_ocean.list was not created for some reason'
 
     # basic sanity: the written file should contain "cmor:" and "table_targets:"
     yaml_text = output_yaml.read_text(encoding='utf-8')
