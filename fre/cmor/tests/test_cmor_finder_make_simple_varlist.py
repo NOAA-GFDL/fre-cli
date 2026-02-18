@@ -297,5 +297,5 @@ def test_make_simple_varlist_mip_table_no_match(tmp_path):
 
     result = make_simple_varlist(str(tmp_path), None, json_mip_table=str(mip_table))
 
-    # No variables matched, so var_list is {}
-    assert result == {}
+    # No variables matched
+    assert result is None
