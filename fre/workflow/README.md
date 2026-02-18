@@ -14,5 +14,4 @@ fre workflow checkout -y fre/workflow/tests/AM5_example/am5.yaml -e c96L65_am5f7
    - Options:
         - `-y, --yamlfile [model yaml] (str; required)`
         - `-e, --experiment [experiment name] (str; required)`
-        - `-b, --branch [workflow repo branch to check out] (str; optional)`
         - `-a, --application [ run | pp ] (str; required)`
