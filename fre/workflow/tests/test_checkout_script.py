@@ -41,7 +41,7 @@ def test_cylc_src_creation_fail(fake_home):
                                               experiment = EXPERIMENT,
                                               application = "pp")
     finally:
-        os.chmod(fake_home, stat.S_IRWXU)
+        Path(fake_home).chmod(stat.S_IRWXU)
 
 def test_check_missing_repo():
     """
