@@ -77,7 +77,6 @@ def print_data_minmax( ds_variable: Optional[np.ma.core.MaskedArray] = None,
         fre_logger.info('%s < %s < %s', ds_variable.min(), desc, ds_variable.max())
     except Exception:
         fre_logger.warning('could not print min/max entries for desc = %s', desc)
-    return
 
 
 def from_dis_gimme_dis( from_dis: Dataset,
@@ -635,8 +634,8 @@ def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
                 table_freq = table_config_data['variable_entry'][var_entry]['frequency']
                 break
             except Exception as exc:
-                raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
-                               'have frequency info under the variable entry!') from exc
+                raise KeyError('no frequency in table under variable_entry. this may be a CMIP7 table.') from exc
+
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
 

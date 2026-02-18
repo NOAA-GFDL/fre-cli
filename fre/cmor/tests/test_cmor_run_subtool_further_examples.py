@@ -201,4 +201,3 @@ def test_git_cleanup():
         #first command completed, second found no file in git status
         assert all( [ restore.returncode == 0,
                       check.returncode == 1 ] )
-

@@ -192,14 +192,12 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
         time_coords_calendar = ds['time'].calendar.lower()
     except:
         fre_logger.debug("could not find calendar attribute on time axis. moving on.")
-        pass
 
     if time_coords_calendar is None:
         try: # second attempt if first didn't work
             time_coords_calendar=ds['time'].calendar_type.lower()
         except:
             fre_logger.debug("could not find calendar_type attribute on time axis. moving on.")
-            pass
 
     # if it's still None, give a warning and move on.
     if time_coords_calendar is None:
@@ -1038,7 +1036,7 @@ def cmor_run_subtool(indir: str = None,
         if opt_var_name is not None and opt_var_name in mip_var_list:
             vars_to_run[opt_var_name] = opt_var_name
             break
-        elif var_list[local_var] not in mip_var_list: #mip_var_cfgs["variable_entry"]:
+        if var_list[local_var] not in mip_var_list: #mip_var_cfgs["variable_entry"]:
             fre_logger.warning('skipping local_var = %s /\n'
                                'target_var = %s\n'
                                'target_var not found in CMOR variable group', local_var, var_list[local_var])
@@ -1053,7 +1051,7 @@ def cmor_run_subtool(indir: str = None,
         raise ValueError('runnable variable list is of length 0 '
                          'this means no variables in input variable list are in '
                          'the mip table configuration, so there\'s nothing to process!')
-    elif all([opt_var_name is not None, opt_var_name not in list(vars_to_run.keys())]):
+    if all([opt_var_name is not None, opt_var_name not in list(vars_to_run.keys())]):
         raise ValueError('opt_var_name is not None! (== %s)'
                          '... but the variable is not contained in the target mip table'
                          '... there\'s nothing to process, exit', opt_var_name)
