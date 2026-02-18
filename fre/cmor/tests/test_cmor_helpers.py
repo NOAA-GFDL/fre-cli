@@ -216,7 +216,7 @@ def test_create_tmp_dir_success(tmp_path):
     ''' create_tmp_dir should create a tmp/ subdirectory and return its path '''
     result = create_tmp_dir(outdir=str(tmp_path))
     assert Path(result).is_dir()
-    assert result.endswith('/tmp')
+    assert result.endswith('/CMOR_tmp')
 
 
 def test_create_tmp_dir_with_exp_config(tmp_path):
