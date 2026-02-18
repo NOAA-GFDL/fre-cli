@@ -1,7 +1,5 @@
 ''' fre workflow checkout tests '''
-import stat
 import re
-import os
 from pathlib import Path
 import pytest
 from fre.workflow import checkout_script
@@ -26,10 +24,11 @@ def test_cylc_src_creation_fail(fake_home):
     Test for the expected failure if the cylc-src
     directory cannot be created. 
 
-    This test simulates a permission error in HOME.
+    This test simulates a file with the name cylc-src
+    already created, causing a permission error in HOME.
     """
     cylc_src_file = Path(f"{fake_home}/cylc-src")
-    with open(cylc_src_file, "w") as f:
+    with open(cylc_src_file, "w", encoding='utf-8') as f:
         f.write("testing 123")
 
     # run checkout to create cylc-src
