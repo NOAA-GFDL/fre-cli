@@ -9,8 +9,8 @@ from fre.cmor.cmor_helpers import ( find_statics_file, print_data_minmax,
                                     find_gold_ocean_statics_file,
                                     create_lev_bnds, get_iso_datetime_ranges,
                                     create_tmp_dir, get_json_file_data,
-                                    update_grid_and_label, get_bronx_freq_from_mip_table,
-                                    update_outpath, filter_brands )
+                                    update_grid_and_label, get_bronx_freq_from_mip_table, #update_outpath,
+                                    filter_brands )
 
 def test_find_statics_file_success():
     ''' what happens when no statics file is found given a bronx directory structure '''
@@ -312,20 +312,20 @@ def test_get_bronx_freq_from_mip_table_invalid_freq(tmp_path):
         get_bronx_freq_from_mip_table(str(f))
 
 
-# ---- update_outpath tests ----
-
-def test_update_outpath_none_json_path():
-    ''' should raise ValueError when json_file_path is None '''
-    with pytest.raises(ValueError):
-        update_outpath(None, '/some/output/path')
-
-
-def test_update_outpath_none_output_path(tmp_path):
-    ''' should raise ValueError when output_file_path is None '''
-    f = tmp_path / 'exp.json'
-    f.write_text(json.dumps({"outpath": "/old/path"}))
-    with pytest.raises(ValueError):
-        update_outpath(str(f), None)
+## ---- update_outpath tests ----
+#
+#def test_update_outpath_none_json_path():
+#    ''' should raise ValueError when json_file_path is None '''
+#    with pytest.raises(ValueError):
+#        update_outpath(None, '/some/output/path')
+#
+#
+#def test_update_outpath_none_output_path(tmp_path):
+#    ''' should raise ValueError when output_file_path is None '''
+#    f = tmp_path / 'exp.json'
+#    f.write_text(json.dumps({"outpath": "/old/path"}))
+#    with pytest.raises(ValueError):
+#        update_outpath(str(f), None)
 
 
 # ---- filter_brands tests ----

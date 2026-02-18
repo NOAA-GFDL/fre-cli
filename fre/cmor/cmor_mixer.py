@@ -44,8 +44,8 @@ import netCDF4 as nc
 
 from .cmor_helpers import ( print_data_minmax, from_dis_gimme_dis, find_statics_file, create_lev_bnds,
                             get_iso_datetime_ranges, check_dataset_for_ocean_grid, get_vertical_dimension,
-                            create_tmp_dir, get_json_file_data, update_grid_and_label, update_calendar_type,
-                            update_outpath, find_gold_ocean_statics_file, filter_brands )
+                            create_tmp_dir, get_json_file_data, update_grid_and_label, #update_outpath,
+                            update_calendar_type, find_gold_ocean_statics_file, filter_brands )
 from .cmor_constants import ( ACCEPTED_VERT_DIMS, NON_HYBRID_SIGMA_COORDS, ALT_HYBRID_SIGMA_COORDS,
                               DEPTH_COORDS, CMOR_NC_FILE_ACTION, CMOR_VERBOSITY,
                               CMOR_EXIT_CTL, CMOR_MK_SUBDIRS, CMOR_LOG )
