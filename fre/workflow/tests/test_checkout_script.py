@@ -31,7 +31,8 @@ def test_cylc_src_creation_fail(fake_home):
     try:
         # Temporarily change fake_home permissions to read-only for usr/owner
         # If read-only, cylc-src dir creation should fail
-        Path(fake_home).chmod(stat.S_IRUSR)
+        read_only_mode = 0o44
+        Path(fake_home).chmod(read_only_mode)
 
         # run checkout to create cylc-src
         directory = Path(f"{fake_home}/cylc-src")
@@ -41,7 +42,8 @@ def test_cylc_src_creation_fail(fake_home):
                                               experiment = EXPERIMENT,
                                               application = "pp")
     finally:
-        Path(fake_home).chmod(stat.S_IRWXU)
+        rwx_mode = 0o77
+        Path(fake_home).chmod(rwx_mode)
 
 def test_check_missing_repo():
     """
