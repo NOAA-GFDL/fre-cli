@@ -30,7 +30,7 @@ from .cmor_constants import DO_NOT_PRINT_LIST
 
 fre_logger = logging.getLogger(__name__)
 
-
+# TODO update for cmip7 if desired
 def print_var_content(table_config_file: IO[str],
                       var_name: str) -> None:
     """
@@ -48,15 +48,8 @@ def print_var_content(table_config_file: IO[str],
     .. note:: If the variable is not found, logs a debug message and returns.
     .. note:: Only prints selected fields, omitting any in DO_NOT_PRINT_LIST.
     """
-    try:
-        proj_table_vars = json.load(table_config_file)
-    except Exception as exc:
-        raise Exception('problem getting proj_table_vars... WHY') from exc
-
-    var_content = proj_table_vars.get("variable_entry", {}).get(var_name)
-    if var_content is None:
-        fre_logger.debug('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
-        return
+    # this function can assume the existence of this was checked in the prev routinue.
+    proj_table_vars = json.load(table_config_file)
 
     table_name = None
     try:
@@ -65,9 +58,15 @@ def print_var_content(table_config_file: IO[str],
         fre_logger.warning("couldn't get header and table_name field")
 
     if table_name is not None:
-        fre_logger.info('found %s data in table %s!', var_name, table_name)
+        fre_logger.info('looking for %s data in table %s!', var_name, table_name)
     else:
-        fre_logger.info('found %s data in table, but not its table_name!', var_name)
+        fre_logger.info('looking for %s data in table %s, but could not find its table_name!',
+                        var_name, table_config_file.name)
+
+    var_content = proj_table_vars.get("variable_entry", {}).get(var_name)
+    if var_content is None:
+        fre_logger.debug('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
+        return
 
     fre_logger.info('    variable key: %s', var_name)
     for content in var_content:
