@@ -4,7 +4,7 @@
 ## Quickstart
 From the root of the fre-cli repository, run:
 ```
-# List post-processing experiments defined in model yaml
+# Checkout/clone the post-processing workflow repository
 fre workflow checkout -y fre/workflow/tests/AM5_example/am5.yaml -e c96L65_am5f7b12r1_amip_TESTING -a pp
 ```
 
