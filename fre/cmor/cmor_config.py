@@ -163,6 +163,8 @@ def cmor_config_subtool(
 
             # optionally regenerate
             if Path(variable_list).exists() and overwrite:
+                fre_logger.debug('varlist %s exists, unlinking to recreate because overwrite=True',
+                                 Path(variable_list).name)
                 Path(variable_list).unlink()
 
             if not Path(entry).is_dir():
