@@ -17,7 +17,6 @@ Functions
 import glob
 import logging
 from pathlib import Path
-from typing import Optional
 
 from .cmor_finder import make_simple_varlist
 from .cmor_constants import EXCLUDED_TABLE_SUFFIXES
