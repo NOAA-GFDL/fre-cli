@@ -282,12 +282,21 @@ def test_cli_fre_cmor_find_opt_dne():
     assert result.exit_code == 2
 
 
-def test_cli_fre_cmor_find_cmip6_case():
-    ''' fre cmor find, test-use case searching for variables in cmip7 tables '''
+def test_cli_fre_cmor_find_cmip6_case1():
+    ''' fre cmor find, test-use case searching for variables in cmip6 tables '''
     result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
                                           "--varlist", "fre/tests/test_files/varlist",
                                           "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
     assert result.exit_code == 0
+
+def test_cli_fre_cmor_find_cmip6_case2():
+    ''' fre cmor find, test-use case searching for variables in cmip6 tables '''
+    result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
+                                          "--opt_var_name", "sos",
+                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
+    assert result.exit_code == 0
+
+
 
 
 def test_cli_fre_cmor_run_cmip7_case1():
