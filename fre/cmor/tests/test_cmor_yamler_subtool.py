@@ -568,7 +568,7 @@ def test_cmip6_freq_none_derivation_succeeds(mock_consolidate, tmp_path):
 
 
 @patch('fre.cmor.cmor_yamler.consolidate_yamls')
-def test_dry_run_prints_cli_call(mock_consolidate, tmp_path, capfd):
+def test_dry_run_prints_cli_call(mock_consolidate, tmp_path):
     '''
     dry_run_mode=True with print_cli_call=True should log the CLI
     invocation and never call cmor_run_subtool.
@@ -603,7 +603,7 @@ def test_dry_run_prints_cli_call(mock_consolidate, tmp_path, capfd):
 
 
 @patch('fre.cmor.cmor_yamler.consolidate_yamls')
-def test_dry_run_prints_python_call(mock_consolidate, tmp_path, capfd):
+def test_dry_run_prints_python_call(mock_consolidate, tmp_path):
     '''
     dry_run_mode=True with print_cli_call=False should log the Python
     cmor_run_subtool(...) invocation.
