@@ -1,3 +1,7 @@
+'''
+tests for fre.cmor helper functions in cmor_helpers
+'''
+
 import json
 from pathlib import Path
 
@@ -19,12 +23,12 @@ def test_iso_to_bronx_chunk():
 
 def test_find_statics_file_success():
     ''' what happens when no statics file is found given a bronx directory structure '''
-    target_file_path = 'fre/tests/test_files/ascii_files/mock_archive/' + \
-                       'USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' + \
-                       'gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/ocean_monthly.000101-000102.sos.nc'
-    if not Path(target_file_path).exists():
-        Path(target_file_path).touch()
-    assert Path(target_file_path).exists()
+    target_file = 'fre/tests/test_files/ascii_files/mock_archive/' + \
+                  'USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' + \
+                  'gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/ocean_monthly.000101-000102.sos.nc'
+    if not Path(target_file).exists():
+        Path(target_file).touch()
+    assert Path(target_file).exists()
 
     expected_answer_statics_file = 'fre/tests/test_files/ascii_files/mock_archive/' + \
                                    'USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' + \
@@ -33,7 +37,7 @@ def test_find_statics_file_success():
         Path(expected_answer_statics_file).touch()
     assert Path(expected_answer_statics_file).exists
 
-    statics_file = find_statics_file( bronx_file_path = target_file_path
+    statics_file = find_statics_file( bronx_file_path = target_file
                                       )
     assert Path(statics_file).exists()
     assert statics_file == expected_answer_statics_file
@@ -303,6 +307,18 @@ def test_get_bronx_freq_from_mip_table_success(tmp_path):
     f.write_text(json.dumps(table))
     assert get_bronx_freq_from_mip_table(str(f)) == "monthly"
 
+def test_get_bronx_freq_from_mip_table_no_freq(tmp_path):
+    ''' should raise bronx-equivalent frequency for a valid table '''
+    table = {
+        "variable_entry": {
+            "sos": {"other": "stuff"}
+        }
+    }
+    f = tmp_path / 'Omon.json'
+    f.write_text(json.dumps(table))
+    with pytest.raises(KeyError,
+                       match='no frequency in table under variable_entry. this may be a CMIP7 table.'):
+        get_bronx_freq_from_mip_table(str(f))
 
 def test_get_bronx_freq_from_mip_table_invalid_freq(tmp_path):
     ''' should raise KeyError when the table frequency is not a valid MIP frequency '''
@@ -315,7 +331,6 @@ def test_get_bronx_freq_from_mip_table_invalid_freq(tmp_path):
     f.write_text(json.dumps(table))
     with pytest.raises(KeyError, match='not a valid MIP frequency'):
         get_bronx_freq_from_mip_table(str(f))
-
 
 ## ---- update_outpath tests ----
 #
