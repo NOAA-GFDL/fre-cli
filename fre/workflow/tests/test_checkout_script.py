@@ -42,8 +42,7 @@ def test_cylc_src_creation_fail(fake_home):
 #    with pytest.raises(OSError, match = re.escape(expected_error)):
 #        checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
 #                                          experiment = EXPERIMENT,
-#                                          application = "pp",
-#                                          branch = None)
+#                                          application = "pp")
     finally:
         os.chmod(fake_home, stat.S_IRWXU)
 
@@ -58,8 +57,7 @@ def test_check_missing_repo():
     with pytest.raises(ValueError, match = f"One of these are None: repo / tag = {repo} / {tag}"):
         checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
                                           experiment = experiment,
-                                          application = "pp",
-                                          branch = None)
+                                          application = "pp")
 
 #def test_run_workflow_checkout(caplog):
 #    """
@@ -67,8 +65,7 @@ def test_check_missing_repo():
 #    """
 #    checkout_script.workflow_checkout(yamlfile,
 #                                      experiment = "c96L65_am5f7b12r1_amip_TESTING",
-#                                      application = "run"
-#                                      branch = None)
+#                                      application = "run")
 
 def test_pp_workflow_checkout(fake_home, caplog):
     """
@@ -76,8 +73,7 @@ def test_pp_workflow_checkout(fake_home, caplog):
     """
     checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
                                       experiment = EXPERIMENT,
-                                      application = "pp",
-                                      branch = None)
+                                      application = "pp")
 
     expected_repo = "https://github.com/NOAA-GFDL/fre-workflows.git"
     expected_tag = "main"
@@ -94,14 +90,12 @@ def test_pp_workflow_checkout_exists_already(fake_home, caplog):
     # 1st checkout
     checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
                                       experiment = EXPERIMENT,
-                                      application = "pp",
-                                      branch = None)
+                                      application = "pp")
 
     # 2nd checkout
     checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
                                       experiment = EXPERIMENT,
-                                      application = "pp",
-                                      branch = None)
+                                      application = "pp")
 
     repo = "https://github.com/NOAA-GFDL/fre-workflows.git"
     expected_tag = "main"
@@ -114,41 +108,41 @@ def test_pp_workflow_checkout_exists_already(fake_home, caplog):
     for string in expected_output:
         assert string in caplog.text
 
-def test_pp_workflow_checkout_branch_override(caplog):
-    """
-    Test for correct checkout if a '-b', '--branch' is specified.
-    """
-    checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
-                                      experiment = EXPERIMENT,
-                                      application = "pp",
-                                      branch = "2025.04")
-
-    repo = "https://github.com/NOAA-GFDL/fre-workflows.git"
-    expected_tag = "2025.04"
-    expected_output = [f"({repo}):({expected_tag}) check out ==> REQUESTED",
-                       f"({repo}):({expected_tag}) check out ==> SUCCESSFUL"]
-
-    for string in expected_output:
-        assert string in caplog.text
-
-def test_pp_workflow_checkout_branch_conflict(fake_home, caplog):
-    """
-    Test for the expected ValueError if the checkout was done already,
-    but user is checking out same repo again, with a different branch/tag.
-    """
-    # 1st checkout: using default 'main' branch as set in the settings.yaml (version)
-    checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
-                                      experiment = EXPERIMENT,
-                                      application = "pp",
-                                      branch = None)
-
-    expected_output = (f"ERROR: Checkout exists ('{fake_home}/cylc-src/{EXPERIMENT}') "
-                        "and does not match '2025.04'")
-    expected_error = "Neither tag nor branch matches the git clone branch arg"
-    with pytest.raises(ValueError, match = expected_error):
-        # 2nd checkout: trying to check out 2025.04 tag while 'main' already checked out
-        checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
-                                          experiment = EXPERIMENT,
-                                          application = "pp",
-                                          branch = "2025.04")
-    assert expected_output in caplog.text
+#def test_pp_workflow_checkout_branch_override(caplog):
+#    """
+#    Test for correct checkout if a '-b', '--branch' is specified.
+#    """
+#    checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
+#                                      experiment = EXPERIMENT,
+#                                      application = "pp",
+#                                      branch = "2025.04")
+#
+#    repo = "https://github.com/NOAA-GFDL/fre-workflows.git"
+#    expected_tag = "2025.04"
+#    expected_output = [f"({repo}):({expected_tag}) check out ==> REQUESTED",
+#                       f"({repo}):({expected_tag}) check out ==> SUCCESSFUL"]
+#
+#    for string in expected_output:
+#        assert string in caplog.text
+#
+#def test_pp_workflow_checkout_branch_conflict(fake_home, caplog):
+#    """
+#    Test for the expected ValueError if the checkout was done already,
+#    but user is checking out same repo again, with a different branch/tag.
+#    """
+#    # 1st checkout: using default 'main' branch as set in the settings.yaml (version)
+#    checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
+#                                      experiment = EXPERIMENT,
+#                                      application = "pp",
+#                                      branch = None)
+#
+#    expected_output = (f"ERROR: Checkout exists ('{fake_home}/cylc-src/{EXPERIMENT}') "
+#                        "and does not match '2025.04'")
+#    expected_error = "Neither tag nor branch matches the git clone branch arg"
+#    with pytest.raises(ValueError, match = expected_error):
+#        # 2nd checkout: trying to check out 2025.04 tag while 'main' already checked out
+#        checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
+#                                          experiment = EXPERIMENT,
+#                                          application = "pp",
+#                                          branch = "2025.04")
+#    assert expected_output in caplog.text
