@@ -8,9 +8,6 @@ on:
 jobs:
   tag-update:
     runs-on: ubuntu-latest
-    outputs:
-      new_tag: ${{ steps.get_tag.outputs.tag }}
-      old_tag: ${{ steps.get_prev_tag.outputs.prev_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
