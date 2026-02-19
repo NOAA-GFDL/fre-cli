@@ -7,7 +7,6 @@ import shutil
 
 import fre.yamltools.combine_yamls_script as cy
 from fre.app.helpers import change_directory
-#from . import make_workflow_name
 from jsonschema import validate, SchemaError, ValidationError
 
 fre_logger = logging.getLogger(__name__)
