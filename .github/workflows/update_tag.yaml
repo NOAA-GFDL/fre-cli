@@ -54,18 +54,24 @@ jobs:
           title: Update refs to version number post-release
           body: automated change, replaces references to the old version number with the new version number upon releases. This PR will need to be closed and reopened to run CI testing.
 
-  send-repository-dispatch:
-    needs: [tag-update]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send repository_dispatch to external repo
-        uses: peter-evans/repository-dispatch@v2
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
         with:
-          token: ${{ secrets.EXTERNAL_REPO_TOKEN }}
+          app-id: ${{ secrets.HPCME_APP_ID }}
+          private-key: ${{ secrets.HPCME_APP_PRIVATE_KEY }}
+          owner: NOAA-GFDL
+          repositories: |
+            HPC-ME
+
+      - name: Dispatch release event to HPC-ME
+        if: ${{ steps.get_tag.outputs.tag != '' }}
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.app-token.outputs.token }}
           repository: NOAA-GFDL/HPC-ME
-          event-type: receive_tag
+          event-type: fre-cli-release
           client-payload: |
             {
-              "new_tag": "${{ needs.tag-update.outputs.new_tag }}",
-              "old_tag": "${{ needs.tag-update.outputs.old_tag }}"
+              "tag": "${{ steps.get_tag.outputs.tag }}"
             }
