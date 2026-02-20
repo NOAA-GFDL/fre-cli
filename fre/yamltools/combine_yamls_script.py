@@ -198,7 +198,7 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, us
             yml_dict.update(pp_yml_dict)
         else:
             yml_dict = pp_yml_dict.copy()
-            fre_logger.info("No analysis yamls were combined")
+            fre_logger.warning("No analysis yamls were found!")
 
         # OUTPUT IF NEEDED
         if output is not None:
