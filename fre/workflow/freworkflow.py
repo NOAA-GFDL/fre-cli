@@ -1,5 +1,5 @@
 ''' fre workflow '''
-
+import os
 import click
 import logging
 fre_logger = logging.getLogger(__name__)
@@ -24,8 +24,16 @@ def workflow_cli():
               type=click.Choice(['run', 'pp']),
               help="Use case for checked out workflow",
               required=True)
-def checkout(yamlfile, experiment, application):
+@click.option("--target-dir",
+              type=str,
+              default=lambda: os.environ['TMPDIR'],
+              help=f"Target directory for workflow to be cloned into. Default location: {os.environ['TMPDIR']}")
+@click.option("--force-checkout",
+              is_flag=True,
+              default=False,
+              help="If the checkout already, exists, remove and check out again.")
+def checkout(yamlfile, experiment, application, target_dir, force_checkout):
     """
     Checkout/extract fre workflow
     """
-    checkout_script.workflow_checkout(yamlfile, experiment, application)
+    checkout_script.workflow_checkout(yamlfile, experiment, application, target_dir, force_checkout)

@@ -3,16 +3,15 @@ import os
 import subprocess
 from pathlib import Path
 import logging
-import shutil 
+import shutil
+import json
+from jsonschema import validate, SchemaError, ValidationError
+from typing import Optional
 
 import fre.yamltools.combine_yamls_script as cy
 from fre.app.helpers import change_directory
-from jsonschema import validate, SchemaError, ValidationError
 
 fre_logger = logging.getLogger(__name__)
-
-FRE_PP_WORKFLOW = "https://github.com/NOAA-GFDL/fre-workflows.git"
-FRE_RUN_WORKFLOW = "https://github.com/NOAA-GFDL/fre-workflows.git"
 
 ######VALIDATE#####
 def validate_yaml(yamlfile: dict, application: str) -> None:
@@ -55,7 +54,28 @@ def validate_yaml(yamlfile: dict, application: str) -> None:
     except Exception as exc:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
-def workflow_checkout(yamlfile: str = None, experiment = None, application = None):
+def create_checkout(repo, tag, src_dir, workflow_name):
+    """
+    Create a directory and clone the workflow template files from a defined repo. ---------
+    ...........
+    ...........
+    ...........
+    ...........
+    """
+    # scenarios 1+2, checkout doesn't exist, branch specified (or not)
+    clone_output = subprocess.run( ["git", "clone","--recursive",
+                                    f"--branch={tag}",
+                                    repo, f"{src_dir}/{workflow_name}"],
+                                    capture_output = True, text = True, check = True)
+    fre_logger.debug(clone_output)
+    fre_logger.warning("(%s):(%s) check out ==> SUCCESSFUL", repo, tag)
+
+    ## Move combined yaml to cylc-src location
+    current_dir = Path.cwd()
+    shutil.move(Path(f"{current_dir}/config.yaml"), f"{src_dir}/{workflow_name}")
+    fre_logger.info("Combined yaml file moved to %s/%s", src_dir, workflow_name)
+
+def workflow_checkout(yamlfile: str = None, experiment: str = None, application: str = None, target_dir: str = os.environ['TMPDIR'], force_checkout: Optional[bool] = False):
     """
     Create a directory and clone the workflow template files from a defined repo.
 
@@ -67,13 +87,18 @@ def workflow_checkout(yamlfile: str = None, experiment = None, application = Non
     :type experiment: str
     :param application: Which workflow will be used/cloned
     :type application: str
-    :raises OSError: why checkout script was not able to be created
+    :raises OSError: if the checkout script was not able to be created
     :raises ValueError:
-        -if experiment or platform or target is None
+        - if the repo and/or tag was not defined
+        - if the 
+                raise ValueError('Neither tag nor branch matches the git clone branch arg')
+
     """
     # Used in consolidate_yamls function for now
     platform = None
     target = None
+#    print(src_dir)
+#    quit()
     if application == "run":
         fre_logger.info("NOT DONE YET")
         # will probably be taken out and put above is "use"
@@ -94,7 +119,7 @@ def workflow_checkout(yamlfile: str = None, experiment = None, application = Non
                                     platform=platform,
                                     target=target,
                                     use="pp",
-                                    output=f"config.yaml")
+                                    output="config.yaml")
         #validate_yaml(yamlfile = yaml, application = "pp")
         workflow_info = yaml.get("workflow").get("pp_workflow")
 
@@ -108,36 +133,42 @@ def workflow_checkout(yamlfile: str = None, experiment = None, application = Non
 
     fre_logger.warning("(%s):(%s) check out ==> REQUESTED", repo, tag)
 
+    # Make sure src_dir exists
+    if not Path(target_dir).exists():
+        raise ValueError(f"Source directory {target_dir} does not exist or cannot be found.")
+
     # clone directory
-    directory = os.path.expanduser("~/cylc-src")
+    src_dir = f"{target_dir}/cylc-src"
     # workflow name
     workflow_name = experiment
 
     # create workflow in cylc-src
     try:
-        Path(directory).mkdir(parents=True, exist_ok=True)
+        Path(src_dir).mkdir(parents=True, exist_ok=True)
     except Exception as exc:
         raise OSError(
-            f"(checkoutScript) directory {directory} wasn't able to be created. exit!") from exc
+            f"(checkoutScript) directory {src_dir} wasn't able to be created. exit!") from exc
 
-    if not Path(f"{directory}/{workflow_name}").is_dir():
-        # scenarios 1+2, checkout doesn't exist, branch specified (or not)
+    if not Path(f"{src_dir}/{workflow_name}").is_dir():
         fre_logger.info("Workflow does not yet exist; will create now")
-        clone_output = subprocess.run( ["git", "clone","--recursive",
-                                        f"--branch={tag}",
-                                        repo, f"{directory}/{workflow_name}"],
-                                        capture_output = True, text = True, check = True)
-        fre_logger.debug(clone_output)
-        fre_logger.warning("(%s):(%s) check out ==> SUCCESSFUL", repo, tag)
-
-        ## Move combined yaml to cylc-src location
-        cylc_src_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{experiment}")
-        current_dir = Path.cwd()
-        shutil.move(Path(f"{current_dir}/config.yaml"), cylc_src_dir)
-        fre_logger.info("Combined yaml file moved to ~/cylc-src/%s", experiment)
-    else:
+        create_checkout(repo = repo,
+                        tag = tag,
+                        src_dir = src_dir,
+                        workflow_name = workflow_name)
+    elif Path(f"{src_dir}/{workflow_name}").is_dir() and force_checkout:
+        fre_logger.warning(" *** PREVIOUS CHECKOUT FOUND: %s/%s *** ", src_dir, workflow_name)
+        # Remove checked out repo
+        shutil.rmtree(f"{src_dir}/{workflow_name}")
+        fre_logger.warning(" *** REMOVING %s/%s *** ", src_dir, workflow_name)
+        # Redo checkout
+        create_checkout(repo = repo,
+                        tag = tag,
+                        src_dir = src_dir,
+                        workflow_name = workflow_name)
+    elif Path(f"{src_dir}/{workflow_name}").is_dir() and not force_checkout:
+        fre_logger.warning(" *** PREVIOUS CHECKOUT FOUND: %s/%s *** ", src_dir, workflow_name)
         # the repo checkout does exist, scenarios 3 and 4.
-        with change_directory(f"{directory}/{workflow_name}"):
+        with change_directory(f"{src_dir}/{workflow_name}"):
             # capture the branch and tag
             # if either match git_clone_branch_arg, then success. otherwise, fail.
             current_tag = subprocess.run(["git","describe","--tags"],
@@ -148,10 +179,10 @@ def workflow_checkout(yamlfile: str = None, experiment = None, application = Non
                                              text = True, check = True).stdout.strip()
 
             if tag in (current_tag, current_branch):
-                fre_logger.warning("Checkout exists ('%s/%s'), and matches '%s'", directory, workflow_name, tag)
+                fre_logger.warning("Checkout exists ('%s/%s'), and matches '%s'", src_dir, workflow_name, tag)
             else:
                 fre_logger.error(
-                    "ERROR: Checkout exists ('%s/%s') and does not match '%s'", directory, workflow_name, tag)
+                    "ERROR: Checkout exists ('%s/%s') and does not match '%s'", src_dir, workflow_name, tag)
                 fre_logger.error(
                     "ERROR: Current branch: '%s', Current tag-describe: '%s'", current_branch, current_tag)
                 raise ValueError('Neither tag nor branch matches the git clone branch arg')
