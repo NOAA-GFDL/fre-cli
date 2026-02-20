@@ -120,7 +120,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
                                     use="run",
                                     output=None)
         #validate_yaml(yamlfile = yaml, application = "run")
-        workflow_info = yaml.get("workflow").get("run_workflow")
+        workflow_info = yaml.get("workflow").get("run")
     elif application == "pp":
         # will probably be taken out and put above is "use"
         # is generalized in this tool
@@ -131,7 +131,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
                                     use="pp",
                                     output="config.yaml")
         #validate_yaml(yamlfile = yaml, application = "pp")
-        workflow_info = yaml.get("workflow").get("pp_workflow")
+        workflow_info = yaml.get("workflow").get("pp")
 
     repo = workflow_info.get("repo")
     tag = workflow_info.get("version")
