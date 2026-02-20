@@ -60,10 +60,7 @@ class InitPPYaml(MergePPANYamls):
         yaml_content_str += model_content
 
         # Return the combined string and loaded yaml
-        former_log_level = fre_logger.level
-        fre_logger.setLevel(logging.INFO)
         fre_logger.info("   model yaml: %s", self.yml)
-        fre_logger.setLevel(former_log_level)
 
         return yaml_content_str
 
@@ -91,10 +88,7 @@ class InitPPYaml(MergePPANYamls):
         yaml_content_str += settings_content
 
         # Return the combined string and loaded yaml
-        former_log_level = fre_logger.level
-        fre_logger.setLevel(logging.INFO)
         fre_logger.info("   settings yaml: %s", settings)
-        fre_logger.setLevel(former_log_level)
 
         return yaml_content_str
 
@@ -195,12 +189,9 @@ class InitPPYaml(MergePPANYamls):
 #            result.update(yaml.load(pp_list[0],Loader=yaml.Loader))
 
         if ey_path is not None:
-            former_log_level = fre_logger.level
-            fre_logger.setLevel(logging.INFO)
             for i in ey_path:
                 exp = str(i).rsplit('/', maxsplit=1)[-1]
                 fre_logger.info("   experiment yaml: %s", exp)
-            fre_logger.setLevel(former_log_level)
         return result
 
     def combine(self):
@@ -226,7 +217,7 @@ class InitPPYaml(MergePPANYamls):
         # Create combined pp yaml
         former_log_level = fre_logger.level
         fre_logger.setLevel(logging.INFO)
-        fre_logger.info("Combining yaml files into one dictionary: ")
+        fre_logger.info("** Combining relevant post-processing yaml files **")
         fre_logger.setLevel(former_log_level)
 
         try:

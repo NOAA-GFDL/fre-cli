@@ -58,10 +58,7 @@ class InitAnalysisYaml(MergePPANYamls):
         yaml_content_str += model_content
 
         # Return the combined string and loaded yaml
-        former_log_level = fre_logger.level
-        fre_logger.setLevel(logging.INFO)
         fre_logger.info("   model yaml: %s", self.yml)
-        fre_logger.setLevel(former_log_level)
 
         return yaml_content_str
 
@@ -90,10 +87,7 @@ class InitAnalysisYaml(MergePPANYamls):
         yaml_content_str += settings_content
 
         # Return the combined string and loaded yaml
-        former_log_level = fre_logger.level
-        fre_logger.setLevel(logging.INFO)
         fre_logger.info("   settings yaml: %s", settings)
-        fre_logger.setLevel(former_log_level)
 
         return yaml_content_str
 
@@ -179,12 +173,9 @@ class InitAnalysisYaml(MergePPANYamls):
                         result['analysis'] = yf['analysis'] | result['analysis']
 
         if ay_path is not None:
-            former_log_level = fre_logger.level
-            fre_logger.setLevel(logging.INFO)
             for i in ay_path:
                 analysis = str(i).rsplit('/', maxsplit=1)[-1]
                 fre_logger.info("   analysis yaml: %s", analysis)
-            fre_logger.setLevel(former_log_level)
 
         return result
 
@@ -210,7 +201,7 @@ class InitAnalysisYaml(MergePPANYamls):
         # Create combined pp yaml
         former_log_level = fre_logger.level
         fre_logger.setLevel(logging.INFO)
-        fre_logger.info("Combining yaml files into one dictionary: ")
+        fre_logger.info("** Combining relevant analysis yaml files **")
         fre_logger.setLevel(former_log_level)
 
         # Merge model into combined file

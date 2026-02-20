@@ -46,10 +46,6 @@ def test_exp_list(caplog):
     for i in check_out:
         assert i in caplog.text
         
-    # make sure the level is INFO
-    for record in caplog.records:
-        assert record.levelname == "INFO"
-
 # Test validation
 def test_yamlvalidate(caplog):
     ''' Test yaml is being validated '''
