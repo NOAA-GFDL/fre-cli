@@ -1,9 +1,9 @@
 #workflow repositories
 workflow:
-  run_workflow:
+  run:
     repo: "https://github.com/NOAA-GFDL"
     version: "tbd"
-  pp_workflow:
+  pp:
     repo: 
     version: "main"
 
