@@ -26,8 +26,8 @@ def workflow_cli():
               required=True)
 @click.option("--target-dir",
               type=str,
-              default=lambda: os.environ['TMPDIR'],
-              help=f"Target directory for workflow to be cloned into. Default location: {os.environ['TMPDIR']}")
+              envvar="TMPDIR",
+              help=f"Target directory for workflow to be cloned into. Default location TMPDIR: {os.environ['TMPDIR']}")
 @click.option("--force-checkout",
               is_flag=True,
               default=False,
