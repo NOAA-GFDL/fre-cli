@@ -14,7 +14,7 @@ from fre.app.helpers import change_directory
 fre_logger = logging.getLogger(__name__)
 
 ######VALIDATE#####
-def validate_yaml(yamlfile: dict, application: str) -> None:
+def validate_yaml(yamlfile: dict, application: str):
     """
     Validate the format of the yaml file based
     on the schema.json in gfdl_msd_schemas
@@ -54,7 +54,7 @@ def validate_yaml(yamlfile: dict, application: str) -> None:
     except Exception as exc:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
-def create_checkout(repo: str, tag: str, src_dir: str, workflow_name: str) --> None:
+def create_checkout(repo: str, tag: str, src_dir: str, workflow_name: str):
     """
     Clone the workflow template files from a defined repo into the cylc-src/workflow
     directory and move the resolved yaml to the cylc-src directory.
@@ -81,7 +81,7 @@ def create_checkout(repo: str, tag: str, src_dir: str, workflow_name: str) --> N
     shutil.move(Path(f"{current_dir}/config.yaml"), f"{src_dir}/{workflow_name}")
     fre_logger.info("Combined yaml file moved to %s/%s", src_dir, workflow_name)
 
-def workflow_checkout(yamlfile: str = None, experiment: str = None, application: str = None, target_dir: str = os.environ['TMPDIR'], force_checkout: Optional[bool] = False) --> None:
+def workflow_checkout(yamlfile: str = None, experiment: str = None, application: str = None, target_dir: str = os.environ['TMPDIR'], force_checkout: Optional[bool] = False):
     """
     Create a directory and clone the workflow template files from a defined repo.
 
