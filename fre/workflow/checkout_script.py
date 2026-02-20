@@ -81,7 +81,7 @@ def create_checkout(repo: str, tag: str, src_dir: str, workflow_name: str):
     shutil.move(Path(f"{current_dir}/config.yaml"), f"{src_dir}/{workflow_name}")
     fre_logger.info("Combined yaml file moved to %s/%s", src_dir, workflow_name)
 
-def workflow_checkout(yamlfile: str = None, experiment: str = None, application: str = None, target_dir: str = os.environ['TMPDIR'], force_checkout: Optional[bool] = False):
+def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = None, application: str = None, force_checkout: Optional[bool] = False):
     """
     Create a directory and clone the workflow template files from a defined repo.
 
