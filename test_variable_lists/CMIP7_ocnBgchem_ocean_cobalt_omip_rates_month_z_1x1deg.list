@@ -1,0 +1,5 @@
+{
+    "_comment": "inl Feb 19: ALL 2 vars tried (graz, pp), ALL -> CMOR_tmp",
+    "graz": "_TRIED_FAIL_graz",
+    "pp": "_TRIED_FAIL_pp"
+}
