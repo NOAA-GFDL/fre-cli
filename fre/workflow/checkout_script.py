@@ -22,7 +22,7 @@ def validate_yaml(yamlfile: dict, application: str) -> None:
     :param yamlfile: Model, settings, pp, and analysis yaml
                      information combined into a dictionary
     :type yamlfile: dict
-    :param application: ------------------------------------------------
+    :param application: type of workflow to check out/clone 
     :type application: string
     :raises ValueError:
         - if gfdl_mdf_schema path is not valid
@@ -54,13 +54,19 @@ def validate_yaml(yamlfile: dict, application: str) -> None:
     except Exception as exc:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
-def create_checkout(repo, tag, src_dir, workflow_name):
+def create_checkout(repo: str, tag: str, src_dir: str, workflow_name: str) --> None:
     """
-    Create a directory and clone the workflow template files from a defined repo. ---------
-    ...........
-    ...........
-    ...........
-    ...........
+    Clone the workflow template files from a defined repo into the cylc-src/workflow
+    directory and move the resolved yaml to the cylc-src directory.
+
+    :param repo: Yaml defined workflow repository
+    :type repo: str
+    :param tag: branch or version of defined repository 
+    :type tag: str
+    :param src_dir: Cylc-src directory 
+    :type src_dir: str
+    :param workflow_name: Name of workflow
+    :type workflow_name: src
     """
     # scenarios 1+2, checkout doesn't exist, branch specified (or not)
     clone_output = subprocess.run( ["git", "clone","--recursive",
@@ -75,7 +81,7 @@ def create_checkout(repo, tag, src_dir, workflow_name):
     shutil.move(Path(f"{current_dir}/config.yaml"), f"{src_dir}/{workflow_name}")
     fre_logger.info("Combined yaml file moved to %s/%s", src_dir, workflow_name)
 
-def workflow_checkout(yamlfile: str = None, experiment: str = None, application: str = None, target_dir: str = os.environ['TMPDIR'], force_checkout: Optional[bool] = False):
+def workflow_checkout(yamlfile: str = None, experiment: str = None, application: str = None, target_dir: str = os.environ['TMPDIR'], force_checkout: Optional[bool] = False) --> None:
     """
     Create a directory and clone the workflow template files from a defined repo.
 
@@ -87,9 +93,14 @@ def workflow_checkout(yamlfile: str = None, experiment: str = None, application:
     :type experiment: str
     :param application: Which workflow will be used/cloned
     :type application: str
+    :param target_dir: Target directory to clone repository into
+    :type target_dir: str
+    :param force_checkout: re-clone the workflow repo if it exists
+    :type force_checkout: bool
     :raises OSError: if the checkout script was not able to be created
     :raises ValueError:
         - if the repo and/or tag was not defined
+        - if the target directory does not exist or cannot be found
         - if the 
                 raise ValueError('Neither tag nor branch matches the git clone branch arg')
 
@@ -97,8 +108,7 @@ def workflow_checkout(yamlfile: str = None, experiment: str = None, application:
     # Used in consolidate_yamls function for now
     platform = None
     target = None
-#    print(src_dir)
-#    quit()
+
     if application == "run":
         fre_logger.info("NOT DONE YET")
         # will probably be taken out and put above is "use"
@@ -124,7 +134,6 @@ def workflow_checkout(yamlfile: str = None, experiment: str = None, application:
         workflow_info = yaml.get("workflow").get("pp_workflow")
 
     repo = workflow_info.get("repo")
-
     tag = workflow_info.get("version")
     fre_logger.info("Defined tag ==> '%s'", tag)
 
@@ -135,7 +144,7 @@ def workflow_checkout(yamlfile: str = None, experiment: str = None, application:
 
     # Make sure src_dir exists
     if not Path(target_dir).exists():
-        raise ValueError(f"Source directory {target_dir} does not exist or cannot be found.")
+        raise ValueError(f"Target directory {target_dir} does not exist or cannot be found.")
 
     # clone directory
     src_dir = f"{target_dir}/cylc-src"

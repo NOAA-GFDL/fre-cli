@@ -22,7 +22,7 @@ def workflow_cli():
               required=True)
 @click.option("-a", "--application",
               type=click.Choice(['run', 'pp']),
-              help="Use case for checked out workflow",
+              help="Type of workflow to check out/clone",
               required=True)
 @click.option("--target-dir",
               type=str,
