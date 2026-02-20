@@ -57,9 +57,6 @@ class InitCompileYaml(MergeCompileYamls):
         # Path to the main model yaml
         self.mainyaml_dir = os.path.dirname(self.yml)
 
-        # Create combined compile yaml
-        fre_logger.info("Combining yaml files into one dictionary: ")
-
     def combine_model(self):
         """
         Create the combined.yaml and merge it with the model yaml
@@ -161,6 +158,12 @@ class InitCompileYaml(MergeCompileYamls):
                  and experiments sections removed
         :rtype: dict
         """
+        # Create combined compile yaml
+        former_log_level = fre_logger.level
+        fre_logger.setLevel(logging.INFO)
+        fre_logger.info("** Combining relevant compile yaml files **")
+        fre_logger.setLevel(former_log_level)
+
         try:
             yaml_content=self.combine_model()
         except Exception as exc:
