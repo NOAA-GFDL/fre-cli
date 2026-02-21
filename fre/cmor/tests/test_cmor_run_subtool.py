@@ -1,11 +1,13 @@
 '''
 tests for fre.cmor.cmor_run_subtool
 '''
+
+from datetime import date
+import json
+import os
+from pathlib import Path
 import subprocess
 import shutil
-from pathlib import Path
-from datetime import date
-import os
 
 import pytest
 
@@ -188,6 +190,7 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
             print(f'WARNING: TMPDIR={TMPDIR} could not be removed.')
             print( '         this does not matter that much, but is unfortunate.')
             print( '         suspicion: something the cmor module is using is not being closed')
+            print(f'         exc = {exc}')
 
     #assert not Path(TMPDIR).exists()    # VERY ANNOYING !!! FYI WARNING TODO
 
@@ -199,6 +202,7 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
             print(f'WARNING: OUTDIR={OUTDIR} could not be removed.')
             print( '         this does not matter that much, but is unfortunate.')
             print( '         suspicion: something the cmor module is using is not being closed')
+            print(f'         exc = {exc}')
 
     #assert not Path(OUTDIR).exists()    # VERY ANNOYING !!! FYI WARNING TODO
 
@@ -331,7 +335,7 @@ def test_fre_cmor_run_subtool_no_exp_config():
 
 VARLIST_EMPTY = \
     f'{ROOTDIR}/empty_varlist'
-def test_fre_cmor_run_subtool_empty_varlist(capfd):
+def test_fre_cmor_run_subtool_empty_varlist():
     '''
     fre cmor run, exception, variable list is empty
     '''
@@ -359,4 +363,44 @@ def test_fre_cmor_run_subtool_opt_var_name_not_in_table():
             json_exp_config = EXP_CONFIG,
             outdir = OUTDIR,
             opt_var_name="difmxybo"
+        )
+
+
+def test_fre_cmor_run_subtool_missing_mip_era(tmp_path):
+    '''
+    KeyError when the exp config JSON has no mip_era entry.
+    '''
+    # create a minimal exp config that is missing 'mip_era'
+    bad_exp = tmp_path / 'no_mip_era.json'
+    exp_data = {"institution_id": "TEST", "source_id": "TEST-1-0"}
+    bad_exp.write_text(json.dumps(exp_data))
+
+    with pytest.raises(KeyError, match='noncompliant'):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST,
+            json_table_config = TABLE_CONFIG,
+            json_exp_config = str(bad_exp),
+            outdir = OUTDIR,
+        )
+
+
+def test_fre_cmor_run_subtool_unsupported_mip_era(tmp_path):
+    '''
+    ValueError when mip_era is present but not CMIP6 or CMIP7.
+    '''
+    # create an exp config with an unsupported mip_era value
+    bad_exp = tmp_path / 'bad_mip_era.json'
+    with open(EXP_CONFIG, 'r', encoding='utf-8') as f:
+        exp_data = json.load(f)
+    exp_data['mip_era'] = 'CMIP99'
+    bad_exp.write_text(json.dumps(exp_data))
+
+    with pytest.raises(ValueError, match='only supports CMIP6 and CMIP7'):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST,
+            json_table_config = TABLE_CONFIG,
+            json_exp_config = str(bad_exp),
+            outdir = OUTDIR,
         )
