@@ -150,7 +150,7 @@ def cmor_config_subtool(
     era_upper = mip_era.upper()
 
     for mip_table in sorted(mip_tables):
-        table_name = Path(mip_table).stem.split('.')[0]   # e.g. CMIP7_ocean
+        table_name = Path(mip_table).stem.split('.')[0].split('_')[1]   # e.g. CMIP7_ocean
         fre_logger.debug('processing mip_table = %s', table_name)
 
         appended_table_header = False
@@ -159,6 +159,7 @@ def cmor_config_subtool(
             component_name = Path(entry).name
 
             variable_list = f'{varlist_dir}/{era_upper}_{table_name}_{component_name}.list'
+            #variable_list = f'{varlist_dir}/{table_name}_{component_name}.list'
 
             # optionally regenerate
             if Path(variable_list).exists() and overwrite:
@@ -215,6 +216,7 @@ def cmor_config_subtool(
                 lines.append(f"          variable_list: '{variable_list}'")
                 lines.append(f"          data_series_type: 'ts'")
                 lines.append(f"          chunk: *PP_CMIP_CHUNK")
+
 
     # ---- write output YAML ----
     if Path(output_yaml).exists():

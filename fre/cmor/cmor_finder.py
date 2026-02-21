@@ -198,7 +198,7 @@ def make_simple_varlist( dir_targ: str,
 
         fre_logger.debug('attempting to make mip variable list')
         mip_vars=[ key.split('_')[0] for key in full_mip_vars_list ]
-        fre_logger.info('mip vars extracted for comparison when making var list: %s', mip_vars)
+        fre_logger.debug('mip vars extracted for comparison when making var list: %s', mip_vars)
 
 
     # Create a dictionary of variable names extracted from the filenames
@@ -207,7 +207,7 @@ def make_simple_varlist( dir_targ: str,
     for targetfile in files:
         var_name=os.path.basename(targetfile).split('.')[-2]
         if mip_vars is not None and var_name not in mip_vars:
-            fre_logger.debug('var_name %s not in mip_vars, omitting', var_name)
+            #fre_logger.debug('var_name %s not in mip_vars, omitting', var_name)
             continue
 
         quick_vlist.append(var_name)
@@ -222,7 +222,7 @@ def make_simple_varlist( dir_targ: str,
     # Write the variable list to the output JSON file
     if output_variable_list is not None and len(var_list)>0:
         try:
-            fre_logger.debug('writing output variable list, %s', output_variable_list)
+            fre_logger.info('writing output variable list, %s', quick_vlist) # output_variable_list)
             with open(output_variable_list, 'w', encoding='utf-8') as f:
                 json.dump(var_list, f, indent=4)
         except Exception as exc:
