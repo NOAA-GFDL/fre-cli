@@ -403,7 +403,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     # if ocean tripolar grid, we need the CMIP grids configuration file. load it but don't set the table yet.
     json_grids_config, loaded_cmor_grids_cfg = None, None
     if process_tripolar_data:
-        json_grids_config = str(Path(json_table_config).parent) + '/'+exp_cfg_mip_era+'_grids.json'
+        json_grids_config = f'{Path(json_table_config).parent}/{exp_cfg_mip_era}_grids.json'
         fre_logger.info('cmor is loading/opening %s', json_grids_config)
         loaded_cmor_grids_cfg = cmor.load_table(json_grids_config)
         cmor.set_table(loaded_cmor_grids_cfg)
