@@ -3,6 +3,7 @@
 * Developers are free to use this repository's `README.md` to familiarize with the CLI and save time from having to install any dependencies, but development within a Conda environment is heavily recommended regardless
 * Gain access to the repository with `git clone --recursive git@github.com:NOAA-GFDL/fre-cli.git` or your fork's link (recommended) and an SSH RSA key
     - Once inside the repository, developers can test local changes by running a `pip install .` inside of the root directory to install the fre-cli package locally with the newest local changes on top of the installed Conda fre-cli dependencies
+    - Optional: load fre-nctools into your PATH to gain access to regridding and certain time-averaging routines (e.g., `module load fre-nctools` on GFDL/Gaea systems)
     - Test as a normal user would use the CLI
 * Create a GitHub issue to reflect your contribution's background and reference it with Git commits
 

@@ -8,6 +8,7 @@ import glob
 
 import subprocess
 import metomi.isodatetime.parsers
+import xarray as xr
 
 from ..helpers import change_directory
 
@@ -39,21 +40,29 @@ def form_bronx_directory_name(frequency: str,
     return frequency_label + '_' + str(interval_object.years) + 'yr'
 
 
-def check_glob(target: str) -> None:
+def merge_netcdfs(input_file_glob: str, output_file: str) -> None:
     """
-    Verify that at least one file is resolved by the glob.
-    Raises FileNotFoundError if no files are found.
+    Merge a group of NetCDF files identified by a glob string
+    into one combined NetCDF file.
 
-    :param target: Glob target to resolve
-    :type target: str
-    :raises FileNotFoundError: No files found
+    :param input_file_glob: Glob string used to form input file list
+    :type source: str
+    :param output_file: Merged output NetCDF file
+    :type source: str
+    :raises FileNotFoundError: Input files not found
+    :raises FileExistsError: Output file already exists
     :rtype: None
     """
-    files = glob.glob(target)
-    if len(files) >= 1:
-        fre_logger.debug("%s has %s files", target, len(files))
+    input_files = glob.glob(input_file_glob)
+    if len(input_files) >= 1:
+        fre_logger.debug(f"Input file search string '{input_file_glob}' matched {len(input_files)} files")
     else:
-        raise FileNotFoundError(f"target={target} resolves to no files")
+        raise FileNotFoundError(f"'{input_file_glob}' resolves to no files")
+    if Path(output_file).exists():
+        raise FileExistsError(f"Output file '{output_file}' already exists")
+
+    ds = xr.open_mfdataset(input_files, compat='override', coords='minimal')
+    ds.to_netcdf(output_file, unlimited_dims=['time'])
 
 
 def combine( root_in_dir: str,
@@ -107,8 +116,7 @@ def combine( root_in_dir: str,
         if frequency == 'yr':
             source = component + '.' + date_string + '.*.nc'
             target = component + '.' + date_string + '.nc'
-            check_glob(source)
-            subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
+            merge_netcdfs(source, target)
             fre_logger.debug("Output file created: %s", target)
             fre_logger.debug("Copying to %s", outdir)
             subprocess.run(['cp', '-v', target, outdir], check=True)
@@ -116,11 +124,5 @@ def combine( root_in_dir: str,
             for month_int in range(1,13):
                 source = f"{component}.{date_string}.*.{month_int:02d}.nc"
                 target = f"{component}.{date_string}.{month_int:02d}.nc"
-                check_glob(source)
-
-                # does there exist a python-cdo way of doing the merge?
-                subprocess.run(['cdo', '-O', 'merge', source, target], check=True)
-                fre_logger.debug("Output file created: %s", target)
-                fre_logger.debug("Copying to %s", outdir)
-
+                merge_netcdfs(source, target)
                 subprocess.run(['cp', '-v', target, outdir], check=True)
