@@ -351,6 +351,7 @@ nncattr
 noaa
 NOAA
 noarch
+nohist
 noleap
 noqa
 nosec
@@ -514,6 +515,7 @@ tasmin
 TAVG
 testingtestingtestingtesting
 thefiles
+thisfile
 timavg
 timavgcsh
 timeaveraged
@@ -534,6 +536,7 @@ tripolar
 ttest
 truncatedate
 truncatedateformat
+tseries
 turb
 twostep
 typealias

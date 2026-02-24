@@ -18,7 +18,8 @@ import yaml
 from itertools import chain
 import logging
 
-from fre.app.helpers import get_variables
+#from fre.app.helpers import get_variables
+from fre.app.helpers import get_variables_hist_src
 
 
 fre_logger = logging.getLogger(__name__)

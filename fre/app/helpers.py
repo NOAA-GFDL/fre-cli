@@ -1,6 +1,4 @@
 import os
-from pathlib import Path
-import yaml
 from contextlib import contextmanager
 
 # set up logging
@@ -14,6 +12,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     :type yml: dict
     :param pp_comp: Active pp component
     :type pp_comp: str
+    :raises TypeError: if yml is not a dict (i.e. a path to a yamlfile)
     :raises ValueError: if the active pp component is not found in the yaml configuration
     :return: dictionary of {source name: [variables]}
         - the values are a list of specified variables
@@ -59,6 +58,57 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     if not src_vars:
         raise ValueError(f"PP component, {pp_comp}, not found in pp yaml configuration!")
 
+    return src_vars
+
+def get_variables_hist_src(yml: dict, hist_src: str) -> list:
+    '''
+    Gets the variables associated with a history_source from the yamlfile.
+    This only works because the history_source elements underneath the pp components
+    are supposed to be unique, and it is needed because some tasks in flow.cylc
+    (like split-netcdf) cycle on the flat list of all history_source elements, 
+    not <component> then <history_source>. 
+    
+    :param yml: loaded yaml file
+    :type yml: dict
+    :param hist_src: name of a history_source file in that yamlfile
+    :type hist_src: string
+    :raises TypeError: if yml is not a dict (i.e. a path to a yamlfile)
+    :raises ValueError: if the history_source is not found in the yaml configuration
+    :return: either "all" or a list of variables associated with history_source
+    :rtype: string or list
+    '''
+    fre_logger.debug(f"Yaml file information: {yml}")
+    fre_logger.debug(f"history source: {hist_src}")
+    if not isinstance(yml, dict):
+        raise TypeError("yml should be of type dict, but was of type " + str(type(yml)))
+    is_found = False
+    src_vars = []
+    for component_info in yml["postprocess"]["components"]:
+        #it is assumed that hist_src is pre-filtered for active/inactive pp components
+        src_info = component_info.get("sources")
+        #timeseries case
+        for src in src_info:
+            if src['history_file'] == hist_src:
+                is_found = True
+                if src.get("variables"):
+                    src_vars = src.get("variables")
+                else:
+                    src_vars = "all"
+                break
+        #static case
+        if component_info.get("static"):
+            static_el = component_info.get("static")
+            if static_el[0].get("source") == hist_src:
+                is_found = True
+                if static_el[0].get("variables"):
+                    src_vars = static_el[0].get("variables")
+                else:
+                    src_vars = "all"
+                break
+    #using is_found rather than a check for length on the off chance that the
+    #variable list is of length 0 without being caught earlier in the config
+    if not is_found:
+        raise ValueError(f"history_file, {hist_src}, not found in pp yaml configuration {yml}!")
     return src_vars
 
 ## NOTE: For python 3.11 - this might be available already as contextlib.chdir()
