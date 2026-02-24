@@ -6,8 +6,12 @@ from pathlib import Path
 import xarray as xr
 import cftime
 from datetime import timedelta
+import yaml
+from metomi.isodatetime.parsers import DurationParser, TimePointParser
 
 fre_logger = logging.getLogger(__name__)
+duration_parser = DurationParser()
+time_parser = TimePointParser(assumed_time_zone=(0, 0))
 
 
 def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) -> (str, str):
@@ -68,7 +72,7 @@ def get_duration_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) 
     return duration
 
 
-def rename_file(input_file: str) -> pathlib.PosixPath:
+def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.PosixPath:
     """
     Accept an input netCDF file that is the result of split-netcdf, e.g.
         00010101.atmos_daily.tile1.temp.nc
@@ -148,7 +152,42 @@ def rename_file(input_file: str) -> pathlib.PosixPath:
             date2 = date1 + (number_of_timesteps-1) * freq
             duration = get_duration_from_two_dates(date1, date2 - freq)
         else:
-            raise Exception('last part')
+            if diag_manifest is not None:
+                if Path(diag_manifest).exists():
+                    fre_logger.info("Using diag manifest '{diag_manifest}'")
+                    with open(diag_manifest, 'r') as f:
+                        yaml_data = yaml.safe_load(f)
+                        duration = None
+                        for diag_file in yaml_data["diag_files"]:
+                            if diag_file["file_name"] == label:
+                                if diag_file["freq_units"] == "years":
+                                    duration = f"P{diag_file['freq']}Y"
+                                    format_ = "%Y"
+                                elif diag_file["freq_units"] == "months":
+                                    if diag_file['freq'] == 12:
+                                        duration = "P1Y"
+                                        format_ = "%Y"
+                                    else:
+                                        duration = f"P{diag_file['freq']}M"
+                                        format_ = "%Y%m"
+                                else:
+                                    raise Exception("Diag manifest found but frequency units {diag_file['freq_units']} are unexpected; expected 'years' or 'months'.")
+                        if duration is not None:
+                            duration_object = duration_parser.parse(duration)
+                        else:
+                            raise Exception("Not found in diag manifest")
+                        # since only one timestep, frequency equals duration
+                        freq_label = duration
+                        # retrieve date1 from the filename
+                        date_str = str(input_file.name).split('.')[0]
+                        date1 = time_parser.parse(date_str)
+                        # subtracting one month works for annual
+                        one_month = duration_parser.parse('P1M')
+                        date2 = date1 + duration_object - one_month
+                else:
+                    raise FileNotFoundError(f"Diag manifest '{diag_manifest}' does not exist")
+            else:
+                raise ValueError(f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds")
 
     date1_str = date1.strftime(format_)
     date2_str = date2.strftime(format_)
@@ -188,7 +227,7 @@ def link_or_copy(source: str, destination:str) -> None:
         fre_logger.debug(f"File copied: {destination}")
 
 
-def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: bool) -> None:
+def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: bool, diag_manifest: str | None = None) -> None:
     """
     Accept a flat directory of NetCDF files and output a nested directory structure
     containing frequency and time interval.
@@ -202,13 +241,13 @@ def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: b
         for subdir in [x for x in input_dir.iterdir() if x.is_dir()]:
             files = subdir.glob(f"*.{component}.*.nc")
             for input_file in files:
-                output_file = Path(output_dir) / subdir.name / rename_file(input_file)
+                output_file = Path(output_dir) / subdir.name / rename_file(input_file, diag_manifest)
                 fre_logger.info(f"Linking '{input_file}' to '{output_file}'")
                 link_or_copy(input_file, output_file)
     else:
         fre_logger.info("Not using subdirs")
         files = input_dir.glob(f"*.{component}.*.nc")
         for input_file in files:
-            output_file = Path(output_dir) / rename_file(input_file)
+            output_file = Path(output_dir) / rename_file(input_file, diag_manifest)
             fre_logger.info(f"Linking '{input_file}' to '{output_file}'")
             link_or_copy(input_file, output_file)

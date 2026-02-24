@@ -282,8 +282,10 @@ def trigger(experiment, platform, target, time):
               help="Component name to process", required=True)
 @click.option("-u", '--use-subdirs', is_flag=True, default=False,
               help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
-def rename_split(input_dir, output_dir, component, use_subdirs):
+@click.option("-d", "--diag-manifest", type=str, required=False, default=None,
+              help="Path to FMS diag manifest associated with the component (history file). Optional, but required when the history file has one timestep and no time bounds.")
+def rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest):
     """
     Create per-variable timeseries from shards
     """
-    rename_split_script.rename_split(input_dir, output_dir, component, use_subdirs)
+    rename_split_script.rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest)

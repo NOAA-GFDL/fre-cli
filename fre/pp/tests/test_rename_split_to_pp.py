@@ -97,7 +97,9 @@ def test_rename_split_to_pp_multiply():
                           pytest.param("ocean_static", False, "P0Y/P0Y/", id="static-native"),
                           pytest.param("ocean_static", True, "P0Y/P0Y/", id="static-regrid"),
                           pytest.param("fail_filenames", False, "", id="fail-badfilename", marks=pytest.mark.xfail()),
-                          pytest.param("fail_nofiles", False, "", id="fail-noinput", marks=pytest.mark.xfail()) ])
+                          pytest.param("fail_nofiles", False, "", id="fail-noinput", marks=pytest.mark.xfail()),
+                          pytest.param("ocean_annual_point", False, "P1Y/P1Y", id="year-native")
+                          ])
 def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
     '''
     Tests the running of rename-split-to-pp, which takes 3 input args:
@@ -159,7 +161,12 @@ def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
       os.makedirs(outputDir)
 
     # run the tool
-    rename_split(inputDir, outputDir, hist_source, do_regrid)
+    # if 'ocean_annual_point', use the diag manifest
+    if hist_source == "ocean_annual_point":
+        manifest = Path(inputDir) / "diag_manifest.yaml"
+    else:
+        manifest = None
+    rename_split(inputDir, outputDir, hist_source, do_regrid, manifest)
 
     # check for expected output filepaths
     expected_files = [os.path.join(origDir, el) for el in os.listdir(origDir)]
