@@ -1,21 +1,37 @@
-#tests rename_split_to_pp with a minimal python wrapper
-#test cases: regrid/native, static/ts
-#fail test cases: no files in your input directory/subdirs; input files are not named according to our very specific naming conventions
+"""
+fre pp rename-split tests
 
+Functionality tested:
+- daily frequency, 6 months duration
+- monthly frequency, 1 year duration
+- static frequency
+- annual frequency, one year duration, with time bounds
+- annual frequency, one year duration, without time bounds and with diag manifest
 
-#https://stackoverflow.com/questions/67631/how-can-i-import-a-module-dynamically-given-the-full-path
-#/archive/cew/CMIP7/ESM4/DEV/ESM4.5_staticfix/ppan-prod-openmp/history/00010101.nc.tar
+Failure cases:
+- no files in your input directory/subdirs
+- input files are not named according to our very specific naming conventions
+"""
 
-import pytest
-import sys
+# Standard library imports
 import os
 from os import path as osp
-import subprocess
-import re
 import pprint
 from pathlib import Path
+import re
+import subprocess
+import sys
+
+# Third-party imports
 import cftime
-from fre.pp.rename_split_script import *
+import pytest
+
+# Local application imports
+from fre.pp.rename_split_script import (
+    get_duration_from_two_dates,
+    get_freq_and_format_from_two_dates,
+    rename_split
+)
 
 def test_get_freq_and_format_from_two_dates():
     """
@@ -52,39 +68,39 @@ def test_rename_split_to_pp_setup():
     '''
     nc_files = []; ncgen_commands = []
     for path,subdirs,files in os.walk(TEST_DATA_DIR):
-      for name in files:
-        if name.endswith("cdl"):
-          name_out = re.sub(".cdl", ".nc", name)
-          cdl_cmd = ["ncgen3", "-k", "netCDF-4", "-o", osp.join(path,name_out), osp.join(path,name)]
-          nc_files.append(osp.join(path,name_out))
-          ncgen_commands.append(cdl_cmd)
+        for name in files:
+            if name.endswith("cdl"):
+                name_out = re.sub(".cdl", ".nc", name)
+                cdl_cmd = ["ncgen3", "-k", "netCDF-4", "-o", osp.join(path,name_out), osp.join(path,name)]
+                nc_files.append(osp.join(path,name_out))
+                ncgen_commands.append(cdl_cmd)
     for cmd in ncgen_commands:
-      out0 = subprocess.run(cmd, capture_output=True)
-      if out0.returncode != 0:
-        print(out0.stdout)
+        out0 = subprocess.run(cmd, capture_output=True)
+        if out0.returncode != 0:
+            print(out0.stdout)
     nc_exists = [osp.isfile(el) for el in nc_files]
     assert all(nc_exists)
     
 def test_rename_split_to_pp_multiply():
-  '''
-  Takes every file with 'tile1' in the name and make 5 new copies.
-  rename-split-to-pp needs 6 tile files - it throws an error if there are fewer -
-  but it's not checking on whether the tiles match up with each other, so we can
-  take one and copy it 5 times.
-  '''
-  nc_tile_files = []; t1 = 'tile1'; tile_patterns = ['tile2', 'tile3', 'tile4', 'tile5', 'tile6']
-  for path,subdirs,files in os.walk(TEST_DATA_DIR):
-    for name in files:
-      if name.endswith(".nc") and re.search(t1, name) is not None:
-        nc_tile_files.append(osp.join(path, name))
-  assert len(nc_tile_files) == 8 #2 tile cases (daily,mon) * input,orig_output *regrid,native
-  tp_files = []
-  for nct in nc_tile_files:
-    for tp in tile_patterns:
-      tp_file = re.sub(t1, tp, nct)
-      tp_files.append(tp_file)
-      os.link(nct, tp_file)
-  assert all([osp.isfile(el) for el in tp_files])
+    '''
+    Takes every file with 'tile1' in the name and make 5 new copies.
+    rename-split-to-pp needs 6 tile files - it throws an error if there are fewer -
+    but it's not checking on whether the tiles match up with each other, so we can
+    take one and copy it 5 times.
+    '''
+    nc_tile_files = []; t1 = 'tile1'; tile_patterns = ['tile2', 'tile3', 'tile4', 'tile5', 'tile6']
+    for path,subdirs,files in os.walk(TEST_DATA_DIR):
+        for name in files:
+            if name.endswith(".nc") and re.search(t1, name) is not None:
+                nc_tile_files.append(osp.join(path, name))
+    assert len(nc_tile_files) == 8 #2 tile cases (daily,mon) * input,orig_output *regrid,native
+    tp_files = []
+    for nct in nc_tile_files:
+        for tp in tile_patterns:
+            tp_file = re.sub(t1, tp, nct)
+            tp_files.append(tp_file)
+            os.link(nct, tp_file)
+    assert all([osp.isfile(el) for el in tp_files])
     
 @pytest.mark.parametrize("hist_source,do_regrid,og_suffix", 
                           [ 
@@ -140,25 +156,19 @@ def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
     print("do_regrid " + str(do_regrid))
     if do_regrid:
         print("do_regrid is set to True")
-        os.environ["use_subdirs"] = "True"
         dir_suffix = hist_source + "-regrid"
         origDir = osp.join(OG, dir_suffix, "regrid", hist_source, og_suffix)
     else:
         #need to set in this branch b/c env variables aren't getting torn down - 
         #otherwise the 'True' from prior run sticks around
-        os.environ["use_subdirs"] = "False"
         dir_suffix = hist_source + "-native"
         origDir = osp.join(OG, dir_suffix, hist_source, og_suffix)
     
     inputDir = osp.join(INDIR, dir_suffix)
     outputDir = osp.join(OUTDIR, dir_suffix)
     
-    os.environ["inputDir"]  = inputDir
-    os.environ["outputDir"] = outputDir
-    os.environ["component"] = hist_source
-    
     if not osp.exists(outputDir):
-      os.makedirs(outputDir)
+        os.makedirs(outputDir)
 
     # run the tool
     # if 'ocean_annual_point', use the diag manifest
@@ -192,19 +202,19 @@ def test_rename_split_to_pp_cleanup():
     dir_list = []
     #all dirs under output
     for path, subdirs, files in os.walk(OUTDIR):
-      for name in subdirs:
-        dir_list.append(osp.join(path,name))
+        for name in subdirs:
+            dir_list.append(osp.join(path,name))
     #all netcdf files
     for path, subdirs, files in os.walk(TEST_DATA_DIR):
-      for name in files:
-        if name.endswith(".nc"):
-          el_list.append(osp.join(path,name))
+        for name in files:
+            if name.endswith(".nc"):
+                el_list.append(osp.join(path,name))
     el_list = list(set(el_list))
     for f in el_list:
-      os.remove(f)
+        os.remove(f)
     dir_list.sort(reverse=True)
     for d in dir_list:
-      os.rmdir(d)
+        os.rmdir(d)
     dir_deleted = [not osp.isdir(el) for el in dir_list]
     el_deleted = [not osp.isdir(el) for el in el_list]
     assert all(el_deleted + dir_deleted)
