@@ -1,24 +1,20 @@
 '''
-expanded set of tests for fre cmor run
-focus on
+expanded set of tests for fre cmor run focus on cases beyond test_cmor_run_subtool.py
 '''
 
 from datetime import date
 from pathlib import Path
 import shutil
-
 import glob
+#import time
+#import platform
+import subprocess
+import os
 
 import pytest
 
 from fre.cmor import cmor_run_subtool
 
-import time
-
-import platform
-
-import subprocess
-import os
 
 # global consts for these tests, with no/trivial impact on the results
 ROOTDIR='fre/tests/test_files'
@@ -187,15 +183,16 @@ def test_git_cleanup():
     git's record of changed files. It's supposed to change as part of the test.
     '''
     is_ci = os.environ.get("GITHUB_WORKSPACE") is not None
-    if is_ci: #git status/restore doesn't run happily in CI and is not needed
-      assert True
-    else:
-      git_cmd = f"git restore {EXP_CONFIG_DEFAULT}"
-      restore = subprocess.run(git_cmd,
-                    shell=True,
-                    check=False)
-      check_cmd = f"git status | grep {EXP_CONFIG_DEFAULT}"
-      check = subprocess.run(check_cmd,
-                             shell = True, check = False)
-      #first command completed, second found no file in git status
-      assert all([restore.returncode == 0, check.returncode == 1])
+    if not is_ci:
+        git_cmd = f"git restore {EXP_CONFIG_DEFAULT}"
+        restore = subprocess.run(git_cmd,
+                                 shell=True,
+                                 check=False)
+        check_cmd = f"git status | grep {EXP_CONFIG_DEFAULT}"
+        check = subprocess.run(check_cmd,
+                               shell = True,
+                               check = False)
+        #first command completed, second found no file in git status
+        assert all( [ restore.returncode == 0,
+                      check.returncode == 1 ] )
+
