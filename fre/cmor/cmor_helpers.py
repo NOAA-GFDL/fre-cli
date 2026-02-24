@@ -33,6 +33,7 @@ Functions
 - ``iso_to_bronx_chunk(cmor_chunk_in)``
 - ``conv_mip_to_bronx_freq(cmor_table_freq)``
 - ``get_bronx_freq_from_mip_table(json_table_config)``
+- ``filter_brands(brands, target_var, mip_var_cfgs, has_time_bnds, input_vert_dim)``
 
 Notes
 -----
@@ -43,12 +44,17 @@ readability, maintainability, and robustness.
 import glob
 import json
 import logging
-import numpy as np
 import os
 from pathlib import Path
-from typing import Optional, Any, List, Union
+import shutil
+import subprocess
+from typing import Optional, List, Union
 
+import numpy as np
 from netCDF4 import Dataset, Variable
+
+from .cmor_constants import ( ARCHIVE_GOLD_DATA_DIR, CMIP7_GOLD_OCEAN_FILE_STUB, CMIP6_GOLD_OCEAN_FILE_STUB,
+                              INPUT_TO_MIP_VERT_DIM )
 
 fre_logger = logging.getLogger(__name__)
 
@@ -73,7 +79,6 @@ def print_data_minmax( ds_variable: Optional[np.ma.core.MaskedArray] = None,
         fre_logger.info('%s < %s < %s', ds_variable.min(), desc, ds_variable.max())
     except Exception:
         fre_logger.warning('could not print min/max entries for desc = %s', desc)
-    return
 
 
 def from_dis_gimme_dis( from_dis: Dataset,
@@ -96,6 +101,79 @@ def from_dis_gimme_dis( from_dis: Dataset,
     except Exception:
         fre_logger.warning('I am sorry, I could not not give you this: %s\n returning None!\n', gimme_dis)
         return None
+
+
+def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optional[str]:
+    """
+    Locate (and if necessary copy) the gold-standard OM5_025 ocean_static.nc file
+    from the GFDL archive into a user-writable directory.
+
+    :param put_copy_here: Directory root under which a mirror of the archive
+        sub-path will be created and the file copied into.
+    :type put_copy_here: str or None
+    :return: Absolute path to the local working copy of ocean_static.nc,
+        or None if the file could not be obtained.
+    :rtype: str or None
+
+    .. note:: The archive path is hard-coded to the OM5_025 dataset on GFDL systems.
+    """
+    archive_gold_file = (
+        f'{ARCHIVE_GOLD_DATA_DIR}/{CMIP7_GOLD_OCEAN_FILE_STUB}'
+        #f'{ARCHIVE_GOLD_DATA_DIR}/OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
+    )
+    fre_logger.debug('ARCHIVE_GOLD_DATA_DIR=%s', ARCHIVE_GOLD_DATA_DIR)
+    fre_logger.debug('archive_gold_file=%s', archive_gold_file)
+
+    if not Path(archive_gold_file).exists():
+        fre_logger.error('ERROR gold archive file does not exist: %s', archive_gold_file)
+        fre_logger.error('ERROR this file should probably exist.')
+        fre_logger.warning('WARNING i will fallback to using buggy ocean_statics'
+                           ' files in pp directories out of desperation')
+        return None
+
+
+    if put_copy_here is None:
+        fre_logger.warning('put_copy_here is None, cannot stage gold ocean statics file')
+        return None
+
+    # mirror the archive sub-path under put_copy_here
+    # e.g.  /archive/gold/datasets/OM5_025/…  ->  datasets/OM5_025/…
+    #try:
+    new_dir_tree = CMIP7_GOLD_OCEAN_FILE_STUB # '/'.join(archive_gold_file.split('/')[3:])
+    fre_logger.debug('new_dir_tree=%s', new_dir_tree)
+    #except Exception:
+    #    fre_logger.error('could not derive sub-path from archive_gold_file')
+    #    return None
+
+    working_copy_dir = f'{put_copy_here}/{Path(new_dir_tree).parent}'
+    Path(working_copy_dir).mkdir(parents=True, exist_ok=True)
+    working_copy = f'{working_copy_dir}/{Path(archive_gold_file).name}'
+
+    # guard: if a stale directory exists where the file should be (from a prior buggy mkdir),
+    # remove it so the copy can succeed
+    if Path(working_copy).exists():
+        if Path(working_copy).is_dir():
+            fre_logger.warning('prior buggy mkdir suspected- removing directory instead of the expected file')
+            shutil.rmtree(working_copy)
+            fre_logger.warning('dir removed, moving on')
+        else:
+            fre_logger.warning('a previous copy of the ocean statics file exists, not re-copying!')
+            return working_copy
+
+    if not Path(working_copy).is_file():
+        fre_logger.info('copying archived golden statics file to\n  %s', working_copy)
+        try:
+            subprocess.run(['cp', archive_gold_file, working_copy], shell=False, check=True)
+        except subprocess.CalledProcessError as exc:
+            fre_logger.warning('cp of gold statics file failed: %s', exc)
+            return None
+
+    if Path(working_copy).is_file():
+        fre_logger.info('gold ocean statics file available at %s', working_copy)
+        return working_copy
+
+    fre_logger.warning('gold ocean statics file not available after copy attempt')
+    return None
 
 # note, the awkward spacing of the docstring below is for the way sphinx renders reStructuredText, do not change!
 def find_statics_file( bronx_file_path: str) -> Optional[str]:
@@ -315,7 +393,7 @@ def create_tmp_dir( outdir: str,
                 fre_logger.warning(
                     'could not read outdir from json_exp_config. the cmor module will throw a toothless warning')
 
-    tmp_dir = str(Path("{}/tmp/".format(outdir)).resolve())
+    tmp_dir = str(Path("{}/CMOR_tmp/".format(outdir)).resolve())
     try:
         os.makedirs(tmp_dir, exist_ok=True)
         if outdir_from_exp_config is not None:
@@ -410,7 +488,7 @@ def update_grid_and_label( json_file_path: str,
             fre_logger.info('Updated "nominal_resolution": %s', data["nominal_resolution"])
         except KeyError as e:
             fre_logger.error("Failed to update 'nominal_resolution': %s", e)
-            raise KeyError("Error while updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from e
+            raise KeyError("Error updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from e
 
         output_file_path = output_file_path or json_file_path
 
@@ -545,7 +623,7 @@ def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
     if bronx_freq is None:
-        fre_logger.warning(f'MIP table frequency = {cmor_table_freq} does not have a FRE-bronx equivalent')
+        fre_logger.warning('MIP table frequency = %s does not have a FRE-bronx equivalent', cmor_table_freq)
     if cmor_table_freq not in cmor_to_bronx_dict.keys():
         raise KeyError(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency')
     return bronx_freq
@@ -568,7 +646,139 @@ def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
                 table_freq = table_config_data['variable_entry'][var_entry]['frequency']
                 break
             except Exception as exc:
-                raise KeyError('could not get freq from table!!! variable entries in cmip cmor tables'
-                               'have frequency info under the variable entry!') from exc
+                raise KeyError('no frequency in table under variable_entry. this may be a CMIP7 table.') from exc
+
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
+
+#def update_outpath( json_file_path: str,
+#                    outpath: str,
+#                    output_file_path: Optional[str] = None) -> None:
+#    """
+#    Update the "outpath" field in a JSON experiment config file.
+#
+#    :param json_file_path: Path to the input JSON file.
+#    :type json_file_path: str
+#    :param outpath: key in input experiment config for managing target output directory, required
+#    :type outpath: str
+#    :param output_file_path: path to write the updated experiment config file to, if desired.
+#    :type output_file_path: str, optional
+#    """
+#
+#    if None in [json_file_path, outpath]:
+#        fre_logger.error(
+#            'a required input argument is None\n'
+#            'bailing...!')
+#        raise ValueError
+#
+#    try:
+#        with open(json_file_path, "r", encoding="utf-8") as file:
+#            data = json.load(file)
+#
+#        try:
+#            fre_logger.info('Original "outpath": %s', data["outpath"])
+#            data["outpath"] = outpath
+#            fre_logger.info('Updated "outpath": %s', data["outpath"])
+#        except KeyError as e:
+#            fre_logger.error("Failed to update 'outpath': %s", e)
+#            raise KeyError("Error while updating 'outpath'. Ensure the field exists and is modifiable.") from e
+#
+#        output_file_path = output_file_path or json_file_path
+#
+#        with open(output_file_path, "w", encoding="utf-8") as file:
+#            json.dump(data, file, indent=4)
+#
+#        fre_logger.info('Successfully updated fields and saved to %s', output_file_path)
+#
+#    except FileNotFoundError:
+#        fre_logger.error("The file '%s' does not exist.", json_file_path)
+#        raise
+#    except json.JSONDecodeError:
+#        fre_logger.error("Failed to decode JSON from the file '%s'.", json_file_path)
+#        raise
+#    except Exception as e:
+#        fre_logger.error("An unexpected error occurred: %s", e)
+#        raise
+
+
+def filter_brands( brands: list,
+                   target_var: str,
+                   mip_var_cfgs: dict,
+                   has_time_bnds: bool,
+                   input_vert_dim: Union[str, int] ) -> str:
+    """
+    Disambiguate multiple CMIP7 variable brands by comparing input data
+    properties against each candidate brand's MIP dimension list.
+
+    Two filters are applied in sequence:
+
+    1. **Time type**: The presence or absence of time bounds in the input data
+       is compared to whether the brand's MIP dimensions contain ``time``
+       (time-mean, has bounds) or ``time1`` (instantaneous, no bounds).
+    2. **Vertical coordinate**: The input data's vertical dimension name is
+       mapped to the corresponding MIP dimension name (via
+       ``INPUT_TO_MIP_VERT_DIM``) and brands whose MIP dimensions do not
+       include it are excluded.
+
+    :param brands: List of candidate brand strings to filter.
+    :type brands: list[str]
+    :param target_var: The base variable name (before the brand suffix).
+    :type target_var: str
+    :param mip_var_cfgs: The full MIP table config dict (must contain
+        ``"variable_entry"``).
+    :type mip_var_cfgs: dict
+    :param has_time_bnds: Whether the input dataset contains ``time_bnds``.
+    :type has_time_bnds: bool
+    :param input_vert_dim: The vertical dimension name from the input dataset,
+        or ``0`` if no vertical dimension is present.
+    :type input_vert_dim: str or int
+    :raises ValueError: If zero or more than one brand survives filtering.
+    :return: The single brand string that survived disambiguation.
+    :rtype: str
+    """
+    # map input vertical dim to MIP equivalent
+    expected_mip_vert = None
+    if input_vert_dim != 0:
+        expected_mip_vert = INPUT_TO_MIP_VERT_DIM.get(
+            input_vert_dim.lower(), input_vert_dim.lower())
+
+    filtered_brands = []
+    for brand in brands:
+        mip_key = f'{target_var}_{brand}'
+        mip_dims = mip_var_cfgs["variable_entry"][mip_key]["dimensions"]
+
+        # time filter
+        if has_time_bnds and 'time1' in mip_dims:
+            fre_logger.debug('filtering out brand %s: MIP dims contain time1 '
+                             'but input data has time_bnds', brand)
+            continue
+        if not has_time_bnds and 'time' in mip_dims and 'time1' not in mip_dims:
+            fre_logger.debug('filtering out brand %s: MIP dims contain time (mean) '
+                             'but input data lacks time_bnds', brand)
+            continue
+
+        # vertical filter
+        if expected_mip_vert is not None and expected_mip_vert not in mip_dims:
+            fre_logger.debug('filtering out brand %s: expected MIP vert dim %s '
+                             'not found in %s', brand, expected_mip_vert, mip_dims)
+            continue
+
+        filtered_brands.append(brand)
+
+    if len(filtered_brands) == 1:
+        fre_logger.info('cmip7 brand disambiguation successful, selected brand: %s',
+                        filtered_brands[0])
+        return filtered_brands[0]
+
+    if len(filtered_brands) == 0:
+        fre_logger.error('cmip7 brand disambiguation eliminated all candidates '
+                         'from %s', brands)
+        raise ValueError(
+            f'multiple brands {brands} found for {target_var}, '
+            f'but none survived disambiguation filtering')
+
+    fre_logger.error('cmip7 brand disambiguation could not resolve between '
+                     '%s', filtered_brands)
+    raise ValueError(
+        f'multiple brands {filtered_brands} remain for {target_var} after '
+        f'disambiguation \u2014 cannot determine which brand to use')

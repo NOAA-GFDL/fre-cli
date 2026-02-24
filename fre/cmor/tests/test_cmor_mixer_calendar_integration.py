@@ -1,125 +1,146 @@
+"""
+Calendar-type integration tests for cmor_run_subtool
+=====================================================
+
+These tests verify that cmor_run_subtool correctly handles the
+``calendar_type`` parameter:
+
+- When a calendar_type is provided  → ``update_calendar_type`` is called.
+- When calendar_type is None        → ``update_calendar_type`` is NOT called.
+
+Heavy internal work (file globbing, CMORization, outpath updating) is
+mocked so the tests focus exclusively on the calendar-type routing logic.
+"""
+
 import json
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, MagicMock
-from pathlib import Path
+
 from fre.cmor.cmor_mixer import cmor_run_subtool
 
+
+# ---------------------------------------------------------------------------
+# shared fixtures – minimal JSON configs written to tmp_path
+# ---------------------------------------------------------------------------
+
 @pytest.fixture
-def mock_json_exp_config(tmp_path):
-    """
-    Create a mock JSON experiment config file for testing.
-    """
-    config_data = {
+def exp_config_file(tmp_path):
+    """Minimal CMIP6 experiment configuration JSON (with outpath for update_outpath)."""
+    config = {
+        "mip_era": "cmip6",
         "calendar": "360_day",
         "grid": "test_grid",
         "grid_label": "gn",
-        "nominal_resolution": "1 km"
+        "nominal_resolution": "1 km",
+        "outpath": "."
     }
-    config_file = tmp_path / "exp_config.json"
-    with open(config_file, "w") as f:
-        json.dump(config_data, f)
-    return str(config_file)
+    path = tmp_path / "exp_config.json"
+    path.write_text(json.dumps(config))
+    return str(path)
+
 
 @pytest.fixture
-def mock_json_var_list(tmp_path):
-    """
-    Create a mock JSON variable list file for testing.
-    """
-    var_data = {"temp": "temp", "salt": "salt"}
-    var_file = tmp_path / "var_list.json"
-    with open(var_file, "w") as f:
-        json.dump(var_data, f)
-    return str(var_file)
+def var_list_file(tmp_path):
+    """Variable-list JSON mapping local names to target names."""
+    path = tmp_path / "var_list.json"
+    path.write_text(json.dumps({"temp": "temp", "salt": "salt"}))
+    return str(path)
+
 
 @pytest.fixture
-def mock_json_table_config(tmp_path):
-    """
-    Create a mock JSON table config file for testing.
-    """
-    table_data = {
+def table_config_file(tmp_path):
+    """MIP-table JSON with two stub variable entries."""
+    table = {
         "variable_entry": {
             "temp": {"frequency": "mon"},
             "salt": {"frequency": "mon"}
         }
     }
-    table_file = tmp_path / "table_config.json"
-    with open(table_file, "w") as f:
-        json.dump(table_data, f)
-    return str(table_file)
+    path = tmp_path / "table_config.json"
+    path.write_text(json.dumps(table))
+    return str(path)
 
-@patch('fre.cmor.cmor_mixer.update_calendar_type')
-@patch('fre.cmor.cmor_mixer.cmorize_all_variables_in_dir')
-@patch('fre.cmor.cmor_mixer.glob.glob')
-def test_cmor_run_w_cal_type( mock_glob,
-                              mock_cmorize_all_variables_in_dir,
-                              mock_update_calendar_type,
-                              mock_json_exp_config,
-                              mock_json_var_list,
-                              mock_json_table_config,
-                              tmp_path):
-    """
-    Test that cmor_run_subtool calls update_calendar_type when calendar_type is provided.
-    """
-    # Arrange
-    mock_glob.return_value = [
-        str(tmp_path / "mock_test_file.00010101-00041231.temp.nc") ,
-        str(tmp_path / "mock_test_file.00010101-00041231.salt.nc")   ]
 
-    mock_cmorize_all_variables_in_dir.return_value = 0
+@pytest.fixture
+def fake_nc_filenames(tmp_path):
+    """Return a list of fake NetCDF filenames that glob would find."""
+    return [
+        str(tmp_path / "mock_test_file.00010101-00041231.temp.nc"),
+        str(tmp_path / "mock_test_file.00010101-00041231.salt.nc")
+    ]
 
-    indir = str(tmp_path)
-    outdir = str(tmp_path / "output")
+
+# ---------------------------------------------------------------------------
+# tests
+# ---------------------------------------------------------------------------
+
+# Shared set of mocks – everything that would touch the filesystem or CMOR
+_MOCKS = [
+    'fre.cmor.cmor_mixer.update_calendar_type',
+    'fre.cmor.cmor_mixer.cmorize_all_variables_in_dir',
+    'fre.cmor.cmor_mixer.glob.glob',
+]
+
+
+@patch(_MOCKS[0])
+@patch(_MOCKS[1])
+@patch(_MOCKS[2])
+def test_cmor_run_w_cal_type(
+    mock_glob,
+    mock_cmorize,
+    mock_update_cal,
+    exp_config_file,
+    var_list_file,
+    table_config_file,
+    fake_nc_filenames,
+    tmp_path
+):
+    """When calendar_type is provided, update_calendar_type must be called."""
+
+    mock_glob.return_value = fake_nc_filenames
+    mock_cmorize.return_value = 0
     calendar_type = "noleap"
 
-    # Act
     cmor_run_subtool(
-        indir = indir,
-        json_var_list = mock_json_var_list,
-        json_table_config = mock_json_table_config,
-        json_exp_config = mock_json_exp_config,
-        outdir = outdir,
-        calendar_type = calendar_type
+        indir            = str(tmp_path),
+        json_var_list    = var_list_file,
+        json_table_config = table_config_file,
+        json_exp_config  = exp_config_file,
+        outdir           = str(tmp_path / "output"),
+        calendar_type    = calendar_type
     )
 
-    ## Assert
-    mock_update_calendar_type.assert_called_once_with(
-        mock_json_exp_config, calendar_type, output_file_path=None )
-
-
-
-@patch('fre.cmor.cmor_mixer.update_calendar_type')
-@patch('fre.cmor.cmor_mixer.cmorize_all_variables_in_dir')
-@patch('fre.cmor.cmor_mixer.glob.glob')
-def test_cmor_run_no_cal_type( mock_glob,
-                               mock_cmorize_all_variables_in_dir,
-                               mock_update_calendar_type,
-                               mock_json_exp_config,
-                               mock_json_var_list,
-                               mock_json_table_config,
-                               tmp_path):
-    """
-    Test that cmor_run_subtool does not call update_calendar_type when calendar_type is None.
-    """
-    # Arrange
-    mock_glob.return_value = [
-        str(tmp_path / "mock_test_file.00010101-00041231.temp.nc") ,
-        str(tmp_path / "mock_test_file.00010101-00041231.salt.nc")   ]
-
-    mock_cmorize_all_variables_in_dir.return_value = 0
-
-    indir = str(tmp_path)
-    outdir = str(tmp_path / "output")
-    calendar_type = None
-
-    # Act - calendar_type is None (default)
-    cmor_run_subtool(
-        indir = indir,
-        json_var_list = mock_json_var_list,
-        json_table_config = mock_json_table_config,
-        json_exp_config = mock_json_exp_config,
-        outdir = outdir,
-        calendar_type  =  None
+    mock_update_cal.assert_called_once_with(
+        exp_config_file, calendar_type, output_file_path=None
     )
 
-    # Assert
-    mock_update_calendar_type.assert_not_called()
+
+@patch(_MOCKS[0])
+@patch(_MOCKS[1])
+@patch(_MOCKS[2])
+def test_cmor_run_no_cal_type(
+    mock_glob,
+    mock_cmorize,
+    mock_update_cal,
+    exp_config_file,
+    var_list_file,
+    table_config_file,
+    fake_nc_filenames,
+    tmp_path
+):
+    """When calendar_type is None (default), update_calendar_type must NOT be called."""
+
+    mock_glob.return_value = fake_nc_filenames
+    mock_cmorize.return_value = 0
+
+    cmor_run_subtool(
+        indir            = str(tmp_path),
+        json_var_list    = var_list_file,
+        json_table_config = table_config_file,
+        json_exp_config  = exp_config_file,
+        outdir           = str(tmp_path / "output"),
+        calendar_type    = None
+    )
+
+    mock_update_cal.assert_not_called()
