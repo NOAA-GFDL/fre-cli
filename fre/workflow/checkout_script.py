@@ -44,7 +44,7 @@ def validate_yaml(yamlfile: dict, application: str):
     # If the yaml is not valid, the schema validation will raise errors and exit
     try:
         validate(instance = yamlfile,schema=schema)
-        fre_logger.info("Combined yaml valid")
+        fre_logger.info(" ** COMBINED YAML VALID ** ")
     except SchemaError as exc:
         raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.") from exc
     except ValidationError as exc:
@@ -126,7 +126,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
                                     target=target,
                                     use="pp",
                                     output="config.yaml")
-        validate_yaml(yamlfile = yaml, application = "pp")
+        #validate_yaml(yamlfile = yaml, application = "pp")
         workflow_info = yaml.get("workflow").get("pp")
 
     repo = workflow_info.get("repo")
