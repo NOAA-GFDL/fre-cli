@@ -288,7 +288,7 @@ def test_pressure_coordinate_found_no_long_name(tmp_input): # pylint: disable=re
     isn't as expected
     """
     in_ds = xr.open_dataset(tmp_input)
-    in_ds['plev19'].attrs['long_name'] = "foo"
+    in_ds['plev19'].attrs['long_name'] = "foo2"
 
     coord_out = pressure_coordinate(ds = in_ds, varname='ua_unmsk')
     assert coord_out is not None

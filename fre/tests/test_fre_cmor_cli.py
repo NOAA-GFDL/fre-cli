@@ -200,7 +200,7 @@ def test_cli_fre_cmor_run_case1():
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
     full_inputfile=f"{indir}/{filename}"
 
-    # clean up, lest we fool ourselves
+    # clean up, lest we foo2l ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
@@ -246,7 +246,7 @@ def test_cli_fre_cmor_run_case2():
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
     full_inputfile=f"{indir}/{filename}"
 
-    # clean up, lest we fool ourselves
+    # clean up, lest we foo2l ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
@@ -325,7 +325,7 @@ def test_cli_fre_cmor_run_cmip7_case1():
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
     full_inputfile=f"{indir}/{filename}"
 
-    # clean up, lest we fool ourselves
+    # clean up, lest we foo2l ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
@@ -371,7 +371,7 @@ def test_cli_fre_cmor_run_cmip7_case2():
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
     full_inputfile=f"{indir}/{filename}"
 
-    # clean up, lest we fool ourselves
+    # clean up, lest we foo2l ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
@@ -428,7 +428,7 @@ def test_cli_fre_cmor_config_case1():
     (mock_pp_dir / 'atmos' / 'ts' / 'monthly' / '5yr').mkdir(parents=True, exist_ok=True)
 
     # create random file that's not a directory in the pp_dir that we should skip over gracefully
-    (mock_pp_dir / 'foo.json').touch()
+    (mock_pp_dir / 'foo2.json').touch()
 
     # put an av directory in to make sure we're nmot targeting that at the moment
     (mock_pp_dir / 'ocean' / 'av').mkdir(parents=True, exist_ok=True)

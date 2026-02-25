@@ -344,10 +344,10 @@ def test_fre_app_gen_time_avg_test_data_cleanup():
 
 
 value_err_args_cases=[
-    pytest.param( None,             'foo_output_file', 'cdo' ),
-    pytest.param( 'foo_input_file', None,              'cdo' ),
-    pytest.param( 'foo_input_file', 'foo_output_file', None  ),
-    pytest.param( 'foo_input_file', 'foo_output_file', 'DNE' ),]
+    pytest.param( None,             'foo2_output_file', 'cdo' ),
+    pytest.param( 'foo2_input_file', None,              'cdo' ),
+    pytest.param( 'foo2_input_file', 'foo2_output_file', None  ),
+    pytest.param( 'foo2_input_file', 'foo2_output_file', 'DNE' ),]
 @pytest.mark.parametrize( "infile,outfile,pkg", value_err_args_cases )
 def test_no_req_arg_inputfile( infile, outfile, pkg):
     '''

@@ -23,7 +23,7 @@ PLATFORM = [ "ci.gnu" ]
 CONTAINER_PLATFORM = ["hpcme.2023"]
 CONTAINER_PLAT2 = ["con.twostep"]
 TARGET = ["debug"]
-BADOPT = ["foo"]
+BADOPT = ["foo2"]
 EXPERIMENT = "null_model_full"
 VERBOSE = False
 

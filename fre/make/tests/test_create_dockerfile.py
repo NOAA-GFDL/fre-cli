@@ -18,7 +18,7 @@ YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
 PLATFORM = ["hpcme.2023"]
 TARGET = ["debug"]
-BADOPT = ["foo"]
+BADOPT = ["foo2"]
 EXPERIMENT = "null_model_full"
 VERBOSE = False
 

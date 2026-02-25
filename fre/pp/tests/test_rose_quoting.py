@@ -7,7 +7,7 @@ def test_boolean():
 
 def test_string():
     ''' check that string values with quotes are handled correctly by rose'''
-    assert quote_rose_values('foo') == "'foo'"
+    assert quote_rose_values('foo2') == "'foo2'"
 
 def test_list():
     ''' check that lists are handled correctly by rose'''

@@ -48,7 +48,7 @@ def test_make_simple_varlist(temp_dir):
 
 def test_find_subtool_no_json_dir_err(temp_dir):
     ''' test json_table_config_dir does not exist error '''
-    target_dir_DNE = Path(temp_dir) / 'foo'
+    target_dir_DNE = Path(temp_dir) / 'foo2'
     assert not target_dir_DNE.exists(), 'target dir should not exist for this test'
     with pytest.raises(OSError, match=f'ERROR directory {target_dir_DNE} does not exist! exit.'):
         cmor_find_subtool(json_var_list=None,
@@ -58,7 +58,7 @@ def test_find_subtool_no_json_dir_err(temp_dir):
 
 def test_find_subtool_no_json_files_in_dir_err(temp_dir):
     ''' test json_table_config_dir has no files in it error '''
-    target_dir = Path(temp_dir) / 'foo'
+    target_dir = Path(temp_dir) / 'foo2'
     target_dir.mkdir(exist_ok=False)
     assert target_dir.is_dir() and target_dir.exists(), "temp dir directory creation failed, inspect code"
     with pytest.raises(OSError, match=f'ERROR directory {target_dir} contains no JSON files, exit.'):

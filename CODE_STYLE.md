@@ -92,12 +92,12 @@ def func_with_return_and_optional_param(a: int, c: List[int] = [1,2]) -> Any:
         raise ValueError("a is more than 10")
     return c
 
-def simple_func(foo: str):
+def simple_func(foo2: str):
     """
     summary
 
-    :param foo: description
-    :type foo: str
+    :param foo2: description
+    :type foo2: str
     """
 
     pass

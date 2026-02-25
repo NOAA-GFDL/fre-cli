@@ -277,7 +277,7 @@ def test_combine_pp_yamls(tmp_path):
             'components' : [
                 {
                     'type'    : 'atmos_cmip',
-                    'sources' : "foo bar" },
+                    'sources' : "foo2 bar" },
                 {
                     'type'    : 'land',
                     'sources' : "land_month"}
@@ -314,7 +314,7 @@ def test_combine_pp_yamls(tmp_path):
             'components' : [
                 {
                     'type'    : 'atmos_cmip',
-                    'sources' : "foo bar" },
+                    'sources' : "foo2 bar" },
                 {
                     'type'    : 'land',
                     'sources' : "land_month"},

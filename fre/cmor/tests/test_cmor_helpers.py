@@ -19,7 +19,7 @@ def test_iso_to_bronx_chunk():
     ''' tests value error raising by iso_to_bronx_chunk '''
     with pytest.raises(ValueError,
                        match='problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py'):
-        iso_to_bronx_chunk('foo')
+        iso_to_bronx_chunk('foo2')
 
 def test_find_statics_file_success():
     ''' what happens when no statics file is found given a bronx directory structure '''
@@ -62,7 +62,7 @@ def test_print_data_minmax_no_exception_case2():
 
 def test_print_data_minmax_no_exception_case3():
     ''' checks to make sure this doesn't raise an exception '''
-    print_data_minmax(np.ma.core.MaskedArray( data=(0, 10, 20, 30) ), 'foo')
+    print_data_minmax(np.ma.core.MaskedArray( data=(0, 10, 20, 30) ), 'foo2')
 
 
 # ---- find_gold_ocean_statics_file tests ----

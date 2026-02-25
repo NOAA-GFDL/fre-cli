@@ -262,9 +262,9 @@ def test_cli_fre_app_mask_atmos_plevel_exception():
     """ fre app mask-atmos-plevel optionDNE """
     result = runner.invoke(fre.fre,
                            args=["-vv", "app", "mask-atmos-plevel",
-                                 "--infile", "foo",
+                                 "--infile", "foo2",
                                  "--outfile", "bar",
                                  "--psfile", "baz"],
                            catch_exceptions = True)
     assert result.exit_code == 1
-    assert result.exception.args[0] == 'ERROR: Input file foo does not exist'
+    assert result.exception.args[0] == 'ERROR: Input file foo2 does not exist'

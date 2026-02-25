@@ -62,7 +62,7 @@ def create_4xdaily_file(tmp_path):
     assert input_path.exists()
 
     # create temporary directory
-    tmp_dir = tmp_path / 'PT6H' / 'foo'
+    tmp_dir = tmp_path / 'PT6H' / 'foo2'
     tmp_dir.mkdir( parents=True, exist_ok = True )
     output_path = Path(f"{tmp_dir}/{test_file_4xdaily}.nc")
 
