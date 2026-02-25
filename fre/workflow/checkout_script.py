@@ -28,8 +28,6 @@ def validate_yaml(yamlfile: dict, application: str):
         - if gfdl_mdf_schema path is not valid
         - combined yaml is not valid
         - unclear error in validation
-    :return: None
-    :rtype: None
     """
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', f'fre_{application}.json')
@@ -74,7 +72,7 @@ def create_checkout(repo: str, tag: str, src_dir: str, workflow_name: str):
                                     repo, f"{src_dir}/{workflow_name}"],
                                     capture_output = True, text = True, check = True)
     fre_logger.debug(clone_output)
-    fre_logger.warning("(%s):(%s) check out ==> SUCCESSFUL", repo, tag)
+    fre_logger.info("(%s):(%s) check out ==> SUCCESSFUL", repo, tag)
 
     ## Move combined yaml to cylc-src location
     current_dir = Path.cwd()
@@ -93,7 +91,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
     :type experiment: str
     :param application: Which workflow will be used/cloned
     :type application: str
-    :param target_dir: Target directory to clone repository into
+    :param target_dir: Target/base directory used for cylc-src/<workflow> creation
     :type target_dir: str
     :param force_checkout: re-clone the workflow repo if it exists
     :type force_checkout: bool
@@ -101,9 +99,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
     :raises ValueError:
         - if the repo and/or tag was not defined
         - if the target directory does not exist or cannot be found
-        - if the 
-                raise ValueError('Neither tag nor branch matches the git clone branch arg')
-
+        - if neither tag nor branch matches the git clone branch arg
     """
     # Used in consolidate_yamls function for now
     platform = None
@@ -119,7 +115,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
                                     target=target,
                                     use="run",
                                     output=None)
-        #validate_yaml(yamlfile = yaml, application = "run")
+        validate_yaml(yamlfile = yaml, application = "run")
         workflow_info = yaml.get("workflow").get("run")
     elif application == "pp":
         # will probably be taken out and put above is "use"
@@ -142,11 +138,11 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
 
     fre_logger.warning("(%s):(%s) check out ==> REQUESTED", repo, tag)
 
-    # Make sure src_dir exists
+    # Create src_dir if it does not exist
     if not Path(target_dir).exists():
-        raise ValueError(f"Target directory {target_dir} does not exist or cannot be found.")
+        Path(target_dir).mkdir(parents=True, exist_ok=True)
 
-    # clone directory
+    # Define cylc-src directory
     src_dir = f"{target_dir}/cylc-src"
     # workflow name
     workflow_name = experiment

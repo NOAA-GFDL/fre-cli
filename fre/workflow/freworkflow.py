@@ -27,14 +27,14 @@ def workflow_cli():
 @click.option("--target-dir",
               type=str,
               envvar="TMPDIR",
-              default=".fre",
-              help=f"Target directory for workflow to be cloned into. Default location TMPDIR: {os.environ['TMPDIR']}")
+              default=os.path.expanduser("~/.fre"),
+              help=f"Target directory for workflow to be cloned into. TMPDIR will be used if set: {os.environ['TMPDIR']}. If not set, a default location of ")
 @click.option("--force-checkout",
               is_flag=True,
               default=False,
-              help="If the checkout already, exists, remove and check out again.")
-def checkout(yamlfile, experiment, application, target_dir, force_checkout):
+              help="If the checkout already, exists, remove and clone the desired repo again.")
+def checkout(target_dir, yamlfile, experiment, application, force_checkout):
     """
     Checkout/extract fre workflow
     """
-    checkout_script.workflow_checkout(yamlfile, experiment, application, target_dir, force_checkout)
+    checkout_script.workflow_checkout(target_dir, yamlfile, experiment, application, force_checkout)
