@@ -236,6 +236,7 @@ def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: b
     in the input directory and use them in the output directory.
     """
     input_dir = Path(input_dir)
+    did_something = False
     if use_subdirs:
         fre_logger.info("Using subdirs")
         for subdir in [x for x in input_dir.iterdir() if x.is_dir()]:
@@ -244,6 +245,7 @@ def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: b
                 output_file = Path(output_dir) / subdir.name / rename_file(input_file, diag_manifest)
                 fre_logger.info(f"Linking '{input_file}' to '{output_file}'")
                 link_or_copy(input_file, output_file)
+                did_something = True
     else:
         fre_logger.info("Not using subdirs")
         files = input_dir.glob(f"*.{component}.*.nc")
@@ -251,3 +253,6 @@ def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: b
             output_file = Path(output_dir) / rename_file(input_file, diag_manifest)
             fre_logger.info(f"Linking '{input_file}' to '{output_file}'")
             link_or_copy(input_file, output_file)
+            did_something = True
+    if not did_something:
+        raise FileNotFoundError(f"No '{component}' files were found in '{input_dir}'")
