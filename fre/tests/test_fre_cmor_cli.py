@@ -70,8 +70,8 @@ def test_cli_fre_cmor_help_and_debuglog():
     assert result.exit_code == 0
     assert Path("TEST_FOO_LOG.log").exists()
 
-    log_text_line_1='[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n' # pylint: disable=line-too-long
-    log_text_line_2='[DEBUG:                  fre.py:                     fre] click entry-point function call done.\n' # pylint: disable=line-too-long
+    log_text_line_1='[  INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n' # pylint: disable=line-too-long
+    log_text_line_2='[ DEBUG:                  fre.py:                     fre] click entry-point function call done.\n' # pylint: disable=line-too-long
     with open( "TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
         line_list=log_text.readlines()
         assert log_text_line_1 in line_list[0]
@@ -89,7 +89,7 @@ def test_cli_fre_cmor_help_and_infolog():
     assert result.exit_code == 0
     assert Path("TEST_FOO_LOG.log").exists()
 
-    log_text_line_1='[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n' # pylint: disable=line-too-long
+    log_text_line_1='[  INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n' # pylint: disable=line-too-long
     with open( "TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
         line_list=log_text.readlines()
         assert log_text_line_1 in line_list[0]
