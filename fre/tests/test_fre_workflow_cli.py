@@ -19,40 +19,40 @@ runner = CliRunner()
 # If a value for --target-dir is not passed --> TMPDIR will be used for --target-dir
 # If TMPDIR is not set --> a default location will be used for --target-dir 
 #-- fre workflow
-def test_cli_fre_workflow(monkeypatch):
+def test_cli_fre_workflow(monkeypatch, tmp_path):
     ''' fre workflow '''
-    monkeypatch.setenv("TMPDIR", "")
+    monkeypatch.setenv("TMPDIR", tmp_path)
     result = runner.invoke(fre.fre, args=["workflow"])
     assert result.exit_code == 2
 
-def test_cli_fre_workflow_help(monkeypatch):
+def test_cli_fre_workflow_help(monkeypatch, tmp_path):
     ''' fre workflow --help '''
-    monkeypatch.setenv("TMPDIR", "")
+    monkeypatch.setenv("TMPDIR", tmp_path)
     result = runner.invoke(fre.fre, args=["workflow", "--help"])
     assert result.exit_code == 0
 
-def test_cli_fre_workflow_opt_dne(monkeypatch):
+def test_cli_fre_workflow_opt_dne(monkeypatch, tmp_path):
     ''' fre workflow optionDNE '''
-    monkeypatch.setenv("TMPDIR", "")
+    monkeypatch.setenv("TMPDIR", tmp_path)
     result = runner.invoke(fre.fre, args=["workflow", "optionDNE"])
     assert result.exit_code == 2
 
 #-- fre workflow checkout
-def test_cli_fre_workflow_checkout(monkeypatch):
+def test_cli_fre_workflow_checkout(monkeypatch, tmp_path):
     ''' fre workflow checkout'''
-    monkeypatch.setenv("TMPDIR", "")
+    monkeypatch.setenv("TMPDIR", tmp_path)
     result = runner.invoke(fre.fre, args=["workflow", "checkout"])
     assert result.exit_code == 2
 
-def test_cli_fre_workflow_checkout_help(monkeypatch):
+def test_cli_fre_workflow_checkout_help(monkeypatch, tmp_path):
     ''' fre workflow checkout --help '''
-    monkeypatch.setenv("TMPDIR", "")
+    monkeypatch.setenv("TMPDIR", tmp_path)
     result = runner.invoke(fre.fre, args=["workflow", "checkout", "--help"])
     assert result.exit_code == 0
 
-def test_cli_fre_workflow_checkout_opt_dne(monkeypatch):
+def test_cli_fre_workflow_checkout_opt_dne(monkeypatch, tmp_path):
     ''' fre workflow checkout optionDNE '''
-    monkeypatch.setenv("TMPDIR", "")
+    monkeypatch.setenv("TMPDIR", tmp_path)
     result = runner.invoke(fre.fre, args=["workflow", "checkout", "optionDNE"])
     assert result.exit_code == 2
 
