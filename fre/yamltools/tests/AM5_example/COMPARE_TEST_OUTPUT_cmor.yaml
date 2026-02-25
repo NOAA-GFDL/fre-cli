@@ -32,15 +32,11 @@ cmor:
   mip_era: CMIP6
   exp_json: fre/tests/test_files/CMOR_input_example.json
   directories:
-    history_dir: fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/history
     pp_dir: fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/ncrc5.intel-prod-openmp/pp
-    analysis_dir: fre/tests/test_files/ascii_files/mock_nbhome/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip
-    ptmp_dir: fre/tests/test_files/ascii_files/mock_xtmp/$USER/ptmp
     table_dir: fre/tests/test_files/cmip6-cmor-tables/Tables
     outdir: fre/tests/test_files/iamnotreallyused/outdir/
   table_targets:
   - table_name: Amon
-    variable_list: fre/tests/test_files/varlist
     freq: null
     gridding:
       grid_label: gn
@@ -48,8 +44,10 @@ cmor:
       nom_res: 1 km
     target_components:
     - component_name: atmos_cmip
+      variable_list: fre/tests/test_files/varlist
       data_series_type: ts
       chunk: P5Y
     - component_name: atmos_level_cmip
+      variable_list: fre/tests/test_files/varlist
       data_series_type: ts
       chunk: P5Y

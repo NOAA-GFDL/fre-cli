@@ -10,18 +10,19 @@ target variable/component.
 Functions
 ---------
 - ``cmor_yaml_subtool(...)``
+
+.. note:: "yamler" is a portmanteau of "yaml" and "reader".
 """
 
-import json
 from pathlib import Path
 import pprint
 import logging
 import os
-from typing import Optional, List, Dict, Any, Union
+from typing import Optional
 
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 from .cmor_mixer import cmor_run_subtool
-from .cmor_helpers import ( check_path_existence, iso_to_bronx_chunk, conv_mip_to_bronx_freq,
+from .cmor_helpers import ( check_path_existence, iso_to_bronx_chunk, #conv_mip_to_bronx_freq,
                             get_bronx_freq_from_mip_table )
 
 fre_logger = logging.getLogger(__name__)
@@ -36,7 +37,8 @@ def cmor_yaml_subtool( yamlfile: str = None,
                        dry_run_mode: bool = False,
                        start: Optional[str] = None,
                        stop: Optional[str] = None,
-                       calendar_type: Optional[str] = None):
+                       calendar_type: Optional[str] = None,
+                       print_cli_call: bool = True):
     """
     Main driver for CMORization using model YAML configuration files.
     This routine parses the model YAML, combines configuration, resolves and checks all required
@@ -65,6 +67,10 @@ def cmor_yaml_subtool( yamlfile: str = None,
     :type stop: str, optional
     :param calendar_type: CF-compliant calendar type.
     :type calendar_type: str, optional
+    :param print_cli_call: When True and dry_run_mode is enabled, print
+        the equivalent ``fre cmor run`` CLI invocation; when False, print
+        the Python ``cmor_run_subtool(...)`` call instead.
+    :type print_cli_call: bool
     :raises FileNotFoundError: If required paths do not exist.
     :raises OSError: If output directories cannot be created.
     :raises ValueError: If required configuration is missing or inconsistent.
@@ -88,6 +94,8 @@ def cmor_yaml_subtool( yamlfile: str = None,
     fre_logger.debug('consolidate_yamls produced the following dictionary of cmor-settings from yamls: \n%s',
                      pprint.pformat(cmor_yaml_dict) )
 
+    mip_era = cmor_yaml_dict['mip_era'].upper()
+    fre_logger.info('mip_era = %s', mip_era)
 
     # ---------------------------------------------------
     # between-logic to form args ----------------------
@@ -118,15 +126,11 @@ def cmor_yaml_subtool( yamlfile: str = None,
             raise OSError(
                 f'could not create cmorized_outdir = {cmorized_outdir} for some reason!') from exc
 
-    # path to metadata header to be appended to output netcdf file
+    # path to input user/experiment configuration, expected by CMOR
     json_exp_config = os.path.expandvars(
         cmor_yaml_dict['exp_json'] )
     fre_logger.info('json_exp_config = %s', json_exp_config)
     check_path_existence(json_exp_config)
-
-    # e.g. CMIP6
-    mip_era = cmor_yaml_dict['mip_era']
-    fre_logger.info('mip_era = %s', mip_era)
 
     # check start/stop years range to target desired input files
     if start is None:
@@ -155,38 +159,50 @@ def cmor_yaml_subtool( yamlfile: str = None,
     # ---------------------------------------------------
     # showtime ------------------------------------------
     # ---------------------------------------------------
-    for table_config in cmor_yaml_dict['table_targets']:
-        table_name = table_config['table_name']
+    for cmor_yaml_table_target in cmor_yaml_dict['table_targets']:
+        table_name = cmor_yaml_table_target['table_name']
         fre_logger.info('table_name = %s', table_name)
 
-        json_var_list = os.path.expandvars(
-            table_config['variable_list']
-        )
-        fre_logger.info('json_var_list = %s', json_var_list)
-
-        json_table_config = f'{cmip_cmor_table_dir}/{mip_era}_{table_name}.json'
-        fre_logger.info('json_table_config = %s', json_table_config)
-        check_path_existence(json_table_config)
+        json_mip_table_config = f'{cmip_cmor_table_dir}/{mip_era}_{table_name}.json'
+        fre_logger.info('json_mip_table_config = %s', json_mip_table_config)
+        check_path_existence(json_mip_table_config)
 
         # frequency of data ---- the reason this spot looks kind of awkward is because of the case where
         #                        the table if e.g. Ofx and thus the table's frequency field is smth like 'fx'
         #                        if that's the case, we only demand that the freq field is filled out in the yaml
         #                        which is really more about path resolving than anything.
-        freq = table_config['freq']
-        table_freq = get_bronx_freq_from_mip_table(json_table_config)
+
+        # check frequency info from user
+        freq = cmor_yaml_table_target['freq']
+
+        # if freq not supplied, behavior depends on MIP era
         if freq is None:
-            freq = table_freq
+            if mip_era == 'CMIP7':
+                # CMIP7 tables do not carry frequency — the user must always specify it
+                raise ValueError(
+                    f'freq is required for CMIP7 but was not specified for table target {table_name}.\n'
+                    f'  CMIP7 MIP tables do not contain frequency metadata.\n'
+                    f'  please set freq explicitly (e.g. "monthly", "daily") in the cmor yaml.')
+            # CMIP6 tables carry frequency — attempt to derive it
+            fre_logger.info('freq not specified in cmor yaml for table %s, '
+                            'attempting to derive from CMIP6 MIP table', table_name)
+            try:
+                freq = get_bronx_freq_from_mip_table(json_mip_table_config)
+            except (KeyError, TypeError):
+                freq = None
+            if freq is None:
+                raise ValueError(
+                    f'not enough frequency information to process variables for {table_name}.\n'
+                    f'  freq was not specified in the cmor yaml, and could not be derived from the MIP table.\n'
+                    f'  please set freq explicitly (e.g. "monthly", "daily") in the cmor yaml.')
+            fre_logger.info('derived freq = %s from MIP table %s', freq, json_mip_table_config)
+
+        # update the table target dict so downstream code sees the resolved freq
+        cmor_yaml_table_target['freq'] = freq
         fre_logger.info('freq = %s', freq)
-        # check frequency info
-        if freq is None:
-            raise ValueError(
-                f'not enough frequency information to process variables for {table_config}')
-        elif freq != table_freq and table_freq is not None:
-            raise ValueError(
-                'frequency from MIP table is incompatible with requested frequency in cmor yaml for {table_config}')
 
         # gridding info of data ---- revisit/TODO
-        gridding_dict = table_config['gridding']
+        gridding_dict = cmor_yaml_table_target['gridding']
         fre_logger.debug('gridding_dict = %s', gridding_dict)
         grid_label, grid_desc, nom_res = None, None, None
         if gridding_dict is not None:
@@ -197,45 +213,71 @@ def cmor_yaml_subtool( yamlfile: str = None,
                 raise ValueError('gridding dictionary, if present, must have all three fields be non-empty.')
         # gridding info of data ---- revisit
 
-        table_components_list = table_config['target_components']
+        table_components_list = cmor_yaml_table_target['target_components']
         for targ_comp_config in table_components_list:
             component = targ_comp_config['component_name']
             bronx_chunk = iso_to_bronx_chunk(targ_comp_config['chunk'])
             data_series_type = targ_comp_config['data_series_type']
+
+            json_var_list = os.path.expandvars(
+                targ_comp_config['variable_list']
+            )
+            fre_logger.info('json_var_list = %s', json_var_list)
             indir = f'{pp_dir}/{component}/{data_series_type}/{freq}/{bronx_chunk}'
             fre_logger.info('indir = %s', indir)
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
+            cmor_run_call_outdir=f'{cmorized_outdir}/{component}/{table_name}'
+
 
             if dry_run_mode:
-                fre_logger.info(  '--DRY RUN CALL---\n'
-                                  'cmor_run_subtool(\n'
-                                 f'    indir = {indir} ,\n'
-                                 f'    json_var_list = {json_var_list} ,\n'
-                                 f'    json_table_config = {json_table_config} ,\n'
-                                 f'    json_exp_config = {json_exp_config} ,\n'
-                                 f'    outdir = {cmorized_outdir} ,\n'
-                                 f'    run_one_mode = {run_one_mode} ,\n'
-                                 f'    opt_var_name = {opt_var_name} ,\n'
-                                 f'    grid = {grid_desc} ,\n'
-                                 f'    grid_label = {grid_label} ,\n'
-                                 f'    nom_res = {nom_res} ,\n'
-                                 f'    start = {start} ,\n'
-                                 f'    stop = {stop} ,\n'
-                                 f'    calendar_type={calendar_type} '
-                                  ')\n' )
+                if print_cli_call:
+                    fre_logger.info(  '--DRY RUN CLI CALL---\n'
+                                      'fre -v -v cmor run \\ \n'
+                                      f'    --indir {indir} \\ \n'
+                                      f'    --varlist {json_var_list} \\ \n'
+                                      f'    --table_config {json_mip_table_config} \\ \n'
+                                      f'    --exp_config {json_exp_config} \\ \n'
+                                      f'    --outdir {cmor_run_call_outdir} \\ \n'
+                                      f'    --run_one \\ \n'
+                                      f'    --opt_var_name {opt_var_name} ,\n'
+                                      f'    --grid_desc "{grid_desc}" \\ \n'
+                                      f'    --grid_label {grid_label} \\ \n'
+                                      f'    --nom_res "{nom_res}" \\ \n'
+                                      f'    --start {start} \\ \n'
+                                      f'    --stop {stop} \\ \n'
+                                      f'    --calendar {calendar_type}'
+                                      '\n' )
+                else:
+                    fre_logger.info(  '--DRY RUN CALL---\n'
+                                      'cmor_run_subtool(\n'
+                                      f'    indir = {indir} ,\n'
+                                      f'    json_var_list = {json_var_list} ,\n'
+                                      f'    json_table_config = {json_mip_table_config} ,\n'
+                                      f'    json_exp_config = {json_exp_config} ,\n'
+                                      f'    outdir = {cmor_run_call_outdir} ,\n'
+                                      f'    run_one_mode = {run_one_mode} ,\n'
+                                      f'    opt_var_name = {opt_var_name} ,\n'
+                                      f'    grid = {grid_desc} ,\n'
+                                      f'    grid_label = {grid_label} ,\n'
+                                      f'    nom_res = {nom_res} ,\n'
+                                      f'    start = {start} ,\n'
+                                      f'    stop = {stop} ,\n'
+                                      f'    calendar_type = {calendar_type}'
+                                      ')\n' )
                 continue
             cmor_run_subtool( #uncovered
                 indir = indir ,
                 json_var_list = json_var_list ,
-                json_table_config = json_table_config ,
+                json_table_config = json_mip_table_config ,
                 json_exp_config = json_exp_config ,
-                outdir = cmorized_outdir ,
+                outdir = cmor_run_call_outdir ,
                 run_one_mode = run_one_mode ,
                 opt_var_name = opt_var_name ,
                 grid = grid_desc ,
                 grid_label = grid_label ,
                 nom_res = nom_res ,
-                start = start,
-                stop = stop
+                start = start ,
+                stop = stop ,
+                calendar_type = calendar_type
             )
