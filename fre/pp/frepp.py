@@ -17,6 +17,7 @@ from . import trigger_script
 from . import status_script
 from . import wrapper_script
 from . import split_netcdf_script
+from . import rename_split_script
 
 # fre pp
 @click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
@@ -270,3 +271,21 @@ def trigger(experiment, platform, target, time):
     Start postprocessing history files that represent a specific chunk of time
     """
     trigger_script.trigger(experiment, platform, target, time)
+
+# fre pp rename-split
+@pp_cli.command()
+@click.option("-i", "--input-dir", type=str,
+              help="Input directory", required=True)
+@click.option("-o", "--output-dir", type=str,
+              help="Output directory", required=True)
+@click.option("-c", "--component", type=str,
+              help="Component name to process", required=True)
+@click.option("-u", '--use-subdirs', is_flag=True, default=False,
+              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
+@click.option("-d", "--diag-manifest", type=str, required=False, default=None,
+              help="Path to FMS diag manifest associated with the component (history file). Optional, but required when the history file has one timestep and no time bounds.")
+def rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest):
+    """
+    Create per-variable timeseries from shards
+    """
+    rename_split_script.rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest)
