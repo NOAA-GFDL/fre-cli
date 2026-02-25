@@ -126,7 +126,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
                                     target=target,
                                     use="pp",
                                     output="config.yaml")
-        #validate_yaml(yamlfile = yaml, application = "pp")
+        validate_yaml(yamlfile = yaml, application = "pp")
         workflow_info = yaml.get("workflow").get("pp")
 
     repo = workflow_info.get("repo")
