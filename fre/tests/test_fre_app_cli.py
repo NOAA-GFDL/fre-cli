@@ -104,7 +104,6 @@ def test_cli_fre_app_gen_time_averages_wrapper_opt_dne(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
-@pytest.mark.xfail(reason='under-construction/developing') #TODO flesh out argument details, assertions and checks etc
 def test_cli_fre_app_gen_time_averages_wrapper_case(capfd):
     """
     fre app gen-time-averages-wrapper \
