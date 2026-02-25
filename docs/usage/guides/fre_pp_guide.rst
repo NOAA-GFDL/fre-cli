@@ -6,7 +6,7 @@ Guide
 
   # Load cylc and FRE
   module load cylc
-  module load fre/2025.04
+  module load fre/foo
 
   # Clone fre-workflows repository into ~/cylc-src/[experiment name]__[platform name]__[target name]
   fre pp checkout -e [experiment name] -p [platform] -t [target]
@@ -29,7 +29,7 @@ Users can also run all fre pp subtools in one command:
 
   # Load cylc and FRE
   module load cylc
-  module load fre/2025.04
+  module load fre/foo
 
   # Run all of fre pp
   fre pp all -e [experiment name] -p [platform] -t [target] -y [model yaml file]
@@ -40,7 +40,7 @@ Users can also run all fre pp subtools in one command:
 
   # Load cylc and FRE
   module load cylc
-  module load fre/2025.04
+  module load fre/foo
 
   # Clone fre-workflows repository into ~/cylc-src/[experiment name]__[platform name]__[target name]
   fre pp checkout -e [experiment name] -p [platform] -t [target] -b [branch or tag name]
@@ -63,7 +63,7 @@ To run all fre pp subtools in one command:
 
   # Load cylc and FRE
   module load cylc
-  module load fre/2025.04
+  module load fre/foo
 
   # Run all of fre pp
   fre pp all -e [experiment name] -p [platform] -t [target] -y [model yaml file] -b [branch or tag name]
