@@ -23,7 +23,7 @@ def test_cli_fre_workflow(monkeypatch):
     ''' fre workflow '''
     monkeypatch.setenv("TMPDIR", "")
     result = runner.invoke(fre.fre, args=["workflow"])
-    assert result.exit_code == 0
+    assert result.exit_code == 2
 
 def test_cli_fre_workflow_help(monkeypatch):
     ''' fre workflow --help '''
