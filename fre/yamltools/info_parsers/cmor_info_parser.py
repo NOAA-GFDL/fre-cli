@@ -242,10 +242,7 @@ class CMORYaml():
         yaml_content_str += settings_content
 
         # Return the combined string and loaded yaml
-        former_log_level = fre_logger.level
-        fre_logger.setLevel(logging.INFO)
         fre_logger.info(f"   settings yaml: {settings}")
-        fre_logger.setLevel(former_log_level)
 
         return yaml_content_str
 
