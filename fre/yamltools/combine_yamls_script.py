@@ -83,7 +83,7 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
         CmorYaml = cmip.CMORYaml(yamlfile, experiment, platform, target)
         fre_logger.info('...CmorYaml instance initialized...')
         #fre_logger.debug('...CmorYaml =\n %s...', pformat(CmorYaml))
-        ##assert False # good.
+        #assert False # good.
     except Exception as exc:
         raise ValueError("CMORYaml.combine_model failed") from exc
 
@@ -93,19 +93,16 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
         fre_logger.info('calling CmorYaml.combine_model() for yaml_content and loaded_yaml...')
         yaml_content, loaded_yaml = CmorYaml.combine_model()
         fre_logger.info('... CmorYaml.combine_model succeeded.\n')
-        #fre_logger.debug('... loaded_yaml = %s', pformat(loaded_yaml))
+        fre_logger.debug('... loaded_yaml = %s', pformat(loaded_yaml))
         #fre_logger.debug('... yaml_content = ...\n %s', pformat(yaml_content))
-        ##assert False # good.
+        #assert False # good.
     except Exception as exc:
         raise Exception(f"CmorYaml.combine_model failed for some reason.\n exc =\n {exc}") from exc
 
 
-    # Merge settings information into combined file
-    try:
-        # Merge model into combined file
-        yaml_content = CmorYaml.get_settings_yaml(yaml_content)
-    except Exception as exc:
-        raise ValueError(f"ERR: Could not merge setting information. exc = \n{exc}") from exc
+    # settings.yaml is deprecated for the cmor path — cmor yamls are now self-contained.
+    # the settings yaml content (shared_directories, etc.) is no longer merged.
+    fre_logger.info('(settings.yaml import skipped — cmor yamls are self-contained)')
 
 
     try:
