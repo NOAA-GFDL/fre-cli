@@ -18,7 +18,7 @@ TARGET = ["debug"]
 OUT = f"{TEST_DIR}/checkout_out"
 
 # Set expected line that should be in checkout script
-EXPECTED_LINE = "git clone --recursive --jobs=2 https://github.com/NOAA-GFDL/FMS.git -b 2025.04 FMS"
+EXPECTED_LINE = "git clone --recursive --jobs=2 https://github.com/NOAA-GFDL/FMS.git -b foo2 FMS"
 
 def test_nullyaml_exists():
     """
