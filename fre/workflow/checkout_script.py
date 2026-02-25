@@ -126,7 +126,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
                                     target=target,
                                     use="pp",
                                     output="config.yaml")
-        #validate_yaml(yamlfile = yaml, application = "pp")
+        validate_yaml(yamlfile = yaml, application = "pp")
         workflow_info = yaml.get("workflow").get("pp")
 
     repo = workflow_info.get("repo")
@@ -136,7 +136,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
     if None in [repo, tag]:
         raise ValueError(f"One of these are None: repo / tag = {repo} / {tag}")
 
-    fre_logger.warning("(%s):(%s) check out ==> REQUESTED", repo, tag)
+    fre_logger.info("(%s):(%s) check out ==> REQUESTED", repo, tag)
 
     # Create src_dir if it does not exist
     if not Path(target_dir).exists():
