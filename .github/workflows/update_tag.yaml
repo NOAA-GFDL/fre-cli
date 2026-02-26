@@ -50,3 +50,25 @@ jobs:
           delete-branch: true          # delete afer merge
           title: Update refs to version number post-release
           body: automated change, replaces references to the old version number with the new version number upon releases. This PR will need to be closed and reopened to run CI testing.
+
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.PPP_REBUILD_APP_ID }}
+          private-key: ${{ secrets.PPP_REBUILD_SECRET }}
+          owner: NOAA-GFDL
+          repositories: |
+            HPC-ME
+
+      - name: Dispatch release event to HPC-ME
+        if: ${{ steps.get_tag.outputs.tag != '' }}
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          repository: NOAA-GFDL/HPC-ME
+          event-type: fre-cli-release
+          client-payload: |
+            {
+              "tag": "${{ steps.get_tag.outputs.tag }}"
+            }
