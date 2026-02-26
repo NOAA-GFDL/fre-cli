@@ -41,7 +41,8 @@ requirements:
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
     - conda-forge::nccmp
-    - conda-forge::numpy==1.26.4
+#    - conda-forge::numpy==1.26.4
+    - conda-forge::numpy>=2
     - conda-forge::python-cdo
     - conda-forge::pyyaml
     - conda-forge::xarray>=2024.*

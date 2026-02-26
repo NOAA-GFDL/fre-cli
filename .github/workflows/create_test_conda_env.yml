@@ -15,7 +15,12 @@ concurrency:
 
 jobs:
   condaenvcreate:
+    name: Test Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:miniconda24_gcc14_v2
       options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
@@ -47,7 +52,12 @@ jobs:
       - name: Create fre-cli Environment
         run: |
           echo "creating fre-cli env holding all deps"
+          echo "Testing with Python ${{ matrix.python-version }}"
+          
           conda env create -y -f environment.yml --name fre-cli
+          
+          # Override Python version based on matrix
+          conda install -y -n fre-cli "python=${{ matrix.python-version }}"
 
           echo "listing packages installed in the fre-cli environment"
           conda env list
