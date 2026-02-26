@@ -1,24 +1,24 @@
 """
-fremake.py defines the `click interface <click link_>`_ for the **fre make** tool
-**fre make**'s subtools include:
+Defines the `click <click link_>`_ subcommands for the following **fre make** commands:
 
 * all
 * checkout-script
+* makefile
 * compile-script
 * dockerfile
-* makefile
 
-**fre make** is the component of **fre** that will check out model code and compile model code. **fre make** subtools 
-are capable of running independently of each other and there is an "all" option that will execute the 
-fre make subtools in an appropriate order to fully compile a model. **fre make** also has the functionality 
-to build a container of a model.
+**fre make** is a **fre** tool consisting of subtools that will clone git-stored model components (checkout-script),
+write Makefiles (makefile), write a Dockerfile and script to generate container images from the Dockerfile (dockerfile),
+create a compile script (compile-script), and (optionally) execute these scripts. **fre make all** will execute the
+fre make subtools in an appropriate order to fully compile a model. Alternatively, **fre make checkout-script**,
+**fre make makefile**, **fre make dockerfile**, and **fre make compile-script** can be called independently.
 
 **fre make** ingests the `model.yaml <myaml link_>`_ configuration file, specifically using information in the:
 
 * `platforms.yaml <pyaml link_>`_
 * `compile.yaml <cyaml link_>`_
 
-For a quickstart on **fre make**, please refer to the README.md at `fre-cli/fre/make/README.md <readme link_>`_
+Please see README.md at `fre-cli/fre/make/README.md <readme link_>`_ for a quickstart guide.
 
 .. _click link: https://click.palletsprojects.com/en/stable/
 .. _myaml link: https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#model-yaml
@@ -50,8 +50,8 @@ This option is ignored when the argument --execute/-x is missing.
 """
 _MAKE_JOBS_OPT_HELP = """Number of make recipes to compile simultaneously. (optional) (default 4)"""
 _GIT_JOBS_OPT_HELP = """Number of git submodules to clone simultaneously. (optional) (default 4)"""
-_NO_PARALLEL_CHECKOUT_OPT_HELP =  """Turns off parallel git checkouts.
-By default, fre make will checkout each git repository defined in the compile.yaml configuration file
+_NO_PARALLEL_CHECKOUT_OPT_HELP =  """Turns off parallel git clones.
+By default, fre make will clone each git repository defined in the compile.yaml configuration file
 in parallel.
 """
 _VERBOSE_OPT_HELP = """Turns on debug level logging."""
