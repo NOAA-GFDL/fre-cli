@@ -14,4 +14,6 @@ Glossary
     Append supplementary targets to the primary target using a hyphen separator.
 
   platform
-    The name of the platform from platforms.yaml.
+    The term refers to the system and compiler that the model is compiled and running on. The platform name is mapped
+    to information defined in the platforms.yaml file. This information includes site-specific compilers, directories,
+    and setup. e.g. ncrc5.intel25 
