@@ -55,7 +55,7 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ secrets.PPP_REBUILD }}
+          app-id: ${{ secrets.PPP_REBUILD_APP_ID }}
           private-key: ${{ secrets.PPP_REBUILD_SECRET }}
           owner: NOAA-GFDL
           repositories: |
