@@ -57,7 +57,6 @@ def test_pp_workflow_checkout(tmp_path, caplog):
                 Path(f"{tmp_path}/cylc-src/{EXPERIMENT}").is_dir(),
                 Path(f"{tmp_path}/cylc-src/{EXPERIMENT}/flow.cylc").exists(),
                 Path(f"{tmp_path}/cylc-src/{EXPERIMENT}/config.yaml").exists()])
-#                f"({expected_repo}):({expected_tag}) check out ==> SUCCESSFUL" in caplog.text])
 
 def test_pp_workflow_checkout_exists_already(tmp_path, caplog):
     """
@@ -79,7 +78,6 @@ def test_pp_workflow_checkout_exists_already(tmp_path, caplog):
     repo = "https://github.com/NOAA-GFDL/fre-workflows.git"
     expected_tag = "main"
     expected_output = [
-                       f"({repo}):({expected_tag}) check out ==> REQUESTED",
                        (f"Checkout exists ('{tmp_path}/cylc-src/c96L65_am5f7b12r1_amip_TESTING'), "
                         f"and matches '{expected_tag}'")
                       ]
@@ -111,7 +109,6 @@ def test_pp_workflow_checkout_force_checkout(tmp_path, caplog):
     tag = "main"
     expected_output = [f" *** PREVIOUS CHECKOUT FOUND: {src_dir}/{workflow_name} *** ",
                        f" *** REMOVING {src_dir}/{workflow_name} *** "]
-    #                   f"({repo}):({tag}) check out ==> SUCCESSFUL"]
 
     for string in expected_output:
         assert string in caplog.text
