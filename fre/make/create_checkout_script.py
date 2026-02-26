@@ -1,5 +1,5 @@
 '''
-Creates a checkout script.
+Builds the checkout script
 
 When run, the checkout script checks out source code needed to build the model. 
 '''
