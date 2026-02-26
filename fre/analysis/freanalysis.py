@@ -44,19 +44,16 @@ def list(library_directory):
 
 
 @analysis_cli.command()
-@click.option("--name", type=str, required=True, help="Name of the analysis script.")
-@click.option("--catalog", type=str, required=True, help="Path to the data catalog.")
-@click.option("--output-directory", type=str, required=True,
-              help="Path to the output directory.")
-@click.option("--output-yaml", type=str, required=True, help="Path to the output yaml.")
-@click.option("--experiment-yaml", type=str, required=True, help="Path to the experiment yaml.")
-@click.option("--library-directory", type=str, required=False,
-              help="Path to a custom lib directory.")
-def run(name, catalog, output_directory, output_yaml, experiment_yaml,
-        library_directory):
-    """Runs the analysis script and writes the paths to the created figures to a yaml file."""
-    run_analysis(name, catalog, output_directory, output_yaml, experiment_yaml,
-                 library_directory)
+@click.option("--yaml", type=str, required=True, help="Path to the model yaml")
+@click.option("--name", type=str, required=True, help="Name of the analysis script")
+@click.option("--date_range", type=str, required=True, help="Time span to use for analysis (YYYY-MM-DD,YYYY-MM-DD)")
+@click.option("--scripts_dir", type=str, required=True, help="Path to a directory to save intermediate scripts")
+@click.option("--output_dir", type=str, required=True, help="Path to a directory to save figures")
+@click.option("--output_yaml", type=str, required=True, help="Path to use as an structured output yaml file")
+def run(yaml, name, date_range, scripts_dir, output_dir, output_yaml):
+    """Runs the analysis and generates all plots and associated datasets.
+    """
+    run_analysis(yaml, name, date_range, scripts_dir, output_dir, output_yaml)
 
 
 @analysis_cli.command()
