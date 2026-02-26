@@ -138,7 +138,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
                     fre_logger.error(
                         "ERROR: Current branch: '%s', Current tag-describe: '%s'", current_branch, current_tag)
                     raise ValueError('Neither tag nor branch matches the git clone branch arg')
-    else:
+    if not Path(f"{src_dir}/{workflow_name}").is_dir():
         fre_logger.info("Workflow does not exist; will create now")
         clone_output = subprocess.run( ["git", "clone","--recursive",
                                         f"--branch={tag}",
