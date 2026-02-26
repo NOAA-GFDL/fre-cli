@@ -54,11 +54,12 @@ def workflow_install(experiment: str, src_dir: str, target_dir: str, force_insta
                 fre_logger.warning("""NOTE: Workflow '%s/%s}' already ",
                                       installed, and the definition is unchanged""", install_dir, workflow_name)
             else:
-                fre_logger.error("ERROR: Please remove installed workflow with one of these options:")
-                fre_logger.error("  - fre workflow install -e %s --src-dir %s --target-dir %s --force-install", experiment, src_dir, target_dir)
-                fre_logger.error("  - cylc clean %s/%s, then re-run install command", install_dir, workflow_name)
                 raise ValueError(f"""ERROR: Workflow '{install_dir}/{workflow_name}' already
-                                     installed, and the definition has changed!""")
+                                     installed, and the definition has changed!
+
+                                     Please remove and re-install the workflow with one of these options:
+                                       - fre workflow install -e {experiment} --src-dir {src_dir} --target-dir {target_dir} --force-install"
+                                       - cylc clean {install_dir}/{workflow_name}, then re-run install command""")
 
     if not Path(install_dir).is_dir():
         fre_logger.warning("NOTE: About to install workflow into ~/cylc-run/%s", workflow_name)
