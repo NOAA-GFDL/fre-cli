@@ -21,6 +21,7 @@ Welcome to ``fre-cli``'s documentation!
    container
    api
    for-developers
+   glossary
 
 Indices
 =======
