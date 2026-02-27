@@ -13,11 +13,6 @@ create a compile script (compile-script), and (optionally) execute these scripts
 fre make subtools in an appropriate order to fully compile a model. Alternatively, **fre make checkout-script**,
 **fre make makefile**, **fre make dockerfile**, and **fre make compile-script** can be called independently.
 
-**fre make** ingests the `model.yaml <myaml link_>`_ configuration file, specifically using information in the:
-
-* `platforms.yaml <pyaml link_>`_
-* `compile.yaml <cyaml link_>`_
-
 Please see README.md at `fre-cli/fre/make/README.md <readme link_>`_ for a quickstart guide.
 
 .. _click link: https://click.palletsprojects.com/en/stable/
