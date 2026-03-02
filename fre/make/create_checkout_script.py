@@ -145,7 +145,7 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
     # Validate the targets
     targets_list = [target] if isinstance(target, str) else target
     for target_name in targets_list:
-    #    target = targetfre.fretarget(target_name)
+        target = targetfre.fretarget(target_name)
 
     fre_logger.setLevel(level=logging.INFO)
 
