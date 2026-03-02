@@ -130,7 +130,7 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
     experiment_name = yamlfile.split(".")[0]
 
     # Combine model, compile, and platform yamls into a unified structure
-    full_combined = cy.consolidate_yamls(yamlfile=yamlfile
+    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
                                          experiment=experiment_name,
                                          platform=platform,
                                          target=target,
