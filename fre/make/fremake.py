@@ -1,17 +1,14 @@
 """
-Defines the `click <click link_>`_ subcommands for the following **fre make** commands:
+Module defining the `click <click link_>`_ interfaces for the following **fre make** subcommands:
 
-* all
-* checkout-script
-* makefile
-* compile-script
-* dockerfile
-
-**fre make** is a **fre** tool consisting of subtools that will clone git-stored model components (checkout-script),
-write Makefiles (makefile), write a Dockerfile and script to generate container images from the Dockerfile (dockerfile),
-create a compile script (compile-script), and (optionally) execute these scripts. **fre make all** will execute the
-fre make subtools in an appropriate order to fully compile a model. Alternatively, **fre make checkout-script**,
-**fre make makefile**, **fre make dockerfile**, and **fre make compile-script** can be called independently.
+* fre make checkout-script [ARGS]: writes a script that will clone (checkout) the model code from respective git
+  repositories
+* fre make makefile [ARGS]: writes a Makefile that will compile the model code
+* fre make compile-script [ARGS]: writes a compile script that will configure the compile environment and execute make
+* fre make dockerfile [ARGS]: writes a Dockerfile and ``createContainer.sh`` script that will generate a container image
+  (``.sif`` format) that contains the source code, Makefile, model executable and its dependent libraries
+* fre make all [ARGS]: executes the above fre make subcommands in the appropriate order to generate a model executable
+  or container
 
 Please see README.md at `fre-cli/fre/make/README.md <readme link_>`_ for a quickstart guide.
 
