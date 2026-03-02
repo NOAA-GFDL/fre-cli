@@ -163,8 +163,8 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
         platform_info = model_yaml.platforms.getPlatformFromName(platform_name)
 
         # Handle Bare-Metal Platforms
-        if not platform["container"]:
-            src_dir = f'{platform["modelRoot"]}/{fremake_yaml["experiment"]}/src'
+        if not platform_info["container"]:
+            src_dir = f'{platform_info["modelRoot"]}/{fremake_yaml["experiment"]}/src'
             
             if not os.path.exists(src_dir):
                 os.makedirs(src_dir, exist_ok=True)
@@ -195,7 +195,7 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
         # Handle Container Platforms
         # Note: Containers do not support the ampersand parallel checkout ('pc') backgrounding
         else:
-            src_dir = f'{platform["modelRoot"]}/{fremake_yaml["experiment"]}/src'
+            src_dir = f'{platform_info["modelRoot"]}/{fremake_yaml["experiment"]}/src'
             tmp_dir = f"tmp/{platform_name}"
             container_pc = ""
 
