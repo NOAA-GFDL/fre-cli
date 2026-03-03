@@ -28,7 +28,7 @@ fre_logger = logging.getLogger(__name__)
 
 def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str, 
                              parallel_cmd: str, execute: bool):
-    """ 
+    """
     Write the checkout script for a bare-metal build environment.
 
     This function initializes a checkout object, writes the necessary shell 
@@ -53,7 +53,7 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
     # Make checkout script executable (rwxr--r--)
     checkout_path = os.path.join(src_dir, "checkout.sh")
     os.chmod(checkout_path, 0o744)
-    fre_logger.info(f"Checkout script created in {checkout_path}")
+    fre_logger.info("Checkout script created in %s", checkout_path")
 
     if execute:
         fre_checkout.run()
@@ -80,7 +80,7 @@ def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir:
     fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
     fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(), jobs, parallel_cmd)
     fre_checkout.finish(model_yaml.compile.getCompileYaml(), parallel_cmd)
-    fre_logger.info(f"Checkout script created in ./{tmp_dir}/checkout.sh")
+    fre_logger.info("Checkout script created in ./%s/checkout.sh", tmp_dir)
 
 def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Union[str, List[str]],
                     no_parallel_checkout: Optional[bool] = None, njobs: int = 4,
@@ -165,7 +165,7 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
         # Handle Bare-Metal Platforms
         if not platform_info["container"]:
             src_dir = f'{platform_info["modelRoot"]}/{fremake_yaml["experiment"]}/src'
-            
+
             if not os.path.exists(src_dir):
                 os.makedirs(src_dir, exist_ok=True)
 
@@ -175,14 +175,14 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
                 baremetal_checkout_write(model_yaml, src_dir, jobs_str, parallel_cmd, execute)
 
             elif os.path.exists(checkout_sh_path) and force_checkout:
-                fre_logger.info(f"Checkout script PREVIOUSLY created in {checkout_sh_path}")
+                fre_logger.info("Checkout script PREVIOUSLY created in %s", checkout_sh_path)
                 fre_logger.info("*** REMOVING CHECKOUT SCRIPT ***")
 
                 os.remove(checkout_sh_path)
                 baremetal_checkout_write(model_yaml, src_dir, jobs_str, parallel_cmd, execute)
 
             elif os.path.exists(checkout_sh_path) and not force_checkout:
-                fre_logger.info(f"Checkout script PREVIOUSLY created in {checkout_sh_path}")
+                fre_logger.info("Checkout script PREVIOUSLY created in %s", checkout_sh_path)
                 if execute:
                     try:
                         subprocess.run(args=[checkout_sh_path], check=True)
@@ -191,7 +191,7 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
                                       f"\nTry removing test folder: {platform_info['modelRoot']}\n") from exc
                 else:
                     return
-        
+
         # Handle Container Platforms
         # Note: Containers do not support the ampersand parallel checkout ('pc') backgrounding
         else:
@@ -206,10 +206,10 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
                 container_checkout_write(model_yaml, src_dir, tmp_dir, jobs_str, container_pc)
 
             elif os.path.exists(tmp_checkout_path) and force_checkout:
-                fre_logger.info(f"Checkout script PREVIOUSLY created in {tmp_checkout_path}")
+                fre_logger.info("Checkout script PREVIOUSLY created in %s", tmp_checkout_path)
                 fre_logger.info("*** REMOVING CHECKOUT SCRIPT ***")
                 os.remove(tmp_checkout_path)
                 container_checkout_write(model_yaml, src_dir, tmp_dir, jobs_str, container_pc)
-            
+
             elif os.path.exists(tmp_checkout_path) and not force_checkout:
-                fre_logger.info(f"Checkout script PREVIOUSLY created in {tmp_checkout_path}")
+                fre_logger.info("Checkout script PREVIOUSLY created in %s", tmp_checkout_path)
