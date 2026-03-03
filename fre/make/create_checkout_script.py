@@ -53,7 +53,7 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
     # Make checkout script executable (rwxr--r--)
     checkout_path = os.path.join(src_dir, "checkout.sh")
     os.chmod(checkout_path, 0o744)
-    fre_logger.info("Checkout script created in %s", checkout_path")
+    fre_logger.info("Checkout script created in %s", checkout_path)
 
     if execute:
         fre_checkout.run()
