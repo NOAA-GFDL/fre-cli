@@ -36,11 +36,11 @@ def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.dat
         format_ = '%Y%m%d'
     # hourly
     elif hours < 24 and hours > 0:
-        iso_freq = f"PT{hours}H"
+        iso_freq = f"PT{int(hours)}H"
         format_ = '%Y%m%d%H'
     # subhourly
     elif hours == 0 and minutes > 0:
-        iso_freq = f"PT{minutes}M"
+        iso_freq = f"PT{int(minutes)}M"
         format_ = '%Y%m%d%H%M'
     else:
         raise ValueError(f"Cannot determine frequency and format from '{date1}' and '{date2}'")
