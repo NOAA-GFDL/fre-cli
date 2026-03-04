@@ -102,9 +102,6 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     if bm_platforms:
         #compile
         fre_logger.info("Running fre make: calling compile_create")
-        if force_checkout is True:
-            force_compile = True
-
         compile_create(yamlfile, bm_platforms, target, njobs, nparallel,
                        execute, verbose, force_compile)
     if container_platforms:
