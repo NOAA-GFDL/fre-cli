@@ -77,15 +77,18 @@ def make_cli():
               help = "Use this to run the created compilation script.")
 @click.option("--force-checkout",
               is_flag = True,
-              help = "Force checkout in case the source directory exists.")
+              help = "Re-create the checkout script in case the source directory exists.")
+@click.option("--force-compile",
+              is_flag = True,
+              help = "Re-create the compile script in case it exists already.")
 @click.option("-v",
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout):
+def all(yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout, force_compile):
     """ - Perform all fre make functions; run checkout and compile scripts to create model executable or container"""
     run_fremake_script.fremake_run(
-        yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout)
+        yamlfile, platform, target, nparallel, njobs, no_parallel_checkout, no_format_transfer, execute, verbose, force_checkout, force_compile)
 
 @make_cli.command()
 @click.option("-y",
@@ -177,14 +180,17 @@ def makefile(yamlfile, platform, target):
               is_flag = True,
               default = False,
               help = "Use this to run the created checkout script.")
+@click.option("--force-compile",
+              is_flag = True,
+              help = "Re-create the compile script in case it exists already.")
 @click.option("-v",
               "--verbose",
               is_flag = True,
               help = VERBOSE_OPT_HELP)
-def compile_script(yamlfile, platform, target, njobs, nparallel, execute, verbose):
+def compile_script(yamlfile, platform, target, njobs, nparallel, execute, verbose, force_compile):
     """ - Write the compile script """
     create_compile_script.compile_create(
-        yamlfile, platform, target, njobs, nparallel, execute, verbose)
+        yamlfile, platform, target, njobs, nparallel, execute, verbose, force_compile)
 
 @make_cli.command
 @click.option("-y",

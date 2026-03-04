@@ -93,7 +93,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                 freMakefile.writeMakefile()
                 former_log_level = fre_logger.level
                 fre_logger.setLevel(logging.INFO)
-                fre_logger.info("Makefile created in " + bldDir + "/Makefile")
+                fre_logger.info("Makefile created: " + bldDir + "/Makefile")
                 fre_logger.setLevel(former_log_level)
             else:
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
@@ -115,5 +115,6 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                 freMakefile.writeMakefile()
                 former_log_level = fre_logger.level
                 fre_logger.setLevel(logging.INFO)
-                fre_logger.info("Makefile created in " + tmpDir + "/Makefile")
+                fre_logger.info("Makefile created: " + tmpDir + "/Makefile")
                 fre_logger.setLevel(former_log_level)
+    fre_logger.warning("")

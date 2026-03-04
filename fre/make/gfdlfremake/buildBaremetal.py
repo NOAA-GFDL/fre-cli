@@ -6,28 +6,67 @@
 
 import subprocess
 import os
+from pathlib import Path
 
+### TODO run as a batch job on the login cluster
 def fremake_parallel(fremakeBuildList):
     """
-    Brief: Called for parallel execution purposes.  Runs the builds.
-    Param:
-        - fremakeBuildList : fremakeBuild object list passes by pool.map
+    Called for parallel execution purposes.  Runs the builds.
+
+    :param fremakeBuildList: list of compile scripts to execute
+    :type fremakeBuildList: .................
     """
-    fremakeBuildList.run()
+    bldDir = Path(fremakeBuildList).parent
+
+    # Run compile script
+    p1 = subprocess.Popen(fremakeBuildList, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+
+    # Direct output to log file as well
+    p2 = subprocess.Popen(["tee",f"{bldDir}/log.compile"], stdin=p1.stdout)
+
+    # Allow process1 to receive SIGPIPE is process2 exits
+    p1.stdout.close()
+    p2.communicate()
+
+    # wait for process1 to finish before checking return code
+    p1.wait()
+    if p1.returncode != 0:
+        return {1: f"{bldDir}/log.compile"}
+    else:
+        return {0: f"{bldDir}/log.compile"} 
 
 class buildBaremetal():
     """
-    Brief: Creates the build script to compile the model
-    Param:
-        - self : The buildScript object
-        - exp  : The experiment name
-        - mkTemplatePath : The template used by mkmf to compile the model
-        - srcDir : The source directory
-        - bldDir : The build directory
+    Class holding routines that will create the build script to compile the model.
+
+    :ivar str exp: The experiment name
+    :ivar str mkTemplatePath: The template used by mkmf to compile the model
+    :ivar str srcDir: The source directory
+    :ivar str bldDir: The build directory
+    :ivar str target:
+    :ivar str env_setup:
+    :ivar str jobs:
     """
     def __init__(self,exp,mkTemplatePath,srcDir,bldDir,target,env_setup,jobs):
         """
         Initialize variables and set-up the compile script.
+
+        :param self:
+        :type self:
+        :param exp:
+        :type exp:
+        :param mkTemplatePath:
+        :type mkTemplatePath:
+        :param srcDir:
+        :type srcDir:
+        :param bldDir:
+        :type bldDir:
+        :param target:
+        :type target:
+        :param env_setup:
+        :type env_setup:
+        :param jobs:
+        :type jobs:
         """
         self.e = exp
         self.t = target.gettargetName()
@@ -57,10 +96,12 @@ class buildBaremetal():
 
     def writeBuildComponents(self, c):
         """
-        Brief: Adds components to the build script
-        Param:
-            - self : The build script object
-            - c : Component from the compile yaml
+        Adds components to the build script
+
+        :param self: The build script object
+        :type self:
+        :param c: Component from the compile yaml
+        :type c:
         """
         # Shorthand for component
         comp = c["component"]
@@ -111,9 +152,10 @@ class buildBaremetal():
 ##TODO: add targets input
     def writeScript(self):
         """
-        Brief: Finishes and writes the build script
-        Param:
-            - self : The buildScript object
+        Finishes and writes the build script
+            
+        :param self: The buildScript object
+        :type self:
         """
         self.f.write(f"cd {self.bld}\n")
         self.f.write(f"{self.make}\n")
@@ -121,30 +163,3 @@ class buildBaremetal():
 
         # Make compile script executable
         os.chmod(self.bld+"/compile.sh", 0o744)
-
-## TODO run as a batch job on the login cluster
-    def run(self):
-        """
-        Brief: Run the build script
-        Param:
-            - self : The dockerfile object
-        """
-        command = [self.bld+"/compile.sh"]
-
-        # Run compile script
-        p1 = subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-
-        # Direct output to log file as well
-        p2 = subprocess.Popen(["tee",self.bld+"/log.compile"], stdin=p1.stdout)
-
-        # Allow process1 to receive SIGPIPE is process2 exits
-        p1.stdout.close()
-        p2.communicate()
-
-        # wait for process1 to finish before checking return code
-        p1.wait()
-        if p1.returncode != 0:
-            print(f"\nThere was an error running {self.bld}/compile.sh")
-            print(f"Check the log file: {self.bld}/log.compile")
-        else:
-            print(f"\nSuccessful run of {self.bld}/compile.sh")
