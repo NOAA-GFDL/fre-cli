@@ -73,7 +73,7 @@ def test_run_fremake_multijob_compile():
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         nparallel=1, njobs=4, no_parallel_checkout=False,
         no_format_transfer=False, execute=True, verbose=VERBOSE,
-        force_checkout=False, force_compile=False))
+        force_checkout=False, force_compile=False)
     assert Path(
         f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
@@ -84,7 +84,7 @@ def test_run_fremake_container_build():
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         nparallel=1, njobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=True, verbose=VERBOSE,
-        force_checkout=False, force_compile=False))
+        force_checkout=False, force_compile=False)
     assert Path("null_model_full-debug.sif").exists()
 
 @pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
@@ -94,7 +94,7 @@ def test_run_fremake_container_build_specified_out():
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM_2, TARGET,
         nparallel=1, njobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=True, verbose=VERBOSE,
-        force_checkout=False, force_compile=False))
+        force_checkout=False, force_compile=False)
     assert Path(
         f"{CONTAINER_BUILD_TEST_PATH}/fremake_canopy/test/null_model_full-debug.sif").exists()
 
@@ -106,7 +106,7 @@ def test_run_fremake_container_build_notransfer():
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         nparallel=1, njobs=1, no_parallel_checkout=True,
         no_format_transfer=True, execute=True, verbose=VERBOSE,
-        force_checkout=False, force_compile=False))
+        force_checkout=False, force_compile=False)
 
 def test_run_fremake_cleanup():
     ''' removes directories created by the test and checks to make sure they're gone '''
@@ -130,7 +130,7 @@ def test_run_fremake_container_build_fail():
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         nparallel=1, njobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE,
-        force_checkout=False, force_compile=False))
+        force_checkout=False, force_compile=False)
     assert Path(f"{currPath}/createContainer.sh").exists()
 
     # Alter script to fail
