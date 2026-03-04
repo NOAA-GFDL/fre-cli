@@ -56,21 +56,24 @@ def test_bad_platform_option():
     ''' test run-fremake with a invalid platform option'''
     run_fremake_script.fremake_run(YAMLPATH, BADOPT, TARGET,
         nparallel=False, njobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False)
 
 @pytest.mark.xfail()
 def test_bad_target_option():
     ''' test run-fremake with a invalid target option'''
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT,
         nparallel=False, njobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False)
 
 @pytest.mark.xfail()
 def test_bad_yamlpath_option():
     ''' test run-fremake with a invalid target option'''
     run_fremake_script.fremake_run(BADOPT[0], PLATFORM, TARGET,
         nparallel=False, njobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False)
 
 # tests script/makefile creation without executing (serial compile)
 # first test runs the run-fremake command, subsequent tests check for creation of scripts
@@ -79,7 +82,8 @@ def test_run_fremake_serial():
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         nparallel=False, njobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False)
 
 def test_run_fremake_compile_script_creation_serial():
     ''' check for compile script creation from previous test '''
@@ -102,7 +106,8 @@ def test_run_fremake_multijob():
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         nparallel=True, njobs=4, no_parallel_checkout=True,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False)
 
 def test_run_fremake_compile_script_creation_multijob():
     ''' check for compile script creation from previous test '''
@@ -124,7 +129,8 @@ def test_run_fremake_container():
     '''run run-fremake with options for containerized build'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         nparallel=False, njobs=1, no_parallel_checkout=True,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False)
 
 def test_run_fremake_build_script_creation_container():
     ''' checks container build script creation from previous test '''
@@ -151,7 +157,8 @@ def test_run_fremake_container_2stage():
     '''run run-fremake with options for containerized build'''
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLAT2, TARGET,
         nparallel=False, njobs=1, no_parallel_checkout=True,
-	no_format_transfer=False, execute=False, verbose=VERBOSE)
+	no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=False, force_compile=False)
 
 def test_run_fremake_build_script_creation_container_2stage():
     ''' checks container build script creation from previous test '''

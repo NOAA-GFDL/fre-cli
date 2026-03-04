@@ -17,6 +17,22 @@ fre_logger = logging.getLogger(__name__)
 
 def compile_call(fremake_yaml, template_path, src_dir, bld_dir, target, platform, jobs):
     """
+    lkjsdlfkjs
+
+    :param fremake_yaml:
+    :type fremake_yaml:
+    :param template_path:
+    :type template_path:
+    :param src_dir:
+    :type src_dir:
+    :param bld_dir:
+    :type bld_dir:
+    :param target:
+    :type target:
+    :param platform:
+    :type platform:
+    :param jobs:
+    :type jobs:
     """
     fremake_build = buildBaremetal.buildBaremetal(exp=fremake_yaml["experiment"],
                                                  mkTemplatePath=template_path,
@@ -32,8 +48,8 @@ def compile_call(fremake_yaml, template_path, src_dir, bld_dir, target, platform
 
 def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                    nparallel: int = 1, execute: Optional[bool] = False,
-                   verbose: Optional[bool] = None,
-                   force_compile: Optional[bool] = None):
+                   verbose: Optional[bool] = False,
+                   force_compile: Optional[bool] = False):
     """
     Creates the compile script for bare-metal build
 
@@ -67,8 +83,8 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
 
     if verbose:
         fre_logger.setLevel(level=logging.DEBUG)
-    else:
-        fre_logger.setLevel(level=logging.INFO)
+#    else:
+#        fre_logger.setLevel(level=logging.INFO)
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yml,
@@ -146,10 +162,11 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                     ###SHOULD IT ALSO BE RE-CREATED IF CHECKOUT RE-CREATED?? -->
                     ### I THINK THIS WILL BE FOR "ALL" SUBTOOL###
 
-    fre_logger.info("")
-    fre_logger.info("Compile scripts to be run: ")
+    fre_logger.setLevel(level=logging.INFO)
+    fre_logger.info("Compile scripts available/generated with specified platform-target combination: ")
     for i in fremake_build_list:
         fre_logger.info("  - %s", i)
+    fre_logger.setLevel(level=logging.WARNING)
 
     # Returns the exit status for multiprocessing pool command
     if execute:
