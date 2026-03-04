@@ -12,9 +12,10 @@ from pathlib import Path
 ### TODO run as a batch job on the login cluster
 def fremake_parallel(fremakeBuildList):
     """
-    Brief: Called for parallel execution purposes.  Runs the builds.
-    Param:
-        - fremakeBuildList : list of compile scripts to execute
+    Called for parallel execution purposes.  Runs the builds.
+
+    :param fremakeBuildList: list of compile scripts to execute
+    :type fremakeBuildList: .................
     """
     bldDir = Path(fremakeBuildList).parent
 
@@ -37,17 +38,36 @@ def fremake_parallel(fremakeBuildList):
 
 class buildBaremetal():
     """
-    Brief: Creates the build script to compile the model
-    Param:
-        - self : The buildScript object
-        - exp  : The experiment name
-        - mkTemplatePath : The template used by mkmf to compile the model
-        - srcDir : The source directory
-        - bldDir : The build directory
+    Class holding routines that will create the build script to compile the model.
+
+    :ivar str exp: The experiment name
+    :ivar str mkTemplatePath: The template used by mkmf to compile the model
+    :ivar str srcDir: The source directory
+    :ivar str bldDir: The build directory
+    :ivar str target:
+    :ivar str env_setup:
+    :ivar str jobs:
     """
     def __init__(self,exp,mkTemplatePath,srcDir,bldDir,target,env_setup,jobs):
         """
         Initialize variables and set-up the compile script.
+
+        :param self:
+        :type self:
+        :param exp:
+        :type exp:
+        :param mkTemplatePath:
+        :type mkTemplatePath:
+        :param srcDir:
+        :type srcDir:
+        :param bldDir:
+        :type bldDir:
+        :param target:
+        :type target:
+        :param env_setup:
+        :type env_setup:
+        :param jobs:
+        :type jobs:
         """
         self.e = exp
         self.t = target.gettargetName()
@@ -77,10 +97,12 @@ class buildBaremetal():
 
     def writeBuildComponents(self, c):
         """
-        Brief: Adds components to the build script
-        Param:
-            - self : The build script object
-            - c : Component from the compile yaml
+        Adds components to the build script
+
+        :param self: The build script object
+        :type self:
+        :param c: Component from the compile yaml
+        :type c:
         """
         # Shorthand for component
         comp = c["component"]
@@ -131,9 +153,10 @@ class buildBaremetal():
 ##TODO: add targets input
     def writeScript(self):
         """
-        Brief: Finishes and writes the build script
-        Param:
-            - self : The buildScript object
+        Finishes and writes the build script
+            
+        :param self: The buildScript object
+        :type self:
         """
         self.f.write(f"cd {self.bld}\n")
         self.f.write(f"{self.make}\n")
