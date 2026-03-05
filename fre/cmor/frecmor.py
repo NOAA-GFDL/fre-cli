@@ -5,6 +5,7 @@ import click
 from . import cmor_find_subtool
 from . import cmor_run_subtool
 from . import cmor_yaml_subtool
+from . import cmor_config_subtool
 from .cmor_finder import make_simple_varlist
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
@@ -21,6 +22,7 @@ START_YEAR_HELP = 'string representing the minimum calendar year CMOR should sta
                   'currently, only YYYY format is supported.'
 STOP_YEAR_HELP = 'string representing the maximum calendar year CMOR should stop processing for. ' + \
                   'currently, only YYYY format is supported.'
+
 
 @click.group(help=click.style(" - cmor subcommands", fg=(232,91,204)))
 def cmor_cli():
@@ -54,13 +56,16 @@ def cmor_cli():
 @click.option('--stop', type=str, default=None,
               help = STOP_YEAR_HELP,
               required = False)
-def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start, stop):
+@click.option('--print_cli_call/--no-print_cli_call', default=True,
+              help = 'In dry-run mode, print the equivalent CLI invocation (default) '
+                     'or the Python cmor_run_subtool() call.',
+              required = False)
+def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start, stop, print_cli_call):
     """
     Processes a CMOR (Climate Model Output Rewriter) YAML configuration file. This function takes a YAML file
     and various parameters related to a climate model experiment, and processes the YAML file using the CMOR
     YAML subtool.
     """
-
     cmor_yaml_subtool(
         yamlfile = yamlfile,
         exp_name = experiment,
@@ -70,8 +75,10 @@ def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start
         run_one_mode = run_one,
         dry_run_mode = dry_run,
         start = start,
-        stop = stop
+        stop = stop,
+        print_cli_call = print_cli_call
     )
+
 
 @cmor_cli.command()
 @click.option("-l", "--varlist", type = str,
@@ -95,7 +102,6 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
         json_table_config_dir = table_config_dir,
         opt_var_name = opt_var_name
     )
-
 
 
 @cmor_cli.command()
@@ -170,11 +176,63 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         calendar_type = calendar
     )
 
+
 @cmor_cli.command()
 @click.option("-d", "--dir_targ", type=str, required=True, help="Target directory")
 @click.option("-o", "--output_variable_list", type=str, required=True, help="Output variable list file")
-def varlist(dir_targ, output_variable_list):
+@click.option("-t", "--mip_table", type=str, required=False, default=None, help="Target MIP table for making variable list")
+def varlist(dir_targ, output_variable_list, mip_table):
     """
     Create a simple variable list from netCDF files in the target directory.
     """
-    make_simple_varlist(dir_targ, output_variable_list)
+    make_simple_varlist(dir_targ = dir_targ,
+                        output_variable_list = output_variable_list,
+                        json_mip_table = mip_table)
+
+
+@cmor_cli.command()
+@click.option("-p", "--pp_dir", type=str, required=True,
+              help="Root post-processing directory containing per-component subdirectories.")
+@click.option("-t", "--mip_tables_dir", type=str, required=True,
+              help="Directory containing MIP table JSON files.")
+@click.option("-m", "--mip_era", type=str, required=True,
+              help="MIP era identifier, e.g. 'cmip6' or 'cmip7'.")
+@click.option("-e", "--exp_config", type=str, required=True,
+              help="Path to JSON experiment/input configuration file expected by CMOR.")
+@click.option("-o", "--output_yaml", type=str, required=True,
+              help="Path for the output CMOR YAML configuration file.")
+@click.option("-d", "--output_dir", type=str, required=True,
+              help="Root output directory for CMORized data.")
+@click.option("-l", "--varlist_dir", type=str, required=True,
+              help="Directory in which per-component variable list JSON files are written.")
+@click.option("--freq", type=str, default="monthly",
+              help="Temporal frequency string, e.g. 'monthly', 'daily'. Default 'monthly'.")
+@click.option("--chunk", type=str, default="5yr",
+              help="Time chunk string, e.g. '5yr', '10yr'. Default '5yr'.")
+@click.option("--grid", type=str, default="g99",
+              help="Grid label anchor name, e.g. 'g99', 'gn'. Default 'g99'.")
+@click.option("--overwrite", is_flag=True, default=False,
+              help="Overwrite existing variable list files.")
+@click.option("--calendar", type=str, default="noleap",
+              help="Calendar type, e.g. 'noleap', '360_day'. Default 'noleap'.")
+def config(pp_dir, mip_tables_dir, mip_era, exp_config, output_yaml,
+           output_dir, varlist_dir, freq, chunk, grid, overwrite, calendar):
+    """
+    Generate a CMOR YAML configuration file from a post-processing directory tree.
+    Scans pp_dir for components and time-series data, cross-references against MIP tables,
+    and writes a YAML configuration that 'fre cmor yaml' can consume.
+    """
+    cmor_config_subtool(
+        pp_dir=pp_dir,
+        mip_tables_dir=mip_tables_dir,
+        mip_era=mip_era,
+        exp_config=exp_config,
+        output_yaml=output_yaml,
+        output_dir=output_dir,
+        varlist_dir=varlist_dir,
+        freq=freq,
+        chunk=chunk,
+        grid=grid,
+        overwrite=overwrite,
+        calendar_type=calendar
+    )

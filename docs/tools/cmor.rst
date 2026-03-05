@@ -1,14 +1,16 @@
-.. last updated Dec 2024
+.. last updated Feb 2026
 
 CMOR Subcommands Overview
 -------------------------
 
-``fre cmor`` rewrites climate model output files with CMIP-compliant metadata. Available subcommands:
+``fre cmor`` rewrites climate model output files with CMIP-compliant metadata. Both CMIP6 and CMIP7
+workflows are supported. Available subcommands:
 
 * ``fre cmor run`` - Rewrite individual directories of netCDF files
 * ``fre cmor yaml`` - Process multiple directories/tables using YAML configuration
 * ``fre cmor find`` - Search MIP tables for variable definitions
 * ``fre cmor varlist`` - Generate variable lists from netCDF files
+* ``fre cmor config`` - Generate a CMOR YAML configuration from a post-processing directory tree
 
 ``run``
 -------
@@ -48,6 +50,7 @@ CMOR Subcommands Overview
    - ``-o, --output TEXT`` - Output file
    - ``--run_one`` - Process one file for testing
    - ``--dry_run`` - Print planned calls without executing
+   - ``--print_cli_call/--no-print_cli_call`` - In dry-run mode, print the equivalent CLI invocation (default) or the Python ``cmor_run_subtool()`` call
    - ``--start TEXT`` - Minimum year (YYYY)
    - ``--stop TEXT`` - Maximum year (YYYY)
 * Example: ``fre cmor yaml -y am5.yaml -e c96L65_am5f7b12r1_amip -p ncrc5.intel -t prod-openmp --dry_run``
@@ -72,7 +75,31 @@ CMOR Subcommands Overview
 * Required Options:
    - ``-d, --dir_targ TEXT`` - Target directory
    - ``-o, --output_variable_list TEXT`` - Output file path
+* Optional:
+   - ``-t, --mip_table TEXT`` - MIP table JSON file to filter variables against
 * Example: ``fre cmor varlist -d ocean_data/ -o varlist.json``
+
+``config``
+----------
+
+* Generates a CMOR YAML configuration file by scanning a post-processing directory tree and cross-referencing against MIP tables
+* Creates per-component variable list JSON files and the structured YAML that ``fre cmor yaml`` consumes
+* Minimal Syntax: ``fre cmor config -p [pp_dir] -t [mip_tables_dir] -m [mip_era] -e [exp_config] -o [output_yaml] -d [output_dir] -l [varlist_dir]``
+* Required Options:
+   - ``-p, --pp_dir TEXT`` - Root post-processing directory
+   - ``-t, --mip_tables_dir TEXT`` - Directory containing MIP table JSON files
+   - ``-m, --mip_era TEXT`` - MIP era identifier (e.g. ``cmip6``, ``cmip7``)
+   - ``-e, --exp_config TEXT`` - Path to experiment configuration JSON
+   - ``-o, --output_yaml TEXT`` - Path for the output CMOR YAML file
+   - ``-d, --output_dir TEXT`` - Root output directory for CMORized data
+   - ``-l, --varlist_dir TEXT`` - Directory for per-component variable list files
+* Optional:
+   - ``--freq TEXT`` - Temporal frequency (default: ``monthly``)
+   - ``--chunk TEXT`` - Time chunk string (default: ``5yr``)
+   - ``--grid TEXT`` - Grid label anchor name (default: ``g99``)
+   - ``--overwrite`` - Overwrite existing variable list files
+   - ``--calendar TEXT`` - Calendar type (default: ``noleap``)
+* Example: ``fre cmor config -p /path/to/pp -t /path/to/tables -m cmip7 -e exp_config.json -o cmor.yaml -d /path/to/output -l /path/to/varlists``
 
 For comprehensive documentation, see `CMORize Postprocessed Output <https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#cmorize-postprocessed-output>`_.
 
