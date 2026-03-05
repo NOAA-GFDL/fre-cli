@@ -1,12 +1,3 @@
-#workflow repositories
-workflow:
-  run:
-    repo: "https://github.com/NOAA-GFDL"
-    version: "tbd"
-  pp:
-    repo: "https://github.com/NOAA-GFDL/fre-workflows.git"
-    version: "main"
-
 #c96_amip_directories:
 directories:
   history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
@@ -16,6 +7,9 @@ directories:
 
 #c96_amip_postprocess:
 postprocess:
+  workflow:
+    repo: "https://github.com/NOAA-GFDL/fre-workflows.git"
+    version: "main"
   settings:
     history_segment:    "P1Y"
     site:               "ppan"
