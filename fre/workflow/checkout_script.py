@@ -66,11 +66,11 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
     :type application: str
     :param target_dir: Target/base directory used for cylc-src/<workflow> creation
     :type target_dir: str
-    :param force_checkout: re-clone the workflow repo if it exists
+    :param force_checkout: re-clone the workflow repository if it exists
     :type force_checkout: bool
     :raises OSError: if the checkout script was not able to be created
     :raises ValueError:
-        - if the repo and/or tag was not defined
+        - if the repository and/or tag was not defined
         - if the target directory does not exist or cannot be found
         - if neither tag nor branch matches the git clone branch arg
     """
@@ -95,7 +95,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
 
         workflow_info = yaml.get(application).get("workflow")
 
-    repo = workflow_info.get("repo")
+    repo = workflow_info.get("repository")
     tag = workflow_info.get("version")
     fre_logger.info("Defined tag ==> '%s'", tag)
 
