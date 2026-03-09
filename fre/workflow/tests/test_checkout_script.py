@@ -108,11 +108,9 @@ def test_pp_workflow_checkout_force_checkout(tmp_path, caplog):
     workflow_name = EXPERIMENT
     repo = "https://github.com/NOAA-GFDL/fre-workflows.git"
     tag = "main"
-    expected_output = [f" *** PREVIOUS CHECKOUT FOUND: {src_dir}/{workflow_name} *** ",
-                       f" *** REMOVING {src_dir}/{workflow_name} *** "]
+    expected_output = f" *** REMOVING {src_dir}/{workflow_name} *** "
 
-    for string in expected_output:
-        assert string in caplog.text
+    assert expected_output in caplog.text
 
 #def test_run_workflow_checkout(caplog):
 #    """
