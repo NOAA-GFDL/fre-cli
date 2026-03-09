@@ -1,4 +1,4 @@
-''' fre workflow '''
+''' fre workflow click interface for fre workflow subcommands'''
 import os
 import click
 import logging
