@@ -26,12 +26,10 @@ def workflow_cli():
               required=True)
 @click.option("--target-dir",
               type=str,
-              envvar="TMPDIR",
-              default=os.path.expanduser("~/.fre"),
+              default=os.path.expanduser("~/.fre-workflows"),
               help=f"""Target directory for the workflow to be cloned into.
-                    If not defined, the environment variable TMPDIR will be used,
-                    if available. If both --target-dir and TMPDIR are not set, a
-                    default location of ~/.fre will be used""")
+                    If not defined, a default location of ~/.fre-workflows
+                    will be used""")
 @click.option("--force-checkout",
               is_flag=True,
               default=False,

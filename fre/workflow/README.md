@@ -15,5 +15,5 @@ fre workflow checkout -y fre/workflow/tests/AM5_example/am5.yaml -e c96L65_am5f7
         - `-y, --yamlfile [model yaml] (str; required)`
         - `-e, --experiment [experiment name] (str; required)`
         - `-a, --application [ run | pp ] (str; required)`
-        - `--target-dir [target directory where workflow will be cloned] (str; optional; default - $TMPDIR if set; default if TMPDIR not set - ~/.fre`
+        - `--target-dir [target directory where workflow will be cloned] (str; optional; default is ~/.fre-workflows`
         - `--force-checkout (bool; optional)`
