@@ -17,7 +17,7 @@ fre_logger = logging.getLogger(__name__)
 def validate_yaml(yamlfile: dict, application: str):
     """
     Validate the format of the yaml file based
-    on the schema.json in gfdl_msd_schemas
+    on the schema.json held in [gfdl_msd_schemas](https://github.com/NOAA-GFDL/gfdl_msd_schemas).
 
     :param yamlfile: Model, settings, pp, and analysis yaml
                      information combined into a dictionary
@@ -54,7 +54,7 @@ def validate_yaml(yamlfile: dict, application: str):
 
 def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = None, application: str = None, force_checkout: Optional[bool] = False):
     """
-    Create a directory and clone the workflow template files from a defined repo.
+    Create a directory and clone the workflow template files from a defined repository.
 
     :param yamlfile: Model yaml configuration file
     :type yamlfile: str
