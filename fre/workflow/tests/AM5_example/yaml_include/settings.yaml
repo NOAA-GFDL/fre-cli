@@ -8,7 +8,7 @@ directories:
 #c96_amip_postprocess:
 postprocess:
   workflow:
-    repo: "https://github.com/NOAA-GFDL/fre-workflows.git"
+    repository: "https://github.com/NOAA-GFDL/fre-workflows.git"
     version: "main"
   settings:
     history_segment:    "P1Y"

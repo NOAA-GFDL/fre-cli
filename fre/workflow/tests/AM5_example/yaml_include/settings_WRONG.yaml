@@ -8,7 +8,7 @@ directories:
 #c96_amip_postprocess:
 postprocess:
   workflow:
-    repo:
+    repository:
     version: "main"
   settings:
     history_segment:    "P1Y"
