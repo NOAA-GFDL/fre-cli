@@ -121,7 +121,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
             f"(checkoutScript) directory {src_dir} wasn't able to be created. exit!") from exc
 
     if Path(f"{src_dir}/{workflow_name}").is_dir():
-        fre_logger.warning(" *** PREVIOUS CHECKOUT FOUND: %s/%s *** ", src_dir, workflow_name)
+        fre_logger.info(" *** PREVIOUS CHECKOUT FOUND: %s/%s *** ", src_dir, workflow_name)
         if force_checkout:
             fre_logger.warning(" *** REMOVING %s/%s *** ", src_dir, workflow_name)
             shutil.rmtree(f"{src_dir}/{workflow_name}")
