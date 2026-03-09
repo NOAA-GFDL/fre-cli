@@ -28,15 +28,16 @@ def test_cylc_src_creation_fail(tmp_path):
                                           application = "pp",
                                           target_dir = tmp_path)
 
-def test_checkout_missing_repo(tmp_path):
+def test_checkout_invalid_resolved_yaml(tmp_path):
     """
-    Test for the expected ValueError if the repo is not
-    defined in the settings.yaml.
+    Test for the expected error if the repository is not
+    defined in the settings.yaml and the yamls could not
+    be combined
     """
     experiment = "c96L65_am5f7b12r1_amip_TESTING_WRONG"
     repo = None
     tag = "main"
-    with pytest.raises(ValueError, match = f"One of these are None: repo / tag = {repo} / {tag}"):
+    with pytest.raises(ValueError, match = f"Combined yaml is not valid. Please fix the errors and try again."):
         checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
                                           experiment = experiment,
                                           application = "pp",
