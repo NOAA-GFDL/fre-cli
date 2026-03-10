@@ -25,18 +25,23 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
     git push --tags
     ```
 
-    For the full release tag, follow the structure: `[year].[major].[minor]`
+    - For the *testing tags*, follow the structure: `[year].[major].[minor]-[testing tag]`
+
+        - `[year].[major].[minor]-alpha[iteration]`: alpha tags relate to major code breaking changes
+        - `[year].[major].[minor]-beta[iteration]`: beta tags relate to minor changes
+
+    - For the *full release tag*, follow the structure: `[year].[major].[minor]`
 
     After the tag is pushed, CI will trigger the creation of a PR changing any reference to the previous tag with the new tag.  Review the PR and merge.
     Verify the tagged release is present [here](https://github.com/NOAA-GFDL/fre-cli/releases>)
 
-* [ ] 3. Update the package release number (i.e. reported by `fre --version`) in your PR branch before merging to `main`
+* [ ] 3. Update the package and tag release number (i.e. reported by `fre --version` for the package) in your PR branch before merging to `main`
 
-    - Edit two version mentions in `fre/tests/test_fre_cli.py`
+    - Edit three version mentions in `fre/tests/test_fre_cli.py`
 
-* [ ] 4. Create a new release associated with the release tag and generate the release notes.
+* [ ] 4. For a full release (only), create a new release associated with the correct tag and generate the release notes.
 
-    - In the release notes, be sure to link any alpha and beta tags that were tested for the release 
+    - In the release notes, be sure to link any alpha and beta tags that were tested for the release
 
 ### fre-workflows changes
 * [ ] 4. Update the package release number in the `fre-workflows` repository:
