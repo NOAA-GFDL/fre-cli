@@ -39,15 +39,15 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
 
     - Edit three version mentions in `fre/tests/test_fre_cli.py`
 
-* [ ] 4. For a full release (only), create a new release associated with the correct tag and generate the release notes.
+* [ ] 4. For a full release (only), create a the github release associated with the correct tag and generate the release notes.
 
     - In the release notes, be sure to link any alpha and beta tags that were tested for the release
 
 ### fre-workflows changes
-* [ ] 4. Update the package release number in the `fre-workflows` repository:
+* [ ] 5. Update the package release number in the `fre-workflows` repository:
 
     - Edit `FRE_VERSION` in `flow.cylc`
 
-* [ ] 5. Create corresponding tag in [fre-workflows](https://github.com/NOAA-GFDL/fre-workflows/tags)
+* [ ] 6. Create corresponding tag in [fre-workflows](https://github.com/NOAA-GFDL/fre-workflows/tags)
 
-* [ ] 6. Navigate to [noaa-gfdl conda channel](https://anaconda.org/NOAA-GFDL/fre-cli) and verify that the last upload date corresponds to the date of this release and that the release number is correct.
+* [ ] 7. Navigate to [noaa-gfdl conda channel](https://anaconda.org/NOAA-GFDL/fre-cli) and verify that the last upload date corresponds to the date of this release and that the release number is correct.
