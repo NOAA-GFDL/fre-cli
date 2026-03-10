@@ -135,10 +135,18 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
     elif number_of_timesteps >= 2:
         first_timestep = ds.time.values[0]
         second_timestep = ds.time.values[1]
+        last_timestep = ds.time.values[-1]
         freq_label, format_ = get_freq_and_format_from_two_dates(first_timestep, second_timestep)
         freq = second_timestep - first_timestep
-        date1 = first_timestep
-        date2 = date1 + (number_of_timesteps-1) * freq
+        cell_methods =  ds[var].attrs.get('cell_methods')
+        # if time-point, date1 is the valid time at end of chunk
+        if cell_methods == "time: point":
+            date1 = first_timestep - freq
+            date2 = last_timestep - freq
+        # otherwise date1 is in the middle of the chunk
+        else:
+            date1 = first_timestep - freq / 2.0
+            date2 = last_timestep - freq / 2.0
         duration = get_duration_from_two_dates(date1, date2)
     else:
         time_bounds_name = ds.time.attrs.get('bounds')
@@ -148,6 +156,7 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
             second_timestep = time_bounds[0].values[1]
             freq_label, format_ = get_freq_and_format_from_two_dates(first_timestep, second_timestep)
             freq = second_timestep - first_timestep
+            # if time_bounds exist, the time sampling is time-mean
             date1 = first_timestep
             date2 = date1 + (number_of_timesteps-1) * freq
             duration = get_duration_from_two_dates(date1, date2 - freq)
@@ -186,6 +195,16 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
                         date2 = date1 + duration_object - one_month
                 else:
                     raise FileNotFoundError(f"Diag manifest '{diag_manifest}' does not exist")
+            # remove next stanza once diag manifests are common
+            elif 'annual' in label:
+                date_str = str(input_file.name).split('.')[0]
+                date1 = time_parser.parse(date_str)
+                one_month = duration_parser.parse('P1M')
+                duration = "P1Y"
+                duration_object = duration_parser.parse(duration)
+                date2 = date1 + duration_object - one_month
+                format_ = "%Y"
+                freq_label = duration
             else:
                 raise ValueError(f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds")
 
