@@ -25,11 +25,12 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
     git push --tags
     ```
 
-    The tag format can follow [year].[major].[minor]-[testing tag]
+    The tag format can be followed: `[year].[major].[minor]-[testing tag]`
 
     For the testing tags:
-        - [year].[major].[minor]-alpha[# iteration]: alpha tags relate to major code breaking changes
-        - [year].[major].[minor]-beta[# iteration]: beta tags relate to minor changes
+
+        - `[year].[major].[minor]-alpha[iteration]`: alpha tags relate to major code breaking changes
+        - `[year].[major].[minor]-beta[iteration]`: beta tags relate to minor changes
 
     After the tag is pushed, CI will trigger the creation of a PR changing any reference to the previous tag with the new tag.  Review the PR and merge.
     Verify the tagged release is present [here](https://github.com/NOAA-GFDL/fre-cli/releases>)
