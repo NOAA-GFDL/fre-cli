@@ -1,25 +1,20 @@
 '''
 FRE Checkout Script Generator
 
-This script automates the creation of 'checkout.sh' scripts used to clone and manage 
-source code for climate model builds within the FRE (FMS Runtime Environment) ecosystem.
+Retrieves information from the resolved yaml configuration to generate a 
+checkout.sh script that git clones the model source code.
 
-Key Responsibilities:
-1. YAML Integration: Consolidates model, platform, and compilation YAML configurations.
-2. Multi-Environment Support: Generates tailored checkout logic for both bare-metal 
-   and containerized build environments.
-3. Parallelization Control: Manages git submodule cloning concurrency and shell-level 
-   parallel backgrounding.
-4. Execution & Lifecycle: Optionally executes the generated script immediately and 
-   handles forced re-creation of existing checkout scripts.
-5. Directory Management: Automatically sets up appropriate source and temporary 
-   directory structures based on the target platform configuration.
+Key Features:
+- YAML Integration: Consolidates model, platform, and compilation YAML configurations.
+- Multi-Environment Support: Generates tailored checkout logic for both bare-metal and containerized build environments.
+- Parallelization Control: Manages git submodule cloning concurrency and shell-level parallel backgrounding.
+
 '''
 
 import os
 import subprocess
 import logging
-from typing import Optional, List, Union
+from typing import Optional
 import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
@@ -29,21 +24,18 @@ fre_logger = logging.getLogger(__name__)
 def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str, 
                              parallel_cmd: str, execute: bool):
     """
-    Write the checkout script for a bare-metal build environment.
+    This function extracts information from resolved/loaded yaml configuration 
+    and generates a checkout script to the source directory for the bare-metal build.
 
-    This function initializes a checkout object, writes the necessary shell 
-    commands to clone repositories into the source directory, and sets 
-    appropriate file permissions.
-
-    :param model_yaml: Validated FRE YAML object containing compilation metadata
+    :param model_yaml: FRE YAML class object containing parsed and validated yaml dictionary compilation information
     :type model_yaml: yamlfre.freyaml
     :param src_dir: Path to the directory where source code will be checked out
     :type src_dir: str
-    :param jobs: Number of parallel jobs for git submodules (as a string)
+    :param jobs: Number of git submodules to clone simultaneously
     :type jobs: str
-    :param parallel_cmd: Shell suffix for parallel execution (e.g. "&" or "")
+    :param parallel_cmd: " &" is added for parallel checkouts and "" for non-parallel checkouts
     :type parallel_cmd: str
-    :param execute: If True, runs the generated script immediately after creation
+    :param execute: If True, runs the generated script after creation
     :type execute: bool
     """
     fre_checkout = checkout.checkout("checkout.sh", src_dir)
@@ -61,20 +53,19 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
 def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir: str,
                              jobs: str, parallel_cmd: str):
     """
-    Write the checkout script specifically for containerized build environments.
+    This function extracts information from resolved/loaded yaml configuration 
+    and generates a checkout script in the ./tmp directory for a containerized build.
+    The script is then copied to and run in the container during the image build.
 
-    Containers often require different pathing logic (tmp directories) and 
-    do not support the same parallel backgrounding logic as bare-metal scripts.
-
-    :param model_yaml: Validated FRE YAML object containing compilation metadata
+    :param model_yaml: FRE YAML class object containing parsed and validated yaml dictionary compilation information
     :type model_yaml: yamlfre.freyaml
-    :param src_dir: Internal container path for source code
+    :param src_dir: Internal container path for source code, corresponding to the 'modelRoot' key defined in the platform yaml
     :type src_dir: str
-    :param tmp_dir: Temporary directory used for staging the checkout script
+    :param tmp_dir: Temporary directory that hosts the created checkout script, before being copied to the cointainer
     :type tmp_dir: str
-    :param jobs: Number of parallel jobs for git submodules (as a string)
+    :param jobs: Number of git submodules to clone simultaneously
     :type jobs: str
-    :param parallel_cmd: Shell suffix for parallel execution; usually empty for containers
+    :param parallel_cmd: Container builds are not parallelized; use "" for non-parallel checkouts
     :type parallel_cmd: str
     """
     fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
@@ -82,7 +73,7 @@ def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir:
     fre_checkout.finish(model_yaml.compile.getCompileYaml(), parallel_cmd)
     fre_logger.info("Checkout script created in ./%s/checkout.sh", tmp_dir)
 
-def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Union[str, List[str]],
+def checkout_create(yamlfile: str, platform: str | list, target: str | list,
                     no_parallel_checkout: Optional[bool] = None, njobs: int = 4,
                     execute: Optional[bool] = False, force_checkout: Optional[bool] = False):
     """
@@ -103,7 +94,7 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
     :type no_parallel_checkout: bool
     :param njobs: Used in the recursive clone; number of submodules to fetch simultaneously (default 4)
     :type njobs: int
-    :param execute: Run the created checkout script to check out source code immediately
+    :param execute: If True, runs the created checkout script to check out source code
     :type execute: bool
     :param force_checkout: If True, overwrites locally existing checkout script and source code with new versions
     :type force_checkout: bool
@@ -113,8 +104,8 @@ def checkout_create(yamlfile: str, platform: Union[str, List[str]], target: Unio
         - If a specified platform does not exist in the platforms yaml configuration
     :raises OSError: If checkout script execution fails
 
-    .. note:: For a bare-metal build, no_parallel_checkout typically defaults to True
-              For a container build, parallel_backgrounding is usually disabled
+    .. note:: For a bare-metal build, a parallel checkout is the default
+              For a container build, a non-parallel checkout is the default
     """
     # Standardize inputs
     jobs_str = str(njobs)
