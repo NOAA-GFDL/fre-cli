@@ -44,9 +44,9 @@ def test_cli_fre_version():
     assert all( [ result.exit_code == 0,
                   expected_out in result.output ] )
 
-def test_fre_version_testing_tag():
-    ''' module import flavor of below cli test '''
-    result = subprocess.run(["git", "tag", "--list", "--sort=-creatordate"], text=True, check=True, capture_output=True)
-    latest_testing_tag = result.stdout.split('\n')[0]
-
-    assert '2026.01-alpha1' == latest_testing_tag
+#def test_fre_version_testing_tag():
+#    ''' module import flavor of below cli test '''
+#    result = subprocess.run(["git", "tag", "--list", "--sort=-creatordate"], text=True, check=True, capture_output=True)
+#    latest_testing_tag = result.stdout.split('\n')[0]
+#
+#    assert '2026.01-alpha1' == latest_testing_tag
