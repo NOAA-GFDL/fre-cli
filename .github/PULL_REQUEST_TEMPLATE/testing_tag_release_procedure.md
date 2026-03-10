@@ -30,6 +30,7 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
     For the testing tags:
 
     `[year].[major].[minor]-alpha[iteration]`: alpha tags relate to major code breaking changes
+
     `[year].[major].[minor]-beta[iteration]`: beta tags relate to minor changes
 
     After the tag is pushed, CI will trigger the creation of a PR changing any reference to the previous tag with the new tag.  Review the PR and merge.
