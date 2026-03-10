@@ -16,7 +16,11 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
 
     **Note**: The release schedules of these submodules may vary from that of fre-cli
 
-* [ ] 2. Create a tag in the fre-cli repository (testing tag or release tag)
+* [ ] 2. Update the package and tag release number (i.e. reported by `fre --version` for the package) in your PR branch before merging to `main`
+
+    - Edit three version mentions in `fre/tests/test_fre_cli.py`
+
+* [ ] 3. Create a tag in the fre-cli repository (testing tag or release tag)
 
     Locally this can be done with:
 
@@ -34,10 +38,6 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
 
     After the tag is pushed, CI will trigger the creation of a PR changing any reference to the previous tag with the new tag.  Review the PR and merge.
     Verify the tagged release is present [here](https://github.com/NOAA-GFDL/fre-cli/releases>)
-
-* [ ] 3. Update the package and tag release number (i.e. reported by `fre --version` for the package) in your PR branch before merging to `main`
-
-    - Edit three version mentions in `fre/tests/test_fre_cli.py`
 
 * [ ] 4. For a full release (only), create a the github release associated with the correct tag and generate the release notes.
 
