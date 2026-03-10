@@ -37,20 +37,15 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
     After the tag is pushed, CI will trigger the creation of a PR changing any reference to the previous tag with the new tag.
     Verify the tagged release is present [here](https://github.com/NOAA-GFDL/fre-cli/releases>)
 
-
-* [ ] 3. Update the package and tag release number (i.e. reported by `fre --version` for the package) in your PR branch before merging to `main`
-
-    - Edit three version mentions in `fre/tests/test_fre_cli.py`
-
-* [ ] 4. For a full release (only), create a the github release associated with the correct tag and generate the release notes.
+* [ ] 3. For a full release (only), create a the github release associated with the correct tag and generate the release notes.
 
     - In the release notes, be sure to link any alpha and beta tags that were tested for the release
 
 ### fre-workflows changes
-* [ ] 5. Update the package release number in the `fre-workflows` repository:
+* [ ] 4. Update the package release number in the `fre-workflows` repository:
 
     - Edit `FRE_VERSION` in `flow.cylc`
 
-* [ ] 6. Create corresponding tag in [fre-workflows](https://github.com/NOAA-GFDL/fre-workflows/tags)
+* [ ] 5. Create corresponding tag in [fre-workflows](https://github.com/NOAA-GFDL/fre-workflows/tags)
 
-* [ ] 7. Navigate to [noaa-gfdl conda channel](https://anaconda.org/NOAA-GFDL/fre-cli) and verify that the last upload date corresponds to the date of this release and that the release number is correct.
+* [ ] 6. Navigate to [noaa-gfdl conda channel](https://anaconda.org/NOAA-GFDL/fre-cli) and verify that the last upload date corresponds to the date of this release and that the release number is correct.
