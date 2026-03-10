@@ -6,7 +6,9 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
 * [ ] 1. Verify that git submodules in the fre-cli reflect the latest state (or certain commit/tag) of the upstream repositories. 
 
     - If not, consult the manager of the upstream repository and determine whether the update should be included in this FRE release.
-    - If so, ask the sub-project maintainer to tag the upstream repository, and then commit the submodule update in `fre-cli`.
+    - If so, ask the sub-project maintainer to tag the upstream repository
+
+    Open a PR to commit the submodule updates in `fre-cli`. (PR must be reviewed and merged in order to create a tag with these updates as in step 2)
        
     - **Submodules**:
         - `fre/gfdl_msd_schemas`
@@ -16,11 +18,7 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
 
     **Note**: The release schedules of these submodules may vary from that of fre-cli
 
-* [ ] 2. Update the package and tag release number (i.e. reported by `fre --version` for the package) in your PR branch before merging to `main`
-
-    - Edit three version mentions in `fre/tests/test_fre_cli.py`
-
-* [ ] 3. Create a tag in the fre-cli repository (testing tag or release tag)
+* [ ] 2. Create a tag in the fre-cli repository (testing tag or release tag)
 
     Locally this can be done with:
 
@@ -36,8 +34,13 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
 
     - For the *full release tag*, follow the structure: `[year].[major].[minor]`
 
-    After the tag is pushed, CI will trigger the creation of a PR changing any reference to the previous tag with the new tag.  Review the PR and merge.
+    After the tag is pushed, CI will trigger the creation of a PR changing any reference to the previous tag with the new tag.
     Verify the tagged release is present [here](https://github.com/NOAA-GFDL/fre-cli/releases>)
+
+
+* [ ] 3. Update the package and tag release number (i.e. reported by `fre --version` for the package) in your PR branch before merging to `main`
+
+    - Edit three version mentions in `fre/tests/test_fre_cli.py`
 
 * [ ] 4. For a full release (only), create a the github release associated with the correct tag and generate the release notes.
 
