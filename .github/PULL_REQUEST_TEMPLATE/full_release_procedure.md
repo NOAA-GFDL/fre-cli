@@ -34,7 +34,9 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
 
     - Edit two version mentions in `fre/tests/test_fre_cli.py`
 
-* [ ] 4. Create a new release associated with the release tag and generate the release notes.  
+* [ ] 4. Create a new release associated with the release tag and generate the release notes.
+
+    - In the release notes, be sure to link any alpha and beta tags that were tested for the release 
 
 ### fre-workflows changes
 * [ ] 4. Update the package release number in the `fre-workflows` repository:
