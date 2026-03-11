@@ -8,9 +8,21 @@ source:
 build:
   script:
     - {{ PYTHON }} -m pip install . -vv
-    - cp fre/mkmf/bin/mkmf $PREFIX/bin
-    - cp fre/mkmf/bin/list_paths $PREFIX/bin
-    - cp fre/mkmf/bin/git-version-string $PREFIX/bin
+    - |
+      # Backwards-compatible copy of mkmf executables:
+      # mkmf PR 75 moved bin/ to mkmf/bin/ within the mkmf repository,
+      # so the submodule path changed from fre/mkmf/bin/ to fre/mkmf/mkmf/bin/.
+      # Try the new path first, fall back to the old path.
+      # If neither exists, warn but continue (mkmf may be a separate conda dependency).
+      for exe in mkmf list_paths git-version-string; do
+        if [ -f "fre/mkmf/mkmf/bin/$exe" ]; then
+          cp "fre/mkmf/mkmf/bin/$exe" "$PREFIX/bin/$exe"
+        elif [ -f "fre/mkmf/bin/$exe" ]; then
+          cp "fre/mkmf/bin/$exe" "$PREFIX/bin/$exe"
+        else
+          echo "Warning: $exe not found in mkmf submodule (checked fre/mkmf/mkmf/bin/ and fre/mkmf/bin/). Expected to be provided by a separate noaa-gfdl::mkmf conda dependency."
+        fi
+      done
   noarch: python
 
 channels:

@@ -48,9 +48,11 @@ class container():
                 self.setup.append(" && spack load "+l+" \\ \n")
 
         # Clone and copy mkmf through Dockerfile
+        # Backwards-compatible with both old mkmf (bin/) and mkmf PR 75 (mkmf/bin/)
         self.mkmfclone=["RUN cd /apps \\ \n",
                        " && git clone --recursive https://github.com/NOAA-GFDL/mkmf \\ \n",
-                       " && cp mkmf/bin/* /usr/local/bin \n"]
+                       " && if [ -d mkmf/mkmf/bin ]; then cp mkmf/mkmf/bin/* /usr/local/bin;"
+                       " else cp mkmf/bin/* /usr/local/bin; fi \n"]
 
         # Set bld_dir, src_dir, mkmf_template
         self.bldsetup=["RUN bld_dir="+self.bld+" \\ \n",
