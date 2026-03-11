@@ -12,10 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Fetch tags
-        run: |
-          git fetch --tags origin
-
       - name: Get the new tag
         id: get_tag
         run: |
