@@ -8,7 +8,7 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
     - If not, consult the manager of the upstream repository and determine whether the update should be included in this FRE release.
     - If so, ask the sub-project maintainer to tag the upstream repository
 
-    Open a PR to commit the submodule updates in `fre-cli`. (PR must be reviewed and merged in order to create a tag with these updates as in step 2)
+    Open a PR to commit the submodule updates in `fre-cli`, solicit a review, and merge the PR.
        
     - **Submodules**:
         - `fre/gfdl_msd_schemas`
