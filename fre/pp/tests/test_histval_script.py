@@ -52,7 +52,7 @@ def test_histval(capfd):
                         match=re.escape(
                             value_err_str
                         ) ):
-        result=(histval.validate(test_dir,'00010101',warn=None))
+        result = histval.validate(test_dir,'00010101',warn=None)
 
     #Delete the test files
     for x in test_files:

@@ -39,7 +39,8 @@ def cleanup():
 
     for i in range(1, ntiles+1):
         gridfile = Path(f"{input_grid}.tile{i}.nc")
-        if gridfile.exists(): gridfile.unlink()
+        if gridfile.exists():
+            gridfile.unlink()
 
 
 def set_test(components_in: dict,
@@ -63,13 +64,20 @@ def set_test(components_in: dict,
         nxy = nxy_in
         nxyp = nxy_in+1
         input_grid = f"C{nxy}"
-    if ntiles_in is not None: ntiles = ntiles_in
-    if date_in is not None: date = date_in
-    if yamlfile_in is not None: yamlfile = yamlfile_in
-    if grid_spec_tar_in is not None: grid_spec_tar = grid_spec_tar_in
-    if input_grid_in is not None: input_grid = input_grid_in
-    if input_mosaic_in is not None: input_mosaic = input_mosaic_in
-    if input_dir_in is not None: input_dir = input_dir_in
+    if ntiles_in is not None:
+        ntiles = ntiles_in
+    if date_in is not None:
+        date = date_in
+    if yamlfile_in is not None:
+        yamlfile = yamlfile_in
+    if grid_spec_tar_in is not None:
+        grid_spec_tar = grid_spec_tar_in
+    if input_grid_in is not None:
+        input_grid = input_grid_in
+    if input_mosaic_in is not None:
+        input_mosaic = input_mosaic_in
+    if input_dir_in is not None:
+        input_dir = input_dir_in
 
     tar_list = []
 
@@ -106,7 +114,7 @@ def make_mosaic():
         gridtiles = [f"tile{i}".encode() for i in range(1,ntiles+1)]
     else:
         gridfiles = f"{input_grid}.nc".encode()
-        gridtiles = f"tile1".encode()
+        gridtiles = "tile1".encode()
 
     data = dict(gridfiles =  xr.DataArray(gridfiles, dims=["ntiles"]).astype("|S255"),
                 gridtiles = xr.DataArray(gridtiles, dims=["ntiles"]).astype("|S255")
@@ -169,7 +177,8 @@ def make_all():
     make_data()
 
     with tarfile.open(grid_spec_tar, "w") as tar:
-        for ifile in tar_list: tar.add(ifile)
+        for ifile in tar_list:
+            tar.add(ifile)
 
     for ifile in tar_list:
         Path(ifile).unlink()

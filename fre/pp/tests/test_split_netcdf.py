@@ -157,7 +157,7 @@ def test_split_file_data(workdir,newdir, origdir):
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     new_count = len(split_files)
-    same_count_files = (new_count == orig_count)
+    same_count_files = new_count == orig_count
     print(f"orig dir: {origdir}  new dir: {newdir}")
     print(f"orig count: {orig_count}  new count: {new_count}")
     all_files_equal=True
@@ -206,7 +206,7 @@ def test_split_file_metadata(workdir,newdir, origdir):
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     new_count = len(split_files)
-    same_count_files = (new_count == orig_count)
+    same_count_files = new_count == orig_count
     all_files_equal=True
     for sf in split_files:
         nccmp_cmd = [ 'nccmp', '-mg', '--force',

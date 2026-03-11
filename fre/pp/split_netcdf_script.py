@@ -65,10 +65,10 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     '''
 
     #Verify input/output dirs exist and are dirs
-    if not (os.path.isdir(inputDir)):
+    if not os.path.isdir(inputDir):
         fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
         raise OSError(f"error: input dir {inputDir} does not exist or is not a directory")
-    if not (os.path.isdir(outputDir)):
+    if not os.path.isdir(outputDir):
         if os.path.isfile(outputDir):
             fre_logger.error(f"error: output dir {outputDir} is a file. Please specify a directory.")
     else:
@@ -292,7 +292,7 @@ def set_coord_encoding(dset, vcoords):
              is worse than no metadata. Dropping the attribute if it's present seems to be
              the lesser of two evils.
     '''
-    fre_logger.debug(f"getting coord encode settings")
+    fre_logger.debug("getting coord encode settings")
     encode_dict = {}
     for vc in vcoords:
         vc_encoding = dset[vc].encoding #dict
@@ -300,7 +300,7 @@ def set_coord_encoding(dset, vcoords):
                                   'dtype': dset[vc].encoding['dtype']}
         if "units" in vc_encoding.keys():
             encode_dict[vc]['units'] = dset[vc].encoding['units']
-    return(encode_dict)
+    return encode_dict
 
 def set_var_encoding(dset, varnames):
     '''
@@ -318,7 +318,7 @@ def set_var_encoding(dset, varnames):
     :return: dict {var1: {encodekey1 : encodeval1, encodekey2:encodeval2...}}
     :rtype: dict
     '''
-    fre_logger.debug(f"getting var encode settings")
+    fre_logger.debug("getting var encode settings")
     encode_dict = {}
     for v in varnames:
         v_encoding = dset[v].encoding #dict
@@ -327,7 +327,7 @@ def set_var_encoding(dset, varnames):
                                    'dtype': dset[v].encoding['dtype']}
         if "units" in v_encoding.keys():
             encode_dict[v]['units'] = dset[v].encoding['units']
-    return(encode_dict)
+    return encode_dict
 
 def fre_outfile_name(infile, varname):
     '''
@@ -349,6 +349,6 @@ def fre_outfile_name(infile, varname):
     :rtype: string
     '''
     var_outfile = re.sub(".nc", f".{varname}.nc", infile)
-    return(var_outfile)
+    return var_outfile
 
 #Main method invocation

@@ -214,8 +214,8 @@ def cmor_config_subtool(
 
                 lines.append(f"        - component_name: '{component_name}'")
                 lines.append(f"          variable_list: '{variable_list}'")
-                lines.append(f"          data_series_type: 'ts'")
-                lines.append(f"          chunk: *PP_CMIP_CHUNK")
+                lines.append("          data_series_type: 'ts'")
+                lines.append("          chunk: *PP_CMIP_CHUNK")
 
 
     # ---- write output YAML ----
