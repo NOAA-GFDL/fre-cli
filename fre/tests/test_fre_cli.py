@@ -10,7 +10,7 @@ We've got 4-ish tests:
   right and thinks the tool has a --optionDNE option)
 - fre --version, checking for version GTE current version (fails if version isn't defined)
 """
-
+import subprocess
 from click.testing import CliRunner
 
 from fre import fre
@@ -43,3 +43,10 @@ def test_cli_fre_version():
     expected_out = 'fre, version 2025.04'
     assert all( [ result.exit_code == 0,
                   expected_out in result.output ] )
+
+#def test_fre_version_testing_tag():
+#    ''' module import flavor of below cli test '''
+#    result = subprocess.run(["git", "tag", "--list", "--sort=-creatordate"], text=True, check=True, capture_output=True)
+#    latest_testing_tag = result.stdout.split('\n')[0]
+#
+#    assert '2026.01-alpha1' == latest_testing_tag
