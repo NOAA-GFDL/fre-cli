@@ -20,6 +20,7 @@ Getting Started
 * ``fre cmor yaml`` - Higher-level tool for processing multiple directories / MIP tables using YAML configuration
 * ``fre cmor find`` - Helper for exploring MIP table configurations for information on a specific variable
 * ``fre cmor varlist`` - Helper for generating variable lists from directories of netCDF files
+* ``fre cmor config`` - Generate a CMOR YAML configuration file from a post-processing directory tree
 
 To see all available subcommands:
 

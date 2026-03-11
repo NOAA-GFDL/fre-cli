@@ -1,6 +1,10 @@
+'''
+tests for fre.cmor.cmor_helpers.update_calendar_type
+'''
 import json
+
 import pytest
-from pathlib import Path
+
 from fre.cmor.cmor_helpers import update_calendar_type
 
 @pytest.fixture

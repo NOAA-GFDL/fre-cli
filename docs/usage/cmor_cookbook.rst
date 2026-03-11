@@ -277,12 +277,13 @@ Prepare the CMOR YAML (``cmor_yamls/ocean_cmor.yaml``):
      exp_json: "/path/to/experiment_config.json"
      
      directories:
+       pp_dir: "/path/to/pp"
        table_dir: "/path/to/cmip6-cmor-tables/Tables"
        outdir: "/path/to/cmor/output"
      
      table_targets:
        - table_name: "Omon"
-         variable_list: "/path/to/ocean_varlist.json"
+         freq: "monthly"
          gridding:
            grid_label: "gn"
            grid_desc: "native tripolar ocean grid"
@@ -290,6 +291,7 @@ Prepare the CMOR YAML (``cmor_yamls/ocean_cmor.yaml``):
          
          target_components:
            - component_name: "ocean_monthly"
+             variable_list: "/path/to/ocean_varlist.json"
              data_series_type: "ts"
              chunk: "P1Y"
 
@@ -342,8 +344,10 @@ Tips
 
 * Use ``fre yamltools combine-yamls`` before attempting CMORization to help figure out YAML issues
 * Use ``--dry_run`` with ``fre cmor yaml`` to preview the equivalent ``fre cmor run`` calls before execution
+* Use ``--no-print_cli_call`` with ``--dry_run`` to see the Python ``cmor_run_subtool(...)`` call instead of the CLI invocation — useful for debugging
 * Use ``--run_one`` with ``fre cmor run`` for testing to only process a single file and catch issues early
 * Use ``--run_one`` with ``fre cmor yaml`` to process a single file per ``fre cmor run`` call for quicker debugging
+* Use ``fre cmor config`` to auto-generate a CMOR YAML configuration from a post-processing directory tree — it scans components, cross-references against MIP tables, and writes both variable lists and the YAML that ``fre cmor yaml`` expects
 * Increase verbosity when debugging - Use ``-v`` to see ``INFO`` logging, and ``-vv`` (or ``-v -v``) for ``DEBUG`` logging
 * Version control your YAML files - Track changes to your CMORization configuration and commit them to git!
 * Check controlled vocabulary - Verify grid labels and nominal resolutions are CV-compliant
