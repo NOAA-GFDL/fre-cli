@@ -20,7 +20,8 @@ def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.dat
     """
     hours = abs(date2 - date1).total_seconds() / 3600.0
     hours_floor = int(hours)
-    minutes_remainder = hours - hours_floor
+    minutes = (hours - hours_floor) * 60
+    print("testing", hours, minutes)
 
     # annual
     if hours > 4320:
@@ -35,11 +36,11 @@ def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.dat
         iso_freq = 'P1D'
         format_ = '%Y%m%d'
     # hourly
-    elif hours < 24 and hours > 0:
+    elif hours_floor < 24 and hours_floor > 0:
         iso_freq = f"PT{int(hours)}H"
         format_ = '%Y%m%d%H'
     # subhourly
-    elif hours == 0 and minutes > 0:
+    elif hours_floor == 0 and minutes > 0:
         iso_freq = f"PT{int(minutes)}M"
         format_ = '%Y%m%d%H%M'
     else:

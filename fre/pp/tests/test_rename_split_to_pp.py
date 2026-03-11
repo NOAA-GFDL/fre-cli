@@ -40,9 +40,9 @@ def test_get_freq_and_format_from_two_dates():
     assert ("P1Y", "%Y")            == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1),       cftime.datetime(2010, 1, 1))
     assert ("P1M", "%Y%m")          == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1),       cftime.datetime(2009, 2, 1))
     assert ("P1D", "%Y%m%d")        == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1),       cftime.datetime(2009, 1, 2))
-    assert ("PT1.0H", "%Y%m%d%H")   == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0),    cftime.datetime(2009, 1, 1, 1))
-    assert ("PT6.0H", "%Y%m%d%H")   == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0),    cftime.datetime(2009, 1, 1, 6))
-    assert ("PT0.5H", "%Y%m%d%H")   == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0, 0), cftime.datetime(2009, 1, 1, 0, 30))
+    assert ("PT1H", "%Y%m%d%H")     == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0),    cftime.datetime(2009, 1, 1, 1))
+    assert ("PT6H", "%Y%m%d%H")     == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0),    cftime.datetime(2009, 1, 1, 6))
+    assert ("PT30M", "%Y%m%d%H%M")  == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0, 0), cftime.datetime(2009, 1, 1, 0, 30))
 
 def test_get_duration_from_two_dates():
     """
