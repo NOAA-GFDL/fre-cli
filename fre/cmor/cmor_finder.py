@@ -10,7 +10,7 @@ Functions
 ---------
 - ``print_var_content(table_config_file, var_name)``
 - ``cmor_find_subtool(json_var_list, json_table_config_dir, opt_var_name)``
-- ``make_simple_varlist(dir_targ, output_variable_list)``
+- ``make_simple_varlist(dir_targ, output_variable_list, json_mip_table)``
 
 Notes
 -----
@@ -24,16 +24,13 @@ import logging
 import os
 from pathlib import Path
 from typing import Optional, Dict, IO
+from .cmor_helpers import get_json_file_data
+
+from .cmor_constants import DO_NOT_PRINT_LIST
 
 fre_logger = logging.getLogger(__name__)
 
-DO_NOT_PRINT_LIST = [
-    'comment',
-    'ok_min_mean_abs', 'ok_max_mean_abs',
-    'valid_min', 'valid_max'
-]
-
-
+# TODO update for cmip7 if desired
 def print_var_content(table_config_file: IO[str],
                       var_name: str) -> None:
     """
@@ -41,8 +38,8 @@ def print_var_content(table_config_file: IO[str],
 
     :param table_config_file: An open file object for a CMIP6 table JSON file. The file should be opened in text mode
     :type table_config_file: Input buffer/stream of text, usually output by the open() built-in. See python typing doc
-    :param var_name: The name of the variable to look for in the configuration file. 
-    :type var_name: str    
+    :param var_name: The name of the variable to look for in the configuration file.
+    :type var_name: str
     :raises Exception: If there is an issue reading the JSON content from the file.
     :return: None
     :rtype: None
@@ -51,15 +48,8 @@ def print_var_content(table_config_file: IO[str],
     .. note:: If the variable is not found, logs a debug message and returns.
     .. note:: Only prints selected fields, omitting any in DO_NOT_PRINT_LIST.
     """
-    try:
-        proj_table_vars = json.load(table_config_file)
-    except Exception as exc:
-        raise Exception('problem getting proj_table_vars... WHY') from exc
-
-    var_content = proj_table_vars.get("variable_entry", {}).get(var_name)
-    if var_content is None:
-        fre_logger.debug('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
-        return
+    # this function can assume the existence of this was checked in the prev routinue.
+    proj_table_vars = json.load(table_config_file)
 
     table_name = None
     try:
@@ -68,9 +58,15 @@ def print_var_content(table_config_file: IO[str],
         fre_logger.warning("couldn't get header and table_name field")
 
     if table_name is not None:
-        fre_logger.info('found %s data in table %s!', var_name, table_name)
+        fre_logger.info('looking for %s data in table %s!', var_name, table_name)
     else:
-        fre_logger.info('found %s data in table, but not its table_name!', var_name)
+        fre_logger.info('looking for %s data in table %s, but could not find its table_name!',
+                        var_name, table_config_file.name)
+
+    var_content = proj_table_vars.get("variable_entry", {}).get(var_name)
+    if var_content is None:
+        fre_logger.debug('variable %s not found in %s, moving on!', var_name, Path(table_config_file.name).name)
+        return
 
     fre_logger.info('    variable key: %s', var_name)
     for content in var_content:
@@ -86,7 +82,7 @@ def cmor_find_subtool( json_var_list: Optional[str] = None,
     """
     Find and print information about variables in CMIP6 JSON configuration files in a specified directory.
 
-    :param json_var_list: Path to a JSON file containing a dictionary of variable names to look up. If None, opt_var_name must be provided.
+    :param json_var_list: path to JSON file containing variable names to look up in tables.
     :type json_var_list: str or None, optional
     :param json_table_config_dir: Directory containing CMIP6 table JSON files.
     :type json_table_config_dir: str
@@ -129,13 +125,11 @@ def cmor_find_subtool( json_var_list: Optional[str] = None,
             for json_table_config in json_table_configs:
                 with open(json_table_config, "r", encoding="utf-8") as table_config_file:
                     print_var_content(table_config_file, str(var_list[var]))
-    else:
-        fre_logger.error('this line should be unreachable!!!')
-        assert False
 
 
 def make_simple_varlist( dir_targ: str,
-                         output_variable_list: Optional[str]) -> Optional[Dict[str, str]]:
+                         output_variable_list: Optional[str],
+                         json_mip_table: Optional[str] = None) -> Optional[Dict[str, str]]:
     """
     Generate a JSON file containing a list of variable names from NetCDF files in a specified directory.
     This function searches for NetCDF files in the given directory, or a subdirectory, "ts/monthly/5yr",
@@ -146,8 +140,10 @@ def make_simple_varlist( dir_targ: str,
     :type dir_targ: str
     :param output_variable_list: The path to the output JSON file where the variable list will be saved.
     :type output_variable_list: str
+    :param json_mip_table: target table for making the var list. found variables are included if they are in the table
+    :type json_mip_table: str
     :raises OSError: if the outputfile cannot be written
-    :return: Dictionary of variable names (keys and values are the same), or None if no files are found or an error occurs
+    :return: Dictionary of variable names (keys == values), or None if no files are found or an error occurs
     :rtype: dict or None
 
     .. note:: Assumes NetCDF filenames are of the form: <something>.<datetime>.<variable>.nc
@@ -168,12 +164,11 @@ def make_simple_varlist( dir_targ: str,
     try:
         one_datetime = os.path.basename(one_file).split('.')[-3]
     except IndexError as e:
-        fre_logger.warning(f'{e}')
+        fre_logger.warning(' e = %s', e)
         fre_logger.warning('WARNING: cannot find datetime in filenames, moving on and doing the best i can.')
-        pass
 
     if one_datetime is None:
-        search_pattern = f"*nc"
+        search_pattern =  "*nc"
     else:
         search_pattern = f"*{one_datetime}*.nc"
 
@@ -183,27 +178,53 @@ def make_simple_varlist( dir_targ: str,
     # Check if any files were found
     if not files:
         fre_logger.error("No files found matching the pattern.") #uncovered
-        return
-    elif len(files) == 1:
+        return None
+
+    if len(files) == 1:
         fre_logger.warning("Warning: Only one file found matching the pattern.") #uncovered
-    else:
-        fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
+
+    fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
+
+    mip_vars = None
+    if json_mip_table is not None:
+        try:
+            # read in mip vars to check against later
+            fre_logger.debug('attempting to read in variable entries in specified mip table')
+            full_mip_vars_list=get_json_file_data(json_mip_table)["variable_entry"].keys()
+
+        except Exception as exc:
+            raise Exception( 'problem opening mip table and getting variable entry data.'
+                            f'exc = {exc}') from exc
+
+        fre_logger.debug('attempting to make mip variable list')
+        mip_vars=[ key.split('_')[0] for key in full_mip_vars_list ]
+        fre_logger.debug('mip vars extracted for comparison when making var list: %s', mip_vars)
+
 
     # Create a dictionary of variable names extracted from the filenames
-    try:
-        var_list = {
-            os.path.basename(file).split('.')[-2]: os.path.basename(file).split('.')[-2] for file in files}
-    except Exception as exc:
-        fre_logger.error(f'{exc}')
-        fre_logger.warning('WARNING: no matching pattern, or not enough info in the filenames'
-                         ' i am expecting FRE-bronx like filenames!')
+    var_list = {}
+    quick_vlist=[]
+    for targetfile in files:
+        var_name=os.path.basename(targetfile).split('.')[-2]
+        if mip_vars is not None and var_name not in mip_vars:
+            #fre_logger.debug('var_name %s not in mip_vars, omitting', var_name)
+            continue
+
+        quick_vlist.append(var_name)
+
+    if len(quick_vlist) > 0:
+        var_list = { _var_name : _var_name for _var_name in quick_vlist }
+    else:
+        fre_logger.warning('WARNING: no variables in target mip table found, or no matching pattern,'
+                           ' or not enough info in the filenames (i am expecting FRE-bronx like filenames)')
         return None
 
     # Write the variable list to the output JSON file
-    if output_variable_list is not None:
+    if output_variable_list is not None and len(var_list)>0:
         try:
-            with open(output_variable_list, 'w') as f:
+            fre_logger.info('writing output variable list, %s', quick_vlist) # output_variable_list)
+            with open(output_variable_list, 'w', encoding='utf-8') as f:
                 json.dump(var_list, f, indent=4)
-        except Exception:
-            raise OSError('output variable list created but cannot be written')
+        except Exception as exc:
+            raise OSError('output variable list created but cannot be written') from exc
     return var_list
