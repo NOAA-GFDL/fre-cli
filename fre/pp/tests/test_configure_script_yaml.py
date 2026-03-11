@@ -93,7 +93,10 @@ def test_validate_fail():
                        "target": "ttest",
                        "directories": {"pp_dir": "/some/path"}
                      }
-    with pytest.raises(ValueError, match="Combined yaml is not valid. Please fix the errors and try again.") as execinfo:
+    with pytest.raises(
+        ValueError,
+        match="Combined yaml is not valid. Please fix the errors and try again."
+    ) as execinfo:
         val_fail = csy.validate_yaml(wrong_yml_dict)
 
     assert execinfo.type is ValueError

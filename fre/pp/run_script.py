@@ -12,15 +12,22 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     """
     Starts, pauses or restarts the Cylc workflow described by $(experiment)__$(platform)__$(target)
     
-    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
+    :param experiment: One of the postprocessing experiment names from the yaml
+        displayed by fre list exps -y $yamlfile
+        (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str
-    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
+    :param platform: The location + compiler that was used to run the model
+        (e.g. gfdl.ncrc5-deploy), default None
     :type platform: str
-    :param target: Options used for the model compiler (e.g. prod-openmp), default None
+    :param target: Options used for the model compiler
+        (e.g. prod-openmp), default None
     :type target: str
-    :param pause: Whether to pause the current Cylc workflow. Defaults to false, which starts or restarts the workflow.
+    :param pause: Whether to pause the current Cylc workflow. Defaults to
+        false, which starts or restarts the workflow.
     :type pause: boolean
-    :param no_wait: Whether to avoid waiting at least 30 seconds for confirmation that the workflow is stopped. Defaults to False, which waits for confirmation.
+    :param no_wait: Whether to avoid waiting at least 30 seconds for
+        confirmation that the workflow is stopped. Defaults to False,
+        which waits for confirmation.
     :type no_wait: boolean
     """
     if None in [experiment, platform, target]:

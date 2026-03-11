@@ -22,7 +22,9 @@ from .gfdlfremake import (
 
 fre_logger = logging.getLogger(__name__)
 
-def dockerfile_create(yamlfile:str, platform:str, target:str, execute: Optional[bool] = False, no_format_transfer: Optional[bool] = False):
+def dockerfile_create(yamlfile:str, platform:str, target:str,
+                      execute: Optional[bool] = False,
+                      no_format_transfer: Optional[bool] = False):
     """
     Creates the dockerfile and container build script for a container build
 
