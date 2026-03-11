@@ -1,6 +1,7 @@
 ''' this holds functions used across various parts of fre/make subtools '''
 
 import logging
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -28,9 +29,26 @@ def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: Opti
     if not container_flag:
         if "/" not in mk_template:
             topdir = Path(__file__).resolve().parents[1]
-            template_path = str(topdir)+ "/mkmf/templates/"+mk_template
+            submodule_path = str(topdir) + "/mkmf/templates/" + mk_template
 
-        # Check in template path exists
+            # First, check the mkmf submodule location (backwards-compatible with both
+            # old mkmf structure and mkmf PR 75, since templates/ stays at repo root)
+            if Path(submodule_path).exists():
+                template_path = submodule_path
+            else:
+                # Fall back to the conda package install location introduced by mkmf PR 75:
+                # templates are installed to $CONDA_PREFIX/share/mkmf/templates/
+                conda_prefix = os.environ.get("CONDA_PREFIX")
+                if conda_prefix:
+                    conda_path = conda_prefix + "/share/mkmf/templates/" + mk_template
+                    if Path(conda_path).exists():
+                        template_path = conda_path
+                    else:
+                        template_path = submodule_path  # use for the error message below
+                else:
+                    template_path = submodule_path  # use for the error message below
+
+        # Check that the resolved template path exists
         if not Path(template_path).exists():
             raise ValueError("Error w/ mkmf template. Created path from given "
                              f"filename: {template_path} does not exist.")
