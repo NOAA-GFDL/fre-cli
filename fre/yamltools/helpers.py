@@ -2,11 +2,18 @@
 
 # this boots yaml with !join- see __init__
 import json
-from jsonschema import validate, ValidationError, SchemaError
 import logging
-from . import *
-from pathlib import Path
 import os
+from pathlib import Path
+
+from jsonschema import (
+    SchemaError,
+    ValidationError,
+    validate
+)
+
+from . import *
+
 
 fre_logger = logging.getLogger(__name__)
 

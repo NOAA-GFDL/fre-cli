@@ -1,10 +1,11 @@
 ''' fre pp run '''
+import logging
 import subprocess
 import time
-import logging
-fre_logger = logging.getLogger(__name__)
 
 from . import make_workflow_name
+
+fre_logger = logging.getLogger(__name__)
 
 def pp_run_subtool(experiment = None, platform = None, target = None,
                    pause = False, no_wait = False):

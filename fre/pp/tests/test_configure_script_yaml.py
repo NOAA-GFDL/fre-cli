@@ -3,12 +3,19 @@ Test configure_script_yaml
 """
 import os
 import shutil
-import yaml
 from pathlib import Path
+
+import pytest
+import yaml
+from jsonschema import (
+    SchemaError,
+    ValidationError,
+    validate
+)
+
 from fre.pp import configure_script_yaml as csy
 from fre.yamltools import combine_yamls_script as cy
-import pytest
-from jsonschema import validate, SchemaError, ValidationError
+
 
 # Set what would be click options
 EXPERIMENT = "c96L65_am5f7b12r1_amip"

@@ -1,14 +1,16 @@
 """
 tests routines in fre.yamltools.combine_yamls
 """
-import os
-from pathlib import Path
-import pytest
-import shutil
 import json
-import yaml
+import os
 import pprint
+import shutil
+from pathlib import Path
+
+import pytest
+import yaml
 from jsonschema import validate
+
 from fre.yamltools import combine_yamls_script as cy
 
 

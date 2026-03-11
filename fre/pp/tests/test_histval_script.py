@@ -1,11 +1,14 @@
 """
 Test histval_script
 """
-import pytest
 import re
-from pathlib import Path
-from fre.pp import histval_script as histval
 import subprocess
+from pathlib import Path
+
+import pytest
+
+from fre.pp import histval_script as histval
+
 
 # Set example input paths
 
