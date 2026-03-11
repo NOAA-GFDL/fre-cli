@@ -99,12 +99,15 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
 
     # open the nc file
     ds = xr.open_dataset(input_file)
-    number_of_timesteps = ds.sizes['time']
-    fre_logger.debug(f"Number of timesteps: {number_of_timesteps}")
 
     # determine if variable depends on time (non-static)
-    has_time = 'time' in ds[var].dims
-    is_static = not has_time
+    if 'time' in ds[var].dims:
+        is_static = False
+        number_of_timesteps = ds.sizes['time']
+    else:
+        is_static = True
+        number_of_timesteps = 0
+    fre_logger.debug(f"Number of timesteps: {number_of_timesteps}")
 
     # we need 4 pieces of information
     # freq and chunk: used for the shards directories
