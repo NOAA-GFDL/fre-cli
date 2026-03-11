@@ -11,6 +11,8 @@
 ##   fre -v cmor yaml -y fre/yamltools/tests/esm4_cmip6_ex/esm4_cmip6.yaml \
 ##                    -e ESM4_TOAR_2014climo_2050ozone_v2 -p gfdl.ncrc5-intel22 -t prod-openmp
 
+fre_version: "2025.04"
+
 # reusable variables
 fre_properties:
   - &ESM4_VERSION    "TOAR_O3RF"
