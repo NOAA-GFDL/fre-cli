@@ -29,8 +29,8 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
 
     - For the *testing tags*, follow the structure: `[year].[major].[minor]-[testing tag]`
 
-        - `[year].[major].[minor]-alpha[iteration]`: alpha tags relate to major code breaking changes
-        - `[year].[major].[minor]-beta[iteration]`: beta tags relate to minor changes
+        - `[year].[major].[minor]-alpha[iteration]`: alpha tags include major code breaking changes
+        - `[year].[major].[minor]-beta[iteration]`: beta tags include releases candidates for testing
 
     - For the *full release tag*, follow the structure: `[year].[major].[minor]`
 
