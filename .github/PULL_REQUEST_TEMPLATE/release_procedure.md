@@ -24,7 +24,7 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
 
     ```
     git tag -a <release>
-    git push --tags
+    git push origin <tag name>
     ```
 
     - For the *testing tags*, follow the structure: `[year].[major].[minor]-[testing tag]`
