@@ -73,7 +73,7 @@ def check_fre_version(yamlfile):
             f"Please update your model yaml or install the correct version of fre-cli."
         )
 
-    fre_logger.info("fre_version check passed: %s", yaml_fre_version)
+    fre_logger.debug("fre_version check passed: %s", yaml_fre_version)
 
 
 def output_yaml(cleaned_yaml, output):
