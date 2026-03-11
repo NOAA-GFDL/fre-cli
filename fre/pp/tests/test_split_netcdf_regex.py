@@ -38,7 +38,10 @@ def test_split_netcdf_file_regex_pattern():
     for history_source in non_matching_files.keys():
         file_regex = generate_regex(history_source)
         match = re.search(file_regex, non_matching_files[history_source])
-        assert match is None, f"File '{non_matching_files[history_source]}' should NOT match regex pattern {file_regex}'"
+        assert match is None, (
+            f"File '{non_matching_files[history_source]}' should NOT match "
+            f"regex pattern {file_regex}'"
+        )
 
 def generate_regex(history_source):
     '''

@@ -2,16 +2,22 @@
 Creates a compile script to compile the model and generate a model executable.
 '''
 
-import os
 import logging
-
-from pathlib import Path
+import os
 from multiprocessing.dummy import Pool
+from pathlib import Path
+from typing import Optional
 
 import fre.yamltools.combine_yamls_script as cy
-from typing import Optional
 from fre.make.make_helpers import get_mktemplate_path
-from .gfdlfremake import varsfre, yamlfre, targetfre, buildBaremetal
+
+from .gfdlfremake import (
+    buildBaremetal,
+    targetfre,
+    varsfre,
+    yamlfre
+)
+
 
 fre_logger = logging.getLogger(__name__)
 
@@ -28,7 +34,8 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
     :type platform: str
     :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
-    :param njobs: Used for parallelism with make; number of files to build simultaneously; on a per-build basis (default 4)
+    :param njobs: Used for parallelism with make; number of files to build
+                  simultaneously; on a per-build basis (default 4)
     :type njobs: int
     :param nparallel: Number of concurrent model builds (default 1)
     :type nparallel: int
