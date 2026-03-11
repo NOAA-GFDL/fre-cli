@@ -346,6 +346,10 @@ def regrid_xy(yamlfile: str,
                                     "Skipping {source}")
                 continue
 
+            # skip component if xyInterp is not set
+            if 'xyInterp' not in component:
+                fre_logger.info(f"Skipping native component '{component}'")
+                continue
             datadict["inputRealm"] = component["inputRealm"]
             datadict["input_mosaic"] = get_input_mosaic(datadict)
             datadict["output_nlat"], datadict["output_nlon"] = component["xyInterp"].split(",")
