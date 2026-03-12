@@ -161,8 +161,8 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str,
     ..note:: The output file name should include a .yaml extension to indicate
              it is a YAML configuration file
     """
-    # Check fre_version compatibility before any YAML combining
-    fre_logger.info('checking fre_version compatibility...')
+    # Check fre_cli_version compatibility before any YAML combining
+    fre_logger.info('checking fre_cli_version compatibility...')
     check_fre_version(yamlfile)
 
     if use == "compile":
