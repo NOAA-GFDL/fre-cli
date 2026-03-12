@@ -23,6 +23,17 @@ build:
           echo "Warning: $exe not found in mkmf submodule (checked fre/mkmf/mkmf/bin/ and fre/mkmf/bin/). Expected to be provided by a separate noaa-gfdl::mkmf conda dependency."
         fi
       done
+      # Install mkmf templates to the standard data-files location, mirroring what
+      # mkmf PR 75 does in the standalone mkmf conda package.  This makes fre-cli
+      # self-contained: downstream tools (get_mktemplate_path) resolve a bare
+      # template name to $CONDA_PREFIX/share/mkmf/templates/<name>.mk when the
+      # mkmf submodule templates/ directory is not present at runtime.
+      if [ -d "fre/mkmf/templates" ]; then
+        mkdir -p "$PREFIX/share/mkmf/templates"
+        cp -r fre/mkmf/templates/* "$PREFIX/share/mkmf/templates/"
+      else
+        echo "Warning: fre/mkmf/templates/ not found; mkmf templates not installed to $PREFIX/share/mkmf/templates/."
+      fi
   noarch: python
 
 channels:
