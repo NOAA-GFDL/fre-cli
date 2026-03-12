@@ -353,7 +353,7 @@ class CMORYaml():
         """
         # Clean the yaml, the key exists, delete
         keys_clean=["name", "platform", "target", # these are needed to create the final parsed dictionary fed to cmor
-                    "fre_properties", "fre_version", "directories", "experiments",
+                    "fre_properties", "fre_cli_version", "directories", "experiments",
                     'build', 'postprocess']
 
         for kc in keys_clean:

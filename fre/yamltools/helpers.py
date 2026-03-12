@@ -28,32 +28,32 @@ def yaml_load(yamlfile):
     return y
 
 
-def check_fre_version(yamlfile):
+def check_fre_version(yamlfile: str) -> None:
     """
-    Check that the fre_version specified in the model yaml matches the
-    installed version of fre-cli. If fre_version is not specified, a
-    warning is logged. If fre_version does not match, a ValueError is raised.
+    Check that the fre_cli_version specified in the model yaml matches the
+    installed version of fre-cli. If fre_cli_version is not specified, a
+    warning is logged. If fre_cli_version does not match, a ValueError is raised.
 
     :param yamlfile: Path to model YAML configuration file
     :type yamlfile: str
-    :raises ValueError: if the fre_version in the YAML does not match the installed fre-cli version
+    :raises ValueError: if the fre_cli_version in the YAML does not match the installed fre-cli version
     """
     try:
         loaded_yaml = yaml_load(yamlfile)
     except Exception as exc:
         fre_logger.warning(
-            "Could not load %s for fre_version check: %s",
+            "Could not load %s for fre_cli_version check: %s",
             yamlfile, exc
         )
         return
 
-    yaml_fre_version = loaded_yaml.get("fre_version")
+    yaml_fre_version = loaded_yaml.get("fre_cli_version")
     installed_version = fre.version
 
     if yaml_fre_version is None:
         fre_logger.warning(
-            "fre_version not specified in %s. "
-            "It is recommended to add 'fre_version' to your model yaml "
+            "fre_cli_version not specified in %s. "
+            "It is recommended to add 'fre_cli_version' to your model yaml "
             "to ensure compatibility with the correct version of fre-cli.",
             yamlfile
         )
@@ -61,7 +61,7 @@ def check_fre_version(yamlfile):
 
     if str(yaml_fre_version) != str(installed_version):
         raise ValueError(
-            f"The fre_version specified in the model yaml ({yaml_fre_version}) "
+            f"The fre_cli_version specified in the model yaml ({yaml_fre_version}) "
             f"does not match the installed version of fre-cli ({installed_version}). "
             f"Please update your model yaml or install the correct version of fre-cli."
         )
@@ -165,7 +165,7 @@ def clean_yaml(yml_dict):
     """
     # Clean the yaml
     # If keys exists, delete:
-    keys_clean=["fre_properties", "fre_version", "experiments"]
+    keys_clean=["fre_properties", "fre_cli_version", "experiments"]
     for kc in keys_clean:
         if kc in yml_dict.keys():
             del yml_dict[kc]
