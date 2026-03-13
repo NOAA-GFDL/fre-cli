@@ -37,6 +37,8 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https:
     After the tag is pushed, CI will trigger the creation of a PR changing any reference to the previous tag with the new tag.
     Verify the tagged release is present [here](https://github.com/NOAA-GFDL/fre-cli/releases>)
 
+    Note: The tests that run for this PR will not fully pass until #5 is done.
+
 * [ ] 3. For a full release (only), create a the github release associated with the correct tag and generate the release notes.
 
     - In the release notes, be sure to link any alpha and beta tags that were tested for the release
