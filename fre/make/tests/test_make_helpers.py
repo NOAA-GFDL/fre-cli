@@ -1,6 +1,7 @@
 """
 Test fre make make_helpers
 """
+import os
 from pathlib import Path
 import pytest
 from fre.make import make_helpers
@@ -93,3 +94,24 @@ def test_mktemplatepath_dne_with_name(test_variables):
         make_helpers.get_mktemplate_path(mk_template = template_path,
                                          model_root = None,
                                          container_flag = False)
+
+def test_mktemplate_name_conda_prefix(tmp_path, monkeypatch):
+    """
+    Test that the right template_path is constructed from the conda package
+    install location ($CONDA_PREFIX/share/mkmf/templates/) when the mkmf
+    submodule template is not present but the conda package provides it.
+    This covers the mkmf PR 75 backwards-compatible behaviour.
+    """
+    # Create a fake conda prefix with the template installed under share/mkmf/templates/
+    conda_prefix = tmp_path / "conda_env"
+    template_dir = conda_prefix / "share" / "mkmf" / "templates"
+    template_dir.mkdir(parents=True)
+    fake_template = template_dir / "fake-template.mk"
+    fake_template.touch()
+
+    monkeypatch.setenv("CONDA_PREFIX", str(conda_prefix))
+
+    template_path = make_helpers.get_mktemplate_path(mk_template = "fake-template.mk",
+                                                     model_root = None,
+                                                     container_flag = False)
+    assert str(fake_template) == template_path

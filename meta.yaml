@@ -8,9 +8,32 @@ source:
 build:
   script:
     - {{ PYTHON }} -m pip install . -vv
-    - cp fre/mkmf/bin/mkmf $PREFIX/bin
-    - cp fre/mkmf/bin/list_paths $PREFIX/bin
-    - cp fre/mkmf/bin/git-version-string $PREFIX/bin
+    - |
+      # Backwards-compatible copy of mkmf executables:
+      # mkmf PR 75 moved bin/ to mkmf/bin/ within the mkmf repository,
+      # so the submodule path changed from fre/mkmf/bin/ to fre/mkmf/mkmf/bin/.
+      # Try the new path first, fall back to the old path.
+      # If neither exists, warn but continue (mkmf may be a separate conda dependency).
+      for exe in mkmf list_paths git-version-string; do
+        if [ -f "fre/mkmf/mkmf/bin/$exe" ]; then
+          cp "fre/mkmf/mkmf/bin/$exe" "$PREFIX/bin/$exe"
+        elif [ -f "fre/mkmf/bin/$exe" ]; then
+          cp "fre/mkmf/bin/$exe" "$PREFIX/bin/$exe"
+        else
+          echo "Warning: $exe not found in mkmf submodule (checked fre/mkmf/mkmf/bin/ and fre/mkmf/bin/). Expected to be provided by a separate noaa-gfdl::mkmf conda dependency."
+        fi
+      done
+      # Install mkmf templates to the standard data-files location, mirroring what
+      # mkmf PR 75 does in the standalone mkmf conda package.  This makes fre-cli
+      # self-contained: downstream tools (get_mktemplate_path) resolve a bare
+      # template name to $CONDA_PREFIX/share/mkmf/templates/<name>.mk when the
+      # mkmf submodule templates/ directory is not present at runtime.
+      if [ -d "fre/mkmf/templates" ]; then
+        mkdir -p "$PREFIX/share/mkmf/templates"
+        cp -r fre/mkmf/templates/* "$PREFIX/share/mkmf/templates/"
+      else
+        echo "Warning: fre/mkmf/templates/ not found; mkmf templates not installed to $PREFIX/share/mkmf/templates/."
+      fi
   noarch: python
 
 channels:
