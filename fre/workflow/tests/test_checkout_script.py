@@ -12,8 +12,8 @@ def test_cylc_src_creation_fail(tmp_path):
     Test for the expected failure if the cylc-src
     directory cannot be created. 
 
-    This test simulates a file with the name cylc-src
-    already created, causing a permission error in HOME.
+    This test simulates the instance where a file with the name
+    'cylc-src' already exists, causing a permission error in HOME.
     """
     cylc_src_file = Path(f"{tmp_path}/cylc-src")
     with open(cylc_src_file, "w", encoding='utf-8') as f:
@@ -88,8 +88,8 @@ def test_pp_workflow_checkout_exists_already(tmp_path, caplog):
 
 def test_pp_workflow_checkout_force_checkout(tmp_path, caplog):
     """
-    Test successful re-cloning of the workflow repo if
-    force-checkout is passed.
+    Test successful re-cloning of the workflow repo
+    when force-checkout=True.
     """
     # 1st checkout
     checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
