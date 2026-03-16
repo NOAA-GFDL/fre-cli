@@ -16,17 +16,17 @@ fre_logger = logging.getLogger(__name__)
 ######VALIDATE#####
 def validate_yaml(yamlfile: dict, application: str):
     """
-    Validate the format of the yaml file based
-    on the schema.json held in [gfdl_msd_schemas](https://github.com/NOAA-GFDL/gfdl_msd_schemas).
+    Validate the format of the yaml file against the
+    schema.json held in [gfdl_msd_schemas](https://github.com/NOAA-GFDL/gfdl_msd_schemas).
 
-    :param yamlfile: Model, settings, pp, and analysis yaml
-                     information combined into a dictionary
+    :param yamlfile: Dictionary containing the combined model,
+                     settings, pp, and analysis yaml content
     :type yamlfile: dict
     :param application: type of workflow to check out/clone 
     :type application: string
     :raises ValueError:
-        - if gfdl_mdf_schema path is not valid
-        - combined yaml is not valid
+        - invalid gfdl_msd_schema path
+        - invalid combined yaml
         - unclear error in validation
     """
     schema_dir = Path(__file__).resolve().parents[1]
@@ -54,25 +54,26 @@ def validate_yaml(yamlfile: dict, application: str):
 
 def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = None, application: str = None, force_checkout: Optional[bool] = False):
     """
-    Create a directory and clone the workflow template files from a defined repository.
+    Create a directory and clone the workflow template files from a specified repository.
 
     :param yamlfile: Model yaml configuration file
     :type yamlfile: str
-    :param experiment: One of the postprocessing experiment names from the
-                       yaml displayed by fre list exps -y $yamlfile 
-                       (e.g. c96L65_am5f4b4r0_amip), default None
+    :param experiment: One of the experiment names listed in the model yaml file.
+                       Note: the command "fre list exps -y [model_yamlfile]" can be used to
+                       list the available experiment names
     :type experiment: str
-    :param application: Which workflow will be used/cloned
+    :param application: String used to specify the type of workflow to be used/cloned.
+                        Ex.: run, postprocess
     :type application: str
-    :param target_dir: Target/base directory used for cylc-src/<workflow> creation
+    :param target_dir: Target location to create the cylc-src/<workflow> directory in
     :type target_dir: str
     :param force_checkout: re-clone the workflow repository if it exists
     :type force_checkout: bool
-    :raises OSError: if the checkout script was not able to be created
+    :raises OSError: if the checkout script cannot be created
     :raises ValueError:
         - if the repository and/or tag was not defined
         - if the target directory does not exist or cannot be found
-        - if neither tag nor branch matches the git clone branch arg
+        - if tag or branch does not match the git clone branch arg
     """
     # Used in consolidate_yamls function for now
     platform = None
