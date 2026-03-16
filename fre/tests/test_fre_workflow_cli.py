@@ -4,7 +4,7 @@ CLI Tests for fre workflow *
 Tests the command-line-interface commands for each tool in the fre workflow suite.
   - successful invocation of fre workflow $tool 
   - successful invocation of fre workflow $tool --help
-  - expected failure for fre workflow $tool --optionDne  (failure for no click option defined for what was passed)
+  - expected failure for fre workflow $tool --optionDne  (failure for undefined click option)
 """
 import os
 from pathlib import Path

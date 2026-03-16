@@ -31,7 +31,7 @@ def test_cylc_src_creation_fail(tmp_path):
 def test_checkout_invalid_resolved_yaml(tmp_path):
     """
     Test for the expected error if the repository is not
-    defined in the settings.yaml and the yamls could not
+    defined in the settings.yaml and the yamls cannot
     be combined
     """
     experiment = "c96L65_am5f7b12r1_amip_TESTING_WRONG"
@@ -61,8 +61,7 @@ def test_pp_workflow_checkout(tmp_path, caplog):
 
 def test_pp_workflow_checkout_exists_already(tmp_path, caplog):
     """
-    Test for the expected output message if the checkout already exists,
-    using the same branch.
+    Test for the expected output message if the checkout already exists.
     """
     # 1st checkout
     checkout_script.workflow_checkout(yamlfile = f"{TEST_CONFIGS}/am5.yaml",
