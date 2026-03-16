@@ -1,12 +1,10 @@
 """
 CLI Tests for fre workflow *
-Tests the command-line-interface calls for tools in the fre workflow suite.
 
-Each tool generally gets 3 tests:
-  - fre workflow $tool, checking for exit code 0 (fails if cli isn't configured right)
-  - fre workflow $tool --help, checking for exit code 0 (fails if the code doesn't run)
-  - fre workflow $tool --optionDNE, checking for exit code 2; misuse of command (fails if cli isn't configured
-    right and thinks the tool has a --optionDNE option)
+Tests the command-line-interface commands for each tool in the fre workflow suite.
+  - successful invocation of fre workflow $tool 
+  - successful invocation of fre workflow $tool --help
+  - expected failure for fre workflow $tool --optionDne  (failure for no click option defined for what was passed)
 """
 import os
 from pathlib import Path
@@ -15,9 +13,6 @@ from fre import fre
 
 runner = CliRunner()
 
-## fre workflow subtools search for if TMPDIR is set, specifically for fre workflow checkout --target-dir
-# If a value for --target-dir is not passed --> TMPDIR will be used for --target-dir
-# If TMPDIR is not set --> a default location will be used for --target-dir 
 #-- fre workflow
 def test_cli_fre_workflow(monkeypatch, tmp_path):
     ''' fre workflow '''
