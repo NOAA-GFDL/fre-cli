@@ -98,7 +98,7 @@ def test_rename_split_to_pp_multiply_setup():
         for tp in tile_patterns:
             tp_file = re.sub(t1, tp, nct)
             tp_files.append(tp_file)
-            Path(nct).link_to(tp_file)
+            Path(nct).hardlink_to(tp_file)
     assert all([Path(el).is_file() for el in tp_files])
     
 @pytest.mark.parametrize("hist_source,do_regrid,og_suffix", 

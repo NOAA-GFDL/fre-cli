@@ -29,7 +29,6 @@ def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.dat
     hours = abs(date2 - date1).total_seconds() / 3600.0
     hours_floor = int(hours)
     minutes = (hours - hours_floor) * 60
-    print("testing", hours, minutes)
 
     # annual
     if hours > 4320:
