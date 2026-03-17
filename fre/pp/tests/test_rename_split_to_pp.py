@@ -80,7 +80,7 @@ def test_rename_split_to_pp_setup():
     nc_exists = [Path(el).is_file() for el in nc_files]
     assert all(nc_exists)
     
-def test_rename_split_to_pp_multiply():
+def test_rename_split_to_pp_multiply_setup():
     '''
     Takes every file with 'tile1' in the name and make 5 new copies.
     rename-split-to-pp needs 6 tile files - it throws an error if there are fewer -
