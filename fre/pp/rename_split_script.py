@@ -17,6 +17,14 @@ time_parser = TimePointParser(assumed_time_zone=(0, 0))
 def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) -> (str, str):
     """
     Accept two dates and returns frequency string in ISO8601 and associated format string.
+
+    :param date1: The first date for comparison.
+    :type date1: cftime.datetime
+    :param date2: The second date for comparison.
+    :type date2: cftime.datetime
+    :returns: A tuple containing the ISO8601 frequency string and the format string.
+    :rtype: tuple[str, str]
+    :raises ValueError: If the frequency cannot be determined from the dates.
     """
     hours = abs(date2 - date1).total_seconds() / 3600.0
     hours_floor = int(hours)
@@ -53,6 +61,14 @@ def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.dat
 def get_duration_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) -> str:
     """
     Accept two dates and output duration in ISO8601.
+
+    :param date1: The first date for comparison.
+    :type date1: cftime.datetime
+    :param date2: The second date for comparison.
+    :type date2: cftime.datetime
+    :returns: The ISO8601 duration string.
+    :rtype: str
+    :raises ValueError: If the duration cannot be determined from the dates.
     """
     duration = abs(date2 - date1)
     days = duration.total_seconds() / 86400
@@ -80,6 +96,16 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
     and output a directory and filename that identifies its frequency, interval,
     and beginning and ending dates, e.g.
         P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc
+
+    :param input_file: Path to the input NetCDF file.
+    :type input_file: str
+    :param diag_manifest: Optional path to the diagnostic manifest file.
+    :type diag_manifest: str or None
+    :returns: The new path for the renamed file.
+    :rtype: pathlib.PosixPath
+    :raises ValueError: If the file cannot be parsed or if diag manifest is required but not provided.
+    :raises FileNotFoundError: If the diag manifest does not exist.
+    :raises Exception: If unexpected frequency units are found in the diag manifest.
     """
     fre_logger.debug(f"Examining '{input_file}'")
     parts = input_file.stem.split('.')
@@ -227,6 +253,13 @@ def link_or_copy(source: str, destination:str) -> None:
     """
     Create a hard link including creating destination directory parents.
     If hard linking is not available, copy instead.
+
+    :param source: Path to the source file.
+    :type source: str
+    :param destination: Path to the destination file.
+    :type destination: str
+    :returns: None
+    :rtype: None
     """
 
     # Create destination directories
@@ -257,6 +290,20 @@ def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: b
     If hard-linking is available, use it; otherwise copy.
     For regridded cases, accept subdirectories corresponding to the regrid label
     in the input directory and use them in the output directory.
+
+    :param input_dir: Path to the input directory containing NetCDF files.
+    :type input_dir: str
+    :param output_dir: Path to the output directory for the nested structure.
+    :type output_dir: str
+    :param component: The component name to filter files (e.g., 'atmos').
+    :type component: str
+    :param use_subdirs: Whether to use subdirectories for regridded cases.
+    :type use_subdirs: bool
+    :param diag_manifest: Optional path to the diagnostic manifest file.
+    :type diag_manifest: str or None
+    :returns: None
+    :rtype: None
+    :raises FileNotFoundError: If no files matching the component are found in the input directory.
     """
     input_dir = Path(input_dir)
     did_something = False
