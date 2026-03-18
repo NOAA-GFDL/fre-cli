@@ -169,7 +169,9 @@ def _compute_renamed_path(filename, decoded_dataset, variable, diag_manifest=Non
         date, label, var = parts
         tile = None
     else:
-        raise ValueError(f"File '{filename}' cannot be parsed")
+        raise ValueError(
+            f"File '{filename}' cannot be parsed. "
+            f"Expected format: 'date.label.var.nc' or 'date.label.tile.var.nc'")
 
     # determine if variable depends on time (non-static)
     if 'time' in decoded_dataset[variable].dims:
@@ -239,7 +241,9 @@ def _compute_renamed_path(filename, decoded_dataset, variable, diag_manifest=Non
                         if duration is not None:
                             duration_object = rename_split_script.duration_parser.parse(duration)
                         else:
-                            raise Exception("Not found in diag manifest")
+                            raise Exception(
+                                f"File label '{label}' not found in diag manifest "
+                                f"'{diag_manifest}'")
                         freq_label = duration
                         date1 = rename_split_script.time_parser.parse(date)
                         one_month = rename_split_script.duration_parser.parse('P1M')
@@ -359,36 +363,37 @@ def split_file_xarray(infile, outfiledir, var_list='all', rename=False, diag_man
         if rename:
             decoded_dataset = xr.open_dataset(infile)
 
-        vc_encode = set_coord_encoding(dataset, dataset._coord_names)
-        for variable in write_vars:
-            fre_logger.info(f"splitting var {variable}")
-            #drop all data vars (diagnostics) that are not the current var of interest
-            #but KEEP the metadata vars
-            #(seriously, we need the time_bnds)
-            data2 = dataset.drop_vars([el for el in datavars if el is not variable])
-            v_encode= set_var_encoding(dataset, metavars)
-            #combine 2 dicts into 1 dict - should be no shared keys,
-            #so the merge is straightforward
-            var_encode = {**vc_encode, **v_encode}
-            fre_logger.debug(f"var_encode settings: {var_encode}")
-            #Encoding principles for xarray:
-            #  - no coords have a _FillValue
-            #  - Everything is written out with THE SAME precision it was read in
-            #  - Everything has THE SAME UNITS as it did when it was read in
-            var_outfile = fre_outfile_name(os.path.basename(infile), variable)
-            if rename:
-                # Compute final path and write directly there (no intermediate file)
-                new_rel_path = _compute_renamed_path(
-                    var_outfile, decoded_dataset, variable, diag_manifest)
-                var_out = os.path.join(outfiledir, str(new_rel_path))
-                os.makedirs(os.path.dirname(var_out), exist_ok=True)
-            else:
-                var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
-            data2.to_netcdf(var_out, encoding = var_encode)
-            fre_logger.debug(f"Wrote '{var_out}'")
-
-        if decoded_dataset is not None:
-            decoded_dataset.close()
+        try:
+            vc_encode = set_coord_encoding(dataset, dataset._coord_names)
+            for variable in write_vars:
+                fre_logger.info(f"splitting var {variable}")
+                #drop all data vars (diagnostics) that are not the current var of interest
+                #but KEEP the metadata vars
+                #(seriously, we need the time_bnds)
+                data2 = dataset.drop_vars([el for el in datavars if el is not variable])
+                v_encode= set_var_encoding(dataset, metavars)
+                #combine 2 dicts into 1 dict - should be no shared keys,
+                #so the merge is straightforward
+                var_encode = {**vc_encode, **v_encode}
+                fre_logger.debug(f"var_encode settings: {var_encode}")
+                #Encoding principles for xarray:
+                #  - no coords have a _FillValue
+                #  - Everything is written out with THE SAME precision it was read in
+                #  - Everything has THE SAME UNITS as it did when it was read in
+                var_outfile = fre_outfile_name(os.path.basename(infile), variable)
+                if rename:
+                    # Compute final path and write directly there (no intermediate file)
+                    new_rel_path = _compute_renamed_path(
+                        var_outfile, decoded_dataset, variable, diag_manifest)
+                    var_out = os.path.join(outfiledir, str(new_rel_path))
+                    os.makedirs(os.path.dirname(var_out), exist_ok=True)
+                else:
+                    var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
+                data2.to_netcdf(var_out, encoding = var_encode)
+                fre_logger.debug(f"Wrote '{var_out}'")
+        finally:
+            if decoded_dataset is not None:
+                decoded_dataset.close()
 
 def get_max_ndims(dataset):
   '''
