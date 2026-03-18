@@ -1,7 +1,9 @@
 import os
 import shutil
+import subprocess
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 
 from fre import fre
@@ -225,3 +227,78 @@ def test_cli_fre_pp_split_netcdf_diag_manifest_help():
     result = runner.invoke(fre.fre, args=["pp", "split-netcdf", "--help"])
     assert result.exit_code == 0
     assert "--diag-manifest" in result.output
+
+
+#-- fre pp split-netcdf --rename (CLI functional tests)
+
+SPLIT_NETCDF_TEST_DIR = os.path.realpath("fre/tests/test_files/ascii_files/split_netcdf")
+SPLIT_RENAME_CASES = {
+    "ts": {"dir": "atmos_daily.tile3",
+           "nc": "00010101.atmos_daily.tile3.nc",
+           "cdl": "00010101.atmos_daily.tile3.cdl",
+           "component": "atmos_daily"},
+    "static": {"dir": "ocean_static",
+               "nc": "00010101.ocean_static.nc",
+               "cdl": "00010101.ocean_static.cdl",
+               "component": "ocean_static"}
+}
+
+@pytest.fixture(scope="module")
+def split_rename_ncgen():
+    '''Generates netcdf files from cdl test data for split --rename CLI tests.'''
+    nc_files = []
+    for testcase in SPLIT_RENAME_CASES.values():
+        cds = os.path.join(SPLIT_NETCDF_TEST_DIR, testcase["dir"])
+        nc_path = os.path.join(cds, testcase["nc"])
+        cdl_path = os.path.join(cds, testcase["cdl"])
+        subprocess.run(["ncgen3", "-k", "netCDF-4", "-o", nc_path, cdl_path],
+                       check=True, capture_output=True)
+        nc_files.append(nc_path)
+    yield nc_files
+    for nc in nc_files:
+        if os.path.isfile(nc):
+            os.unlink(nc)
+
+
+@pytest.mark.parametrize("case_key", ["ts", "static"])
+def test_cli_fre_pp_split_netcdf_rename_run(split_rename_ncgen, tmp_path, case_key):
+    ''' fre pp split-netcdf --rename runs successfully via CLI '''
+    case = SPLIT_RENAME_CASES[case_key]
+    workdir = os.path.join(SPLIT_NETCDF_TEST_DIR, case["dir"])
+    infile = os.path.join(workdir, case["nc"])
+    outfiledir = str(tmp_path / f"rename_{case_key}")
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf",
+                                          "--file", infile,
+                                          "--outputdir", outfiledir,
+                                          "--variables", "all",
+                                          "--rename"])
+    assert result.exit_code == 0
+    outpath = Path(outfiledir)
+    component_dir = outpath / case["component"]
+    assert component_dir.is_dir(), f"Expected component directory {component_dir} not found"
+    root_nc_files = list(outpath.glob("*.nc"))
+    assert len(root_nc_files) == 0, f"Flat .nc files remain at root: {root_nc_files}"
+    nested_nc_files = list(outpath.rglob("*.nc"))
+    assert len(nested_nc_files) > 0, "No .nc files found in nested structure"
+    for nc_file in nested_nc_files:
+        rel_path = nc_file.relative_to(outpath)
+        assert len(rel_path.parts) >= 4, \
+            f"File {nc_file} not deep enough: {rel_path.parts}"
+
+
+def test_cli_fre_pp_split_netcdf_no_rename(split_rename_ncgen, tmp_path):
+    ''' fre pp split-netcdf without --rename produces flat output '''
+    case = SPLIT_RENAME_CASES["ts"]
+    workdir = os.path.join(SPLIT_NETCDF_TEST_DIR, case["dir"])
+    infile = os.path.join(workdir, case["nc"])
+    outfiledir = str(tmp_path / "no_rename")
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf",
+                                          "--file", infile,
+                                          "--outputdir", outfiledir,
+                                          "--variables", "all"])
+    assert result.exit_code == 0
+    outpath = Path(outfiledir)
+    root_nc_files = list(outpath.glob("*.nc"))
+    assert len(root_nc_files) > 0, "No flat .nc files at root without --rename"
+    subdirs = [d for d in outpath.iterdir() if d.is_dir()]
+    assert len(subdirs) == 0, f"Subdirs created without --rename: {subdirs}"

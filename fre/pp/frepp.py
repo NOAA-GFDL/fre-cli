@@ -223,32 +223,10 @@ def split_netcdf(file, outputdir, variables, rename, diag_manifest):
         If --rename is set, split files are additionally reorganized into a nested
         directory structure under $outputdir with frequency and duration
         (e.g. atmos_daily/P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc).'''
-    from pathlib import Path
     var_list = variables.split(",")
-    split_netcdf_script.split_file_xarray(file, outputdir, variables)
-    if rename:
-        outpath = Path(outputdir)
-        basename = Path(file).stem
-        pattern = f"{basename}.*.nc"
-        split_files = list(outpath.glob(pattern))
-        renamed_files = []
-        try:
-            for split_file in split_files:
-                new_rel_path = rename_split_script.rename_file(split_file, diag_manifest)
-                new_full_path = outpath / new_rel_path
-                rename_split_script.link_or_copy(str(split_file), str(new_full_path))
-                renamed_files.append((split_file, new_full_path))
-        except Exception as exc:
-            fre_logger.error(f"Error renaming split files: {exc}")
-            fre_logger.error("Cleaning up partially renamed files")
-            for _, renamed_path in renamed_files:
-                if Path(renamed_path).exists():
-                    Path(renamed_path).unlink()
-            raise
-        for split_file in split_files:
-            if split_file.exists():
-                split_file.unlink()
-        fre_logger.info(f"Renamed {len(split_files)} split files under {outputdir}")
+    split_netcdf_script.split_file_xarray(file, outputdir, variables,
+                                          rename=rename,
+                                          diag_manifest=diag_manifest)
 
 
 #fre pp ppval

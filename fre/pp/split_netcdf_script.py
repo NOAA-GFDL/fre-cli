@@ -140,7 +140,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
   fre_logger.info(f"split-netcdf-wrapper call complete, having split {files_split} files")
   sys.exit(0) #check this
 
-def split_file_xarray(infile, outfiledir, var_list='all'):
+def split_file_xarray(infile, outfiledir, var_list='all', rename=False, diag_manifest=None):
   '''
   Given a netcdf infile containing one or more data variables,
   writes out a separate file for each data variable in the file, including the
@@ -148,12 +148,20 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
   if var_list if specified, only the vars in var_list are written to file;
   if no vars in the file match the vars in var_list, no files are written.
 
+  If rename is True, split files are additionally reorganized into a nested
+  directory structure under outfiledir with frequency and duration
+  (e.g. atmos_daily/P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc).
+
   :param infile: input netcdf file
   :type infile: string
   :param outfiledir: writeable directory to which to write netcdf files
   :type outfiledir: string
   :param var_list: python list of string variable names or a string "all"
   :type var_list: list of strings
+  :param rename: if True, reorganize split files into nested dirs
+  :type rename: bool
+  :param diag_manifest: path to FMS diag manifest file, used with rename
+  :type diag_manifest: string or None
   '''
   if not os.path.isdir(outfiledir):
     fre_logger.info("creating output directory")
@@ -233,6 +241,31 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
       var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
       data2.to_netcdf(var_out, encoding = var_encode)
       fre_logger.debug(f"Wrote '{var_out}'")
+
+    if rename:
+      from . import rename_split_script
+      outpath = Path(outfiledir)
+      basename = Path(infile).stem
+      pattern = f"{basename}.*.nc"
+      split_files = list(outpath.glob(pattern))
+      renamed_files = []
+      try:
+        for split_file in split_files:
+          new_rel_path = rename_split_script.rename_file(split_file, diag_manifest)
+          new_full_path = outpath / new_rel_path
+          rename_split_script.link_or_copy(str(split_file), str(new_full_path))
+          renamed_files.append((split_file, new_full_path))
+      except Exception as exc:
+        fre_logger.error(f"Error renaming split files: {exc}")
+        fre_logger.error("Cleaning up partially renamed files")
+        for _, renamed_path in renamed_files:
+          if Path(renamed_path).exists():
+            Path(renamed_path).unlink()
+        raise
+      for split_file in split_files:
+        if split_file.exists():
+          split_file.unlink()
+      fre_logger.info(f"Renamed {len(split_files)} split files under {outfiledir}")
 
 def get_max_ndims(dataset):
   '''
