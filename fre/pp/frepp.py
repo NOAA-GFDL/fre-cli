@@ -231,11 +231,23 @@ def split_netcdf(file, outputdir, variables, rename, diag_manifest):
         basename = Path(file).stem
         pattern = f"{basename}.*.nc"
         split_files = list(outpath.glob(pattern))
+        renamed_files = []
+        try:
+            for split_file in split_files:
+                new_rel_path = rename_split_script.rename_file(split_file, diag_manifest)
+                new_full_path = outpath / new_rel_path
+                rename_split_script.link_or_copy(str(split_file), str(new_full_path))
+                renamed_files.append((split_file, new_full_path))
+        except Exception as exc:
+            fre_logger.error(f"Error renaming split files: {exc}")
+            fre_logger.error("Cleaning up partially renamed files")
+            for _, renamed_path in renamed_files:
+                if Path(renamed_path).exists():
+                    Path(renamed_path).unlink()
+            raise
         for split_file in split_files:
-            new_rel_path = rename_split_script.rename_file(split_file, diag_manifest)
-            new_full_path = outpath / new_rel_path
-            rename_split_script.link_or_copy(str(split_file), str(new_full_path))
-            split_file.unlink()
+            if split_file.exists():
+                split_file.unlink()
         fre_logger.info(f"Renamed {len(split_files)} split files under {outputdir}")
 
 
