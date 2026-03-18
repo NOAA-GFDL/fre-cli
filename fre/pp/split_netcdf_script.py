@@ -150,8 +150,9 @@ def split_file_xarray(infile, outfiledir, var_list='all', rename=False, diag_man
     if no vars in the file match the vars in var_list, no files are written.
 
     If rename is True, split files are additionally reorganized into a nested
-    directory structure under outfiledir with frequency and duration
-    (e.g. atmos_daily/P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc).
+    directory structure under outfiledir with frequency and duration (e.g. if 
+    outfiledir=atmos_daily, a complete path/dir structure might look like
+    atmos_daily/P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc).
 
     :param infile: input netcdf file
     :type infile: string
