@@ -19,6 +19,7 @@ from itertools import chain
 import logging
 
 from fre.app.helpers import get_variables
+from fre.pp import rename_split_script
 
 
 fre_logger = logging.getLogger(__name__)
@@ -243,7 +244,6 @@ def split_file_xarray(infile, outfiledir, var_list='all', rename=False, diag_man
       fre_logger.debug(f"Wrote '{var_out}'")
 
     if rename:
-      from . import rename_split_script
       outpath = Path(outfiledir)
       basename = Path(infile).stem
       pattern = f"{basename}.*.nc"
