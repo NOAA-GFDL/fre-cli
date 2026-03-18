@@ -204,7 +204,13 @@ Either unset --split-all-vars or parse the varlist from the yaml - do not try do
 @click.option('-v', '--variables', type = str, required=True,
               help='''Specifies which variables in $file are split and written to $outputdir.
                      Either a string "all" or a comma-separated string of variable names ("tasmax,tasmin,pr")''')
-def split_netcdf(file, outputdir, variables):
+@click.option('-r', '--rename', is_flag=True, default=False,
+              help='After splitting, rename output files into a nested directory structure '
+                   'organized by frequency and duration under $outputdir.')
+@click.option('-d', '--diag-manifest', type=str, required=False, default=None,
+              help='Path to FMS diag manifest file. Only used with --rename. '
+                   'Required when input file has one timestep and no time bounds.')
+def split_netcdf(file, outputdir, variables, rename, diag_manifest):
     ''' Splits a single netcdf file into one netcdf file per data variable and writes
         files to $outputdir.
         $variables is an option to filter the variables split out of $file and
@@ -212,9 +218,25 @@ def split_netcdf(file, outputdir, variables):
         in $file are split and written to $outputdir; if set to a comma-separated
         string of variable names, only the variable names in the string will be
         split and written to $outputdir. If no variable names in $variables match
-        variables in $file, no files will be written to $outputdir.'''
+        variables in $file, no files will be written to $outputdir.
+
+        If --rename is set, split files are additionally reorganized into a nested
+        directory structure under $outputdir with frequency and duration
+        (e.g. atmos_daily/P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc).'''
+    from pathlib import Path
     var_list = variables.split(",")
     split_netcdf_script.split_file_xarray(file, outputdir, variables)
+    if rename:
+        outpath = Path(outputdir)
+        basename = Path(file).stem
+        pattern = f"{basename}.*.nc"
+        split_files = list(outpath.glob(pattern))
+        for split_file in split_files:
+            new_rel_path = rename_split_script.rename_file(split_file, diag_manifest)
+            new_full_path = outpath / new_rel_path
+            rename_split_script.link_or_copy(str(split_file), str(new_full_path))
+            split_file.unlink()
+        fre_logger.info(f"Renamed {len(split_files)} split files under {outputdir}")
 
 
 #fre pp ppval
@@ -271,21 +293,3 @@ def trigger(experiment, platform, target, time):
     Start postprocessing history files that represent a specific chunk of time
     """
     trigger_script.trigger(experiment, platform, target, time)
-
-# fre pp rename-split
-@pp_cli.command()
-@click.option("-i", "--input-dir", type=str,
-              help="Input directory", required=True)
-@click.option("-o", "--output-dir", type=str,
-              help="Output directory", required=True)
-@click.option("-c", "--component", type=str,
-              help="Component name to process", required=True)
-@click.option("-u", '--use-subdirs', is_flag=True, default=False,
-              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
-@click.option("-d", "--diag-manifest", type=str, required=False, default=None,
-              help="Path to FMS diag manifest associated with the component (history file). Optional, but required when the history file has one timestep and no time bounds.")
-def rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest):
-    """
-    Create per-variable timeseries from shards
-    """
-    rename_split_script.rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest)

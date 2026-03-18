@@ -213,3 +213,15 @@ def test_cli_fre_pp_split_netcdf_opt_dne():
     ''' fre pp split-netcdf optionDNE '''
     result = runner.invoke(fre.fre, args=["pp", "split-netcdf", "optionDNE"])
     assert result.exit_code == 2
+
+def test_cli_fre_pp_split_netcdf_rename_help():
+    ''' fre pp split-netcdf --help includes --rename option '''
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf", "--help"])
+    assert result.exit_code == 0
+    assert "--rename" in result.output
+
+def test_cli_fre_pp_split_netcdf_diag_manifest_help():
+    ''' fre pp split-netcdf --help includes --diag-manifest option '''
+    result = runner.invoke(fre.fre, args=["pp", "split-netcdf", "--help"])
+    assert result.exit_code == 0
+    assert "--diag-manifest" in result.output
