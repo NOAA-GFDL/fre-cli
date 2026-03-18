@@ -26,7 +26,7 @@ cases = {"ts": {"dir": "atmos_daily.tile3",
                      "nc": "00010101.ocean_static.nc",
                      "cdl": "00010101.ocean_static.cdl"}}
 
-
+# scope=module means that this is invoked once for the tests that run from this file
 @pytest.fixture(scope="module")
 def ncgen_setup():
     '''Generates netcdf files from cdl test data needed for split+rename testing.'''
