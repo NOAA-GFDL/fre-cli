@@ -36,6 +36,6 @@ def workflow_cli():
               help="If the checkout already, exists, remove and clone the desired repo again.")
 def checkout(target_dir, yamlfile, experiment, application, force_checkout):
     """
-    Checkout/extract fre workflow
+    Checkout/clone the workflow repository.
     """
     checkout_script.workflow_checkout(target_dir, yamlfile, experiment, application, force_checkout)
