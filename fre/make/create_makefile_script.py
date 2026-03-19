@@ -8,12 +8,12 @@ For a bare-metal build: This file creates the Makefile used for model compilatio
 For a container build: This file creates the Makefile used for model compilation
                        in the `./tmp/[platform]` directory  
 
-For more information about the Makefile, see the fre-cli glossary: https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
+For more information about the Makefile, see the fre-cli glossary:
+https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
 '''
 
-import os
 import logging
-
+from pathlib import Path
 import fre.yamltools.combine_yamls_script as cy
 from fre.make.make_helpers import get_mktemplate_path
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
@@ -43,7 +43,6 @@ def makefile_create(yamlfile: str, platform: str, target:str):
        - for a bare-metal build (linker flags defined with "baremetal_linkerflags" in the
          compile yaml), linker flags are added to the link line in the Makefile
     """
-    srcDir="src"
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target
@@ -62,63 +61,63 @@ def makefile_create(yamlfile: str, platform: str, target:str):
     fre_vars = varsfre.frevars(full_combined)
 
     ## Open the yaml file, validate the yaml, and parse as fremake_yaml
-    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
-    fremakeYaml = modelYaml.getCompileYaml()
+    model_yaml = yamlfre.freyaml(full_combined,fre_vars)
+    fremake_yaml = model_yaml.getCompileYaml()
 
     ## Loop through platforms and targets
-    for platformName in plist:
-        for targetName in tlist:
-            targetObject = targetfre.fretarget(targetName)
-            if modelYaml.platforms.hasPlatform(platformName):
+    for platform_name in plist:
+        for target_name in tlist:
+            target_object = targetfre.fretarget(target_name)
+            if model_yaml.platforms.hasPlatform(platform_name):
                 pass
             else:
-                raise ValueError (f"{platformName} does not exist in platforms.yaml")
+                raise ValueError (f"{platform_name} does not exist in platforms.yaml")
 
-            platform=modelYaml.platforms.getPlatformFromName(platformName)
-            ## Make the bldDir based on the modelRoot, the platform, and the target
-            srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
+            platform=model_yaml.platforms.getPlatformFromName(platform_name)
+            ## Make the bld_dir based on the modelRoot, the platform, and the target
+            src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
             ## Check for type of build
             if platform["container"] is False:
-                bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
-                         f'{platformName}-{targetObject.gettargetName()}/exec'
-                os.system("mkdir -p " + bldDir)
+                bld_dir = f'{platform["modelRoot"]}/{fremake_yaml["experiment"]}/' + \
+                         f'{platform_name}-{target_object.gettargetName()}/exec'
+                Path(bld_dir).mkdir(parents = True, exist_ok = True)
 
                 template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                        model_root = platform["modelRoot"],
                                                        container_flag = platform["container"])
                 ## Create the Makefile
-                freMakefile = makefilefre.makefile(exp = fremakeYaml["experiment"],
-                                                   libs = fremakeYaml["baremetal_linkerflags"],
-                                                   srcDir = srcDir,
-                                                   bldDir = bldDir,
+                fre_makefile = makefilefre.makefile(exp = fremake_yaml["experiment"],
+                                                   libs = fremake_yaml["baremetal_linkerflags"],
+                                                   srcDir = src_dir,
+                                                   bldDir = bld_dir,
                                                    mkTemplatePath = template_path)
                 # Loop through components and send the component name, requires, and overrides for the Makefile
-                for c in fremakeYaml['src']:
-                    freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
-                freMakefile.writeMakefile()
+                for c in fremake_yaml['src']:
+                    fre_makefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
+                fre_makefile.writeMakefile()
                 former_log_level = fre_logger.level
                 fre_logger.setLevel(logging.INFO)
-                fre_logger.info("Makefile created in %s/Makefile", bldDir)
+                fre_logger.info("Makefile created in %s/Makefile", bld_dir)
                 fre_logger.setLevel(former_log_level)
             else:
-                bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
-                tmpDir = "./tmp/"+platformName
+                bld_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/exec"
+                tmp_dir = "./tmp/"+platform_name
 
                 template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                        model_root = platform["modelRoot"],
                                                        container_flag = platform["container"])
-                freMakefile = makefilefre.makefileContainer(exp = fremakeYaml["experiment"],
-                                                      libs = fremakeYaml["container_addlibs"],
-                                                      srcDir = srcDir,
-                                                      bldDir = bldDir,
+                fre_makefile = makefilefre.makefileContainer(exp = fremake_yaml["experiment"],
+                                                      libs = fremake_yaml["container_addlibs"],
+                                                      srcDir = src_dir,
+                                                      bldDir = bld_dir,
                                                       mkTemplatePath = template_path,
-                                                      tmpDir = tmpDir)
+                                                      tmpDir = tmp_dir)
 
                 # Loop through components and send the component name and requires for the Makefile
-                for c in fremakeYaml['src']:
-                    freMakefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
-                freMakefile.writeMakefile()
+                for c in fremake_yaml['src']:
+                    fre_makefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
+                fre_makefile.writeMakefile()
                 former_log_level = fre_logger.level
                 fre_logger.setLevel(logging.INFO)
-                fre_logger.info("Makefile created in %s/Makefile", tmpDir)
+                fre_logger.info("Makefile created in %s/Makefile", tmp_dir)
                 fre_logger.setLevel(former_log_level)
