@@ -1,9 +1,13 @@
 '''
-Creates a compile script to compile the model and generate a model executable.
+This script is used to create a compile.sh file for the bare-metal model compilation.
+It is created in the `[modelRoot]/[experiment name][platform-target]/exec` folder, where
+modelRoot` is defined in the `platforms.yaml`, `experiment name` is defined in `compile.yaml`,
+and `platform` and `target` are passed via click options.
+
+When run, the compile script generates the model executable.
 '''
 
 import logging
-import os
 from multiprocessing.dummy import Pool
 from pathlib import Path
 from typing import Optional
@@ -25,7 +29,7 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                    nparallel: int = 1, execute: Optional[bool] = False,
                    verbose: Optional[bool] = None):
     """
-    Creates the compile script for bare-metal build
+    This function creates the compile script for bare-metal build.
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
@@ -104,7 +108,7 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                 baremetalRun = True
                 bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
                          f'{platformName}-{target.gettargetName()}/exec'
-                os.system("mkdir -p " + bldDir)
+                Path(bldDir).mkdir(parents = True, exist_ok = True)
 
                 template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                     model_root = platform["modelRoot"],
@@ -122,11 +126,9 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                     fremakeBuild.writeBuildComponents(c)
                 fremakeBuild.writeScript()
                 fremakeBuildList.append(fremakeBuild)
-                fre_logger.info("\nCompile script created at " + bldDir + "/compile.sh" + "\n")
+                fre_logger.info("Compile script created here: %s/compile.sh", bldDir)
 
     if execute:
         if baremetalRun:
             pool = Pool(processes=nparallel)  # Create a multiprocessing Pool
             pool.map(buildBaremetal.fremake_parallel, fremakeBuildList)  # process data_inputs iterable with pool
-    else:
-        return
