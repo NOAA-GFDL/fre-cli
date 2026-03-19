@@ -4,17 +4,16 @@ Creates the Makefile for model compilation
 
 import os
 import logging
-from pathlib import Path
 
 import fre.yamltools.combine_yamls_script as cy
-from fre.make.make_helpers import get_mktemplate_path 
+from fre.make.make_helpers import get_mktemplate_path
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 
 fre_logger = logging.getLogger(__name__)
 
 def makefile_create(yamlfile: str, platform: str, target:str):
     """
-    Creates the makefile for model compilation
+    This function creates the makefile for model compilation.
     
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
@@ -34,10 +33,8 @@ def makefile_create(yamlfile: str, platform: str, target:str):
 
        - for a bare-metal build (linker flags defined with "baremetal_linkerflags" in the
          compile yaml), linker flags are added to the link line in the Makefile
-
     """
     srcDir="src"
-    baremetalRun = False # This is needed if there are no bare metal runs
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target
@@ -73,7 +70,6 @@ def makefile_create(yamlfile: str, platform: str, target:str):
             srcDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/src"
             ## Check for type of build
             if platform["container"] is False:
-                baremetalRun = True
                 bldDir = f'{platform["modelRoot"]}/{fremakeYaml["experiment"]}/' + \
                          f'{platformName}-{targetObject.gettargetName()}/exec'
                 os.system("mkdir -p " + bldDir)
@@ -93,7 +89,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                 freMakefile.writeMakefile()
                 former_log_level = fre_logger.level
                 fre_logger.setLevel(logging.INFO)
-                fre_logger.info("Makefile created in " + bldDir + "/Makefile")
+                fre_logger.info("Makefile created in %s/Makefile", bldDir)
                 fre_logger.setLevel(former_log_level)
             else:
                 bldDir = platform["modelRoot"] + "/" + fremakeYaml["experiment"] + "/exec"
@@ -115,5 +111,5 @@ def makefile_create(yamlfile: str, platform: str, target:str):
                 freMakefile.writeMakefile()
                 former_log_level = fre_logger.level
                 fre_logger.setLevel(logging.INFO)
-                fre_logger.info("Makefile created in " + tmpDir + "/Makefile")
+                fre_logger.info("Makefile created in %s/Makefile", tmpDir)
                 fre_logger.setLevel(former_log_level)
