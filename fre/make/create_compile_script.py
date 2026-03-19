@@ -36,10 +36,10 @@ def compile_create(yamlfile:str, platform:str, target:str, makejobs: int = 4,
     :param platform: FRE platform; defined in the platforms yaml
                      If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :param target: Predefined FRE targets; options include [prod|debug|repro]-[openmp|lto]
     :type target: str
     :param makejobs: Used for parallelism with make; number of files to build
-                  simultaneously; on a per-build basis (default 4)
+                     simultaneously; on a per-build basis (default 4)
     :type makejobs: int
     :param nparallel: Number of concurrent model builds (default 1)
     :type nparallel: int
@@ -67,9 +67,6 @@ def compile_create(yamlfile:str, platform:str, target:str, makejobs: int = 4,
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target
-
-    # Combined compile yaml file
-    # combined = Path(f"combined-{name}.yaml")
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yml,
