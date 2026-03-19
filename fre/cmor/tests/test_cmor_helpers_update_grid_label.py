@@ -70,7 +70,10 @@ def test_missing_nom_res_field(temp_json_file):
     new_nom_res = "updated_nom_res"
 
     # Act & Assert
-    with pytest.raises(KeyError, match='"Error updating \'nominal_resolution\'. Ensure the field exists and is modifiable."'):
+    with pytest.raises(
+        KeyError,
+        match='"Error updating \'nominal_resolution\'. Ensure the field exists and is modifiable."'
+    ):
         update_grid_and_label(temp_json_file, new_grid_label, new_grid, new_nom_res)
 
 def test_missing_grid_label_field(temp_json_file):

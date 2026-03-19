@@ -1,14 +1,16 @@
 """
 tests routines in fre.yamltools.combine_yamls
 """
-import os
-from pathlib import Path
-import pytest
-import shutil
 import json
-import yaml
+import os
 import pprint
+import shutil
+from pathlib import Path
+
+import pytest
+import yaml
 from jsonschema import validate
+
 from fre.yamltools import combine_yamls_script as cy
 
 
@@ -173,11 +175,15 @@ def test_check_expected_platformyamlcontent():
                                              'module load fre/bronx-23',
                                              'module load cray-hdf5/1.12.2.11',
                                              'module load cray-netcdf/4.9.0.11'],
-                                'mkTemplate': '/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/intel-classic.mk',
+                                'mkTemplate': '/ncrc/home2/fms/local/opt/'
+                                             'fre-commands/bronx-20/site/ncrc5/intel-classic.mk',
                                 'modelRoot': '${HOME}/fremake_canopy/test'}
     expected_platform_info_2 = {'name': 'hpcme.2023',
                                 'compiler': 'intel',
-                                'RUNenv': ['. /spack/share/spack/setup-env.sh', 'spack load libyaml', 'spack load netcdf-fortran@4.5.4', 'spack load hdf5@1.14.0'],
+                                'RUNenv': ['. /spack/share/spack/setup-env.sh',
+                                           'spack load libyaml',
+                                           'spack load netcdf-fortran@4.5.4',
+                                           'spack load hdf5@1.14.0'],
                                 'modelRoot': '/apps',
                                 'container': True,
                                 'containerBuild': 'podman',

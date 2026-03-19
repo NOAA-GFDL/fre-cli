@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 
 import fre.yamltools.combine_yamls_script as cy
-from fre.make.make_helpers import get_mktemplate_path 
+from fre.make.make_helpers import get_mktemplate_path
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 
 fre_logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ fre_logger = logging.getLogger(__name__)
 def makefile_create(yamlfile: str, platform: str, target:str):
     """
     Creates the makefile for model compilation
-    
+
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platform; defined in the platforms yaml
@@ -23,7 +23,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
     :type platform: str
     :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
-    :raises ValueError: Error if platform does not exist in platforms yaml configuration 
+    :raises ValueError: Error if platform does not exist in platforms yaml configuration
 
     .. note:: If additional library dependencies are defined in the compile.yaml file:
 
