@@ -1,13 +1,14 @@
 '''
 FRE Checkout Script Generator
 
-Retrieves information from the resolved yaml configuration to generate a 
-checkout.sh script that git clones the model source code.
+Retrieves information from the resolved YAML configuration to generate a 
+checkout.sh script that git clones the model source code. 
 
-Key Features:
-- YAML Integration: Consolidates model, platform, and compilation YAML configurations.
-- Multi-Environment Support: Generates tailored checkout logic for both bare-metal and containerized build environments.
-- Parallelization Control: Manages git submodule cloning concurrency and shell-level parallel backgrounding.
+The checkout script will clone component repositories defined in the 
+compile YAML to build the model.
+
+Note, a bare-metal build defaults to a parallel checkout.
+A container build defaults to a non-parallel checkout.
 
 '''
 
@@ -24,18 +25,22 @@ fre_logger = logging.getLogger(__name__)
 def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str, 
                              parallel_cmd: str, execute: bool):
     """
-    This function extracts information from resolved/loaded yaml configuration 
-    and generates a checkout script to the source directory for the bare-metal build.
+    This function baremetal_checkout_write is called by checkout_create in order to
+      - Extract compilation specifications from the parsed YAML configuration
+      - Generate a checkout script to the source directory. The source directory is
+      defined within the 'modelRoot' variable in the "platforms" section of the combined YAML
+      
 
-    :param model_yaml: FRE YAML class object containing parsed and validated yaml dictionary compilation information
+    :param model_yaml: "freyaml" class object containing a parsed and validated yaml dictionary 
+                       containing the "compile" specification
     :type model_yaml: yamlfre.freyaml
-    :param src_dir: Path to the directory where source code will be checked out
+    :param src_dir: Absolute directory path to git clone the source code
     :type src_dir: str
-    :param jobs: Number of git submodules to clone simultaneously
+    :param jobs: Number of git submodules to clone simultaneously (TO CLARIFY)
     :type jobs: str
-    :param parallel_cmd: " &" is added for parallel checkouts and "" for non-parallel checkouts
+    :param parallel_cmd: Set to " &" for parallel checkouts and "" for non-parallel checkouts
     :type parallel_cmd: str
-    :param execute: If True, runs the generated script after creation
+    :param execute: If True, run the generated checkout.sh
     :type execute: bool
     """
     fre_checkout = checkout.checkout("checkout.sh", src_dir)
@@ -53,19 +58,22 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
 def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir: str,
                              jobs: str, parallel_cmd: str):
     """
-    This function extracts information from resolved/loaded yaml configuration 
-    and generates a checkout script in the ./tmp directory for a containerized build.
-    The script is then copied to and run in the container during the image build.
+    This function container_checkout_write is called by checkout_create in order to
+      - Extract compilation specifications from the parsed YAML configuration
+      - Generate a checkout script in a local ./tmp directory, where it will later be
+      copied to the directory of the container image filesystem for execution
 
-    :param model_yaml: FRE YAML class object containing parsed and validated yaml dictionary compilation information
+    :param model_yaml: "freyaml" class object containing a parsed and validated yaml dictionary 
+                       containing the "compile" specification
     :type model_yaml: yamlfre.freyaml
-    :param src_dir: Internal container path for source code, corresponding to the 'modelRoot' key defined in the platform yaml
+    :param src_dir: Internal path for source code in the running container. The source directory is
+                    defined within the 'modelRoot' variable in the "platforms" section of the combined YAML
     :type src_dir: str
-    :param tmp_dir: Temporary directory that hosts the created checkout script, before being copied to the cointainer
+    :param tmp_dir: Temporary directory (outside of container) that hosts the created checkout script
     :type tmp_dir: str
-    :param jobs: Number of git submodules to clone simultaneously
+    :param jobs: Number of git submodules to clone simultaneously (TO CLARIFY)
     :type jobs: str
-    :param parallel_cmd: Container builds are not parallelized; use "" for non-parallel checkouts
+    :param parallel_cmd: Since container builds are not parallelized, set to ""
     :type parallel_cmd: str
     """
     fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
@@ -73,39 +81,33 @@ def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir:
     fre_checkout.finish(model_yaml.compile.getCompileYaml(), parallel_cmd)
     fre_logger.info("Checkout script created in ./%s/checkout.sh", tmp_dir)
 
-def checkout_create(yamlfile: str, platform: str | list, target: str | list,
+def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                     no_parallel_checkout: Optional[bool] = None, njobs: int = 4,
                     execute: Optional[bool] = False, force_checkout: Optional[bool] = False):
     """
-    Creates the checkout script for bare-metal or container builds.
+    Calls baremetal_checkout_write or container_checkout_write to create checkout.sh
+    for baremetal or container builds, respectively.
 
-    The checkout script will clone component repositories, defined 
-    in the compile yaml, needed to build the model.
-
-    :param yamlfile: Model compile YAML file path
+    :param yamlfile: Model YAML file path
     :type yamlfile: str
-    :param platform: FRE platform(s); defined in the platforms yaml.
-                     Can be a single string or a list of platforms.
-                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
-    :type platform: str or list
-    :param target: Predefined FRE target(s); options include [prod/debug/repro]-openmp
-    :type target: str or list
-    :param no_parallel_checkout: Option to turn off background parallel checkouts
+    :param platform: FRE platform(s) that are defined in the platforms.yaml
+    :type platform: tuple
+    :param target: Predefined FRE target(s)
+    :type target: tuple
+    :param no_parallel_checkout: Option to disable parallel checkouts
     :type no_parallel_checkout: bool
-    :param njobs: Used in the recursive clone; number of submodules to fetch simultaneously (default 4)
+    :param njobs: Used in the recursive clone; number of submodules to fetch simultaneously (default 4) (TO CLARIFY)
     :type njobs: int
-    :param execute: If True, runs the created checkout script to check out source code
+    :param execute: If True, run checkout.sh
     :type execute: bool
-    :param force_checkout: If True, overwrites locally existing checkout script and source code with new versions
+    :param force_checkout: If True, overwrite locally existing checkout script and source code
     :type force_checkout: bool
 
     :raises ValueError:
-        - If 'njobs' is not an integer/compatible with execution flags
-        - If a specified platform does not exist in the platforms yaml configuration
-    :raises OSError: If checkout script execution fails
-
-    .. note:: For a bare-metal build, a parallel checkout is the default
-              For a container build, a non-parallel checkout is the default
+        - If 'njobs' is not an integer
+        - If 'platform' does not exist in the platforms.yaml configuration
+    :raises OSError: If executing checkout.sh returns an error
+    
     """
     # Standardize inputs
     jobs_str = str(njobs)
@@ -134,9 +136,8 @@ def checkout_create(yamlfile: str, platform: str | list, target: str | list,
     fremake_yaml = model_yaml.getCompileYaml()
 
     # Validate the targets
-    targets_list = [target] if isinstance(target, str) else target
-    for target_name in targets_list:
-        target = targetfre.fretarget(target_name)
+    for t in target:
+      valid_t = targetfre.fretarget(t)
 
     fre_logger.setLevel(level=logging.INFO)
 
@@ -145,9 +146,8 @@ def checkout_create(yamlfile: str, platform: str | list, target: str | list,
     ## If the platform is a baremetal platform, write the checkout script and run it once
     ## This should be done separately and serially because baremetal platforms should all be using
     ## the same source code.
-    platforms_list = [platform] if isinstance(platform, str) else platform
 
-    for platform_name in platforms_list:
+    for platform_name in platform:
         if not model_yaml.platforms.hasPlatform(platform_name):
             raise ValueError(f"{platform_name} does not exist in platforms.yaml")
 
