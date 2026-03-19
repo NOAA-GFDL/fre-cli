@@ -1,5 +1,14 @@
 '''
-Creates the Makefile for model compilation
+For a bare-metal build: This file creates the Makefile used for model compilation
+                        in the `[modelRoot]/[experiment name][platform-target]/exec`,
+                        where `modelRoot` is defined in the `platforms.yaml`, `experiment name`
+                        is defined in `compile.yaml`, and `platform` and `target` are passed
+                        via click options.
+
+For a container build: This file creates the Makefile used for model compilation
+                       in the `./tmp/[platform]` directory  
+
+For more information about the Makefile, see the fre-cli glossary: https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
 '''
 
 import os
