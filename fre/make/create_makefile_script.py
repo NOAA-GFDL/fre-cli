@@ -1,6 +1,6 @@
 '''
 For a bare-metal build: This file creates the Makefile used for model compilation
-                        in the `[modelRoot]/[experiment name][platform-target]/exec`,
+                        in the `[modelRoot]/[experiment name][platform-target]/exec` folder,
                         where `modelRoot` is defined in the `platforms.yaml`, `experiment name`
                         is defined in `compile.yaml`, and `platform` and `target` are passed
                         via click options.
@@ -31,7 +31,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
     :type platform: str
     :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
-    :raises ValueError: Error if platform does not exist in platforms yaml configuration 
+    :raises ValueError: Error if platform does not exist in platforms yaml configuration
 
     .. note:: If additional library dependencies are defined in the compile.yaml file:
 

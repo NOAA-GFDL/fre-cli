@@ -2,11 +2,10 @@
 module init file for fre. sets the version attribute, and sets up a fre_logger
 """
 
-import os
-version = os.getenv("GIT_DESCRIBE_TAG", "2026.01-alpha1")
-__version__ = version
-
 import logging
+import os
+version = os.getenv("GIT_DESCRIBE_TAG", "2026.01.alpha1")
+__version__ = version
 
 fre_logger = logging.getLogger(__name__)
 

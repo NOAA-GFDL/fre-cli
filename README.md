@@ -40,7 +40,7 @@ loading fre-cli into a user's environment.
 
 ```
 module use -a /ncrc/home2/fms/local/modulefiles
-module load fre/2026.01-alpha1
+module load fre/2026.01.alpha1
 ```
 
 #### Activate a shared conda environment:
@@ -48,12 +48,12 @@ module load fre/2026.01-alpha1
 - GFDL:
 ```
 module load miniforge
-conda activate /nbhome/fms/conda/envs/fre-2026.01-alpha1
+conda activate /nbhome/fms/conda/envs/fre-2026.01.alpha1
 ```
 - Gaea:
 ```
 module use /usw/conda/modulefiles
-module load miniforge conda activate /ncrc/home2/fms/.conda/envs/fre-2026.01-alpha1
+module load miniforge conda activate /ncrc/home2/fms/.conda/envs/fre-2026.01.alpha1
 ```
 
 ## Install via Conda
@@ -64,8 +64,8 @@ of how to install fre-cli via conda:
 ```
 conda config --append channels noaa-gfdl
 conda config --append channels conda-forge
-conda create --name fre-2026.01-alpha1 --channel noaa-gfdl --channel conda-forge fre-cli::2026.01-alpha1
-conda activate fre-2026.01-alpha1
+conda create --name fre-2026.01.alpha1 --channel noaa-gfdl --channel conda-forge fre-cli::2026.01.alpha1
+conda activate fre-2026.01.alpha1
 # optional: install or load fre-nctools to gain access to regridding and certain time-averaging routines
 # add to your path like: export PATH=/path/to/your/fre-nctools/build/bin:$PATH
 # or if you have lmod/modules: module load fre-nctools/<version>

@@ -1,11 +1,14 @@
 """
 Test histval_script
 """
-import pytest
 import re
-from pathlib import Path
-from fre.pp import histval_script as histval
 import subprocess
+from pathlib import Path
+
+import pytest
+
+from fre.pp import histval_script as histval
+
 
 # Set example input paths
 
@@ -49,7 +52,7 @@ def test_histval(capfd):
                         match=re.escape(
                             value_err_str
                         ) ):
-        result=(histval.validate(test_dir,'00010101',warn=None))
+        result = histval.validate(test_dir,'00010101',warn=None)
 
     #Delete the test files
     for x in test_files:
