@@ -100,7 +100,7 @@ def test_run_fremake_makefile_creation_serial():
     assert Path(
         f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/Makefile").exists()
 
-def test_run_fremake_force_checkout_serial():
+def test_run_fremake_force_checkout_serial(caplog):
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
 
@@ -121,7 +121,7 @@ def test_run_fremake_force_checkout_serial():
                 Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists()])
 
 # same tests with multijob compile and non-parallel-checkout options enabled
-def test_run_fremake_multijob(caplog):
+def test_run_fremake_multijob():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
 
