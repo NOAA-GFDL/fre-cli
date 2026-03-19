@@ -18,6 +18,6 @@ Glossary
 
   makefile
     The term refers to the file created, for both the bare-metal and container builds, through ``fre make makefile``.
-    The file defines required components, dependencies, any necessary linker flags, and the mk_template (defined in the 
-    ``platforms.yaml``) used for the model to compile. The mk_template path is defined in the platforms yaml and refers
-    to a template in the `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
+    The file defines required components, dependencies, necessary linker flags, copmiler options, and the mk_template
+    (defined in the ``platforms.yaml``) used for the model to compile. The mk_template path is defined in the platforms
+    yaml and refers to a template in the `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
