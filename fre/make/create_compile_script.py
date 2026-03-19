@@ -25,7 +25,7 @@ from .gfdlfremake import (
 
 fre_logger = logging.getLogger(__name__)
 
-def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
+def compile_create(yamlfile:str, platform:str, target:str, makejobs: int = 4,
                    nparallel: int = 1, execute: Optional[bool] = False,
                    verbose: Optional[bool] = None):
     """
@@ -38,9 +38,9 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
     :type platform: str
     :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
-    :param njobs: Used for parallelism with make; number of files to build
+    :param makejobs: Used for parallelism with make; number of files to build
                   simultaneously; on a per-build basis (default 4)
-    :type njobs: int
+    :type makejobs: int
     :param nparallel: Number of concurrent model builds (default 1)
     :type nparallel: int
     :param execute: Run the created compile script to build a model executable
@@ -55,7 +55,7 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
     # Define variables
     yml = yamlfile
     name = yamlfile.split(".")[0]
-    jobs = str(njobs)
+    jobs = str(makejobs)
 
     if verbose:
         fre_logger.setLevel(level=logging.DEBUG)
