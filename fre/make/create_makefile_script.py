@@ -1,6 +1,6 @@
 '''
 For a bare-metal build: This file creates the Makefile used for model compilation
-                        in the `[modelRoot]/[experiment name][platform-target]/exec`,
+                        in the `[modelRoot]/[experiment name][platform-target]/exec` folder,
                         where `modelRoot` is defined in the `platforms.yaml`, `experiment name`
                         is defined in `compile.yaml`, and `platform` and `target` are passed
                         via click options.
