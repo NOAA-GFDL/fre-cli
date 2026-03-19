@@ -31,7 +31,7 @@ def makefile_create(yamlfile: str, platform: str, target:str):
     :type platform: str
     :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
-    :raises ValueError: Error if platform does not exist in platforms yaml configuration 
+    :raises ValueError: Error if platform does not exist in platforms yaml configuration
 
     .. note:: If additional library dependencies are defined in the compile.yaml file:
 
