@@ -64,7 +64,7 @@ def test_bad_target_option():
     ''' test run-fremake with a invalid target option'''
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT,
         nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE
+	no_format_transfer=False, execute=False, verbose=VERBOSE, 
         force_checkout=False)
 
 @pytest.mark.xfail()
