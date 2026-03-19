@@ -55,7 +55,13 @@ def validate_yaml(yamlfile: dict) -> None:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 ####################
-def rose_init(experiment: str, platform: str, target: str) -> tuple[metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode]:
+def rose_init(
+    experiment: str, platform: str, target: str
+) -> tuple[
+    metomi.rose.config.ConfigNode,
+    metomi.rose.config.ConfigNode,
+    metomi.rose.config.ConfigNode
+]:
     """
     Initializes the rose suite and app configurations.
 
@@ -155,7 +161,9 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
             rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
 
 ####################
-def set_rose_apps(yamlfile: dict, rose_regrid: metomi.rose.config.ConfigNode, rose_remap: metomi.rose.config.ConfigNode) -> None:
+def set_rose_apps(yamlfile: dict,
+                  rose_regrid: metomi.rose.config.ConfigNode,
+                  rose_remap: metomi.rose.config.ConfigNode) -> None:
     """
     Sets items in the regrid and remap rose app configurations.
 

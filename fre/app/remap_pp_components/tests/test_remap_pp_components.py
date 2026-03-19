@@ -374,8 +374,10 @@ def test_nccmp_ncgen_remap_statics():
     output_nc_file = f"{comp_name}.bk.nc"
 
     nccmp = [ "nccmp", "-d",
-              Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_static_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}"),
-              Path(f"{REMAP_OUT}/static/{comp_name}/{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}")]
+              Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_static_scalar/"
+                   f"{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}"),
+              Path(f"{REMAP_OUT}/static/{comp_name}/"
+                   f"{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}")]
 
     sp = subprocess.run( nccmp, check = False)
     assert sp.returncode == 0
@@ -444,8 +446,12 @@ def test_remap_static_variable_filtering():
     # Check for
     # 1. creation of output directory structure,
     # 2. link to nc file in output location
-    assert all([Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
-                Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/{STATIC_FREQ}/{STATIC_CHUNK}/atmos_scalar_test_vars_CNAME.bk.nc").exists()])
+    assert all([
+        Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/"
+             f"{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
+        Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/"
+             f"{STATIC_FREQ}/{STATIC_CHUNK}/atmos_scalar_test_vars_CNAME.bk.nc").exists()
+    ])
 
 @pytest.mark.xfail
 def test_remap_variable_filtering_fail():
