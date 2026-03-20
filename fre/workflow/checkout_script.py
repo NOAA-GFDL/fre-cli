@@ -70,7 +70,8 @@ def workflow_checkout(target_dir: str = None, yamlfile: str = None, experiment: 
     :type application: str
     :param target_dir: Target location to create the cylc-src/<workflow> directory in
     :type target_dir: str
-    :param force_checkout: re-clone the workflow repository if it exists
+    :param force_checkout: If the workflow directory exists, move it to an archived location
+                           (~/.fre-workflows/archived) and re-clone the workflow repository
     :type force_checkout: bool
     :raises OSError: if the checkout script cannot be created
     :raises ValueError:
