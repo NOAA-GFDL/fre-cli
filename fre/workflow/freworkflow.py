@@ -26,7 +26,6 @@ def workflow_cli():
               required=True)
 @click.option("--target-dir",
               type=str,
-              default=os.path.expanduser("~/.fre-workflows"),
               help=f"""Target directory for the workflow to be cloned into.
                     If not defined, a default location of ~/.fre-workflows
                     will be used""")
