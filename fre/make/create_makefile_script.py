@@ -1,16 +1,16 @@
 '''
 For a bare-metal build: 
 Create the Makefile used for model compilation in the 
-`[modelRoot]/[experiment name][platform-target]/exec`
+`[modelRoot]/[experiment name]/[platform]-[target]/exec`
 folder.
-
-- `modelRoot` is defined in the `platforms.yaml`
-- 'experiment name` is defined in `compile.yaml`
-- `platform` and `target` are passed via click options
 
 For a container build:
 Create the Makefile used for model compilation in the
 `./tmp/[platform]` directory.
+
+- `modelRoot` is defined in the `platforms.yaml`
+- `experiment name` is defined in `compile.yaml`
+- `platform` and `target` are passed via click options
 
 For more information about the Makefile, see the fre-cli glossary:
 https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
