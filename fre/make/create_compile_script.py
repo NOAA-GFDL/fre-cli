@@ -2,9 +2,11 @@
 Retrieves information from the resolved YAML configuration to generate the compile.sh
 for the bare-metal model compilation.
 
-It is created in the `[modelRoot]/[experiment name][platform-target]/exec` folder, where
-modelRoot` is defined in the `platforms.yaml`, `experiment name` is defined in `compile.yaml`,
-and `platform` and `target` are passed via click options.
+It is created in the `[modelRoot]/[experiment name]/[platform-target]/exec` folder.
+
+- modelRoot` is defined in the `platforms.yaml`
+- `experiment name` is defined in `compile.yaml`
+- `platform` and `target` are passed via click options
 
 When run, the compile script generates the model executable.
 '''
