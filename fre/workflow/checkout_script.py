@@ -65,7 +65,7 @@ def workflow_checkout(target_dir: str = None, yamlfile: str = None, experiment: 
                        Note: the command "fre list exps -y [model_yamlfile]" can be used to
                        list the available experiment names
     :type experiment: str
-    :param application: String used to specify the type of workflow to be used/cloned.
+    :param application: String used to specify the type of workflow to be cloned.
                         Ex.: run, postprocess
     :type application: str
     :param target_dir: Target location to create the cylc-src/<workflow> directory in
