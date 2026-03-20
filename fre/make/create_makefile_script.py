@@ -1,12 +1,12 @@
 '''
-For a bare-metal build: This file creates the Makefile used for model compilation
-                        in the `[modelRoot]/[experiment name][platform-target]/exec` folder,
-                        where `modelRoot` is defined in the `platforms.yaml`, `experiment name`
-                        is defined in `compile.yaml`, and `platform` and `target` are passed
-                        via click options.
+For a bare-metal build: Create the Makefile used for model compilation
+                        in the `[modelRoot]/[experiment name][platform-target]/exec`
+                        folder, where `modelRoot` is defined in the `platforms.yaml`,
+                        `experiment name` is defined in `compile.yaml`, and `platform`
+                        and `target` are passed via click options.
 
-For a container build: This file creates the Makefile used for model compilation
-                       in the `./tmp/[platform]` directory  
+For a container build: Create the Makefile used for model compilation in the
+                       `./tmp/[platform]` directory .
 
 For more information about the Makefile, see the fre-cli glossary:
 https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
@@ -20,37 +20,32 @@ from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 
 fre_logger = logging.getLogger(__name__)
 
-def makefile_create(yamlfile: str, platform: str, target:str):
+def makefile_create(yamlfile: str, platform: tuple, target: tuple):
     """
     This function creates the makefile for model compilation.
     
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platform; defined in the platforms yaml
-                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
-    :type platform: str
+    :type platform: tuple
     :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
-    :type target: str
+    :type target: tuple
     :raises ValueError: Error if platform does not exist in platforms yaml configuration
 
     .. note:: If additional library dependencies are defined in the compile.yaml file:
 
-       - for a container build (library dependencies defined with "container_addlibs" in
-         the compile yaml), a linkline script will be generated to determine paths for the
-         additional libraries located inside the container and add the appropriate flags
-         to the Makefile
+       - For a container build, where library dependencies are defined via the "container_addlibs"
+         key in the compile yaml, a linkline script will be generated to determine paths for the
+         additional libraries located inside the container. This script will add appropriate
+         flags to the Makefile for these libraries. 
 
-       - for a bare-metal build (linker flags defined with "baremetal_linkerflags" in the
-         compile yaml), linker flags are added to the link line in the Makefile
+       - For a bare-metal build, where linker flags are defined via the "baremetal_linkerflags" key
+         in the compile yaml, linker flags are added to the link line in the Makefile
     """
-    ## Split and store the platforms and targets in a list
-    plist = platform
-    tlist = target
-    yml = yamlfile
     name = yamlfile.split(".")[0]
 
     # Combine model, compile, and platform yamls
-    full_combined = cy.consolidate_yamls(yamlfile=yml,
+    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
                                          experiment=name,
                                          platform=platform,
                                          target=target,
@@ -65,8 +60,8 @@ def makefile_create(yamlfile: str, platform: str, target:str):
     fremake_yaml = model_yaml.getCompileYaml()
 
     ## Loop through platforms and targets
-    for platform_name in plist:
-        for target_name in tlist:
+    for platform_name in platform:
+        for target_name in target:
             target_object = targetfre.fretarget(target_name)
             if model_yaml.platforms.hasPlatform(platform_name):
                 pass
