@@ -18,25 +18,25 @@ Users can clone the fre-cli repository and invoke the commands below from the ro
 
 ```bash
 # Create and run checkout script: checkout script will check out source code as defined in the compile.yaml
-fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+fre make checkout-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod --execute
 
 # Create Makefile
-fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod
+fre make makefile -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod
 
 # Create and run the compile script to generate a model executable
-fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+fre make compile-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod --execute
 ```
 ### Bare-metal Build (Multi-target):
 
 ```bash
 # Create and run checkout script: checkout script will check out source code as defined in the compile.yaml
-fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
+fre make checkout-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
 # Create Makefile
-fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
+fre make makefile -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
 # Create and run a compile script for each target specified; generates model executables
-fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
+fre make compile-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 ```
 
 ### Container Build:
@@ -44,13 +44,13 @@ In order for the container to build successfully, the parallel checkout feature 
 
 ```bash
 # Create checkout script
-fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod
+fre make checkout-script -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod
 
 # Create Makefile
-fre make makefile -y null_model.yaml -p hpcme.2023 -t prod
+fre make makefile -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod
 
 # Create the Dockerfile and container build script: the container build script (createContainer.sh) uses the Dockerfile to build a model container
-fre make dockerfile -y null_model.yaml -p hpcme.2023 -t prod --execute
+fre make dockerfile -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod --execute
 ```
 
 ### Run all of fremake:
@@ -59,10 +59,10 @@ fre make dockerfile -y null_model.yaml -p hpcme.2023 -t prod --execute
 
 ```bash
 # Bare-metal: create and run checkout script, create makefile, create and RUN compile script to generate a model executable
-fre make all -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+fre make all -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod --execute
 
 # Container: create checkout script, makefile, create dockerfile, and create and RUN the container build script to generate a model container
-fre make all -y null_model.yaml -p hpcme.2023 -t prod --execute
+fre make all -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod --execute
 ```
 
 ## Subtools
