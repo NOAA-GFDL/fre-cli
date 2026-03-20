@@ -1,12 +1,14 @@
 """ Workflow checkout """
 import os
 import subprocess
+import filecmp
 from pathlib import Path
 import logging
 import shutil
+from datetime import datetime
+from typing import Optional
 import json
 from jsonschema import validate, SchemaError, ValidationError
-from typing import Optional
 
 import fre.yamltools.combine_yamls_script as cy
 from fre.app.helpers import change_directory
@@ -27,7 +29,7 @@ def validate_yaml(yamlfile: dict, application: str):
     :raises ValueError:
         - invalid gfdl_msd_schema path
         - invalid combined yaml
-        - unclear error in validation
+        - miscellaneous error in validation
     """
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', f'fre_{application}.json')
@@ -50,9 +52,10 @@ def validate_yaml(yamlfile: dict, application: str):
     except ValidationError as exc:
         raise ValueError("Combined yaml is not valid. Please fix the errors and try again.") from exc
     except Exception as exc:
-        raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
+        raise ValueError("Miscellaneous error from validation. Please try to find the error and try again.") from exc
 
-def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = None, application: str = None, force_checkout: Optional[bool] = False):
+def workflow_checkout(target_dir: str = None, yamlfile: str = None, experiment: str = None,
+                      application: str = None, force_checkout: Optional[bool] = False):
     """
     Create a directory and clone the workflow template files from a specified repository.
 
@@ -79,6 +82,10 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
     platform = None
     target = None
 
+    # Set the default target directory location
+    if target_dir is None:
+        target_dir = os.path.expanduser("~/.fre-workflows")
+
     if application in ["run", "pp"]:
         fre_logger.info(" ** Configuring the resolved YAML for the %s **", application)
         yaml = cy.consolidate_yamls(yamlfile=yamlfile,
@@ -96,6 +103,7 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
 
         workflow_info = yaml.get(application).get("workflow")
 
+    yaml_filepath = f"{Path.cwd()}/config.yaml"
     repo = workflow_info.get("repository")
     tag = workflow_info.get("version")
     fre_logger.info("Defined tag ==> '%s'", tag)
@@ -124,10 +132,24 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
     if Path(f"{src_dir}/{workflow_name}").is_dir():
         fre_logger.info(" *** PREVIOUS CHECKOUT FOUND: %s/%s *** ", src_dir, workflow_name)
         if force_checkout:
-            fre_logger.warning(" *** REMOVING %s/%s *** ", src_dir, workflow_name)
-            shutil.rmtree(f"{src_dir}/{workflow_name}")
+            # Create archived workflows location
+            archived = f"{target_dir}/archived_workflows"
+            Path(archived).mkdir(parents=True, exist_ok=True)
+
+            # Move previous workflow to archived location
+            fre_logger.warning(" *** Moving previous checkout to %s ***", archived)
+            shutil.move(f"{src_dir}/{workflow_name}", archived)
+
+            # Rename previous workflow
+            move_timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+            os.rename(f"{archived}/{workflow_name}", f"{archived}/{workflow_name}_{move_timestamp}")
+
+#            # Keeping this here in case we want to switch force_checkout to removing instead of moving
+#            fre_logger.warning(" *** REMOVING %s/%s *** ", src_dir, workflow_name)
+#            shutil.rmtree(f"{src_dir}/{workflow_name}")
         else:
             with change_directory(f"{src_dir}/{workflow_name}"):
+                ## Compare previous workflow directory
                 # capture the branch and tag
                 # if either match git_clone_branch_arg, then success. otherwise, fail.
                 current_tag = subprocess.run(["git","describe","--tags"],
@@ -138,13 +160,35 @@ def workflow_checkout(target_dir: str, yamlfile: str = None, experiment: str = N
                                                  text = True, check = True).stdout.strip()
 
                 if tag in (current_tag, current_branch):
-                    fre_logger.warning("Checkout exists ('%s/%s'), and matches '%s'", src_dir, workflow_name, tag)
+                    fre_logger.info("Checkout exists ('%s/%s'), and matches '%s'", src_dir, workflow_name, tag)
                 else:
                     fre_logger.error(
                         "ERROR: Checkout exists ('%s/%s') and does not match '%s'", src_dir, workflow_name, tag)
                     fre_logger.error(
                         "ERROR: Current branch: '%s', Current tag-describe: '%s'", current_branch, current_tag)
                     raise ValueError('Neither tag nor branch matches the git clone branch arg')
+
+
+                ## Compare content of current and previous configured, resolved yamls
+                if filecmp.cmp(yaml_filepath, "config.yaml", shallow=False):
+                    fre_logger.info("Resolved yaml already exists and did not change.")
+                else:
+                    fre_logger.error("")
+                    fre_logger.error("ERROR: Checkout and resolved yaml already exist but resolved yaml files "
+                                     "are not identical!")
+                    fre_logger.error("For troubleshooting:")
+                    fre_logger.error("  - Current resolved yaml: %s", yaml_filepath)
+                    fre_logger.error("  - Previous resolved yaml: %s", f"{src_dir}/{workflow_name}/config.yaml")
+                    fre_logger.error("Try:")
+                    fre_logger.error("  - resolving yaml differences if nothing else has changed")
+                    fre_logger.error(f"  - removing the {target_dir}/cylc-src/{workflow_name} folder and "
+                                           "re-running the command")
+                    fre_logger.error("  - pass the --force-checkout option to archive the workflow (move to "
+                                     "~/.fre-workflows/archived/) and clone a new workflow.")
+                    return
+#                    raise ValueError("Resolve yaml differences or pass --force-checkout to archive the workflow"
+#                                     "(moved to ~/.fre-workflows/archived) and clone a new workflow.")
+
     if not Path(f"{src_dir}/{workflow_name}").is_dir():
         fre_logger.info("Workflow does not exist; will create now")
         clone_output = subprocess.run( ["git", "clone","--recursive",
