@@ -1,5 +1,7 @@
 '''
-This script is used to create a compile.sh file for the bare-metal model compilation.
+Retrieves information from the resolved YAML configuration to generate the compile.sh
+for the bare-metal model compilation.
+
 It is created in the `[modelRoot]/[experiment name][platform-target]/exec` folder, where
 modelRoot` is defined in the `platforms.yaml`, `experiment name` is defined in `compile.yaml`,
 and `platform` and `target` are passed via click options.
@@ -25,19 +27,18 @@ from .gfdlfremake import (
 
 fre_logger = logging.getLogger(__name__)
 
-def compile_create(yamlfile:str, platform:str, target:str, makejobs: int = 4,
+def compile_create(yamlfile:str, platform:tuple, target:tuple, makejobs: int = 4,
                    nparallel: int = 1, execute: Optional[bool] = False,
                    verbose: Optional[bool] = None):
     """
-    This function creates the compile script for bare-metal build.
+    This function compile_create generates the compile script for bare-metal build.
 
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platform; defined in the platforms yaml
-                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
-    :type platform: str
-    :param target: Predefined FRE targets; options include [prod|debug|repro]-[openmp|lto]
-    :type target: str
+    :type platform: tuple
+    :param target: Predefined FRE targets
+    :type target: tuple
     :param makejobs: Used for parallelism with make; number of files to build
                      simultaneously; on a per-build basis (default 4)
     :type makejobs: int
