@@ -1,6 +1,8 @@
 # FRE workflow
 
-The`fre workflow` toolset allows user to clone, install, and run a cylc workflow.
+The`fre workflow` toolset allows users to clone, install, and run a cylc workflow.
+
+The workflow repository and version are specified in `the setting.yaml`.
 
 ## Quickstart
 From the top-level dircetory of the fre-cli repository:
