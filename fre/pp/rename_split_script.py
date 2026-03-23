@@ -88,7 +88,7 @@ def get_duration_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) 
     return duration
 
 
-def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.PosixPath:
+def rename_file(input_file: str, diag_manifest: str | None = None) -> Path:
     """
     Accept an input netCDF file that is the result of split-netcdf, e.g.
         00010101.atmos_daily.tile1.temp.nc
@@ -101,12 +101,13 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
     :param diag_manifest: Optional path to the diagnostic manifest file.
     :type diag_manifest: str or None
     :returns: The new path for the renamed file.
-    :rtype: pathlib.PosixPath
+    :rtype: Path
     :raises ValueError: If the file cannot be parsed or if diag manifest is required but not provided.
     :raises FileNotFoundError: If the diag manifest does not exist.
     :raises Exception: If unexpected frequency units are found in the diag manifest.
     """
     fre_logger.debug(f"Examining '{input_file}'")
+    input_file = Path(input_file)
     parts = input_file.stem.split('.')
 
     if len(parts) == 4:

@@ -64,6 +64,34 @@ def test_get_duration_from_two_dates(start_date, end_date, expected_duration):
     """
     assert expected_duration == get_duration_from_two_dates(start_date, end_date)
 
+@pytest.mark.parametrize(
+    "start_date,end_date",
+    [
+        (cftime.datetime(2009, 1, 1, 0), cftime.datetime(2009, 1, 1, 0)),  # 0 hours, indeterminate
+        (cftime.datetime(2009, 1, 1), cftime.datetime(2009, 1, 3)),  # 48 hours (2 days), doesn't fit categories
+    ],
+)
+def test_get_freq_and_format_from_two_dates_raises_valueerror(start_date, end_date):
+    """
+    Test that ValueError is raised when frequency cannot be determined
+    """
+    with pytest.raises(ValueError, match="Cannot determine frequency and format"):
+        get_freq_and_format_from_two_dates(start_date, end_date)
+
+@pytest.mark.parametrize(
+    "start_date,end_date",
+    [
+        (cftime.datetime(2009, 1, 1), cftime.datetime(2009, 2, 15)),  # 45 days, doesn't fit categories
+        (cftime.datetime(2009, 1, 1), cftime.datetime(2010, 2, 6)),  # ~400 days, fractional part > 0.04
+    ],
+)
+def test_get_duration_from_two_dates_raises_valueerror(start_date, end_date):
+    """
+    Test that ValueError is raised when duration cannot be determined
+    """
+    with pytest.raises(ValueError, match="Could not determine ISO8601 duration"):
+        get_duration_from_two_dates(start_date, end_date)
+
 ROOTDIR = Path(__file__).parent.parent.parent
 print("Root directory: " + str(ROOTDIR))
 
@@ -229,3 +257,63 @@ def test_rename_split_to_pp_cleanup():
     dir_deleted = [not Path(el).is_dir() for el in dir_list]
     el_deleted = [not Path(el).is_file() for el in el_list]
     assert all(el_deleted + dir_deleted)
+
+def test_rename_split_raises_filenotfounderror_no_files():
+    """
+    Test that FileNotFoundError is raised when no files matching the component are found
+    """
+    from fre.pp.rename_split_script import rename_split
+    import tempfile
+    
+    with tempfile.TemporaryDirectory() as tmpdir:
+        input_dir = Path(tmpdir) / "input"
+        output_dir = Path(tmpdir) / "output"
+        input_dir.mkdir()
+        output_dir.mkdir()
+        
+        with pytest.raises(FileNotFoundError, match="No 'atmos' files were found"):
+            rename_split(str(input_dir), str(output_dir), "atmos", False)
+
+def test_rename_file_raises_valueerror_bad_filename():
+    """
+    Test that ValueError is raised when filename cannot be parsed
+    """
+    from fre.pp.rename_split_script import rename_file
+    import tempfile
+    import netCDF4
+    
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Create a temporary netCDF file with a bad filename (doesn't match expected format)
+        bad_filename = Path(tmpdir) / "badname.nc"
+        ds = netCDF4.Dataset(str(bad_filename), "w")
+        ds.close()
+        
+        with pytest.raises(ValueError, match="cannot be parsed"):
+            rename_file(bad_filename)
+
+def test_rename_file_raises_filenotfounderror_missing_diag_manifest():
+    """
+    Test that FileNotFoundError is raised when diag manifest doesn't exist
+    """
+    from fre.pp.rename_split_script import rename_file
+    import tempfile
+    import netCDF4
+    
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Create a valid filename with 3 parts: date.label.var
+        valid_filename = Path(tmpdir) / "00010101.atmos_daily.temp.nc"
+        ds = netCDF4.Dataset(str(valid_filename), "w")
+        # Create a time dimension with 1 timestep
+        ds.createDimension('time', 1)
+        # Create a time variable with no bounds (to trigger the diag manifest path)
+        time_var = ds.createVariable('time', 'f', ('time',))
+        time_var[:] = [0]
+        # Create the data variable
+        temp_var = ds.createVariable('temp', 'f', ('time',))
+        temp_var[:] = [273.15]
+        ds.close()
+        
+        with pytest.raises(FileNotFoundError, match="does not exist"):
+            rename_file(valid_filename, diag_manifest="/nonexistent/manifest.yaml")
+
+
