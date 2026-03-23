@@ -32,25 +32,37 @@ from fre.pp.rename_split_script import (
     rename_split
 )
 
-def test_get_freq_and_format_from_two_dates():
+@pytest.mark.parametrize(
+    "start_date,end_date,expected_freq,expected_format",
+    [
+        (cftime.datetime(2009, 1, 1), cftime.datetime(2010, 1, 1), "P1Y", "%Y"),
+        (cftime.datetime(2009, 1, 1), cftime.datetime(2009, 2, 1), "P1M", "%Y%m"),
+        (cftime.datetime(2009, 1, 1), cftime.datetime(2009, 1, 2), "P1D", "%Y%m%d"),
+        (cftime.datetime(2009, 1, 1, 0), cftime.datetime(2009, 1, 1, 1), "PT1H", "%Y%m%d%H"),
+        (cftime.datetime(2009, 1, 1, 0), cftime.datetime(2009, 1, 1, 6), "PT6H", "%Y%m%d%H"),
+        (cftime.datetime(2009, 1, 1, 0, 0), cftime.datetime(2009, 1, 1, 0, 30), "PT30M", "%Y%m%d%H%M"),
+    ],
+)
+def test_get_freq_and_format_from_two_dates(start_date, end_date, expected_freq, expected_format):
     """
     Lookup some frequencies and formats between 2 dates
     """
-    assert ("P1Y", "%Y")            == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1),       cftime.datetime(2010, 1, 1))
-    assert ("P1M", "%Y%m")          == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1),       cftime.datetime(2009, 2, 1))
-    assert ("P1D", "%Y%m%d")        == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1),       cftime.datetime(2009, 1, 2))
-    assert ("PT1H", "%Y%m%d%H")     == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0),    cftime.datetime(2009, 1, 1, 1))
-    assert ("PT6H", "%Y%m%d%H")     == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0),    cftime.datetime(2009, 1, 1, 6))
-    assert ("PT30M", "%Y%m%d%H%M")  == get_freq_and_format_from_two_dates(cftime.datetime(2009, 1, 1, 0, 0), cftime.datetime(2009, 1, 1, 0, 30))
+    assert (expected_freq, expected_format) == get_freq_and_format_from_two_dates(start_date, end_date)
 
-def test_get_duration_from_two_dates():
+@pytest.mark.parametrize(
+    "start_date,end_date,expected_duration",
+    [
+        (cftime.datetime(2009, 1, 1), cftime.datetime(2009, 2, 1), "P1M"),
+        (cftime.datetime(2009, 1, 1), cftime.datetime(2009, 7, 1), "P6M"),
+        (cftime.datetime(2009, 1, 1), cftime.datetime(2010, 1, 1), "P1Y"),
+        (cftime.datetime(2000, 1, 1), cftime.datetime(2005, 1, 1), "P5Y"),
+    ],
+)
+def test_get_duration_from_two_dates(start_date, end_date, expected_duration):
     """
     Lookup some durations between two dates
     """
-    assert "P1M" == get_duration_from_two_dates(cftime.datetime(2009, 1, 1), cftime.datetime(2009, 2, 1))
-    assert "P6M" == get_duration_from_two_dates(cftime.datetime(2009, 1, 1), cftime.datetime(2009, 7, 1))
-    assert "P1Y" == get_duration_from_two_dates(cftime.datetime(2009, 1, 1), cftime.datetime(2010, 1, 1))
-    assert "P5Y" == get_duration_from_two_dates(cftime.datetime(2000, 1, 1), cftime.datetime(2005, 1, 1))
+    assert expected_duration == get_duration_from_two_dates(start_date, end_date)
 
 ROOTDIR = Path(__file__).parent.parent.parent
 print("Root directory: " + str(ROOTDIR))
