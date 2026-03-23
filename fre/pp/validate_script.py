@@ -21,7 +21,7 @@ def validate_subtool(experiment = None, platform = None, target = None):
     try:
         # Change the current working directory
         os.chdir(directory)
-        
+
         # Run the Rose validation macros
         cmd = "rose macro --validate"
         subprocess.run(cmd, shell=True, check=True)

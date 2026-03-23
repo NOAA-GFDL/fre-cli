@@ -3,9 +3,12 @@ Test fre make compile-script
 """
 import os
 import shutil
-import pytest
 from pathlib import Path
+
+import pytest
+
 from fre.make import create_compile_script
+
 
 ## SET-UP
 TEST_DIR = Path("fre/make/tests")
