@@ -26,13 +26,14 @@ fre_logger = logging.getLogger(__name__)
 
 def makefile_create(yamlfile: str, platform: tuple, target: tuple):
     """
-    This function creates the makefile for model compilation.
+    This function makefile_create generates the Makefile for the source code that is specified
+    in the model compile YAML file.
     
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
-    :param platform: FRE platform; defined in the platforms yaml
+    :param platform: FRE platforms that are defined in the platforms.yaml
     :type platform: tuple
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :param target: Predefined FRE targets; options include ('[prod/debug/repro]-openmp',) (TO CLARIFY)
     :type target: tuple
     :raises ValueError: Error if platform does not exist in platforms yaml configuration
 
@@ -99,8 +100,8 @@ def makefile_create(yamlfile: str, platform: tuple, target: tuple):
                 fre_logger.info("Makefile created: %s/Makefile", bld_dir)
                 fre_logger.setLevel(former_log_level)
             else:
-                bld_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/exec"
-                tmp_dir = "./tmp/"+platform_name
+                bld_dir = f"{platform['modelRoot']}/{fremake_yaml['experiment']}/exec"
+                tmp_dir = f"./tmp/{platform_name}"
 
                 template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                        model_root = platform["modelRoot"],

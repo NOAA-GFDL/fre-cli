@@ -16,7 +16,7 @@ Glossary
     platform must be defined in ``platforms.yaml``. See `fre-examples: platforms.yaml
     <https://github.com/NOAA-GFDL/fre-examples/blob/main/platforms.yaml>`_
 
-  makefile
+  Makefile
     The term refers to the file created, for both the bare-metal and container builds, through ``fre make makefile``.
     The file defines required components, dependencies, necessary linker flags, copmiler options, and the mk_template
     (defined in the ``platforms.yaml``) used for the model to compile. The mk_template path is defined in the platforms
