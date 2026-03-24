@@ -43,6 +43,8 @@ non_regriddable_variables = [
     "average_T2",
     "average_DT",
     "time_bnds",
+    "lat",
+    "lon",
 ]
 
 
