@@ -1,19 +1,19 @@
 '''
 Retrieves information from the resolved YAML configuration to generate the compile.sh
-in the `[modelRoot]/[experiment name]/[platform-target]/exec` directory, where 
+in the ``[modelRoot]/[experiment name]/[platform-target]/exec`` directory, where 
 
-- modelRoot` is defined in the `platforms.yaml`
-- `experiment name` is defined in `compile.yaml`
-- `platform` and `target` are passed via click options
+- ``modelRoot`` is defined in the `platforms.yaml`
+- ``experiment name`` is defined in `compile.yaml`
+- ``platform`` and ``target`` are passed via Click options
 
 The compile.sh script
 
-1. Sets the `src_dir`
-2. Sets the `bld_dir`
-3. Sets the `mkmf_template`
+1. Sets the ``src_dir``
+2. Sets the ``bld_dir``
+3. Sets the ``mkmf_template``
 4. Loads/unloads modules to set-up the compile environment
-5. Calls `mkmf` to generate Makefiles for each model component defined in the compile.yaml
-6. Calls `make` to generate the model executable
+5. Calls ``mkmf`` to generate Makefiles for each model component defined in the `compile.yaml`
+6. Calls ``make`` to generate the model executable
 '''
 
 import logging
