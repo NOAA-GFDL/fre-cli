@@ -1,12 +1,15 @@
 """
 Test fre list pp-comps
 """
-import pytest
 from pathlib import Path
+
+import pytest
 import yaml
+
 from fre.list_ import list_pp_components_script
 from fre.yamltools import combine_yamls_script as cy
 from fre.yamltools import helpers
+
 
 # SET-UP
 TEST_DIR = Path("fre/pp/tests")
@@ -45,7 +48,7 @@ def test_exp_list(caplog):
 
     for i in check_out:
         assert i in caplog.text
-        
+
     # make sure the level is INFO
     for record in caplog.records:
         assert record.levelname == "INFO"
