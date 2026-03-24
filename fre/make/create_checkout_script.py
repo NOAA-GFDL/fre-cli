@@ -26,6 +26,7 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
                              parallel_cmd: str, execute: bool):
     """
     This function baremetal_checkout_write is called by checkout_create in order to
+    
       - Extract compilation specifications from the parsed YAML configuration
       - Generate a checkout script to the source directory. The source directory is
       defined within the 'modelRoot' variable in the "platforms" section of the combined YAML
@@ -59,6 +60,7 @@ def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir:
                              jobs: str, parallel_cmd: str):
     """
     This function container_checkout_write is called by checkout_create in order to
+    
       - Extract compilation specifications from the parsed YAML configuration
       - Generate a checkout script in a local ./tmp directory, where it will later be
       copied to the directory of the container image filesystem for execution
