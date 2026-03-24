@@ -18,18 +18,6 @@ Glossary
 
   Makefile
     A Makefile is a configuration file required for code compilation with GNU make. For bare-metal and container
-    builds, this file is created via the ``fre make makefile`` subtool. The Makefile defines required components,
-    dependencies, necessary linker flags, compiler options, and the mk_template (defined in the ``platforms.yaml``)
-    used for the model to compile: 
-
-    1. ``SRCROOT``: Directory path for source code 
-    2. ``BUILDROOT``: Directory path for model build
-    3. ``MK_TEMPLATE_PATH``: Directory path of mk_template. 
-                             This path is defined in the platforms yaml and refers to a template in the 
-                             `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
-    4. Build and linking recipes that adheres to the following structure:
-
-    .. code-block::
-
-      [target]: [prerequisites]
-          [recipe]
+    builds, this file is created with the ``fre make makefile`` subtool. The Makefile contains information about
+    the required components, library dependencies, linker flags, compiler flags, and the mk_template (defined in
+    the ``platforms.yaml``). 
