@@ -33,7 +33,7 @@ from .gfdlfremake import (
 
 fre_logger = logging.getLogger(__name__)
 
-def compile_create(yamlfile:str, platform:tuple, target:tuple, makejobs: int = 4,
+def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejobs: int = 4,
                    nparallel: int = 1, execute: Optional[bool] = False,
                    verbose: Optional[bool] = None):
     """
@@ -42,9 +42,9 @@ def compile_create(yamlfile:str, platform:tuple, target:tuple, makejobs: int = 4
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platform; defined in the platforms yaml
-    :type platform: tuple
+    :type platform: tuple of strings
     :param target: Predefined FRE targets
-    :type target: tuple
+    :type target: tuple of strings
     :param makejobs: Number of recipes from the Makefile to run in parallel (default 4);
                      corresponds to -j option in make
     :type makejobs: int
