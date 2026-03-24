@@ -26,8 +26,7 @@ Glossary
     2. ``BUILDROOT``: directory path for model build
     3. ``MK_TEMPLATE_PATH``: directory path of mk_template; this path is defined in the platforms yaml and refers
                              to a template in the `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
-
-    The make job adheres to the following structure (goal = target, dependencies = prerequisites, commands to run = recipe):
+    4. Build and linking recipes that adheres to the following structure:
 
 .. code-block::
 
