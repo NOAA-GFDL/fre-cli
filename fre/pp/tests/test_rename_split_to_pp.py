@@ -314,6 +314,55 @@ def test_rename_file_raises_filenotfounderror_missing_diag_manifest():
         ds.close()
         
         with pytest.raises(FileNotFoundError, match="does not exist"):
-            rename_file(valid_filename, diag_manifest="/nonexistent/manifest.yaml")
+            rename_file(valid_filename, diag_manifest=("/nonexistent/manifest.yaml",))
+
+
+def test_rename_file_uses_diag_manifest_tuple():
+    """Test that diag_manifest tuple is supported and picks the matching manifest entry."""
+    from fre.pp.rename_split_script import rename_file
+    import tempfile
+    import netCDF4
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        valid_filename = Path(tmpdir) / "00010101.atmos_daily.temp.nc"
+        ds = netCDF4.Dataset(str(valid_filename), "w")
+        ds.createDimension('time', 1)
+        time_var = ds.createVariable('time', 'f', ('time',))
+        time_var[:] = [0]
+        temp_var = ds.createVariable('temp', 'f', ('time',))
+        temp_var[:] = [273.15]
+        ds.close()
+
+        manifest1 = Path(tmpdir) / "manifest1.yaml"
+        manifest1.write_text("diag_files: []\n")
+
+        manifest2 = Path(tmpdir) / "manifest2.yaml"
+        manifest2.write_text("diag_files:\n  - file_name: atmos_daily\n    freq_units: months\n    freq: 3\n")
+
+        renamed = rename_file(valid_filename, diag_manifest=(str(manifest1), str(manifest2)))
+        assert renamed == Path('atmos_daily') / 'P3M' / 'P3M' / 'atmos_daily.000101-000103.temp.nc'
+
+
+def test_rename_file_raises_exception_missing_in_manifests():
+    """Test that missing label in all manifests raises an exception."""
+    from fre.pp.rename_split_script import rename_file
+    import tempfile
+    import netCDF4
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        valid_filename = Path(tmpdir) / "00010101.atmos_daily.temp.nc"
+        ds = netCDF4.Dataset(str(valid_filename), "w")
+        ds.createDimension('time', 1)
+        time_var = ds.createVariable('time', 'f', ('time',))
+        time_var[:] = [0]
+        temp_var = ds.createVariable('temp', 'f', ('time',))
+        temp_var[:] = [273.15]
+        ds.close()
+
+        manifest = Path(tmpdir) / "manifest.yaml"
+        manifest.write_text("diag_files: []\n")
+
+        with pytest.raises(Exception, match="not found in diag manifests"):
+            rename_file(valid_filename, diag_manifest=(str(manifest),))
 
 
