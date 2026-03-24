@@ -1,0 +1,39 @@
+---
+title: cm5_c96L65_am5f8d6r1_om5_b12_nonbous_piC
+base_date: 1 1 1 0 0 0
+diag_files:
+- file_name: ocean_annual_point
+  freq: 12
+  freq_units: months
+  time_units: days
+  unlimdim: time
+  new_file_freq:
+  new_file_freq_units:
+  start_time:
+  file_duration:
+  file_duration_units:
+  number_of_timelevels: 1
+  number_of_tiles: 1
+  number_of_distributed_files: 4
+  varlist:
+  - module: ocean_model
+    var_name: so
+    reduction: average
+    kind: r4
+    output_name:
+    long_name:
+    units:
+    zbounds:
+    n_diurnal:
+    pow_value:
+    dimensions: time yh xh
+    standard_name:
+  sub_region:
+  - grid_type:
+    tile:
+    corner1:
+    corner2:
+    corner3:
+    corner4:
+  global_meta:
+  - {}
