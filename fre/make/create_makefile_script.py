@@ -13,10 +13,11 @@ Create the Makefile used for model compilation in the
 - `platform` and `target` are passed via click options
 
 The Makefile sets:
+
 1. ``SRCROOT``: Directory path for source code 
 2. ``BUILDROOT``: Directory path for model build
-3. ``MK_TEMPLATE_PATH``: Directory path of mk_template. 
-                         This path is defined in the platforms yaml and refers to a template in the 
+3. ``MK_TEMPLATE_PATH``: Directory path of mk_template. This path is defined
+                         in the `platforms.yaml` and refers to a template in the 
                          `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
 4. Build and linking recipes that adheres to the following structure:
 ```
