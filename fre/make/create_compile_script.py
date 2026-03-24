@@ -1,8 +1,6 @@
 '''
 Retrieves information from the resolved YAML configuration to generate the compile.sh
-for the bare-metal model compilation.
-
-It is created in the `[modelRoot]/[experiment name]/[platform-target]/exec` folder.
+in the `[modelRoot]/[experiment name]/[platform-target]/exec` directory, where 
 
 - modelRoot` is defined in the `platforms.yaml`
 - `experiment name` is defined in `compile.yaml`
@@ -41,14 +39,14 @@ def compile_create(yamlfile:str, platform:tuple, target:tuple, makejobs: int = 4
     :type platform: tuple
     :param target: Predefined FRE targets
     :type target: tuple
-    :param makejobs: Used for parallelism with make; number of files to build
-                     simultaneously; on a per-build basis (default 4)
+    :param makejobs: Number of tasks from the Makefile to run in parallel (default 4);
+                     used for parallelism with make (corresponds to -j option in make)
     :type makejobs: int
     :param nparallel: Number of concurrent model builds (default 1)
     :type nparallel: int
-    :param execute: Run the created compile script to build a model executable
+    :param execute: If True, execute the created compile.sh script to build a model executable
     :type execute: bool
-    :param verbose: Increase verbosity output
+    :param verbose: If True, increase verbosity output
     :type verbose: bool
     :raises ValueError:
         - Error if platform does not exist in platforms yaml configuration 
