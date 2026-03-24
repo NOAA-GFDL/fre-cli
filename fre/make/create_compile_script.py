@@ -48,7 +48,7 @@ def compile_create(yamlfile:str, platform:tuple, target:tuple, makejobs: int = 4
     :param makejobs: Number of tasks from the Makefile to run in parallel (default 4);
                      used for parallelism with make (corresponds to -j option in make)
     :type makejobs: int
-    :param nparallel: Number of concurrent model builds (default 1)
+    :param nparallel: Number of compile.sh scripts to run in parallel (default 1)
     :type nparallel: int
     :param execute: If True, execute the created compile.sh script to build a model executable
     :type execute: bool
