@@ -6,7 +6,13 @@ in the `[modelRoot]/[experiment name]/[platform-target]/exec` directory, where
 - `experiment name` is defined in `compile.yaml`
 - `platform` and `target` are passed via click options
 
-When run, the compile script generates the model executable.
+The compile.sh script
+1. Sets the `src_dir`
+2. Sets the `bld_dir`
+3. Sets the `mkmf_template`
+4. Loads/unloads modules to set-up the compile environment
+5. Calls `mkmf` to generate Makefiles for each model component defined in the compile.yaml
+6. Calls `make` to generate the model executable
 '''
 
 import logging
