@@ -21,10 +21,11 @@ The Makefile sets:
       `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
 4. Build and linking recipes that adheres to the following structure:
 
-```
+.. code-block::
+
       [target]: [prerequisites]
           [recipe]
-```
+
 
 For more information about the Makefile, see the fre-cli glossary:
 https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
