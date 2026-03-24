@@ -45,8 +45,8 @@ def compile_create(yamlfile:str, platform:tuple, target:tuple, makejobs: int = 4
     :type platform: tuple
     :param target: Predefined FRE targets
     :type target: tuple
-    :param makejobs: Number of tasks from the Makefile to run in parallel (default 4);
-                     used for parallelism with make (corresponds to -j option in make)
+    :param makejobs: Number of recipes from the Makefile to run in parallel (default 4);
+                     corresponds to -j option in make
     :type makejobs: int
     :param nparallel: Number of compile.sh scripts to run in parallel (default 1)
     :type nparallel: int
