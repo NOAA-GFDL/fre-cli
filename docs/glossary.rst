@@ -28,7 +28,7 @@ Glossary
                              to a template in the `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
     4. Build and linking recipes that adheres to the following structure:
 
-.. code-block::
+    .. code-block::
 
-  [target]: [prerequisites]
-      [recipe]
+      [target]: [prerequisites]
+          [recipe]
