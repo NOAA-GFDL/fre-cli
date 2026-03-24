@@ -39,8 +39,8 @@ fre_logger = logging.getLogger(__name__)
 
 def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
     """
-    This function makefile_create generates the Makefile for the source code that is specified
-    in the model compile YAML file.
+    This function makefile_create generates the top level Makefile for the source code
+    that is specified in the model compile YAML file.
     
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
