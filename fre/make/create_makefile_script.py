@@ -12,6 +12,18 @@ Create the Makefile used for model compilation in the
 - `experiment name` is defined in `compile.yaml`
 - `platform` and `target` are passed via click options
 
+The Makefile sets:
+1. ``SRCROOT``: Directory path for source code 
+2. ``BUILDROOT``: Directory path for model build
+3. ``MK_TEMPLATE_PATH``: Directory path of mk_template. 
+                         This path is defined in the platforms yaml and refers to a template in the 
+                         `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
+4. Build and linking recipes that adheres to the following structure:
+```
+      [target]: [prerequisites]
+          [recipe]
+```
+
 For more information about the Makefile, see the fre-cli glossary:
 https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
 '''
@@ -24,7 +36,7 @@ from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 
 fre_logger = logging.getLogger(__name__)
 
-def makefile_create(yamlfile: str, platform: tuple, target: tuple):
+def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
     """
     This function makefile_create generates the Makefile for the source code that is specified
     in the model compile YAML file.
@@ -32,20 +44,23 @@ def makefile_create(yamlfile: str, platform: tuple, target: tuple):
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platforms that are defined in the platforms.yaml
-    :type platform: tuple
-    :param target: Predefined FRE targets; options include ('[prod/debug/repro]-openmp',) (TO CLARIFY)
-    :type target: tuple
+    :type platform: tuple of strings
+    :param target: Predefined FRE targets
+    :type target: tuple of strings 
     :raises ValueError: Error if platform does not exist in platforms yaml configuration
 
     .. note:: If additional library dependencies are defined in the compile.yaml file:
 
        - For a container build, where library dependencies are defined via the "container_addlibs"
-         key in the compile yaml, a linkline script will be generated to determine paths for the
-         additional libraries located inside the container. This script will add appropriate
-         flags to the Makefile for these libraries. 
-
-       - For a bare-metal build, where linker flags are defined via the "baremetal_linkerflags" key
-         in the compile yaml, linker flags are added to the link line in the Makefile
+         key in the `compile.yaml`, a linkline.sh script will be generated to determine paths for the
+         additional `-L/[path to libraries]` and `-l[library name]` located inside the container to
+         the Makefile.
+           - Example: `container_addlibs: ['darcy']`
+         
+       - For a bare-metal build, library flags, `-L/[path to libraries]` and `-l[library name]`, are
+         defined via the "baremetal_linkerflags" key in the `compile.yaml` and added to the link line
+         in the Makefile.
+           - Example: `baremetal_linkerflags: ["-L/derbyshire/pemberly -ldarcy"]`
     """
     name = yamlfile.split(".")[0]
 
