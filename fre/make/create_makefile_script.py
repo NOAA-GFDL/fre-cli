@@ -20,6 +20,7 @@ The Makefile sets:
     - This path is defined in the `platforms.yaml` and refers to a template in the 
       `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
 4. Build and linking recipes that adheres to the following structure:
+
 ```
       [target]: [prerequisites]
           [recipe]
