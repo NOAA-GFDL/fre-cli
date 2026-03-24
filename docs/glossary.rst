@@ -17,7 +17,19 @@ Glossary
     <https://github.com/NOAA-GFDL/fre-examples/blob/main/platforms.yaml>`_
 
   Makefile
-    The term refers to the file created, for both the bare-metal and container builds, through ``fre make makefile``.
-    The file defines required components, dependencies, necessary linker flags, copmiler options, and the mk_template
-    (defined in the ``platforms.yaml``) used for the model to compile. The mk_template path is defined in the platforms
-    yaml and refers to a template in the `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
+    A Makefile is a configuration file required for code compilation with GNU make. For bare-metal and container
+    builds, this file is created via the ``fre make makefile`` subtool. The Makefile defines required components,
+    dependencies, necessary linker flags, compiler options, and the mk_template (defined in the ``platforms.yaml``)
+    used for the model to compile: 
+
+    1. ``SRCROOT``: directory path for source code 
+    2. ``BUILDROOT``: directory path for model build
+    3. ``MK_TEMPLATE_PATH``: directory path of mk_template; this path is defined in the platforms yaml and refers
+                             to a template in the `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
+
+    The make job adheres to the following structure (goal = target, dependencies = prerequisites, commands to run = recipe):
+
+.. code-block::
+
+  [target]: [prerequisites]
+      [recipe]
