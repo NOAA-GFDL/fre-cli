@@ -7,6 +7,7 @@ in the `[modelRoot]/[experiment name]/[platform-target]/exec` directory, where
 - `platform` and `target` are passed via click options
 
 The compile.sh script
+
 1. Sets the `src_dir`
 2. Sets the `bld_dir`
 3. Sets the `mkmf_template`
