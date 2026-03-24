@@ -125,7 +125,6 @@ def test_run_fremake_multijob():
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
 
-    # run fre make checkout-script with force-checkout
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         nparallel=True, makejobs=4, gitjobs=4, no_parallel_checkout=True,
 	no_format_transfer=False, execute=False, verbose=VERBOSE,
