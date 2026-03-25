@@ -1,9 +1,9 @@
 '''
 Generates a Dockerfile and an accompanying execrunscript.sh.
-Execrunscript.sh is a convenient script that will build a Docker image 
-of the compiled model executable and the library dependencies using the
-generated Dockerfile.  By default, execrunscript.sh will convert the Docker OCI
-image to a singularity image file (.sif) format.  Note, Podman is the preferred
+Execrunscript.sh is a convenient script that builds a Docker image of the
+compiled model executable and the library dependencies using the generated
+Dockerfile.  By default, execrunscript.sh will convert the Docker OCI image
+to a Singularity image file (.sif) format.  Note, Podman is the preferred
 container engine for building images; Singularity/Apptainer is the preferred
 container engine for running containers on HPC systems.
 '''
@@ -28,7 +28,7 @@ fre_logger = logging.getLogger(__name__)
 def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
                       execute: bool = False, no_format_transfer: bool = False):
     """
-    This function dockerfile_create creates a Dockerfile and 
+    This function dockerfile_create creates a Dockerfile and
     an accompanying execrunscript.sh script that will build a container image containing
     the compiled model executable and the library dependencies
 
@@ -50,7 +50,7 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
     .. note:: The script execrunscript.sh requires on Podman container engine to build container images.
               To execute the script on GFDL's RDHPCS GAEA, please submit a GFDL helpdesk ticket for Podman access
     """
-    
+
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target
