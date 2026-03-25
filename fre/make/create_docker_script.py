@@ -1,11 +1,10 @@
 '''
-Generates a Dockerfile and an accompanying execrunscript.sh.
-Execrunscript.sh is a convenient script that builds a Docker image of the
-compiled model executable and the library dependencies using the generated
-Dockerfile.  By default, execrunscript.sh will convert the Docker OCI image
-to a Singularity image file (.sif) format.  Note, Podman is the preferred
-container engine for building images; Singularity/Apptainer is the preferred
-container engine for running containers on HPC systems.
+Generates a Dockerfile and an accompanying createContainer.sh script that
+builds a Docker image of the compiled model executable and the library
+dependencies from the generated Dockerfile.  Unless specified,
+createContainer.sh will convert the Docker OCI image to a Singularity image
+file (.sif) format that can be launched with Singularity/Apptainer.
+(Singularity/Apptainer is the preferred container engine for running containers on HPC systems.)
 '''
 
 import logging
@@ -29,26 +28,38 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
                       execute: bool = False, no_format_transfer: bool = False):
     """
     This function dockerfile_create creates a Dockerfile and
-    an accompanying execrunscript.sh script that will build a container image containing
+    an accompanying createContainer.sh script that builds a container image containing
     the compiled model executable and the library dependencies
 
     :param yamlfile: model compile YAML file
     :type yamlfile: str
-    :param platform: FRE container-specific platform(s) that are defined in platforms.yaml.
-                     Platforms that require Intel compilers, such as the "hpcme.2023" platform,
-                     will build images that cannot be launched on compute systems external to GFDL
-                     due to licensing agreements
+    :param platform: FRE container-specific platform(s) that are defined in platforms.yaml, for example,
+                     as the following:
+                     platforms:
+                       - name: hpcme.intel25
+                         compiler: intel
+                         RUNenv: ""
+                         modelRoot: /apps
+                         container: True
+                         containerBuild: "podman"
+                         containerRun: "apptainer"
+                         containerBase: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.2"
+                         mkTemplate: "/apps/mkmf/templates/hpcme-intel25.mk"
+                         container2step: True
+                         container2base: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.2rte"
+                     Note, if an Intel compiler is specified to compile the src_code, the container
+                     will not successful launch on compute systems external to GFDL due to licensing agreements.
     :type platform: tuple(str)
     :param target: Predefined FRE targets
     :type target: tuple(str)
-    :param execute: If true, execute execrunscript.sh to build the container image with Podman
+    :param execute: If true, execute createContainer.sh to build the container image
     :type execute: bool
-    :param no_format_transfer: if False, skip image format conversion to a .sif file
+    :param no_format_transfer: if True, skip image format conversion to a .sif file
     :type no_format_transfer: bool
     :raises ValueError: Error if platform does not exist in platforms.yaml
 
-    .. note:: The script execrunscript.sh requires on Podman container engine to build container images.
-              To execute the script on GFDL's RDHPCS GAEA, please submit a GFDL helpdesk ticket for Podman access
+    .. note:: If building the container image on GFDL's RDHPCS GAEA with the Podman container engine,
+              please submit a GFDL helpdesk ticket to request Podman access
     """
 
     ## Split and store the platforms and targets in a list
