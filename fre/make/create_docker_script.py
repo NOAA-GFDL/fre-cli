@@ -47,7 +47,7 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
     :type no_format_transfer: bool
     :raises ValueError: Error if platform does not exist in platforms.yaml
 
-    .. note:: The script execrunscript.sh depends on Podman container engine to build container images.
+    .. note:: The script execrunscript.sh requires on Podman container engine to build container images.
               To execute the script on GFDL's RDHPCS GAEA, please submit a GFDL helpdesk ticket for Podman access
     """
     
