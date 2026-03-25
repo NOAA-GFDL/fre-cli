@@ -1,26 +1,31 @@
-''' this holds functions used across various parts of fre/make subtools '''
+''' 
+module of helper/utility functions used in the fre make subtool
+'''
 
 import logging
 from pathlib import Path
-from typing import Optional
 
-def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: Optional[str]=None) -> str:
+def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str = None) -> str:
+
     """
-    Save the full path to the mk_template.
-
-    :param mk_template: Full path or just the name of the mk_template
+    This function get_mktemplate_path generates the full path to the 
+    mkmf mk_templates on the bare-metal system or the container image filesystem
+    
+    :param mk_template: Full or relative path to the mkmf mk_template file (.mk)
     :type mk_template: string
-    :param model_root: Path to the root for all model install files
+    :param model_root: Path to the root for all model install files (TO CLARIFY)
     :type model_root: str
-    :param container_flag: True/False if it is a container build
+    :param container_flag: if True, generate full path for the container image filesystem
     :type container_flag: boolean
-    :raises ValueError: Error if the mk_template does not exist
-    :return: Full path to the mk_template
+
+    :raises ValueError: Error if the mk_template file does not exist in the generated full path
+
+    :return: Full path to the mkmf mk_template
     :rtype: string
 
-    .. note:: When container_flag is False, model_root is not used.
-              When container_flag is True, model_root must be defined.
+    .. note:: model_root must be specified if container_flag is True
     """
+
     template_path = mk_template
 
     # check if mk_template has a /, indicating it is a path
