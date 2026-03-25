@@ -23,10 +23,10 @@ The Makefile
 
 4. Sets the build and linking recipes that adhere to the following structure:
 
-.. code-block::
+   .. code-block:: makefile
 
-    [target]: [prerequisites]
-        [recipe]
+      [target]: [prerequisites]
+          [recipe]
 
 For more information about the Makefile, see the fre-cli glossary:
 https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
