@@ -172,7 +172,7 @@ def clean_yaml(yml_dict):
     """
     # Clean the yaml
     # If keys exists, delete:
-    keys_clean=["fre_properties", "fre_cli_version", "experiments"]
+    keys_clean=["fre_properties", "experiments"]
     for kc in keys_clean:
         if kc in yml_dict.keys():
             del yml_dict[kc]
