@@ -59,11 +59,13 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
          key in the `compile.yaml`, a linkline.sh script will be generated to determine paths for the
          additional `-L/[path to libraries]` and `-l[library name]` located inside the container to
          the Makefile.
+         
            - Example: `container_addlibs: ['darcy']`
          
        - For a bare-metal build, library flags, `-L/[path to libraries]` and `-l[library name]`, are
          defined via the "baremetal_linkerflags" key in the `compile.yaml` and added to the link line
          in the Makefile.
+         
            - Example: `baremetal_linkerflags: ["-L/derbyshire/pemberly -ldarcy"]`
     """
     name = yamlfile.split(".")[0]
