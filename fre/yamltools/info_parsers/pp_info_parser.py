@@ -79,21 +79,27 @@ class InitPPYaml(MergePPANYamls):
                  target, model yaml content, and setting yaml content
         :rtype: str
         """
+        settings = None
         my = yaml.load(yaml_content_str, Loader=yaml.Loader)
         for i in my.get("experiments"):
             if self.name != i.get("name"):
                 continue
             settings = i.get("settings")
 
-        with open(f"{self.mainyaml_dir}/{settings}", 'r') as f:
-            settings_content = f.read()
-
-        yaml_content_str += settings_content
-
-        # Return the combined string and loaded yaml
+        # set log level to info
         former_log_level = fre_logger.level
         fre_logger.setLevel(logging.INFO)
-        fre_logger.info("   settings yaml: %s", settings)
+
+        # if settings yaml is used, apply it
+        if settings is not None:
+            with open(f"{self.mainyaml_dir}/{settings}", 'r') as f:
+                settings_content = f.read()
+            yaml_content_str += settings_content
+            fre_logger.info("   settings yaml: %s", settings)
+        else:
+            fre_logger.info("   settings yaml: not used")
+
+        # set log level to previous level
         fre_logger.setLevel(former_log_level)
 
         return yaml_content_str
