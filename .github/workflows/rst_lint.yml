@@ -29,4 +29,4 @@ jobs:
           pip install -r requirements.txt
           pip install doc8
       - name: Lint RST files
-        run: doc8 source
+        run: doc8 *
