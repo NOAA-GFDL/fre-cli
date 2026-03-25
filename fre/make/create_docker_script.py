@@ -4,7 +4,6 @@ builds a Docker image of the compiled model executable and the library
 dependencies from the generated Dockerfile.  Unless specified,
 createContainer.sh will convert the Docker OCI image to a Singularity image
 file (.sif) format that can be launched with Singularity/Apptainer.
-(Singularity/Apptainer is the preferred container engine for running containers on HPC systems.)
 '''
 
 import logging
