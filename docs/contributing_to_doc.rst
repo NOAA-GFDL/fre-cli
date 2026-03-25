@@ -90,6 +90,9 @@ From the root-directory of your local repository copy:
  # Activate your fre-cli environment
  conda activate fre-cli
  
+ # optional: load fre-nctools into your PATH to gain access to regridding and certain time-averaging routines
+ # module load fre-nctools
+ 
  # Install documentation dependencies
  pip install .[docs]
  

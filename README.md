@@ -1,12 +1,11 @@
-[![Anaconda-Server
-Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/version.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
-[![Anaconda-Server
-Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
-[![Anaconda-Server
-Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_relative_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
-[![CI](https://github.com/NOAA-GFDL/fre-cli/workflows/publish_conda/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions?query=workflow%3Apublish_conda+branch%3Amain++)
-[![readthedocs](https://app.readthedocs.org/projects/noaa-gfdl-fre-cli/badge/?version=latest&style=flat)](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/)
+[![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/version.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
+[![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
+[![Anaconda-Server Badge](https://anaconda.org/noaa-gfdl/fre-cli/badges/latest_release_relative_date.svg)](https://anaconda.org/noaa-gfdl/fre-cli)
+
 [![codecov](https://codecov.io/gh/NOAA-GFDL/fre-cli/graph/badge.svg?token=iGb0wEuWs1)](https://codecov.io/gh/NOAA-GFDL/fre-cli)
+[![publish_conda](https://github.com/NOAA-GFDL/fre-cli/workflows/publish_conda/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions?query=workflow%3Apublish_conda+branch%3Amain++)
+[![create_test_conda_env](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/create_test_conda_env.yml/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/create_test_conda_env.yml)
+[![readthedocs](https://app.readthedocs.org/projects/noaa-gfdl-fre-cli/badge/?version=latest&style=flat)](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/)
 
 # **`fre-cli`**
 
@@ -67,6 +66,11 @@ conda config --append channels noaa-gfdl
 conda config --append channels conda-forge
 conda create --name fre-2025.04 --channel noaa-gfdl --channel conda-forge fre-cli::2025.04
 conda activate fre-2025.04
+# optional: install or load fre-nctools to gain access to regridding and certain time-averaging routines
+# add to your path like: export PATH=/path/to/your/fre-nctools/build/bin:$PATH
+# or if you have lmod/modules: module load fre-nctools/<version>
+# or compile/install from source: see github.comNOAA-GDFL/FRE-NCTools documentation on compilation/installation
+# DO NOT USE noaa-gfdl::fre-nctools==2022.01 at this time, it is being deprecated
 ```
 
 ## GFDL/RDHPCS deployment notes

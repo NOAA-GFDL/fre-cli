@@ -1,4 +1,6 @@
-''' For testing fre app generate-time-averages '''
+'''
+For testing fre app generate-time-averages
+'''
 from pathlib import Path
 import subprocess
 import os
@@ -44,7 +46,9 @@ TWO_OUT_FILE_NAME_MONTH = 'test_out_double_hist.01.nc'
 
 # setup, TODO convert to fixture ?
 def setup_test_files():
-    """Generate test files needed for the tests. Called by test functions that need these files."""
+    '''
+    Generate test files needed for the tests. Called by test functions that need these files.
+    '''
     # Generate first test file
     if Path(NCGEN_OUTPUT).exists():
         Path(NCGEN_OUTPUT).unlink()
@@ -61,7 +65,9 @@ def setup_test_files():
 
 # setup, TODO convert to fixture?
 def setup_two_test_files():
-    """Generate the two ocean test files needed for multi-file tests."""
+    '''
+    Generate the two ocean test files needed for multi-file tests.
+    '''
     for ocean_base_file_name in OCEAN_BASE_FILE_NAMES:
         ncgen_input = TIME_AVG_FILE_DIR + ocean_base_file_name + ".cdl"
         ncgen_output = TIME_AVG_FILE_DIR + ocean_base_file_name + ".nc"
@@ -73,13 +79,17 @@ def setup_two_test_files():
         subprocess.run(ex, check = True)
 
 def test_setups():
-    """setup by generating netcdf files from cdl inputs"""
+    '''
+    setup by generating netcdf files from cdl inputs
+    '''
     setup_test_files()
     setup_two_test_files()
 
 # sanity check
 def test_time_avg_file_dir_exists():
-    ''' look for input test file directory '''
+    '''
+    look for input test file directory
+    '''
     assert Path(TIME_AVG_FILE_DIR).exists()
 
 FULL_TEST_FILE_PATH = TIME_AVG_FILE_DIR + TEST_FILE_NAME
@@ -101,26 +111,26 @@ cases=[
     #cdo cases, all, one/multiple files, weighted/unweighted
     pytest.param( 'cdo', 'all', True ,
                   FULL_TEST_FILE_PATH,
-                  TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TEST_FILE_NAME),
+                  STR_UNWGT_CDO_INF),
     pytest.param( 'cdo', 'all', True ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TWO_OUT_FILE_NAME),
     pytest.param( 'cdo', 'all', False ,
                   FULL_TEST_FILE_PATH,
-                  TIME_AVG_FILE_DIR + 'timmean_' + TEST_FILE_NAME),
+                  STR_CDO_INF),
     pytest.param( 'cdo', 'all', False ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME),
     #fre-python-tools cases, all, one/multiple files, weighted/unweighted flag
     pytest.param( 'fre-python-tools', 'all',  False ,
                   FULL_TEST_FILE_PATH,
-                  TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TEST_FILE_NAME),
+                  STR_FRE_PYTOOLS_INF),
     pytest.param( 'fre-python-tools', 'all',  False ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'frepytools_timavg_' + TWO_OUT_FILE_NAME),
     pytest.param( 'fre-python-tools', 'all',  True ,
                   FULL_TEST_FILE_PATH,
-                  TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TEST_FILE_NAME),
+                  STR_UNWGT_FRE_PYTOOLS_INF),
     pytest.param( 'fre-python-tools', 'all',  True ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'frepytools_unwgt_timavg_' + TWO_OUT_FILE_NAME),
@@ -146,8 +156,9 @@ def test_run_avgtype_pkg_calculations( pkg      ,
                                        unwgt    ,
                                        infile   ,
                                        outfile  ):
-
-    ''' test-harness function, called by other test functions. '''
+    '''
+    test-harness function, called by other test functions.
+    '''
 
     # because the conda package for fre-nctools is a bit... special
     if pkg=='fre-nctools':
@@ -202,7 +213,9 @@ def test_run_avgtype_pkg_calculations( pkg      ,
 
 @pytest.mark.xfail(reason = 'fre-cli seems to not bitwise reproduce frenctools at this time') #TODO
 def test_compare_fre_cli_to_fre_nctools():
-    ''' compares fre_cli pkg answer to fre_nctools pkg answer '''
+    '''
+    compares fre_cli pkg answer to fre_nctools pkg answer
+    '''
     assert Path(STR_FRE_PYTOOLS_INF).exists(), f'DNE: STR_FRE_PYTOOLS_INF = {STR_FRE_PYTOOLS_INF}'
     fre_pytools_inf = Dataset(STR_FRE_PYTOOLS_INF,'r')
     fre_pytools_timavg = fre_pytools_inf[VAR][:].copy()
@@ -227,12 +240,14 @@ def test_compare_fre_cli_to_fre_nctools():
 
     non_zero_count = np.count_nonzero( diff_pytools_nctools_timavg[:] )
     #assert (non_zero_count == 0.) # bad way to check for zero.
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between frepy / frenctools were found"
 
 
 @pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_fre_cli_to_cdo():
-    ''' compares fre_cli pkg answer to cdo pkg answer '''
+    '''
+    compares fre_cli pkg answer to cdo pkg answer
+    '''
     assert Path(STR_FRE_PYTOOLS_INF).exists(), f'DNE: STR_FRE_PYTOOLS_INF = {STR_FRE_PYTOOLS_INF}'
     fre_pytools_inf = Dataset(STR_FRE_PYTOOLS_INF, 'r')
     fre_pytools_timavg = fre_pytools_inf[VAR][:].copy()
@@ -255,11 +270,13 @@ def test_compare_fre_cli_to_cdo():
         break
 
     non_zero_count = np.count_nonzero( diff_pytools_cdo_timavg[:] )
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frepytools were found"
 
 
 def test_compare_unwgt_fre_cli_to_unwgt_cdo():
-    ''' compares fre_cli pkg answer to cdo pkg answer '''
+    '''
+    compares fre_cli pkg answer to cdo pkg answer
+    '''
     assert Path(STR_UNWGT_FRE_PYTOOLS_INF).exists(), f'DNE: STR_UNWGT_FRE_PYTOOLS_INF = {STR_UNWGT_FRE_PYTOOLS_INF}'
     fre_pytools_inf = Dataset(STR_UNWGT_FRE_PYTOOLS_INF, 'r')
     fre_pytools_timavg = fre_pytools_inf[VAR][:].copy()
@@ -282,11 +299,13 @@ def test_compare_unwgt_fre_cli_to_unwgt_cdo():
         break
 
     non_zero_count = np.count_nonzero(diff_pytools_cdo_timavg[:])
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frepytools were found"
 
 @pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_cdo_to_fre_nctools():
-    ''' compares cdo pkg answer to fre_nctools pkg answer '''
+    '''
+    compares cdo pkg answer to fre_nctools pkg answer
+    '''
 
     assert Path(STR_FRENCTOOLS_INF).exists(), f'DNE: STR_FRENCTOOLS_INF = {STR_FRENCTOOLS_INF}'
     fre_nctools_inf = Dataset(STR_FRENCTOOLS_INF, 'r')
@@ -310,11 +329,13 @@ def test_compare_cdo_to_fre_nctools():
         break
 
     non_zero_count = np.count_nonzero(diff_cdo_nctools_timavg[:])
-    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) )
+    assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frenctools were found"
 
 # if we use fixtures and tmpdirs, can omit this error prone thing
 def test_fre_app_gen_time_avg_test_data_cleanup():
-    ''' Removes all .nc files in fre/app/generate_time_averages/tests/test_data/ '''
+    '''
+    Removes all .nc files in fre/app/generate_time_averages/tests/test_data/
+    '''
     nc_files = [ Path(os.path.join(TIME_AVG_FILE_DIR, el)) for el in os.listdir(TIME_AVG_FILE_DIR)
                  if el.endswith('.nc')]
     for nc in nc_files:
@@ -329,8 +350,10 @@ value_err_args_cases=[
     pytest.param( 'foo_input_file', 'foo_output_file', 'DNE' ),]
 @pytest.mark.parametrize( "infile,outfile,pkg", value_err_args_cases )
 def test_no_req_arg_inputfile( infile, outfile, pkg):
+    '''
+    test failures/exceptions regarding input args
+    '''
     with pytest.raises(ValueError):
         gtas.generate_time_average( infile = infile,
                                     outfile = outfile,
                                     pkg = pkg )
-

@@ -152,6 +152,11 @@ def make_data():
       history_file = source["history_file"]
       for i in range(1, ntiles+1):
         dataset.to_netcdf(f"{input_dir}/{date}.{history_file}.tile{i}.nc")
+    if "static" in component:
+      for static_source in component["static"]:
+        history_file = static_source["source"]
+        for i in range(1, ntiles+1):
+          dataset.to_netcdf(f"{input_dir}/{date}.{history_file}.tile{i}.nc")
 
 
 def make_all():

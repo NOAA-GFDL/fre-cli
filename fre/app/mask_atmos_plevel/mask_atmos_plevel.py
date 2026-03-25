@@ -80,9 +80,9 @@ def mask_atmos_plevel_subtool(infile: str = None,
                 fre_logger.debug('first pressure masking trigger passed. processing data.')
                 ds_out[var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
                 ds_out[var].attrs['pressure_mask'] = "True"
-                fre_logger.info("Finished processing %s, pressure_mask is True", var)
+                fre_logger.info(f"Finished processing '{var}'. pressure_mask was False, now set to True")
             else:
-                fre_logger.debug("Not processing %s, 'pressure_mask' was not False.", var)
+                fre_logger.debug(f"Not processing '{var}' because 'pressure_mask' is already True.")
 
         elif '_unmsk' in var:
             fre_logger.debug('second pressure masking trigger passed, \'_unmsk\' in variable name. processing data.')
@@ -103,7 +103,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
 
             fre_logger.info("Finished processing %s, wrote %s, pressure_mask is True", var, masked_var)
         else:
-            fre_logger.debug("Not processing %s, no pressure_mask attr, nor _unmsk in the variable name", var)
+            fre_logger.info(f"Not processing '{var}' because no 'pressure_mask' attribute exists")
 
     fre_logger.info('Write the output file if any unmasked variables were masked')
     if ds_out.variables:

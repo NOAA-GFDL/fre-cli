@@ -7,6 +7,7 @@ from pathlib import Path
 from fre.pp import ppval_script as ppval
 import subprocess
 
+# Test annual, monthly, daily input files
 # Set example input paths
 
 test_dir = Path("fre/tests/test_files/ascii_files")
@@ -42,19 +43,38 @@ def test_ppval(_file,capfd):
     """
 
     # Run the ppval tool
-    # This specific ocean annual file has one less timesteps than it should
-    # If the problematic file is being tested we expect a Value Error
-    if not "ocean_annual.2010-2014.tob" in _file:
-        try:
-            ppval.validate(f"{test_dir}/{_file}.nc")
-            assert True
-        except:
-            assert False
-
-    else:
-        with pytest.raises(ValueError):
-            ppval.validate(f"{test_dir}/{_file}.nc")
+    ppval.validate(f"{test_dir}/{_file}.nc")
 
     Path(f"{test_dir}/{_file}.nc").unlink()
 
     _out, _err = capfd.readouterr()
+
+# Test subdaily
+test_file_4xdaily = "atmos_4xdaily.0001010100-0005123118.slp.tile1"
+
+@pytest.fixture()
+def create_4xdaily_file(tmp_path):
+    """
+    4xdaily file requires a separate directory structure
+    """
+
+    input_path = Path(f"{test_dir}/{test_file_4xdaily}.cdl")
+    assert input_path.exists()
+
+    # create temporary directory
+    tmp_dir = tmp_path / 'PT6H' / 'foo'
+    tmp_dir.mkdir( parents=True, exist_ok = True )
+    output_path = Path(f"{tmp_dir}/{test_file_4xdaily}.nc")
+
+    # generate the netcdf file
+    ex = ["ncgen3", "-k", "netCDF-4", "-o", output_path, input_path]
+    sp = subprocess.run(ex, check = True)
+    assert all( [sp.returncode == 0, output_path.exists() ] )
+
+    yield output_path
+
+def test_ppval_4xdaily(create_4xdaily_file):
+    """
+    Test the timesteps for a 4xdaily file
+    """
+    ppval.validate(create_4xdaily_file)

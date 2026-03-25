@@ -2,7 +2,7 @@
 
 `regrid_xy.py` remaps scalar and/or vector fields from one kind of lat/lon grid to another.  It can remap between different grids of the same type (e.g. spherical), and between grids of different types (e.g. spherical to tripolar). By default, it uses an O(1) conservative interpolation scheme to accomplish the regridding, except under certain conditions [defined within `fregrid`](https://github.com/NOAA-GFDL/FRE-NCtools/blob/master/tools/fregrid/fregrid.c#L915-L920) the underlying CLI tool which does the heavy lifting.
 
-requires `fre-nctools` and `fregrid` to be in one's `PATH` variable, and `python3` (tested/developed with python 3.9.16). there should be `netCDF4` and `metomi` python modules in one's python environment for imports. `pytest` and `nccmp` is required for tests. `pylint` recommended for future developers working on this tool. 
+requires `fregrid` to be in one's `PATH` variable (`fre-nctools` no longer bundled; load via `module load fre-nctools`), and `python3` >= 3.11 (tested/developed with python 3.12). there should be `netCDF4` and `xarray` python modules in one's python environment for imports. `pytest` and `nccmp` is required for tests. `pylint` recommended for future developers working on this tool. 
 
 
 # INPUT PARAMETERS (mandatory, env vars)
