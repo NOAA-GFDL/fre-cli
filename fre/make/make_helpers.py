@@ -9,13 +9,15 @@ def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str 
 
     """
     This function get_mktemplate_path generates the full path to the 
-    mkmf mk_templates on the bare-metal system or the container image filesystem
+    mkmf mk_template on the bare-metal system or the container image filesystem
     
-    :param mk_template: Full or relative path to the mkmf mk_template file (.mk)
+    :param mk_template: Full path to or the mkmf mk_template filename with .mk extension
     :type mk_template: string
     :param model_root: Path to the root for all model install files (TO CLARIFY)
     :type model_root: str
-    :param container_flag: if True, generate full path for the container image filesystem
+    :param container_flag: if True and the full path to the mk_template is not specified, 
+                           return model_root+"/mkmf/templates/"+mk_template; else if True
+                           and mk_template is the filename, return mk_template
     :type container_flag: boolean
 
     :raises ValueError: Error if the mk_template file does not exist in the generated full path
