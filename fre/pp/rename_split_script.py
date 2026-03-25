@@ -91,10 +91,10 @@ def get_duration_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) 
 def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = ()) -> Path:
     """
     Accept an input netCDF file that is the result of split-netcdf, e.g.
-        00010101.atmos_daily.tile1.temp.nc
+    ``00010101.atmos_daily.tile1.temp.nc``
     and output a directory and filename that identifies its frequency, interval,
     and beginning and ending dates, e.g.
-        P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc
+    ``P1D/P6M/atmos_daily.00010101-0001063.temp.tile1.nc``
 
     :param input_file: Path to the input NetCDF file.
     :type input_file: str
