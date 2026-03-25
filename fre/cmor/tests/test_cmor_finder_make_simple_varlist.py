@@ -190,9 +190,9 @@ def test_make_simple_varlist_mip_table_filter(tmp_path):
 # ---- IndexError on datetime extraction (monkeypatched) ----
 def test_make_simple_varlist_index_error_on_datetime(tmp_path):
     """
-    When os.path.basename(one_file).split('.')[-3] raises IndexError
+    When ``os.path.basename(one_file).split('.')[-3]`` raises IndexError
     (e.g. a file with fewer than 3 dot-segments sneaks in), the function
-    should catch it, set one_datetime = None, and fall back to the '*nc'
+    should catch it, set one_datetime = None, and fall back to the ``'*nc'``
     search pattern.
     Covers the except IndexError branch and the one_datetime is None path.
     """
