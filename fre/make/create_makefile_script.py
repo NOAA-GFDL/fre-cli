@@ -14,20 +14,19 @@ Create the Makefile used for model compilation in the
 
 The Makefile
 
-1. Sets the ``SRCROOT`` (Directory path for source code)
-2. Sets the ``BUILDROOT`` (Directory path for model build)
-3. Sets the ``MK_TEMPLATE_PATH`` (Directory path of mk_template)
+1. Sets the ``SRCROOT``
+2. Sets the ``BLDROOT``
+3. Sets the ``MK_TEMPLATE_PATH``
 
     * This path is defined in the `platforms.yaml` and refers to a template in the 
-      `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
+    `mkmf` repository <https://github.com/NOAA-GFDL/mkmf>`_.
 
-4. Sets build and linking recipes that adheres to the following structure:
+4. Sets the build and linking recipes that adhere to the following structure:
 
 .. code-block::
 
-      [target]: [prerequisites]
-          [recipe]
-
+    [target]: [prerequisites]
+        [recipe]
 
 For more information about the Makefile, see the fre-cli glossary:
 https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
