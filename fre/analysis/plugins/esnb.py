@@ -2,7 +2,6 @@ import logging
 from pathlib import Path, PurePosixPath
 import requests
 from ..base_class import AnalysisScript
-import esnb.engine
 
 fre_logger = logging.getLogger(__name__)
 
@@ -54,6 +53,14 @@ class freanalysis_esnb(AnalysisScript):
             'PP_DIR': pp_dir,
             'date_range': split_date
         }
+
+        try:
+            import esnb.engine
+        except ImportError:
+            raise ImportError(
+                "The 'esnb' package is required for ESNB analysis but is not installed. "
+                "Please install it using: pip install esnb"
+            )
 
         # write the python script that runs the notebook
         python_script = esnb.engine.canopy_launcher(run_settings, case_settings, verbose=True)
