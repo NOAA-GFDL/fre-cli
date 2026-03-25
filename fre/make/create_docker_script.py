@@ -4,19 +4,27 @@ Creates a Dockerfile and container build script
 If the build script is executed, a singularity image file (.sif) is generated. 
 '''
 
-import os
 import logging
-
+import os
 import subprocess
+from typing import Optional
 
 import fre.yamltools.combine_yamls_script as cy
-from typing import Optional
 from fre.make.make_helpers import get_mktemplate_path
-from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
+
+from .gfdlfremake import (
+    buildDocker,
+    targetfre,
+    varsfre,
+    yamlfre
+)
+
 
 fre_logger = logging.getLogger(__name__)
 
-def dockerfile_create(yamlfile:str, platform:str, target:str, execute: Optional[bool] = False, no_format_transfer: Optional[bool] = False):
+def dockerfile_create(yamlfile:str, platform:str, target:str,
+                      execute: Optional[bool] = False,
+                      no_format_transfer: Optional[bool] = False):
     """
     Creates the dockerfile and container build script for a container build
 
