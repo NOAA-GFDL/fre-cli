@@ -1,6 +1,8 @@
 import logging
 from pathlib import Path, PurePosixPath
 import requests
+import subprocess
+import sys
 from ..base_class import AnalysisScript
 
 fre_logger = logging.getLogger(__name__)
@@ -67,4 +69,12 @@ class freanalysis_esnb(AnalysisScript):
         fre_logger.debug(f"ESNB python wrapper saved to '{python_script}'")
 
         # run the python script
+        fre_logger.info(f"Running ESNB analysis script: {python_script}")
+        result = subprocess.run([sys.executable, python_script], check=True, capture_output=True, text=True)
+        fre_logger.debug(f"ESNB script output: {result.stdout}")
+        if result.stderr:
+            fre_logger.warning(f"ESNB script stderr: {result.stderr}")
+
+        # Return empty list for now, as ESNB might not generate PNGs directly
+        return []
 
