@@ -15,7 +15,7 @@ Create the Makefile used for model compilation in the
 The Makefile
 
 1. Sets the ``SRCROOT``
-2. Sets the ``BLDROOT``
+2. Sets the ``BUILDROOT``
 3. Sets the ``MK_TEMPLATE_PATH``
 
     * This path is defined in the `platforms.yaml` and refers to a template in the 
