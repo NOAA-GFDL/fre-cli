@@ -48,12 +48,13 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
                          container2base: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.2rte"
                      Note, if an Intel compiler is specified to compile the src_code, the container
                      will not successful launch on compute systems external to GFDL due to licensing agreements.
+                     (TODO: REMOVE PLATFORM EXAMPLE)
     :type platform: tuple(str)
     :param target: Predefined FRE targets
     :type target: tuple(str)
     :param execute: If true, execute createContainer.sh to build the container image
     :type execute: bool
-    :param no_format_transfer: if True, skip image format conversion to a .sif file
+    :param no_format_transfer: if True, skip container image format conversion to a .sif file
     :type no_format_transfer: bool
     :raises ValueError: Error if platform does not exist in platforms.yaml
 
