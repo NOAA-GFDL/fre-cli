@@ -1,0 +1,32 @@
+name: reStructuredText Lint
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
+jobs:
+  run_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+      - name: Make Sphinx Requirements
+        run: |
+          echo "sphinx" > requirements.txt
+          echo "sphinx_rtd_theme" >> requirements.txt
+          echo "sphinx_design" >> requirements.txt
+          echo "sphinx-sitemap" >> requirements.txt
+          echo "sphinxcontrib-mermaid" >> requirements.txt
+          echo "doc8" >> requirements.txt  
+      - name: Prepare Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      - name: Install Python Requirements
+        run: |
+          pip install -r requirements.txt
+          pip install doc8
+      - name: Lint RST files
+        run: doc8 source
