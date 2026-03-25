@@ -64,8 +64,8 @@ def test_check_fre_version_mismatch(yaml_with_wrong_version):
         check_fre_version(yaml_with_wrong_version)
 
 def test_check_fre_version_missing(yaml_without_version, caplog):
-    """check_fre_version should warn but not error when fre_cli_version is missing."""
+    """check_fre_version should log info but not error when fre_cli_version is missing."""
     import logging
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.INFO):
         check_fre_version(yaml_without_version)
     assert "fre_cli_version not specified" in caplog.text
