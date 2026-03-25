@@ -1,9 +1,12 @@
 '''
 Generates a Dockerfile and an accompanying createContainer.sh script that
-builds a Docker image of the compiled model executable and the library
+builds a Docker image containing the compiled model executable and the library
 dependencies from the generated Dockerfile.  Unless specified,
 createContainer.sh will convert the Docker OCI image to a Singularity image
 file (.sif) format that can be launched with Singularity/Apptainer.
+
+Note, once the container image is built, the source code and the compiled
+executable cannot be modified.
 '''
 
 import logging
@@ -32,23 +35,7 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
 
     :param yamlfile: model compile YAML file
     :type yamlfile: str
-    :param platform: FRE container-specific platform(s) that are defined in platforms.yaml, for example,
-                     as the following:
-                     platforms:
-                       - name: hpcme.intel25
-                         compiler: intel
-                         RUNenv: ""
-                         modelRoot: /apps
-                         container: True
-                         containerBuild: "podman"
-                         containerRun: "apptainer"
-                         containerBase: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.2"
-                         mkTemplate: "/apps/mkmf/templates/hpcme-intel25.mk"
-                         container2step: True
-                         container2base: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.2rte"
-                     Note, if an Intel compiler is specified to compile the src_code, the container
-                     will not successful launch on compute systems external to GFDL due to licensing agreements.
-                     (TODO: REMOVE PLATFORM EXAMPLE)
+    :param platform: FRE container-specific platform(s) that are defined in platforms.yaml
     :type platform: tuple(str)
     :param target: Predefined FRE targets
     :type target: tuple(str)
