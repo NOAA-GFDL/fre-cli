@@ -1,5 +1,3 @@
-fre_cli_version: "2025.04"
-
 # reusable variables
 fre_properties:
   - &AM5_VERSION        "am5f7b12r1"

@@ -58,7 +58,7 @@ def check_fre_version(yamlfile: str) -> None:
     installed_version = fre.version
 
     if yaml_fre_version is None:
-        fre_logger.warning(
+        fre_logger.info(
             "fre_cli_version not specified in %s. "
             "It is recommended to add 'fre_cli_version' to your model yaml "
             "to ensure compatibility with the correct version of fre-cli.",
@@ -172,7 +172,7 @@ def clean_yaml(yml_dict):
     """
     # Clean the yaml
     # If keys exists, delete:
-    keys_clean=["fre_properties", "experiments"]
+    keys_clean=["fre_properties", "fre_cli_version", "experiments"]
     for kc in keys_clean:
         if kc in yml_dict.keys():
             del yml_dict[kc]
