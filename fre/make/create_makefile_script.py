@@ -19,7 +19,7 @@ The Makefile
 3. Sets the ``MK_TEMPLATE_PATH``
 
    * This path is defined in the `platforms.yaml` and refers to a template in the 
-     `mkmf` repository <https://github.com/NOAA-GFDL/mkmf>`_.
+     `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_.
 
 4. Sets the build and linking recipes that adhere to the following structure:
 
