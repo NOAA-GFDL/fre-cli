@@ -179,7 +179,7 @@ def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
       - success:
 
          - daily regrid/native, multiple tiles
-         - monthly regird/native, multiple tiles (currently failing because of metadata)
+         - monthly regrid/native, multiple tiles (currently failing because of metadata)
          - annual regrid/native
          - static regrid/no regrid
 
