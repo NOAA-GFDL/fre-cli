@@ -15,3 +15,9 @@ Glossary
     This commonly takes on the form ``platform.compiler`` (.e.g. ``ncrc5.intel25``, ``gfdl.intel25``). Note, the
     platform must be defined in ``platforms.yaml``. See `fre-examples: platforms.yaml
     <https://github.com/NOAA-GFDL/fre-examples/blob/main/platforms.yaml>`_
+
+  Makefile
+    A Makefile is a configuration file required for code compilation with GNU make. For bare-metal and container
+    builds, this file is created with the ``fre make makefile`` subtool. The Makefile contains information about
+    the required components, library dependencies, linker flags, compiler flags, and the mk_template (defined in
+    the ``platforms.yaml``). 
