@@ -154,15 +154,23 @@ def make_simple_varlist( dir_targ: str,
 
     """
     # if the variable is in the filename, it's likely delimited by another period.
-    one_file = next(glob.iglob(os.path.join(dir_targ, "*.*.nc")), None)
-    if not one_file:
+    all_nc_files = glob.glob(os.path.join(dir_targ, "*.*.nc"))
+    if not all_nc_files:
         fre_logger.error("No files found in the directory.") #uncovered
         return None
 
     one_datetime = None
     search_pattern = None
     try:
-        one_datetime = os.path.basename(one_file).split('.')[-3]
+        # Count files per datetime stamp and pick the most common one.
+        # This ensures we choose the most representative datetime, which
+        # maximises the number of variables found and avoids non-deterministic
+        # behaviour caused by filesystem-dependent glob ordering.
+        datetime_counts: Dict[str, int] = {}
+        for f in all_nc_files:
+            dt = os.path.basename(f).split('.')[-3]
+            datetime_counts[dt] = datetime_counts.get(dt, 0) + 1
+        one_datetime = max(datetime_counts, key=lambda k: datetime_counts[k])
     except IndexError as e:
         fre_logger.warning(' e = %s', e)
         fre_logger.warning('WARNING: cannot find datetime in filenames, moving on and doing the best i can.')
