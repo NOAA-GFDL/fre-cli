@@ -1,4 +1,4 @@
-directories: &shared_directories
+directories:
   history_dir:  !join [/archive/lwh/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
   pp_dir:       !join [/archive/lwh/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
 #  analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
@@ -7,15 +7,12 @@ directories: &shared_directories
 
 # shared pp settings
 postprocess: 
-  settings: &shared_settings
+  settings:
     history_segment:    "P100Y"
     site:               "ppan"
-  switches: &shared_switches # note, did not change these at all
-    do_statics:         True
+  switches:
     do_timeavgs:        True
     clean_work:         True
-    do_refinediag:      False
     do_atmos_plevel_masking: True
-    do_preanalysis:     False
     do_analysis:        True
     do_analysis_only:   False
