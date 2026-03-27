@@ -21,6 +21,9 @@ def checkout_out(monkeypatch):
     Ensures the output directory exists and is clean before each test,
     and cleans up after. Uses monkeypatch to set TEST_BUILD_DIR so it
     is automatically restored after the test.
+
+    Note: Only cleans the experiment subtree (not the whole OUT dir)
+    because checkout_create creates the full directory structure itself.
     """
     out = f"{TEST_DIR}/checkout_out"
     monkeypatch.setenv("TEST_BUILD_DIR", out)
@@ -40,6 +43,9 @@ def checkout_out(monkeypatch):
 def compile_out(monkeypatch):
     """
     Provide a clean compile output directory and set TEST_BUILD_DIR.
+
+    Note: Recreates the entire OUT dir because compile_create expects
+    the base output directory to already exist.
     """
     out = f"{TEST_DIR}/compile_out"
     monkeypatch.setenv("TEST_BUILD_DIR", out)
@@ -54,6 +60,9 @@ def compile_out(monkeypatch):
 def makefile_out(monkeypatch):
     """
     Provide a clean makefile output directory and set TEST_BUILD_DIR.
+
+    Note: Recreates the entire OUT dir because makefile_create expects
+    the base output directory to already exist.
     """
     out = f"{TEST_DIR}/makefile_out"
     monkeypatch.setenv("TEST_BUILD_DIR", out)
