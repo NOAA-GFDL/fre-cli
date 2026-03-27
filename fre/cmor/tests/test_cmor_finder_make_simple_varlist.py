@@ -3,6 +3,7 @@ tests for fre.cmor.cmor_finder.make_simple_varlist
 '''
 
 import json
+import os
 import glob as glob_module
 from unittest.mock import patch
 
@@ -190,40 +191,36 @@ def test_make_simple_varlist_mip_table_filter(tmp_path):
 # ---- IndexError on datetime extraction (monkeypatched) ----
 def test_make_simple_varlist_index_error_on_datetime(tmp_path):
     """
-    When ``os.path.basename(one_file).split('.')[-3]`` raises IndexError
-    (e.g. a file with fewer than 3 dot-segments sneaks in), the function
-    should catch it, set one_datetime = None, and fall back to the ``'*nc'``
-    search pattern.
+    When all discovered files have fewer than 3 dot-segments,
+    ``split('.')[-3]`` raises IndexError.  The function should catch it,
+    set one_datetime = None, and fall back to the ``'*nc'`` search pattern.
     Covers the except IndexError branch and the one_datetime is None path.
     """
-    # Create a file that matches *.*.nc normally
+    # Create a real file so the fallback '*nc' glob returns something useful.
     real_file = tmp_path / "model.19900101.temp.nc"
     real_file.touch()
 
-    # Patch iglob so the *first* call (the *.*.nc probe) returns a pathological
-    # name with only one dot ("short.nc"), triggering IndexError on split('.')[-3].
-    # The *second* call (glob.glob with search_pattern) returns the real file.
+    # Patch glob.glob so the initial *.*.nc discovery call returns a file whose
+    # basename has fewer than 3 dot-separated segments, triggering IndexError on
+    # split('.')[-3].  The subsequent search-pattern glob uses the real filesystem.
     fake_probe = str(tmp_path / "short.nc")
     (tmp_path / "short.nc").touch()
 
-    original_iglob = glob_module.iglob
     original_glob = glob_module.glob
 
-    def patched_iglob(pattern, **kwargs):
-        # Return the pathological file for the first probe
-        return iter([fake_probe])
-
     def patched_glob(pattern, **kwargs):
-        # Return the real files for the search_pattern glob
+        if os.path.basename(pattern) == "*.*.nc":
+            # Return a pathological filename for the *.*.nc discovery call
+            return [fake_probe]
+        # Return real files for the search_pattern glob
         return original_glob(pattern, **kwargs)
 
-    with patch('fre.cmor.cmor_finder.glob.iglob', side_effect=patched_iglob):
-        with patch('fre.cmor.cmor_finder.glob.glob', side_effect=patched_glob):
-            result = make_simple_varlist(str(tmp_path), None)
+    with patch('fre.cmor.cmor_finder.glob.glob', side_effect=patched_glob):
+        result = make_simple_varlist(str(tmp_path), None)
 
-    # short.nc split is ['short', 'nc'], [-3] raises IndexError
-    # one_datetime becomes None, search_pattern becomes '*nc'
-    # glob picks up *.nc files in the directory
+    # 'short.nc' has only 2 parts when split by '.', so [-3] raises IndexError;
+    # one_datetime becomes None, search_pattern becomes '*nc',
+    # and the real glob picks up *.nc files in the directory.
     assert result is not None
     assert isinstance(result, dict)
 
@@ -266,15 +263,16 @@ def test_make_simple_varlist_dedup_across_datetimes(tmp_path):
     """
     Files with different datetime stamps but the same variable name
     should be de-duplicated so the variable appears only once.
-    Covers the 'var_name already in target varlist, skip' branch.
+    The most-common datetime is selected and all variables for that
+    datetime are returned without duplicates.
     """
     (tmp_path / "ocean.19900101.tos.nc").touch()
     (tmp_path / "ocean.19900201.tos.nc").touch()
     (tmp_path / "ocean.19900101.sos.nc").touch()
     (tmp_path / "ocean.19900201.sos.nc").touch()
 
-    # All four files share datetime pattern "1990*" so they all get globbed;
-    # tos and sos each appear twice, the second occurrence triggers the skip.
+    # Both datetimes (19900101, 19900201) have 2 files each; the most-files
+    # datetime is picked, and both tos and sos appear in that set.
     result = make_simple_varlist(str(tmp_path), None)
 
     assert result is not None
