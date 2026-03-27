@@ -2,19 +2,22 @@
 Tests split-netcdf, parse_yaml from split_netcdf_script.py
 '''
 
-import pytest
-import re
-from fre.pp import split_netcdf_script
-from fre.pp.split_netcdf_script import split_file_xarray
-import subprocess
 import os
-from os import path as osp
 import pathlib
+import re
+import subprocess
+from os import path as osp
 from pathlib import Path
-from fre import fre
 
 import click
+import pytest
 from click.testing import CliRunner
+
+from fre import fre
+from fre.pp import split_netcdf_script
+from fre.pp.split_netcdf_script import split_file_xarray
+
+
 runner=CliRunner()
 
 #rootdir = Path(__file__).parents[3] #get to root directory
@@ -45,30 +48,30 @@ def test_split_file_setup():
     nc_files = []
     sp_stat = []
     for testcase in cases.keys():
-      cds = osp.join(test_dir,cases[testcase]["dir"])
-      subdirs = [f.path for f in os.scandir(cds) if f.is_dir()]
-      for sd in subdirs:
-          #for each directory in the current dir, make a new dir with "new_" prepended
-          newdir = osp.join(cds, "new_" + os.path.basename(sd))
-          if not osp.exists(newdir):
-              os.makedirs(newdir)
-              print(newdir)
-          cdl_files = [f.path for f in os.scandir(sd) if f.is_file]
-          cdl_files = [el for el in cdl_files if re.search("cdl", el) is not None]
-          for cdlf in cdl_files:
-              cdl_out = re.sub(".cdl", ".nc", cdlf)
-              cdlf_cmd = ["ncgen3", "-k", "netCDF-4", "-o", cdl_out, cdlf]
-              nc_files.append(cdl_out)
-              ncgen_commands.append(cdlf_cmd)
-          ncgen_commands.append(["ncgen3", "-k", "netCDF-4", "-o",
-                                 osp.join(cds, cases[testcase]["nc"]),
-                                 osp.join(cds, cases[testcase]["cdl"])])
-          for ncg in ncgen_commands:
-              print(ncg)
-              sp = subprocess.run(ncg, check = True, capture_output=True)
-              sp_stat.append(sp.returncode)
-          sp_success = [el == 0 for el in sp_stat]
-          nc_files_exist = [osp.isfile(el) for el in nc_files]
+        cds = osp.join(test_dir,cases[testcase]["dir"])
+        subdirs = [f.path for f in os.scandir(cds) if f.is_dir()]
+        for sd in subdirs:
+            #for each directory in the current dir, make a new dir with "new_" prepended
+            newdir = osp.join(cds, "new_" + os.path.basename(sd))
+            if not osp.exists(newdir):
+                os.makedirs(newdir)
+                print(newdir)
+            cdl_files = [f.path for f in os.scandir(sd) if f.is_file]
+            cdl_files = [el for el in cdl_files if re.search("cdl", el) is not None]
+            for cdlf in cdl_files:
+                cdl_out = re.sub(".cdl", ".nc", cdlf)
+                cdlf_cmd = ["ncgen3", "-k", "netCDF-4", "-o", cdl_out, cdlf]
+                nc_files.append(cdl_out)
+                ncgen_commands.append(cdlf_cmd)
+            ncgen_commands.append(["ncgen3", "-k", "netCDF-4", "-o",
+                                   osp.join(cds, cases[testcase]["nc"]),
+                                   osp.join(cds, cases[testcase]["cdl"])])
+            for ncg in ncgen_commands:
+                print(ncg)
+                sp = subprocess.run(ncg, check = True, capture_output=True)
+                sp_stat.append(sp.returncode)
+            sp_success = [el == 0 for el in sp_stat]
+            nc_files_exist = [osp.isfile(el) for el in nc_files]
     assert all( [ sp_success + nc_files_exist ] )
 
 #test splitting files
@@ -97,17 +100,21 @@ def test_split_file_run(workdir,infile, outfiledir, varlist):
     :type workdir: string
     :param infile: netcdf file to split into single-var files
     :type infile: string
-    :param outfiledir: directory to which to write the split netcdf files (new_all_ts_varlist, new_some_ts_varlist, new_none_ts_varlist)
+    :param outfiledir: directory to which to write the split netcdf files
+        (new_all_ts_varlist, new_some_ts_varlist, new_none_ts_varlist)
     :type outfiledir: string
     :param varlist: comma-separated string specifying which variables to write ("all", some_ts_varlist, none_ts_varlist)
     :type varlist: string
     :type origdir: string
 
-    Parameters for the 5 tests are based off of the list of variables to filter on plus the type of file:
+    Parameters for the 5 tests are based off of the list of variables to
+    filter on plus the type of file:
 
     - all: "all", the default, processes all variables in the input
-    - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
-    - none: processes a list of variables, none of which are in the input; should produce no files
+    - some: processes a list of variables, some of which are and some of which
+      are not in the input; includes one duplicate var
+    - none: processes a list of variables, none of which are in the input;
+      should produce no files
     - ts: timeseries files
     - static: static files
     '''
@@ -136,10 +143,12 @@ def test_split_file_data(workdir,newdir, origdir):
     :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
     :type origdir: string
 
-    Parameters for the tests differ based off the variable list from test_split_file_run and the type of file being split:
+    Parameters for the tests differ based off the variable list from
+    test_split_file_run and the type of file being split:
 
     - all: "all", the default, processes all variables in the input
-    - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
+    - some: processes a list of variables, some of which are and some of
+      which are not in the input; includes one duplicate var
     - ts: timeseries files
     - static: static files
     '''
@@ -148,7 +157,7 @@ def test_split_file_data(workdir,newdir, origdir):
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     new_count = len(split_files)
-    same_count_files = (new_count == orig_count)
+    same_count_files = new_count == orig_count
     print(f"orig dir: {origdir}  new dir: {newdir}")
     print(f"orig count: {orig_count}  new count: {new_count}")
     all_files_equal=True
@@ -183,10 +192,12 @@ def test_split_file_metadata(workdir,newdir, origdir):
     :param origdir: dir containing the old files to check against (all_ts_varlist, some_ts_varlist)
     :type origdir: string
 
-    Parameters for the tests differ based off the variable list from test_split_file_run and the type of file being split:
+    Parameters for the tests differ based off the variable list from
+    test_split_file_run and the type of file being split:
 
     - all: "all", the default, processes all variables in the input
-    - some: processes a list of variables, some of which are and some of which are not in the input; includes one duplicate var
+    - some: processes a list of variables, some of which are and some of
+      which are not in the input; includes one duplicate var
     - ts: timeseries files
     - static: static files
     '''
@@ -195,7 +206,7 @@ def test_split_file_metadata(workdir,newdir, origdir):
     orig_count = len([el for el in os.listdir(origdir) if el.endswith(".nc")])
     split_files = [el for el in os.listdir(newdir) if el.endswith(".nc")]
     new_count = len(split_files)
-    same_count_files = (new_count == orig_count)
+    same_count_files = new_count == orig_count
     all_files_equal=True
     for sf in split_files:
         nccmp_cmd = [ 'nccmp', '-mg', '--force',
@@ -216,16 +227,16 @@ def test_split_file_cleanup():
     el_list = []
     dir_list = []
     for path, subdirs, files in os.walk(test_dir):
-      for name in files:
-        el_list.append(osp.join(path, name))
-      for name in subdirs:
-        dir_list.append(osp.join(path,name))
+        for name in files:
+            el_list.append(osp.join(path, name))
+        for name in subdirs:
+            dir_list.append(osp.join(path,name))
     netcdf_files = [el for el in el_list if el.endswith(".nc")]
     for nc in netcdf_files:
-      pathlib.Path.unlink(Path(nc))
+        pathlib.Path.unlink(Path(nc))
     newdir = [el for el in dir_list if osp.basename(el).startswith("new_")]
     for nd in newdir:
-      pathlib.Path.rmdir(Path(nd))
+        pathlib.Path.rmdir(Path(nd))
     dir_deleted = [not osp.isdir(el) for el in newdir]
     el_deleted = [not osp.isdir(el) for el in netcdf_files]
     assert all(el_deleted + dir_deleted)

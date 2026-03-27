@@ -1,42 +1,54 @@
 '''
-Creates a Dockerfile and container build script
+Generates a Dockerfile and an accompanying createContainer.sh script that
+builds a Docker image containing the compiled model executable and the library
+dependencies from the generated Dockerfile.  Unless specified,
+createContainer.sh will convert the Docker OCI image to a Singularity image
+file format (.sif) that can be launched with Singularity/Apptainer.
 
-If the build script is executed, a singularity image file (.sif) is generated. 
+Note, once the container image is built, the source code and the compiled
+executable cannot be modified.
 '''
 
-import os
 import logging
-
+import os
 import subprocess
 
 import fre.yamltools.combine_yamls_script as cy
-from typing import Optional
 from fre.make.make_helpers import get_mktemplate_path
-from .gfdlfremake import varsfre, targetfre, yamlfre, buildDocker
+
+from .gfdlfremake import (
+    buildDocker,
+    targetfre,
+    varsfre,
+    yamlfre
+)
+
 
 fre_logger = logging.getLogger(__name__)
 
-def dockerfile_create(yamlfile:str, platform:str, target:str, execute: Optional[bool] = False, no_format_transfer: Optional[bool] = False):
+def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
+                      execute: bool = False, no_format_transfer: bool = False):
     """
-    Creates the dockerfile and container build script for a container build
+    This function dockerfile_create creates a Dockerfile and
+    an accompanying createContainer.sh script that builds a container image containing
+    the compiled model executable and the library dependencies
 
-    :param yamlfile: Model compile YAML file
+    :param yamlfile: model compile YAML file
     :type yamlfile: str
-    :param platform: FRE container platform; container platforms are defined in the platforms yaml.
-                     Container platforms can build non-shareable (includes intel compilers) and shareable
-                     (does not include intel compilers) singularity image files. An example of a
-                     non-shareable container platform is "hpcme.2023"
-    :type platform: str
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
-    :type target: str
-    :param execute: Run the created dockerfile to build a container
+    :param platform: FRE container-specific platform(s) that are defined in platforms.yaml
+    :type platform: tuple(str)
+    :param target: Predefined FRE targets
+    :type target: tuple(str)
+    :param execute: If true, execute createContainer.sh to build the container image
     :type execute: bool
-    :param no_format_transfer: Skip the container format conversion to a .sif file.
+    :param no_format_transfer: if True, skip container image format conversion to a .sif file
     :type no_format_transfer: bool
-    :raises ValueError: Error if platform does not exist in platforms yaml configuration 
+    :raises ValueError: Error if platform does not exist in platforms.yaml
 
-    .. note:: To build an image on GFDL's RDHPCS GAEA, please submit a GFDL helpdesk ticket for podman access.
+    .. note:: If building the container image on GFDL's RDHPCS GAEA with the Podman container engine,
+              please submit a GFDL helpdesk ticket to request Podman access
     """
+
     ## Split and store the platforms and targets in a list
     plist = platform
     tlist = target

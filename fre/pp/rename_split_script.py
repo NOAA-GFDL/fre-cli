@@ -1,11 +1,11 @@
 import logging
 import os
 import shutil
-import pathlib
-from pathlib import Path
-import xarray as xr
-import cftime
 from datetime import timedelta
+from pathlib import Path
+
+import cftime
+import xarray as xr
 import yaml
 from metomi.isodatetime.parsers import DurationParser, TimePointParser
 
@@ -88,25 +88,26 @@ def get_duration_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) 
     return duration
 
 
-def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.PosixPath:
+def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = ()) -> Path:
     """
     Accept an input netCDF file that is the result of split-netcdf, e.g.
-        00010101.atmos_daily.tile1.temp.nc
+    ``00010101.atmos_daily.tile1.temp.nc``
     and output a directory and filename that identifies its frequency, interval,
     and beginning and ending dates, e.g.
-        P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc
+    ``P1D/P6M/atmos_daily.00010101-0001063.temp.tile1.nc``
 
     :param input_file: Path to the input NetCDF file.
     :type input_file: str
-    :param diag_manifest: Optional path to the diagnostic manifest file.
-    :type diag_manifest: str or None
+    :param diag_manifest: Optional tuple of paths to diagnostic manifest files.
+    :type diag_manifest: tuple[str, ...] or str or None
     :returns: The new path for the renamed file.
-    :rtype: pathlib.PosixPath
+    :rtype: Path
     :raises ValueError: If the file cannot be parsed or if diag manifest is required but not provided.
-    :raises FileNotFoundError: If the diag manifest does not exist.
-    :raises Exception: If unexpected frequency units are found in the diag manifest.
+    :raises FileNotFoundError: If a diag manifest does not exist.
+    :raises Exception: If unexpected frequency units are found in the diag manifest, or if the label is not found.
     """
     fre_logger.debug(f"Examining '{input_file}'")
+    input_file = Path(input_file)
     parts = input_file.stem.split('.')
 
     if len(parts) == 4:
@@ -160,6 +161,7 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
             newfile_base = f"{label}.{var}.{tile}.nc"
         else:
             newfile_base = f"{label}.{var}.nc"
+        fre_logger.info(f"'{input_file}' is static")
         return Path(label) / 'P0Y' / 'P0Y' / newfile_base
     elif number_of_timesteps >= 2:
         first_timestep = ds.time.values[0]
@@ -177,6 +179,7 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
             date1 = first_timestep - freq / 2.0
             date2 = last_timestep - freq / 2.0
         duration = get_duration_from_two_dates(date1, date2)
+        fre_logger.info(f"'{input_file}' has 2+ timesteps; date1='{date1}'; date2='{date2}'; duration='{duration}'")
     else:
         time_bounds_name = ds.time.attrs.get('bounds')
         if time_bounds_name:
@@ -189,41 +192,63 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
             date1 = first_timestep
             date2 = date1 + (number_of_timesteps-1) * freq
             duration = get_duration_from_two_dates(date1, date2 - freq)
+            fre_logger.info(f"'{input_file}' has 1 timesteps with bounds; date1='{date1}'; date2='{date2}'; duration='{duration}'")
         else:
-            if diag_manifest is not None:
-                if Path(diag_manifest).exists():
-                    fre_logger.info("Using diag manifest '{diag_manifest}'")
-                    with open(diag_manifest, 'r') as f:
+            manifests: tuple[str, ...]
+            if diag_manifest is None:
+                manifests = ()
+            elif isinstance(diag_manifest, str):
+                manifests = (diag_manifest,)
+            elif isinstance(diag_manifest, Path):
+                manifests = (str(diag_manifest),)
+            else:
+                manifests = tuple(diag_manifest)
+
+            if manifests:
+                found_entry = None
+                found_manifest = None
+                for manifest in manifests:
+                    manifest_path = Path(manifest)
+                    if not manifest_path.exists():
+                        raise FileNotFoundError(f"Diag manifest '{manifest}' does not exist")
+                    fre_logger.info(f"Using diag manifest '{manifest}'")
+                    with open(manifest_path, 'r') as f:
                         yaml_data = yaml.safe_load(f)
-                        duration = None
-                        for diag_file in yaml_data["diag_files"]:
-                            if diag_file["file_name"] == label:
-                                if diag_file["freq_units"] == "years":
-                                    duration = f"P{diag_file['freq']}Y"
-                                    format_ = "%Y"
-                                elif diag_file["freq_units"] == "months":
-                                    if diag_file['freq'] == 12:
-                                        duration = "P1Y"
-                                        format_ = "%Y"
-                                    else:
-                                        duration = f"P{diag_file['freq']}M"
-                                        format_ = "%Y%m"
-                                else:
-                                    raise Exception("Diag manifest found but frequency units {diag_file['freq_units']} are unexpected; expected 'years' or 'months'.")
-                        if duration is not None:
-                            duration_object = duration_parser.parse(duration)
-                        else:
-                            raise Exception("Not found in diag manifest")
-                        # since only one timestep, frequency equals duration
-                        freq_label = duration
-                        # retrieve date1 from the filename
-                        date_str = str(input_file.name).split('.')[0]
-                        date1 = time_parser.parse(date_str)
-                        # subtracting one month works for annual
-                        one_month = duration_parser.parse('P1M')
-                        date2 = date1 + duration_object - one_month
+                    for diag_file in yaml_data.get("diag_files", []):
+                        if diag_file.get("file_name") == label:
+                            if found_entry is not None:
+                                raise Exception(f"Diag file '{label}' found in multiple manifests ('{found_manifest}' and '{manifest}')")
+                            found_entry = diag_file
+                            found_manifest = manifest
+
+                if found_entry is None:
+                    raise Exception(f"File '{label}' not found in diag manifests")
+
+                freq_units = found_entry.get("freq_units")
+                freq_value = found_entry.get("freq")
+                if freq_units == "years":
+                    duration = f"P{freq_value}Y"
+                    format_ = "%Y"
+                elif freq_units == "months":
+                    if freq_value == 12:
+                        duration = "P1Y"
+                        format_ = "%Y"
+                    else:
+                        duration = f"P{freq_value}M"
+                        format_ = "%Y%m"
                 else:
-                    raise FileNotFoundError(f"Diag manifest '{diag_manifest}' does not exist")
+                    raise Exception(f"Diag manifest found but frequency units '{freq_units}' are unexpected; expected 'years' or 'months'.")
+
+                duration_object = duration_parser.parse(duration)
+                # since only one timestep, frequency equals duration
+                freq_label = duration
+                # retrieve date1 from the filename
+                date_str = str(input_file.name).split('.')[0]
+                date1 = time_parser.parse(date_str)
+                # subtracting one month works for annual
+                one_month = duration_parser.parse('P1M')
+                date2 = date1 + duration_object - one_month
+                fre_logger.info(f"'{input_file}' has 1 timesteps with diag manifest; date1='{date1}'; date2='{date2}'; duration='{duration}'")
             # remove next stanza once diag manifests are common
             elif 'annual' in label:
                 date_str = str(input_file.name).split('.')[0]
@@ -234,6 +259,7 @@ def rename_file(input_file: str, diag_manifest: str | None = None) -> pathlib.Po
                 date2 = date1 + duration_object - one_month
                 format_ = "%Y"
                 freq_label = duration
+                fre_logger.info(f"'{input_file}' has 1 timesteps without diag manifest (legacy case to be removed); date1='{date1}'; date2='{date2}'; duration='{duration}'")
             else:
                 raise ValueError(f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds")
 
@@ -282,7 +308,7 @@ def link_or_copy(source: str, destination:str) -> None:
         fre_logger.debug(f"File copied: {destination}")
 
 
-def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: bool, diag_manifest: str | None = None) -> None:
+def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: bool, diag_manifest: tuple[str, ...] | str | None = ()) -> None:
     """
     Accept a flat directory of NetCDF files and output a nested directory structure
     containing frequency and time interval.
@@ -298,12 +324,18 @@ def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: b
     :type component: str
     :param use_subdirs: Whether to use subdirectories for regridded cases.
     :type use_subdirs: bool
-    :param diag_manifest: Optional path to the diagnostic manifest file.
-    :type diag_manifest: str or None
+    :param diag_manifest: Optional tuple of paths to diagnostic manifest files.
+    :type diag_manifest: tuple[str, ...] or str or None
     :returns: None
     :rtype: None
     :raises FileNotFoundError: If no files matching the component are found in the input directory.
     """
+    fre_logger.info(f"Input dir: '{input_dir}'")
+    fre_logger.info(f"Output dir: '{output_dir}'")
+    fre_logger.info(f"Component: '{component}'")
+    fre_logger.info(f"Use subdirs: '{use_subdirs}'")
+    fre_logger.info(f"Diag manifest: '{diag_manifest}'")
+
     input_dir = Path(input_dir)
     did_something = False
     if use_subdirs:

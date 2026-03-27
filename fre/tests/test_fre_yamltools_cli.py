@@ -13,13 +13,15 @@ We also have one significantly more complex test for combine-yamls, which needs 
 that a command-line call to combine-yamls makes the same yaml that we expect
 """
 from pathlib import Path
+
+import yaml
 from click.testing import CliRunner
 
 from fre import fre
 
+
 runner = CliRunner()
 
-import yaml
 
 def test_cli_fre_yamltools():
     ''' fre yamltools '''
