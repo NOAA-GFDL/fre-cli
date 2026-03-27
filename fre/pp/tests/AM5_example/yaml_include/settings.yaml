@@ -25,12 +25,15 @@ postprocess:
     vitals:
       script: "/path/to/vitals-script"
       input: ['atmos_month', 'aerosol_month']
+      do_preanalysis: True
   refinediag:
     ocean:
       script: "/path/to/ocean-script"
       input: ['ocean_monthly', 'ocean_bgc']
       output: ['ocean_refined']
+      do_refinediag: True
     aerosol:
       script: "/path/to/aerosol-script"
       input: ['aerosol_month']
       output: ['aerosol_refined']
+      do_refinediag: True

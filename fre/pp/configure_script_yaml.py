@@ -121,40 +121,52 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     dirs=yamlfile.get("directories")
 
     # set rose-suite items
-#    rds = []
-    rds = ""
+    pa_scripts = ""
+    rd_scripts = ""
     if pp is None:
         raise ValueError("ahhhhh")
-    for k, v in pp.items():
-        if k == "settings" or k == "switches":
-            for key,value in v.items():
-                if not isinstance(v, list):
+
+    for pp_key, pp_value in pp.items():
+        if pp_key == "settings" or pp_key == "switches":
+            for key,value in pp_value.items():
+                if not isinstance(pp_value, list):
                     if key in ['pp_start', 'pp_stop']:
                         if isinstance(value, int):
                             value = f"{value:04}"
 
                     rose_suite.set( keys = ['template variables', key.upper()],
                                     value = quote_rose_values(value) )
-        if k == "preanalysis":
-            script = v["vitals"].get("script")
-            if script is not None:
-                do_preanalysis = "True"
-                rose_suite.set( keys = ['template variables', 'DO_PREANALYSIS'],
-                                value = do_preanalysis )
-                rose_suite.set( keys = ['template variables', 'PREANALYSIS_SCRIPT'],
-                value = quote_rose_values(script) )
 
-        if k == "refinediag":
-            for k2, v2 in v.items():
-                script = v2["script"]
-#                rds.append(scripts)
-                rds = f"{rds} {script}"
-    if rds is not None:
-        do_refinediag = "True"
+        # Account for multiple scripts for both preanalysis and refinediag
+        if pp_key == "preanalysis":
+            for k2, v2 in pp_value.items():
+                switch = v2["do_preanalysis"]
+                if switch is True:
+                    script = v2["script"]
+                    pa_scripts += f"{script} "
+
+        if pp_key == "refinediag":
+            for k2, v2 in pp_value.items():
+                switch = v2["do_refinediag"]
+                if switch is True:
+                    script = v2["script"]
+                    rd_scripts += f"{script} "
+
+    # Add refinediag switch and string of scripts if specified
+    # Note: trailing space on script variables is removed for when the string
+    #       is split (by spaces) in the workflow
+    if rd_scripts is not None:
         rose_suite.set( keys = ['template variables', 'DO_REFINEDIAG'],
-                        value = do_refinediag )
+                        value = 'True' )
         rose_suite.set( keys = ['template variables', 'REFINEDIAG_SCRIPTS'],
-                        value = quote_rose_values(rds) )
+                        value = quote_rose_values(rd_scripts.rstrip()) )
+
+    # Add preanalysis switch and string of scripts if specified
+    if pa_scripts is not None:
+        rose_suite.set( keys = ['template variables', 'DO_PREANALYSIS'],
+                        value = 'True' )
+        rose_suite.set( keys = ['template variables', 'PREANALYSIS_SCRIPT'],
+                        value = quote_rose_values(pa_scripts.rstrip()) )
 
     if dirs is not None:
         for key,value in dirs.items():
@@ -203,18 +215,17 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     # Combine model, experiment, and analysis yamls
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
-
     full_yamldict = cy.consolidate_yamls(yamlfile = yml,
                                          experiment = e, platform = p, target = t,
                                          use = "pp",
                                          output = outfile)
 
-#    # Validate yaml
-#    validate_yaml(full_yamldict)
+    # Validate yaml
+    validate_yaml(full_yamldict)
 
     ## PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items
-    set_rose_suite(full_yamldict,rose_suite)
+    set_rose_suite(full_yamldict, rose_suite)
 
     # Write output files
     fre_logger.info("Writing output files...")
