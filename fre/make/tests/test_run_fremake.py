@@ -3,7 +3,6 @@ Test "fre make all" calls without actual compilation
 """
 
 import os
-from shutil  import rmtree
 from pathlib import Path
 
 from click.testing import CliRunner
@@ -34,9 +33,14 @@ targets = ["debug", "prod", "repro", "debug-openmp", "prod-openmp", "repro-openm
 SERIAL_TEST_PATH="fre/make/tests/test_run_fremake_serial"
 MULTIJOB_TEST_PATH="fre/make/tests/test_run_fremake_multijob"
 MULTITARGET_TEST_PATH="fre/make/tests/test_run_fremake_multitarget"
-Path(SERIAL_TEST_PATH).mkdir(parents=True,exist_ok=True)
-Path(MULTIJOB_TEST_PATH).mkdir(parents=True,exist_ok=True)
-Path(MULTITARGET_TEST_PATH).mkdir(parents=True,exist_ok=True)
+
+@pytest.fixture(autouse=True, scope="module")
+def setup_run_fremake_dirs():
+    """Create test output directories for this test module."""
+    Path(SERIAL_TEST_PATH).mkdir(parents=True, exist_ok=True)
+    Path(MULTIJOB_TEST_PATH).mkdir(parents=True, exist_ok=True)
+    Path(MULTITARGET_TEST_PATH).mkdir(parents=True, exist_ok=True)
+    yield
 
 ##def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
 
@@ -74,9 +78,9 @@ def test_bad_yamlpath_option():
 
 # tests script/makefile creation without executing (serial compile)
 # first test runs the run-fremake command, subsequent tests check for creation of scripts
-def test_run_fremake_serial():
+def test_run_fremake_serial(monkeypatch):
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
-    os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
+    monkeypatch.setenv("TEST_BUILD_DIR", SERIAL_TEST_PATH)
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
 	no_format_transfer=False, execute=False, verbose=VERBOSE)
@@ -97,9 +101,9 @@ def test_run_fremake_makefile_creation_serial():
         f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/Makefile").exists()
 
 # same tests with multijob compile and non-parallel-checkout options enabled
-def test_run_fremake_multijob():
+def test_run_fremake_multijob(monkeypatch):
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
-    os.environ["TEST_BUILD_DIR"] = MULTIJOB_TEST_PATH
+    monkeypatch.setenv("TEST_BUILD_DIR", MULTIJOB_TEST_PATH)
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
         nparallel=True, makejobs=4, gitjobs=4, no_parallel_checkout=True,
 	no_format_transfer=False, execute=False, verbose=VERBOSE)
@@ -179,14 +183,15 @@ def test_run_fremake_run_script_creation_container_2stage():
 
 # tests for builds with multiple targets
 
-def test_run_fremake_bad_target():
+def test_run_fremake_bad_target(monkeypatch):
     ''' checks invalid target returns an error '''
-    os.environ["TEST_BUILD_DIR"] = MULTITARGET_TEST_PATH
+    monkeypatch.setenv("TEST_BUILD_DIR", MULTITARGET_TEST_PATH)
     result = runner.invoke(fre.fre, args=["make", "all", "-y", YAMLPATH, "-p", PLATFORM[0], "-t", "prod-repro"])
     assert result.exit_code == 1
 
-def test_run_fremake_multiple_targets():
+def test_run_fremake_multiple_targets(monkeypatch):
     ''' passes all valid targets for a build '''
+    monkeypatch.setenv("TEST_BUILD_DIR", MULTITARGET_TEST_PATH)
     result = runner.invoke(fre.fre, args=["make", "all", "-y", YAMLPATH, "-p", PLATFORM[0], "-t",  \
                                           "debug", "-t", "prod", "-t", "repro", "-t", "debug-openmp", "-t",\
                                           "prod-openmp", "-t", "repro-openmp"])

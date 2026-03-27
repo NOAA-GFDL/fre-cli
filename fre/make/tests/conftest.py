@@ -1,0 +1,65 @@
+"""
+Shared pytest fixtures for fre.make tests.
+
+Provides common setup/teardown for test output directories and
+environment variables used across the make test suite.
+"""
+
+import shutil
+from pathlib import Path
+
+import pytest
+
+# Test directory paths
+TEST_DIR = Path("fre/make/tests")
+
+@pytest.fixture
+def checkout_out(monkeypatch):
+    """
+    Provide a clean checkout output directory and set TEST_BUILD_DIR.
+
+    Ensures the output directory exists and is clean before each test,
+    and cleans up after. Uses monkeypatch to set TEST_BUILD_DIR so it
+    is automatically restored after the test.
+    """
+    out = f"{TEST_DIR}/checkout_out"
+    monkeypatch.setenv("TEST_BUILD_DIR", out)
+
+    # Clean the experiment-specific subtree (not the whole out dir)
+    experiment_dir = Path(f"{out}/fremake_canopy/test")
+    if experiment_dir.exists():
+        shutil.rmtree(experiment_dir)
+
+    yield out
+
+    # Post-test cleanup of experiment subtree
+    if experiment_dir.exists():
+        shutil.rmtree(experiment_dir, ignore_errors=True)
+
+@pytest.fixture
+def compile_out(monkeypatch):
+    """
+    Provide a clean compile output directory and set TEST_BUILD_DIR.
+    """
+    out = f"{TEST_DIR}/compile_out"
+    monkeypatch.setenv("TEST_BUILD_DIR", out)
+
+    if Path(out).exists():
+        shutil.rmtree(out)
+    Path(out).mkdir(parents=True, exist_ok=True)
+
+    yield out
+
+@pytest.fixture
+def makefile_out(monkeypatch):
+    """
+    Provide a clean makefile output directory and set TEST_BUILD_DIR.
+    """
+    out = f"{TEST_DIR}/makefile_out"
+    monkeypatch.setenv("TEST_BUILD_DIR", out)
+
+    if Path(out).exists():
+        shutil.rmtree(out)
+    Path(out).mkdir(parents=True, exist_ok=True)
+
+    yield out
