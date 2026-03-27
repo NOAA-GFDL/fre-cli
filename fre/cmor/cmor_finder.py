@@ -159,39 +159,10 @@ def make_simple_varlist( dir_targ: str,
         fre_logger.error("No files found in the directory.") #uncovered
         return None
 
-    one_datetime = None
-    search_pattern = None
-    try:
-        # Count files per datetime stamp and pick the most common one.
-        # This ensures we choose the most representative datetime, which
-        # maximises the number of variables found and avoids non-deterministic
-        # behaviour caused by filesystem-dependent glob ordering.
-        datetime_counts: Dict[str, int] = {}
-        for f in all_nc_files:
-            dt = os.path.basename(f).split('.')[-3]
-            datetime_counts[dt] = datetime_counts.get(dt, 0) + 1
-        one_datetime = max(datetime_counts, key=lambda k: datetime_counts[k])
-    except IndexError as e:
-        fre_logger.warning(' e = %s', e)
-        fre_logger.warning('WARNING: cannot find datetime in filenames, moving on and doing the best i can.')
+    if len(all_nc_files) == 1:
+        fre_logger.warning("Warning: Only one file found matching the pattern.")
 
-    if one_datetime is None:
-        search_pattern =  "*nc"
-    else:
-        search_pattern = f"*{one_datetime}*.nc"
-
-    # Find all files in the directory that match the datetime component
-    files = glob.glob(os.path.join(dir_targ, search_pattern))
-
-    # Check if any files were found
-    if not files:
-        fre_logger.error("No files found matching the pattern.") #uncovered
-        return None
-
-    if len(files) == 1:
-        fre_logger.warning("Warning: Only one file found matching the pattern.") #uncovered
-
-    fre_logger.info("Files found with %s in the filename. Number of files: %d", one_datetime, len(files))
+    fre_logger.info("Files found matching pattern. Number of files: %d", len(all_nc_files))
 
     mip_vars = None
     if json_mip_table is not None:
@@ -208,29 +179,25 @@ def make_simple_varlist( dir_targ: str,
         mip_vars=[ key.split('_')[0] for key in full_mip_vars_list ]
         fre_logger.debug('mip vars extracted for comparison when making var list: %s', mip_vars)
 
-
-    # Create a dictionary of variable names extracted from the filenames
-    var_list = {}
-    quick_vlist=[]
-    for targetfile in files:
+    # Build a deduplicated dict of variable names extracted from all filenames across
+    # all datetimes. Assigning to a dict naturally deduplicates while preserving
+    # first-seen insertion order (Python 3.7+).
+    var_list: Dict[str, str] = {}
+    for targetfile in all_nc_files:
         var_name=os.path.basename(targetfile).split('.')[-2]
         if mip_vars is not None and var_name not in mip_vars:
-            #fre_logger.debug('var_name %s not in mip_vars, omitting', var_name)
             continue
+        var_list[var_name] = var_name
 
-        quick_vlist.append(var_name)
-
-    if len(quick_vlist) > 0:
-        var_list = { _var_name : _var_name for _var_name in quick_vlist }
-    else:
+    if not var_list:
         fre_logger.warning('WARNING: no variables in target mip table found, or no matching pattern,'
                            ' or not enough info in the filenames (i am expecting FRE-bronx like filenames)')
         return None
 
     # Write the variable list to the output JSON file
-    if output_variable_list is not None and len(var_list)>0:
+    if output_variable_list is not None:
         try:
-            fre_logger.info('writing output variable list, %s', quick_vlist) # output_variable_list)
+            fre_logger.info('writing output variable list, %s', list(var_list.keys()))
             with open(output_variable_list, 'w', encoding='utf-8') as f:
                 json.dump(var_list, f, indent=4)
         except Exception as exc:

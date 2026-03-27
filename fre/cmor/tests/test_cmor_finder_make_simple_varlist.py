@@ -3,8 +3,6 @@ tests for fre.cmor.cmor_finder.make_simple_varlist
 '''
 
 import json
-import os
-import glob as glob_module
 from unittest.mock import patch
 
 import pytest
@@ -149,8 +147,9 @@ def test_make_simple_varlist_no_matching_pattern(tmp_path):
 # ---- duplicate var_name skip coverage ----
 def test_make_simple_varlist_deduplicates(tmp_path):
     """
-    When multiple files share the same var_name, the result should contain
-    the variable only once (duplicate skip path).
+    When multiple files share the same var_name across different datetimes,
+    the result should contain the variable only once. Variables that only
+    appear at a single datetime are still included.
     """
     # Two files with var_name "temp" and one with "salt"
     (tmp_path / "model.19900101.temp.nc").touch()
@@ -188,55 +187,18 @@ def test_make_simple_varlist_mip_table_filter(tmp_path):
     assert "notinmip" not in result
 
 
-# ---- IndexError on datetime extraction (monkeypatched) ----
-def test_make_simple_varlist_index_error_on_datetime(tmp_path):
-    """
-    When all discovered files have fewer than 3 dot-segments,
-    ``split('.')[-3]`` raises IndexError.  The function should catch it,
-    set one_datetime = None, and fall back to the ``'*nc'`` search pattern.
-    Covers the except IndexError branch and the one_datetime is None path.
-    """
-    # Create a real file so the fallback '*nc' glob returns something useful.
-    real_file = tmp_path / "model.19900101.temp.nc"
-    real_file.touch()
-
-    # Patch glob.glob so the initial *.*.nc discovery call returns a file whose
-    # basename has fewer than 3 dot-separated segments, triggering IndexError on
-    # split('.')[-3].  The subsequent search-pattern glob uses the real filesystem.
-    fake_probe = str(tmp_path / "short.nc")
-    (tmp_path / "short.nc").touch()
-
-    original_glob = glob_module.glob
-
-    def patched_glob(pattern, **kwargs):
-        if os.path.basename(pattern) == "*.*.nc":
-            # Return a pathological filename for the *.*.nc discovery call
-            return [fake_probe]
-        # Return real files for the search_pattern glob
-        return original_glob(pattern, **kwargs)
-
-    with patch('fre.cmor.cmor_finder.glob.glob', side_effect=patched_glob):
-        result = make_simple_varlist(str(tmp_path), None)
-
-    # 'short.nc' has only 2 parts when split by '.', so [-3] raises IndexError;
-    # one_datetime becomes None, search_pattern becomes '*nc',
-    # and the real glob picks up *.nc files in the directory.
-    assert result is not None
-    assert isinstance(result, dict)
-
-
 # ---- no files matching search pattern ----
 def test_make_simple_varlist_no_files_matching_pattern(tmp_path):
     """
-    When the initial probe finds a file but the subsequent glob with the
-    derived search_pattern returns no files, the function should return None.
-    Covers the 'if not files' early return.
+    When glob finds no *.*.nc files in the directory the function should
+    return None.  Covers the 'if not all_nc_files' early return by patching
+    glob.glob to return an empty list.
     """
-    # Create a file for the initial probe
+    # Create a file for the probe to land on (but the patch overrides it)
     probe_file = tmp_path / "model.19900101.temp.nc"
     probe_file.touch()
 
-    # Patch glob.glob to return empty list for the pattern-based search
+    # Patch glob.glob to return empty list
     with patch('fre.cmor.cmor_finder.glob.glob', return_value=[]):
         result = make_simple_varlist(str(tmp_path), None)
 
@@ -263,16 +225,16 @@ def test_make_simple_varlist_dedup_across_datetimes(tmp_path):
     """
     Files with different datetime stamps but the same variable name
     should be de-duplicated so the variable appears only once.
-    The most-common datetime is selected and all variables for that
-    datetime are returned without duplicates.
+    All files across all datetimes are scanned; duplicate var names
+    are collapsed by dict assignment.
     """
     (tmp_path / "ocean.19900101.tos.nc").touch()
     (tmp_path / "ocean.19900201.tos.nc").touch()
     (tmp_path / "ocean.19900101.sos.nc").touch()
     (tmp_path / "ocean.19900201.sos.nc").touch()
 
-    # Both datetimes (19900101, 19900201) have 2 files each; the most-files
-    # datetime is picked, and both tos and sos appear in that set.
+    # All four files are scanned; tos and sos each appear twice but
+    # dict assignment deduplicates them.
     result = make_simple_varlist(str(tmp_path), None)
 
     assert result is not None
@@ -299,3 +261,22 @@ def test_make_simple_varlist_mip_table_no_match(tmp_path):
 
     # No variables matched
     assert result is None
+
+
+# ---- variable only present at a minority datetime is still returned ----
+def test_make_simple_varlist_minority_datetime_var_included(tmp_path):
+    """
+    A variable that only appears at one datetime should still be returned
+    even when most files belong to a different datetime.  Scanning all files
+    (not just those at the most-common datetime) guarantees this.
+    """
+    # "temp" appears four times at 19900101; "salt" appears only once at 19900201.
+    for i in range(1, 5):
+        (tmp_path / f"model.1990010{i}.temp.nc").touch()
+    (tmp_path / "model.19900201.salt.nc").touch()
+
+    result = make_simple_varlist(str(tmp_path), None)
+
+    assert result is not None
+    assert "temp" in result
+    assert "salt" in result  # must not be silently dropped
