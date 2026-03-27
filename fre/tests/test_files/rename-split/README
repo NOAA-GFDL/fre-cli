@@ -5,7 +5,7 @@
 1. Notes on test data
 
 rename-split-to-pp is called directly after split-netcdf in the fre workflow;
-you shoudl be using split-netcdf output as input for rename-split-to-pp 
+you should be using split-netcdf output as input for rename-split-to-pp 
 
 netcdf files -> split-netcdf -> rename-split-to-pp
 
