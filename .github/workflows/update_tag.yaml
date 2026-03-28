@@ -43,6 +43,12 @@ jobs:
             find docs -type f -exec sed -i "s/$old_tag/$new_tag/g" {} +
           fi
 
+      - name: Update fre-cli version for container environment
+        run: |
+          new_tag="${{ steps.get_tag.outputs.tag }}"
+          # Targeted update: only replace version on the fre-cli dependency line
+          sed -i "s/\(noaa-gfdl::fre-cli ==\)[0-9.]\+/\1$new_tag/" container-files/cylc-flow-tools.yaml
+
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
         with:
