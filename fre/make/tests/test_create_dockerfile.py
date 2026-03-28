@@ -12,10 +12,13 @@ from fre.make import create_docker_script
 
 runner=CliRunner()
 
+# Compute repo root
+repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+
 # command options
-YAMLDIR = "fre/make/tests/null_example"
+YAMLDIR = os.path.join(repo_root, "fre/make/tests/null_example")
 YAMLFILE = "null_model.yaml"
-YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
+YAMLPATH = os.path.join(YAMLDIR, YAMLFILE)
 PLATFORM = ["hpcme.2023"]
 TARGET = ["debug"]
 BADOPT = ["foo"]
@@ -72,49 +75,59 @@ def test_bad_yamlpath_option():
     	execute=False, no_format_transfer=False)
 
 
-def test_no_op_platform():
+@pytest.fixture(scope="session")
+def session_tmp(tmp_path_factory):
+    return tmp_path_factory.mktemp("fre_make_test")
+
+def test_no_op_platform(monkeypatch, session_tmp):
     """
     Test create-dockerfile will do nothing if non-container platform is given
     """
-    if Path(os.getcwd()+"/tmp").exists():
-        rmtree(os.getcwd()+"/tmp") # clear out any past runs
+    monkeypatch.chdir(session_tmp)
+    if Path("tmp").exists():
+        rmtree("tmp") # clear out any past runs
     create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET,
     	execute=False, no_format_transfer=False)
-    assert not Path(os.getcwd()+"/tmp").exists()
+    assert not Path("tmp").exists()
 
 # tests container build script/makefile/dockerfile creation
-def test_create_dockerfile():
+def test_create_dockerfile(monkeypatch, session_tmp):
     """
     Run create-dockerfile with options for containerized build
     """
+    monkeypatch.chdir(session_tmp)
     create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET,
     	execute=False, no_format_transfer=False)
 
-def test_container_dir_creation():
+def test_container_dir_creation(monkeypatch, session_tmp):
     """
     Check directories are created
     """
+    monkeypatch.chdir(session_tmp)
     assert Path(f"./tmp/{PLATFORM[0]}").exists()
 
-def test_container_build_script_creation():
+def test_container_build_script_creation(monkeypatch, session_tmp):
     """
     Checks container build script creation from previous test
     """
+    monkeypatch.chdir(session_tmp)
     assert Path("createContainer.sh").exists()
 
-def test_runscript_creation():
+def test_runscript_creation(monkeypatch, session_tmp):
     """ 
     Checks (internal) container run script creation from previous test
     """
+    monkeypatch.chdir(session_tmp)
     assert Path(f"tmp/{PLATFORM[0]}/execrunscript.sh").exists()
 
-def test_dockerfile_creation():
+def test_dockerfile_creation(monkeypatch, session_tmp):
     """
     Checks dockerfile creation from previous test
     """
+    monkeypatch.chdir(session_tmp)
     assert Path("Dockerfile").exists()
 
-def test_dockerfile_contents():
+def test_dockerfile_contents(monkeypatch, session_tmp):
     """
     Checks dockerfile contents from previous test
     """
@@ -134,11 +147,12 @@ def test_dockerfile_contents():
     line = copy_lines[2].strip().split()
     assert line == ["COPY", f"tmp/{PLATFORM[0]}/execrunscript.sh", f"{MODEL_ROOT}/{EXPERIMENT}/exec/execrunscript.sh"]
 
-def test_build_script_contents():
+def test_build_script_contents(monkeypatch, session_tmp):
     """
     Checks container build script contents from previous test. 
     Specifically - testing the volume mount is added correctly. 
     """
+    monkeypatch.chdir(session_tmp)
     # Open container build script
     with open('createContainer.sh', 'r') as f:
         lines = f.readlines()

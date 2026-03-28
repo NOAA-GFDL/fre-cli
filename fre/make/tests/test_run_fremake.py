@@ -15,10 +15,13 @@ from fre.make import run_fremake_script
 
 runner=CliRunner()
 
+# Compute repo root
+repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+
 # command options
-YAMLDIR = "fre/make/tests/null_example"
+YAMLDIR = os.path.join(repo_root, "fre/make/tests/null_example")
 YAMLFILE = "null_model.yaml"
-YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
+YAMLPATH = os.path.join(YAMLDIR, YAMLFILE)
 PLATFORM = [ "ci.gnu" ]
 CONTAINER_PLATFORM = ["hpcme.2023"]
 CONTAINER_PLAT2 = ["con.twostep"]
@@ -30,13 +33,9 @@ VERBOSE = False
 # possible targets
 targets = ["debug", "prod", "repro", "debug-openmp", "prod-openmp", "repro-openmp"]
 
-# set up some paths for the tests
-SERIAL_TEST_PATH="fre/make/tests/test_run_fremake_serial"
-MULTIJOB_TEST_PATH="fre/make/tests/test_run_fremake_multijob"
-MULTITARGET_TEST_PATH="fre/make/tests/test_run_fremake_multitarget"
-Path(SERIAL_TEST_PATH).mkdir(parents=True,exist_ok=True)
-Path(MULTIJOB_TEST_PATH).mkdir(parents=True,exist_ok=True)
-Path(MULTITARGET_TEST_PATH).mkdir(parents=True,exist_ok=True)
+@pytest.fixture(scope="session")
+def session_tmp(tmp_path_factory):
+    return tmp_path_factory.mktemp("fre_make_test")
 
 ##def fremake_run(yamlfile,platform,target,parallel,jobs,no_parallel_checkout,execute,verbose):
 
@@ -161,21 +160,20 @@ def test_run_fremake_dockerfile_creation_container_2stage():
     ''' checks dockerfile creation from previous test '''
     assert Path("Dockerfile").exists()
 
-def test_run_fremake_checkout_script_creation_container_2stage():
+def test_run_fremake_checkout_script_creation_container_2stage(monkeypatch, session_tmp):
     ''' checks checkout script creation from previous test '''
-    cwd = os.getcwd()
-    print(f"checking path: {cwd}/tmp/{CONTAINER_PLAT2[0]}/checkout.sh")
-    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
+    monkeypatch.chdir(session_tmp)
+    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
 
-def test_run_fremake_makefile_creation_container_2stage():
+def test_run_fremake_makefile_creation_container_2stage(monkeypatch, session_tmp):
     ''' checks makefile creation from previous test '''
-    cwd = os.getcwd()
-    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
+    monkeypatch.chdir(session_tmp)
+    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
 
-def test_run_fremake_run_script_creation_container_2stage():
+def test_run_fremake_run_script_creation_container_2stage(monkeypatch, session_tmp):
     ''' checks (internal) container run script creation from previous test '''
-    cwd = os.getcwd()
-    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
+    monkeypatch.chdir(session_tmp)
+    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
 
 # tests for builds with multiple targets
 
