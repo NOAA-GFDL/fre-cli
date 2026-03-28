@@ -37,7 +37,9 @@ Assuming one has ``conda`` in their path, then do the following::
   conda activate fre-cli
 
   # add mkmf to your PATH
-  export PATH=$PATH:${PWD}/mkmf/bin
+  # mkmf PR 75 moved executables from bin/ to mkmf/bin/ within the mkmf repo;
+  # both paths are added here for backwards-compatibility with either version.
+  export PATH=$PATH:${PWD}/fre/mkmf/bin:${PWD}/fre/mkmf/mkmf/bin
 
   # now we pip install the local code under the `fre/` directory
   # the -e flag makes re-installing the code after editing not necessary
