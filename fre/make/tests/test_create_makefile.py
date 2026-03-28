@@ -1,10 +1,11 @@
 """
 Test fre make makefile
 """
-import os
 import shutil
 from pathlib import Path
 from fre.make import create_makefile_script
+
+import pytest
 
 # SET-UP
 TEST_DIR = Path("fre/make/tests")
@@ -16,18 +17,16 @@ CONTAINER_PLAT2 = ["con.twostep"]
 TARGET = ["debug"]
 EXPERIMENT = "null_model_full"
 
-# Create output location
+# Output location
 OUT = f"{TEST_DIR}/makefile_out"
-if Path(OUT).exists():
-    # remove
-    shutil.rmtree(OUT)
-    # create output directory
-    Path(OUT).mkdir(parents=True,exist_ok=True)
-else:
-    Path(OUT).mkdir(parents=True,exist_ok=True)
 
-# Set output directory as home for fre make output
-#os.environ["HOME"]=str(Path(OUT))
+@pytest.fixture(autouse=True, scope="module")
+def setup_makefile_out():
+    """Create a clean makefile output directory for this test module."""
+    if Path(OUT).exists():
+        shutil.rmtree(OUT)
+    Path(OUT).mkdir(parents=True, exist_ok=True)
+    yield
 
 def test_modelyaml_exists():
     """

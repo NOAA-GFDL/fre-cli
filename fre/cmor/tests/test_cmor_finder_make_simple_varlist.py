@@ -151,9 +151,12 @@ def test_make_simple_varlist_deduplicates(tmp_path):
     When multiple files share the same var_name, the result should contain
     the variable only once (duplicate skip path).
     """
-    # Two files with var_name "temp" and one with "salt"
+    # Two files with var_name "temp" and one with "salt".
+    # All files must share the same datetime component so that
+    # the glob search pattern (derived from whichever file iglob
+    # picks first) matches all of them regardless of filesystem order.
     (tmp_path / "model.19900101.temp.nc").touch()
-    (tmp_path / "model.19900201.temp.nc").touch()  # duplicate var_name
+    (tmp_path / "extra.19900101.temp.nc").touch()  # duplicate var_name, same datetime
     (tmp_path / "model.19900101.salt.nc").touch()
 
     result = make_simple_varlist(str(tmp_path), None)
