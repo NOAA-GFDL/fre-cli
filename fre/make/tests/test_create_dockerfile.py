@@ -1,6 +1,5 @@
 ''' test "fre make dockerfile" calls '''
 
-import os
 from shutil  import rmtree
 from pathlib import Path
 
@@ -12,8 +11,9 @@ from fre.make import create_docker_script
 
 runner=CliRunner()
 
-# command options
-YAMLDIR = "fre/make/tests/null_example"
+# command options — use __file__ so tests work from any working directory
+_TEST_DIR = Path(__file__).resolve().parent
+YAMLDIR = str(_TEST_DIR / "null_example")
 YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
 PLATFORM = ["hpcme.2023"]
@@ -76,11 +76,11 @@ def test_no_op_platform():
     """
     Test create-dockerfile will do nothing if non-container platform is given
     """
-    if Path(os.getcwd()+"/tmp").exists():
-        rmtree(os.getcwd()+"/tmp") # clear out any past runs
+    if Path("tmp").exists():
+        rmtree("tmp") # clear out any past runs
     create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET,
     	execute=False, no_format_transfer=False)
-    assert not Path(os.getcwd()+"/tmp").exists()
+    assert not Path("tmp").exists()
 
 # tests container build script/makefile/dockerfile creation
 def test_create_dockerfile():

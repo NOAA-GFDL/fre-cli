@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-# Test directory paths
-TEST_DIR = Path("fre/make/tests")
+# Test directory paths — use __file__ so tests work from any working directory
+TEST_DIR = Path(__file__).resolve().parent
 
 @pytest.fixture
 def checkout_out(monkeypatch):

@@ -9,8 +9,8 @@ import pytest
 from fre.make import create_compile_script
 
 
-## SET-UP
-TEST_DIR = Path("fre/make/tests")
+## SET-UP — use __file__ so tests work from any working directory
+TEST_DIR = Path(__file__).resolve().parent
 NM_EXAMPLE = Path("null_example")
 YAMLFILE = "null_model.yaml"
 PLATFORM = ["ci.gnu"]

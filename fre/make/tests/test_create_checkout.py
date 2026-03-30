@@ -6,8 +6,8 @@ from pathlib import Path
 
 from fre.make import create_checkout_script
 
-# Set example yaml paths, input directory
-TEST_DIR = str(Path("fre/make/tests"))
+# Set example yaml paths, input directory — use __file__ so tests work from any cwd
+TEST_DIR = str(Path(__file__).resolve().parent)
 YAMLFILE = str(Path(f"{TEST_DIR}/null_example/null_model.yaml"))
 
 # Set platform and target

@@ -2,7 +2,6 @@
 Test "fre make all" calls without actual compilation
 """
 
-import os
 from pathlib import Path
 
 from click.testing import CliRunner
@@ -14,8 +13,9 @@ from fre.make import run_fremake_script
 
 runner=CliRunner()
 
-# command options
-YAMLDIR = "fre/make/tests/null_example"
+# command options — use __file__ so tests work from any working directory
+_TEST_DIR = Path(__file__).resolve().parent
+YAMLDIR = str(_TEST_DIR / "null_example")
 YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
 PLATFORM = [ "ci.gnu" ]
@@ -30,9 +30,9 @@ VERBOSE = False
 targets = ["debug", "prod", "repro", "debug-openmp", "prod-openmp", "repro-openmp"]
 
 # set up some paths for the tests
-SERIAL_TEST_PATH="fre/make/tests/test_run_fremake_serial"
-MULTIJOB_TEST_PATH="fre/make/tests/test_run_fremake_multijob"
-MULTITARGET_TEST_PATH="fre/make/tests/test_run_fremake_multitarget"
+SERIAL_TEST_PATH = str(_TEST_DIR / "test_run_fremake_serial")
+MULTIJOB_TEST_PATH = str(_TEST_DIR / "test_run_fremake_multijob")
+MULTITARGET_TEST_PATH = str(_TEST_DIR / "test_run_fremake_multitarget")
 
 @pytest.fixture(autouse=True, scope="module")
 def setup_run_fremake_dirs():
@@ -104,9 +104,9 @@ def test_run_fremake_makefile_creation_serial():
     assert Path(
         f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/Makefile").exists()
 
-def test_run_fremake_force_checkout_serial(caplog):
+def test_run_fremake_force_checkout_serial(monkeypatch, caplog):
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
-    os.environ["TEST_BUILD_DIR"] = SERIAL_TEST_PATH
+    monkeypatch.setenv("TEST_BUILD_DIR", SERIAL_TEST_PATH)
 
     # double check checkout script exists already
     assert Path(
@@ -194,19 +194,15 @@ def test_run_fremake_dockerfile_creation_container_2stage():
 
 def test_run_fremake_checkout_script_creation_container_2stage():
     ''' checks checkout script creation from previous test '''
-    cwd = os.getcwd()
-    print(f"checking path: {cwd}/tmp/{CONTAINER_PLAT2[0]}/checkout.sh")
-    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
+    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/checkout.sh").exists()
 
 def test_run_fremake_makefile_creation_container_2stage():
     ''' checks makefile creation from previous test '''
-    cwd = os.getcwd()
-    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
+    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/Makefile").exists()
 
 def test_run_fremake_run_script_creation_container_2stage():
     ''' checks (internal) container run script creation from previous test '''
-    cwd = os.getcwd()
-    assert Path(f"{cwd}/tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
+    assert Path(f"tmp/{CONTAINER_PLAT2[0]}/execrunscript.sh").exists()
 
 # tests for builds with multiple targets
 
