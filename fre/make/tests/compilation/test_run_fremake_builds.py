@@ -138,9 +138,10 @@ def test_run_fremake_container_build_fail():
         f2.writelines(new_script)
 
     # Run altered script and compare error
-    # Use "./createContainer.sh" so subprocess finds the CWD file
-    # (a bare filename without directory separator triggers PATH search)
-    run = subprocess.run(Path("./createContainer.sh"), capture_output=True, check=False)
+    # Use a plain string "./createContainer.sh" (not a Path object) so the "./"
+    # prefix is preserved — Path("./x") normalises to PosixPath("x"), losing
+    # the directory separator and causing subprocess to search $PATH.
+    run = subprocess.run("./createContainer.sh", capture_output=True, check=False)
     stderr = run.stderr
 
     #Check that the incorrect line specifically prints in the stderr
