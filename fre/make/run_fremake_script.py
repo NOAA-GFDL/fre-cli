@@ -21,8 +21,8 @@ def fremake_run(yamlfile:str, platform:str, target:str,
                 no_parallel_checkout: Optional[bool] = None,
                 no_format_transfer: Optional[bool] = False,
                 execute: Optional[bool] = False,
-                force_checkout: Optional[bool] = False,
-                verbose: Optional[bool] = None):
+                verbose: Optional[bool] = None,
+                force_checkout: Optional[bool] = False):
     """
     Runs all of fre make code
 
