@@ -157,35 +157,47 @@ def test_rename_split_to_pp_multiply_setup():
                           ])
 def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
     '''
-    Tests the running of rename-split-to-pp, which takes 3 input args:
-      hist_source: source of the history data, used to build input and output paths
-      do_regrid: whether to do regridding, boolean, changes dir structure
-      og_suffix: the frequency suffix that rename-split-to-pp should be adding to
-         the output data dir structure
-    rename-split-to-pp takes 4 arguments, which are set as env variables:
-      inputDir (inputDir)  - location of your input files, output from split-netcdf
-      outputDir (outputDir) - location to which to write your output files
-      component (history_source) - VERY BADLY NAMED. What split-netcdf is calling the hist_source after the rewrite.
-      use_subdirs (do_regrid) - either set to 1 or unset. 1 is used for the regridding case.
-        * no longer set to 1 or unset, set to "True" or "False". Makes the if checks
-        more sensitive, but makes the setup/teardown of unsetting env variables easier.
+    Tests the running of ``rename-split-to-pp``, which takes 3 input args:
+
+    :param hist_source: source of the history data, used to build input and output paths
+    :param do_regrid: whether to do regridding, boolean, changes dir structure
+    :param og_suffix: the frequency suffix that ``rename-split-to-pp`` should be adding to
+                      the output data dir structure
+
+    ``rename-split-to-pp`` takes 4 arguments, which are set as env variables:
+
+    :inputDir: (inputDir) location of your input files, output from split-netcdf
+    :outputDir: (outputDir) location to which to write your output files
+    :component: (history_source) VERY BADLY NAMED. What split-netcdf is calling the hist_source after the rewrite.
+    :use_subdirs: (do_regrid) either set to 1 or unset. 1 is used for the regridding case.
+
+                  - no longer set to 1 or unset, set to "True" or "False". Makes the if checks
+                    more sensitive, but makes the setup/teardown of unsetting env variables easier.
+
     These tests operate under 4 frequencies with regridding/no regridding cases:
+
       - success:
-        - daily regrid/native, multiple tiles
-        - monthly regird/native, multiple tiles (currently failing because of metadata)
-        - annual regrid/native
-        - static regrid/no regrid
+
+         - daily regrid/native, multiple tiles
+         - monthly regrid/native, multiple tiles (currently failing because of metadata)
+         - annual regrid/native
+         - static regrid/no regrid
+
       - failure:
-        - files in input don't match naming convention, raises error TBD
-        - no files in input dir, raises error TBD
-    For the moment, rename=split-to-pp isn't doing any rewriting of files -
+
+         - files in input don't match naming convention, raises error TBD
+         - no files in input dir, raises error TBD
+
+    For the moment, ``rename-split-to-pp`` isn't doing any rewriting of files -
     it's copying files to new locations and verifying that they have the 
     right number of timesteps. 
     I've included hooks for functions that check on data + metadata, but we
     really don't need them yet.
+
     TODO:
-      - when this is ported to python, the xfail tests should check for the python error that gets raised - 
-      but until that point, not a whole lot of point in checking on a raised exception here
+
+      - When this is ported to python, the ``xfail`` tests should check for the python error that gets raised, 
+        but until that point, not a whole lot of point in checking on a raised exception here
     '''
     # if not os.path.isdir(outputDir):
     #   os.mkdir(outputDir)
