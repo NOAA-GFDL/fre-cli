@@ -46,38 +46,44 @@ def setup_run_fremake_dirs():
 
 # yaml file checks
 def test_modelyaml_exists():
+    '''check that the model yaml is where it should be'''
     assert Path(f"{YAMLDIR}/{YAMLFILE}").exists()
 
 def test_compileyaml_exists():
+    '''check that the compile yaml is where it should be'''
     assert Path(f"{YAMLDIR}/compile.yaml").exists()
 
 def test_platformyaml_exists():
+    '''check that the playform yaml is where it should be'''
     assert Path(f"{YAMLDIR}/platforms.yaml").exists()
 
 # expected failures for incorrect options
-@pytest.mark.xfail()
+
 def test_bad_platform_option():
     ''' test run-fremake with a invalid platform option'''
-    run_fremake_script.fremake_run(YAMLPATH, BADOPT, TARGET,
-        nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE,
-        force_checkout=False)
+    with pytest.raises(ValueError):
+        run_fremake_script.fremake_run(YAMLPATH, BADOPT, TARGET,
+                                       nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
+	                               no_format_transfer=False, execute=False, verbose=VERBOSE,
+                                       force_checkout=False)
 
-@pytest.mark.xfail()
+
 def test_bad_target_option():
     ''' test run-fremake with a invalid target option'''
-    run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT,
-        nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE, 
-        force_checkout=False)
+    with pytest.raises(ValueError):
+        run_fremake_script.fremake_run(YAMLPATH, PLATFORM, BADOPT,
+                                       nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
+	                               no_format_transfer=False, execute=False, verbose=VERBOSE,
+                                       force_checkout=False)
 
-@pytest.mark.xfail()
+
 def test_bad_yamlpath_option():
     ''' test run-fremake with a invalid target option'''
-    run_fremake_script.fremake_run(BADOPT[0], PLATFORM, TARGET,
-        nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE,
-        force_checkout=False)
+    with pytest.raises(ValueError):
+        run_fremake_script.fremake_run(BADOPT[0], PLATFORM, TARGET,
+                                       nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
+	                               no_format_transfer=False, execute=False, verbose=VERBOSE,
+                                       force_checkout=False)
 
 # tests script/makefile creation without executing (serial compile)
 # first test runs the run-fremake command, subsequent tests check for creation of scripts
@@ -85,9 +91,9 @@ def test_run_fremake_serial(monkeypatch):
     ''' run fre make with run-fremake subcommand and build the null model experiment with gnu'''
     monkeypatch.setenv("TEST_BUILD_DIR", SERIAL_TEST_PATH)
     run_fremake_script.fremake_run(YAMLPATH, PLATFORM, TARGET,
-        nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
-	no_format_transfer=False, execute=False, verbose=VERBOSE,
-        force_checkout=False)
+                                   nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=False,
+	                           no_format_transfer=False, execute=False, verbose=VERBOSE,
+                                   force_checkout=False)
 
 def test_run_fremake_compile_script_creation_serial():
     ''' check for compile script creation from previous test '''
@@ -227,8 +233,8 @@ def test_run_fremake_compile_script_creation_multitarget():
             f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{t}/exec/compile.sh").exists()
 
 def test_run_fremake_checkout_script_creation_multitarget():
-    ''' check for checkout script creation for multi-target build'''
-    ''' check checkout script exists from previous test'''
+    ''' check for checkout script creation for multi-target build
+    and check checkout script exists from previous test '''
     assert Path(
         f"{MULTITARGET_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists()
 

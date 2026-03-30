@@ -129,12 +129,12 @@ def test_run_fremake_container_build_fail():
 
     # Alter script to fail
     new_script = []
-    with open("createContainer.sh", "r") as f:
+    with open("createContainer.sh", "r", encoding='utf-8') as f:
         lines = f.readlines()
         for line in lines:
             new_script.append(line.replace("Dockerfile", "Dockerfile-wrong"))
 
-    with open("createContainer.sh", "w") as f2:
+    with open("createContainer.sh", "w", encoding='utf-8') as f2:
         f2.writelines(new_script)
 
     # Run altered script and compare error

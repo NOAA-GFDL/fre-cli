@@ -3,9 +3,10 @@ Test fre make makefile
 """
 import shutil
 from pathlib import Path
-from fre.make import create_makefile_script
 
 import pytest
+
+from fre.make import create_makefile_script
 
 # SET-UP — use __file__ so tests work from any working directory
 TEST_DIR = Path(__file__).resolve().parent

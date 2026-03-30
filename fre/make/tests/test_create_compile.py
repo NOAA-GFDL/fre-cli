@@ -100,9 +100,9 @@ def test_compile_executable_failure(monkeypatch):
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir()
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile").exists()
-    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/null_model_full.x").exists() == False
+    assert not Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/null_model_full.x").exists()
 
-@pytest.mark.xfail(raises=ValueError)
+#@pytest.mark.xfail(raises=ValueError)
 def test_bad_platform(monkeypatch):
     """
     Check for the failure of compile script creation
@@ -113,13 +113,14 @@ def test_bad_platform(monkeypatch):
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile = yamlfile_path,
-                                         platform = BAD_PLATFORM,
-                                         target = TARGET,
-                                         makejobs = 4,
-                                         nparallel = 1,
-                                         execute = False,
-                                         verbose = False)
+    with pytest.raises(ValueError):
+        create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                             platform = BAD_PLATFORM,
+                                             target = TARGET,
+                                             makejobs = 4,
+                                             nparallel = 1,
+                                             execute = False,
+                                             verbose = False)
 
 def test_bad_platform_compilelog(monkeypatch):
     """
@@ -130,8 +131,8 @@ def test_bad_platform_compilelog(monkeypatch):
 
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
-    try:
-        # Create the compile script
+    # Create the compile script
+    with pytest.raises(ValueError):
         create_compile_script.compile_create(yamlfile = yamlfile_path,
                                              platform = BAD_PLATFORM,
                                              target = TARGET,
@@ -139,10 +140,10 @@ def test_bad_platform_compilelog(monkeypatch):
                                              nparallel = 1,
                                              execute = False,
                                              verbose = False)
-    except:
-        assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
+ 
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
 
-@pytest.mark.xfail(raises=ValueError)
+
 def test_bad_target(monkeypatch):
     """
     Check for the failure of compile script creation
@@ -153,13 +154,14 @@ def test_bad_target(monkeypatch):
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile = yamlfile_path,
-                                         platform = PLATFORM,
-                                         target = BAD_TARGET,
-                                         makejobs = 4,
-                                         nparallel = 1,
-                                         execute = False,
-                                         verbose = False)
+    with pytest.raises(ValueError):
+        create_compile_script.compile_create(yamlfile = yamlfile_path,
+                                             platform = PLATFORM,
+                                             target = BAD_TARGET,
+                                             makejobs = 4,
+                                             nparallel = 1,
+                                             execute = False,
+                                             verbose = False)
 
 def test_bad_target_compilelog(monkeypatch):
     """
@@ -170,8 +172,8 @@ def test_bad_target_compilelog(monkeypatch):
 
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
-    try:
-        # Create the compile script
+    # Create the compile script
+    with pytest.raises(ValueError):
         create_compile_script.compile_create(yamlfile = yamlfile_path,
                                              platform = PLATFORM,
                                              target = BAD_TARGET,
@@ -179,8 +181,8 @@ def test_bad_target_compilelog(monkeypatch):
                                              nparallel = 1,
                                              execute = False,
                                              verbose = False)
-    except:
-        assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
+
+    assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
 
 def test_multi_target(monkeypatch):
     """
