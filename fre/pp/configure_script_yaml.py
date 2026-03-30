@@ -114,6 +114,9 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     :param rose_suite: class within Rose python library; represents 
                        elements of the rose-suite configuration 
     :type rose_suite: metomi.rose.config.ConfigNode; class
+    :raises ValueError:
+        - if the postproces section of the yaml is not defined
+        - if more than 1 pre-analysis script is defined
     :return: None
     :rtype: None
     """
@@ -124,7 +127,8 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     pa_scripts = ""
     rd_scripts = ""
     if pp is None:
-        raise ValueError("ahhhhh")
+        fre_logger.error("Missing 'postprocess' section!")
+        raise ValueError
 
     for pp_key, pp_value in pp.items():
         if pp_key == "settings" or pp_key == "switches":
@@ -137,12 +141,20 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
                     rose_suite.set( keys = ['template variables', key.upper()],
                                     value = quote_rose_values(value) )
 
-        # Account for multiple scripts for both preanalysis and refinediag
+        # Account for multiple scripts for refinediag
+        # Fail if multiple scripts defined for preanalysis (not implemented yet)
         if pp_key == "preanalysis":
             for k2, v2 in pp_value.items():
                 switch = v2["do_preanalysis"]
                 if switch is True:
                     script = v2["script"]
+
+                    # If there is already a script defined for preanalysis, fail
+                    # More than 1 script is not supported yet
+                    if pa_scripts:
+                        fre_logger.error("Using more than 1 pre-analysis script is not supported")
+                        raise ValueError
+
                     pa_scripts += f"{script} "
 
         if pp_key == "refinediag":
