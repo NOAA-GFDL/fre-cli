@@ -230,7 +230,7 @@ Either unset --split-all-vars or parse the varlist from the yaml - do not try do
               help='''Specifies which variables in $file are split and written to $outputdir.
                      Either a string "all" or a comma-separated string of variable names ("tasmax,tasmin,pr")''')
 @click.option('-r', '--rename', is_flag=True, default=False,
-              help='After splitting, rename output files into a nested directory structure '
+              help='During splitting, rename output files into a nested directory structure '
                    'organized by frequency and duration under $outputdir.')
 @click.option('-d', '--diag-manifest', type=str, required=False, default=None,
               help='Path to FMS diag manifest file. Only used with --rename. '
