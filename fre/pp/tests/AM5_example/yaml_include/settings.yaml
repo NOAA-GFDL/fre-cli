@@ -1,13 +1,14 @@
 #c96_amip_directories:
 directories:
   history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
+  refined_history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history_dir_refined]
   pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
   analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
   ptmp_dir:     "/xtmp/$USER/ptmp"
 
 #c96_amip_postprocess:
 postprocess:
-  settings: &shared_settings
+  settings:
     history_segment:    "P1Y"
     site:               "ppan"
     pp_start:   *ANA_AMIP_START
@@ -16,9 +17,23 @@ postprocess:
       - *PP_AMIP_CHUNK96
     pp_grid_spec: *GRID_SPEC96
   switches: &shared_switches
-    clean_work:         True
-    do_refinediag:      False
+    clean_work:              True
     do_atmos_plevel_masking: True
-    do_preanalysis:     False
-    do_analysis:        True
-    do_analysis_only:   False
+    do_analysis:             True
+    do_analysis_only:        False
+  preanalysis:
+    vitals:
+      script: "/path/to/vitals-script"
+      inputs: ['atmos_month', 'aerosol_month']
+      do_preanalysis: True
+  refinediag:
+    ocean:
+      script: "/path/to/ocean-script"
+      inputs: ['ocean_monthly', 'ocean_bgc']
+      outputs: ['ocean_refined']
+      do_refinediag: True
+    aerosol:
+      script: "/path/to/aerosol-script"
+      inputs: ['aerosol_month']
+      outputs: ['aerosol_refined']
+      do_refinediag: True
