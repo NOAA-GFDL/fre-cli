@@ -60,7 +60,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        if: ${{ inputs.publish == 'true' }}
+        if: ${{ inputs.dry_run != 'true' }}
         uses: docker/build-push-action@v5
         with:
           context: .
