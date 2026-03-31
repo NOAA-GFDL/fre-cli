@@ -54,9 +54,7 @@ This file can follow the format below:
      switches:
        do_timeavgs: "switch to turn on/off time-average file generation"                                                  (boolean)
        clean_work: "switch to remove intermediate data files when they are no longer needed"                              (boolean)
-       do_refinediag: "switch to run refine-diag script(s) on history file to generate additional diagnostics"            (boolean)
        do_atmos_plevel_masking: "switch to mask atmos pressure-level output above/below surface pressure/atmos top"       (boolean)
-       do_preanalysis: "switch to run a pre-analysis script on history files"                                             (boolean)
        do_analysis: "switch to launch analysis scripts"                                                                   (boolean)
        do_analysis_only: "switch to only launch analysis scripts"                                                         (boolean)
 
@@ -73,8 +71,6 @@ Required keys include:
     - pp_grid_spec
     - clean_work
     - do_timeavgs
-    - do_refinediag
     - do_atmos_plevel_masking
-    - do_preanalysis
     - do_analysis
     - do_analysis_only
