@@ -9,18 +9,9 @@ on:
         default: "true"
         type: choice
         options: ["true", "false"]
-  push:
-    # Run when tags are pushed (same event that runs update_tag.yaml)
-    tags:
-      - '*'          # or 'v*' if you only care about version tags
-    # Optional: also build on main when container files change
-    branches:
-      - main
-    paths:
-      - 'container-files/Dockerfile-frecli'
-      - 'container-files/runscript.sh'
-      - 'container-files/cylc-flow-tools.yaml'
-      - '.github/workflows/update_container_image.yaml'
+
+  repository_dispatch:
+    types: [publish-conda-succeeded]
 
 env:
   REGISTRY: ghcr.io
