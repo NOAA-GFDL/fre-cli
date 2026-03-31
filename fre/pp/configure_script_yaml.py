@@ -167,18 +167,24 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     # Add refinediag switch and string of scripts if specified
     # Note: trailing space on script variables is removed for when the string
     #       is split (by spaces) in the workflow
-    if rd_scripts is not None:
+    if rd_scripts:
         rose_suite.set( keys = ['template variables', 'DO_REFINEDIAG'],
                         value = 'True' )
         rose_suite.set( keys = ['template variables', 'REFINEDIAG_SCRIPTS'],
                         value = quote_rose_values(rd_scripts.rstrip()) )
+    else:
+        rose_suite.set( keys = ['template variables', 'DO_REFINEDIAG'],
+                        value = 'False' )
 
     # Add preanalysis switch and string of scripts if specified
-    if pa_scripts is not None:
+    if pa_scripts:
         rose_suite.set( keys = ['template variables', 'DO_PREANALYSIS'],
                         value = 'True' )
         rose_suite.set( keys = ['template variables', 'PREANALYSIS_SCRIPT'],
                         value = quote_rose_values(pa_scripts.rstrip()) )
+    else:
+        rose_suite.set( keys = ['template variables', 'DO_PREANALYSIS'],
+                        value = 'False' )
 
     if dirs is not None:
         for key,value in dirs.items():
