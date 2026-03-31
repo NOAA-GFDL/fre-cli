@@ -5,7 +5,6 @@ channels:
 dependencies:
   - noaa-gfdl::hsm
   - noaa-gfdl::fre-cli ==2025.04
-  - noaa-gfdl::fre-python-tools
   - conda-forge::nco
   - conda-forge::rsync
   - conda-forge::make
