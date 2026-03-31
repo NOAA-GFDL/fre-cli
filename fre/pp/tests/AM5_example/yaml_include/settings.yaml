@@ -1,7 +1,7 @@
 #c96_amip_directories:
 directories:
   history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
-  history_dir_refined:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history_dir_refined]
+  refined_history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history_dir_refined]
   pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
   analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
   ptmp_dir:     "/xtmp/$USER/ptmp"
