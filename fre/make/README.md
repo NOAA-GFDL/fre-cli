@@ -67,24 +67,51 @@ fre make all -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t pro
 
 ## Subtools
 - `fre make checkout-script [options]`
-   - Purpose: 
+   - Purpose: Create and run a checkout script. 
    - Options:
-        - `-y, --yamlfile [model yaml] (str; required)`
-        - `-p, --platform`
-        - `-t, --target`
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
         - `-gj, --gitjobs`
         - `-npc, --no-parallel-checkout`
         - `--execute`
         - `--force-checkout`
 - `fre make makefile [options]`
-   - Purpose: 
+   - Purpose: Create a Makefile.
    - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
 - `fre make compile-script [options]`
-   - Purpose: 
+   - Purpose: Create and run a compile script to generate a model executable.
    - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-n --nparallel`
+        - `-mj --makejobs`
+        - `-e, --execute`
+        - `-v, --verbose`
 - `fre make dockerfile [options]`
-   - Purpose: 
+   - Purpose: Create and run a Dockerfile to generate a model container.
    - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-nft, --no-format-transfer`
+        - `-e, --execute`
 - `fre make all [options]`
    - Purpose: 
+        - For a bare-metal build: Create a checkout script, Makefile, and compile script to generate a model executable
+        - For a container build: Create a checkout script, Makefile, and Dockerfile to generate a model container.
    - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-n --nparallel`
+        - `-mj --makejobs`
+        - `gj, --gitjobs`
+        - `-npc, --no-parallel-checkout`
+        - `-nft, --no-format-transfer`
+        - `-e, --execute`
+        - `-v, --verbose`
