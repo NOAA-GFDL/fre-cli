@@ -115,6 +115,46 @@ def test_set_rose_suite_missing_postprocess():
     with pytest.raises(ValueError):
         csy.set_rose_suite(yaml_dict, rose_suite)
 
+def test_set_rose_suite_no_refinediag():
+    """
+    Test that set_rose_suite sets DO_REFINEDIAG to 'False' when no refinediag scripts are requested
+    """
+    rose_suite = metomi.rose.config.ConfigNode()
+    yaml_dict = {
+        "postprocess": {
+            "settings": {"some_setting": "value"},
+            "refinediag": {
+                "example": {
+                    "script": "/path/to/some/script",
+                    "do_refinediag": False
+                }
+            }
+        },
+        "directories": {"pp_dir": "/some/path"},
+    }
+    csy.set_rose_suite(yaml_dict, rose_suite)
+    assert rose_suite.get(['template variables', 'DO_REFINEDIAG']).value == 'False'
+
+def test_set_rose_suite_no_preanalysis():
+    """
+    Test that set_rose_suite sets DO_PREANALYSIS to 'False' when no preanalysis scripts are requested
+    """
+    rose_suite = metomi.rose.config.ConfigNode()
+    yaml_dict = {
+        "postprocess": {
+            "settings": {"some_setting": "value"},
+            "preanalysis": {
+                "example": {
+                    "script": "/path/to/some/script",
+                    "do_preanalysis": False
+                }
+            }
+        },
+        "directories": {"pp_dir": "/some/path"},
+    }
+    csy.set_rose_suite(yaml_dict, rose_suite)
+    assert rose_suite.get(['template variables', 'DO_PREANALYSIS']).value == 'False'
+
 def test_cleanup():
     shutil.rmtree(f"{TEST_DIR}/configure_yaml_out")
     assert not Path(f"{TEST_DIR}/configure_yaml_out").exists()
