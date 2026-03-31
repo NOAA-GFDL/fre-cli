@@ -1,6 +1,14 @@
 name: Build and Push Container Image
 
 on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Skip pushing container image"
+        required: true
+        default: "true"
+        type: choice
+        options: ["true", "false"]
   push:
     # Run when tags are pushed (same event that runs update_tag.yaml)
     tags:
@@ -52,6 +60,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
+        if: ${{ inputs.publish == 'true' }}
         uses: docker/build-push-action@v5
         with:
           context: .
