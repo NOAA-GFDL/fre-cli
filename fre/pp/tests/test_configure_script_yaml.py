@@ -13,6 +13,8 @@ from jsonschema import (
     validate
 )
 
+import metomi.rose.config
+
 from fre.pp import configure_script_yaml as csy
 from fre.yamltools import combine_yamls_script as cy
 
@@ -98,6 +100,20 @@ def test_validate_fail():
         val_fail = csy.validate_yaml(wrong_yml_dict)
 
     assert execinfo.type is ValueError
+
+def test_set_rose_suite_missing_postprocess():
+    """
+    Test that set_rose_suite raises ValueError when 'postprocess' section is missing.
+    """
+    rose_suite = metomi.rose.config.ConfigNode()
+    yaml_dict = {
+        "name": "exp_name",
+        "platform": "ptest",
+        "target": "ttest",
+        "directories": {"pp_dir": "/some/path"}
+    }
+    with pytest.raises(ValueError):
+        csy.set_rose_suite(yaml_dict, rose_suite)
 
 def test_cleanup():
     shutil.rmtree(f"{TEST_DIR}/configure_yaml_out")
