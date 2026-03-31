@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.12', '3.13']
+        python-version: ['3.12', '3.13', '3.14']
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:miniconda24_gcc14_v2
       options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
