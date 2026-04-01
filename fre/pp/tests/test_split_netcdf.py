@@ -164,6 +164,7 @@ def test_split_file_data(workdir,newdir, origdir):
     print(f"orig count: {orig_count}  new count: {new_count}")
     all_files_equal=True
     for sf in split_files:
+        these_files_equal=False
         orig_file = osp.join(origdir, sf)
         new_file = osp.join(newdir, sf)
         ds_orig = None
@@ -172,10 +173,12 @@ def test_split_file_data(workdir,newdir, origdir):
             ds_orig = xr.open_dataset(orig_file)
             ds_new = xr.open_dataset(new_file)
             xr.testing.assert_equal(ds_orig, ds_new)
+            these_files_equal=True
         except AssertionError:
-            all_files_equal=False
+            these_files_equal=False
             print(f"data comparison of {new_file} and {orig_file} did not match")
         finally:
+            all_files_equal = all_files_equal and these_files_equal
             if ds_orig is not None:
                 ds_orig.close()
             if ds_new is not None:
