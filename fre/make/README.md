@@ -7,51 +7,111 @@ Through the fre-cli, `fre make` can be used to create and run a checkout script,
    - container creation
    - parallel checkouts for bare-metal build**
 
-** **Note: Users will not be able to create containers without access to podman**
+**Note: Users will not be able to create containers without access to podman**
 
-## Guide
+## Quickstart
 
-### **Bare-metal Build:**
+The quickstart instructions can be used with the null model example located in the fre-cli repository: https://github.com/NOAA-GFDL/fre-cli/tree/main/fre/make/tests/null_example
 
-Use fre make subtools to checkout code, create a Makefile, and compile code:
+Users can clone the fre-cli repository and invoke the commands below from the root of the repository. 
+### Bare-metal Build:
 
 ```bash
-# Create and run checkout script
-fre make checkout-script -y [model yaml file] -p [platform] -t [target] --execute
+# Create and run checkout script: checkout script will check out source code as defined in the compile.yaml
+fre make checkout-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod --execute
 
 # Create Makefile
-fre make makefile -y [model yaml file] -p [platform] -t [target]
+fre make makefile -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod
 
-# Create and run the compile script
-fre make compile-script -y [model yaml file] -p [platform] -t [target] --execute
+# Create and run the compile script to generate a model executable
+fre make compile-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod --execute
 ```
-
-Or use `fre make all` to do the job of all 3 subtools in one step:
+### Bare-metal Build (Multi-target):
 
 ```bash
-# Run fre make checkout-script, fre make makefile, and fre make compile-script in order
-fre make all -y [model yaml file] -p [platform] -t [target] [other options...]
-```
-
-### **Container Build:**
-***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
-
-Use fre make subtools to checkout code, create a Makefile, and build a container:
-
-```bash
-# Create and run checkout script
-fre make checkout-script -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
+# Create and run checkout script: checkout script will check out source code as defined in the compile.yaml
+fre make checkout-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
 # Create Makefile
-fre make makefile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
+fre make makefile -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
-# Create and run the Dockerfile
-fre make dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
+# Create and run a compile script for each target specified; generates model executables
+fre make compile-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 ```
 
-Use `fre make all` to do the job of all 3 subtools in one step:
+### Container Build:
+In order for the container to build successfully, the parallel checkout feature is disabled.
 
 ```bash
-# Run fre make checkout-script, fre make makefile, and fre make dockerfile in order
-fre make all -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
+# Create checkout script
+fre make checkout-script -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod
+
+# Create Makefile
+fre make makefile -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod
+
+# Create the Dockerfile and container build script: the container build script (createContainer.sh) uses the Dockerfile to build a model container
+fre make dockerfile -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod --execute
 ```
+
+### Run all of fremake:
+
+`all` kicks off the compilation automatically
+
+```bash
+# Bare-metal: create and run checkout script, create makefile, create and RUN compile script to generate a model executable
+fre make all -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod --execute
+
+# Container: create checkout script, makefile, create dockerfile, and create and RUN the container build script to generate a model container
+fre make all -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod --execute
+```
+
+## Subtools
+- `fre make checkout-script [options]`
+   - Purpose: Create and run a checkout script. 
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-gj, --gitjobs`
+        - `-npc, --no-parallel-checkout`
+        - `--execute`
+        - `--force-checkout`
+- `fre make makefile [options]`
+   - Purpose: Create a Makefile.
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+- `fre make compile-script [options]`
+   - Purpose: Create and run a compile script to generate a model executable.
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-n --nparallel`
+        - `-mj --makejobs`
+        - `-e, --execute`
+        - `-v, --verbose`
+- `fre make dockerfile [options]`
+   - Purpose: Create and run a Dockerfile to generate a model container.
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-nft, --no-format-transfer`
+        - `-e, --execute`
+- `fre make all [options]`
+   - Purpose: 
+        - For a bare-metal build: Create a checkout script, Makefile, and compile script to generate a model executable
+        - For a container build: Create a checkout script, Makefile, and Dockerfile to generate a model container.
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-n --nparallel`
+        - `-mj --makejobs`
+        - `gj, --gitjobs`
+        - `-npc, --no-parallel-checkout`
+        - `-nft, --no-format-transfer`
+        - `-e, --execute`
+        - `-v, --verbose`
