@@ -166,6 +166,8 @@ def test_split_file_data(workdir,newdir, origdir):
     for sf in split_files:
         orig_file = osp.join(origdir, sf)
         new_file = osp.join(newdir, sf)
+        ds_orig = None
+        ds_new = None
         try:
             ds_orig = xr.open_dataset(orig_file)
             ds_new = xr.open_dataset(new_file)
@@ -174,8 +176,10 @@ def test_split_file_data(workdir,newdir, origdir):
             all_files_equal=False
             print(f"data comparison of {new_file} and {orig_file} did not match")
         finally:
-            ds_orig.close()
-            ds_new.close()
+            if ds_orig is not None:
+                ds_orig.close()
+            if ds_new is not None:
+                ds_new.close()
     assert all_files_equal and same_count_files
 
 #test_split_file_metadata is currently commented out because the set of commands:
@@ -217,6 +221,8 @@ def test_split_file_metadata(workdir,newdir, origdir):
     for sf in split_files:
         orig_file = osp.join(origdir, sf)
         new_file = osp.join(newdir, sf)
+        ds_orig = None
+        ds_new = None
         try:
             ds_orig = xr.open_dataset(orig_file)
             ds_new = xr.open_dataset(new_file)
@@ -233,9 +239,9 @@ def test_split_file_metadata(workdir,newdir, origdir):
                     assert orig_val == new_val, \
                         f"global attribute {attr_key} differs for {sf}"
             # Compare variable metadata/attributes (-m flag equivalent)
+            assert set(ds_orig.variables) == set(ds_new.variables), \
+                f"variable sets differ for {sf}"
             for var in ds_orig.variables:
-                assert var in ds_new.variables, \
-                    f"variable {var} missing in new file {sf}"
                 assert set(ds_orig[var].attrs.keys()) == set(ds_new[var].attrs.keys()), \
                     f"attribute keys for variable {var} differ in {sf}"
                 for attr_key in ds_orig[var].attrs:
@@ -252,8 +258,10 @@ def test_split_file_metadata(workdir,newdir, origdir):
             print(f"metadata comparison of {new_file} and {orig_file} did not match")
             print(exc)
         finally:
-            ds_orig.close()
-            ds_new.close()
+            if ds_orig is not None:
+                ds_orig.close()
+            if ds_new is not None:
+                ds_new.close()
     assert all_files_equal and same_count_files
 
 #clean up splitting files
