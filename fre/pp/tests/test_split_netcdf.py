@@ -245,6 +245,9 @@ def test_split_file_metadata(workdir,newdir, origdir):
             assert set(ds_orig.variables) == set(ds_new.variables), \
                 f"variable sets differ for {sf}"
             for var in ds_orig.variables:
+                assert ds_orig[var].dtype == ds_new[var].dtype, \
+                    f"dtype for variable {var} differs in {sf}: " \
+                    f"{ds_orig[var].dtype} vs {ds_new[var].dtype}"
                 assert set(ds_orig[var].attrs.keys()) == set(ds_new[var].attrs.keys()), \
                     f"attribute keys for variable {var} differ in {sf}"
                 for attr_key in ds_orig[var].attrs:
