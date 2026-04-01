@@ -139,7 +139,7 @@ def mask_atmos_plevel(infile, psfile, outfile, warn_no_ps):
               help = "Output file name")
 @click.option("-p", "--pkg",
               type = click.Choice(["cdo","fre-nctools","fre-python-tools"]),
-              default = "cdo",
+              default = "fre-python-tools",
               help = "Time average approach")
 @click.option("-v", "--var",
               type = str,
@@ -193,7 +193,7 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
               help = "Frequency of desired climatology: 'mon' or 'yr'")
 @click.option("-p", "--pkg",
               type = click.Choice(["cdo","fre-nctools","fre-python-tools"]),
-              default = "cdo",
+              default = "fre-python-tools",
               help = "Time average approach")
 def gen_time_averages_wrapper(cycle_point, dir_, sources, output_interval, input_interval, grid, frequency, pkg):
     """

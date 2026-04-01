@@ -3,11 +3,11 @@
 import os
 import logging
 import time
+import warnings
 from typing import Optional, List, Union
 
-from cdo import Cdo
+import xarray as xr
 
-from .cdoTimeAverager import cdoTimeAverager
 from .frenctoolsTimeAverager import frenctoolsTimeAverager
 from .frepytoolsTimeAverager import frepytoolsTimeAverager
 
@@ -46,7 +46,7 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     exitstatus = 1
     myavger = None
 
-    # multiple files case Use cdo to merge multiple files if present
+    # multiple files case - merge multiple files if present
     merged = False
     orig_infile_list = None
     if all ( [ type(infile).__name__ == 'list',
@@ -54,13 +54,14 @@ def generate_time_average(infile: Union[str, List[str]] = None,
         fre_logger.info('list input argument detected')
         infile_str = [str(item) for item in infile]
 
-        _cdo = Cdo()
         merged_file = "merged_output.nc"
 
-        fre_logger.info('calling cdo mergetime')
+        fre_logger.info('merging input files with xarray')
         fre_logger.debug('output: %s', merged_file)
         fre_logger.debug('inputs: \n %s', ' '.join(infile_str) )
-        _cdo.mergetime(input = ' '.join(infile_str), output = merged_file)
+        ds = xr.open_mfdataset(infile_str, combine='by_coords')
+        ds.to_netcdf(merged_file)
+        ds.close()
 
         # preserve the original file names for later
         orig_infile_list = infile
@@ -69,6 +70,14 @@ def generate_time_average(infile: Union[str, List[str]] = None,
         fre_logger.info('file merging success')
 
     if pkg == 'cdo':
+        warnings.warn(
+            "The 'cdo' time-averaging package is deprecated and will be removed in a future release. "
+            "Use 'fre-python-tools' instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        # lazy import to avoid hard dependency on cdo
+        from .cdoTimeAverager import cdoTimeAverager  # pylint: disable=import-outside-toplevel
         fre_logger.info('creating a cdoTimeAverager')
         myavger = cdoTimeAverager( pkg = pkg,
                                    var = var,

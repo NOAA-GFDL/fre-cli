@@ -92,35 +92,50 @@ def test_time_avg_file_dir_exists():
     '''
     assert Path(TIME_AVG_FILE_DIR).exists()
 
+try:
+    import cdo  # noqa: F401
+    HAS_CDO = True
+except ImportError:
+    HAS_CDO = False
+
 FULL_TEST_FILE_PATH = TIME_AVG_FILE_DIR + TEST_FILE_NAME
+cdo_skip = pytest.mark.skipif(not HAS_CDO, reason='python-cdo not installed (deprecated)')
 cases=[
     #cdo cases, monthly, one/multiple files, weighted
     pytest.param( 'cdo', 'month', True ,
                   FULL_TEST_FILE_PATH,
-                  TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TEST_FILE_NAME),
+                  TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TEST_FILE_NAME,
+                  marks=cdo_skip),
     pytest.param( 'cdo', 'month', True ,
                   TWO_TEST_FILE_NAMES,
-                  TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TWO_OUT_FILE_NAME),
+                  TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TWO_OUT_FILE_NAME,
+                  marks=cdo_skip),
     #cdo cases, seasonal, one/multiple files, unweighted
     pytest.param( 'cdo', 'seas', True ,
                   FULL_TEST_FILE_PATH,
-                  TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TEST_FILE_NAME),
+                  TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TEST_FILE_NAME,
+                  marks=cdo_skip),
     pytest.param( 'cdo', 'seas', True ,
                   TWO_TEST_FILE_NAMES,
-                  TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TWO_OUT_FILE_NAME),
+                  TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TWO_OUT_FILE_NAME,
+                  marks=cdo_skip),
     #cdo cases, all, one/multiple files, weighted/unweighted
     pytest.param( 'cdo', 'all', True ,
                   FULL_TEST_FILE_PATH,
-                  STR_UNWGT_CDO_INF),
+                  STR_UNWGT_CDO_INF,
+                  marks=cdo_skip),
     pytest.param( 'cdo', 'all', True ,
                   TWO_TEST_FILE_NAMES,
-                  TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TWO_OUT_FILE_NAME),
+                  TIME_AVG_FILE_DIR + 'timmean_unwgt_' + TWO_OUT_FILE_NAME,
+                  marks=cdo_skip),
     pytest.param( 'cdo', 'all', False ,
                   FULL_TEST_FILE_PATH,
-                  STR_CDO_INF),
+                  STR_CDO_INF,
+                  marks=cdo_skip),
     pytest.param( 'cdo', 'all', False ,
                   TWO_TEST_FILE_NAMES,
-                  TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME),
+                  TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME,
+                  marks=cdo_skip),
     #fre-python-tools cases, all, one/multiple files, weighted/unweighted flag
     pytest.param( 'fre-python-tools', 'all',  False ,
                   FULL_TEST_FILE_PATH,
@@ -243,6 +258,7 @@ def test_compare_fre_cli_to_fre_nctools():
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between frepy / frenctools were found"
 
 
+@pytest.mark.skipif(not HAS_CDO, reason='python-cdo not installed (deprecated)')
 @pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_fre_cli_to_cdo():
     '''
@@ -273,6 +289,7 @@ def test_compare_fre_cli_to_cdo():
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frepytools were found"
 
 
+@pytest.mark.skipif(not HAS_CDO, reason='python-cdo not installed (deprecated)')
 def test_compare_unwgt_fre_cli_to_unwgt_cdo():
     '''
     compares fre_cli pkg answer to cdo pkg answer
@@ -301,6 +318,7 @@ def test_compare_unwgt_fre_cli_to_unwgt_cdo():
     non_zero_count = np.count_nonzero(diff_pytools_cdo_timavg[:])
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frepytools were found"
 
+@pytest.mark.skipif(not HAS_CDO, reason='python-cdo not installed (deprecated)')
 @pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
 def test_compare_cdo_to_fre_nctools():
     '''
