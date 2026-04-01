@@ -10,7 +10,9 @@ from os import path as osp
 from pathlib import Path
 
 import click
+import numpy as np
 import pytest
+import xarray as xr
 from click.testing import CliRunner
 
 from fre import fre
@@ -162,14 +164,25 @@ def test_split_file_data(workdir,newdir, origdir):
     print(f"orig count: {orig_count}  new count: {new_count}")
     all_files_equal=True
     for sf in split_files:
-        nccmp_cmd = [ 'nccmp', '-d', '--force',
-                    osp.join(origdir, sf), osp.join(newdir, sf) ]
-        sp = subprocess.run( nccmp_cmd)
-        if sp.returncode != 0:
-            all_files_equal=False
-            print(" ".join(nccmp_cmd))
-            print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
-            print(sp.stdout, sp.stderr)
+        these_files_equal=False
+        orig_file = osp.join(origdir, sf)
+        new_file = osp.join(newdir, sf)
+        ds_orig = None
+        ds_new = None
+        try:
+            ds_orig = xr.open_dataset(orig_file)
+            ds_new = xr.open_dataset(new_file)
+            xr.testing.assert_equal(ds_orig, ds_new)
+            these_files_equal=True
+        except AssertionError:
+            these_files_equal=False
+            print(f"data comparison of {new_file} and {orig_file} did not match")
+        finally:
+            all_files_equal = all_files_equal and these_files_equal
+            if ds_orig is not None:
+                ds_orig.close()
+            if ds_new is not None:
+                ds_new.close()
     assert all_files_equal and same_count_files
 
 #test_split_file_metadata is currently commented out because the set of commands:
@@ -209,14 +222,52 @@ def test_split_file_metadata(workdir,newdir, origdir):
     same_count_files = new_count == orig_count
     all_files_equal=True
     for sf in split_files:
-        nccmp_cmd = [ 'nccmp', '-mg', '--force',
-                     osp.join(origdir, sf), osp.join(newdir, sf) ]
-        sp = subprocess.run( nccmp_cmd)
-        if sp.returncode != 0:
-            print(" ".join(nccmp_cmd))
+        orig_file = osp.join(origdir, sf)
+        new_file = osp.join(newdir, sf)
+        ds_orig = None
+        ds_new = None
+        try:
+            ds_orig = xr.open_dataset(orig_file)
+            ds_new = xr.open_dataset(new_file)
+            # Compare global attributes (-g flag equivalent)
+            assert set(ds_orig.attrs.keys()) == set(ds_new.attrs.keys()), \
+                f"global attribute keys differ for {sf}"
+            for attr_key in ds_orig.attrs:
+                orig_val = ds_orig.attrs[attr_key]
+                new_val = ds_new.attrs[attr_key]
+                if isinstance(orig_val, np.ndarray):
+                    assert np.array_equal(orig_val, new_val), \
+                        f"global attribute {attr_key} differs for {sf}"
+                else:
+                    assert orig_val == new_val, \
+                        f"global attribute {attr_key} differs for {sf}"
+            # Compare variable metadata/attributes (-m flag equivalent)
+            assert set(ds_orig.variables) == set(ds_new.variables), \
+                f"variable sets differ for {sf}"
+            for var in ds_orig.variables:
+                assert ds_orig[var].dtype == ds_new[var].dtype, \
+                    f"dtype for variable {var} differs in {sf}: " \
+                    f"{ds_orig[var].dtype} vs {ds_new[var].dtype}"
+                assert set(ds_orig[var].attrs.keys()) == set(ds_new[var].attrs.keys()), \
+                    f"attribute keys for variable {var} differ in {sf}"
+                for attr_key in ds_orig[var].attrs:
+                    orig_val = ds_orig[var].attrs[attr_key]
+                    new_val = ds_new[var].attrs[attr_key]
+                    if isinstance(orig_val, np.ndarray):
+                        assert np.array_equal(orig_val, new_val), \
+                            f"attribute {attr_key} for variable {var} differs in {sf}"
+                    else:
+                        assert orig_val == new_val, \
+                            f"attribute {attr_key} for variable {var} differs in {sf}"
+        except AssertionError as exc:
             all_files_equal=False
-            print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
-            print(sp.stdout, sp.stderr)
+            print(f"metadata comparison of {new_file} and {orig_file} did not match")
+            print(exc)
+        finally:
+            if ds_orig is not None:
+                ds_orig.close()
+            if ds_new is not None:
+                ds_new.close()
     assert all_files_equal and same_count_files
 
 #clean up splitting files
