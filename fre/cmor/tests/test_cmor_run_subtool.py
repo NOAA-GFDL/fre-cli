@@ -10,6 +10,7 @@ import subprocess
 import shutil
 
 import netCDF4
+import numpy as np
 import pytest
 
 from fre.cmor import cmor_run_subtool
@@ -57,6 +58,57 @@ FULL_OUTPUTDIR = \
    f"{OUTDIR}/{CMOR_CREATES_DIR}/v{YYYYMMDD}"
 FULL_OUTPUTFILE = \
 f"{FULL_OUTPUTDIR}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{GRID_LABEL}_{DATETIMES_INPUTFILE}.nc"
+
+# CMIP6-required global attributes that must be present in CMOR output
+CMIP6_REQUIRED_GLOBAL_ATTRS = [
+    'variable_id', 'mip_era', 'table_id',
+    'experiment_id', 'institution_id', 'source_id'
+]
+
+
+def _assert_data_matches(ds_in, ds_out):
+    '''
+    helper: assert that science variable data, coordinate data, and shapes
+    are preserved between input and CMOR output datasets.
+    '''
+    # the science variable data must be preserved exactly
+    assert np.array_equal(ds_in.variables['sos'][:], ds_out.variables['sos'][:]), \
+        "sos data values differ between input and CMOR output"
+
+    # coordinate data must be preserved
+    assert np.allclose(ds_in.variables['lat'][:], ds_out.variables['lat'][:]), \
+        "latitude data differs between input and CMOR output"
+    assert np.allclose(ds_in.variables['lon'][:], ds_out.variables['lon'][:]), \
+        "longitude data differs between input and CMOR output"
+    assert np.allclose(ds_in.variables['time'][:], ds_out.variables['time'][:]), \
+        "time data differs between input and CMOR output"
+
+    # variable shapes must be preserved
+    assert ds_in.variables['sos'][:].shape == ds_out.variables['sos'][:].shape, \
+        "sos data shape differs between input and CMOR output"
+
+
+def _assert_metadata_matches(ds_in, ds_out):
+    '''
+    helper: assert that CMIP6-required global attributes are present and that
+    key variable-level metadata is preserved between input and CMOR output datasets.
+    '''
+    # CMOR output must contain CMIP6-required global attributes
+    for required_attr in CMIP6_REQUIRED_GLOBAL_ATTRS:
+        assert required_attr in ds_out.ncattrs(), \
+            f"CMOR output missing required global attribute '{required_attr}'"
+
+    # science variable standard_name and long_name must be preserved
+    assert ds_in.variables['sos'].standard_name == ds_out.variables['sos'].standard_name, \
+        "sos standard_name differs between input and CMOR output"
+    assert ds_in.variables['sos'].long_name == ds_out.variables['sos'].long_name, \
+        "sos long_name differs between input and CMOR output"
+
+    # _FillValue and missing_value must be preserved
+    assert ds_in.variables['sos']._FillValue == ds_out.variables['sos']._FillValue, \
+        "sos _FillValue differs between input and CMOR output"
+    assert ds_in.variables['sos'].missing_value == ds_out.variables['sos'].missing_value, \
+        "sos missing_value differs between input and CMOR output"
 
 
 def test_setup_fre_cmor_run_subtool(capfd):
@@ -130,6 +182,8 @@ def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
         # file formats should differ: CMOR converts input to NETCDF4_CLASSIC
         assert ds_in.file_format != ds_out.file_format, \
             f"expected file formats to differ, got input={ds_in.file_format}, output={ds_out.file_format}"
+
+        _assert_data_matches(ds_in, ds_out)
     _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
@@ -142,6 +196,8 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
         # CMOR processing should add/change global attributes
         assert set(ds_in.ncattrs()) != set(ds_out.ncattrs()), \
             "expected global attributes to differ between input and CMOR output"
+
+        _assert_metadata_matches(ds_in, ds_out)
     _out, _err = capfd.readouterr()
 
 
@@ -241,6 +297,8 @@ def test_fre_cmor_run_subtool_case2_output_compare_data(capfd):
         # file formats should differ: CMOR converts input to NETCDF4_CLASSIC
         assert ds_in.file_format != ds_out.file_format, \
             f"expected file formats to differ, got input={ds_in.file_format}, output={ds_out.file_format}"
+
+        _assert_data_matches(ds_in, ds_out)
     _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case2_output_compare_metadata(capfd):
@@ -253,6 +311,8 @@ def test_fre_cmor_run_subtool_case2_output_compare_metadata(capfd):
         # CMOR processing should add/change global attributes
         assert set(ds_in.ncattrs()) != set(ds_out.ncattrs()), \
             "expected global attributes to differ between input and CMOR output"
+
+        _assert_metadata_matches(ds_in, ds_out)
     _out, _err = capfd.readouterr()
 
 def test_git_cleanup():
