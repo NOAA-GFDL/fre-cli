@@ -59,9 +59,8 @@ def generate_time_average(infile: Union[str, List[str]] = None,
         fre_logger.info('merging input files with xarray')
         fre_logger.debug('output: %s', merged_file)
         fre_logger.debug('inputs: \n %s', ' '.join(infile_str) )
-        ds = xr.open_mfdataset(infile_str, combine='by_coords')
-        ds.to_netcdf(merged_file)
-        ds.close()
+        with xr.open_mfdataset(infile_str, combine='by_coords') as ds:
+            ds.to_netcdf(merged_file)
 
         # preserve the original file names for later
         orig_infile_list = infile
