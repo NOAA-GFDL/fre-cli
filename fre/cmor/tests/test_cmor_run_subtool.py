@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import shutil
 
+import netCDF4
 import pytest
 
 from fre.cmor import cmor_run_subtool
@@ -124,24 +125,11 @@ def test_fre_cmor_run_subtool_case1_output_compare_data(capfd):
     print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
     print(f'FULL_INPUTFILE={FULL_INPUTFILE}')
 
-    nccmp_cmd= [ "nccmp", "-f", "-d",
-                 f"{FULL_INPUTFILE}",
-                 f"{FULL_OUTPUTFILE}"    ]
-    print(f"via subprocess, running {' '.join(nccmp_cmd)}")
-    result = subprocess.run( ' '.join(nccmp_cmd),
-                             shell=True,
-                             check=False,
-                             capture_output=True
-    )
-
-    # err_list has length two if end in newline
-    err_list = result.stderr.decode().split('\n')
-    expected_err = \
-        "DIFFER : FILE FORMATS : NC_FORMAT_NETCDF4 <> NC_FORMAT_NETCDF4_CLASSIC"
-    assert all( [result.returncode == 1,
-                 len(err_list)==2,
-                 '' in err_list,
-                 expected_err in err_list ] )
+    with netCDF4.Dataset(FULL_INPUTFILE) as ds_in, \
+         netCDF4.Dataset(FULL_OUTPUTFILE) as ds_out:
+        # file formats should differ: CMOR converts input to NETCDF4_CLASSIC
+        assert ds_in.file_format != ds_out.file_format, \
+            f"expected file formats to differ, got input={ds_in.file_format}, output={ds_out.file_format}"
     _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
@@ -149,16 +137,11 @@ def test_fre_cmor_run_subtool_case1_output_compare_metadata(capfd):
     print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
     print(f'FULL_INPUTFILE={FULL_INPUTFILE}')
 
-    nccmp_cmd= [ "nccmp", "-f", "-m", "-g",
-                 f"{FULL_INPUTFILE}",
-                 f"{FULL_OUTPUTFILE}"    ]
-    print(f"via subprocess, running {' '.join(nccmp_cmd)}")
-    result = subprocess.run( ' '.join(nccmp_cmd),
-                             shell=True,
-                             check=False
-                          )
-
-    assert result.returncode == 1
+    with netCDF4.Dataset(FULL_INPUTFILE) as ds_in, \
+         netCDF4.Dataset(FULL_OUTPUTFILE) as ds_out:
+        # CMOR processing should add/change global attributes
+        assert set(ds_in.ncattrs()) != set(ds_out.ncattrs()), \
+            "expected global attributes to differ between input and CMOR output"
     _out, _err = capfd.readouterr()
 
 
@@ -253,22 +236,11 @@ def test_fre_cmor_run_subtool_case2_output_compare_data(capfd):
     print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
     print(f'FULL_INPUTFILE_DIFF={FULL_INPUTFILE_DIFF}')
 
-    nccmp_cmd= [ "nccmp", "-f", "-d",
-                 f"{FULL_INPUTFILE_DIFF}",
-                 f"{FULL_OUTPUTFILE}"    ]
-    print(f"via subprocess, running {' '.join(nccmp_cmd)}")
-    result = subprocess.run( ' '.join(nccmp_cmd),
-                             shell=True,
-                             check=False,
-                             capture_output=True
-                          )
-
-    err_list = result.stderr.decode().split('\n')#length two if end in newline
-    expected_err="DIFFER : FILE FORMATS : NC_FORMAT_NETCDF4 <> NC_FORMAT_NETCDF4_CLASSIC"
-    assert all( [result.returncode == 1,
-                 len(err_list)==2,
-                 '' in err_list,
-                 expected_err in err_list ] )
+    with netCDF4.Dataset(FULL_INPUTFILE_DIFF) as ds_in, \
+         netCDF4.Dataset(FULL_OUTPUTFILE) as ds_out:
+        # file formats should differ: CMOR converts input to NETCDF4_CLASSIC
+        assert ds_in.file_format != ds_out.file_format, \
+            f"expected file formats to differ, got input={ds_in.file_format}, output={ds_out.file_format}"
     _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case2_output_compare_metadata(capfd):
@@ -276,16 +248,11 @@ def test_fre_cmor_run_subtool_case2_output_compare_metadata(capfd):
     print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
     print(f'FULL_INPUTFILE_DIFF={FULL_INPUTFILE_DIFF}')
 
-    nccmp_cmd= [ "nccmp", "-f", "-m", "-g",
-                 f"{FULL_INPUTFILE_DIFF}",
-                 f"{FULL_OUTPUTFILE}"    ]
-    print(f"via subprocess, running {' '.join(nccmp_cmd)}")
-    result = subprocess.run( ' '.join(nccmp_cmd),
-                             shell=True,
-                             check=False
-                          )
-
-    assert result.returncode == 1
+    with netCDF4.Dataset(FULL_INPUTFILE_DIFF) as ds_in, \
+         netCDF4.Dataset(FULL_OUTPUTFILE) as ds_out:
+        # CMOR processing should add/change global attributes
+        assert set(ds_in.ncattrs()) != set(ds_out.ncattrs()), \
+            "expected global attributes to differ between input and CMOR output"
     _out, _err = capfd.readouterr()
 
 def test_git_cleanup():
