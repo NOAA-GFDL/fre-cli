@@ -80,41 +80,40 @@ class frenctoolsTimeAverager(timeAverager):
                 month_output_file_paths[month_index] = os.path.join( output_dir,
                                                                      f"{Path(outfile).stem}.{month_index:02d}.nc")
 
-            ds_in = xr.open_dataset(infile)
-            #Loop through each month and select the corresponding data
-            for month_index in month_indices:
+            with xr.open_dataset(infile) as ds_in:
+                #Loop through each month and select the corresponding data
+                for month_index in month_indices:
 
-                #month_name = month_names[month_index - 1]
-                nc_monthly_file = nc_month_file_paths[month_index]
+                    #month_name = month_names[month_index - 1]
+                    nc_monthly_file = nc_month_file_paths[month_index]
 
-                #Select data for the given month
-                month_ds = ds_in.sel(time=ds_in['time.month'] == month_index)
-                month_ds.to_netcdf(nc_monthly_file)
-                month_ds.close()
+                    #Select data for the given month
+                    month_ds = ds_in.sel(time=ds_in['time'].dt.month == month_index)
+                    month_ds.to_netcdf(nc_monthly_file)
+                    month_ds.close()
 
-                #Run timavg command for newly created file
-                month_output_file = month_output_file_paths[month_index]
-                #timavgcsh_command=['timavg.csh', '-mb','-o', month_output_file, nc_monthly_file]
-                timavgcsh_command=[shutil.which('timavg.csh'), '-dmb','-o', month_output_file, nc_monthly_file]
-                fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
-                exitstatus=1
-                with Popen(timavgcsh_command,
-                           stdout=PIPE, stderr=PIPE, shell=False) as subp:
-                    stdout, stderr = subp.communicate()
-                    stdoutput=stdout.decode()
-                    fre_logger.info('output= %s', stdoutput)
-                    stderror=stderr.decode()
-                    fre_logger.info('error = %s', stderror )
+                    #Run timavg command for newly created file
+                    month_output_file = month_output_file_paths[month_index]
+                    #timavgcsh_command=['timavg.csh', '-mb','-o', month_output_file, nc_monthly_file]
+                    timavgcsh_command=[shutil.which('timavg.csh'), '-dmb','-o', month_output_file, nc_monthly_file]
+                    fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
+                    exitstatus=1
+                    with Popen(timavgcsh_command,
+                               stdout=PIPE, stderr=PIPE, shell=False) as subp:
+                        stdout, stderr = subp.communicate()
+                        stdoutput=stdout.decode()
+                        fre_logger.info('output= %s', stdoutput)
+                        stderror=stderr.decode()
+                        fre_logger.info('error = %s', stderror )
 
-                    if subp.returncode != 0:
-                        fre_logger.error('stderror = %s', stderror)
-                        raise ValueError(f'error: timavg.csh had a problem, subp.returncode = {subp.returncode}')
+                        if subp.returncode != 0:
+                            fre_logger.error('stderror = %s', stderror)
+                            raise ValueError(f'error: timavg.csh had a problem, subp.returncode = {subp.returncode}')
 
-                    fre_logger.info('%s climatology successfully ran',nc_monthly_file)
-                    exitstatus=0
+                        fre_logger.info('%s climatology successfully ran',nc_monthly_file)
+                        exitstatus=0
 
-                #Delete files after being used to generate output files
-            ds_in.close()
+                    #Delete files after being used to generate output files
             shutil.rmtree('monthly_nc_files')
 
         if self.avg_type == 'month':   #End here if month variable used
