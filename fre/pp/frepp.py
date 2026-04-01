@@ -229,7 +229,13 @@ Either unset --split-all-vars or parse the varlist from the yaml - do not try do
 @click.option('-v', '--variables', type = str, required=True,
               help='''Specifies which variables in $file are split and written to $outputdir.
                      Either a string "all" or a comma-separated string of variable names ("tasmax,tasmin,pr")''')
-def split_netcdf(file, outputdir, variables):
+@click.option('-r', '--rename', is_flag=True, default=False,
+              help='During splitting, rename output files into a nested directory structure '
+                   'organized by frequency and duration under $outputdir.')
+@click.option('-d', '--diag-manifest', type=str, required=False, default=None,
+              help='Path to FMS diag manifest file. Only used with --rename. '
+                   'Required when input file has one timestep and no time bounds.')
+def split_netcdf(file, outputdir, variables, rename, diag_manifest):
     ''' Splits a single netcdf file into one netcdf file per data variable and writes
         files to $outputdir.
         $variables is an option to filter the variables split out of $file and
@@ -237,9 +243,15 @@ def split_netcdf(file, outputdir, variables):
         in $file are split and written to $outputdir; if set to a comma-separated
         string of variable names, only the variable names in the string will be
         split and written to $outputdir. If no variable names in $variables match
-        variables in $file, no files will be written to $outputdir.'''
+        variables in $file, no files will be written to $outputdir.
+
+        If --rename is set, split files are additionally reorganized into a nested
+        directory structure under $outputdir with frequency and duration
+        (e.g. atmos_daily/P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc).'''
     var_list = variables.split(",")
-    split_netcdf_script.split_file_xarray(file, outputdir, variables)
+    split_netcdf_script.split_file_xarray(file, outputdir, variables,
+                                          rename=rename,
+                                          diag_manifest=diag_manifest)
 
 
 #fre pp ppval
