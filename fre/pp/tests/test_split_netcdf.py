@@ -166,11 +166,9 @@ def test_split_file_data(workdir,newdir, origdir):
         orig_path = osp.join(origdir, sf)
         new_path = osp.join(newdir, sf)
         try:
-            orig_ds = xr.open_dataset(orig_path, decode_cf=False, decode_times=False)
-            new_ds = xr.open_dataset(new_path, decode_cf=False, decode_times=False)
-            xr.testing.assert_equal(orig_ds, new_ds)
-            orig_ds.close()
-            new_ds.close()
+            with xr.open_dataset(orig_path, decode_cf=False, decode_times=False) as orig_ds, \
+                 xr.open_dataset(new_path, decode_cf=False, decode_times=False) as new_ds:
+                xr.testing.assert_equal(orig_ds, new_ds)
         except AssertionError:
             all_files_equal=False
             print(f"comparison of {orig_path} and {new_path} did not match")
@@ -216,13 +214,11 @@ def test_split_file_metadata(workdir,newdir, origdir):
         orig_path = osp.join(origdir, sf)
         new_path = osp.join(newdir, sf)
         try:
-            orig_ds = xr.open_dataset(orig_path, decode_cf=False, decode_times=False)
-            new_ds = xr.open_dataset(new_path, decode_cf=False, decode_times=False)
-            # assert_identical compares global attributes, variable metadata,
-            # and data values (equivalent to nccmp -mg and more)
-            xr.testing.assert_identical(orig_ds, new_ds)
-            orig_ds.close()
-            new_ds.close()
+            with xr.open_dataset(orig_path, decode_cf=False, decode_times=False) as orig_ds, \
+                 xr.open_dataset(new_path, decode_cf=False, decode_times=False) as new_ds:
+                # assert_identical compares global attributes, variable metadata,
+                # and data values (equivalent to nccmp -mg and more)
+                xr.testing.assert_identical(orig_ds, new_ds)
         except AssertionError:
             all_files_equal=False
             print(f"comparison of {orig_path} and {new_path} did not match")

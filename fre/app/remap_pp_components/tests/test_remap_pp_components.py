@@ -341,15 +341,13 @@ def test_compare_ncgen_remap():
     comp_name = "atmos_scalar_CNAME"
     output_nc_file = f"{comp_name}.198001-198412.co2mass.nc"
 
-    ds_in = xr.open_dataset(
-        Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
-        decode_cf=False, decode_times=False)
-    ds_out = xr.open_dataset(
-        Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr/{output_nc_file}"),
-        decode_cf=False, decode_times=False)
-    xr.testing.assert_equal(ds_in, ds_out)
-    ds_in.close()
-    ds_out.close()
+    with xr.open_dataset(
+            Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
+            decode_cf=False, decode_times=False) as ds_in, \
+         xr.open_dataset(
+            Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr/{output_nc_file}"),
+            decode_cf=False, decode_times=False) as ds_out:
+        xr.testing.assert_equal(ds_in, ds_out)
 
 def test_compare_ncgen_remap_ens_mem():
     """
@@ -363,15 +361,13 @@ def test_compare_ncgen_remap_ens_mem():
     remap_ens_in = f"{TEST_OUTDIR}/ncgen-ens-output"
     remap_ens_out = f"{TEST_OUTDIR}/remap-ens-output"
 
-    ds_in = xr.open_dataset(
-        Path(f"{remap_ens_in}/{NATIVE_GRID}/ens_01/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
-        decode_cf=False, decode_times=False)
-    ds_out = xr.open_dataset(
-        Path(f"{remap_ens_out}/{comp_name}/{PRODUCT}/ens_01/monthly/5yr/{output_nc_file}"),
-        decode_cf=False, decode_times=False)
-    xr.testing.assert_equal(ds_in, ds_out)
-    ds_in.close()
-    ds_out.close()
+    with xr.open_dataset(
+            Path(f"{remap_ens_in}/{NATIVE_GRID}/ens_01/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
+            decode_cf=False, decode_times=False) as ds_in, \
+         xr.open_dataset(
+            Path(f"{remap_ens_out}/{comp_name}/{PRODUCT}/ens_01/monthly/5yr/{output_nc_file}"),
+            decode_cf=False, decode_times=False) as ds_out:
+        xr.testing.assert_equal(ds_in, ds_out)
 
 def test_compare_ncgen_remap_statics():
     """
@@ -381,17 +377,15 @@ def test_compare_ncgen_remap_statics():
     comp_name = "atmos_scalar_CNAME"
     output_nc_file = f"{comp_name}.bk.nc"
 
-    ds_in = xr.open_dataset(
-        Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_static_scalar/"
-             f"{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}"),
-        decode_cf=False, decode_times=False)
-    ds_out = xr.open_dataset(
-        Path(f"{REMAP_OUT}/static/{comp_name}/"
-             f"{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}"),
-        decode_cf=False, decode_times=False)
-    xr.testing.assert_equal(ds_in, ds_out)
-    ds_in.close()
-    ds_out.close()
+    with xr.open_dataset(
+            Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_static_scalar/"
+                 f"{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}"),
+            decode_cf=False, decode_times=False) as ds_in, \
+         xr.open_dataset(
+            Path(f"{REMAP_OUT}/static/{comp_name}/"
+                 f"{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}"),
+            decode_cf=False, decode_times=False) as ds_out:
+        xr.testing.assert_equal(ds_in, ds_out)
 
 ## VARIABLE FILTERING TESTS ##
 def test_remap_variable_filtering():
