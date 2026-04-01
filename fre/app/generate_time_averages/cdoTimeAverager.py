@@ -1,6 +1,7 @@
 ''' class using (mostly) cdo functions for time-averages '''
 
 import logging
+import warnings
 
 from netCDF4 import Dataset
 import numpy as np
@@ -16,6 +17,10 @@ class cdoTimeAverager(timeAverager):
     '''
     class inheriting from abstract base class timeAverager
     generates time-averages using cdo (mostly, see weighted approach)
+
+    .. deprecated::
+        The cdoTimeAverager is deprecated and will be removed in a future release.
+        Use frepytoolsTimeAverager instead.
     '''
 
     def generate_timavg(self, infile = None, outfile = None):
@@ -29,7 +34,16 @@ class cdoTimeAverager(timeAverager):
         :type outfile: str
         :return: 1 if the instance variable self.avg_typ is unsupported, 0 if function has a clean exit
         :rtype: int
+
+        .. deprecated::
+            Use frepytoolsTimeAverager.generate_timavg instead.
         """
+        warnings.warn(
+            "cdoTimeAverager is deprecated and will be removed in a future release. "
+            "Use frepytoolsTimeAverager (pkg='fre-python-tools') instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
 
         if self.avg_type not in ['all', 'seas', 'month']:
             fre_logger.error('requested unknown avg_type %s.', self.avg_type)

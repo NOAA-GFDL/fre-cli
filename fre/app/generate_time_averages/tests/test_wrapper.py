@@ -9,6 +9,12 @@ import pytest
 
 from fre.app.generate_time_averages import wrapper
 
+try:
+    import cdo  # noqa: F401
+    HAS_CDO = True
+except ImportError:
+    HAS_CDO = False
+
 # create_monthly_timeseries:
 # ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198001-198012.alb_sfc.nc
 # ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198101-198112.alb_sfc.nc
@@ -171,6 +177,7 @@ def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
 
 
 # CDO-based tests
+@pytest.mark.skipif(not HAS_CDO, reason='python-cdo not installed (deprecated)')
 def test_cdo_annual_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate annual average from monthly timeseries using CDO
@@ -204,6 +211,7 @@ def test_cdo_annual_av_from_monthly_ts(create_monthly_timeseries):
         assert file_.exists()
 
 
+@pytest.mark.skipif(not HAS_CDO, reason='python-cdo not installed (deprecated)')
 def test_cdo_annual_av_from_annual_ts(create_annual_timeseries):
     """
     Generate annual average from annual timeseries using CDO
@@ -237,6 +245,7 @@ def test_cdo_annual_av_from_annual_ts(create_annual_timeseries):
         assert file_.exists()
 
 
+@pytest.mark.skipif(not HAS_CDO, reason='python-cdo not installed (deprecated)')
 def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
     """
     Generate monthly climatology from monthly timeseries using CDO
@@ -272,6 +281,7 @@ def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
 
 
 # Test for CDO equivalence to fre-nctools when timavg.csh is available
+@pytest.mark.skipif(not HAS_CDO, reason='python-cdo not installed (deprecated)')
 @pytest.mark.xfail(reason="no timavg.csh")
 def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
     """

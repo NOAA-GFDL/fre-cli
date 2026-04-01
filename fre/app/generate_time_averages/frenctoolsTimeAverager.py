@@ -5,7 +5,7 @@ import shutil
 from subprocess import Popen, PIPE
 from pathlib import Path
 
-from cdo import Cdo
+import xarray as xr
 from .timeAverager import timeAverager
 
 fre_logger = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class frenctoolsTimeAverager(timeAverager):
                 month_output_file_paths[month_index] = os.path.join( output_dir,
                                                                      f"{Path(outfile).stem}.{month_index:02d}.nc")
 
-            cdo = Cdo()
+            ds_in = xr.open_dataset(infile)
             #Loop through each month and select the corresponding data
             for month_index in month_indices:
 
@@ -88,7 +88,9 @@ class frenctoolsTimeAverager(timeAverager):
                 nc_monthly_file = nc_month_file_paths[month_index]
 
                 #Select data for the given month
-                cdo.select(f"month={month_index}", input=infile, output=nc_monthly_file)
+                month_ds = ds_in.sel(time=ds_in['time.month'] == month_index)
+                month_ds.to_netcdf(nc_monthly_file)
+                month_ds.close()
 
                 #Run timavg command for newly created file
                 month_output_file = month_output_file_paths[month_index]
@@ -112,6 +114,7 @@ class frenctoolsTimeAverager(timeAverager):
                     exitstatus=0
 
                 #Delete files after being used to generate output files
+            ds_in.close()
             shutil.rmtree('monthly_nc_files')
 
         if self.avg_type == 'month':   #End here if month variable used
