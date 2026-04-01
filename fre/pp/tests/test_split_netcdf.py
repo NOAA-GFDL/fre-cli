@@ -11,7 +11,6 @@ from pathlib import Path
 
 import click
 import pytest
-import xarray as xr
 from click.testing import CliRunner
 
 from fre import fre
@@ -163,15 +162,14 @@ def test_split_file_data(workdir,newdir, origdir):
     print(f"orig count: {orig_count}  new count: {new_count}")
     all_files_equal=True
     for sf in split_files:
-        orig_path = osp.join(origdir, sf)
-        new_path = osp.join(newdir, sf)
-        try:
-            with xr.open_dataset(orig_path, decode_cf=False, decode_times=False) as orig_ds, \
-                 xr.open_dataset(new_path, decode_cf=False, decode_times=False) as new_ds:
-                xr.testing.assert_equal(orig_ds, new_ds)
-        except AssertionError:
+        nccmp_cmd = [ 'nccmp', '-d', '--force',
+                    osp.join(origdir, sf), osp.join(newdir, sf) ]
+        sp = subprocess.run( nccmp_cmd)
+        if sp.returncode != 0:
             all_files_equal=False
-            print(f"comparison of {orig_path} and {new_path} did not match")
+            print(" ".join(nccmp_cmd))
+            print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
+            print(sp.stdout, sp.stderr)
     assert all_files_equal and same_count_files
 
 #test_split_file_metadata is currently commented out because the set of commands:
@@ -211,17 +209,14 @@ def test_split_file_metadata(workdir,newdir, origdir):
     same_count_files = new_count == orig_count
     all_files_equal=True
     for sf in split_files:
-        orig_path = osp.join(origdir, sf)
-        new_path = osp.join(newdir, sf)
-        try:
-            with xr.open_dataset(orig_path, decode_cf=False, decode_times=False) as orig_ds, \
-                 xr.open_dataset(new_path, decode_cf=False, decode_times=False) as new_ds:
-                # assert_identical compares global attributes, variable metadata,
-                # and data values (equivalent to nccmp -mg and more)
-                xr.testing.assert_identical(orig_ds, new_ds)
-        except AssertionError:
+        nccmp_cmd = [ 'nccmp', '-mg', '--force',
+                     osp.join(origdir, sf), osp.join(newdir, sf) ]
+        sp = subprocess.run( nccmp_cmd)
+        if sp.returncode != 0:
+            print(" ".join(nccmp_cmd))
             all_files_equal=False
-            print(f"comparison of {orig_path} and {new_path} did not match")
+            print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
+            print(sp.stdout, sp.stderr)
     assert all_files_equal and same_count_files
 
 #clean up splitting files
