@@ -1,0 +1,11 @@
+name: cylc-flow-tools
+channels: 
+  - conda-forge
+  - NOAA-GFDL
+dependencies:
+  - noaa-gfdl::hsm
+  - noaa-gfdl::fre-cli ==2025.04
+  - conda-forge::nco
+  - conda-forge::rsync
+  - conda-forge::make
+  - conda-forge::vim
