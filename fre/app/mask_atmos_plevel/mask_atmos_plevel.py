@@ -64,7 +64,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
     if "ps" not in list(ds_ps.variables):
         fre_logger.warning('pressure variable ps not found in target pressure file')
         if not warn_no_ps:
-            log_and_raise(f"Surface pressure file {psfile} does not contain surface pressure.")
+            log_and_raise(f"Surface pressure file {psfile} does not contain surface pressure.", ValueError)
         fre_logger.warning('warn_no_ps is True! this means I\'m going to no-op gracefully instead of raising an error')
         return
 

@@ -37,6 +37,7 @@ def form_bronx_directory_name(frequency: str,
         frequency_label = "annual"
     else:
         log_and_raise(f"Frequency '{frequency}' not recognized or supported", ValueError)
+    interval_object = duration_parser.parse(interval)
     return frequency_label + '_' + str(interval_object.years) + 'yr'
 
 
