@@ -68,16 +68,12 @@ jobs:
           These warnings were detected during the weekly automated Sphinx documentation build.
           Please review and fix the warnings to improve documentation quality."
 
-          # close any existing weekly doc build warning issues
-          gh issue list --label "automated,documentation" --state open --json number --jq '.[].number' | while read -r ISSUE_NUM; do
+          # close any existing weekly doc build warning issues (search by title prefix)
+          gh issue list --state open --search "docs: weekly Sphinx build warnings report" --json number --jq '.[].number' | while read -r ISSUE_NUM; do
             gh issue close "$ISSUE_NUM" --comment "Superseded by new weekly doc build warning check."
           done
 
           # create new issue
-          echo "$ISSUE_BODY" | gh issue create \
-            --title "docs: weekly Sphinx build warnings report (${WARNING_COUNT} warnings)" \
-            --body-file - \
-            --label "automated,documentation" || \
           echo "$ISSUE_BODY" | gh issue create \
             --title "docs: weekly Sphinx build warnings report (${WARNING_COUNT} warnings)" \
             --body-file -
