@@ -208,8 +208,8 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
         with open(json_exp_config, "r", encoding="utf-8") as file:
             exp_cfg_calendar = json.load(file)['calendar']
             if exp_cfg_calendar != time_coords_calendar:
-                raise ValueError(f"data calendar type {time_coords_calendar} "
-                                 f"does not match input config calendar type: {exp_cfg_calendar}")
+                log_and_raise(f"data calendar type {time_coords_calendar} "
+                              f"does not match input config calendar type: {exp_cfg_calendar}", ValueError)
 
     # read in time_bnds, if present
     fre_logger.info('attempting to read coordinate BNDS, time_bnds')
@@ -224,7 +224,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     lev_bnds = None
     if vert_dim != 0:
         if vert_dim.lower() not in ACCEPTED_VERT_DIMS:
-            raise ValueError(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported') #uncovered
+            log_and_raise(f'var_dim={var_dim}, vert_dim = {vert_dim} is not supported', ValueError) #uncovered
         lev = ds[vert_dim]
         if vert_dim.lower() != "landuse":
             lev_units = ds[vert_dim].units
@@ -255,7 +255,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                 'an ocean statics file is needed, but it could not be found.\n'
                 '   moving on and doing my best, but I am probably going to break'
             )
-            raise FileNotFoundError('statics file not found.') from exc
+            log_and_raise('statics file not found.', FileNotFoundError, exc=exc)
 
 
         fre_logger.info("statics file found.")
@@ -355,14 +355,14 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
 
         if any( [yh_dim != (yq_dim - 1),
                  xh_dim != (xq_dim - 1)]):
-            raise ValueError( #uncovered
+            log_and_raise( #uncovered
                 'the number of h-point lat/lon coordinates is inconsistent with the number of\n'
                 'q-point lat/lon coordinates! i.e. ( hpoint_dim != qpoint_dim-1 )\n'
                 f'yh_dim = {yh_dim}\n'
                 f'xh_dim = {xh_dim}\n'
                 f'yq_dim = {yq_dim}\n'
-                f'xq_dim = {xq_dim}'
-            )
+                f'xq_dim = {xq_dim}',
+                ValueError)
 
         # create h-point bounds from the q-point lat lons
         fre_logger.info('creating yh_bnds, xh_bnds from yq, xq')
@@ -763,14 +763,14 @@ def cmorize_target_var_files(indir: str = None,
         make_cmor_write_here = tmp_dir
         # make sure we know where we are writing, or else!
         if not Path(make_cmor_write_here).exists():
-            raise ValueError(f'\ntmp_dir = \n{tmp_dir}\ncannot be found/created/resolved!') #uncovered
+            log_and_raise(f'\ntmp_dir = \n{tmp_dir}\ncannot be found/created/resolved!', ValueError) #uncovered
 
         gotta_go_back_here = os.getcwd()
         try:
             fre_logger.warning("changing directory to: \n%s", make_cmor_write_here)
             os.chdir(make_cmor_write_here)
         except Exception as exc: #uncovered
-            raise OSError(f'(cmorize_target_var_files) could not chdir to {make_cmor_write_here}') from exc
+            log_and_raise(f'(cmorize_target_var_files) could not chdir to {make_cmor_write_here}', OSError, exc=exc)
 
         fre_logger.info("calling rewrite_netcdf_file_var")
         try:
@@ -782,10 +782,11 @@ def cmorize_target_var_files(indir: str = None,
                                                       json_table_config,
                                                       prev_path=nc_fls[i] )
         except Exception as exc: #uncovered
-            raise Exception(
+            log_and_raise(
                 'problem with rewrite_netcdf_file_var. '
                 f'exc={exc}\n'
-                'exiting and executing finally block.') from exc
+                'exiting and executing finally block.',
+                Exception, exc=exc)
         finally:  # should always execute, errors or not!
             fre_logger.warning('finally, changing directory to: \n%s', gotta_go_back_here)
             os.chdir(gotta_go_back_here)
@@ -795,8 +796,8 @@ def cmorize_target_var_files(indir: str = None,
         # now that CMOR has rewritten things... we can take our post-rewriting actions
         # first, remove /CMOR_tmp/ from the output path.
         if not Path(local_file_name).is_absolute():
-            raise ValueError(f'local_file_name should be an absolute path, not a relative one. \n '
-                             f'local_file_name = {local_file_name}')
+            log_and_raise(f'local_file_name should be an absolute path, not a relative one. \n '
+                          f'local_file_name = {local_file_name}', ValueError)
 
         fre_logger.info('local_file_name = %s', local_file_name)
         filename = local_file_name.replace('/CMOR_tmp/','/')
@@ -958,26 +959,28 @@ def cmor_run_subtool(indir: str = None,
     """
     # CHECK req'd inputs
     if None in [indir, json_var_list, json_table_config, json_exp_config, outdir]:
-        raise ValueError('the following input arguments are required:\n'
-                         '[indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
-                         '[%s, %s, %s, %s, %s]', indir, json_var_list, json_table_config, json_exp_config, outdir)
+        log_and_raise(f'the following input arguments are required:\n'
+                      f'[indir, json_var_list, json_table_config, json_exp_config, outdir] = \n'
+                      f'[{indir}, {json_var_list}, {json_table_config}, {json_exp_config}, {outdir}]',
+                      ValueError)
 
     # CHECK existence of the exp-specific metadata file
     if Path(json_exp_config).exists():
         json_exp_config = str(Path(json_exp_config).resolve())
     else:
-        raise FileNotFoundError('ERROR: json_exp_config file cannot be opened.\n'
-                                'json_exp_config = %s', json_exp_config)
+        log_and_raise(f'ERROR: json_exp_config file cannot be opened.\n'
+                      f'json_exp_config = {json_exp_config}',
+                      FileNotFoundError)
 
     # CHECK mip_era entry of exp config exists, needed ?
     try:
         exp_cfg_mip_era = get_json_file_data(json_exp_config)['mip_era'].upper()
     except KeyError as exc:
-        raise KeyError('no mip_era entry in experimental metadata configuration, the file is noncompliant!') from exc
+        log_and_raise('no mip_era entry in experimental metadata configuration, the file is noncompliant!', KeyError, exc=exc)
 
     fre_logger.debug('exp_cfg_mip_era = %s', exp_cfg_mip_era)
     if exp_cfg_mip_era not in ['CMIP6', 'CMIP7']:
-        raise ValueError('cmor_mixer only supports CMIP6 and CMIP7 cases')
+        log_and_raise('cmor_mixer only supports CMIP6 and CMIP7 cases', ValueError)
 
     if exp_cfg_mip_era == 'CMIP7':
         fre_logger.warning('CMIP7 configuration detected, will be expecting and enforcing variable brands.')
@@ -1013,7 +1016,7 @@ def cmor_run_subtool(indir: str = None,
         mip_var_list = [ var.split('_')[0] for var in mip_fullvar_list ]
         mip_var_brand_list = [ var.split('_')[1] for var in mip_fullvar_list ]
         if len(mip_var_list) != len(mip_var_brand_list):
-            raise ValueError('the number of brands is not one-to-one with the number of variables. check config.')
+            log_and_raise('the number of brands is not one-to-one with the number of variables. check config.', ValueError)
     elif exp_cfg_mip_era == "CMIP6":
         mip_var_list = mip_fullvar_list
 
@@ -1049,13 +1052,15 @@ def cmor_run_subtool(indir: str = None,
 
     # CHECK that there's at least one variable to run after comparing use inputs vars to MIP config input vars
     if len(vars_to_run) < 1:
-        raise ValueError('runnable variable list is of length 0 '
-                         'this means no variables in input variable list are in '
-                         'the mip table configuration, so there\'s nothing to process!')
+        log_and_raise('runnable variable list is of length 0 '
+                      'this means no variables in input variable list are in '
+                      'the mip table configuration, so there\'s nothing to process!',
+                      ValueError)
     if all([opt_var_name is not None, opt_var_name not in list(vars_to_run.keys())]):
-        raise ValueError('opt_var_name is not None! (== %s)'
-                         '... but the variable is not contained in the target mip table'
-                         '... there\'s nothing to process, exit', opt_var_name)
+        log_and_raise(f'opt_var_name is not None! (== {opt_var_name})'
+                      '... but the variable is not contained in the target mip table'
+                      '... there\'s nothing to process, exit',
+                      ValueError)
 
     fre_logger.info('runnable variable list formed, it is vars_to_run=\n%s', vars_to_run)
 
@@ -1065,7 +1070,7 @@ def cmor_run_subtool(indir: str = None,
     indir_filenames = glob.glob(f'{indir}/*.nc')
     indir_filenames.sort()
     if len(indir_filenames) == 0:
-        raise ValueError('no files in input target directory = indir = \n%s', indir)
+        log_and_raise(f'no files in input target directory = indir = \n{indir}', ValueError)
     fre_logger.debug('found %s filenames', len(indir_filenames))
 
     # name_of_set == component label

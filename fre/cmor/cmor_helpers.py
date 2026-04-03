@@ -247,7 +247,7 @@ def create_lev_bnds( bound_these: Variable = None,
     .. note:: Logs debug information about the input and output arrays.
     """
     if len(with_these) != (len(bound_these) + 1):
-        raise ValueError('failed creating bnds on-the-fly :-(')
+        log_and_raise('failed creating bnds on-the-fly :-(', ValueError)
     fre_logger.debug('bound_these = \n%s', bound_these)
     fre_logger.debug('with_these = \n%s', with_these)
 
@@ -294,8 +294,7 @@ def get_iso_datetime_ranges( var_filenames: List[str],
     fre_logger.debug(' stop_yr_int = %s', stop_yr_int)
 
     if iso_daterange_arr is None:
-        raise ValueError(
-            'this function requires the list one desires to fill with datetime ranges from filenames')
+        log_and_raise('this function requires the list one desires to fill with datetime ranges from filenames', ValueError)
 
     for filename in var_filenames:
         fre_logger.debug('filename = %s', filename)
@@ -316,7 +315,7 @@ def get_iso_datetime_ranges( var_filenames: List[str],
     iso_daterange_arr.sort()
 
     if len(iso_daterange_arr) < 1:
-        raise ValueError('iso_daterange_arr has length 0! i need to find at least one datetime range!')
+        log_and_raise('iso_daterange_arr has length 0! i need to find at least one datetime range!', ValueError)
 
 
 def check_dataset_for_ocean_grid( ds: Dataset) -> bool:
@@ -406,7 +405,7 @@ def create_tmp_dir( outdir: str,
                 fre_logger.info('attempting to create %s dir in tmp_dir targ did not work', outdir_from_exp_config)
                 fre_logger.info('... attempt to avoid a toothless cmor warning failed... moving on')
     except Exception as exc:
-        raise OSError('problem creating tmp output directory {}. stop.'.format(tmp_dir)) from exc
+        log_and_raise('problem creating tmp output directory {}. stop.'.format(tmp_dir), OSError, exc=exc)
 
     return tmp_dir
 
@@ -425,10 +424,10 @@ def get_json_file_data( json_file_path: Optional[str] = None) -> dict:
         with open(json_file_path, "r", encoding="utf-8") as json_config_file:
             return json.load(json_config_file)
     except Exception as exc:
-        raise FileNotFoundError(
+        log_and_raise(
             'ERROR: json_file_path file cannot be opened.\n'
-            '       json_file_path = {}'.format(json_file_path)
-        ) from exc
+            '       json_file_path = {}'.format(json_file_path),
+            FileNotFoundError, exc=exc)
 
 
 def update_grid_and_label( json_file_path: str,
@@ -573,7 +572,7 @@ def check_path_existence(some_path: str):
     :raises FileNotFoundError: If the path does not exist.
     """
     if not Path(some_path).exists():
-        raise FileNotFoundError(f'does not exist:  {some_path}')
+        log_and_raise(f'does not exist:  {some_path}', FileNotFoundError)
 
 def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
     """
@@ -589,7 +588,7 @@ def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
     if cmor_chunk_in[0] == 'P' and cmor_chunk_in[-1] == 'Y':
         bronx_chunk = f'{cmor_chunk_in[1:-1]}yr'
     else:
-        raise ValueError('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py')
+        log_and_raise('problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py', ValueError)
     fre_logger.debug('bronx_chunk = %s', bronx_chunk)
     return bronx_chunk
 
@@ -625,7 +624,7 @@ def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
     if bronx_freq is None:
         fre_logger.warning('MIP table frequency = %s does not have a FRE-bronx equivalent', cmor_table_freq)
     if cmor_table_freq not in cmor_to_bronx_dict.keys():
-        raise KeyError(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency')
+        log_and_raise(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency', KeyError)
     return bronx_freq
 
 def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
@@ -646,7 +645,7 @@ def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
                 table_freq = table_config_data['variable_entry'][var_entry]['frequency']
                 break
             except Exception as exc:
-                raise KeyError('no frequency in table under variable_entry. this may be a CMIP7 table.') from exc
+                log_and_raise('no frequency in table under variable_entry. this may be a CMIP7 table.', KeyError, exc=exc)
 
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq

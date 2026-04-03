@@ -37,6 +37,7 @@ from typing import Any, Union, List, Dict, IO, Tuple
 import logging
 fre_logger = logging.getLogger(__name__)
 
+from fre import log_and_raise
 # this boots yaml with !join- see __init__
 from . import *
 
@@ -65,7 +66,7 @@ def experiment_check( mainyaml_dir: Union[str, Path],
         exp_list.append(i.get("name"))
 
     if experiment not in exp_list:
-        raise NameError(f"{experiment} is not in the list of experiments")
+        log_and_raise(f"{experiment} is not in the list of experiments", NameError)
 
     # Extract yaml path for exp. provided
     # if experiment matches name in list of experiments in yaml, extract file path
@@ -84,12 +85,12 @@ def experiment_check( mainyaml_dir: Union[str, Path],
         else:
             grid_yaml_path=os.path.join(mainyaml_dir, gridyaml)
             if not Path(grid_yaml_path).exists():
-                raise FileNotFoundError('%s not found!!!', grid_yaml_path)
+                log_and_raise(f'{grid_yaml_path} not found!!!', FileNotFoundError)
 
         ppyamls=i.get('pp')
         fre_logger.info(f'ppyamls is going to look like ppyamls=\n{ppyamls}')
         if ppyamls is None:
-            raise ValueError(f"no ppyaml paths found under experiment = {experiment}")
+            log_and_raise(f"no ppyaml paths found under experiment = {experiment}", ValueError)
 
         #ppsettingsyaml=None
         #for ppyaml in ppyamls:
@@ -111,17 +112,17 @@ def experiment_check( mainyaml_dir: Union[str, Path],
 
         cmoryaml=i.get("cmor")[0]
         if cmoryaml is None:
-            raise ValueError("No experiment yaml path given!")
+            log_and_raise("No experiment yaml path given!", ValueError)
 
         fre_logger.info(f'cmoryaml={cmoryaml} found- now checking for existence.')
         if not Path(os.path.join(mainyaml_dir, cmoryaml)).exists():
-            raise FileNotFoundError(f'cmoryaml={cmoryaml} does not exist!')
+            log_and_raise(f'cmoryaml={cmoryaml} does not exist!', FileNotFoundError)
 
         cmor_yaml_path = Path( os.path.join(mainyaml_dir, cmoryaml) )
         break
 
     if cmor_yaml_path is None:
-        raise ValueError('... something wrong... cmor_yaml_path is None... it should not be none!')
+        log_and_raise('... something wrong... cmor_yaml_path is None... it should not be none!', ValueError)
 
     fre_logger.info(f'cmor_info_parser\'s experiment_check about to return cmor_yaml_path!')
     return cmor_yaml_path, settings_yaml_path, grid_yaml_path
@@ -271,7 +272,7 @@ class CMORYaml():
 
         fre_logger.info(f'cmory_path = {cmory_path}')
         if cmory_path is None:
-            raise ValueError('cmory_path is none!')
+            log_and_raise('cmory_path is none!', ValueError)
 
         #fre_logger.info(f'ppsettingsy_path = {ppsettingsy_path}')
         #if ppsettingsy_path is None:
@@ -324,7 +325,7 @@ class CMORYaml():
         :rtype: dict
         """
         if cmor_list is None:
-            raise ValueError('cmor_list is none and should not be!!!')
+            log_and_raise('cmor_list is none and should not be!!!', ValueError)
         #fre_logger.debug("loaded_yaml =\n  %s", pformat(loaded_yaml))
         #fre_logger.debug("cmor_list =\n  %s", pformat(cmor_list))
         

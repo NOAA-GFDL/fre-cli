@@ -50,11 +50,11 @@ def validate_yaml(yamlfile: dict) -> None:
         validate(instance = yamlfile,schema=schema)
         fre_logger.info("Combined yaml valid")
     except SchemaError as exc:
-        raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.") from exc
+        log_and_raise(f"Schema '{schema_path}' is not valid. Contact the FRE team.", ValueError, exc=exc)
     except ValidationError as exc:
-        raise ValueError("Combined yaml is not valid. Please fix the errors and try again.") from exc
+        log_and_raise("Combined yaml is not valid. Please fix the errors and try again.", ValueError, exc=exc)
     except Exception as exc:
-        raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
+        log_and_raise("Unclear error from validation. Please try to find the error and try again.", ValueError, exc=exc)
 
 ####################
 def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config.ConfigNode:
@@ -219,9 +219,9 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     fre_logger.info('Starting')
 
     if None in [yamlfile, experiment, platform, target]:
-        raise ValueError( 'yamlfile, experiment, platform, and target must all not be None.'
-                          'currently, their values are...'
-                          f'{yamlfile} / {experiment} / {platform} / {target}')
+        log_and_raise('yamlfile, experiment, platform, and target must all not be None.'
+                      'currently, their values are...'
+                      f'{yamlfile} / {experiment} / {platform} / {target}', ValueError)
     e = experiment
     p = platform
     t = target
