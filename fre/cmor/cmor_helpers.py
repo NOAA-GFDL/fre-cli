@@ -29,6 +29,7 @@ Functions
 - ``get_json_file_data(json_file_path)``
 - ``update_grid_and_label(json_file_path, new_grid_label, new_grid, new_nom_res, output_file_path)``
 - ``update_calendar_type(json_file_path, new_calendar_type, output_file_path)``
+- ``calendars_are_equivalent(cal1, cal2)``
 - ``check_path_existence(some_path)``
 - ``iso_to_bronx_chunk(cmor_chunk_in)``
 - ``conv_mip_to_bronx_freq(cmor_table_freq)``
@@ -54,7 +55,7 @@ import numpy as np
 from netCDF4 import Dataset, Variable
 
 from .cmor_constants import ( ARCHIVE_GOLD_DATA_DIR, CMIP7_GOLD_OCEAN_FILE_STUB, CMIP6_GOLD_OCEAN_FILE_STUB,
-                              INPUT_TO_MIP_VERT_DIM )
+                              INPUT_TO_MIP_VERT_DIM, CF_CALENDAR_ALIASES )
 
 fre_logger = logging.getLogger(__name__)
 
@@ -574,6 +575,29 @@ def check_path_existence(some_path: str):
     """
     if not Path(some_path).exists():
         raise FileNotFoundError(f'does not exist:  {some_path}')
+
+
+def calendars_are_equivalent(cal1: str, cal2: str) -> bool:
+    """
+    Return True if two CF calendar names refer to the same calendar.
+
+    The CF Conventions define several calendar aliases (e.g. ``noleap`` and
+    ``365_day`` are the same calendar; ``standard`` and ``gregorian`` are the
+    same calendar).  This function resolves both names to a canonical form via
+    :data:`.cmor_constants.CF_CALENDAR_ALIASES` before comparing, so that
+    alias pairs compare as equal.
+
+    :param cal1: First CF calendar name (case-insensitive).
+    :type cal1: str
+    :param cal2: Second CF calendar name (case-insensitive).
+    :type cal2: str
+    :return: ``True`` if both names refer to the same calendar, ``False`` otherwise.
+    :rtype: bool
+    """
+    canonical1 = CF_CALENDAR_ALIASES.get(cal1.lower(), cal1.lower())
+    canonical2 = CF_CALENDAR_ALIASES.get(cal2.lower(), cal2.lower())
+    return canonical1 == canonical2
+
 
 def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
     """
