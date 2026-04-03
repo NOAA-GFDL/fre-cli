@@ -738,7 +738,7 @@ def cmorize_target_var_files(indir: str = None,
 
         fre_logger.info("input file = %s", nc_fls[i])
         if not Path(nc_fls[i]).exists():
-            fre_logger.warning("input file(s) not found. Moving on.") #uncovered
+            fre_logger.warning("input file not found, omitting: %s", nc_fls[i])
             continue
 
         if not Path(nc_fls[i]).is_absolute():
@@ -877,6 +877,7 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
 
     # loop over local-variable:target-variable pairs in vars_to_run
     return_status = -1
+    omissions = []
     for local_var in vars_to_run:
         # if the target-variable is "good", get the name of the data inside the netcdf file.
         target_var = vars_to_run[local_var]  # often equiv to local_var but not necessarily.
@@ -897,11 +898,21 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
             fre_logger.warning('exc=%s', exc)
             fre_logger.warning('this message came from within cmorize_target_var_files')
             fre_logger.warning('COULD NOT PROCESS: %s/%s...moving on', local_var, target_var)
-            # log an omitted variable here...
+            omissions.append(
+                {'local_var': local_var, 'target_var': target_var, 'exception': str(exc)}
+            )
 
         if run_one_mode:
             fre_logger.warning('run_one_mode is True. breaking vars_to_run loop')
             break
+
+    if len(omissions) > 0:
+        fre_logger.warning('--- OMISSION LOG: %s variable(s) could not be processed ---', len(omissions))
+        for entry in omissions:
+            fre_logger.warning('  OMITTED local_var=%s / target_var=%s, reason: %s',
+                               entry['local_var'], entry['target_var'], entry['exception'])
+        fre_logger.warning('--- END OMISSION LOG ---')
+
     return return_status
 
 
