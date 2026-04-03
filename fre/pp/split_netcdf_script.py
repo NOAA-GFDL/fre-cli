@@ -19,6 +19,7 @@ from pathlib import Path
 import xarray as xr
 import yaml
 
+from fre import log_and_raise
 from fre.app.helpers import get_variables
 
 
@@ -66,8 +67,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
 
     #Verify input/output dirs exist and are dirs
     if not os.path.isdir(inputDir):
-        fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
-        raise OSError(f"error: input dir {inputDir} does not exist or is not a directory")
+        log_and_raise(f"error: input dir {inputDir} does not exist or is not a directory", OSError)
     if not os.path.isdir(outputDir):
         if os.path.isfile(outputDir):
             fre_logger.error(f"error: output dir {outputDir} is a file. Please specify a directory.")
@@ -180,8 +180,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
         os.makedirs(outfiledir)
 
     if not os.path.isfile(infile):
-        fre_logger.error(f"error: input file {infile} not found. Please check the path.")
-        raise OSError(f"error: input file {infile} not found. Please check the path.")
+        log_and_raise(f"error: input file {infile} not found. Please check the path.", OSError)
 
     dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False, decode_coords="all")
     allvars = dataset.data_vars.keys()

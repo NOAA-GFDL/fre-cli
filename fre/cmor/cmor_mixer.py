@@ -50,6 +50,8 @@ from .cmor_constants import ( ACCEPTED_VERT_DIMS, NON_HYBRID_SIGMA_COORDS, ALT_H
                               DEPTH_COORDS, CMOR_NC_FILE_ACTION, CMOR_VERBOSITY,
                               CMOR_EXIT_CTL, CMOR_MK_SUBDIRS, CMOR_LOG )
 
+from fre import log_and_raise
+
 fre_logger = logging.getLogger(__name__)
 
 def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
@@ -523,8 +525,8 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                 lev_bnds = create_lev_bnds(bound_these=lev, with_these=ds['z_i'])
                 fre_logger.info('created lev_bnds...')
             except Exception as exc:
-                fre_logger.error("the cmor module always requires vertical levels to have bounds.")
-                raise KeyError("CMOR requires the input data have vertical level boundaries (bnds)") from exc
+                log_and_raise("CMOR requires the input data have vertical level boundaries (bnds)",
+                              KeyError, exc=exc)
 
             fre_logger.info('lev_bnds = \n%s', lev_bnds)
             cmor_z = cmor.axis('depth_coord',
