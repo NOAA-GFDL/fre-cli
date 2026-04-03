@@ -28,6 +28,18 @@ def log_and_raise(msg, exc_type=ValueError, exc=None):
     :param exc: Optional original exception to chain from (uses ``raise ... from exc``).
     :type exc: Exception, optional
     :raises exc_type: Always raised with the given message.
+
+    Examples::
+
+        # raises ValueError (default) and logs the message at ERROR level
+        log_and_raise("something went wrong")
+
+        # raises a specific exception type
+        log_and_raise("file not found", OSError)
+
+        # chains from an original exception (raise ... from exc)
+        except KeyError as e:
+            log_and_raise("update failed", KeyError, exc=e)
     """
     fre_logger.error(msg, stacklevel=2)
     if exc is not None:
