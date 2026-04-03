@@ -42,5 +42,6 @@ def check(file_path: str, num_steps: int):
         log_and_raise(
             f" Unexpected number of timesteps found in {file_path}. "
             f"Found: {num_actual_steps} timesteps  "
-            f"Expected: {num_steps} timesteps"
+            f"Expected: {num_steps} timesteps",
+            ValueError
         )

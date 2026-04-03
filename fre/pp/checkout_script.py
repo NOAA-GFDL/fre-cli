@@ -52,7 +52,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     if None in [experiment, platform, target]:
         os.chdir(go_back_here)
         log_and_raise( 'one of these are None: experiment / platform / target = \n'
-                         f'{experiment} / {platform} / {target}' )
+                         f'{experiment} / {platform} / {target}', ValueError)
     #name = f"{experiment}__{platform}__{target}"
     workflow_name = make_workflow_name(experiment, platform, target)
 
@@ -97,7 +97,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
             fre_logger.info(
                 f"ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
             os.chdir(go_back_here)
-            log_and_raise('neither tag nor branch matches the git clone branch arg')
+            log_and_raise('neither tag nor branch matches the git clone branch arg', ValueError)
 
     # make sure we are back where we should be
     if os.getcwd() != go_back_here:

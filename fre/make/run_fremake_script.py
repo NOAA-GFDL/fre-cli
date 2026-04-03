@@ -90,7 +90,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     container_platforms = ()
     for platform_name in plist:
         if not model_yaml.platforms.hasPlatform(platform_name):
-            log_and_raise(f"{platform_name} does not exist in platforms.yaml")
+            log_and_raise(f"{platform_name} does not exist in platforms.yaml", ValueError)
 
         platform_info = model_yaml.platforms.getPlatformFromName(platform_name)
 

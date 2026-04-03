@@ -42,7 +42,8 @@ def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str 
         # Check in template path exists
         if not Path(template_path).exists():
             log_and_raise("Error w/ mkmf template. Created path from given "
-                             f"filename: {template_path} does not exist.")
+                             f"filename: {template_path} does not exist.",
+                             ValueError)
     else:
         if "/" not in mk_template:
             template_path = model_root+"/mkmf/templates/"+mk_template

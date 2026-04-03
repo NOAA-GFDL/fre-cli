@@ -33,13 +33,13 @@ def verify_dirs(in_dir: str, out_dir: str):
     if Path(in_dir).is_dir():
         fre_logger.info("Input directory is a valid directory")
     else:
-        log_and_raise(f"Error: Input directory {in_dir} does not exist or is not a valid directory")
+        log_and_raise(f"Error: Input directory {in_dir} does not exist or is not a valid directory", ValueError)
 
     # Verify output directory exists and is a directory
     if Path(out_dir).is_dir():
         fre_logger.info("Output directory is a valid directory")
     else:
-        log_and_raise(f"Error: Output directory {out_dir} does not exist or is not a valid directory")
+        log_and_raise(f"Error: Output directory {out_dir} does not exist or is not a valid directory", ValueError)
 
 def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: bool) -> str:
     """
@@ -116,7 +116,7 @@ def freq_to_legacy(iso_dura: str) -> str:
     elif iso_dura in ['PT30M', 'PT0.5H']:
         freq_legacy = '30min'
     else:
-        log_and_raise(f"Could not convert ISO duration '{iso_dura}'")
+        log_and_raise(f"Could not convert ISO duration '{iso_dura}'", ValueError)
 
     return freq_legacy
 
@@ -162,7 +162,7 @@ def freq_to_date_format(iso_freq: str) -> str:
     elif (iso_freq[:2]=='PT') and (iso_freq[-1:]=='H'):
         return 'CCYYMMDDThh'
     else:
-        log_and_raise(f'ERROR: Unknown Frequency {iso_freq}')
+        log_and_raise(f'ERROR: Unknown Frequency {iso_freq}', ValueError)
 
 def truncate_date(date: str, freq: str) -> str:
     """
@@ -232,7 +232,7 @@ def search_files(product: str, var: list, source: str, freq: str,
                 fre_logger.info("var: %s", v)
                 f = glob.glob(f"{source}.{v}*.nc")
                 if not f: #if glob returns empty list
-                    log_and_raise("Variable {v} could not be found or does not exist.")
+                    log_and_raise("Variable {v} could not be found or does not exist.", ValueError)
                 files.extend(f)
     else:
         if product == "ts":
@@ -241,7 +241,7 @@ def search_files(product: str, var: list, source: str, freq: str,
         elif product == "av":
             date = truncate_date(begin, "P1Y")
         else:
-            log_and_raise("Product not set to ts or av.")
+            log_and_raise("Product not set to ts or av.", ValueError)
 
         if var == "all":
             f = glob.glob(f"{source}.{date}-*.*.nc")
@@ -251,7 +251,7 @@ def search_files(product: str, var: list, source: str, freq: str,
                 fre_logger.info("var: %s", v)
                 f = glob.glob(f"{source}.{date}-*.{v}*.nc")
                 if not f: #if glob returns empty list
-                    log_and_raise("Variable {v} could not be found or does not exist.")
+                    log_and_raise("Variable {v} could not be found or does not exist.", ValueError)
                 files.extend(f)
         if product == "av" and current_chunk == "P1Y":
             f = glob.glob(f"{source}.{date}.*.nc")
@@ -279,7 +279,8 @@ def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict) 
         if comp_info.get("static") is None:
             log_and_raise(
                 f"Product is set to static but no static sources/variables defined for "
-                f"{comp_info.get('type')}"
+                f"{comp_info.get('type')}",
+                ValueError
             )
 
     ## Dictionary of variables associated with pp component source name
@@ -543,9 +544,9 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
 
                             if not files:
                                 if ens_mem is not None:
-                                    log_and_raise(f"\nError: No input files found in {input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")
+                                    log_and_raise(f"\nError: No input files found in {input_dir}/{g}/{ens_mem}/{s}/{f}/{c}", ValueError)
                                 else:
-                                    log_and_raise(f"\nError: No input files found in {input_dir}/{g}/{s}/{f}/{c}")
+                                    log_and_raise(f"\nError: No input files found in {input_dir}/{g}/{s}/{f}/{c}", ValueError)
 
                             os.chdir(output_dir)
 
@@ -593,7 +594,8 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                                     if not Path(src_file).exists():
                                         log_and_raise("Offline diagnostic file defined but "
                                                          f"{src_file} does not exist or cannot "
-                                                         "be found!")
+                                                         "be found!",
+                                                         ValueError)
 
                                     offline_link = ["ln",
                                                     "-s",

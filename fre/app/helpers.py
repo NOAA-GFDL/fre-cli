@@ -63,7 +63,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     # If the dictionary is empty (no overlap of pp components and components
     # in pp yaml) --> error
     if not src_vars:
-        log_and_raise(f"PP component, {pp_comp}, not found in pp yaml configuration!")
+        log_and_raise(f"PP component, {pp_comp}, not found in pp yaml configuration!", ValueError)
 
     return src_vars
 
