@@ -35,7 +35,7 @@ _DAYS_IN_MONTH = np.array([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
                            dtype='float64')
 
 
-def _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float'):
+def _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float'):
     '''
     Build a minimal monthly xr.Dataset with one numeric variable ('temp').
 
@@ -49,7 +49,7 @@ def _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float'):
         How many full calendar years to include (12*n_years timesteps).
     with_bnds : bool
         Whether to include a ``time_bnds`` variable.
-    bnds_dtype : str
+    time_bnds_encoding : str
         How to encode ``time_bnds``:
         - ``'float'``      → plain float64 day-counts (numeric path)
         - ``'timedelta'``  → numpy datetime64 edges (timedelta64 diff path)
@@ -75,13 +75,13 @@ def _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float'):
     }
 
     if with_bnds:
-        if bnds_dtype == 'float':
+        if time_bnds_encoding == 'float':
             # plain float64 day-counts (numeric path in _compute_time_weights)
             t0 = np.concatenate([[0.0], np.cumsum(days[:-1])])
             t1 = np.cumsum(days)
             bnds_vals = np.stack([t0, t1], axis=1)
             data_vars['time_bnds'] = xr.DataArray(bnds_vals, dims=['time', 'bnds'])
-        elif bnds_dtype == 'timedelta':
+        elif time_bnds_encoding == 'timedelta':
             # datetime64 edges → difference gives timedelta64 (timedelta path)
             starts = month_starts.values.astype('datetime64[D]')
             ends   = month_ends.values.astype('datetime64[D]')
@@ -163,14 +163,14 @@ class TestComputeTimeWeights:
     '''Unit tests for the _compute_time_weights() helper.'''
 
     def test_float_bnds_returns_correct_days(self):
-        ds, days = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, days = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         weights = _compute_time_weights(ds)
         assert weights.dtype == np.float64
         np.testing.assert_allclose(weights.values, days)
 
     def test_timedelta_bnds_returns_correct_days(self):
         '''time_bnds stored as datetime64 edges → difference is timedelta64.'''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='timedelta')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='timedelta')
         weights = _compute_time_weights(ds)
         assert weights.dtype == np.float64
         # compute expected days from the actual bounds stored in the dataset
@@ -187,7 +187,7 @@ class TestComputeTimeWeights:
         np.testing.assert_array_equal(weights.values, np.ones(12))
 
     def test_weights_dim_is_time(self):
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         weights = _compute_time_weights(ds)
         assert 'time' in weights.dims
 
@@ -233,13 +233,13 @@ class TestWeightedTimeMean:
 
     def test_time_dim_eliminated(self):
         '''Output should have no time dimension.'''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_time_mean(ds)
         assert 'time' not in result['temp'].dims
 
     def test_non_time_vars_preserved(self):
         '''Variables without time dimension are passed through unchanged.'''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         # lat dim in _make_monthly_ds has size 1; match that size here
         ds = ds.assign({'static': xr.DataArray([42.0], dims=['lat'])})
         result = _weighted_time_mean(ds)
@@ -248,7 +248,7 @@ class TestWeightedTimeMean:
 
     def test_time_bnds_excluded_from_output(self):
         '''time_bnds should not appear in the weighted mean output.'''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_time_mean(ds)
         assert 'time_bnds' not in result
 
@@ -262,7 +262,7 @@ class TestWeightedTimeMean:
 
     def test_attrs_preserved(self):
         '''Dataset and variable attributes should be preserved.'''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_time_mean(ds)
         assert result['temp'].attrs.get('units') == 'K'
 
@@ -275,19 +275,19 @@ class TestWeightedSeasonalMean:
     '''Unit tests for _weighted_seasonal_mean() correctness.'''
 
     def test_season_dim_present(self):
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_seasonal_mean(ds)
         assert 'season' in result['temp'].dims
 
     def test_four_seasons_present(self):
         '''A full year should produce all four seasons in the output.'''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_seasonal_mean(ds)
         seasons = set(result['season'].values)
         assert seasons == {'DJF', 'MAM', 'JJA', 'SON'}
 
     def test_time_bnds_excluded(self):
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_seasonal_mean(ds)
         assert 'time_bnds' not in result
 
@@ -296,7 +296,7 @@ class TestWeightedSeasonalMean:
         MAM (Mar=31, Apr=30, May=31) with values (3,4,5):
         weighted mean = (3*31 + 4*30 + 5*31) / (31+30+31) = 368/92 ≈ 4.0
         '''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_seasonal_mean(ds)
         mam_val = float(result['temp'].sel(season='MAM').values.flat[0])
         np.testing.assert_allclose(mam_val, 368.0 / 92.0, rtol=1e-4)
@@ -306,7 +306,7 @@ class TestWeightedSeasonalMean:
         JJA (Jun=30, Jul=31, Aug=31) with values (6,7,8):
         weighted mean = (6*30 + 7*31 + 8*31) / (30+31+31) = 645/92
         '''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_seasonal_mean(ds)
         jja_val = float(result['temp'].sel(season='JJA').values.flat[0])
         np.testing.assert_allclose(jja_val, 645.0 / 92.0, rtol=1e-4)
@@ -316,7 +316,7 @@ class TestWeightedSeasonalMean:
         SON (Sep=30, Oct=31, Nov=30) with values (9,10,11):
         weighted mean = (9*30 + 10*31 + 11*30) / (30+31+30) = 910/91 = 10.0
         '''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_seasonal_mean(ds)
         son_val = float(result['temp'].sel(season='SON').values.flat[0])
         np.testing.assert_allclose(son_val, 910.0 / 91.0, rtol=1e-4)
@@ -338,13 +338,13 @@ class TestWeightedMonthlyMean:
     '''Unit tests for _weighted_monthly_mean() correctness.'''
 
     def test_month_dim_present(self):
-        '''groupby(''time.month'') produces a ''month'' coordinate dimension.'''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        '''groupby(time.month) produces a "month" coordinate dimension.'''
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_monthly_mean(ds)
         assert 'month' in result['temp'].dims
 
     def test_twelve_months_present(self):
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_monthly_mean(ds)
         # groupby('time.month') produces a 'time' coordinate with 12 values
         assert result['temp'].shape[0] == 12
@@ -354,7 +354,7 @@ class TestWeightedMonthlyMean:
         With only one year of data, each month appears exactly once so
         weighted and unweighted averages are identical.
         '''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         weighted = _weighted_monthly_mean(ds)
         unweighted = ds.groupby('time.month').mean(dim='time', keep_attrs=True)
         np.testing.assert_allclose(
@@ -368,14 +368,14 @@ class TestWeightedMonthlyMean:
         With two years, January appears twice with identical weights (31 days
         both years) and values 1.0 (year 1) and 1.0 (year 2) → mean = 1.0.
         '''
-        ds, _ = _make_monthly_ds(n_years=2, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=2, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_monthly_mean(ds)
         # groupby(time.month) produces a 'month' coordinate; month=1 is January
         jan_val = float(result['temp'].sel(month=1).values.flat[0])
         np.testing.assert_allclose(jan_val, 1.0, rtol=1e-5)
 
     def test_time_bnds_excluded(self):
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         result = _weighted_monthly_mean(ds)
         assert 'time_bnds' not in result
 
@@ -399,7 +399,7 @@ class TestXarrayTimeAveragerGenerateTimavg:
     @pytest.fixture
     def monthly_nc(self, tmp_path):
         '''Write a 1-year monthly dataset to a temp NetCDF file.'''
-        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=1, with_bnds=True, time_bnds_encoding='float')
         nc_path = tmp_path / 'monthly.nc'
         ds.to_netcdf(nc_path)
         return nc_path
@@ -407,7 +407,7 @@ class TestXarrayTimeAveragerGenerateTimavg:
     @pytest.fixture
     def two_year_nc(self, tmp_path):
         '''Write a 2-year monthly dataset to a temp NetCDF file.'''
-        ds, _ = _make_monthly_ds(n_years=2, with_bnds=True, bnds_dtype='float')
+        ds, _ = _make_monthly_ds(n_years=2, with_bnds=True, time_bnds_encoding='float')
         nc_path = tmp_path / 'monthly_2yr.nc'
         ds.to_netcdf(nc_path)
         return nc_path
