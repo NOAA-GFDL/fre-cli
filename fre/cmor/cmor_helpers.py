@@ -56,6 +56,8 @@ from netCDF4 import Dataset, Variable
 from .cmor_constants import ( ARCHIVE_GOLD_DATA_DIR, CMIP7_GOLD_OCEAN_FILE_STUB, CMIP6_GOLD_OCEAN_FILE_STUB,
                               INPUT_TO_MIP_VERT_DIM )
 
+from fre import log_and_raise
+
 fre_logger = logging.getLogger(__name__)
 
 
@@ -457,10 +459,9 @@ def update_grid_and_label( json_file_path: str,
     .. note:: The function logs before and after values, and overwrites the input file unless an output path is given.
     """
     if None in [new_grid_label, new_grid, new_nom_res]:
-        fre_logger.error(
+        log_and_raise(
             'grid/grid_label/nom_res updating requested for exp_config file, but one of them is None\n'
             'bailing...!')
-        raise ValueError
 
     try:
         with open(json_file_path, "r", encoding="utf-8") as file:
@@ -471,24 +472,24 @@ def update_grid_and_label( json_file_path: str,
             data["grid"] = new_grid
             fre_logger.info('Updated "grid": %s', data["grid"])
         except KeyError as e:
-            fre_logger.error("Failed to update 'grid': %s", e)
-            raise KeyError("Error while updating 'grid'. Ensure the field exists and is modifiable.") from e
+            log_and_raise("Error while updating 'grid'. Ensure the field exists and is modifiable.",
+                          KeyError, exc=e)
 
         try:
             fre_logger.info('Original "grid_label": %s', data["grid_label"])
             data["grid_label"] = new_grid_label
             fre_logger.info('Updated "grid_label": %s', data["grid_label"])
         except KeyError as e:
-            fre_logger.error("Failed to update 'grid_label': %s", e)
-            raise KeyError("Error while updating 'grid_label'. Ensure the field exists and is modifiable.") from e
+            log_and_raise("Error while updating 'grid_label'. Ensure the field exists and is modifiable.",
+                          KeyError, exc=e)
 
         try:
             fre_logger.info('Original "nominal_resolution": %s', data["nominal_resolution"])
             data["nominal_resolution"] = new_nom_res
             fre_logger.info('Updated "nominal_resolution": %s', data["nominal_resolution"])
         except KeyError as e:
-            fre_logger.error("Failed to update 'nominal_resolution': %s", e)
-            raise KeyError("Error updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from e
+            log_and_raise("Error updating 'nominal_resolution'. Ensure the field exists and is modifiable.",
+                          KeyError, exc=e)
 
         output_file_path = output_file_path or json_file_path
 
@@ -530,10 +531,9 @@ def update_calendar_type( json_file_path: str,
     .. note:: The function logs before and after values, and overwrites the input file unless an output path is given.
     """
     if new_calendar_type is None:
-        fre_logger.error(
+        log_and_raise(
             'calendar_type updating requested for exp_config file, but one of them is None\n'
             'bailing...!')
-        raise ValueError
 
     try:
         with open(json_file_path, "r", encoding="utf-8") as file:
@@ -544,8 +544,8 @@ def update_calendar_type( json_file_path: str,
             data["calendar"] = new_calendar_type
             fre_logger.info('Updated "calendar": %s', data["calendar"])
         except KeyError as e:
-            fre_logger.error("Failed to update 'calendar': %s", e)
-            raise KeyError("Error while updating 'calendar'. Ensure the field exists and is modifiable.") from e
+            log_and_raise("Error while updating 'calendar'. Ensure the field exists and is modifiable.",
+                          KeyError, exc=e)
 
         output_file_path = output_file_path or json_file_path
 

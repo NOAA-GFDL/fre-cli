@@ -8,6 +8,7 @@ import numpy as np
 import cdo
 from cdo import Cdo
 
+from fre import log_and_raise
 from .timeAverager import timeAverager
 
 fre_logger = logging.getLogger(__name__)
@@ -32,8 +33,7 @@ class cdoTimeAverager(timeAverager):
         """
 
         if self.avg_type not in ['all', 'seas', 'month']:
-            fre_logger.error('requested unknown avg_type %s.', self.avg_type)
-            raise ValueError(f'requested unknown avg_type {self.avg_type}')
+            log_and_raise(f'requested unknown avg_type {self.avg_type}')
 
         if self.var is not None:
             fre_logger.warning('WARNING: variable specification not twr supported for cdo time averaging. ignoring!')

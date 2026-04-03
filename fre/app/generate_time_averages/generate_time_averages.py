@@ -11,6 +11,8 @@ from .cdoTimeAverager import cdoTimeAverager
 from .frenctoolsTimeAverager import frenctoolsTimeAverager
 from .frepytoolsTimeAverager import frepytoolsTimeAverager
 
+from fre import log_and_raise
+
 fre_logger = logging.getLogger(__name__)
 
 def generate_time_average(infile: Union[str, List[str]] = None,
@@ -98,8 +100,7 @@ def generate_time_average(infile: Union[str, List[str]] = None,
         exitstatus = myavger.generate_timavg( infile = infile,
                                               outfile = outfile)
     else:
-        fre_logger.error('averager is None, check generate_time_average in generate_time_averages.py!')
-        raise ValueError
+        log_and_raise('averager is None, check generate_time_average in generate_time_averages.py!')
 
     # remove the new merged file if we created it.
     if merged:

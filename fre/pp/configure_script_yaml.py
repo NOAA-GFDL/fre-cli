@@ -13,6 +13,8 @@ import metomi.rose.config
 
 import fre.yamltools.combine_yamls_script as cy
 
+from fre import log_and_raise
+
 fre_logger = logging.getLogger(__name__)
 
 ######VALIDATE#####
@@ -127,8 +129,7 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     pa_scripts = ""
     rd_scripts = ""
     if pp is None:
-        fre_logger.error("Missing 'postprocess' section!")
-        raise ValueError
+        log_and_raise("Missing 'postprocess' section!")
 
     for pp_key, pp_value in pp.items():
         if pp_key == "settings" or pp_key == "switches":
@@ -152,8 +153,7 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
                     # If there is already a script defined for preanalysis, fail
                     # More than 1 script is not supported yet
                     if pa_scripts:
-                        fre_logger.error("Using more than 1 pre-analysis script is not supported")
-                        raise ValueError
+                        log_and_raise("Using more than 1 pre-analysis script is not supported")
 
                     pa_scripts += f"{script} "
 

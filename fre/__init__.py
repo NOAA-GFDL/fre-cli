@@ -14,3 +14,22 @@ logging.basicConfig(level = logging.WARNING,
                     format = FORMAT,
                     filename = None,
                     encoding = 'utf-8' )
+
+
+def log_and_raise(msg, exc_type=ValueError, exc=None):
+    """
+    Log an error message via fre_logger and raise an exception with the same message.
+    Avoids the need to duplicate error text in both fre_logger.error() and raise calls.
+
+    :param msg: Error message to log and include in the exception.
+    :type msg: str
+    :param exc_type: Exception class to raise. Defaults to ValueError.
+    :type exc_type: type
+    :param exc: Optional original exception to chain from (uses ``raise ... from exc``).
+    :type exc: Exception, optional
+    :raises exc_type: Always raised with the given message.
+    """
+    fre_logger.error(msg, stacklevel=2)
+    if exc is not None:
+        raise exc_type(msg) from exc
+    raise exc_type(msg)
