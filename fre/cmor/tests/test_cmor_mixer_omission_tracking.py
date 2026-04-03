@@ -4,7 +4,7 @@ Tests for omission tracking in cmorize_all_variables_in_dir
 
 Verifies that when cmorize_target_var_files raises an exception for one or
 more variables, the failures are collected and a summary omission log is
-emitted at the end of processing.
+emitted at the end of processing, including the expected file paths.
 """
 
 import logging
@@ -37,7 +37,7 @@ DUMMY_ARGS = dict(
 
 @patch('fre.cmor.cmor_mixer.cmorize_target_var_files')
 def test_omission_tracking_single_failure(mock_cmorize, caplog):
-    """A single variable failure is tracked and logged in the omission summary."""
+    """A single variable failure is tracked and logged with variable name and file path."""
     mock_cmorize.side_effect = RuntimeError('test failure')
 
     with caplog.at_level(logging.WARNING, logger='fre.cmor.cmor_mixer'):
@@ -49,11 +49,14 @@ def test_omission_tracking_single_failure(mock_cmorize, caplog):
     assert status == 1
     assert any('OMISSION LOG' in msg for msg in caplog.messages)
     assert any('var_a' in msg and 'test failure' in msg for msg in caplog.messages)
+    # file path should appear in the omission log
+    expected_path = '/fake/indir/component.00010101-00041231.var_a.nc'
+    assert any(expected_path in msg for msg in caplog.messages)
 
 
 @patch('fre.cmor.cmor_mixer.cmorize_target_var_files')
 def test_omission_tracking_multiple_failures(mock_cmorize, caplog):
-    """Multiple variable failures are each tracked and all appear in the summary."""
+    """Multiple variable failures are each tracked and all appear in the summary with file paths."""
     mock_cmorize.side_effect = RuntimeError('kaboom')
 
     with caplog.at_level(logging.WARNING, logger='fre.cmor.cmor_mixer'):
@@ -66,6 +69,9 @@ def test_omission_tracking_multiple_failures(mock_cmorize, caplog):
     assert any('2 variables could not be processed' in msg for msg in caplog.messages)
     assert any('alpha' in msg for msg in caplog.messages)
     assert any('beta' in msg for msg in caplog.messages)
+    # both file paths should appear
+    assert any('/fake/indir/component.00010101-00041231.alpha.nc' in msg for msg in caplog.messages)
+    assert any('/fake/indir/component.00010101-00041231.beta.nc' in msg for msg in caplog.messages)
 
 
 @patch('fre.cmor.cmor_mixer.cmorize_target_var_files')
@@ -85,7 +91,7 @@ def test_no_omission_log_when_all_succeed(mock_cmorize, caplog):
 
 @patch('fre.cmor.cmor_mixer.cmorize_target_var_files')
 def test_omission_tracking_mixed_success_failure(mock_cmorize, caplog):
-    """Only failed variables appear in the omission log; successes do not."""
+    """Only failed variables appear in the omission log with their file paths."""
     def side_effect(indir, target_var, local_var, *args, **kwargs):
         if local_var == 'bad_var':
             raise ValueError('bad variable error')
@@ -101,6 +107,8 @@ def test_omission_tracking_mixed_success_failure(mock_cmorize, caplog):
     assert status == 1
     assert any('1 variable could not be processed' in msg for msg in caplog.messages)
     assert any('bad_var' in msg and 'bad variable error' in msg for msg in caplog.messages)
+    # bad_var file path should appear
+    assert any('/fake/indir/component.00010101-00041231.bad_var.nc' in msg for msg in caplog.messages)
     # good_var should not appear in any omission log entry
-    omission_entries = [msg for msg in caplog.messages if 'OMITTED' in msg]
+    omission_entries = [msg for msg in caplog.messages if 'OMITTED' in msg or 'file:' in msg]
     assert not any('good_var' in entry for entry in omission_entries)

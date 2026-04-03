@@ -898,8 +898,13 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
             fre_logger.warning('exc=%s', exc)
             fre_logger.warning('this message came from within cmorize_target_var_files')
             fre_logger.warning('COULD NOT PROCESS: %s/%s...moving on', local_var, target_var)
+            expected_files = [
+                f'{indir}/{name_of_set}.{dt}.{local_var}.nc'
+                for dt in iso_datetime_range_arr
+            ]
             omissions.append(
-                {'local_var': local_var, 'target_var': target_var, 'exception': str(exc)}
+                {'local_var': local_var, 'target_var': target_var,
+                 'exception': str(exc), 'files': expected_files}
             )
 
         if run_one_mode:
@@ -912,6 +917,8 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
         for entry in omissions:
             fre_logger.warning('  OMITTED local_var=%s / target_var=%s, reason: %s',
                                entry['local_var'], entry['target_var'], entry['exception'])
+            for fpath in entry['files']:
+                fre_logger.warning('    file: %s', fpath)
         fre_logger.warning('--- END OMISSION LOG ---')
 
     return return_status
