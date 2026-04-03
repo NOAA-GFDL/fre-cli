@@ -53,6 +53,10 @@ repository, and the user directly.
 # entry-point to all subcommands
 fre cmor --help
 
+# initialise CMOR resources: generate an empty experiment-config template
+# and/or fetch MIP tables from trusted sources
+fre cmor init --help
+
 # main engine of the sub module, does the rewriting
 fre cmor run --help
 
@@ -77,6 +81,36 @@ fre cmor config --help
 Below are short descriptions and a practical example for each of the `fre cmor` subcommands. For more information, consult each
 respective tool's `--help` output at the command line, and consult the
 [official fre-cli docs](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#cmorize-postprocessed-output).
+
+
+### `fre cmor init`
+
+Initialise CMOR resources for a new experiment. This command can generate an empty experiment-configuration JSON template for
+either CMIP6 or CMIP7, and optionally fetch the official MIP tables from their trusted GitHub repositories.
+
+Tables are fetched via `git clone --depth 1` by default; pass `--fast` to download a tarball via `curl` instead. A specific
+release tag can be requested with `--tag`.
+
+Trusted sources:
+- CMIP6: [pcmdi/cmip6-cmor-tables](https://github.com/pcmdi/cmip6-cmor-tables)
+- CMIP7: [WCRP-CMIP/cmip7-cmor-tables](https://github.com/WCRP-CMIP/cmip7-cmor-tables)
+
+
+#### Example and Description
+```
+# Generate an empty CMIP6 experiment config template
+fre cmor init --mip_era cmip6 --exp_config my_experiment.json
+
+# Generate a CMIP7 template and fetch the latest MIP tables via git
+fre cmor init --mip_era cmip7 --exp_config my_cmip7_exp.json --tables_dir ./cmip7-tables
+
+# Fetch CMIP6 tables at a specific tag using curl (fast mode)
+fre cmor init --mip_era cmip6 --tables_dir ./cmip6-tables --tag v6.2.7.18 --fast
+```
+
+Here, `fre cmor init` writes a JSON file containing all the fields expected by `fre cmor run` and the underlying CMOR library,
+with placeholder values that the user fills in for their specific experiment. When `--tables_dir` is provided, the official MIP
+tables are fetched into the specified directory.
 
 
 ### `fre cmor run`
