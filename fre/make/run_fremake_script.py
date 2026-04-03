@@ -13,6 +13,7 @@ from fre.make.create_makefile_script import makefile_create
 from fre.make.create_compile_script import compile_create
 from fre.make.create_docker_script import dockerfile_create
 from .gfdlfremake import (varsfre, yamlfre)
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 
@@ -89,7 +90,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     container_platforms = ()
     for platform_name in plist:
         if not model_yaml.platforms.hasPlatform(platform_name):
-            raise ValueError (f"{platform_name} does not exist in platforms.yaml")
+            log_and_raise(f"{platform_name} does not exist in platforms.yaml", ValueError)
 
         platform_info = model_yaml.platforms.getPlatformFromName(platform_name)
 

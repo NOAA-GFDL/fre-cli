@@ -6,6 +6,7 @@ import subprocess
 from pathlib import Path
 
 from . import make_workflow_name
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ def install_subtool(experiment, platform, target):
         else:
             fre_logger.error(f"ERROR: Please remove installed workflow with 'cylc clean {workflow_name}'"
                   " or move the workflow run directory '{install_dir}'")
-            raise Exception(f"ERROR: Workflow '{install_dir}' already installed, and the definition has changed!")
+            log_and_raise(f"ERROR: Workflow '{install_dir}' already installed, and the definition has changed!", Exception)
     else:
         fre_logger.info(f"NOTE: About to install workflow into ~/cylc-run/{workflow_name}")
         cmd = f"cylc install --no-run-name {workflow_name}"

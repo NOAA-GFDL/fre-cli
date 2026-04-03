@@ -31,6 +31,7 @@ from .gfdlfremake import (
     yamlfre
 )
 
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 
@@ -101,7 +102,7 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
         for target_name in tlist:
             target = targetfre.fretarget(target_name)
             if not model_yaml.platforms.hasPlatform(platform_name):
-                raise ValueError(f"{platform_name} does not exist in platforms.yaml")
+                log_and_raise(f"{platform_name} does not exist in platforms.yaml", ValueError)
 
             platform = model_yaml.platforms.getPlatformFromName(platform_name)
             ## Make the bld_dir based on the modelRoot, the platform, and the target

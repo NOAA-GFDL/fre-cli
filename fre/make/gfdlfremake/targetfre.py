@@ -1,3 +1,5 @@
+from fre import log_and_raise
+
 class fretarget:
     """
     Class: Stores information about the target
@@ -52,19 +54,19 @@ class fretarget:
         if self.debug:
             try:
                 if self.repro or self.prod == True:
-                    raise ValueError(errormsg)
+                    log_and_raise(errormsg, ValueError)
             except ValueError:
                 raise
         elif self.repro:
             try:
                 if self.prod == True:
-                    raise ValueError(errormsg)
+                    log_and_raise(errormsg, ValueError)
             except ValueError:
                 raise
         else:
             try:
                 if self.prod == False:
-                    raise ValueError("Your target '"+self.target+"' needs to include one of the following: prod, repro, debug")
+                    log_and_raise("Your target '"+self.target+"' needs to include one of the following: prod, repro, debug", ValueError)
             except ValueError:
                 raise
 

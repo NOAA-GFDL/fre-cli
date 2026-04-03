@@ -8,6 +8,7 @@ import os
 import logging
 import yaml
 from . import nccheck_script as ncc
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 
@@ -53,8 +54,8 @@ def validate(history: str, date_string: str, warn: bool):
     # Make sure we found atleast one diag_manifest
     if diag_count < 1:
         if not warn:
-            raise FileNotFoundError(
-                f" No diag_manifest files were found in {history}. History files cannot be validated.")
+            log_and_raise(
+                f" No diag_manifest files were found in {history}. History files cannot be validated.", FileNotFoundError)
         fre_logger.warning(
             f" Warning: No diag_manifest files were found in {history}. History files cannot be validated.")
         return 0
@@ -90,7 +91,7 @@ def validate(history: str, date_string: str, warn: bool):
     #Error Handling
     if len(mismatches)!=0:
         fre_logger.error("Unexpected number of timesteps found")
-        raise ValueError(
+        log_and_raise(
               "\n" + str(len(mismatches)) + 
               " file(s) contain(s) an unexpected number of timesteps:\n" + 
               "\n".join(mismatches))

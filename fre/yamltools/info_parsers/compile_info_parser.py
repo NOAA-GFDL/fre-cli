@@ -3,6 +3,7 @@ compile-yaml configuration class
 '''
 import os
 import logging
+from fre import log_and_raise
 # this boots yaml with !join- see __init__
 #from fre.yamltools import *
 from fre.yamltools.helpers import clean_yaml
@@ -31,7 +32,7 @@ def get_compile_paths(full_path, yaml_content):
     for key,value in yml.items():
         if key == "build":
             if (value.get("platformYaml") or value.get("compileYaml")) is None:
-                raise ValueError("Compile or platform yaml not defined")
+                log_and_raise("Compile or platform yaml not defined", ValueError)
 
             py_path = os.path.join(full_path,value.get("platformYaml"))
             cy_path = os.path.join(full_path,value.get("compileYaml"))
@@ -164,24 +165,24 @@ class InitCompileYaml(MergeCompileYamls):
         try:
             yaml_content=self.combine_model()
         except Exception as exc:
-            raise ValueError("ERR: Could not merge model yaml config with name, platform, and target.") from exc
+            log_and_raise("ERR: Could not merge model yaml config with name, platform, and target.", ValueError, exc=exc)
 
         # Merge compile into combined file to create updated yaml_content/yaml
         try:
             yaml_content = self.combine_compile(yaml_content)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge compile yaml config with model config.") from exc
+            log_and_raise("ERR: Could not merge compile yaml config with model config.", ValueError, exc=exc)
 
         # Merge platforms.yaml into combined file
         try:
             full_combined = self.combine_platforms(yaml_content)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge platform yaml config with model and compile configs.") from exc
+            log_and_raise("ERR: Could not merge platform yaml config with model and compile configs.", ValueError, exc=exc)
 
         # Clean the yaml
         try:
             cleaned_yaml = clean_yaml(full_combined)
         except Exception as exc:
-            raise ValueError("The final YAML could not cleaned.") from exc
+            log_and_raise("The final YAML could not cleaned.", ValueError, exc=exc)
 
         return cleaned_yaml

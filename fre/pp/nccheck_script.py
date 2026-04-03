@@ -2,6 +2,8 @@
 import logging
 import netCDF4
 
+from fre import log_and_raise
+
 fre_logger = logging.getLogger(__name__)
 
 
@@ -37,13 +39,9 @@ def check(file_path: str, num_steps: int):
         return 0
 
     else:
-        fre_logger.error(
+        log_and_raise(
             f" Unexpected number of timesteps found in {file_path}. "
             f"Found: {num_actual_steps} timesteps  "
-            f"Expected: {num_steps} timesteps"
-        )
-        raise ValueError(
-            f" Unexpected number of timesteps found in {file_path}. "
-            f"Found: {num_actual_steps} timesteps  "
-            f"Expected: {num_steps} timesteps"
+            f"Expected: {num_steps} timesteps",
+            ValueError
         )

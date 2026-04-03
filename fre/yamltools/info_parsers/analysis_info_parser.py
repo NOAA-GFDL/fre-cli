@@ -3,6 +3,7 @@ analysis yaml class
 '''
 import os
 import logging
+from fre import log_and_raise
 #import pprint
 
 from fre.yamltools.helpers import experiment_check, clean_yaml
@@ -217,19 +218,19 @@ class InitAnalysisYaml(MergePPANYamls):
         try:
             yaml_content_str = self.combine_model()
         except Exception as exc:
-            raise ValueError("ERR:  Could not merge model yaml config with name, platform, and target.") from exc
+            log_and_raise("ERR:  Could not merge model yaml config with name, platform, and target.", ValueError, exc=exc)
 
         # Merge settings into combined file
         try:
             yaml_content_str = self.combine_settings(yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge setting config with model config.") from exc
+            log_and_raise("ERR: Could not merge setting config with model config.", ValueError, exc=exc)
 
         # Merge analysis yamls, if defined, into combined file
         try:
             comb_analysis_updated_list = self.combine_yamls(yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR:  Could not merge analysis yaml config with model and setting config") from exc
+            log_and_raise("ERR:  Could not merge analysis yaml config with model and setting config", ValueError, exc=exc)
 
         # Merge model/analysis yamls if more than 1 is defined
         # (without overwriting the yaml)
@@ -237,11 +238,11 @@ class InitAnalysisYaml(MergePPANYamls):
             full_combined = self.merge_multiple_yamls(comb_analysis_updated_list,
                                                       yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge multiple analysis yaml configs together.") from exc
+            log_and_raise("ERR: Could not merge multiple analysis yaml configs together.", ValueError, exc=exc)
 
         try:
             cleaned_yaml = clean_yaml(full_combined)
         except Exception as exc:
-            raise ValueError("The final YAML could not cleaned.") from exc
+            log_and_raise("The final YAML could not cleaned.", ValueError, exc=exc)
 
         return cleaned_yaml

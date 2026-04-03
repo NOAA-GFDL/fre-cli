@@ -18,6 +18,7 @@ import glob
 import logging
 from pathlib import Path
 
+from fre import log_and_raise
 from .cmor_finder import make_simple_varlist
 from .cmor_constants import EXCLUDED_TABLE_SUFFIXES
 
@@ -103,11 +104,11 @@ def cmor_config_subtool(
     """
     # ---- validate inputs ----
     if not Path(pp_dir).is_dir():
-        raise FileNotFoundError(f'pp_dir does not exist: {pp_dir}')
+        log_and_raise(f'pp_dir does not exist: {pp_dir}', FileNotFoundError)
     if not Path(mip_tables_dir).is_dir():
-        raise FileNotFoundError(f'mip_tables_dir does not exist: {mip_tables_dir}')
+        log_and_raise(f'mip_tables_dir does not exist: {mip_tables_dir}', FileNotFoundError)
     if not Path(exp_config).is_file():
-        raise FileNotFoundError(f'exp_config does not exist: {exp_config}')
+        log_and_raise(f'exp_config does not exist: {exp_config}', FileNotFoundError)
 
     # ensure output directories exist
     Path(varlist_dir).mkdir(parents=True, exist_ok=True)
@@ -116,8 +117,8 @@ def cmor_config_subtool(
     # ---- gather MIP tables ----
     mip_tables = _filter_mip_tables(mip_tables_dir, mip_era)
     if not mip_tables:
-        raise ValueError(
-            f'no MIP tables found in {mip_tables_dir} for era {mip_era} after filtering')
+        log_and_raise(
+            f'no MIP tables found in {mip_tables_dir} for era {mip_era} after filtering', ValueError)
 
     # ---- discover pp components ----
     ppcompdirs = sorted(glob.glob(f'{pp_dir}/*'))

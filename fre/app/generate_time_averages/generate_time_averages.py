@@ -11,6 +11,8 @@ from .cdoTimeAverager import cdoTimeAverager
 from .frenctoolsTimeAverager import frenctoolsTimeAverager
 from .frepytoolsTimeAverager import frepytoolsTimeAverager
 
+from fre import log_and_raise
+
 fre_logger = logging.getLogger(__name__)
 
 def generate_time_average(infile: Union[str, List[str]] = None,
@@ -40,9 +42,9 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     start_time = time.perf_counter()
     fre_logger.debug('called generate_time_average')
     if None in [infile, outfile, pkg]:
-        raise ValueError('infile, outfile, and pkg are required inputs')
+        log_and_raise('infile, outfile, and pkg are required inputs', ValueError)
     if pkg not in ['cdo', 'fre-nctools', 'fre-python-tools']:
-        raise ValueError(f'argument pkg = {pkg} not known, must be one of: cdo, fre-nctools, fre-python-tools')
+        log_and_raise(f'argument pkg = {pkg} not known, must be one of: cdo, fre-nctools, fre-python-tools', ValueError)
     exitstatus = 1
     myavger = None
 
@@ -98,8 +100,7 @@ def generate_time_average(infile: Union[str, List[str]] = None,
         exitstatus = myavger.generate_timavg( infile = infile,
                                               outfile = outfile)
     else:
-        fre_logger.error('averager is None, check generate_time_average in generate_time_averages.py!')
-        raise ValueError
+        log_and_raise('averager is None, check generate_time_average in generate_time_averages.py!')
 
     # remove the new merged file if we created it.
     if merged:

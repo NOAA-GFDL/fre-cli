@@ -1,4 +1,5 @@
 import yaml
+from fre import log_and_raise
 
 class platforms ():
     def __init__(self,platforminfo):
@@ -17,12 +18,12 @@ class platforms ():
             try:
                 p["name"]
             except:
-                raise Exception("At least one of the platforms is missing a name in "+fname+"\n")
+                log_and_raise("At least one of the platforms is missing a name in "+fname+"\n", Exception)
             ## Check the compiler
             try:
                 p["compiler"]
             except:
-                raise Exception("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n")
+                log_and_raise("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n", Exception)
             ## Check for list of commands that include modules to initialize, load, and unload
             try:
                 p["envSetup"]
@@ -52,14 +53,14 @@ class platforms ():
                 try:
                     p["containerBuild"]
                 except:
-                    raise Exception("Platform "+p["name"]+": You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
+                    log_and_raise("Platform "+p["name"]+": You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n", Exception)
                 if p["containerBuild"] != "podman" and p["containerBuild"] != "docker":
-                    raise ValueError("Platform "+p["name"]+": Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
+                    log_and_raise("Platform "+p["name"]+": Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n", ValueError)
                 ## Get the name of the base container
                 try:
                     p["containerBase"]
                 except:
-                    raise NameError("Platform "+p["name"]+": You must specify the base container you wish to use to build your application")
+                    log_and_raise("Platform "+p["name"]+": You must specify the base container you wish to use to build your application", NameError)
                 ## Check if this is a 2 step (multi stage) build
                 try:
                     p["container2step"]
@@ -70,7 +71,7 @@ class platforms ():
                     try:
                         p["container2base"]
                     except:
-                        raise NameError ("Platform "+p["name"]+": container2step is True, so you must define a container2base\n")
+                        log_and_raise("Platform "+p["name"]+": container2step is True, so you must define a container2base\n", NameError)
                     ## Check if there is anything special to copy over
                 else:
                     ## There should not be a second base if this is not a 2 step build
@@ -79,7 +80,7 @@ class platforms ():
                     except:
                         p["container2base"] = ""
                     else:
-                        raise ValueError ("Platform "+p["name"]+": You defined container2base "+p["container2base"]+" but container2step is False\n")
+                        log_and_raise("Platform "+p["name"]+": You defined container2base "+p["container2base"]+" but container2step is False\n", ValueError)
                 ## Get any commands to execute in the dockerfile RUN command
                 try:
                     p["RUNenv"]
@@ -94,9 +95,9 @@ class platforms ():
                 try:
                     p["containerRun"]
                 except:
-                    raise Exception("You must specify the program used to run the container (containerRun) on the "+p["name"]+" platform in the file "+fname+"\n")
+                    log_and_raise("You must specify the program used to run the container (containerRun) on the "+p["name"]+" platform in the file "+fname+"\n", Exception)
                 if p["containerRun"] != "apptainer" and p["containerRun"] != "singularity":
-                    raise ValueError("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n")
+                    log_and_raise("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n", ValueError)
 
                 ## Get the path to where the output model container will be located
                 try:
@@ -108,7 +109,7 @@ class platforms ():
                 try:
                     p["mkTemplate"]
                 except:
-                    raise ValueError("The platform "+p["name"]+" must specify a mkTemplate \n")
+                    log_and_raise("The platform "+p["name"]+" must specify a mkTemplate \n", ValueError)
 
     def hasPlatform(self,name):
         """
