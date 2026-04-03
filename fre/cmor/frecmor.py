@@ -6,6 +6,7 @@ from . import cmor_find_subtool
 from . import cmor_run_subtool
 from . import cmor_yaml_subtool
 from . import cmor_config_subtool
+from . import cmor_init_subtool
 from .cmor_finder import make_simple_varlist
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
@@ -236,4 +237,33 @@ def config(pp_dir, mip_tables_dir, mip_era, exp_config, output_yaml,
         grid=grid,
         overwrite=overwrite,
         calendar_type=calendar
+    )
+
+
+@cmor_cli.command()
+@click.option("-m", "--mip_era", type=click.Choice(['cmip6', 'cmip7'], case_sensitive=False),
+              required=True,
+              help="MIP era for the template: 'cmip6' or 'cmip7'.")
+@click.option("-e", "--exp_config", type=str, default=None,
+              help="Output path for the template experiment-config JSON file. "
+                   "When omitted and --tables_dir is also omitted, a default "
+                   "filename is used.")
+@click.option("-t", "--tables_dir", type=str, default=None,
+              help="Directory into which MIP tables will be fetched from "
+                   "trusted sources. Omit to skip table retrieval.")
+@click.option("--tag", type=str, default=None,
+              help="Specific git tag or release for the MIP tables repository.")
+@click.option("--fast", is_flag=True, default=False,
+              help="Use curl to download a tarball instead of git clone.")
+def init(mip_era, exp_config, tables_dir, tag, fast):
+    """
+    Initialise CMOR resources: write an empty experiment-config JSON template
+    and/or fetch MIP tables from trusted sources.
+    """
+    cmor_init_subtool(
+        mip_era=mip_era,
+        exp_config=exp_config,
+        tables_dir=tables_dir,
+        tag=tag,
+        fast=fast
     )
