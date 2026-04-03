@@ -736,6 +736,12 @@ def filter_brands( brands: list,
     :return: The single brand string that survived disambiguation.
     :rtype: str
     """
+    # guard: brands list must be non-empty
+    if not brands:
+        raise ValueError(
+            f'filter_brands called with an empty brands list for '
+            f'{target_var!r} \u2014 there is nothing to disambiguate')
+
     # map input vertical dim to MIP equivalent
     expected_mip_vert = None
     if input_vert_dim != 0:
@@ -772,13 +778,25 @@ def filter_brands( brands: list,
 
     if len(filtered_brands) == 0:
         fre_logger.error('cmip7 brand disambiguation eliminated all candidates '
-                         'from %s', brands)
+                         'from %s for target_var %s '
+                         '(has_time_bnds=%s, input_vert_dim=%s)',
+                         brands, target_var, has_time_bnds, input_vert_dim)
         raise ValueError(
-            f'multiple brands {brands} found for {target_var}, '
-            f'but none survived disambiguation filtering')
+            f'all candidate brands {brands} for {target_var!r} were eliminated '
+            f'during disambiguation (has_time_bnds={has_time_bnds}, '
+            f'input_vert_dim={input_vert_dim!r}). none survived filtering. '
+            f'verify that the input file has the expected time bounds and '
+            f'vertical coordinate, and that the MIP table entries for '
+            f'{[f"{target_var}_{b}" for b in brands]} are correct')
 
     fre_logger.error('cmip7 brand disambiguation could not resolve between '
-                     '%s', filtered_brands)
+                     '%s for target_var %s '
+                     '(has_time_bnds=%s, input_vert_dim=%s)',
+                     filtered_brands, target_var, has_time_bnds, input_vert_dim)
     raise ValueError(
-        f'multiple brands {filtered_brands} remain for {target_var} after '
-        f'disambiguation \u2014 cannot determine which brand to use')
+        f'multiple brands {filtered_brands} remain for {target_var!r} after '
+        f'disambiguation (has_time_bnds={has_time_bnds}, '
+        f'input_vert_dim={input_vert_dim!r}) \u2014 cannot determine which '
+        f'brand to use. verify the input file dimensions and check whether '
+        f'the MIP table has duplicate entries that share the same time-type '
+        f'and vertical coordinate')

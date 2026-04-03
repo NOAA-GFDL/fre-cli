@@ -125,16 +125,21 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     var_brand = None
     exp_cfg_mip_era = get_json_file_data(json_exp_config)['mip_era'].upper()
     if exp_cfg_mip_era == 'CMIP7':
+        brand_prefix = target_var + '_'
         brands = []
         for mip_var in mip_var_cfgs["variable_entry"].keys():
-            if all([ target_var == mip_var.split('_')[0],
-                     var_dim == len(mip_var_cfgs["variable_entry"][mip_var]['dimensions']) ]):
-                brands.append(mip_var.split('_')[1])
+            if not mip_var.startswith(brand_prefix):
+                continue
+            brand = mip_var[len(brand_prefix):]
+            if not brand:
+                continue
+            if var_dim == len(mip_var_cfgs["variable_entry"][mip_var]['dimensions']):
+                brands.append(brand)
 
-        if len(brands)>0:
-            if len(brands)==1:
-                var_brand=brands[0]
-                fre_logger.debug('cmip7 case, extracted brand %s',var_brand)
+        if len(brands) > 0:
+            if len(brands) == 1:
+                var_brand = brands[0]
+                fre_logger.debug('cmip7 case, extracted brand %s', var_brand)
             else:
                 fre_logger.warning('cmip7 case, extracted multiple brands %s, attempting disambiguation',
                                    brands)
@@ -144,9 +149,19 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                     input_vert_dim = get_vertical_dimension(ds, target_var)
                 )
         else:
-            fre_logger.error('cmip7 case detected, but dimensions of input data do not match '
-                             'any of those found for the associated brands.')
-            raise ValueError
+            fre_logger.error(
+                'CMIP7 branded-variable error for %s: no brands in the MIP '
+                'table matched with %d dimension(s). available branded entries '
+                'for this variable: %s',
+                target_var, var_dim,
+                [k for k in mip_var_cfgs["variable_entry"] if k.startswith(brand_prefix)]
+            )
+            raise ValueError(
+                f'no brands in the MIP table match {target_var!r} with '
+                f'{var_dim} dimension(s). check that the MIP table contains a '
+                f'branded entry (e.g. {target_var}_<brand>) whose dimension '
+                f'count matches the input data'
+            )
     else:
         fre_logger.debug('non-cmip7 case detected, skipping variable brands')
 

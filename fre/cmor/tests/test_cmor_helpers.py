@@ -412,9 +412,24 @@ def test_filter_brands_all_eliminated():
         "sos_a": "longitude latitude time1",
         "sos_b": "longitude latitude time1",
     })
-    with pytest.raises(ValueError, match='none survived'):
+    with pytest.raises(ValueError, match='none survived filtering'):
         filter_brands(
             brands=["a", "b"],
+            target_var="sos",
+            mip_var_cfgs=mip,
+            has_time_bnds=True,
+            input_vert_dim=0,
+        )
+
+
+def test_filter_brands_all_eliminated_message_contains_properties():
+    ''' the error message should include the input properties that led to elimination '''
+    mip = _make_mip_var_cfgs({
+        "sos_a": "longitude latitude time1",
+    })
+    with pytest.raises(ValueError, match=r'has_time_bnds=True.*input_vert_dim=0'):
+        filter_brands(
+            brands=["a"],
             target_var="sos",
             mip_var_cfgs=mip,
             has_time_bnds=True,
@@ -428,9 +443,38 @@ def test_filter_brands_multiple_remain():
         "sos_a": "longitude latitude time",
         "sos_b": "longitude latitude time",
     })
-    with pytest.raises(ValueError, match='remain for sos'):
+    with pytest.raises(ValueError, match="remain for 'sos'"):
         filter_brands(
             brands=["a", "b"],
+            target_var="sos",
+            mip_var_cfgs=mip,
+            has_time_bnds=True,
+            input_vert_dim=0,
+        )
+
+
+def test_filter_brands_multiple_remain_message_contains_properties():
+    ''' the error message for multiple remaining brands should include input properties '''
+    mip = _make_mip_var_cfgs({
+        "sos_a": "longitude latitude time",
+        "sos_b": "longitude latitude time",
+    })
+    with pytest.raises(ValueError, match=r'has_time_bnds=True.*input_vert_dim=0'):
+        filter_brands(
+            brands=["a", "b"],
+            target_var="sos",
+            mip_var_cfgs=mip,
+            has_time_bnds=True,
+            input_vert_dim=0,
+        )
+
+
+def test_filter_brands_empty_brands_list():
+    ''' should raise ValueError when brands list is empty '''
+    mip = _make_mip_var_cfgs({})
+    with pytest.raises(ValueError, match='empty brands list'):
+        filter_brands(
+            brands=[],
             target_var="sos",
             mip_var_cfgs=mip,
             has_time_bnds=True,
