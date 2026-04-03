@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: '30 8 * * 1'  # Every Monday at 08:30 UTC
   workflow_dispatch:
+  push: # temp development
 
 permissions:
   contents: read

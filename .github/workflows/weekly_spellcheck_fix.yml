@@ -1,11 +1,10 @@
 name: Weekly Spell Check Fix
 
 on:
+  schedule:
+    - cron: '0 8 * * 1'  # Every Monday at 08:00 UTC
+  workflow_dispatch:
   push: # temp / confirm functioning
-
-#  schedule:
-#    - cron: '0 8 * * 1'  # Every Monday at 08:00 UTC
-#  workflow_dispatch:
 
 permissions:
   contents: write
@@ -35,6 +34,7 @@ jobs:
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
+		if: false # temp / prevent spam during development
         with:
           base: main
           branch: automated/weekly-spellcheck-fix
