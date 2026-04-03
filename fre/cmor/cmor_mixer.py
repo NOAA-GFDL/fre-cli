@@ -907,7 +907,8 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
             break
 
     if len(omissions) > 0:
-        fre_logger.warning('--- OMISSION LOG: %s variable(s) could not be processed ---', len(omissions))
+        fre_logger.warning('--- OMISSION LOG: %s %s could not be processed ---',
+                         len(omissions), 'variable' if len(omissions) == 1 else 'variables')
         for entry in omissions:
             fre_logger.warning('  OMITTED local_var=%s / target_var=%s, reason: %s',
                                entry['local_var'], entry['target_var'], entry['exception'])

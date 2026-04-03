@@ -63,7 +63,7 @@ def test_omission_tracking_multiple_failures(mock_cmorize, caplog):
         )
 
     assert status == 1
-    assert any('2 variable(s) could not be processed' in msg for msg in caplog.messages)
+    assert any('2 variables could not be processed' in msg for msg in caplog.messages)
     assert any('alpha' in msg for msg in caplog.messages)
     assert any('beta' in msg for msg in caplog.messages)
 
@@ -98,9 +98,8 @@ def test_omission_tracking_mixed_success_failure(mock_cmorize, caplog):
             **DUMMY_ARGS,
         )
 
-    # return_status reflects the last variable processed
     assert status == 1
-    assert any('1 variable(s) could not be processed' in msg for msg in caplog.messages)
+    assert any('1 variable could not be processed' in msg for msg in caplog.messages)
     assert any('bad_var' in msg and 'bad variable error' in msg for msg in caplog.messages)
     # good_var should not appear in any omission log entry
     omission_entries = [msg for msg in caplog.messages if 'OMITTED' in msg]
