@@ -9,53 +9,54 @@ from .regrid_xy.regrid_xy import regrid_xy
 from .generate_time_averages.combine import combine
 from .remap_pp_components.remap_pp_components import remap_pp_components
 
-@click.group(help=click.style(" - app subcommands", fg=(250,154,90)))
+
+@click.group(help=click.style(" - app subcommands", fg=(250, 154, 90)))
 def app_cli():
     ''' entry point to fre app click commands '''
 
+
 @app_cli.command()
 @click.option("-i", "--input-dir",
-              type = str,
-              help = "Input directory",
-              required = True)
+              type=str,
+              help="Input directory",
+              required=True)
 @click.option("-o", "--output-dir",
-              type = str,
-              help = "Output directory",
-              required = True)
+              type=str,
+              help="Output directory",
+              required=True)
 @click.option("-b", "--begin-date",
-              type = str,
-              help = "ISO8601 date format; date to begin post-processing data",
-              required = True)
+              type=str,
+              help="ISO8601 date format; date to begin post-processing data",
+              required=True)
 @click.option("-c", "--current-chunk",
-              type = str,
-              help = "Current chunk to post-process",
-              required = True)
+              type=str,
+              help="Current chunk to post-process",
+              required=True)
 @click.option("-p", "--product",
-              type = click.Choice(['ts', 'av', 'static']),
-              help = " Variable to define time-series, time-averaging or static",
-              required = True)
+              type=click.Choice(['ts', 'av', 'static']),
+              help=" Variable to define time-series, time-averaging or static",
+              required=True)
 @click.option("-ppc", "--pp-component",
-              type = str,
-              help = "Component to be post-processed",
-              required = True)
+              type=str,
+              help="Component to be post-processed",
+              required=True)
 @click.option("-cp", "--copy-tool",
-              type = click.Choice(['gcp','cp']),
-              help = "Tool to use for copying files; gcp can be used in on gfdl systems where gcp is available",
-              required = False)
+              type=click.Choice(['gcp', 'cp']),
+              help="Tool to use for copying files; gcp can be used in on gfdl systems where gcp is available",
+              required=False)
 @click.option("-y", "--yaml-config",
-              type = str,
-              help = "Path of yaml configuration file",
-              required =  True)
+              type=str,
+              help="Path of yaml configuration file",
+              required=True)
 @click.option("-em", "--ens-mem",
-              type = str,
-              help = "Ensemble member number as XX",
-              required = False)
+              type=str,
+              help="Ensemble member number as XX",
+              required=False)
 @click.option("-tsw", "--ts-workaround",
-              is_flag = True,
-              default = False,
-              help = "Time series workaround variable",
-              required = False)
-
+              is_flag=True,
+              default=False,
+              help="Time series workaround variable",
+              required=False)
 def remap(input_dir, output_dir, begin_date, current_chunk,
           product, pp_component, copy_tool, yaml_config,
           ts_workaround, ens_mem):
@@ -64,40 +65,41 @@ def remap(input_dir, output_dir, begin_date, current_chunk,
                         product, pp_component, copy_tool, yaml_config,
                         ts_workaround, ens_mem)
 
+
 @app_cli.command()
 @click.option("--yamlfile",
-              type = str,
-              help = "Path to yaml configuration file",
-              required = True)
+              type=str,
+              help="Path to yaml configuration file",
+              required=True)
 @click.option("-i", "--input_dir",
-              type = str,
-              help = "`inputDir` / `input_dir` (env var) specifies input directory to regrid, " + \
-                     "typically an untarred history file archive" ,
-              required = True)
+              type=str,
+              help="`inputDir` / `input_dir` (env var) specifies input directory to regrid, " +
+              "typically an untarred history file archive",
+              required=True)
 @click.option("-o", "--output_dir",
-              type = str,
-              help = "`outputDir` / `output_dir` (env var) specifies target location for output" + \
-                     " regridded files",
-              required = True)
+              type=str,
+              help="`outputDir` / `output_dir` (env var) specifies target location for output" +
+              " regridded files",
+              required=True)
 @click.option("-w", "--work_dir",
-              type = str,
-              help = "`TMPDIR` / `workdir_dir` (env var) work directory for location of file " + \
-                     "read/writes",
-              required = True)
+              type=str,
+              help="`TMPDIR` / `workdir_dir` (env var) work directory for location of file " +
+              "read/writes",
+              required=True)
 @click.option("-rd", "--remap_dir",
-              type = str,
-              help = "`fregridRemapDir` / `remap_dir` (env var) directory containing remap file" + \
+              type=str,
+              help="`fregridRemapDir` / `remap_dir` (env var) directory containing remap file" +
                      " for regridding",
-              required = True)
+              required=True)
 @click.option("-s", "--source",
-              type = str,
-              help = "`source` / `source` (env var) source name for input target file name " + \
-                     "within input directory to target for regridding. the value for `source` " + \
-                     "must be present in at least one component's configuration fields",
-              required = True)
+              type=str,
+              help="`source` / `source` (env var) source name for input target file name " +
+              "within input directory to target for regridding. the value for `source` " +
+              "must be present in at least one component's configuration fields",
+              required=True)
 @click.option("-id", "--input_date",
-              type = str,
-              help = "`input_date` / `input_date` (env var) ISO8601 datetime format specification for" + \
+              type=str,
+              help="`input_date` / `input_date` (env var) ISO8601 datetime format specification for" +
                      " starting date of data, part of input target file name")
 def regrid(yamlfile, input_dir, output_dir, work_dir,
            remap_dir, source, input_date):
@@ -108,21 +110,21 @@ def regrid(yamlfile, input_dir, output_dir, work_dir,
 
 @app_cli.command()
 @click.option("-i", "--infile",
-              type = str,
-              help = "Input NetCDF file containing pressure-level output to be masked",
-              required = True)
+              type=str,
+              help="Input NetCDF file containing pressure-level output to be masked",
+              required=True)
 @click.option("-o", "--outfile",
-              type = str,
-              help = "Output file",
-              required = True)
+              type=str,
+              help="Output file",
+              required=True)
 @click.option("-p", "--psfile",
-              help = "Input NetCDF file containing surface pressure (ps)",
-              type = str,
-              required = True)
+              help="Input NetCDF file containing surface pressure (ps)",
+              type=str,
+              required=True)
 @click.option("-wnps", "--warn-no-ps",
-             help = "if pressure variable not found in target psfile, warn and then pass instead of raising an error",
-             is_flag = True, default = False, required = False
-             )
+              help="if pressure variable not found in target psfile, warn and then pass instead of raising an error",
+              is_flag=True, default=False, required=False
+              )
 def mask_atmos_plevel(infile, psfile, outfile, warn_no_ps):
     """Mask diagnostic 'infile' below surface pressure 'psfile'"""
     mask_atmos_plevel_subtool(infile, psfile, outfile, warn_no_ps)
@@ -130,29 +132,29 @@ def mask_atmos_plevel(infile, psfile, outfile, warn_no_ps):
 
 @app_cli.command()
 @click.option("-i", "--inf",
-              type = str,
-              required = True,
-              help = "Input file name")
+              type=str,
+              required=True,
+              help="Input file name")
 @click.option("-o", "--outf",
-              type = str,
-              required = True,
-              help = "Output file name")
+              type=str,
+              required=True,
+              help="Output file name")
 @click.option("-p", "--pkg",
-              type = click.Choice(["cdo","fre-nctools","fre-python-tools"]),
-              default = "cdo",
-              help = "Time average approach")
+              type=click.Choice(["cdo", "fre-nctools", "fre-python-tools"]),
+              default="cdo",
+              help="Time average approach")
 @click.option("-v", "--var",
-              type = str,
-              default = None,
-              help = "Specify variable to average")
+              type=str,
+              default=None,
+              help="Specify variable to average")
 @click.option("-u", "--unwgt",
-              is_flag = True,
-              default = False,
-              help = "Request unweighted statistics")
+              is_flag=True,
+              default=False,
+              help="Request unweighted statistics")
 @click.option("-a", "--avg_type",
-              type = click.Choice(["month","seas","all"]),
-              default = "all",
-              help = "Type of time average to generate. \n \
+              type=click.Choice(["month", "seas", "all"]),
+              default="all",
+              help="Type of time average to generate. \n \
                      currently, fre-nctools and fre-python-tools pkg options\n \
                      do not support seasonal and monthly averaging.\n")
 def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
@@ -161,40 +163,40 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     """
     generate(inf, outf, pkg, var, unwgt, avg_type)
 
+
 @app_cli.command()
 @click.option("--cycle-point",
-              type = str,
-              required = True,
-              help = "Beginning cycle-point in ISO8601")
+              type=str,
+              required=True,
+              help="Beginning cycle-point in ISO8601")
 @click.option("--dir", 'dir_',
-              type = str,
-              required = True,
-              help = "Root directory containing the shards")
+              type=str,
+              required=True,
+              help="Root directory containing the shards")
 @click.option("--sources",
-              type = str,
-              required = True,
-              help = "Sources (history file) input file, comma-separated")
+              type=str,
+              required=True,
+              help="Sources (history file) input file, comma-separated")
 @click.option("--output-interval",
-              type = str,
-              required = True,
-              help = "ISO interval of the desired climatology")
+              type=str,
+              required=True,
+              help="ISO interval of the desired climatology")
 @click.option("--input-interval",
-              type = str,
-              required = True,
-              help = "ISO interval of the input timeseries")
+              type=str,
+              required=True,
+              help="ISO interval of the input timeseries")
 @click.option("--grid",
-              type = str,
-              required = True,
-              help = "Grid label corresponding to the shards directory, e.g. native, regrid-xy/180_288.conserve_order2")
-
+              type=str,
+              required=True,
+              help="Grid label corresponding to the shards directory, e.g. native, regrid-xy/180_288.conserve_order2")
 @click.option("--frequency",
-              type = str,
-              required = True,
-              help = "Frequency of desired climatology: 'mon' or 'yr'")
+              type=str,
+              required=True,
+              help="Frequency of desired climatology: 'mon' or 'yr'")
 @click.option("-p", "--pkg",
-              type = click.Choice(["cdo","fre-nctools","fre-python-tools"]),
-              default = "cdo",
-              help = "Time average approach")
+              type=click.Choice(["cdo", "fre-nctools", "fre-python-tools"]),
+              default="cdo",
+              help="Time average approach")
 def gen_time_averages_wrapper(cycle_point, dir_, sources, output_interval, input_interval, grid, frequency, pkg):
     """
     Wrapper for climatology tool.
@@ -203,35 +205,36 @@ def gen_time_averages_wrapper(cycle_point, dir_, sources, output_interval, input
     sources_list = sources.split(',')
     generate_wrapper(cycle_point, dir_, sources_list, output_interval, input_interval, grid, frequency, pkg)
 
+
 @app_cli.command()
 @click.option("--in-dir",
-              type = str,
-              required = True,
-              help = "Input directory")
+              type=str,
+              required=True,
+              help="Input directory")
 @click.option("--out-dir",
-              type = str,
-              required = True,
-              help = "Output directory")
+              type=str,
+              required=True,
+              help="Output directory")
 @click.option("--component",
-              type = str,
-              required = True,
-              help = "Component name to combine")
+              type=str,
+              required=True,
+              help="Component name to combine")
 @click.option("--begin",
-              type = int,
-              required = True,
-              help = "Beginning year")
+              type=int,
+              required=True,
+              help="Beginning year")
 @click.option("--end",
-              type = int,
-              required = True,
-              help = "Ending year")
+              type=int,
+              required=True,
+              help="Ending year")
 @click.option("--frequency",
-              type = str,
-              required = True,
-              help = "Climatology frequency; 'mon' or 'yr'")
+              type=str,
+              required=True,
+              help="Climatology frequency; 'mon' or 'yr'")
 @click.option("--interval",
-              type = str,
-              required = True,
-              help = "Climatology interval in ISO8601")
+              type=str,
+              required=True,
+              help="Climatology interval in ISO8601")
 def combine_time_averages(in_dir, out_dir, component, begin, end, frequency, interval):
     """
     Combine per-variable climatologies into one file

@@ -10,7 +10,7 @@ import pytest
 from fre.make import create_compile_script
 
 
-## SET-UP
+# SET-UP
 TEST_DIR = Path("fre/make/tests")
 NM_EXAMPLE = Path("null_example")
 YAMLFILE = "null_model.yaml"
@@ -19,11 +19,11 @@ TARGET = ["debug"]
 EXPERIMENT = "null_model_full"
 
 # Multi-plat-targ
-MULTI_TARGET = ["prod","repro"]
+MULTI_TARGET = ["prod", "repro"]
 
 # Bad plat/targ
-BAD_PLATFORM=["no_plat"]
-BAD_TARGET=["no_targ"]
+BAD_PLATFORM = ["no_plat"]
+BAD_TARGET = ["no_targ"]
 
 # Create output location
 OUT = f"{TEST_DIR}/compile_out"
@@ -31,9 +31,10 @@ if Path(OUT).exists():
     # remove
     shutil.rmtree(OUT)
     # create output directory
-    Path(OUT).mkdir(parents=True,exist_ok=True)
+    Path(OUT).mkdir(parents=True, exist_ok=True)
 else:
-    Path(OUT).mkdir(parents=True,exist_ok=True)
+    Path(OUT).mkdir(parents=True, exist_ok=True)
+
 
 def test_modelyaml_exists():
     """
@@ -41,17 +42,20 @@ def test_modelyaml_exists():
     """
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}").exists()
 
+
 def test_compileyaml_exists():
     """
     Check the compile yaml exists
     """
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/compile.yaml").exists()
 
+
 def test_platformyaml_exists():
     """
     Check the platform yaml exists
     """
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/platforms.yaml").exists()
+
 
 def test_compile_creation():
     """
@@ -65,15 +69,16 @@ def test_compile_creation():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile = yamlfile_path,
-                                         platform = PLATFORM,
-                                         target = TARGET,
-                                         makejobs = 4,
-                                         nparallel = 1,
-                                         execute = False,
-                                         verbose = False)
+    create_compile_script.compile_create(yamlfile=yamlfile_path,
+                                         platform=PLATFORM,
+                                         target=TARGET,
+                                         makejobs=4,
+                                         nparallel=1,
+                                         execute=False,
+                                         verbose=False)
     # Check for creation of compile script
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/compile.sh").exists()
+
 
 def test_compile_executable_failure():
     """
@@ -89,13 +94,13 @@ def test_compile_executable_failure():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Execute the compile script
-    create_compile_script.compile_create(yamlfile = yamlfile_path,
-                                         platform = PLATFORM,
-                                         target = TARGET,
-                                         makejobs = 4,
-                                         nparallel = 1,
-                                         execute = True,
-                                         verbose = False)
+    create_compile_script.compile_create(yamlfile=yamlfile_path,
+                                         platform=PLATFORM,
+                                         target=TARGET,
+                                         makejobs=4,
+                                         nparallel=1,
+                                         execute=True,
+                                         verbose=False)
 
     # Check for creation of compile script, FMS directory,
     # log.compile file, the executable
@@ -103,6 +108,7 @@ def test_compile_executable_failure():
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/FMS").is_dir()
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/log.compile").exists()
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{plat}-{targ}/exec/null_model_full.x").exists() == False
+
 
 @pytest.mark.xfail(raises=ValueError)
 def test_bad_platform():
@@ -116,13 +122,14 @@ def test_bad_platform():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile = yamlfile_path,
-                                         platform = BAD_PLATFORM,
-                                         target = TARGET,
-                                         makejobs = 4,
-                                         nparallel = 1,
-                                         execute = False,
-                                         verbose = False)
+    create_compile_script.compile_create(yamlfile=yamlfile_path,
+                                         platform=BAD_PLATFORM,
+                                         target=TARGET,
+                                         makejobs=4,
+                                         nparallel=1,
+                                         execute=False,
+                                         verbose=False)
+
 
 def test_bad_platform_compilelog():
     """
@@ -136,15 +143,16 @@ def test_bad_platform_compilelog():
 
     try:
         # Create the compile script
-        create_compile_script.compile_create(yamlfile = yamlfile_path,
-                                             platform = BAD_PLATFORM,
-                                             target = TARGET,
-                                             makejobs = 4,
-                                             nparallel = 1,
-                                             execute = False,
-                                             verbose = False)
+        create_compile_script.compile_create(yamlfile=yamlfile_path,
+                                             platform=BAD_PLATFORM,
+                                             target=TARGET,
+                                             makejobs=4,
+                                             nparallel=1,
+                                             execute=False,
+                                             verbose=False)
     except:
         assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
+
 
 @pytest.mark.xfail(raises=ValueError)
 def test_bad_target():
@@ -158,13 +166,14 @@ def test_bad_target():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile = yamlfile_path,
-                                         platform = PLATFORM,
-                                         target = BAD_TARGET,
-                                         makejobs = 4,
-                                         nparallel = 1,
-                                         execute = False,
-                                         verbose = False)
+    create_compile_script.compile_create(yamlfile=yamlfile_path,
+                                         platform=PLATFORM,
+                                         target=BAD_TARGET,
+                                         makejobs=4,
+                                         nparallel=1,
+                                         execute=False,
+                                         verbose=False)
+
 
 def test_bad_target_compilelog():
     """
@@ -178,15 +187,16 @@ def test_bad_target_compilelog():
 
     try:
         # Create the compile script
-        create_compile_script.compile_create(yamlfile = yamlfile_path,
-                                             platform = PLATFORM,
-                                             target = BAD_TARGET,
-                                             makejobs = 4,
-                                             nparallel = 1,
-                                             execute = False,
-                                             verbose = False)
+        create_compile_script.compile_create(yamlfile=yamlfile_path,
+                                             platform=PLATFORM,
+                                             target=BAD_TARGET,
+                                             makejobs=4,
+                                             nparallel=1,
+                                             execute=False,
+                                             verbose=False)
     except:
         assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{BAD_PLATFORM}-{TARGET}/exec/log.compile")
+
 
 def test_multi_target():
     """
@@ -198,13 +208,13 @@ def test_multi_target():
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Create the compile script
-    create_compile_script.compile_create(yamlfile = yamlfile_path,
-                                         platform = PLATFORM,
-                                         target = MULTI_TARGET,
-                                         makejobs = 4,
-                                         nparallel = 1,
-                                         execute = False,
-                                         verbose = False)
+    create_compile_script.compile_create(yamlfile=yamlfile_path,
+                                         platform=PLATFORM,
+                                         target=MULTI_TARGET,
+                                         makejobs=4,
+                                         nparallel=1,
+                                         execute=False,
+                                         verbose=False)
 
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[0]}/exec/compile.sh").exists()
     assert Path(f"{OUT}/fremake_canopy/test/null_model_full/{PLATFORM[0]}-{MULTI_TARGET[1]}/exec/compile.sh").exists()

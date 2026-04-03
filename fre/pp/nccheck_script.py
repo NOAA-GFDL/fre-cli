@@ -21,7 +21,7 @@ def check(file_path: str, num_steps: int):
 
     fre_logger.info(f" netCDF file = {file_path}")
 
-    #Let's grab the data we need from the netCDF file + close if after we're done
+    # Let's grab the data we need from the netCDF file + close if after we're done
     dataset = netCDF4.Dataset(file_path, 'r')
     fre_logger.info("Grabbed data from file")
 
@@ -31,7 +31,7 @@ def check(file_path: str, num_steps: int):
 
     fre_logger.info("Closed file")
 
-    #Compare
+    # Compare
     if num_actual_steps == int(num_steps):
         fre_logger.info(f" Expected number of timesteps found in {file_path}")
         return 0

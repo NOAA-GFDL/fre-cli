@@ -16,7 +16,8 @@ from .gfdlfremake import (varsfre, yamlfre)
 
 fre_logger = logging.getLogger(__name__)
 
-def fremake_run(yamlfile:str, platform:str, target:str,
+
+def fremake_run(yamlfile: str, platform: str, target: str,
                 nparallel: int = 1, makejobs: int = 4, gitjobs: int = 4,
                 no_parallel_checkout: Optional[bool] = None,
                 no_format_transfer: Optional[bool] = False,
@@ -69,27 +70,27 @@ def fremake_run(yamlfile:str, platform:str, target:str,
                                          use="compile",
                                          output=None)
 
-    ## Get the variables in the model yaml
+    # Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
-    model_yaml = yamlfre.freyaml(full_combined,fre_vars)
+    # Open the yaml file, validate the yaml, and parse as fremake_yaml
+    model_yaml = yamlfre.freyaml(full_combined, fre_vars)
 
-    #checkout
+    # checkout
     fre_logger.info("Running fre make: calling checkout_create")
     checkout_create(yamlfile, platform, target, no_parallel_checkout,
                     gitjobs, execute, force_checkout)
 
-    #makefile
+    # makefile
     fre_logger.info("Running fre make: calling makefile_create")
     makefile_create(yamlfile, platform, target)
 
-    #Filter out container vs non-container platforms
+    # Filter out container vs non-container platforms
     bm_platforms = ()
     container_platforms = ()
     for platform_name in plist:
         if not model_yaml.platforms.hasPlatform(platform_name):
-            raise ValueError (f"{platform_name} does not exist in platforms.yaml")
+            raise ValueError(f"{platform_name} does not exist in platforms.yaml")
 
         platform_info = model_yaml.platforms.getPlatformFromName(platform_name)
 
@@ -99,7 +100,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
             container_platforms = container_platforms + (platform_name,)
 
     if bm_platforms:
-        #compile
+        # compile
         fre_logger.info("Running fre make: calling compile_create")
         compile_create(yamlfile, bm_platforms, target, makejobs, nparallel,
                        execute, verbose)

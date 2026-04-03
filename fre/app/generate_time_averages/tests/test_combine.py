@@ -7,6 +7,7 @@ import pytest
 
 from fre.app.generate_time_averages import combine
 
+
 @pytest.fixture()
 def create_annual_per_variable_climatologies(tmp_path):
     """
@@ -39,6 +40,7 @@ def create_annual_per_variable_climatologies(tmp_path):
 
     yield tmp_path
 
+
 @pytest.fixture()
 def create_monthly_per_variable_climatologies(tmp_path):
     """
@@ -61,7 +63,7 @@ def create_monthly_per_variable_climatologies(tmp_path):
     output_dir.mkdir(parents=True)
 
     # write netcdf files
-    for i in range(1,13):
+    for i in range(1, 13):
         for name in input_basenames:
             input_file = input_dir / f"{name}.{i:02d}.cdl"
             assert input_file.exists()
@@ -73,6 +75,7 @@ def create_monthly_per_variable_climatologies(tmp_path):
             assert output_file.exists()
 
     yield tmp_path
+
 
 def test_combine_annual_av(create_annual_per_variable_climatologies):
     """
@@ -93,7 +96,6 @@ def test_combine_annual_av(create_annual_per_variable_climatologies):
           f'                               --frequency {frequency} \\ \n'
           f'                               --interval {interval}\n')
 
-
     combine.combine(in_dir, out_dir,
                     component,
                     begin, end,
@@ -103,6 +105,7 @@ def test_combine_annual_av(create_annual_per_variable_climatologies):
     output_file = full_out_dir / 'atmos.1980-1981.nc'
 
     assert output_file.exists()
+
 
 def test_combine_monthly_av(create_monthly_per_variable_climatologies):
     """
@@ -129,16 +132,17 @@ def test_combine_monthly_av(create_monthly_per_variable_climatologies):
                     frequency, interval)
 
     output_dir = Path(create_monthly_per_variable_climatologies, 'out', 'atmos', 'av', 'monthly_2yr')
-    for i in range(1,13):
+    for i in range(1, 13):
         output_file = output_dir / f'atmos.1980-1981.{i:02d}.nc'
         assert output_file.exists()
+
 
 def test_freq_not_valid_valueerror():
     with pytest.raises(ValueError):
         combine.combine(
-            root_in_dir = 'some_in_dir',
-            root_out_dir = 'some_out_dir',
-            component = 'component',
-            begin = 0, end = 1,
-            interval = 'P999Y',
-            frequency = 'FOO' )
+            root_in_dir='some_in_dir',
+            root_out_dir='some_out_dir',
+            component='component',
+            begin=0, end=1,
+            interval='P999Y',
+            frequency='FOO')

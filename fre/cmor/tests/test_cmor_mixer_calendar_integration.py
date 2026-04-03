@@ -103,12 +103,12 @@ def test_cmor_run_w_cal_type(
     calendar_type = "noleap"
 
     cmor_run_subtool(
-        indir            = str(tmp_path),
-        json_var_list    = var_list_file,
-        json_table_config = table_config_file,
-        json_exp_config  = exp_config_file,
-        outdir           = str(tmp_path / "output"),
-        calendar_type    = calendar_type
+        indir=str(tmp_path),
+        json_var_list=var_list_file,
+        json_table_config=table_config_file,
+        json_exp_config=exp_config_file,
+        outdir=str(tmp_path / "output"),
+        calendar_type=calendar_type
     )
 
     mock_update_cal.assert_called_once_with(
@@ -135,12 +135,12 @@ def test_cmor_run_no_cal_type(
     mock_cmorize.return_value = 0
 
     cmor_run_subtool(
-        indir            = str(tmp_path),
-        json_var_list    = var_list_file,
-        json_table_config = table_config_file,
-        json_exp_config  = exp_config_file,
-        outdir           = str(tmp_path / "output"),
-        calendar_type    = None
+        indir=str(tmp_path),
+        json_var_list=var_list_file,
+        json_table_config=table_config_file,
+        json_exp_config=exp_config_file,
+        outdir=str(tmp_path / "output"),
+        calendar_type=None
     )
 
     mock_update_cal.assert_not_called()

@@ -11,7 +11,6 @@ import xarray as xr
 fre_logger = logging.getLogger(__name__)
 
 
-
 def mask_atmos_plevel_subtool(infile: str = None,
                               psfile: str = None,
                               outfile: str = None,
@@ -46,7 +45,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
 
     # Warn if outfile exists, but continue and recreate
     if os.path.exists(outfile):
-        #raise FileExistsError(f"ERROR: Output file {outfile} already exists")
+        # raise FileExistsError(f"ERROR: Output file {outfile} already exists")
         fre_logger.warning("Output file %s already exists", outfile)
         fre_logger.warning("it will be recreated i hope")
 
@@ -190,16 +189,16 @@ def pressure_coordinate(ds: xr.Dataset,
             continue
 
         fre_logger.info('attempting to assign pressure coordinate, checking dim=%s', dim)
-        fre_logger.debug('attributes: %s', list(ds[dim].attrs) )
+        fre_logger.debug('attributes: %s', list(ds[dim].attrs))
         try:
             if ds[dim].attrs["long_name"].lower() == "pressure":
                 pressure_coord = ds[dim]
                 break
 
-            pressure_unit_list = ["Pa", "kPa", "mmHg", "atm" ] # to be expanded as necessary.
-            if all( [ 'positive' in list(ds[dim].attrs),
-                      ds[dim].attrs['axis'].lower() == "z",
-                      ds[dim].attrs["units"] in pressure_unit_list ] ) :
+            pressure_unit_list = ["Pa", "kPa", "mmHg", "atm"]  # to be expanded as necessary.
+            if all(['positive' in list(ds[dim].attrs),
+                    ds[dim].attrs['axis'].lower() == "z",
+                    ds[dim].attrs["units"] in pressure_unit_list]):
                 pressure_coord = ds[dim]
                 break
 

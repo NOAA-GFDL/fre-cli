@@ -15,7 +15,9 @@ import fre.yamltools.combine_yamls_script as cy
 
 fre_logger = logging.getLogger(__name__)
 
-######VALIDATE#####
+###### VALIDATE#####
+
+
 def validate_yaml(yamlfile: dict) -> None:
     """
     Validate the format of the yaml file based
@@ -36,7 +38,7 @@ def validate_yaml(yamlfile: dict) -> None:
     fre_logger.info("Using yaml schema '%s'", schema_path)
     # Load the json schema: .load() (vs .loads()) reads and parses the json in one)
     try:
-        with open(schema_path,'r', encoding='utf-8') as s:
+        with open(schema_path, 'r', encoding='utf-8') as s:
             schema = json.load(s)
     except:
         fre_logger.error("Schema '%s' is not valid. Contact the FRE team.", schema_path)
@@ -45,7 +47,7 @@ def validate_yaml(yamlfile: dict) -> None:
     # Validate yaml
     # If the yaml is not valid, the schema validation will raise errors and exit
     try:
-        validate(instance = yamlfile,schema=schema)
+        validate(instance=yamlfile, schema=schema)
         fre_logger.info("Combined yaml valid")
     except SchemaError as exc:
         raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.") from exc
@@ -55,6 +57,8 @@ def validate_yaml(yamlfile: dict) -> None:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 ####################
+
+
 def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config.ConfigNode:
     """
     Initializes the rose suite configuration.
@@ -86,6 +90,8 @@ def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config
     return rose_suite
 
 ####################
+
+
 def quote_rose_values(value: str) -> str:
     """
     rose-suite.conf template variables must be quoted unless they are
@@ -104,6 +110,8 @@ def quote_rose_values(value: str) -> str:
         return "'" + str(value) + "'"
 
 ####################
+
+
 def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) -> None:
     """
     Sets items in the rose suite configuration.
@@ -120,8 +128,8 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     :return: None
     :rtype: None
     """
-    pp=yamlfile.get("postprocess")
-    dirs=yamlfile.get("directories")
+    pp = yamlfile.get("postprocess")
+    dirs = yamlfile.get("directories")
 
     # set rose-suite items
     pa_scripts = ""
@@ -132,14 +140,14 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
 
     for pp_key, pp_value in pp.items():
         if pp_key == "settings" or pp_key == "switches":
-            for key,value in pp_value.items():
+            for key, value in pp_value.items():
                 if not isinstance(pp_value, list):
                     if key in ['pp_start', 'pp_stop']:
                         if isinstance(value, int):
                             value = f"{value:04}"
 
-                    rose_suite.set( keys = ['template variables', key.upper()],
-                                    value = quote_rose_values(value) )
+                    rose_suite.set(keys=['template variables', key.upper()],
+                                   value=quote_rose_values(value))
 
         # Account for multiple scripts for refinediag
         # Fail if multiple scripts defined for preanalysis (not implemented yet)
@@ -168,29 +176,31 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     # Note: trailing space on script variables is removed for when the string
     #       is split (by spaces) in the workflow
     if rd_scripts:
-        rose_suite.set( keys = ['template variables', 'DO_REFINEDIAG'],
-                        value = 'True' )
-        rose_suite.set( keys = ['template variables', 'REFINEDIAG_SCRIPTS'],
-                        value = quote_rose_values(rd_scripts.rstrip()) )
+        rose_suite.set(keys=['template variables', 'DO_REFINEDIAG'],
+                       value='True')
+        rose_suite.set(keys=['template variables', 'REFINEDIAG_SCRIPTS'],
+                       value=quote_rose_values(rd_scripts.rstrip()))
     else:
-        rose_suite.set( keys = ['template variables', 'DO_REFINEDIAG'],
-                        value = 'False' )
+        rose_suite.set(keys=['template variables', 'DO_REFINEDIAG'],
+                       value='False')
 
     # Add preanalysis switch and string of scripts if specified
     if pa_scripts:
-        rose_suite.set( keys = ['template variables', 'DO_PREANALYSIS'],
-                        value = 'True' )
-        rose_suite.set( keys = ['template variables', 'PREANALYSIS_SCRIPT'],
-                        value = quote_rose_values(pa_scripts.rstrip()) )
+        rose_suite.set(keys=['template variables', 'DO_PREANALYSIS'],
+                       value='True')
+        rose_suite.set(keys=['template variables', 'PREANALYSIS_SCRIPT'],
+                       value=quote_rose_values(pa_scripts.rstrip()))
     else:
-        rose_suite.set( keys = ['template variables', 'DO_PREANALYSIS'],
-                        value = 'False' )
+        rose_suite.set(keys=['template variables', 'DO_PREANALYSIS'],
+                       value='False')
 
     if dirs is not None:
-        for key,value in dirs.items():
+        for key, value in dirs.items():
             rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
 
 ####################
+
+
 def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None, target: str = None) -> None:
     """
     Using a valid pp.yaml, the rose-suite configuration file is created
@@ -219,29 +229,29 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     fre_logger.info('Starting')
 
     if None in [yamlfile, experiment, platform, target]:
-        raise ValueError( 'yamlfile, experiment, platform, and target must all not be None.'
-                          'currently, their values are...'
-                          f'{yamlfile} / {experiment} / {platform} / {target}')
+        raise ValueError('yamlfile, experiment, platform, and target must all not be None.'
+                         'currently, their values are...'
+                         f'{yamlfile} / {experiment} / {platform} / {target}')
     e = experiment
     p = platform
     t = target
     yml = yamlfile
 
     # Initialize the rose configurations
-    rose_suite = rose_init(e,p,t)
+    rose_suite = rose_init(e, p, t)
 
     # Combine model, experiment, and analysis yamls
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
-    full_yamldict = cy.consolidate_yamls(yamlfile = yml,
-                                         experiment = e, platform = p, target = t,
-                                         use = "pp",
-                                         output = outfile)
+    full_yamldict = cy.consolidate_yamls(yamlfile=yml,
+                                         experiment=e, platform=p, target=t,
+                                         use="pp",
+                                         output=outfile)
 
     # Validate yaml
     validate_yaml(full_yamldict)
 
-    ## PARSE COMBINED YAML TO CREATE CONFIGS
+    # PARSE COMBINED YAML TO CREATE CONFIGS
     # Set rose-suite items
     set_rose_suite(full_yamldict, rose_suite)
 

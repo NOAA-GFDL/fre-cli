@@ -13,6 +13,7 @@ class MockMakefileObject:
     """
     Mock makefile object for testing linklineBuild
     """
+
     def __init__(self, filePath, experiment, libs):
         self.filePath = filePath
         self.e = experiment
@@ -22,7 +23,7 @@ class MockMakefileObject:
 def test_linklineBuild_container_path():
     """
     Test linklineBuild when filePath contains 'tmp' (container path).
-    
+
     This tests line 50 which contains the fh.write() call with the sed pattern.
     """
     # Create a temporary directory for testing

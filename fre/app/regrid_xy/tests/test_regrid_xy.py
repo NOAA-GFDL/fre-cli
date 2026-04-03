@@ -25,12 +25,12 @@ yamlfile = Path(curr_dir)/"test_yaml.yaml"
 grid_spec_tar = Path(curr_dir)/"grid_spec.tar"
 input_dir = Path(curr_dir)/"test_inputs"
 output_dir = Path(curr_dir)/"test_outputs"
-remap_dir= Path(curr_dir)/"test_remap"
+remap_dir = Path(curr_dir)/"test_remap"
 work_dir = Path(curr_dir)/"test_work"
 
-input_files             = [{"history_file":"pemberley"}, {"history_file":"longbourn"}]
-input_files_donotregrid = [{"history_file":"nope"}]
-input_files_static      = [{"source": "my_static_history"}]
+input_files = [{"history_file": "pemberley"}, {"history_file": "longbourn"}]
+input_files_donotregrid = [{"history_file": "nope"}]
+input_files_static = [{"source": "my_static_history"}]
 
 components = [
     {"xyInterp": f"{nxy},{nxy}",
@@ -62,7 +62,7 @@ def setup_test():
     remap_dir.mkdir(exist_ok=True)
     work_dir.mkdir(exist_ok=True)
 
-    #generate test files
+    # generate test files
     generate_files.set_test(components_in=components,
                             date_in=date,
                             grid_spec_tar_in=str(grid_spec_tar),
@@ -81,6 +81,7 @@ def cleanup_test():
         shutil.rmtree(work_dir)
     generate_files.cleanup()
 
+
 @pytest.mark.skipif(not HAVE_FREGRID,
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
 def test_regrid_xy():
@@ -91,7 +92,7 @@ def test_regrid_xy():
 
     setup_test()
 
-    #modify generate_files to change sources
+    # modify generate_files to change sources
     for source_dict in input_files:
         source = source_dict["history_file"]
         regrid_xy.regrid_xy(yamlfile=str(yamlfile),
@@ -102,7 +103,7 @@ def test_regrid_xy():
                             source=source,
                             input_date=date+"TTTT")
 
-    #check answers
+    # check answers
     for source_dict in input_files:
         # Files are now output to a subdirectory based on grid size and interpolation method
         output_subdir = output_dir/f"{nxy}_{nxy}.conserve_order2"
@@ -115,20 +116,21 @@ def test_regrid_xy():
         assert "darcy" in test
         assert "wins" in test
 
-        assert np.all(test["mister"].values==np.float64(1.0))
-        assert np.all(test["darcy"].values==np.float64(2.0))
-        assert np.all(test["wins"].values==np.float64(3.0))
+        assert np.all(test["mister"].values == np.float64(1.0))
+        assert np.all(test["darcy"].values == np.float64(2.0))
+        assert np.all(test["wins"].values == np.float64(3.0))
 
-    #check answers, these shouldn't have been regridded
+    # check answers, these shouldn't have been regridded
     for source_dict in input_files_donotregrid:
         ifile = source_dict["history_file"]
         assert not (output_dir/f"{date}.{ifile}.nc").exists()
 
-        #check remap_file exists and is not empty
+        # check remap_file exists and is not empty
         remap_file = remap_dir/f"C{nxy}_mosaicX{nxy}by{nxy}_conserve_order2.nc"
         assert remap_file.exists()
 
     cleanup_test()
+
 
 @pytest.mark.skipif(not HAVE_FREGRID,
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
@@ -163,21 +165,19 @@ def test_regrid_xy_static():
         assert "darcy" in test
         assert "wins" in test
 
-        assert np.all(test["mister"].values==np.float64(1.0))
-        assert np.all(test["darcy"].values==np.float64(2.0))
-        assert np.all(test["wins"].values==np.float64(3.0))
+        assert np.all(test["mister"].values == np.float64(1.0))
+        assert np.all(test["darcy"].values == np.float64(2.0))
+        assert np.all(test["wins"].values == np.float64(3.0))
 
-    #check remap_file exists and is not empty
+    # check remap_file exists and is not empty
     remap_file = remap_dir/f"C{nxy}_mosaicX{nxy}by{nxy}_conserve_order2.nc"
     assert remap_file.exists()
 
     cleanup_test()
 
 
-
 @pytest.mark.skipif(not HAVE_FREGRID,
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
-
 def test_get_input_mosaic():
     """
     Tests get_input_mosaic correctly copies the mosaic file to the input directory
@@ -189,12 +189,13 @@ def test_get_input_mosaic():
     generate_files.make_grid_spec()
     mosaic_file.touch()
 
-    datadict=dict(grid_spec=grid_spec, inputRealm="ocean")
+    datadict = dict(grid_spec=grid_spec, inputRealm="ocean")
 
     assert regrid_xy.get_input_mosaic(datadict) == str(mosaic_file)
 
-    mosaic_file.unlink()  #clean up
-    grid_spec.unlink()  #clean up
+    mosaic_file.unlink()  # clean up
+    grid_spec.unlink()  # clean up
+
 
 @pytest.mark.skipif(not HAVE_FREGRID,
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
@@ -210,6 +211,7 @@ def test_get_input_file():
 
     datadict["input_date"] = None
     assert regrid_xy.get_input_file(datadict, source) == source
+
 
 @pytest.mark.skipif(not HAVE_FREGRID,
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
@@ -230,7 +232,7 @@ def test_get_remap_file():
                 "output_nlat": nlat,
                 "interp_method": interp_method}
 
-    #check remap file from current directory is copied to input directory
+    # check remap file from current directory is copied to input directory
     remap_file = Path(f"remap_dir/{input_mosaic}X{nlon}by{nlat}_{interp_method}.nc")
     assert regrid_xy.get_remap_file(datadict) == str(remap_file)
 

@@ -53,14 +53,14 @@ from typing import Optional, List, Union
 import numpy as np
 from netCDF4 import Dataset, Variable
 
-from .cmor_constants import ( ARCHIVE_GOLD_DATA_DIR, CMIP7_GOLD_OCEAN_FILE_STUB, CMIP6_GOLD_OCEAN_FILE_STUB,
-                              INPUT_TO_MIP_VERT_DIM )
+from .cmor_constants import (ARCHIVE_GOLD_DATA_DIR, CMIP7_GOLD_OCEAN_FILE_STUB, CMIP6_GOLD_OCEAN_FILE_STUB,
+                             INPUT_TO_MIP_VERT_DIM)
 
 fre_logger = logging.getLogger(__name__)
 
 
-def print_data_minmax( ds_variable: Optional[np.ma.core.MaskedArray] = None,
-                       desc: Optional[str] = None) -> None:
+def print_data_minmax(ds_variable: Optional[np.ma.core.MaskedArray] = None,
+                      desc: Optional[str] = None) -> None:
     """
     Log the minimum and maximum values of a numpy MaskedArray along with a description.
 
@@ -81,8 +81,8 @@ def print_data_minmax( ds_variable: Optional[np.ma.core.MaskedArray] = None,
         fre_logger.warning('could not print min/max entries for desc = %s', desc)
 
 
-def from_dis_gimme_dis( from_dis: Dataset,
-                        gimme_dis: str) -> Optional[np.ndarray]:
+def from_dis_gimme_dis(from_dis: Dataset,
+                       gimme_dis: str) -> Optional[np.ndarray]:
     """
     Retrieve and return a copy of a variable from a netCDF4.Dataset-like object.
 
@@ -119,7 +119,7 @@ def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optiona
     """
     archive_gold_file = (
         f'{ARCHIVE_GOLD_DATA_DIR}/{CMIP7_GOLD_OCEAN_FILE_STUB}'
-        #f'{ARCHIVE_GOLD_DATA_DIR}/OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
+        # f'{ARCHIVE_GOLD_DATA_DIR}/OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
     )
     fre_logger.debug('ARCHIVE_GOLD_DATA_DIR=%s', ARCHIVE_GOLD_DATA_DIR)
     fre_logger.debug('archive_gold_file=%s', archive_gold_file)
@@ -131,17 +131,16 @@ def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optiona
                            ' files in pp directories out of desperation')
         return None
 
-
     if put_copy_here is None:
         fre_logger.warning('put_copy_here is None, cannot stage gold ocean statics file')
         return None
 
     # mirror the archive sub-path under put_copy_here
     # e.g.  /archive/gold/datasets/OM5_025/…  ->  datasets/OM5_025/…
-    #try:
-    new_dir_tree = CMIP7_GOLD_OCEAN_FILE_STUB # '/'.join(archive_gold_file.split('/')[3:])
+    # try:
+    new_dir_tree = CMIP7_GOLD_OCEAN_FILE_STUB  # '/'.join(archive_gold_file.split('/')[3:])
     fre_logger.debug('new_dir_tree=%s', new_dir_tree)
-    #except Exception:
+    # except Exception:
     #    fre_logger.error('could not derive sub-path from archive_gold_file')
     #    return None
 
@@ -176,7 +175,9 @@ def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optiona
     return None
 
 # note, the awkward spacing of the docstring below is for the way sphinx renders reStructuredText, do not change!
-def find_statics_file( bronx_file_path: str) -> Optional[str]:
+
+
+def find_statics_file(bronx_file_path: str) -> Optional[str]:
     """
     Attempt to find the corresponding statics file given the path to a FRE-bronx output file. The code assumes
     the output file is in a FRE-bronx directory structure when trying to access the statics file. The structure is
@@ -220,7 +221,7 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     fre_logger.debug('the call is going to be:')
     fre_logger.debug(f"\n glob.glob({statics_path+'/*static*.nc'})  \n")
 
-    statics_file_glob = glob.glob(statics_path+'/*static*.nc') # update to use component TODO
+    statics_file_glob = glob.glob(statics_path+'/*static*.nc')  # update to use component TODO
     fre_logger.debug('the output glob looks like: %s', statics_file_glob)
     if len(statics_file_glob) == 1:
         return statics_file_glob[0]
@@ -229,8 +230,8 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     return None
 
 
-def create_lev_bnds( bound_these: Variable = None,
-                     with_these: Variable = None) -> np.ndarray:
+def create_lev_bnds(bound_these: Variable = None,
+                    with_these: Variable = None) -> np.ndarray:
     """
     Create a vertical level bounds array for a set of levels.
 
@@ -257,10 +258,10 @@ def create_lev_bnds( bound_these: Variable = None,
     return the_bnds
 
 
-def get_iso_datetime_ranges( var_filenames: List[str],
-                             iso_daterange_arr: Optional[List[str]] = None,
-                             start: Optional[str] = None,
-                             stop: Optional[str] = None) -> None:
+def get_iso_datetime_ranges(var_filenames: List[str],
+                            iso_daterange_arr: Optional[List[str]] = None,
+                            start: Optional[str] = None,
+                            stop: Optional[str] = None) -> None:
     """
     Extract and append ISO datetime ranges from filenames, filtered by start/stop years if specified.
 
@@ -317,7 +318,7 @@ def get_iso_datetime_ranges( var_filenames: List[str],
         raise ValueError('iso_daterange_arr has length 0! i need to find at least one datetime range!')
 
 
-def check_dataset_for_ocean_grid( ds: Dataset) -> bool:
+def check_dataset_for_ocean_grid(ds: Dataset) -> bool:
     """
     Check if a netCDF4.Dataset uses an ocean grid (i.e., contains 'xh' or 'yh' variables).
 
@@ -340,8 +341,8 @@ def check_dataset_for_ocean_grid( ds: Dataset) -> bool:
     return uses_ocean_grid
 
 
-def get_vertical_dimension( ds: Dataset,
-                            target_var: str) -> Union[str, int]:
+def get_vertical_dimension(ds: Dataset,
+                           target_var: str) -> Union[str, int]:
     """
     Determine the vertical dimension for a variable in a netCDF4.Dataset.
 
@@ -369,8 +370,8 @@ def get_vertical_dimension( ds: Dataset,
     return vert_dim
 
 
-def create_tmp_dir( outdir: str,
-                    json_exp_config: Optional[str] = None) -> str:
+def create_tmp_dir(outdir: str,
+                   json_exp_config: Optional[str] = None) -> str:
     """
     Create a temporary directory for output, possibly informed by a JSON experiment config.
 
@@ -409,7 +410,7 @@ def create_tmp_dir( outdir: str,
     return tmp_dir
 
 
-def get_json_file_data( json_file_path: Optional[str] = None) -> dict:
+def get_json_file_data(json_file_path: Optional[str] = None) -> dict:
     """
     Load and return the contents of a JSON file.
 
@@ -429,11 +430,11 @@ def get_json_file_data( json_file_path: Optional[str] = None) -> dict:
         ) from exc
 
 
-def update_grid_and_label( json_file_path: str,
-                           new_grid_label: str,
-                           new_grid: str,
-                           new_nom_res: str,
-                           output_file_path: Optional[str] = None) -> None:
+def update_grid_and_label(json_file_path: str,
+                          new_grid_label: str,
+                          new_grid: str,
+                          new_nom_res: str,
+                          output_file_path: Optional[str] = None) -> None:
     """
     Update the "grid_label", "grid", and "nominal_resolution" fields in a JSON experiment config.
 
@@ -508,9 +509,9 @@ def update_grid_and_label( json_file_path: str,
         raise
 
 
-def update_calendar_type( json_file_path: str,
-                          new_calendar_type: str,
-                          output_file_path: Optional[str] = None) -> None:
+def update_calendar_type(json_file_path: str,
+                         new_calendar_type: str,
+                         output_file_path: Optional[str] = None) -> None:
     """
     Update the "calendar" field in a JSON experiment config file.
 
@@ -564,6 +565,7 @@ def update_calendar_type( json_file_path: str,
         fre_logger.error("An unexpected error occurred: %s", e)
         raise
 
+
 def check_path_existence(some_path: str):
     """
     Check if the given path exists, raising FileNotFoundError if not.
@@ -574,6 +576,7 @@ def check_path_existence(some_path: str):
     """
     if not Path(some_path).exists():
         raise FileNotFoundError(f'does not exist:  {some_path}')
+
 
 def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
     """
@@ -593,6 +596,7 @@ def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
     fre_logger.debug('bronx_chunk = %s', bronx_chunk)
     return bronx_chunk
 
+
 def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
     """
     Convert a MIP table frequency string to its FRE-bronx equivalent using a lookup table.
@@ -604,22 +608,22 @@ def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
     :rtype: str or None
     """
     cmor_to_bronx_dict = {
-        "1hr"    : "1hr",
-        "1hrCM"  : None,
-        "1hrPt"  : None,
-        "3hr"    : "3hr",
-        "3hrPt"  : None,
-        "6hr"    : "6hr",
-        "6hrPt"  : None,
-        "day"    : "daily",
-        "dec"    : None,
-        "fx"     : None,
-        "mon"    : "monthly",
-        "monC"   : None,
-        "monPt"  : None,
+        "1hr": "1hr",
+        "1hrCM": None,
+        "1hrPt": None,
+        "3hr": "3hr",
+        "3hrPt": None,
+        "6hr": "6hr",
+        "6hrPt": None,
+        "day": "daily",
+        "dec": None,
+        "fx": None,
+        "mon": "monthly",
+        "monC": None,
+        "monPt": None,
         "subhrPt": None,
-        "yr"     : "annual",
-        "yrPt"   : None
+        "yr": "annual",
+        "yrPt": None
     }
     bronx_freq = cmor_to_bronx_dict.get(cmor_table_freq)
     if bronx_freq is None:
@@ -627,6 +631,7 @@ def conv_mip_to_bronx_freq(cmor_table_freq: str) -> Optional[str]:
     if cmor_table_freq not in cmor_to_bronx_dict.keys():
         raise KeyError(f'MIP table frequency = "{cmor_table_freq}" is not a valid MIP frequency')
     return bronx_freq
+
 
 def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
     """
@@ -651,7 +656,7 @@ def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
     bronx_freq = conv_mip_to_bronx_freq(table_freq)
     return bronx_freq
 
-#def update_outpath( json_file_path: str,
+# def update_outpath( json_file_path: str,
 #                    outpath: str,
 #                    output_file_path: Optional[str] = None) -> None:
 #    """
@@ -701,11 +706,11 @@ def get_bronx_freq_from_mip_table(json_table_config: str) -> str:
 #        raise
 
 
-def filter_brands( brands: list,
-                   target_var: str,
-                   mip_var_cfgs: dict,
-                   has_time_bnds: bool,
-                   input_vert_dim: Union[str, int] ) -> str:
+def filter_brands(brands: list,
+                  target_var: str,
+                  mip_var_cfgs: dict,
+                  has_time_bnds: bool,
+                  input_vert_dim: Union[str, int]) -> str:
     """
     Disambiguate multiple CMIP7 variable brands by comparing input data
     properties against each candidate brand's MIP dimension list.

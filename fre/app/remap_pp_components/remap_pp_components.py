@@ -14,6 +14,7 @@ from fre.app import helpers
 
 fre_logger = logging.getLogger(__name__)
 
+
 def verify_dirs(in_dir: str, out_dir: str):
     """
     Verify that the input and output directories exists and are directories
@@ -40,7 +41,8 @@ def verify_dirs(in_dir: str, out_dir: str):
     else:
         raise ValueError(f"Error: Output directory {out_dir} does not exist or is not a valid directory")
 
-def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: bool) -> str:
+
+def create_dir(out_dir: str, comp: str, freq: str, chunk: str, ens: str, dir_ts: bool) -> str:
     """
     Create the output directory structure
 
@@ -73,14 +75,15 @@ def create_dir(out_dir: str, comp: str, freq: str, chunk:str, ens:str, dir_ts: b
 
     # Create dir from outputDir
     os.chdir(out_dir)
-    Path(dirs).mkdir(parents=True,exist_ok=True)
+    Path(dirs).mkdir(parents=True, exist_ok=True)
 
     return dirs
+
 
 def freq_to_legacy(iso_dura: str) -> str:
     """
     Print Bronx-style frequency given an ISO8601 duration
-    
+
     :param iso_dura: frequency
     :type ise_dura: ISO str format
     :raises ValueError: if ISO duration can not be converted to Bronx-style frequency
@@ -88,29 +91,29 @@ def freq_to_legacy(iso_dura: str) -> str:
     :rtype: str
     """
 
-    if iso_dura=='P1Y':
+    if iso_dura == 'P1Y':
         freq_legacy = 'annual'
-    elif iso_dura=='P1M':
+    elif iso_dura == 'P1M':
         freq_legacy = 'monthly'
-    elif iso_dura=='P3M':
+    elif iso_dura == 'P3M':
         freq_legacy = 'seasonal'
-    elif iso_dura=='P1D':
+    elif iso_dura == 'P1D':
         freq_legacy = 'daily'
-    elif iso_dura=='PT120H':
+    elif iso_dura == 'PT120H':
         freq_legacy = '120hr'
-    elif iso_dura=='PT12H':
+    elif iso_dura == 'PT12H':
         freq_legacy = '12hr'
-    elif iso_dura=='PT8H':
+    elif iso_dura == 'PT8H':
         freq_legacy = '8hr'
-    elif iso_dura=='PT6H':
+    elif iso_dura == 'PT6H':
         freq_legacy = '6hr'
-    elif iso_dura=='PT4H':
+    elif iso_dura == 'PT4H':
         freq_legacy = '4hr'
-    elif iso_dura=='PT3H':
+    elif iso_dura == 'PT3H':
         freq_legacy = '3hr'
-    elif iso_dura=='PT2H':
+    elif iso_dura == 'PT2H':
         freq_legacy = '2hr'
-    elif iso_dura=='PT1H':
+    elif iso_dura == 'PT1H':
         freq_legacy = 'hourly'
     elif iso_dura in ['PT30M', 'PT0.5H']:
         freq_legacy = '30min'
@@ -118,6 +121,7 @@ def freq_to_legacy(iso_dura: str) -> str:
         raise ValueError(f"Could not convert ISO duration '{iso_dura}'")
 
     return freq_legacy
+
 
 def chunk_to_legacy(iso_dura: str) -> str:
     """
@@ -129,17 +133,18 @@ def chunk_to_legacy(iso_dura: str) -> str:
     :rtype: str 
     """
 
-    if iso_dura[0]=='P':
-        if iso_dura[-1:]=='M':
-            brx_freq=iso_dura[1]+'mo'
-        elif iso_dura[-1:]=='Y':
-            brx_freq=iso_dura[1]+'yr'
+    if iso_dura[0] == 'P':
+        if iso_dura[-1:] == 'M':
+            brx_freq = iso_dura[1]+'mo'
+        elif iso_dura[-1:] == 'Y':
+            brx_freq = iso_dura[1]+'yr'
         else:
             brx_freq = 'error'
     else:
         brx_freq = 'error'
 
     return brx_freq
+
 
 def freq_to_date_format(iso_freq: str) -> str:
     """
@@ -152,16 +157,17 @@ def freq_to_date_format(iso_freq: str) -> str:
     :rtype: str
     """
 
-    if iso_freq=='P1Y':
+    if iso_freq == 'P1Y':
         return 'CCYY'
-    elif iso_freq=='P1M':
+    elif iso_freq == 'P1M':
         return 'CCYYMM'
-    elif iso_freq=='P1D':
+    elif iso_freq == 'P1D':
         return 'CCYYMMDD'
-    elif (iso_freq[:2]=='PT') and (iso_freq[-1:]=='H'):
+    elif (iso_freq[:2] == 'PT') and (iso_freq[-1:] == 'H'):
         return 'CCYYMMDDThh'
     else:
         raise ValueError(f'ERROR: Unknown Frequency {iso_freq}')
+
 
 def truncate_date(date: str, freq: str) -> str:
     """
@@ -185,17 +191,18 @@ def truncate_date(date: str, freq: str) -> str:
                               stdout=subprocess.PIPE)
 
     bytedate = output.communicate()[0]
-    date=str(bytedate.decode())
+    date = str(bytedate.decode())
     fre_logger.info("truncatedate: %s", date)
 
-    #remove trailing newline
-    date=date[:(len(date)-1)]
+    # remove trailing newline
+    date = date[:(len(date)-1)]
 
-    #check for and remove 'T' if present
+    # check for and remove 'T' if present
     if not date.isnumeric():
-        date=date[:8]+date[-2:]
+        date = date[:8]+date[-2:]
 
     return date
+
 
 def search_files(product: str, var: list, source: str, freq: str,
                  current_chunk: str, begin: str) -> List[str]:
@@ -230,7 +237,7 @@ def search_files(product: str, var: list, source: str, freq: str,
             for v in var:
                 fre_logger.info("var: %s", v)
                 f = glob.glob(f"{source}.{v}*.nc")
-                if not f: #if glob returns empty list
+                if not f:  # if glob returns empty list
                     raise ValueError("Variable {v} could not be found or does not exist.")
                 files.extend(f)
     else:
@@ -249,7 +256,7 @@ def search_files(product: str, var: list, source: str, freq: str,
             for v in var:
                 fre_logger.info("var: %s", v)
                 f = glob.glob(f"{source}.{date}-*.{v}*.nc")
-                if not f: #if glob returns empty list
+                if not f:  # if glob returns empty list
                     raise ValueError("Variable {v} could not be found or does not exist.")
                 files.extend(f)
         if product == "av" and current_chunk == "P1Y":
@@ -257,6 +264,7 @@ def search_files(product: str, var: list, source: str, freq: str,
             files.extend(f)
 
     return files
+
 
 def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict) -> List[str]:
     """
@@ -281,8 +289,8 @@ def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict) 
                 f"{comp_info.get('type')}"
             )
 
-    ## Dictionary of variables associated with pp component source name
-    ## are retrieved through Jinjafilter get_variables.py
+    # Dictionary of variables associated with pp component source name
+    # are retrieved through Jinjafilter get_variables.py
     # 1. Loop through each element in dictionary passed
     # 2. match pp component source name with the requested source being assessed
     # 3. Save variables associated with that pp component
@@ -291,6 +299,7 @@ def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict) 
             v = src_vars[req_source]
 
     return v
+
 
 def get_sources(comp_info: dict, product: str) -> List[str]:
     """
@@ -314,6 +323,7 @@ def get_sources(comp_info: dict, product: str) -> List[str]:
 
     return sources
 
+
 def get_freq(comp_info: dict) -> List[str]:
     """
     Return the frequency
@@ -330,6 +340,7 @@ def get_freq(comp_info: dict) -> List[str]:
 
     return freq
 
+
 def get_chunk(comp_info: dict) -> List[str]:
     """
     Return the chunk size
@@ -345,6 +356,7 @@ def get_chunk(comp_info: dict) -> List[str]:
         chunk = comp_info.get("chunk")
 
     return chunk
+
 
 def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, current_chunk: str,
                         product: str, component: str, copy_tool: str, yaml_config: str,
@@ -389,7 +401,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
     fre_logger.info("    yaml config: %s", yaml_config)
     fre_logger.info("    dirTSWorkaround: %s", ts_workaround)
 
-    if not ens_mem:  ## if ens_mem is an empty string
+    if not ens_mem:  # if ens_mem is an empty string
         ens_mem = None
         fre_logger.info("    ens_mem: None")
     else:
@@ -399,7 +411,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
     exp_dir = Path(__file__).resolve().parents[3]
     path_to_yamlconfig = os.path.join(exp_dir, yaml_config)
     # Load and read yaml configuration
-    with open(path_to_yamlconfig,'r') as yml:
+    with open(path_to_yamlconfig, 'r') as yml:
         yml_info = yaml.safe_load(yml)
 
     # Verify the input and output directories
@@ -426,8 +438,8 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                 fre_logger.warning("Info not associated with component, %s, requested", comp)
                 continue
 
-            offline_srcs=[]
-            #if static but no static defined, skip
+            offline_srcs = []
+            # if static but no static defined, skip
             if product == "static":
                 if comp_info.get("static") is None:
                     fre_logger.warning('Product set to "static" but no static source requested defined')
@@ -441,7 +453,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
 
                     offline_srcs.append(static_info.get("offline_source"))
 
-            ## Loop through grid
+            # Loop through grid
             # Set grid type if component has xyInterp defined or not
             grid = []
             if "xyInterp" not in comp_info.keys():
@@ -459,7 +471,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                 else:
                     os.chdir(f"{input_dir}/{g}")
 
-                ## Loop through sources
+                # Loop through sources
                 sources = get_sources(comp_info, product)
                 for s in sources:
                     if ens_mem is not None:
@@ -469,12 +481,12 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                     if not os.path.exists(source_dir) and product == "av":
                         fre_logger.info("Source directory '%s' does not exist, "
                                         "but this could be expected, so skipping.",
-                                         source_dir)
+                                        source_dir)
                         continue
                     os.chdir(source_dir)
 
-                    ## Loop through freq
-                    freq = get_freq(comp_info) ###might have to be a list
+                    # Loop through freq
+                    freq = get_freq(comp_info)  # might have to be a list
 
                     for f in freq:
                         if ens_mem is not None:
@@ -482,8 +494,8 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                         else:
                             os.chdir(f"{input_dir}/{g}/{s}/{f}")
 
-                        ## Loop through chunk
-                        chunk = get_chunk(comp_info)  ## might have to be a list ...
+                        # Loop through chunk
+                        chunk = get_chunk(comp_info)  # might have to be a list ...
                         for c in chunk:
                             if c != current_chunk:
                                 fre_logger.warning(
@@ -499,19 +511,19 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                             # ts output is written to final location, av is not.
                             # so convert the ts only to bronx-style
                             if product == "ts":
-                                dirs = create_dir(out_dir = output_dir,
-                                                  comp = comp,
-                                                  freq = freq_to_legacy(f),
-                                                  chunk = chunk_to_legacy(c),
-                                                  ens = ens_mem,
-                                                  dir_ts = ts_workaround)
+                                dirs = create_dir(out_dir=output_dir,
+                                                  comp=comp,
+                                                  freq=freq_to_legacy(f),
+                                                  chunk=chunk_to_legacy(c),
+                                                  ens=ens_mem,
+                                                  dir_ts=ts_workaround)
                             else:
-                                dirs = create_dir(out_dir = output_dir,
-                                                  comp = comp,
-                                                  freq = f,
-                                                  chunk = c,
-                                                  ens = ens_mem,
-                                                  dir_ts = ts_workaround)
+                                dirs = create_dir(out_dir=output_dir,
+                                                  comp=comp,
+                                                  freq=f,
+                                                  chunk=c,
+                                                  ens=ens_mem,
+                                                  dir_ts=ts_workaround)
 
                             fre_logger.info("directory created: %s", dirs)
 
@@ -521,16 +533,16 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                             else:
                                 os.chdir(f"{input_dir}/{g}/{s}/{f}/{c}")
 
-                            ## VARIABLE INFORMATION for requested source
+                            # VARIABLE INFORMATION for requested source
                             # Note: variable filtering not done for offline static diagnostics
                             v = get_varlist(comp_info, product, s, src_vars_dict)
 
-                            files = search_files(product = product,
-                                                 var = v,
-                                                 source = s,
-                                                 freq = f,
-                                                 current_chunk = current_chunk,
-                                                 begin = begin_date)
+                            files = search_files(product=product,
+                                                 var=v,
+                                                 source=s,
+                                                 freq=f,
+                                                 current_chunk=current_chunk,
+                                                 begin=begin_date)
 
                             fre_logger.info("%d files found for component '%s', "
                                             "source '%s', "
@@ -551,7 +563,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                             os.chdir(output_dir)
 
                             for file in files:
-                                newfile1 = file.split(".",1)[1]
+                                newfile1 = file.split(".", 1)[1]
                                 newfile2 = f"{comp}.{newfile1}"
                                 # If file exists, remove it
                                 # (would exist if workflow was run previously)
@@ -570,20 +582,20 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                                             f"{input_dir}/{g}/{s}/{f}/{c}/{file}",
                                             f"{output_dir}/{dirs}/{newfile2}"]
 
-                                run = subprocess.run( link, check = False )
+                                run = subprocess.run(link, check=False)
                                 ret = run.returncode
 
                                 if ret != 0:
                                     if ens_mem is None:
                                         copy = [f"{copy_tool}",
                                                 f"{input_dir}/{g}/{s}/{f}/{c}/{file}",
-                                                f"{output_dir}/{dirs}/{newfile2}" ]
-                                        subprocess.run( copy, check = False )
+                                                f"{output_dir}/{dirs}/{newfile2}"]
+                                        subprocess.run(copy, check=False)
                                     else:
                                         copy = [f"{copy_tool}",
                                                 f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}/{file}",
-                                                f"{output_dir}/{dirs}/{newfile2}" ]
-                                        subprocess.run( copy, check = False )
+                                                f"{output_dir}/{dirs}/{newfile2}"]
+                                        subprocess.run(copy, check=False)
 
                             # Symlink or copy the offline diagnostic file for the
                             # specified component in the output directory.
@@ -600,14 +612,14 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                                                     "-s",
                                                     f"{src_file}",
                                                     f"{output_dir}/{dirs}"]
-                                    offline_link_run = subprocess.run( offline_link, check = False )
+                                    offline_link_run = subprocess.run(offline_link, check=False)
                                     offline_link_ret = offline_link_run.returncode
 
                                     if offline_link_ret != 0:
-                                        #raise ValueError("copy failed")
+                                        # raise ValueError("copy failed")
                                         offline_copy = ["{copy_tool}",
                                                         f"{src_file}",
                                                         f"{output_dir}/{dirs}"]
-                                        subprocess.run( offline_copy, check = False )
+                                        subprocess.run(offline_copy, check=False)
 
     fre_logger.info("Component remapping complete")

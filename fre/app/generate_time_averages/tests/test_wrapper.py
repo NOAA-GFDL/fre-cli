@@ -15,6 +15,7 @@ from fre.app.generate_time_averages import wrapper
 # ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198001-198012.aliq.nc
 # ts/regrid-xy/180_288.conserve_order2/atmos_month/P1M/P1Y/atmos_month.198101-198112.aliq.nc
 
+
 @pytest.fixture()
 def create_monthly_timeseries(tmp_path):
     """
@@ -93,6 +94,8 @@ def create_annual_timeseries(tmp_path):
     yield tmp_path
 
 # FRE-NCtool timavg.csh tests
+
+
 @pytest.mark.xfail(reason="no timavg.csh")
 def test_annual_av_from_monthly_ts(create_monthly_timeseries):
     """
@@ -117,6 +120,7 @@ def test_annual_av_from_monthly_ts(create_monthly_timeseries):
 
     for file_ in output_files:
         assert file_.exists()
+
 
 @pytest.mark.xfail(reason="no timavg.csh")
 def test_annual_av_from_annual_ts(create_annual_timeseries):
@@ -143,6 +147,7 @@ def test_annual_av_from_annual_ts(create_annual_timeseries):
     for file_ in output_files:
         assert file_.exists()
 
+
 @pytest.mark.xfail(reason="no timavg.csh")
 def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
     """
@@ -165,7 +170,7 @@ def test_monthly_av_from_monthly_ts(create_monthly_timeseries):
         output_dir / 'atmos_month.1980-1981.aliq',
     ]
     for f in output_files:
-        for i in range(1,13):
+        for i in range(1, 13):
             file_ = Path(str(f) + f".{i:02d}.nc")
             assert file_.exists()
 
@@ -266,7 +271,7 @@ def test_cdo_monthly_av_from_monthly_ts(create_monthly_timeseries):
         output_dir / 'atmos_month.1980-1981.aliq',
     ]
     for f in output_files:
-        for i in range(1,13):
+        for i in range(1, 13):
             file_ = Path(str(f) + f".{i:02d}.nc")
             assert file_.exists()
 
@@ -311,11 +316,11 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
 
         output_dir_fre = Path(fre_dir, 'av', grid, 'atmos_month', 'P1Y', output_interval)
         new_output_dir_fre = Path(create_monthly_timeseries, 'fre_av', grid, 'atmos_month', 'P1Y', output_interval)
-        new_output_dir_fre.mkdir(exist_ok = False, parents = True)
+        new_output_dir_fre.mkdir(exist_ok=False, parents=True)
 
         for file_ in output_files:
-            shutil.move( output_dir_fre / file_ , new_output_dir_fre / file_)
-            assert ( new_output_dir_fre / file_ ).exists()
+            shutil.move(output_dir_fre / file_, new_output_dir_fre / file_)
+            assert (new_output_dir_fre / file_).exists()
 
         # Run with CDO (on original test directory)
         print(f' fre app gen-time-averages-wrapper --cycle_point {cycle_point} \\ \n'
@@ -340,20 +345,21 @@ def test_cdo_fre_nctools_equivalence(create_monthly_timeseries):
             assert fre_file.exists(), f"fre-nctools output file {fre_file} does not exist"
 
             # Use nccmp to compare files if available, otherwise just check they exist
-            #if shutil.which('nccmp'):
+            # if shutil.which('nccmp'):
             result = subprocess.run(['nccmp', '-v', file_.split('.')[2], '-d', str(cdo_file), str(fre_file)],
-                                    capture_output = True, text = True, check = False)
+                                    capture_output=True, text=True, check=False)
             stdoutput = result.stdout
             stderror = result.stderr
 
             assert result.returncode == 0, stdoutput+'\n'+stderror
 
+
 def test_freq_not_valid_valueerror():
     with pytest.raises(ValueError):
-        wrapper.generate_wrapper(dir_ = 'some_in_dir',
-                                 cycle_point = '19800101T0000Z',
-                                 sources = ['source1','source2'],
-                                 input_interval = 'P1Y',
-                                 output_interval = 'P999Y',
-                                 frequency = 'FOO',
-                                 grid = 'BAR')
+        wrapper.generate_wrapper(dir_='some_in_dir',
+                                 cycle_point='19800101T0000Z',
+                                 sources=['source1', 'source2'],
+                                 input_interval='P1Y',
+                                 output_interval='P999Y',
+                                 frequency='FOO',
+                                 grid='BAR')

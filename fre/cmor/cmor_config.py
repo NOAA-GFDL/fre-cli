@@ -159,7 +159,7 @@ def cmor_config_subtool(
             component_name = Path(entry).name
 
             variable_list = f'{varlist_dir}/{era_upper}_{table_name}_{component_name}.list'
-            #variable_list = f'{varlist_dir}/{table_name}_{component_name}.list'
+            # variable_list = f'{varlist_dir}/{table_name}_{component_name}.list'
 
             # optionally regenerate
             if Path(variable_list).exists() and overwrite:
@@ -207,16 +207,15 @@ def cmor_config_subtool(
                     lines.append('')
                     lines.append(f"    - table_name: '{table_name}'")
                     lines.append(f"      freq: '{freq}'")
-                    lines.append( '      gridding:')
+                    lines.append('      gridding:')
                     lines.append(f'        <<: *{grid}')
-                    lines.append( '      target_components:')
+                    lines.append('      target_components:')
                     appended_table_header = True
 
                 lines.append(f"        - component_name: '{component_name}'")
                 lines.append(f"          variable_list: '{variable_list}'")
                 lines.append("          data_series_type: 'ts'")
                 lines.append("          chunk: *PP_CMIP_CHUNK")
-
 
     # ---- write output YAML ----
     if Path(output_yaml).exists():

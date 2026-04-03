@@ -49,7 +49,6 @@ non_regriddable_variables = [
 
 
 def get_grid_spec(datadict: dict) -> str:
-
     """
     Gets the mosaic.nc or grid_spec.nc file from the tar file specified in
     yaml["postprocess"]["settings"]["pp_grid_spec"]
@@ -68,16 +67,16 @@ def get_grid_spec(datadict: dict) -> str:
               input mosaic filename
     """
 
-    #get tar file containing the grid_spec file
+    # get tar file containing the grid_spec file
     pp_grid_spec_tar = datadict["yaml"]["postprocess"]["settings"]["pp_grid_spec"]
     fre_logger.debug(f"Going to untar this grid spec tarfile: {pp_grid_spec_tar}")
 
-    #untar grid_spec tar file into the current work directory
+    # untar grid_spec tar file into the current work directory
     if tarfile.is_tarfile(pp_grid_spec_tar):
         with tarfile.open(pp_grid_spec_tar, "r") as tar:
             tar.extractall()
 
-    #check for mosaic.nc first
+    # check for mosaic.nc first
     if Path("mosaic.nc").exists():
         grid_spec = "mosaic.nc"
     elif Path("grid_spec.nc").exists():
@@ -92,7 +91,6 @@ def get_grid_spec(datadict: dict) -> str:
 
 
 def get_input_mosaic(datadict: dict) -> str:
-
     """
     Gets the input mosaic filename from the grid_spec file.
 
@@ -110,17 +108,17 @@ def get_input_mosaic(datadict: dict) -> str:
 
     grid_spec = datadict["grid_spec"]
 
-    #gridspec variable name holding the mosaic filename information
+    # gridspec variable name holding the mosaic filename information
     match datadict["inputRealm"]:
         case "atmos": mosaic_key = "atm_mosaic_file"
         case "ocean": mosaic_key = "ocn_mosaic_file"
         case "land": mosaic_key = "lnd_mosaic_file"
 
-    #get mosaic filename
+    # get mosaic filename
     with xr.open_dataset(grid_spec) as dataset:
         mosaic_file = str(dataset[mosaic_key].data.astype(str))
 
-    #check if the mosaic file exists in the current directory
+    # check if the mosaic file exists in the current directory
     if not Path(mosaic_file).exists():
         raise IOError(f"Cannot find mosaic file {mosaic_file} in current work directory {work_dir}")
 
@@ -128,7 +126,6 @@ def get_input_mosaic(datadict: dict) -> str:
 
 
 def get_input_file(datadict: dict, source: str) -> str:
-
     """
     Formats the input file name where the input file contains the variable data that will be regridded.
 
@@ -159,7 +156,6 @@ def get_input_file(datadict: dict, source: str) -> str:
 
 
 def get_remap_file(datadict: dict) -> str:
-
     """
     Determines the remap filename based on the input mosaic filename, output grid size, and
     conservative order.  For example, this function will return the name
@@ -187,13 +183,13 @@ def get_remap_file(datadict: dict) -> str:
     nlat = datadict["output_nlat"]
     interp_method = datadict["interp_method"]
 
-    #define remap filename
+    # define remap filename
     remap_file = remap_dir/Path(f"{input_mosaic.stem}X{nlon}by{nlat}_{interp_method}.nc")
 
-    #check if remap file exists in remap_dir
+    # check if remap file exists in remap_dir
     if not remap_file.exists():
         fre_logger.warning(
-            f"Cannot find remap_file {remap_file}\n" \
+            f"Cannot find remap_file {remap_file}\n"
             f"Remap file {remap_file} will be generated and saved to directory {remap_dir}"
         )
 
@@ -201,7 +197,6 @@ def get_remap_file(datadict: dict) -> str:
 
 
 def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
-
     """
     Returns the scalar_fields argument for fregrid.
     Scalar_fields is a string of comma separated list of variables
@@ -222,7 +217,7 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
     mosaic_file = datadict["input_mosaic"]
     input_file = datadict["input_file"]
 
-    #add the proper suffix to the input filename
+    # add the proper suffix to the input filename
     with xr.open_dataset(mosaic_file) as dataset:
         input_file += ".tile1.nc" if dataset.sizes["ntiles"] > 1 else ".nc"
 
@@ -239,7 +234,6 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 
 
 def write_summary(datadict):
-
     """
     Logs a summary of the component that will be regridded in a human-readable format
     This function will log only if the logging level is set to INFO or lower
@@ -269,8 +263,7 @@ def regrid_xy(yamlfile: str,
               remap_dir: str,
               source: str,
               input_date: str = None,
-):
-
+              ):
     """
     Calls fregrid to regrid data in the specified source data file.
 
@@ -297,23 +290,23 @@ def regrid_xy(yamlfile: str,
     .. note:: All directories should be in absolute paths
     """
 
-    #check if input_dir exists
+    # check if input_dir exists
     if not Path(input_dir).exists():
         raise RuntimeError(f"Input directory {input_dir} containing the input data files does not exist")
 
-    #check if output_dir exists
+    # check if output_dir exists
     if not Path(output_dir).exists():
-        raise RuntimeError(f"Output directory {output_dir} where regridded data" \
-                            "will be outputted does not exist")
+        raise RuntimeError(f"Output directory {output_dir} where regridded data"
+                           "will be outputted does not exist")
 
-    #check if work_dir exists
+    # check if work_dir exists
     if not Path(work_dir).exists():
         raise RuntimeError(f"Specified working directory {work_dir} does not exist")
 
-    #work in working directory
+    # work in working directory
     with helpers.change_directory(work_dir):
 
-        #initialize datadict
+        # initialize datadict
         datadict = {}
 
         # load yamlfile to yamldict
@@ -345,8 +338,8 @@ def regrid_xy(yamlfile: str,
 
             # skip component if postprocess_on = False
             if not component["postprocess_on"]:
-                fre_logger.warning(f"postprocess_on=False for {source} in component {component['type']}." \
-                                    "Skipping {source}")
+                fre_logger.warning(f"postprocess_on=False for {source} in component {component['type']}."
+                                   "Skipping {source}")
                 continue
 
             # skip component if xyInterp is not set
@@ -374,7 +367,7 @@ def regrid_xy(yamlfile: str,
             )
             output_subdir.mkdir(parents=True, exist_ok=True)
 
-            #construct fregrid command
+            # construct fregrid command
             fregrid_command = [
                 "fregrid",
                 "--debug",
@@ -392,10 +385,10 @@ def regrid_xy(yamlfile: str,
             ]
             fre_logger.debug(f"fregrid command: {fregrid_command}")
 
-            #execute fregrid command
+            # execute fregrid command
             fregrid_job = subprocess.run(fregrid_command, capture_output=True, text=True)
 
-            #print job useful information
+            # print job useful information
             if fregrid_job.returncode == 0:
                 fre_logger.info(fregrid_job.stdout.split("\n")[-3:])
             else:

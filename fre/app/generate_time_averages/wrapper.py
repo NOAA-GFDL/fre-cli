@@ -12,6 +12,7 @@ from . import generate_time_averages
 fre_logger = logging.getLogger(__name__)
 one_year = DurationParser().parse('P1Y')
 
+
 def extract_variables_from_files(files: list[str]) -> list[str]:
     """
     Utility to extract "variable" part of a list of input files,
@@ -99,7 +100,7 @@ def generate_wrapper(cycle_point: str,
             # mon timeseries => mon climo
             if frequency == "yr":
                 # prefer the annual timeseries if it's there
-                subdir_yr =  Path(dir_ / 'ts' / grid / source / 'P1Y' / str(input_interval))
+                subdir_yr = Path(dir_ / 'ts' / grid / source / 'P1Y' / str(input_interval))
                 subdir_mon = Path(dir_ / 'ts' / grid / source / 'P1M' / str(input_interval))
                 if subdir_yr.exists():
                     results = glob.glob(str(subdir_yr / f"{source}.{yyyy}-{zzzz}.*.nc"))
@@ -142,8 +143,8 @@ def generate_wrapper(cycle_point: str,
 
         # then run the climo tool for each variable
         number_of_files = output_interval.get_seconds() / input_interval.get_seconds()
-        recurrence = TimeRecurrenceParser().parse( 'R' + str(int(number_of_files)) + '/' + \
-                                                   f"{cycle_point.year:04d}" + '/' + str(input_interval) )
+        recurrence = TimeRecurrenceParser().parse('R' + str(int(number_of_files)) + '/' +
+                                                  f"{cycle_point.year:04d}" + '/' + str(input_interval))
 
         for var in variables:
             fre_logger.debug("Variable loop: averaging variable %s", var)
@@ -175,8 +176,8 @@ def generate_wrapper(cycle_point: str,
             subdir.mkdir(parents=True, exist_ok=True)
 
             if frequency == "yr":
-                generate_time_averages.generate_time_average(infile = input_files, outfile = str(output_file),
-                                                             pkg = pkg, var = var, unwgt = True, avg_type = 'all')
+                generate_time_averages.generate_time_average(infile=input_files, outfile=str(output_file),
+                                                             pkg=pkg, var=var, unwgt=True, avg_type='all')
             elif frequency == "mon":
-                generate_time_averages.generate_time_average(infile = input_files, outfile = str(output_file),
-                                                             pkg = pkg, var = var, unwgt = True, avg_type = 'month')
+                generate_time_averages.generate_time_average(infile=input_files, outfile=str(output_file),
+                                                             pkg=pkg, var=var, unwgt=True, avg_type='month')

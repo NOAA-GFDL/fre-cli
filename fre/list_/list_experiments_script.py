@@ -8,13 +8,14 @@ import yaml
 
 from fre.yamltools.info_parsers import pp_info_parser as ppip
 
-## to-do: figure out validation
+# to-do: figure out validation
 # Imports associated with commented block
 # from pathlib import Path
 # from fre.yamltools import helpers
 # from fre.yamltools import combine_yamls_script as cy
 
 fre_logger = logging.getLogger(__name__)
+
 
 def list_experiments_subtool(yamlfile: str):
     """
@@ -31,13 +32,13 @@ def list_experiments_subtool(yamlfile: str):
     # Create pp yaml instance
     yamldict = ppip.InitPPYaml(yamlfile, exp, platform, target)
     yaml_str = yamldict.combine_model()
-    yaml_dict = yaml.load(yaml_str, Loader = yaml.Loader)
+    yaml_dict = yaml.load(yaml_str, Loader=yaml.Loader)
 
-## COULD HAVE been one way to validate but section we'd want to parse was
-## cleaned in final/"combined" yaml information
-## Currently not a way to validate model yaml information because we only
-## have schemas for the final "combined" compile or pp information (both
-## of which remove the "experiments" section I believe
+# COULD HAVE been one way to validate but section we'd want to parse was
+# cleaned in final/"combined" yaml information
+# Currently not a way to validate model yaml information because we only
+# have schemas for the final "combined" compile or pp information (both
+# of which remove the "experiments" section I believe
 #    exp = yamlfile.split("/")[-1].split(".")[0]
 #    platform = "None"
 #    target = "None"

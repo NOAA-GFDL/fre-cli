@@ -1,7 +1,8 @@
 import yaml
 
+
 class platforms ():
-    def __init__(self,platforminfo):
+    def __init__(self, platforminfo):
         """
         Param:
             - self The platform yaml object
@@ -10,33 +11,33 @@ class platforms ():
         """
         self.yaml = platforminfo
 
-        ## Check the yaml for errors/omissions
-        ## Loop through the platforms
+        # Check the yaml for errors/omissions
+        # Loop through the platforms
         for p in self.yaml:
-            ## Check the platform name
+            # Check the platform name
             try:
                 p["name"]
             except:
                 raise Exception("At least one of the platforms is missing a name in "+fname+"\n")
-            ## Check the compiler
+            # Check the compiler
             try:
                 p["compiler"]
             except:
                 raise Exception("You must specify a compiler in your "+p["name"]+" platform in the file "+fname+"\n")
-            ## Check for list of commands that include modules to initialize, load, and unload
+            # Check for list of commands that include modules to initialize, load, and unload
             try:
                 p["envSetup"]
             except:
-                p["envSetup"]=[""]
-            ## Get the root for the build
+                p["envSetup"] = [""]
+            # Get the root for the build
             try:
                 p["modelRoot"]
             except:
                 p["modelRoot"] = "/apps"
-            ## Check if we are working with a container and get the info for that
+            # Check if we are working with a container and get the info for that
             try:
                 p["container"]
-            ## When not doing a container build, this should all be set to empty strings and Falses
+            # When not doing a container build, this should all be set to empty strings and Falses
             except:
                 p["container"] = False
                 p["RUNenv"] = [""]
@@ -48,69 +49,76 @@ class platforms ():
                 p["containerOutputLocation"] = ""
                 p["volume"] = ""
             if p["container"]:
-                ## Check the container builder
+                # Check the container builder
                 try:
                     p["containerBuild"]
                 except:
-                    raise Exception("Platform "+p["name"]+": You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
+                    raise Exception(
+                        "Platform "+p["name"]+": You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n")
                 if p["containerBuild"] != "podman" and p["containerBuild"] != "docker":
-                    raise ValueError("Platform "+p["name"]+": Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
-                ## Get the name of the base container
+                    raise ValueError(
+                        "Platform "+p["name"]+": Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
+                # Get the name of the base container
                 try:
                     p["containerBase"]
                 except:
-                    raise NameError("Platform "+p["name"]+": You must specify the base container you wish to use to build your application")
-                ## Check if this is a 2 step (multi stage) build
+                    raise NameError(
+                        "Platform "+p["name"]+": You must specify the base container you wish to use to build your application")
+                # Check if this is a 2 step (multi stage) build
                 try:
                     p["container2step"]
                 except:
                     p["container2step"] = False
-                ## Get the base for the second stage of the build
+                # Get the base for the second stage of the build
                 if p["container2step"]:
                     try:
                         p["container2base"]
                     except:
-                        raise NameError ("Platform "+p["name"]+": container2step is True, so you must define a container2base\n")
-                    ## Check if there is anything special to copy over
+                        raise NameError("Platform "+p["name"] +
+                                        ": container2step is True, so you must define a container2base\n")
+                    # Check if there is anything special to copy over
                 else:
-                    ## There should not be a second base if this is not a 2 step build
+                    # There should not be a second base if this is not a 2 step build
                     try:
                         p["container2base"]
                     except:
                         p["container2base"] = ""
                     else:
-                        raise ValueError ("Platform "+p["name"]+": You defined container2base "+p["container2base"]+" but container2step is False\n")
-                ## Get any commands to execute in the dockerfile RUN command
+                        raise ValueError("Platform "+p["name"]+": You defined container2base " +
+                                         p["container2base"]+" but container2step is False\n")
+                # Get any commands to execute in the dockerfile RUN command
                 try:
                     p["RUNenv"]
                 except:
                     p["RUNenv"] = ""
-                ## Check the location of the volume that should be mounted
+                # Check the location of the volume that should be mounted
                 try:
                     p["volume"]
                 except:
-                    p["volume"] = "" 
-                ## Check the container runner
+                    p["volume"] = ""
+                # Check the container runner
                 try:
                     p["containerRun"]
                 except:
-                    raise Exception("You must specify the program used to run the container (containerRun) on the "+p["name"]+" platform in the file "+fname+"\n")
+                    raise Exception("You must specify the program used to run the container (containerRun) on the " +
+                                    p["name"]+" platform in the file "+fname+"\n")
                 if p["containerRun"] != "apptainer" and p["containerRun"] != "singularity":
-                    raise ValueError("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n")
+                    raise ValueError("Container builds only supported with apptainer, but you listed " +
+                                     p["containerRun"]+"\n")
 
-                ## Get the path to where the output model container will be located
+                # Get the path to where the output model container will be located
                 try:
                     p["containerOutputLocation"]
                 except:
                     p["containerOutputLocation"] = ""
             else:
-                ## Find the location of the mkmf template
+                # Find the location of the mkmf template
                 try:
                     p["mkTemplate"]
                 except:
                     raise ValueError("The platform "+p["name"]+" must specify a mkTemplate \n")
 
-    def hasPlatform(self,name):
+    def hasPlatform(self, name):
         """
         Brief: Checks if the platform yaml has the named platform
         """
@@ -125,25 +133,27 @@ class platforms ():
         """
         return self.yaml
 
-    def getPlatformFromName(self,name):
+    def getPlatformFromName(self, name):
         """
         Brief: Get the platform information from the name of the platform
         """
         for p in self.yaml:
             if p["name"] == name:
                 return p
-    def getContainerInfoFromName(self,name):
+
+    def getContainerInfoFromName(self, name):
         """
         Brief: Return a tuple of the container information
         """
         for p in self.yaml:
             if p["name"] == name:
-                return (p["container"], \
-                p["RUNenv"], \
-                p["containerBuild"], \
-                p["containerRun"], \
-                p["containerBase"], \
-                p["container2step"])
+                return (p["container"],
+                        p["RUNenv"],
+                        p["containerBuild"],
+                        p["containerRun"],
+                        p["containerBase"],
+                        p["container2step"])
+
     def isContainer(self, name):
         """
         Brief: Returns boolean of if this platform is a container based on the name
@@ -151,14 +161,16 @@ class platforms ():
         for p in self.yaml:
             if p["name"] == name:
                 return p["container"]
-    def getContainerImage(self,name):
+
+    def getContainerImage(self, name):
         """
         Brief: Returns the image name from the platform
         """
         for p in self.yaml:
             if p["name"] == name:
                 return p["containerBase"]
-    def getContainer2base(self,name):
+
+    def getContainer2base(self, name):
         """
         Brief: returns the image to be used in the second step of the Dockerfile
         """

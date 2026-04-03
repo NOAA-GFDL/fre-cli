@@ -8,10 +8,11 @@ from . import make_workflow_name
 
 fre_logger = logging.getLogger(__name__)
 
-def trigger(experiment = None, platform = None, target = None, time = None):
+
+def trigger(experiment=None, platform=None, target=None, time=None):
     """
     Trigger the postprocessing tasks for one segment of the history.
-    
+
     :param experiment: One of the postprocessing experiment names from the
         yaml displayed by fre list exps -y $yamlfile
         (e.g. c96L65_am5f4b4r0_amip), default None
@@ -31,11 +32,11 @@ def trigger(experiment = None, platform = None, target = None, time = None):
         the first chunk of a filename (19790101.atmos_tracer.tile6.nc).
     """
     if None in [experiment, platform, target, time]:
-        raise ValueError( 'experiment, platform, target and time must all not be None.'
-                          'currently, their values are...'
-                          f'{experiment} / {platform} / {target} / {time}')
+        raise ValueError('experiment, platform, target and time must all not be None.'
+                         'currently, their values are...'
+                         f'{experiment} / {platform} / {target} / {time}')
 
-    #name = experiment + '__' + platform + '__' + target
+    # name = experiment + '__' + platform + '__' + target
     workflow_name = make_workflow_name(experiment, platform, target)
     cmd = f"cylc trigger {workflow_name}//{time}/pp-starter"
     fre_logger.debug('running the following command: ')

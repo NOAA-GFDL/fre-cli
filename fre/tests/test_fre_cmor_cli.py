@@ -26,14 +26,15 @@ from fre import fre
 runner = CliRunner()
 
 # where are we? we're running pytest from the base directory of this repo
-#ROOTDIR = 'fre/tests/test_files'
-ROOTDIR = str( Path( fre.__file__ ).parent ) + '/tests/test_files'
+# ROOTDIR = 'fre/tests/test_files'
+ROOTDIR = str(Path(fre.__file__).parent) + '/tests/test_files'
 
 # these unit tests should be more about the cli, rather than the workload
-YYYYMMDD=date.today().strftime('%Y%m%d')
+YYYYMMDD = date.today().strftime('%Y%m%d')
 
 COPIED_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
 ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
+
 
 def test_setup_test_files():
     """ set-up test: copy and rename NetCDF file created in test_fre_cmor_run_subtool.py """
@@ -48,17 +49,18 @@ def test_setup_test_files():
     assert Path(COPIED_NC_FILEPATH).exists()
 
 
-
 # fre cmor
 def test_cli_fre_cmor():
     ''' fre cmor '''
     result = runner.invoke(fre.fre, args=["cmor"])
     assert result.exit_code == 2
 
+
 def test_cli_fre_cmor_help():
     ''' fre cmor --help '''
     result = runner.invoke(fre.fre, args=["cmor", "--help"])
     assert result.exit_code == 0
+
 
 def test_cli_fre_cmor_help_and_debuglog():
     ''' fre -vv -l TEST_FOO_LOG.log cmor --help '''
@@ -70,14 +72,15 @@ def test_cli_fre_cmor_help_and_debuglog():
     assert result.exit_code == 0
     assert Path("TEST_FOO_LOG.log").exists()
 
-    log_text_line_1='[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n' # pylint: disable=line-too-long
-    log_text_line_2='[DEBUG:                  fre.py:                     fre] click entry-point function call done.\n' # pylint: disable=line-too-long
-    with open( "TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
-        line_list=log_text.readlines()
+    log_text_line_1 = '[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n'  # pylint: disable=line-too-long
+    log_text_line_2 = '[DEBUG:                  fre.py:                     fre] click entry-point function call done.\n'  # pylint: disable=line-too-long
+    with open("TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
+        line_list = log_text.readlines()
         assert log_text_line_1 in line_list[0]
         assert log_text_line_2 in line_list[1]
 
     Path("TEST_FOO_LOG.log").unlink()
+
 
 def test_cli_fre_cmor_help_and_infolog():
     ''' fre -v -l TEST_FOO_LOG.log cmor --help '''
@@ -89,12 +92,13 @@ def test_cli_fre_cmor_help_and_infolog():
     assert result.exit_code == 0
     assert Path("TEST_FOO_LOG.log").exists()
 
-    log_text_line_1='[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n' # pylint: disable=line-too-long
-    with open( "TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
-        line_list=log_text.readlines()
+    log_text_line_1 = '[ INFO:                  fre.py:                     fre] fre_file_handler added to base_fre_logger\n'  # pylint: disable=line-too-long
+    with open("TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
+        line_list = log_text.readlines()
         assert log_text_line_1 in line_list[0]
 
     Path("TEST_FOO_LOG.log").unlink()
+
 
 def test_cli_fre_cmor_help_and_quietlog():
     ''' fre -q -l TEST_FOO_LOG.log cmor --help '''
@@ -106,11 +110,12 @@ def test_cli_fre_cmor_help_and_quietlog():
     assert result.exit_code == 0
     assert Path("TEST_FOO_LOG.log").exists()
 
-    with open( "TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
-        line_list=log_text.readlines()
+    with open("TEST_FOO_LOG.log", 'r', encoding='utf-8') as log_text:
+        line_list = log_text.readlines()
         assert line_list == []
 
     Path("TEST_FOO_LOG.log").unlink()
+
 
 def test_cli_fre_cmor_opt_dne():
     ''' fre cmor optionDNE '''
@@ -118,31 +123,38 @@ def test_cli_fre_cmor_opt_dne():
     assert result.exit_code == 2
 
 # fre cmor yaml
+
+
 def test_cli_fre_cmor_yaml():
     ''' fre cmor yaml '''
     result = runner.invoke(fre.fre, args=["cmor", "yaml"])
     assert result.exit_code == 2
+
 
 def test_cli_fre_cmor_yaml_help():
     ''' fre cmor yaml --help '''
     result = runner.invoke(fre.fre, args=["cmor", "yaml", "--help"])
     assert result.exit_code == 0
 
+
 def test_cli_fre_cmor_yaml_opt_dne():
     ''' fre cmor yaml optionDNE '''
     result = runner.invoke(fre.fre, args=["cmor", "yaml", "optionDNE"])
     assert result.exit_code == 2
 
-TEST_AM5_YAML_PATH="fre/yamltools/tests/AM5_example/am5.yaml"
-TEST_CMOR_YAML_PATH="fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
+
+TEST_AM5_YAML_PATH = "fre/yamltools/tests/AM5_example/am5.yaml"
+TEST_CMOR_YAML_PATH = "fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
+
+
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml --dry_run -y TEST_AM5_YAML_PATH ... --output FOO_cmor.yaml '''
     # only pp_dir is needed by cmor_yamler; history/analysis dirs came from settings.yaml
     # which is now deprecated for the cmor path
-    Path( os.path.expandvars(
-        'fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/' + \
+    Path(os.path.expandvars(
+        'fre/tests/test_files/ascii_files/mock_archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/' +
         'ncrc5.intel-prod-openmp/pp'
-        ) ).mkdir(parents=True, exist_ok=True)
+    )).mkdir(parents=True, exist_ok=True)
     if Path('FOO_cmor.yaml').exists():
         Path('FOO_cmor.yaml').unlink()
     result = runner.invoke(fre.fre, args=["-v", "-v", "cmor", "yaml", "--dry_run",
@@ -150,12 +162,12 @@ def test_cli_fre_cmor_yaml_case1():
                                           "-e", "c96L65_am5f7b12r1_amip",
                                           "-p", "ncrc5.intel",
                                           "-t", "prod-openmp",
-                                          "--output", "FOO_cmor.yaml" ])
+                                          "--output", "FOO_cmor.yaml"])
 
-    assert all ( [ Path(TEST_AM5_YAML_PATH).exists(), # input, unparsed, model-yaml file
-                   Path(TEST_CMOR_YAML_PATH).exists(), # input, unparsed, tool-yaml file
-                   Path('FOO_cmor.yaml').exists(), #output, merged, parsed, model+tool yaml-file
-                   result.exit_code == 0 ] )
+    assert all([Path(TEST_AM5_YAML_PATH).exists(),  # input, unparsed, model-yaml file
+                Path(TEST_CMOR_YAML_PATH).exists(),  # input, unparsed, tool-yaml file
+                Path('FOO_cmor.yaml').exists(),  # output, merged, parsed, model+tool yaml-file
+                result.exit_code == 0])
 
 
 # fre cmor run
@@ -164,15 +176,18 @@ def test_cli_fre_cmor_run():
     result = runner.invoke(fre.fre, args=["cmor", "run"])
     assert result.exit_code == 2
 
+
 def test_cli_fre_cmor_run_help():
     ''' fre cmor run --help '''
     result = runner.invoke(fre.fre, args=["cmor", "run", "--help"])
     assert result.exit_code == 0
 
+
 def test_cli_fre_cmor_run_opt_dne():
     ''' fre cmor run optionDNE '''
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
+
 
 def test_cli_fre_cmor_run_case1():
     ''' fre cmor run, test-use case '''
@@ -186,7 +201,7 @@ def test_cli_fre_cmor_run_case1():
     grid_label = 'gr'
     grid_desc = 'FOO_BAR_PLACEHOLD'
     nom_res = '10000 km'
-    calendar='julian'
+    calendar = 'julian'
 
     # determined by cmor_run_subtool
     cmor_creates_dir = \
@@ -198,26 +213,26 @@ def test_cli_fre_cmor_run_case1():
 
     # FYI/unneeded, this is mostly for reference
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
-    full_inputfile=f"{indir}/{filename}"
+    full_inputfile = f"{indir}/{filename}"
 
     # clean up, lest we fool ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
-    result = runner.invoke(fre.fre, args = [ "-v", "-v",
-                                             "cmor", "run", "--run_one",
-                                             "--indir", indir,
-                                             "--varlist", varlist,
-                                             "--table_config", table_config,
-                                             "--exp_config", exp_config,
-                                             "--outdir",  outdir,
-                                             "--calendar", calendar,
-                                             "--grid_label", grid_label,
-                                             "--grid_desc", grid_desc,
-                                             "--nom_res", nom_res ] )
-    assert all ( [ result.exit_code == 0,
-                   Path(full_outputfile).exists(),
-                   Path(full_inputfile).exists() ] )
+    result = runner.invoke(fre.fre, args=["-v", "-v",
+                                          "cmor", "run", "--run_one",
+                                          "--indir", indir,
+                                          "--varlist", varlist,
+                                          "--table_config", table_config,
+                                          "--exp_config", exp_config,
+                                          "--outdir",  outdir,
+                                          "--calendar", calendar,
+                                          "--grid_label", grid_label,
+                                          "--grid_desc", grid_desc,
+                                          "--nom_res", nom_res])
+    assert all([result.exit_code == 0,
+                Path(full_outputfile).exists(),
+                Path(full_inputfile).exists()])
 
 
 def test_cli_fre_cmor_run_case2():
@@ -232,7 +247,7 @@ def test_cli_fre_cmor_run_case2():
     grid_label = 'gr'
     grid_desc = 'FOO_BAR_PLACEHOLD'
     nom_res = '10000 km'
-    calendar='julian'
+    calendar = 'julian'
 
     # determined by cmor_run_subtool
     cmor_creates_dir = \
@@ -244,37 +259,41 @@ def test_cli_fre_cmor_run_case2():
 
     # FYI/unneeded, this is mostly for reference
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
-    full_inputfile=f"{indir}/{filename}"
+    full_inputfile = f"{indir}/{filename}"
 
     # clean up, lest we fool ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
-    result = runner.invoke(fre.fre, args = ["-v", "-v",
-                                            "cmor", "run", "--run_one",
-                                            "--indir", indir,
-                                            "--varlist", varlist,
-                                            "--table_config", table_config,
-                                            "--exp_config", exp_config,
-                                            "--outdir",  outdir,
-                                            "--calendar", calendar,
-                                             "--grid_label", grid_label,
-                                             "--grid_desc", grid_desc,
-                                             "--nom_res", nom_res ] )
-    assert all ( [ result.exit_code == 0,
-                   Path(full_outputfile).exists(),
-                   Path(full_inputfile).exists() ] )
+    result = runner.invoke(fre.fre, args=["-v", "-v",
+                                          "cmor", "run", "--run_one",
+                                          "--indir", indir,
+                                          "--varlist", varlist,
+                                          "--table_config", table_config,
+                                          "--exp_config", exp_config,
+                                          "--outdir",  outdir,
+                                          "--calendar", calendar,
+                                          "--grid_label", grid_label,
+                                          "--grid_desc", grid_desc,
+                                          "--nom_res", nom_res])
+    assert all([result.exit_code == 0,
+                Path(full_outputfile).exists(),
+                Path(full_inputfile).exists()])
 
 # fre cmor find
+
+
 def test_cli_fre_cmor_find():
     ''' fre cmor find '''
     result = runner.invoke(fre.fre, args=["cmor", "find"])
     assert result.exit_code == 2
 
+
 def test_cli_fre_cmor_find_help():
     ''' fre cmor find --help '''
     result = runner.invoke(fre.fre, args=["cmor", "find", "--help"])
     assert result.exit_code == 0
+
 
 def test_cli_fre_cmor_find_opt_dne():
     ''' fre cmor find optionDNE '''
@@ -286,17 +305,16 @@ def test_cli_fre_cmor_find_cmip6_case1():
     ''' fre cmor find, test-use case searching for variables in cmip6 tables '''
     result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
                                           "--varlist", "fre/tests/test_files/varlist",
-                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
+                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"])
     assert result.exit_code == 0
+
 
 def test_cli_fre_cmor_find_cmip6_case2():
     ''' fre cmor find, test-use case searching for variables in cmip6 tables '''
     result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
                                           "--opt_var_name", "sos",
-                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
+                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"])
     assert result.exit_code == 0
-
-
 
 
 def test_cli_fre_cmor_run_cmip7_case1():
@@ -311,7 +329,7 @@ def test_cli_fre_cmor_run_cmip7_case1():
     grid_label = 'g99'
     grid_desc = 'FOO_BAR_PLACEHOLD'
     nom_res = '10000 km'
-    calendar='julian'
+    calendar = 'julian'
 
     # determined by cmor_run_subtool
     cmor_creates_dir = \
@@ -323,26 +341,26 @@ def test_cli_fre_cmor_run_cmip7_case1():
 
     # FYI/unneeded, this is mostly for reference
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
-    full_inputfile=f"{indir}/{filename}"
+    full_inputfile = f"{indir}/{filename}"
 
     # clean up, lest we fool ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
-    result = runner.invoke(fre.fre, args = [ "-v", "-v",
-                                             "cmor", "run", "--run_one",
-                                             "--indir", indir,
-                                             "--varlist", varlist,
-                                             "--table_config", table_config,
-                                             "--exp_config", exp_config,
-                                             "--outdir",  outdir,
-                                             "--calendar", calendar,
-                                             "--grid_label", grid_label,
-                                             "--grid_desc", grid_desc,
-                                             "--nom_res", nom_res ] )
-    assert all ( [ result.exit_code == 0,
-                   Path(full_outputfile).exists(),
-                   Path(full_inputfile).exists() ] )
+    result = runner.invoke(fre.fre, args=["-v", "-v",
+                                          "cmor", "run", "--run_one",
+                                          "--indir", indir,
+                                          "--varlist", varlist,
+                                          "--table_config", table_config,
+                                          "--exp_config", exp_config,
+                                          "--outdir",  outdir,
+                                          "--calendar", calendar,
+                                          "--grid_label", grid_label,
+                                          "--grid_desc", grid_desc,
+                                          "--nom_res", nom_res])
+    assert all([result.exit_code == 0,
+                Path(full_outputfile).exists(),
+                Path(full_inputfile).exists()])
 
 
 def test_cli_fre_cmor_run_cmip7_case2():
@@ -357,7 +375,7 @@ def test_cli_fre_cmor_run_cmip7_case2():
     grid_label = 'g99'
     grid_desc = 'FOO_BAR_PLACEHOLD'
     nom_res = '10000 km'
-    calendar='julian'
+    calendar = 'julian'
 
     # determined by cmor_run_subtool
     cmor_creates_dir = \
@@ -369,26 +387,26 @@ def test_cli_fre_cmor_run_cmip7_case2():
 
     # FYI/unneeded, this is mostly for reference
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
-    full_inputfile=f"{indir}/{filename}"
+    full_inputfile = f"{indir}/{filename}"
 
     # clean up, lest we fool ourselves
     if Path(full_outputfile).exists():
         Path(full_outputfile).unlink()
 
-    result = runner.invoke(fre.fre, args = [ "-v", "-v",
-                                             "cmor", "run", "--run_one",
-                                             "--indir", indir,
-                                             "--varlist", varlist,
-                                             "--table_config", table_config,
-                                             "--exp_config", exp_config,
-                                             "--outdir",  outdir,
-                                             "--calendar", calendar,
-                                             "--grid_label", grid_label,
-                                             "--grid_desc", grid_desc,
-                                             "--nom_res", nom_res ] )
-    assert all ( [ result.exit_code == 0,
-                   Path(full_outputfile).exists(),
-                   Path(full_inputfile).exists() ] )
+    result = runner.invoke(fre.fre, args=["-v", "-v",
+                                          "cmor", "run", "--run_one",
+                                          "--indir", indir,
+                                          "--varlist", varlist,
+                                          "--table_config", table_config,
+                                          "--exp_config", exp_config,
+                                          "--outdir",  outdir,
+                                          "--calendar", calendar,
+                                          "--grid_label", grid_label,
+                                          "--grid_desc", grid_desc,
+                                          "--nom_res", nom_res])
+    assert all([result.exit_code == 0,
+                Path(full_outputfile).exists(),
+                Path(full_inputfile).exists()])
 
 
 # fre cmor config
@@ -397,10 +415,12 @@ def test_cli_fre_cmor_config():
     result = runner.invoke(fre.fre, args=["cmor", "config"])
     assert result.exit_code == 2
 
+
 def test_cli_fre_cmor_config_help():
     ''' fre cmor config --help '''
     result = runner.invoke(fre.fre, args=["cmor", "config", "--help"])
     assert result.exit_code == 0
+
 
 def test_cli_fre_cmor_config_opt_dne():
     ''' fre cmor config optionDNE '''
@@ -419,7 +439,7 @@ def test_cli_fre_cmor_config_case1():
     comp_ts_dir.mkdir(parents=True, exist_ok=True)
 
     # make an ice component dir with no chunk-dir to skip accordingly
-    (mock_pp_dir / 'ice' / 'ts' / 'monthly' ).mkdir(parents=True, exist_ok=True)
+    (mock_pp_dir / 'ice' / 'ts' / 'monthly').mkdir(parents=True, exist_ok=True)
 
     # make a land component dir with no ts dir to skip accordingly
     (mock_pp_dir / 'land' / 'av').mkdir(parents=True, exist_ok=True)
@@ -502,10 +522,12 @@ def test_cli_fre_cmor_varlist():
     result = runner.invoke(fre.fre, args=["cmor", "varlist"])
     assert result.exit_code == 2
 
+
 def test_cli_fre_cmor_varlist_help():
     ''' fre cmor varlist --help '''
     result = runner.invoke(fre.fre, args=["cmor", "varlist", "--help"])
     assert result.exit_code == 0
+
 
 def test_cli_fre_cmor_varlist_opt_dne():
     ''' fre cmor varlist optionDNE '''

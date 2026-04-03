@@ -17,9 +17,11 @@ def temp_path():
     yield temp_path
     os.remove(temp_path)
 
+
 def test_yaml_load_reads_yaml_file_correctly(temp_path):
     loaded = yaml_load(temp_path)
     assert loaded == {'foo': 'bar', 'list': [1, 2, 3]}
+
 
 def test_yaml_load_raises_file_not_found():
     with pytest.raises(FileNotFoundError):

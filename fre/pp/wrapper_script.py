@@ -23,14 +23,15 @@ from .status_script import status_subtool
 
 fre_logger = logging.getLogger(__name__)
 
-def run_all_fre_pp_steps(experiment = None, platform = None, target = None,
-                         config_file = None, branch = None, time = None):
+
+def run_all_fre_pp_steps(experiment=None, platform=None, target=None,
+                         config_file=None, branch=None, time=None):
     '''
     Wrapper script for all the steps of the fre2 pp infrastructure. 
-    
+
     Calls config_file, checkout_template, yaml_info, install_subtool, pp_run_subtool,
     (trigger) and status_subtool in sequence. (trigger) is an optional step.
-    
+
     :param experiment: One of the postprocessing experiment names from the yaml displayed
         by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str

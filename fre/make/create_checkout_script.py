@@ -22,15 +22,16 @@ from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 # set up logging
 fre_logger = logging.getLogger(__name__)
 
-def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str, 
+
+def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str,
                              parallel_cmd: str, execute: bool):
     """
     This function baremetal_checkout_write is called by checkout_create in order to
-    
+
       - Extract compilation specifications from the parsed YAML configuration
       - Generate a checkout script to the source directory. The source directory is
         defined within the 'modelRoot' variable in the "platforms" section of the combined YAML
-      
+
 
     :param model_yaml: "freyaml" class object containing a parsed and validated yaml dictionary 
                        containing the "compile" specification
@@ -56,11 +57,12 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
     if execute:
         fre_checkout.run()
 
+
 def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir: str,
                              jobs: str, parallel_cmd: str):
     """
     This function container_checkout_write is called by checkout_create in order to
-    
+
       - Extract compilation specifications from the parsed YAML configuration
       - Generate a checkout script in a local ./tmp directory, where it will later be
         copied to the directory of the container image filesystem for execution
@@ -82,6 +84,7 @@ def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir:
     fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(), jobs, parallel_cmd)
     fre_checkout.finish(model_yaml.compile.getCompileYaml(), parallel_cmd)
     fre_logger.info("Checkout script created in ./%s/checkout.sh", tmp_dir)
+
 
 def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                     no_parallel_checkout: Optional[bool] = None, njobs: int = 4,
@@ -109,19 +112,19 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
         - If 'njobs' is not an integer
         - If 'platform' does not exist in the platforms.yaml configuration
     :raises OSError: If executing checkout.sh returns an error
-    
+
     """
     # Standardize inputs
     jobs_str = str(njobs)
 
     if isinstance(njobs, bool) and execute:
-        raise ValueError ('njobs must be defined as a number if --execute flag is True')
+        raise ValueError('njobs must be defined as a number if --execute flag is True')
 
     # Determine backgrounding syntax
     # parallel_cmd is the suffix added to shell commands
     parallel_cmd = "" if no_parallel_checkout else " &"
 
-    ## Split and store the platforms and targets in a list
+    # Split and store the platforms and targets in a list
     experiment_name = yamlfile.split(".")[0]
 
     # Combine model, compile, and platform yamls into a unified structure
@@ -139,15 +142,15 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
 
     # Validate the targets
     for t in target:
-      valid_t = targetfre.fretarget(t)
+        valid_t = targetfre.fretarget(t)
 
     fre_logger.setLevel(level=logging.INFO)
 
     # Process platforms (handle both string and list inputs)
-    ## Loop through the platforms specified on the command line
-    ## If the platform is a baremetal platform, write the checkout script and run it once
-    ## This should be done separately and serially because baremetal platforms should all be using
-    ## the same source code.
+    # Loop through the platforms specified on the command line
+    # If the platform is a baremetal platform, write the checkout script and run it once
+    # This should be done separately and serially because baremetal platforms should all be using
+    # the same source code.
 
     for platform_name in platform:
         if not model_yaml.platforms.hasPlatform(platform_name):

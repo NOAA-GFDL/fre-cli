@@ -9,46 +9,46 @@ from catalogbuilder.scripts import compval
 from catalogbuilder.scripts import combine_cats
 
 
-@click.group(help=click.style(" - catalog subcommands", fg=(64,94,213)))
+@click.group(help=click.style(" - catalog subcommands", fg=(64, 94, 213)))
 def catalog_cli():
     ''' entry point for click into fre catalog cli calls '''
 
 
-
 @catalog_cli.command()
-#TODO arguments dont have help message. So consider changing arguments to options?
-@click.argument('input_path', required = False, nargs = 1)
-#, help = 'The directory path with the datasets to be cataloged. E.g a GFDL PP path till /pp')
-@click.argument('output_path', required = False, nargs = 1)
-#, help = 'Specify output filename suffix only. e.g. catalog')
-@click.option('--config', required = False, type = click.Path(exists = True), nargs = 1,
-              help = 'Path to your yaml config, Use the config_template in intakebuilder repo')
-@click.option('--filter_realm',  nargs = 1)
-@click.option('--filter_freq',  nargs = 1)
-@click.option('--filter_chunk',  nargs = 1)
-@click.option('--verbose', is_flag = True, default = False)
-@click.option('--overwrite', is_flag = True, default = False)
-@click.option('--append', is_flag = True, default = False)
-@click.option('--slow', is_flag = True, default = False,
-    help = "Open NetCDF files to retrieve additional vocabulary (standard_name and intrafile static variables")
-@click.option('--strict', is_flag = True, default = False,
-    help = "Ensure output catalog is strictly compliant with schema")
+# TODO arguments dont have help message. So consider changing arguments to options?
+@click.argument('input_path', required=False, nargs=1)
+# , help = 'The directory path with the datasets to be cataloged. E.g a GFDL PP path till /pp')
+@click.argument('output_path', required=False, nargs=1)
+# , help = 'Specify output filename suffix only. e.g. catalog')
+@click.option('--config', required=False, type=click.Path(exists=True), nargs=1,
+              help='Path to your yaml config, Use the config_template in intakebuilder repo')
+@click.option('--filter_realm',  nargs=1)
+@click.option('--filter_freq',  nargs=1)
+@click.option('--filter_chunk',  nargs=1)
+@click.option('--verbose', is_flag=True, default=False)
+@click.option('--overwrite', is_flag=True, default=False)
+@click.option('--append', is_flag=True, default=False)
+@click.option('--slow', is_flag=True, default=False,
+              help="Open NetCDF files to retrieve additional vocabulary (standard_name and intrafile static variables")
+@click.option('--strict', is_flag=True, default=False,
+              help="Ensure output catalog is strictly compliant with schema")
 @click.pass_context
-def build(context, input_path = None, output_path = None, config = None, filter_realm = None,
-          filter_freq = None, filter_chunk = None, verbose = False, overwrite = False,
-          append = False, slow = False, strict = False):
+def build(context, input_path=None, output_path=None, config=None, filter_realm=None,
+          filter_freq=None, filter_chunk=None, verbose=False, overwrite=False,
+          append=False, slow=False, strict=False):
     # pylint: disable=unused-argument
     """ - Generate .csv and .json files for catalog """
     context.forward(gen_intake_gfdl.create_catalog_cli)
 
+
 @catalog_cli.command()
-@click.argument('json_path', nargs = 1 , required = True)
-@click.argument('json_template_path', nargs = 1 , required = False)
-@click.option('--vocab', is_flag=True, default = False,
+@click.argument('json_path', nargs=1, required=True)
+@click.argument('json_template_path', nargs=1, required=False)
+@click.option('--vocab', is_flag=True, default=False,
               help="Validates catalog vocabulary")
-@click.option('-pg','--proper_generation', is_flag=True, default = False,
+@click.option('-pg', '--proper_generation', is_flag=True, default=False,
               help="Ensures that catalog has been 'properly generated' (No empty columns, reflects template)")
-@click.option('-tf', '--test-failure', is_flag=True, default = False,
+@click.option('-tf', '--test-failure', is_flag=True, default=False,
               help="Errors are only printed. Program will not exit.")
 @click.pass_context
 def validate(context, json_path, json_template_path, vocab, proper_generation, test_failure):
@@ -58,11 +58,12 @@ def validate(context, json_path, json_template_path, vocab, proper_generation, t
     template (proper generation checking) """
     context.forward(compval.main)
 
+
 @catalog_cli.command()
-@click.option('--input', required = True, multiple = True,
-              help = 'Catalog json files to be merged, space-separated')
-@click.option('--output', required = True, nargs = 1,
-              help = 'Merged catalog')
+@click.option('--input', required=True, multiple=True,
+              help='Catalog json files to be merged, space-separated')
+@click.option('--output', required=True, nargs=1,
+              help='Merged catalog')
 @click.pass_context
 def merge(context, input, output):
     """ - Merge two or more more catalogs into one """

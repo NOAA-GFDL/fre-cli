@@ -15,6 +15,7 @@ from ..helpers import change_directory
 fre_logger = logging.getLogger(__name__)
 duration_parser = metomi.isodatetime.parsers.DurationParser()
 
+
 def form_bronx_directory_name(frequency: str,
                               interval: str) -> str:
     """
@@ -65,13 +66,13 @@ def merge_netcdfs(input_file_glob: str, output_file: str) -> None:
     ds.to_netcdf(output_file, unlimited_dims=['time'])
 
 
-def combine( root_in_dir: str,
-             root_out_dir: str,
-             component: str,
-             begin: int,
-             end: int,
-             frequency: str,
-             interval: str) -> None:
+def combine(root_in_dir: str,
+            root_out_dir: str,
+            component: str,
+            begin: int,
+            end: int,
+            frequency: str,
+            interval: str) -> None:
     """
     Combine per-variable climatologies into one file.
 
@@ -121,7 +122,7 @@ def combine( root_in_dir: str,
             fre_logger.debug("Copying to %s", outdir)
             subprocess.run(['cp', '-v', target, outdir], check=True)
         elif frequency == 'mon':
-            for month_int in range(1,13):
+            for month_int in range(1, 13):
                 source = f"{component}.{date_string}.*.{month_int:02d}.nc"
                 target = f"{component}.{date_string}.{month_int:02d}.nc"
                 merge_netcdfs(source, target)

@@ -9,6 +9,7 @@ from . import make_workflow_name
 
 fre_logger = logging.getLogger(__name__)
 
+
 def install_subtool(experiment, platform, target):
     """
     Install the Cylc workflow definition located in
@@ -29,7 +30,7 @@ def install_subtool(experiment, platform, target):
     :type target: str
     """
 
-    #name = experiment + '__' + platform + '__' + target
+    # name = experiment + '__' + platform + '__' + target
     workflow_name = make_workflow_name(experiment, platform, target)
     # if the cylc-run directory already exists,
     # then check whether the cylc expanded definition (cylc config)
@@ -38,7 +39,7 @@ def install_subtool(experiment, platform, target):
     install_dir = Path(os.path.expanduser("~/cylc-run"), workflow_name)
     if os.path.isdir(install_dir):
         # must convert from bytes to string for proper comparison
-        installed_def = subprocess.run(["cylc", "config", workflow_name],capture_output=True).stdout.decode('utf-8')
+        installed_def = subprocess.run(["cylc", "config", workflow_name], capture_output=True).stdout.decode('utf-8')
         go_back_here = os.getcwd()
         os.chdir(source_dir)
         source_def = subprocess.run(['cylc', 'config', '.'], capture_output=True).stdout.decode('utf-8')
@@ -46,7 +47,7 @@ def install_subtool(experiment, platform, target):
             fre_logger.warning(f"NOTE: Workflow '{install_dir}' already installed, and the definition is unchanged")
         else:
             fre_logger.error(f"ERROR: Please remove installed workflow with 'cylc clean {workflow_name}'"
-                  " or move the workflow run directory '{install_dir}'")
+                             " or move the workflow run directory '{install_dir}'")
             raise Exception(f"ERROR: Workflow '{install_dir}' already installed, and the definition has changed!")
     else:
         fre_logger.info(f"NOTE: About to install workflow into ~/cylc-run/{workflow_name}")

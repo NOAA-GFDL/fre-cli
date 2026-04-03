@@ -3,12 +3,13 @@ import yaml
 import pytest
 from fre.app import helpers
 
-## Path to example test data
+# Path to example test data
 DATA_DIR = Path("fre/app/remap_pp_components/tests/test-data")
-## YAML configuration example file
+# YAML configuration example file
 YAML_EX = f"{DATA_DIR}/yaml_ex.yaml"
 
 DIR_CHANGE = Path("fre/app/remap_pp_components")
+
 
 def test_get_variables():
     """
@@ -16,8 +17,8 @@ def test_get_variables():
     from given pp component.
     """
     # Load the yaml config
-    with open(YAML_EX,'r') as f:
-        yml=yaml.safe_load(f)
+    with open(YAML_EX, 'r') as f:
+        yml = yaml.safe_load(f)
 
     expected_dicts = [{'atmos_scalar_test_vars': ['co2mass'],
                       'atmos_static_scalar_test_vars': ['bk']},
@@ -33,24 +34,26 @@ def test_get_variables():
         "atmos_scalar_static_test_vars_fail_CNAME"
     ]
 
-    out1 = helpers.get_variables(yml = yml, pp_comp = components[0])
-    out2 = helpers.get_variables(yml = yml, pp_comp = components[1])
-    out3 = helpers.get_variables(yml = yml, pp_comp = components[2])
+    out1 = helpers.get_variables(yml=yml, pp_comp=components[0])
+    out2 = helpers.get_variables(yml=yml, pp_comp=components[1])
+    out3 = helpers.get_variables(yml=yml, pp_comp=components[2])
 
-    assert all([len(out1) !=0,
-                len(out2) !=0,
-                len(out3) !=0,
+    assert all([len(out1) != 0,
+                len(out2) != 0,
+                len(out3) != 0,
                 out1 == expected_dicts[0],
                 out2 == expected_dicts[1],
                 out3 == expected_dicts[2]])
+
 
 def test_get_variables_err():
     """
     Test get_variables() returns an error when given inappropriate input
     """
-    with pytest.raises( TypeError ) as execinfo:
-        out = helpers.get_variables(yml = YAML_EX, pp_comp = "test_param")
+    with pytest.raises(TypeError) as execinfo:
+        out = helpers.get_variables(yml=YAML_EX, pp_comp="test_param")
     assert execinfo.type is TypeError
+
 
 def test_change_directory():
     """

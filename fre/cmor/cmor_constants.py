@@ -48,10 +48,10 @@ DEPTH_COORDS = ["z_l"]
 # CMOR module defaults (passed to cmor.setup in cmor_mixer)
 # ---------------------------------------------------------------------------
 CMOR_NC_FILE_ACTION = cmor.CMOR_REPLACE
-CMOR_VERBOSITY      = cmor.CMOR_NORMAL
-CMOR_EXIT_CTL       = cmor.CMOR_NORMAL
-CMOR_MK_SUBDIRS     = 1
-CMOR_LOG             = None
+CMOR_VERBOSITY = cmor.CMOR_NORMAL
+CMOR_EXIT_CTL = cmor.CMOR_NORMAL
+CMOR_MK_SUBDIRS = 1
+CMOR_LOG = None
 
 
 # ---------------------------------------------------------------------------
@@ -72,8 +72,8 @@ INPUT_TO_MIP_VERT_DIM = {
 # Archive / filesystem paths (used by cmor_helpers)
 # ---------------------------------------------------------------------------
 ARCHIVE_GOLD_DATA_DIR = '/archive/gold/datasets'
-CMIP7_GOLD_OCEAN_FILE_STUB='OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
-CMIP6_GOLD_OCEAN_FILE_STUB=None #TODO
+CMIP7_GOLD_OCEAN_FILE_STUB = 'OM5_025/ocean_mosaic_v20250916_unpacked/ocean_static.nc'
+CMIP6_GOLD_OCEAN_FILE_STUB = None  # TODO
 
 # ---------------------------------------------------------------------------
 # MIP-table filtering (used by cmor_config)

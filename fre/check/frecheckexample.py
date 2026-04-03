@@ -3,6 +3,7 @@ Template file for frecheck
 fre check has not been developed yet
 """
 
+
 def check_test_function(uppercase=None):
     """
     Description of fre check test function

@@ -1,8 +1,10 @@
 import os
 import subprocess
 
-## TODO: Add parallelizations using () and simplify
-def writeRepo(file,repo,component,srcDir,branch,add,multi,jobs,pc):
+# TODO: Add parallelizations using () and simplify
+
+
+def writeRepo(file, repo, component, srcDir, branch, add, multi, jobs, pc):
     """
     Brief: Creates the clone lines for the checkout script
     Param:
@@ -14,51 +16,53 @@ def writeRepo(file,repo,component,srcDir,branch,add,multi,jobs,pc):
         - add Additional instructions after the clone
         - multi True if a component has more than one repo to clone
     """
-    ## Write message about cloning repo and branch in component
+    # Write message about cloning repo and branch in component
     file.write("echo cloning "+repo+" -b "+branch+" into "+srcDir+"/"+component+"\n")
 
-    ## If this component has multiple repos, clone everything in the component folder
-    ## If it's not multi, then use the component name (comp) as the folder name to clone into
+    # If this component has multiple repos, clone everything in the component folder
+    # If it's not multi, then use the component name (comp) as the folder name to clone into
     if multi:
         file.write("mkdir -p "+component+"\n")
         file.write("cd "+component+"\n")
-        comp=""
+        comp = ""
     else:
-        comp=component
+        comp = component
 
-    ## Check if there is a branch/version and then write the clone line;
-    ## record the pid of that clone in dictionary `pids` if parallel
-    ## checkout option is defined
+    # Check if there is a branch/version and then write the clone line;
+    # record the pid of that clone in dictionary `pids` if parallel
+    # checkout option is defined
     if pc:
-        if branch=="":
+        if branch == "":
             file.write("(git clone --recursive --jobs="+jobs+" "+repo+" "+comp+")"+pc+"\n")
             if multi:
-                r=repo.split("/")[4].strip(".git")
+                r = repo.split("/")[4].strip(".git")
                 file.write("pids+=("+r+"pid:$!)\n")
             else:
                 file.write("pids+=("+comp+"pid:$!)\n")
         else:
             file.write("(git clone --recursive --jobs="+jobs+" "+repo+" -b "+branch+" "+comp+")"+pc+"\n")
             if multi:
-                r=repo.split("/")[4].strip(".git")
+                r = repo.split("/")[4].strip(".git")
                 file.write("pids+=("+r+"pid:$!)\n")
             else:
                 file.write("pids+=("+comp+"pid:$!)\n")
     else:
-        if branch=="":
+        if branch == "":
             file.write("git clone --recursive --jobs="+jobs+" "+repo+" "+comp+"\n")
         else:
             file.write("git clone --recursive --jobs="+jobs+" "+repo+" -b "+branch+" "+comp+"\n")
 
-    ## Make sure to go back up in the folder structure
+    # Make sure to go back up in the folder structure
     if multi:
         file.write("cd .. \n")
+
 
 class checkout():
     """
     Brief: Class to create the checkout script
     """
-    def __init__(self,fname,srcDir):
+
+    def __init__(self, fname, srcDir):
         """
         Brief: Opens the checkout script with the specified name
         Param:
@@ -69,27 +73,30 @@ class checkout():
         self.fname = fname
         self.src = srcDir
         os.system("mkdir -p "+self.src)
-        ##TODO: Force checkout
+        # TODO: Force checkout
         os.system("rm -rf "+self.src+"/*")
         self.checkoutScript = open(self.src+"/"+fname, 'w')
         self.checkoutScript.write("#!/bin/sh -f \n")
         self.checkoutScript.write("export GIT_TERMINAL_PROMPT=0 \n")
-    def writeCheckout(self,y,jobs,pc):
+
+    def writeCheckout(self, y, jobs, pc):
         """
         Brief: Writes the contents of the checkout script by looping through the input yaml
         Param:
             - self The checkout script object
             - y The fremake compile yaml
         """
-        self.checkoutScript.write("cd  "+self.src +"\n")
+        self.checkoutScript.write("cd  "+self.src + "\n")
         for c in y['src']:
             if type(c['repo']) is list and type(c['branch']) is list:
-                for (repo,branch) in zip(c['repo'],c['branch']):
-                    writeRepo(self.checkoutScript,repo,c['component'],self.src,branch,c['additionalInstructions'],True,jobs,pc)
+                for (repo, branch) in zip(c['repo'], c['branch']):
+                    writeRepo(self.checkoutScript, repo, c['component'], self.src,
+                              branch, c['additionalInstructions'], True, jobs, pc)
             else:
-                writeRepo(self.checkoutScript,c['repo'],c['component'],self.src,c['branch'],c['additionalInstructions'],False,jobs,pc)
+                writeRepo(self.checkoutScript, c['repo'], c['component'], self.src,
+                          c['branch'], c['additionalInstructions'], False, jobs, pc)
 
-    def finish (self,y,pc):
+    def finish(self, y, pc):
         """
         Brief: If pc is defined: Loops through dictionary of pids, 
                waits for each pid individually, writes exit code in 
@@ -102,23 +109,25 @@ class checkout():
             - pc Parallel checkout option
         """
         if pc:
-            self.checkoutScript.write('for id in ${pids[@]}; do\n  wait ${id##*:}\n  check+=("clone of ${id%%:*} exited with status $?")\ndone\n')
-            self.checkoutScript.write('for stat in "${check[@]}"; do\n  echo $stat \n  if [ ${stat##* } -ne 0 ]; then\n    exit ${stat##* }\n  fi\ndone\n')
+            self.checkoutScript.write(
+                'for id in ${pids[@]}; do\n  wait ${id##*:}\n  check+=("clone of ${id%%:*} exited with status $?")\ndone\n')
+            self.checkoutScript.write(
+                'for stat in "${check[@]}"; do\n  echo $stat \n  if [ ${stat##* } -ne 0 ]; then\n    exit ${stat##* }\n  fi\ndone\n')
 
             for c in y['src']:
-                if c['additionalInstructions']!="":
+                if c['additionalInstructions'] != "":
                     self.checkoutScript.write(c['additionalInstructions'])
 
             self.checkoutScript.close()
         else:
             for c in y['src']:
-                if c['additionalInstructions']!="":
+                if c['additionalInstructions'] != "":
                     self.checkoutScript.write(c['additionalInstructions'])
 
             self.checkoutScript.close()
 
-## TODO: batch script building
-    def run (self):
+# TODO: batch script building
+    def run(self):
         """
         Brief: Runs the checkout script
         Param:
@@ -130,12 +139,15 @@ class checkout():
             print("There was an error with the checkout script "+self.src+"/"+self.fname)
             raise
 ###################################################################################################
-## Subclass for container checkout
+# Subclass for container checkout
+
+
 class checkoutForContainer(checkout):
     """
     Brief: Subclass for container checkout
     """
-    def __init__(self,fname,srcDir,tmpdir):
+
+    def __init__(self, fname, srcDir, tmpdir):
         """
         Brief: Opens the checkout script with the specified name
         Param:
@@ -154,7 +166,7 @@ class checkoutForContainer(checkout):
         self.checkoutScript.write("#!/bin/sh -fx \n")
         self.checkoutScript.write("export GIT_TERMINAL_PROMPT=0 \n")
 
-    def cleanup (self):
+    def cleanup(self):
         """
         Brief: Removes the self.tmpdir and contents
         Param:

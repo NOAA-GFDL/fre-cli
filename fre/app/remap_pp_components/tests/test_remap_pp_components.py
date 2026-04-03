@@ -28,7 +28,7 @@ NATIVE_GRID = "native"
 REGRID_GRID = "regrid-xy"
 COPY_TOOL = "cp"
 
-## Define non-static variables
+# Define non-static variables
 # CDL file to generate nc file from ncgen
 DATA_FILE_CDL = Path("atmos_scalar.198001-198412.co2mass.cdl")
 # netcdf files to make for remap input
@@ -40,7 +40,7 @@ PRODUCT = "ts"
 FREQ = "P1M"
 CHUNK = "P5Y"
 
-## Define static variables
+# Define static variables
 # CDL file to generate static nc file from ncgen
 STATIC_DATA_FILE_CDL = Path("atmos_static_scalar.bk.cdl")
 # static netcdf files to make for remap input
@@ -54,7 +54,7 @@ STATIC_SRC_LIST = ["atmos_static_scalar",
                    "atmos_static_scalar_test_vars",
                    "atmos_static_scalar_test_vars_fail"]
 
-#If output directory exists, remove and create again
+# If output directory exists, remove and create again
 if Path(TEST_OUTDIR).exists():
     shutil.rmtree(TEST_OUTDIR)
 
@@ -63,24 +63,27 @@ ncgen_static_out_paths = []
 # Set up input directories (location previously made in flow.cylc workflow
 for i in SOURCENAME_LIST:
     ncgen_native_out = f"{REMAP_IN}/{NATIVE_GRID}/{i}/{FREQ}/{CHUNK}"
-    Path(ncgen_native_out).mkdir(parents=True,exist_ok=True)
+    Path(ncgen_native_out).mkdir(parents=True, exist_ok=True)
     ncgen_native_out_paths.append(ncgen_native_out)
 for j in STATIC_SRC_LIST:
     ncgen_static_out = f"{REMAP_IN}/{NATIVE_GRID}/{j}/{STATIC_FREQ}/{STATIC_CHUNK}"
-    Path(ncgen_static_out).mkdir(parents=True,exist_ok=True)
+    Path(ncgen_static_out).mkdir(parents=True, exist_ok=True)
     ncgen_static_out_paths.append(ncgen_static_out)
 
 # Create output directory
-Path(REMAP_OUT).mkdir(parents=True,exist_ok=True)
+Path(REMAP_OUT).mkdir(parents=True, exist_ok=True)
 
 #################################################
 ## FILE EXISTENCE TESTS ##
+
+
 def test_cdl_file_exists():
     """
     Test for the existence of cdl test files
     """
     assert all([Path(f"{DATA_DIR}/{DATA_FILE_CDL}").exists(),
                 Path(f"{DATA_DIR}/{STATIC_DATA_FILE_CDL}")])
+
 
 def test_yaml_ex_exists():
     """
@@ -89,6 +92,8 @@ def test_yaml_ex_exists():
     assert Path(YAML_EX).exists()
 
 ## CREATE TEST FILES ##
+
+
 def test_create_ncfile_with_ncgen_cdl():
     """
     Check for the creation of required directories
@@ -103,18 +108,19 @@ def test_create_ncfile_with_ncgen_cdl():
     for out_path in ncgen_native_out_paths:
         for nc_fn in DATA_NC_FILES:
             # NCGEN command: ncgen -o [outputfile] [inputfile]
-            ex = [ "ncgen", "-k", "64-bit offset",
-                   "-o", Path(out_path) / nc_fn,
-                   DATA_DIR / DATA_FILE_CDL ]
+            ex = ["ncgen", "-k", "64-bit offset",
+                  "-o", Path(out_path) / nc_fn,
+                  DATA_DIR / DATA_FILE_CDL]
 
             # Run ncgen command
-            sp = subprocess.run( ex, check = False )
+            sp = subprocess.run(ex, check=False)
 
             # Check for
             # 1. ncgen command success
             # 2. nc file creation
             assert all([sp.returncode == 0,
                        Path(f"{out_path}/{nc_fn}").exists()])
+
 
 def test_create_static_ncfile_with_ncgen_cdl():
     """
@@ -124,7 +130,7 @@ def test_create_static_ncfile_with_ncgen_cdl():
     file for the rewrite remap tests.
     Test checks for success of ncgen command.
     """
-    #print(f"NCGEN OUTPUT DIRECTORY: {ncgen_static_out}")
+    # print(f"NCGEN OUTPUT DIRECTORY: {ncgen_static_out}")
 
     for out_path in ncgen_static_out_paths:
         for snc_fn in STATIC_DATA_NC_FILES:
@@ -132,12 +138,12 @@ def test_create_static_ncfile_with_ncgen_cdl():
                 continue
 
             # NCGEN command: ncgen -o [outputfile] [inputfile]
-            ex = [ "ncgen", "-k", "64-bit offset",
-                   "-o", Path(out_path) / snc_fn,
-                   DATA_DIR / STATIC_DATA_FILE_CDL ]
+            ex = ["ncgen", "-k", "64-bit offset",
+                  "-o", Path(out_path) / snc_fn,
+                  DATA_DIR / STATIC_DATA_FILE_CDL]
 
             # Run ncgen command
-            sp = subprocess.run( ex, check = False )
+            sp = subprocess.run(ex, check=False)
 
             # Check for
             # 1. ncgen command success
@@ -146,6 +152,8 @@ def test_create_static_ncfile_with_ncgen_cdl():
                        Path(f"{out_path}/{snc_fn}").exists()])
 
 ## TEST REMAP FUNCTION ##
+
+
 def test_remap_pp_components():
     """
     Checks for success of remapping a file with rose app using
@@ -175,11 +183,13 @@ def test_remap_pp_components():
     assert all([Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr").exists(),
                 Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr/{output_nc_file}").exists()])
 
-## Pytest can utilize monkeypatch fixture, if needed, which can help set/delete attributes,
-## environments, etc.
-## monkeypatch.setenv() used to set/reset specific environment variables in each test,
-## without resetting them for all tests or the proceeding test (i.e. - wouldn't effect
-## other test's environment variables defined)
+# Pytest can utilize monkeypatch fixture, if needed, which can help set/delete attributes,
+# environments, etc.
+# monkeypatch.setenv() used to set/reset specific environment variables in each test,
+# without resetting them for all tests or the proceeding test (i.e. - wouldn't effect
+# other test's environment variables defined)
+
+
 def test_remap_pp_components_with_ensmem():
     """
     Checks for success of remapping a file with rose app config using
@@ -194,8 +204,8 @@ def test_remap_pp_components_with_ensmem():
     remap_ens_out = f"{TEST_OUTDIR}/remap-ens-output"
 
     # Create ensemble locations
-    Path(ncgen_ens_out).mkdir(parents=True,exist_ok=True)
-    Path(remap_ens_out).mkdir(parents=True,exist_ok=True)
+    Path(ncgen_ens_out).mkdir(parents=True, exist_ok=True)
+    Path(remap_ens_out).mkdir(parents=True, exist_ok=True)
 
     # Make sure input nc file is also in ens input location
     shutil.copyfile(Path(ncgen_native_out_paths[0]) / DATA_NC_FILES[0], Path(ncgen_ens_out) / DATA_NC_FILES[0])
@@ -221,6 +231,7 @@ def test_remap_pp_components_with_ensmem():
     assert all([Path(f"{remap_ens_out}/{comp_name}/{PRODUCT}/ens_01/monthly/5yr").exists(),
                 Path(f"{remap_ens_out}/{comp_name}/{PRODUCT}/ens_01/monthly/5yr/{output_nc_file}").exists()])
 
+
 @pytest.mark.xfail
 def test_remap_pp_components_product_failure():
     """
@@ -242,6 +253,7 @@ def test_remap_pp_components_product_failure():
                             yaml_config=str(YAML_EX),
                             ts_workaround=True,
                             ens_mem="")
+
 
 def test_remap_pp_components_chunk_failure(caplog):
     """
@@ -270,6 +282,7 @@ def test_remap_pp_components_chunk_failure(caplog):
     warning_to_check = "Chunk in directory structure is not equal to the current chunk set!"
     assert any(warning_to_check in msg for msg in warning_messages)
 
+
 @pytest.mark.xfail
 def test_remap_pp_components_begin_date_failure():
     """
@@ -293,6 +306,8 @@ def test_remap_pp_components_begin_date_failure():
                             ens_mem="")
 
 ## STATIC SOURCE REMAPPING ##
+
+
 def test_remap_pp_components_statics():
     """
     Test static sources are remapped to output location correctly
@@ -301,7 +316,7 @@ def test_remap_pp_components_statics():
     output_nc_file = f"{comp_name}.bk.nc"
 
     remap_static_out = f"{REMAP_OUT}/static"
-    Path(remap_static_out).mkdir(parents=True,exist_ok=True)
+    Path(remap_static_out).mkdir(parents=True, exist_ok=True)
 
     # run script
     try:
@@ -324,6 +339,7 @@ def test_remap_pp_components_statics():
     assert all([Path(f"{remap_static_out}/{comp_name}/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
                 Path(f"{remap_static_out}/{comp_name}/{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}").exists()])
 
+
 @pytest.mark.skip(reason="Offline file will not be in same place for everyone here - figure out how to test")
 def test_remap_offline_diagnostics(monkeypatch):
     """
@@ -332,6 +348,8 @@ def test_remap_offline_diagnostics(monkeypatch):
     assert Path(f"{os.getenv('outputDir')}/atmos_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/empty.nc").exists()
 
 ## COMPARE INPUT AND OUTPUT FILES ##
+
+
 def test_nccmp_ncgen_remap():
     """
     This test compares the results of ncgen and rewrite_remap,
@@ -340,11 +358,12 @@ def test_nccmp_ncgen_remap():
     comp_name = "atmos_scalar_CNAME"
     output_nc_file = f"{comp_name}.198001-198412.co2mass.nc"
 
-    nccmp = [ "nccmp", "-d",
-              Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
-              Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr/{output_nc_file}") ]
-    sp = subprocess.run( nccmp, check = False)
+    nccmp = ["nccmp", "-d",
+             Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
+             Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr/{output_nc_file}")]
+    sp = subprocess.run(nccmp, check=False)
     assert sp.returncode == 0
+
 
 def test_nccmp_ncgen_remap_ens_mem():
     """
@@ -358,12 +377,13 @@ def test_nccmp_ncgen_remap_ens_mem():
     remap_ens_in = f"{TEST_OUTDIR}/ncgen-ens-output"
     remap_ens_out = f"{TEST_OUTDIR}/remap-ens-output"
 
-    nccmp = [ "nccmp", "-d",
-              Path(f"{remap_ens_in}/{NATIVE_GRID}/ens_01/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
-              Path(f"{remap_ens_out}/{comp_name}/{PRODUCT}/ens_01/monthly/5yr/{output_nc_file}") ]
+    nccmp = ["nccmp", "-d",
+             Path(f"{remap_ens_in}/{NATIVE_GRID}/ens_01/atmos_scalar/{FREQ}/{CHUNK}/{DATA_NC_FILES[0]}"),
+             Path(f"{remap_ens_out}/{comp_name}/{PRODUCT}/ens_01/monthly/5yr/{output_nc_file}")]
 
-    sp = subprocess.run( nccmp, check = False)
+    sp = subprocess.run(nccmp, check=False)
     assert sp.returncode == 0
+
 
 def test_nccmp_ncgen_remap_statics():
     """
@@ -373,16 +393,18 @@ def test_nccmp_ncgen_remap_statics():
     comp_name = "atmos_scalar_CNAME"
     output_nc_file = f"{comp_name}.bk.nc"
 
-    nccmp = [ "nccmp", "-d",
-              Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_static_scalar/"
-                   f"{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}"),
-              Path(f"{REMAP_OUT}/static/{comp_name}/"
-                   f"{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}")]
+    nccmp = ["nccmp", "-d",
+             Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_static_scalar/"
+                  f"{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}"),
+             Path(f"{REMAP_OUT}/static/{comp_name}/"
+                  f"{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}")]
 
-    sp = subprocess.run( nccmp, check = False)
+    sp = subprocess.run(nccmp, check=False)
     assert sp.returncode == 0
 
 ## VARIABLE FILTERING TESTS ##
+
+
 def test_remap_variable_filtering():
     """
     Test variable filtering capabilities
@@ -395,7 +417,7 @@ def test_remap_variable_filtering():
     # Remove previous output and re-create
     if Path(REMAP_OUT).exists():
         shutil.rmtree(REMAP_OUT)
-        Path(REMAP_OUT).mkdir(parents=True,exist_ok=True)
+        Path(REMAP_OUT).mkdir(parents=True, exist_ok=True)
 
     # run script
     try:
@@ -418,6 +440,7 @@ def test_remap_variable_filtering():
     assert all([Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr").exists(),
                 Path(f"{REMAP_OUT}/{comp_name}/{PRODUCT}/monthly/5yr/{output_nc_file}").exists()])
 
+
 def test_remap_static_variable_filtering():
     """
     Test variable filtering capabilities
@@ -426,7 +449,7 @@ def test_remap_static_variable_filtering():
       but component, defined specifies variable bk
     """
     remap_static_out = f"{REMAP_OUT}/static"
-    Path(remap_static_out).mkdir(parents=True,exist_ok=True)
+    Path(remap_static_out).mkdir(parents=True, exist_ok=True)
 
     # run script
     try:
@@ -453,6 +476,7 @@ def test_remap_static_variable_filtering():
              f"{STATIC_FREQ}/{STATIC_CHUNK}/atmos_scalar_test_vars_CNAME.bk.nc").exists()
     ])
 
+
 @pytest.mark.xfail
 def test_remap_variable_filtering_fail():
     """
@@ -471,6 +495,7 @@ def test_remap_variable_filtering_fail():
                             ts_workaround=True,
                             ens_mem="")
 
+
 @pytest.mark.xfail
 def test_remap_static_variable_filtering_fail():
     """
@@ -488,6 +513,7 @@ def test_remap_static_variable_filtering_fail():
                             yaml_config=str(YAML_EX),
                             ts_workaround=False,
                             ens_mem="")
+
 
 def test_remap_chdir():
     """
@@ -517,7 +543,7 @@ def test_remap_chdir():
 
     assert all([original_dir == final_dir])
 
-#to-do:
+# to-do:
 # - figure out test for offline diagnostics
 # - test for when product = "av"
 # - test grid = regrid-xy

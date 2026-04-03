@@ -169,7 +169,7 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
         last_timestep = ds.time.values[-1]
         freq_label, format_ = get_freq_and_format_from_two_dates(first_timestep, second_timestep)
         freq = second_timestep - first_timestep
-        cell_methods =  ds[var].attrs.get('cell_methods')
+        cell_methods = ds[var].attrs.get('cell_methods')
         # if time-point, date1 is the valid time at end of chunk
         if cell_methods == "time: point":
             date1 = first_timestep - freq
@@ -192,7 +192,8 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
             date1 = first_timestep
             date2 = date1 + (number_of_timesteps-1) * freq
             duration = get_duration_from_two_dates(date1, date2 - freq)
-            fre_logger.info(f"'{input_file}' has 1 timesteps with bounds; date1='{date1}'; date2='{date2}'; duration='{duration}'")
+            fre_logger.info(
+                f"'{input_file}' has 1 timesteps with bounds; date1='{date1}'; date2='{date2}'; duration='{duration}'")
         else:
             manifests: tuple[str, ...]
             if diag_manifest is None:
@@ -217,7 +218,8 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                     for diag_file in yaml_data.get("diag_files", []):
                         if diag_file.get("file_name") == label:
                             if found_entry is not None:
-                                raise Exception(f"Diag file '{label}' found in multiple manifests ('{found_manifest}' and '{manifest}')")
+                                raise Exception(
+                                    f"Diag file '{label}' found in multiple manifests ('{found_manifest}' and '{manifest}')")
                             found_entry = diag_file
                             found_manifest = manifest
 
@@ -237,7 +239,8 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                         duration = f"P{freq_value}M"
                         format_ = "%Y%m"
                 else:
-                    raise Exception(f"Diag manifest found but frequency units '{freq_units}' are unexpected; expected 'years' or 'months'.")
+                    raise Exception(
+                        f"Diag manifest found but frequency units '{freq_units}' are unexpected; expected 'years' or 'months'.")
 
                 duration_object = duration_parser.parse(duration)
                 # since only one timestep, frequency equals duration
@@ -248,7 +251,8 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                 # subtracting one month works for annual
                 one_month = duration_parser.parse('P1M')
                 date2 = date1 + duration_object - one_month
-                fre_logger.info(f"'{input_file}' has 1 timesteps with diag manifest; date1='{date1}'; date2='{date2}'; duration='{duration}'")
+                fre_logger.info(
+                    f"'{input_file}' has 1 timesteps with diag manifest; date1='{date1}'; date2='{date2}'; duration='{duration}'")
             # remove next stanza once diag manifests are common
             elif 'annual' in label:
                 date_str = str(input_file.name).split('.')[0]
@@ -259,9 +263,11 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                 date2 = date1 + duration_object - one_month
                 format_ = "%Y"
                 freq_label = duration
-                fre_logger.info(f"'{input_file}' has 1 timesteps without diag manifest (legacy case to be removed); date1='{date1}'; date2='{date2}'; duration='{duration}'")
+                fre_logger.info(
+                    f"'{input_file}' has 1 timesteps without diag manifest (legacy case to be removed); date1='{date1}'; date2='{date2}'; duration='{duration}'")
             else:
-                raise ValueError(f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds")
+                raise ValueError(
+                    f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds")
 
     date1_str = date1.strftime(format_)
     date2_str = date2.strftime(format_)
@@ -274,7 +280,7 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
     return Path(label) / freq_label / duration / newfile_base
 
 
-def link_or_copy(source: str, destination:str) -> None:
+def link_or_copy(source: str, destination: str) -> None:
     """
     Create a hard link including creating destination directory parents.
     If hard linking is not available, copy instead.

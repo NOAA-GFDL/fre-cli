@@ -12,13 +12,14 @@ from .timeAverager import timeAverager
 
 fre_logger = logging.getLogger(__name__)
 
+
 class cdoTimeAverager(timeAverager):
     '''
     class inheriting from abstract base class timeAverager
     generates time-averages using cdo (mostly, see weighted approach)
     '''
 
-    def generate_timavg(self, infile = None, outfile = None):
+    def generate_timavg(self, infile=None, outfile=None):
         """
         use cdo package routines via python bindings        
 
@@ -43,7 +44,7 @@ class cdoTimeAverager(timeAverager):
         _cdo = Cdo()
 
         wgts_sum = 0
-        if not self.unwgt: #weighted case, cdo ops alone don't support a weighted time-average.
+        if not self.unwgt:  # weighted case, cdo ops alone don't support a weighted time-average.
 
             nc_fin = Dataset(infile, 'r')
 
@@ -63,25 +64,25 @@ class cdoTimeAverager(timeAverager):
         if self.avg_type == 'all':
             fre_logger.info('time average over all time requested.')
             if self.unwgt:
-                _cdo.timmean(input = infile, output = outfile, returnCdf = True)
+                _cdo.timmean(input=infile, output=outfile, returnCdf=True)
             else:
-                _cdo.divc( str(wgts_sum), input = "-timsum -muldpm "+infile, output = outfile)
+                _cdo.divc(str(wgts_sum), input="-timsum -muldpm "+infile, output=outfile)
             fre_logger.info('done averaging over all time.')
 
         elif self.avg_type == 'seas':
             fre_logger.info('seasonal time-averages requested.')
-            _cdo.yseasmean(input = infile, output = outfile, returnCdf = True)
+            _cdo.yseasmean(input=infile, output=outfile, returnCdf=True)
             fre_logger.info('done averaging over seasons.')
 
         elif self.avg_type == 'month':
             fre_logger.info('monthly time-averages requested.')
             outfile_str = str(outfile)
-            _cdo.ymonmean(input = infile, output = outfile_str, returnCdf = True)
+            _cdo.ymonmean(input=infile, output=outfile_str, returnCdf=True)
             fre_logger.info('done averaging over months.')
 
             fre_logger.warning(" splitting by month")
             outfile_root = outfile_str.removesuffix(".nc") + '.'
-            _cdo.splitmon(input = outfile_str, output = outfile_root)
+            _cdo.splitmon(input=outfile_str, output=outfile_root)
             fre_logger.debug('Done with splitting by month, outfile_root = %s', outfile_root)
 
         fre_logger.info('done averaging')

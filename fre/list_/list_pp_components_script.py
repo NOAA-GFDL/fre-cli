@@ -10,6 +10,7 @@ from fre.yamltools import helpers
 
 fre_logger = logging.getLogger(__name__)
 
+
 def list_ppcomps_subtool(yamlfile: str, experiment: str):
     """
     List the components to be post-processed
@@ -28,12 +29,12 @@ def list_ppcomps_subtool(yamlfile: str, experiment: str):
     target = None
 
     # Combine model / experiment
-    yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
-                                    experiment = exp,
-                                    platform = platform,
-                                    target = target,
-                                    use = "pp",
-                                    output = None)
+    yml_dict = cy.consolidate_yamls(yamlfile=yamlfile,
+                                    experiment=exp,
+                                    platform=platform,
+                                    target=target,
+                                    use="pp",
+                                    output=None)
 
     # Validate combined yaml information
     frelist_dir = Path(__file__).resolve().parents[2]

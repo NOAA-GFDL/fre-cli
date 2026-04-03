@@ -9,6 +9,7 @@ import yaml
 
 fre_logger = logging.getLogger(__name__)
 
+
 def get_variables(yml: dict, pp_comp: str) -> dict:
     """Retrieve any variables specified with active pp components from the yaml
 
@@ -27,7 +28,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     if not isinstance(yml, dict):
         raise TypeError("yml should be of type dict, but was of type " + str(type(yml)))
 
-    src_vars={}
+    src_vars = {}
 
     for component_info in yml["postprocess"]["components"]:
         # if component in yaml not an active pp component, skip
@@ -56,7 +57,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
                 else:
                     src_vars[static_elem.get("source")] = "all"
 
-        ##offline statics won't use variables filtering ... yet?
+        # offline statics won't use variables filtering ... yet?
 
     # If the dictionary is empty (no overlap of pp components and components
     # in pp yaml) --> error
@@ -65,8 +66,10 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
 
     return src_vars
 
-## NOTE: For python 3.11 - this might be available already as contextlib.chdir()
-## Re-asses if our own contextmanager function is needed here
+# NOTE: For python 3.11 - this might be available already as contextlib.chdir()
+# Re-asses if our own contextmanager function is needed here
+
+
 @contextmanager
 def change_directory(new_path: str):
     """Temporarily change the directory
@@ -74,15 +77,15 @@ def change_directory(new_path: str):
     :param new_path: Path to change into
     :type new_path: str
     """
-    ## Get current working directory
+    # Get current working directory
     original_path = os.getcwd()
 
-    ## Change into path passed
+    # Change into path passed
     os.chdir(new_path)
 
-    ## Execute code within the 'with' block when using this function
-    ## ('with change_directories(path):'), then go back to the original
-    ## directory
+    # Execute code within the 'with' block when using this function
+    # ('with change_directories(path):'), then go back to the original
+    # directory
     # 'yield': used to create generators (special types of iterators that allow
     #                                     for lazy value production; produces
     #                                     values at time of iteration)

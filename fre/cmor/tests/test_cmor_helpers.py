@@ -8,18 +8,20 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from fre.cmor.cmor_helpers import ( find_statics_file, print_data_minmax,
-                                    find_gold_ocean_statics_file,
-                                    create_lev_bnds, get_iso_datetime_ranges, iso_to_bronx_chunk,
-                                    create_tmp_dir, get_json_file_data,
-                                    update_grid_and_label, get_bronx_freq_from_mip_table, #update_outpath,
-                                    filter_brands )
+from fre.cmor.cmor_helpers import (find_statics_file, print_data_minmax,
+                                   find_gold_ocean_statics_file,
+                                   create_lev_bnds, get_iso_datetime_ranges, iso_to_bronx_chunk,
+                                   create_tmp_dir, get_json_file_data,
+                                   update_grid_and_label, get_bronx_freq_from_mip_table,  # update_outpath,
+                                   filter_brands)
+
 
 def test_iso_to_bronx_chunk():
     ''' tests value error raising by iso_to_bronx_chunk '''
     with pytest.raises(ValueError,
                        match='problem with converting to bronx chunk from the cmor chunk. check cmor_yamler.py'):
         iso_to_bronx_chunk('foo')
+
 
 def test_find_statics_file_success():
     ''' what happens when no statics file is found given a bronx directory structure '''
@@ -37,8 +39,8 @@ def test_find_statics_file_success():
         Path(expected_answer_statics_file).touch()
     assert Path(expected_answer_statics_file).exists
 
-    statics_file = find_statics_file( bronx_file_path = target_file
-                                      )
+    statics_file = find_statics_file(bronx_file_path=target_file
+                                     )
     assert Path(statics_file).exists()
     assert statics_file == expected_answer_statics_file
 
@@ -46,9 +48,9 @@ def test_find_statics_file_success():
 def test_find_statics_file_nothing_found():
     ''' what happens when a statics file is found given a bronx directory structure '''
     statics_file = find_statics_file(
-        bronx_file_path = 'fre/tests/test_files/ascii_files/' + \
-                          'mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' + \
-                          'gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/land.000101-000512.lai.nc' )
+        bronx_file_path='fre/tests/test_files/ascii_files/' +
+        'mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' +
+        'gfdl.ncrc5-intel23-prod-openmp/pp/land/ts/monthly/5yr/land.000101-000512.lai.nc')
     assert statics_file is None
 
 
@@ -56,13 +58,15 @@ def test_print_data_minmax_no_exception_case1():
     ''' checks to make sure this doesn't raise an exception '''
     print_data_minmax(None, None)
 
+
 def test_print_data_minmax_no_exception_case2():
     ''' checks to make sure this doesn't raise an exception '''
-    print_data_minmax(np.ma.core.MaskedArray( data=(0, 10, 20, 30) ), None)
+    print_data_minmax(np.ma.core.MaskedArray(data=(0, 10, 20, 30)), None)
+
 
 def test_print_data_minmax_no_exception_case3():
     ''' checks to make sure this doesn't raise an exception '''
-    print_data_minmax(np.ma.core.MaskedArray( data=(0, 10, 20, 30) ), 'foo')
+    print_data_minmax(np.ma.core.MaskedArray(data=(0, 10, 20, 30)), 'foo')
 
 
 # ---- find_gold_ocean_statics_file tests ----
@@ -79,7 +83,7 @@ def test_find_gold_ocean_statics_file_archive_missing(tmp_path):
     the function should create the local directory tree but return None
     because there's nothing to copy.
     '''
-    from fre.cmor.cmor_constants import ARCHIVE_GOLD_DATA_DIR, CMIP7_GOLD_OCEAN_FILE_STUB # pylint: disable=import-outside-toplevel
+    from fre.cmor.cmor_constants import ARCHIVE_GOLD_DATA_DIR, CMIP7_GOLD_OCEAN_FILE_STUB  # pylint: disable=import-outside-toplevel
     gold_file = f'{ARCHIVE_GOLD_DATA_DIR}/{CMIP7_GOLD_OCEAN_FILE_STUB}'
 
     result = find_gold_ocean_statics_file(put_copy_here=str(tmp_path))
@@ -100,8 +104,8 @@ def test_find_gold_ocean_statics_file_mock_copy(tmp_path):
     exercise the full copy path by creating a fake archive gold file in tmp_path
     and monkeypatching ARCHIVE_GOLD_DATA_DIR so the function finds it.
     '''
-    import fre.cmor.cmor_helpers as _helpers_mod # pylint: disable=import-outside-toplevel
-    import fre.cmor.cmor_constants as _const_mod # pylint: disable=import-outside-toplevel
+    import fre.cmor.cmor_helpers as _helpers_mod  # pylint: disable=import-outside-toplevel
+    import fre.cmor.cmor_constants as _const_mod  # pylint: disable=import-outside-toplevel
 
     # build a fake archive layout:  <tmp>/gold/datasets/OM5_025/.../ocean_static.nc
     fake_archive_root = tmp_path / 'fake_archive' / 'gold' / 'datasets'
@@ -310,6 +314,7 @@ def test_get_bronx_freq_from_mip_table_success(tmp_path):
     f.write_text(json.dumps(table))
     assert get_bronx_freq_from_mip_table(str(f)) == "monthly"
 
+
 def test_get_bronx_freq_from_mip_table_no_freq(tmp_path):
     ''' should raise bronx-equivalent frequency for a valid table '''
     table = {
@@ -323,6 +328,7 @@ def test_get_bronx_freq_from_mip_table_no_freq(tmp_path):
                        match='no frequency in table under variable_entry. this may be a CMIP7 table.'):
         get_bronx_freq_from_mip_table(str(f))
 
+
 def test_get_bronx_freq_from_mip_table_invalid_freq(tmp_path):
     ''' should raise KeyError when the table frequency is not a valid MIP frequency '''
     table = {
@@ -335,15 +341,15 @@ def test_get_bronx_freq_from_mip_table_invalid_freq(tmp_path):
     with pytest.raises(KeyError, match='not a valid MIP frequency'):
         get_bronx_freq_from_mip_table(str(f))
 
-## ---- update_outpath tests ----
+# ---- update_outpath tests ----
 #
-#def test_update_outpath_none_json_path():
+# def test_update_outpath_none_json_path():
 #    ''' should raise ValueError when json_file_path is None '''
 #    with pytest.raises(ValueError):
 #        update_outpath(None, '/some/output/path')
 #
 #
-#def test_update_outpath_none_output_path(tmp_path):
+# def test_update_outpath_none_output_path(tmp_path):
 #    ''' should raise ValueError when output_file_path is None '''
 #    f = tmp_path / 'exp.json'
 #    f.write_text(json.dumps({"outpath": "/old/path"}))

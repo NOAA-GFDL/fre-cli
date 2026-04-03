@@ -10,6 +10,7 @@ from fre.yamltools import helpers
 
 fre_logger = logging.getLogger(__name__)
 
+
 def list_platforms_subtool(yamlfile: str):
     """
     List the platforms available
@@ -26,12 +27,12 @@ def list_platforms_subtool(yamlfile: str):
     target = None
 
     # Combine model / experiment
-    yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
-                                    experiment = exp,
-                                    platform = platform,
-                                    target = target,
-                                    use = "compile",
-                                    output = None)
+    yml_dict = cy.consolidate_yamls(yamlfile=yamlfile,
+                                    experiment=exp,
+                                    platform=platform,
+                                    target=target,
+                                    use="compile",
+                                    output=None)
 
     # Validate the yaml
     fre_pkg_dir = Path(__file__).resolve().parents[1]

@@ -1,8 +1,9 @@
 from typing import Optional
 
-def make_workflow_name(experiment : Optional[str] = None,
-                       platform : Optional[str] = None,
-                       target : Optional[str] = None) -> str:
+
+def make_workflow_name(experiment: Optional[str] = None,
+                       platform: Optional[str] = None,
+                       target: Optional[str] = None) -> str:
     """
     Function that takes in a triplet of tags for a model experiment, platform, and target, and
     returns a directory name for the corresponding pp workflow. Because this is often given by 
@@ -24,8 +25,8 @@ def make_workflow_name(experiment : Optional[str] = None,
     """
     name = f'{experiment}__{platform}__{target}'
     return ''.join(
-                      (''.join(
-                          name.split(' ')
-                              )
-                      ).split(';')
-                  ) # user-input sanitation, prevents some malicious cmds from being executed with privileges
+        (''.join(
+            name.split(' ')
+        )
+        ).split(';')
+    )  # user-input sanitation, prevents some malicious cmds from being executed with privileges

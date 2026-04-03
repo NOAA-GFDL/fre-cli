@@ -3,7 +3,7 @@ analysis yaml class
 '''
 import os
 import logging
-#import pprint
+# import pprint
 
 from fre.yamltools.helpers import experiment_check, clean_yaml
 from fre.yamltools.abstract_classes import MergePPANYamls
@@ -15,6 +15,7 @@ from . import *
 
 fre_logger = logging.getLogger(__name__)
 
+
 class InitAnalysisYaml(MergePPANYamls):
     """
     Class holding routines for initializing and combining post-processing yamls
@@ -24,7 +25,8 @@ class InitAnalysisYaml(MergePPANYamls):
     :ivar str platform: Platform name
     :ivar str target: Target name
     """
-    def __init__(self,yamlfile,experiment,platform,target):
+
+    def __init__(self, yamlfile, experiment, platform, target):
         """
         Process to combine the applicable yamls for post-processing
         """
@@ -47,11 +49,11 @@ class InitAnalysisYaml(MergePPANYamls):
         """
         # Define click options in string
         yaml_content_str = (f'name: &name "{self.name}"\n'
-                        f'platform: &platform "{self.platform}"\n'
-                        f'target: &target "{self.target}"\n')
+                            f'platform: &platform "{self.platform}"\n'
+                            f'target: &target "{self.target}"\n')
 
         # Read model yaml as string
-        with open(self.yml,'r') as f:
+        with open(self.yml, 'r') as f:
             model_content = f.read()
 
         # Combine information as strings
@@ -97,7 +99,7 @@ class InitAnalysisYaml(MergePPANYamls):
 
         return yaml_content_str
 
-    def combine_yamls(self,yaml_content_str):
+    def combine_yamls(self, yaml_content_str):
         """
         Combine analysis yamls with the defined combined.yaml
         If more than 1 analysis yaml defined, return a list of strings.
@@ -114,20 +116,20 @@ class InitAnalysisYaml(MergePPANYamls):
         :rtype: list of strings
         """
         # Load string as yaml
-        yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
-        _ ,ay_path = experiment_check(self.mainyaml_dir,self.name,yml)
+        yml = yaml.load(yaml_content_str, Loader=yaml.Loader)
+        _, ay_path = experiment_check(self.mainyaml_dir, self.name, yml)
 
         analysis_yamls = []
         analysis_yamls.append(yaml_content_str)
 
-        ## COMBINE EXPERIMENT YAML INFO
+        # COMBINE EXPERIMENT YAML INFO
         # If no analysis yaml defined, move on silently.
         if ay_path is None:
             pass
 
         # If only 1 analysis yaml defined, combine with model yaml
         elif len(ay_path) == 1:
-            with open(ay_path[0],'r') as ayp:
+            with open(ay_path[0], 'r') as ayp:
                 analysis_content = ayp.read()
 
             analysis_info = yaml_content_str + analysis_content
@@ -137,7 +139,7 @@ class InitAnalysisYaml(MergePPANYamls):
         # (Must be done for aliases defined)
         elif len(ay_path) > 1:
             for i in ay_path:
-                with open(i,'r') as ayp:
+                with open(i, 'r') as ayp:
                     analysis_content = ayp.read()
 
                 analysis_info_i = yaml_content_str + analysis_content
@@ -160,8 +162,8 @@ class InitAnalysisYaml(MergePPANYamls):
         :rtype: dict
         """
         # Load string as yaml
-        yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
-        _ ,ay_path = experiment_check(self.mainyaml_dir,self.name,yml)
+        yml = yaml.load(yaml_content_str, Loader=yaml.Loader)
+        _, ay_path = experiment_check(self.mainyaml_dir, self.name, yml)
 
         result = {}
         # If more than one analysis yaml is listed, update dictionary with content from 1st yaml
@@ -175,7 +177,7 @@ class InitAnalysisYaml(MergePPANYamls):
                 for key, value in result.items():
                     if key not in yf.keys():
                         continue
-                    if isinstance(result[key], dict) and isinstance(yf[key],dict):
+                    if isinstance(result[key], dict) and isinstance(yf[key], dict):
                         result['analysis'] = yf['analysis'] | result['analysis']
 
         if ay_path is not None:

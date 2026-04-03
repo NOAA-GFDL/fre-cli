@@ -6,6 +6,7 @@ import pytest
 
 from fre.cmor.cmor_helpers import conv_mip_to_bronx_freq
 
+
 def test_conv_mip_to_bronx_freq_valid_frequencies():
     """
     Test conversion of valid MIP table frequencies to bronx frequencies.
@@ -34,6 +35,7 @@ def test_conv_mip_to_bronx_freq_valid_frequencies():
         result = conv_mip_to_bronx_freq(cmor_freq)
         assert result == expected_bronx_freq, f"Failed for {cmor_freq}: expected {expected_bronx_freq}, got {result}"
 
+
 def test_conv_mip_to_bronx_freq_invalid_frequency():
     """
     Test that invalid frequencies (not 'fx') raise KeyError.
@@ -46,6 +48,7 @@ def test_conv_mip_to_bronx_freq_invalid_frequency():
         with pytest.raises(KeyError, match=f'MIP table frequency = "{invalid_freq}" is not a valid MIP frequency'):
             conv_mip_to_bronx_freq(invalid_freq)
 
+
 def test_conv_mip_to_bronx_freq_edge_cases():
     """
     Test edge cases and boundary conditions.
@@ -57,6 +60,7 @@ def test_conv_mip_to_bronx_freq_edge_cases():
     # Test None input - should raise KeyError
     with pytest.raises(KeyError):
         conv_mip_to_bronx_freq(None)
+
 
 def test_conv_mip_to_bronx_freq_case_sensitivity():
     """

@@ -7,6 +7,7 @@ import pytest
 
 from fre.cmor.cmor_helpers import update_calendar_type
 
+
 @pytest.fixture
 def temp_json_file(tmp_path):
     """
@@ -29,6 +30,7 @@ def temp_json_file(tmp_path):
         json.dump(test_json_content, file, indent=4)
     return json_file
 
+
 def test_update_calendar_type_success(temp_json_file):
     """
     Test successful update of 'grid_label' and 'grid' fields.
@@ -45,6 +47,7 @@ def test_update_calendar_type_success(temp_json_file):
         assert data["calendar"] == new_calendar_type
         assert data["other_field"] == "some_value"
 
+
 def test_update_calendar_type_valerr_raise(temp_json_file):
     """
     Test error raising when the input calendar is None
@@ -52,13 +55,15 @@ def test_update_calendar_type_valerr_raise(temp_json_file):
     with pytest.raises(ValueError):
         update_calendar_type(temp_json_file, None)
 
+
 def test_update_calendar_type_unknown_err():
     """
     Test raising an exception not caught by the other ones
     """
     bad_path = 12345
     with pytest.raises(Exception):
-        update_calendar_type( bad_path, '365_day')
+        update_calendar_type(bad_path, '365_day')
+
 
 @pytest.fixture
 def temp_keyerr_json_file(tmp_path):
@@ -73,7 +78,7 @@ def temp_keyerr_json_file(tmp_path):
     """
     # Sample data for testing
     test_json_content = {
-        "clendar": "original_calendar_type", #oops spelling error  # cspell:disable-line
+        "clendar": "original_calendar_type",  # oops spelling error  # cspell:disable-line
         "other_field": "some_value"
     }
 
@@ -82,12 +87,14 @@ def temp_keyerr_json_file(tmp_path):
         json.dump(test_json_content, file, indent=4)
     return json_file
 
+
 def test_update_calendar_type_keyerror_raise(temp_keyerr_json_file):
     """
     Test error raising when the calendar key doesn't exist
     """
     with pytest.raises(KeyError):
-        update_calendar_type(temp_keyerr_json_file,'365_day')
+        update_calendar_type(temp_keyerr_json_file, '365_day')
+
 
 @pytest.fixture
 def temp_jsondecodeerr_json_file(tmp_path):
@@ -98,6 +105,7 @@ def temp_jsondecodeerr_json_file(tmp_path):
         f.write(invalid_content)
     return invalid_json_file
 
+
 def test_update_calendar_type_jsondecode_raise(temp_jsondecodeerr_json_file):
     """
     Test raising a JSONDecodeError
@@ -105,9 +113,10 @@ def test_update_calendar_type_jsondecode_raise(temp_jsondecodeerr_json_file):
     with pytest.raises(json.JSONDecodeError):
         update_calendar_type(temp_jsondecodeerr_json_file, '365_day')
 
+
 def test_update_calendar_type_jsonDNE_raise():
     """
     Test error raising when the input experiment json doesn't exist
     """
     with pytest.raises(FileNotFoundError):
-        update_calendar_type('DOES_NOT_EXIST.json','365_day')
+        update_calendar_type('DOES_NOT_EXIST.json', '365_day')

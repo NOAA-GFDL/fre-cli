@@ -7,11 +7,12 @@ from . import make_workflow_name
 
 fre_logger = logging.getLogger(__name__)
 
-def pp_run_subtool(experiment = None, platform = None, target = None,
-                   pause = False, no_wait = False):
+
+def pp_run_subtool(experiment=None, platform=None, target=None,
+                   pause=False, no_wait=False):
     """
     Starts, pauses or restarts the Cylc workflow described by $(experiment)__$(platform)__$(target)
-    
+
     :param experiment: One of the postprocessing experiment names from the yaml
         displayed by fre list exps -y $yamlfile
         (e.g. c96L65_am5f4b4r0_amip), default None
@@ -31,25 +32,25 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     :type no_wait: boolean
     """
     if None in [experiment, platform, target]:
-        raise ValueError( 'experiment, platform, and target must all not be None.'
-                          'currently, their values are...'
-                          f'{experiment} / {platform} / {target}')
+        raise ValueError('experiment, platform, and target must all not be None.'
+                         'currently, their values are...'
+                         f'{experiment} / {platform} / {target}')
 
     # Check to see if the workflow is already running
     name = make_workflow_name(experiment, platform, target)
     first_cmd = f'cylc scan --name ^{name}$'
     fre_logger.debug('running the following command: ')
     fre_logger.debug(first_cmd)
-    result = subprocess.run(['cylc', 'scan', '--name', f"^{name}$"], capture_output = True ).stdout.decode('utf-8')
+    result = subprocess.run(['cylc', 'scan', '--name', f"^{name}$"], capture_output=True).stdout.decode('utf-8')
     if len(result):
         fre_logger.info("Workflow already running!")
         return
 
     # If not running, start it
-    cmd  = "cylc play"
+    cmd = "cylc play"
     if pause:
-        cmd+=" --pause"
-    cmd +=f" {name}"
+        cmd += " --pause"
+    cmd += f" {name}"
     subprocess.run(cmd, shell=True, check=True)
 
     # not interested in the confirmation? gb2work now
@@ -63,7 +64,7 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     # confirm the scheduler came up. note the regex surrounding {name} for start/end of a string to avoid glob matches
     result = subprocess.run(
         ['cylc', 'scan', '--name', f"^{name}$"],
-        capture_output = True ).stdout.decode('utf-8')
+        capture_output=True).stdout.decode('utf-8')
 
     if not len(result):
         raise Exception('Cylc scheduler was started without error but is not running after 30 seconds')

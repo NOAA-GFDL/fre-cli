@@ -4,12 +4,13 @@ compile-yaml configuration class
 import os
 import logging
 # this boots yaml with !join- see __init__
-#from fre.yamltools import *
+# from fre.yamltools import *
 from fre.yamltools.helpers import clean_yaml
 from fre.yamltools.abstract_classes import MergeCompileYamls
 import yaml
 
 fre_logger = logging.getLogger(__name__)
+
 
 def get_compile_paths(full_path, yaml_content):
     """
@@ -26,19 +27,21 @@ def get_compile_paths(full_path, yaml_content):
     :rtype: str
     """
     # Load string as yaml
-    yml=yaml.load(yaml_content, Loader = yaml.Loader)
+    yml = yaml.load(yaml_content, Loader=yaml.Loader)
 
-    for key,value in yml.items():
+    for key, value in yml.items():
         if key == "build":
             if (value.get("platformYaml") or value.get("compileYaml")) is None:
                 raise ValueError("Compile or platform yaml not defined")
 
-            py_path = os.path.join(full_path,value.get("platformYaml"))
-            cy_path = os.path.join(full_path,value.get("compileYaml"))
+            py_path = os.path.join(full_path, value.get("platformYaml"))
+            cy_path = os.path.join(full_path, value.get("compileYaml"))
 
             return (py_path, cy_path)
 
 ## COMPILE CLASS ##
+
+
 class InitCompileYaml(MergeCompileYamls):
     """
     Class holding routines for initializing and combining compilation yamls
@@ -47,9 +50,10 @@ class InitCompileYaml(MergeCompileYamls):
     :ivar str platform: Platform name
     :ivar str target: Target name
     """
-    def __init__(self,yamlfile,platform,target):
+
+    def __init__(self, yamlfile, platform, target):
         self.yml = yamlfile
-        #self.name = yamlfile.split(".")[0]
+        # self.name = yamlfile.split(".")[0]
         self.namenopath = self.yml.split("/")[-1].split(".")[0]
         self.platform = platform
         self.target = target
@@ -74,7 +78,7 @@ class InitCompileYaml(MergeCompileYamls):
                         f'target: &target "{self.target}"\n')
 
         # Read model yaml as string
-        with open(self.yml,'r') as f:
+        with open(self.yml, 'r') as f:
             model_content = f.read()
 
         # Combine information as strings
@@ -84,7 +88,7 @@ class InitCompileYaml(MergeCompileYamls):
         fre_logger.info(f"   model yaml: {self.yml}")
         return (yaml_content)
 
-    def combine_compile(self,yaml_content):
+    def combine_compile(self, yaml_content):
         """
         Combine compile yaml with the defined combined.yaml
 
@@ -99,8 +103,8 @@ class InitCompileYaml(MergeCompileYamls):
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Get compile info
-        #( py_path, cy_path ) = get_compile_paths(self.mainyaml_dir,loaded_yaml)
-        ( _, cy_path ) = get_compile_paths(self.mainyaml_dir, yaml_content)
+        # ( py_path, cy_path ) = get_compile_paths(self.mainyaml_dir,loaded_yaml)
+        (_, cy_path) = get_compile_paths(self.mainyaml_dir, yaml_content)
 
         # copy compile yaml info into combined yaml
         if cy_path is not None:
@@ -128,19 +132,19 @@ class InitCompileYaml(MergeCompileYamls):
         self.mainyaml_dir = os.path.dirname(self.yml)
 
         # Get compile info
-        ( py_path, _ ) = get_compile_paths(self.mainyaml_dir, yaml_content)
+        (py_path, _) = get_compile_paths(self.mainyaml_dir, yaml_content)
 
         # copy compile yaml info into combined yaml
         platform_content = None
         if py_path is not None:
-            with open(py_path,'r') as pf:
+            with open(py_path, 'r') as pf:
                 platform_content = pf.read()
 
         # Combine information as strings
         yaml_content += platform_content
 
         # Load string as yaml
-        yml = yaml.load(yaml_content, Loader = yaml.Loader)
+        yml = yaml.load(yaml_content, Loader=yaml.Loader)
 
         # Return the combined string and loaded yaml
         fre_logger.info(f"   platforms yaml: {py_path}")
@@ -162,7 +166,7 @@ class InitCompileYaml(MergeCompileYamls):
         :rtype: dict
         """
         try:
-            yaml_content=self.combine_model()
+            yaml_content = self.combine_model()
         except Exception as exc:
             raise ValueError("ERR: Could not merge model yaml config with name, platform, and target.") from exc
 

@@ -41,10 +41,10 @@ def getenot(date_start: str,
     :rtype: int
     """
 
-    #Chunk type is the frequency of the data chunk
-    #enot = estimated number of timesteps
-    #start/end are cf datetime objects representing the start and end time of the data chunk
-    #diff represents the time difference between start and stop
+    # Chunk type is the frequency of the data chunk
+    # enot = estimated number of timesteps
+    # start/end are cf datetime objects representing the start and end time of the data chunk
+    # diff represents the time difference between start and stop
     if chunk_type == 'yearly':
         enot = int(date_end[1]) - int(date_start[1]) + 1
 
@@ -55,11 +55,11 @@ def getenot(date_start: str,
         start = cftime.datetime(int(date_start[1]),
                                 int(date_start[2].lstrip('0')),
                                 int(date_start[3].lstrip('0')),
-                                calendar = cal)
-        end =   cftime.datetime(int(date_end[1]),
-                                int(date_end[2].lstrip('0')),
-                                int(date_end[3].lstrip('0')),
-                                calendar = cal)
+                                calendar=cal)
+        end = cftime.datetime(int(date_end[1]),
+                              int(date_end[2].lstrip('0')),
+                              int(date_end[3].lstrip('0')),
+                              calendar=cal)
         diff = end - start
         enot = diff.days + 1
 
@@ -67,13 +67,13 @@ def getenot(date_start: str,
         start = cftime.datetime(int(date_start[1]),
                                 int(date_start[2].lstrip('0')),
                                 int(date_start[3].lstrip('0')),
-                                hour = int(date_start[4]),
-                                calendar = cal)
-        end =   cftime.datetime(int(date_end[1]),
-                                int(date_end[2].lstrip('0')),
-                                int(date_end[3].lstrip('0')),
-                                hour = int(date_end[4]),
-                                calendar = cal)
+                                hour=int(date_start[4]),
+                                calendar=cal)
+        end = cftime.datetime(int(date_end[1]),
+                              int(date_end[2].lstrip('0')),
+                              int(date_end[3].lstrip('0')),
+                              hour=int(date_end[4]),
+                              calendar=cal)
         diff = end - start
         enot = (diff.days + 1) * 4
 
@@ -81,13 +81,13 @@ def getenot(date_start: str,
         start = cftime.datetime(int(date_start[1]),
                                 int(date_start[2].lstrip('0')),
                                 int(date_start[3].lstrip('0')),
-                                hour = int(date_start[4]),
-                                calendar = cal)
-        end =   cftime.datetime(int(date_end[1]),
-                                int(date_end[2].lstrip('0')),
-                                int(date_end[3].lstrip('0')),
-                                hour = int(date_end[4]),
-                                calendar = cal)
+                                hour=int(date_start[4]),
+                                calendar=cal)
+        end = cftime.datetime(int(date_end[1]),
+                              int(date_end[2].lstrip('0')),
+                              int(date_end[3].lstrip('0')),
+                              hour=int(date_end[4]),
+                              calendar=cal)
         diff = end - start
         enot = (diff.days + 1) * 8
 
@@ -95,13 +95,13 @@ def getenot(date_start: str,
         start = cftime.datetime(int(date_start[1]),
                                 int(date_start[2].lstrip('0')),
                                 int(date_start[3].lstrip('0')),
-                                hour = int(date_start[4]),
-                                calendar = cal)
-        end =   cftime.datetime(int(date_end[1]),
-                                int(date_end[2].lstrip('0')),
-                                int(date_end[3].lstrip('0')),
-                                hour = int(date_end[4]),
-                                calendar = cal)
+                                hour=int(date_start[4]),
+                                calendar=cal)
+        end = cftime.datetime(int(date_end[1]),
+                              int(date_end[2].lstrip('0')),
+                              int(date_end[3].lstrip('0')),
+                              hour=int(date_end[4]),
+                              calendar=cal)
         diff = end - start
         enot = (diff.days + 1) * 24
 
@@ -109,14 +109,14 @@ def getenot(date_start: str,
         start = cftime.datetime(int(date_start[1]),
                                 int(date_start[2].lstrip('0')),
                                 int(date_start[3].lstrip('0')),
-                                hour = int(date_start[4]),
-                                calendar = cal)
-        end =   cftime.datetime(int(date_end[1]),
-                                int(date_end[2].lstrip('0')),
-                                int(date_end[3].lstrip('0')),
-                                hour = int(date_end[4]),
-                                minute = int(date_end[5]),
-                                calendar = cal)
+                                hour=int(date_start[4]),
+                                calendar=cal)
+        end = cftime.datetime(int(date_end[1]),
+                              int(date_end[2].lstrip('0')),
+                              int(date_end[3].lstrip('0')),
+                              hour=int(date_end[4]),
+                              minute=int(date_end[5]),
+                              calendar=cal)
         diff = end - start
         enot = (diff.days + 1) * 48
 
@@ -146,7 +146,6 @@ def validate(filepath: str):
     :return: Returns 0 unless an exception is raised or number of timesteps differ from expectation
     :rtype: int
     """
-
 
     import re
     # Get the date range from the filename
@@ -182,7 +181,7 @@ def validate(filepath: str):
 
     # Check if the calendar name is valid by creating a test datetime object.. if it's not raise an error
     try:
-        cftime.datetime(1,1,1, calendar = cal)
+        cftime.datetime(1, 1, 1, calendar=cal)
     except:
         raise ValueError(f" Calendar name must follow cf convention for validation. {cal} is not a valid calendar.")
 
@@ -213,23 +212,23 @@ def validate(filepath: str):
         # Path elements contains the directories from the filepath..
         # we use this to determine frequency/chunk_size in sub-daily files
         path_elements = os.path.abspath(filepath).split('/')
-        expected_frequencies  = ['6hr', 'PT6H', '3hr', 'PT3H', '1hr', 'PT1H', '30min', 'PT30M', 'PT0.5H']
+        expected_frequencies = ['6hr', 'PT6H', '3hr', 'PT3H', '1hr', 'PT1H', '30min', 'PT30M', 'PT0.5H']
 
         # 4x Daily
         if 'PT6H' in path_elements or '6hr' in path_elements:
-            enot = getenot(date_start,date_end,'4xdaily',cal)
+            enot = getenot(date_start, date_end, '4xdaily', cal)
 
         # 8x Daily
         if 'PT3H' in path_elements or '3hr' in path_elements:
-            enot = getenot(date_start,date_end,'8xdaily',cal)
+            enot = getenot(date_start, date_end, '8xdaily', cal)
 
         # HOURLY
         if 'PT1H' in path_elements or '1hr' in path_elements:
-            enot = getenot(date_start,date_end,'hourly',cal)
+            enot = getenot(date_start, date_end, 'hourly', cal)
 
         # 30 MINUTE
         if 'PT30M' in path_elements or 'PT0.5H' in path_elements or '30min' in path_elements:
-            enot = getenot(date_start,date_end,'30minute',cal)
+            enot = getenot(date_start, date_end, '30minute', cal)
 
         # If none of the expected frequencies are found in filepath, raise ValueError
         if all(freq not in path_elements for freq in expected_frequencies):

@@ -22,23 +22,24 @@ from typing import Optional
 
 from fre.yamltools.combine_yamls_script import consolidate_yamls
 from .cmor_mixer import cmor_run_subtool
-from .cmor_helpers import ( check_path_existence, iso_to_bronx_chunk, #conv_mip_to_bronx_freq,
-                            get_bronx_freq_from_mip_table )
+from .cmor_helpers import (check_path_existence, iso_to_bronx_chunk,  # conv_mip_to_bronx_freq,
+                           get_bronx_freq_from_mip_table)
 
 fre_logger = logging.getLogger(__name__)
 
-def cmor_yaml_subtool( yamlfile: str = None,
-                       exp_name: str = None,
-                       platform: str = None,
-                       target: str = None,
-                       output: Optional[str] = None,
-                       opt_var_name: Optional[str] = None,
-                       run_one_mode: bool = False,
-                       dry_run_mode: bool = False,
-                       start: Optional[str] = None,
-                       stop: Optional[str] = None,
-                       calendar_type: Optional[str] = None,
-                       print_cli_call: bool = True):
+
+def cmor_yaml_subtool(yamlfile: str = None,
+                      exp_name: str = None,
+                      platform: str = None,
+                      target: str = None,
+                      output: Optional[str] = None,
+                      opt_var_name: Optional[str] = None,
+                      run_one_mode: bool = False,
+                      dry_run_mode: bool = False,
+                      start: Optional[str] = None,
+                      stop: Optional[str] = None,
+                      calendar_type: Optional[str] = None,
+                      print_cli_call: bool = True):
     """
     Main driver for CMORization using model YAML configuration files.
     This routine parses the model YAML, combines configuration, resolves and checks all required
@@ -92,7 +93,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
                                        experiment=exp_name, platform=platform, target=target,
                                        use="cmor", output=output)['cmor']
     fre_logger.debug('consolidate_yamls produced the following dictionary of cmor-settings from yamls: \n%s',
-                     pprint.pformat(cmor_yaml_dict) )
+                     pprint.pformat(cmor_yaml_dict))
 
     mip_era = cmor_yaml_dict['mip_era'].upper()
     fre_logger.info('mip_era = %s', mip_era)
@@ -103,32 +104,32 @@ def cmor_yaml_subtool( yamlfile: str = None,
 
     # target input pp directory
     pp_dir = os.path.expandvars(
-        cmor_yaml_dict['directories']['pp_dir'] )
+        cmor_yaml_dict['directories']['pp_dir'])
     fre_logger.info('pp_dir = %s', pp_dir)
     check_path_existence(pp_dir)
 
     # directory holding mip table config inputs
     cmip_cmor_table_dir = os.path.expandvars(
-        cmor_yaml_dict['directories']['table_dir'] )
+        cmor_yaml_dict['directories']['table_dir'])
     fre_logger.info('cmip_cmor_table_dir = %s', cmip_cmor_table_dir)
     check_path_existence(cmip_cmor_table_dir)
 
     # final directory housing whole CMOR dir structure at the end of it all
     cmorized_outdir = os.path.expandvars(
-        cmor_yaml_dict['directories']['outdir'] )
+        cmor_yaml_dict['directories']['outdir'])
     fre_logger.info('cmorized_outdir = %s', cmorized_outdir)
     if not Path(cmorized_outdir).exists():
         try:
             fre_logger.info('cmorized_outdir does not exist.')
             fre_logger.info('attempt to create it...')
             Path(cmorized_outdir).mkdir(exist_ok=False, parents=True)
-        except Exception as exc: #uncovered
+        except Exception as exc:  # uncovered
             raise OSError(
                 f'could not create cmorized_outdir = {cmorized_outdir} for some reason!') from exc
 
     # path to input user/experiment configuration, expected by CMOR
     json_exp_config = os.path.expandvars(
-        cmor_yaml_dict['exp_json'] )
+        cmor_yaml_dict['exp_json'])
     fre_logger.info('json_exp_config = %s', json_exp_config)
     check_path_existence(json_exp_config)
 
@@ -227,57 +228,56 @@ def cmor_yaml_subtool( yamlfile: str = None,
             fre_logger.info('indir = %s', indir)
 
             fre_logger.info('PROCESSING: ( %s, %s )', table_name, component)
-            cmor_run_call_outdir=f'{cmorized_outdir}/{component}/{table_name}'
-
+            cmor_run_call_outdir = f'{cmorized_outdir}/{component}/{table_name}'
 
             if dry_run_mode:
                 if print_cli_call:
-                    fre_logger.info(  '--DRY RUN CLI CALL---\n'
-                                      'fre -v -v cmor run \\ \n'
-                                      f'    --indir {indir} \\ \n'
-                                      f'    --varlist {json_var_list} \\ \n'
-                                      f'    --table_config {json_mip_table_config} \\ \n'
-                                      f'    --exp_config {json_exp_config} \\ \n'
-                                      f'    --outdir {cmor_run_call_outdir} \\ \n'
-                                      f'    --run_one \\ \n'
-                                      f'    --opt_var_name {opt_var_name} ,\n'
-                                      f'    --grid_desc "{grid_desc}" \\ \n'
-                                      f'    --grid_label {grid_label} \\ \n'
-                                      f'    --nom_res "{nom_res}" \\ \n'
-                                      f'    --start {start} \\ \n'
-                                      f'    --stop {stop} \\ \n'
-                                      f'    --calendar {calendar_type}'
-                                      '\n' )
+                    fre_logger.info('--DRY RUN CLI CALL---\n'
+                                    'fre -v -v cmor run \\ \n'
+                                    f'    --indir {indir} \\ \n'
+                                    f'    --varlist {json_var_list} \\ \n'
+                                    f'    --table_config {json_mip_table_config} \\ \n'
+                                    f'    --exp_config {json_exp_config} \\ \n'
+                                    f'    --outdir {cmor_run_call_outdir} \\ \n'
+                                    f'    --run_one \\ \n'
+                                    f'    --opt_var_name {opt_var_name} ,\n'
+                                    f'    --grid_desc "{grid_desc}" \\ \n'
+                                    f'    --grid_label {grid_label} \\ \n'
+                                    f'    --nom_res "{nom_res}" \\ \n'
+                                    f'    --start {start} \\ \n'
+                                    f'    --stop {stop} \\ \n'
+                                    f'    --calendar {calendar_type}'
+                                    '\n')
                 else:
-                    fre_logger.info(  '--DRY RUN CALL---\n'
-                                      'cmor_run_subtool(\n'
-                                      f'    indir = {indir} ,\n'
-                                      f'    json_var_list = {json_var_list} ,\n'
-                                      f'    json_table_config = {json_mip_table_config} ,\n'
-                                      f'    json_exp_config = {json_exp_config} ,\n'
-                                      f'    outdir = {cmor_run_call_outdir} ,\n'
-                                      f'    run_one_mode = {run_one_mode} ,\n'
-                                      f'    opt_var_name = {opt_var_name} ,\n'
-                                      f'    grid = {grid_desc} ,\n'
-                                      f'    grid_label = {grid_label} ,\n'
-                                      f'    nom_res = {nom_res} ,\n'
-                                      f'    start = {start} ,\n'
-                                      f'    stop = {stop} ,\n'
-                                      f'    calendar_type = {calendar_type}'
-                                      ')\n' )
+                    fre_logger.info('--DRY RUN CALL---\n'
+                                    'cmor_run_subtool(\n'
+                                    f'    indir = {indir} ,\n'
+                                    f'    json_var_list = {json_var_list} ,\n'
+                                    f'    json_table_config = {json_mip_table_config} ,\n'
+                                    f'    json_exp_config = {json_exp_config} ,\n'
+                                    f'    outdir = {cmor_run_call_outdir} ,\n'
+                                    f'    run_one_mode = {run_one_mode} ,\n'
+                                    f'    opt_var_name = {opt_var_name} ,\n'
+                                    f'    grid = {grid_desc} ,\n'
+                                    f'    grid_label = {grid_label} ,\n'
+                                    f'    nom_res = {nom_res} ,\n'
+                                    f'    start = {start} ,\n'
+                                    f'    stop = {stop} ,\n'
+                                    f'    calendar_type = {calendar_type}'
+                                    ')\n')
                 continue
-            cmor_run_subtool( #uncovered
-                indir = indir ,
-                json_var_list = json_var_list ,
-                json_table_config = json_mip_table_config ,
-                json_exp_config = json_exp_config ,
-                outdir = cmor_run_call_outdir ,
-                run_one_mode = run_one_mode ,
-                opt_var_name = opt_var_name ,
-                grid = grid_desc ,
-                grid_label = grid_label ,
-                nom_res = nom_res ,
-                start = start ,
-                stop = stop ,
-                calendar_type = calendar_type
+            cmor_run_subtool(  # uncovered
+                indir=indir,
+                json_var_list=json_var_list,
+                json_table_config=json_mip_table_config,
+                json_exp_config=json_exp_config,
+                outdir=cmor_run_call_outdir,
+                run_one_mode=run_one_mode,
+                opt_var_name=opt_var_name,
+                grid=grid_desc,
+                grid_label=grid_label,
+                nom_res=nom_res,
+                start=start,
+                stop=stop,
+                calendar_type=calendar_type
             )

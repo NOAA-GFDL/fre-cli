@@ -31,6 +31,8 @@ from .cmor_constants import DO_NOT_PRINT_LIST
 fre_logger = logging.getLogger(__name__)
 
 # TODO update for cmip7 if desired
+
+
 def print_var_content(table_config_file: IO[str],
                       var_name: str) -> None:
     """
@@ -76,9 +78,9 @@ def print_var_content(table_config_file: IO[str],
     fre_logger.info('\n')
 
 
-def cmor_find_subtool( json_var_list: Optional[str] = None,
-                       json_table_config_dir: Optional[str] = None,
-                       opt_var_name: Optional[str] = None) -> None:
+def cmor_find_subtool(json_var_list: Optional[str] = None,
+                      json_table_config_dir: Optional[str] = None,
+                      opt_var_name: Optional[str] = None) -> None:
     """
     Find and print information about variables in CMIP6 JSON configuration files in a specified directory.
 
@@ -127,9 +129,9 @@ def cmor_find_subtool( json_var_list: Optional[str] = None,
                     print_var_content(table_config_file, str(var_list[var]))
 
 
-def make_simple_varlist( dir_targ: str,
-                         output_variable_list: Optional[str],
-                         json_mip_table: Optional[str] = None) -> Optional[Dict[str, str]]:
+def make_simple_varlist(dir_targ: str,
+                        output_variable_list: Optional[str],
+                        json_mip_table: Optional[str] = None) -> Optional[Dict[str, str]]:
     """
     Generate a JSON file containing a list of variable names from NetCDF files in a specified directory.
     This function searches for NetCDF files in the given directory, or a subdirectory, "ts/monthly/5yr",
@@ -156,7 +158,7 @@ def make_simple_varlist( dir_targ: str,
     # if the variable is in the filename, it's likely delimited by another period.
     all_nc_files = glob.glob(os.path.join(dir_targ, "*.*.nc"))
     if not all_nc_files:
-        fre_logger.error("No files found in the directory.") #uncovered
+        fre_logger.error("No files found in the directory.")  # uncovered
         return None
 
     if len(all_nc_files) == 1:
@@ -169,14 +171,14 @@ def make_simple_varlist( dir_targ: str,
         try:
             # read in mip vars to check against later
             fre_logger.debug('attempting to read in variable entries in specified mip table')
-            full_mip_vars_list=get_json_file_data(json_mip_table)["variable_entry"].keys()
+            full_mip_vars_list = get_json_file_data(json_mip_table)["variable_entry"].keys()
 
         except Exception as exc:
-            raise Exception( 'problem opening mip table and getting variable entry data.'
+            raise Exception('problem opening mip table and getting variable entry data.'
                             f'exc = {exc}') from exc
 
         fre_logger.debug('attempting to make mip variable list')
-        mip_vars=[ key.split('_')[0] for key in full_mip_vars_list ]
+        mip_vars = [key.split('_')[0] for key in full_mip_vars_list]
         fre_logger.debug('mip vars extracted for comparison when making var list: %s', mip_vars)
 
     # Build a deduplicated dict of variable names extracted from all filenames across
@@ -184,7 +186,7 @@ def make_simple_varlist( dir_targ: str,
     # first-seen insertion order (Python 3.7+).
     var_list: Dict[str, str] = {}
     for targetfile in all_nc_files:
-        var_name=os.path.basename(targetfile).split('.')[-2]
+        var_name = os.path.basename(targetfile).split('.')[-2]
         if mip_vars is not None and var_name not in mip_vars:
             continue
         var_list[var_name] = var_name

@@ -26,17 +26,21 @@ from fre import fre
 runner = CliRunner()
 
 # fre app
+
+
 def test_cli_fre_app(capfd):
     """ fre app """
     result = runner.invoke(fre.fre, args=["app"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+
 def test_cli_fre_app_help(capfd):
     """ fre app --help """
     result = runner.invoke(fre.fre, args=["app", "--help"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
+
 
 def test_cli_fre_app_opt_dne(capfd):
     """ fre app optionDNE """
@@ -52,11 +56,13 @@ def test_cli_fre_app_gen_time_averages(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+
 def test_cli_fre_app_gen_time_averages_help(capfd):
     """ fre app gen-time-averages --help """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages", "--help"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
+
 
 def test_cli_fre_app_gen_time_averages_opt_dne(capfd):
     """ fre app gen-time-averages optionDNE """
@@ -64,7 +70,8 @@ def test_cli_fre_app_gen_time_averages_opt_dne(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
-@pytest.mark.xfail(reason='under-construction/developing') #TODO flesh out argument details, assertions and checks etc
+
+@pytest.mark.xfail(reason='under-construction/developing')  # TODO flesh out argument details, assertions and checks etc
 def test_cli_fre_app_gen_time_averages_case(capfd):
     """
     fre app gen-time-averages --inf \
@@ -80,7 +87,7 @@ def test_cli_fre_app_gen_time_averages_case(capfd):
                                           "BAR_PLACEHOLD",
                                           "--avg_type", "all",
                                           "--pkg", "cdo",
-                                          "--unwgt" ])
+                                          "--unwgt"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
 
@@ -92,17 +99,20 @@ def test_cli_fre_app_gen_time_averages_wrapper(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+
 def test_cli_fre_app_gen_time_averages_wrapper_help(capfd):
     """ fre app gen-time-averages-wrapper --help """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages-wrapper", "--help"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
 
+
 def test_cli_fre_app_gen_time_averages_wrapper_opt_dne(capfd):
     """ fre app gen-time-averages-wrapper optionDNE """
     result = runner.invoke(fre.fre, args=["app", "gen-time-averages-wrapper", "optionDNE"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
+
 
 def test_cli_fre_app_gen_time_averages_wrapper_case(capfd):
     """
@@ -136,11 +146,13 @@ def test_cli_fre_app_combine_time_averages(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+
 def test_cli_fre_app_combine_time_averages_help(capfd):
     """ fre app combine-time-averages --help """
     result = runner.invoke(fre.fre, args=["app", "combine-time-averages", "--help"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
+
 
 def test_cli_fre_app_combine_time_averages_opt_dne(capfd):
     """ fre app combine-time-averages optionDNE """
@@ -148,7 +160,8 @@ def test_cli_fre_app_combine_time_averages_opt_dne(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
-@pytest.mark.xfail(reason='under-construction/developing') #TODO flesh out argument details, assertions and checks etc
+
+@pytest.mark.xfail(reason='under-construction/developing')  # TODO flesh out argument details, assertions and checks etc
 def test_cli_fre_app_combine_time_averages_case(capfd):
     """
     fre app combine-time-averages \
@@ -169,7 +182,7 @@ def test_cli_fre_app_combine_time_averages_case(capfd):
                                           "--begin", "1980",
                                           "--end", "1981",
                                           "--frequency", "yr",
-                                          "--interval", "P2Y",  ])
+                                          "--interval", "P2Y",])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
 
@@ -181,17 +194,20 @@ def test_cli_fre_app_regrid(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+
 def test_cli_fre_app_regrid_help(capfd):
     """ fre app regrid --help """
     result = runner.invoke(fre.fre, args=["app", "regrid", "--help"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
 
+
 def test_cli_fre_app_regrid_opt_dne(capfd):
     """ fre app regrid optionDNE """
     result = runner.invoke(fre.fre, args=["app", "regrid", "optionDNE"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
+
 
 @pytest.mark.skipif(which('fregrid') is None,
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
@@ -212,7 +228,7 @@ def test_cli_fre_app_regrid_test_case_1(capfd):
     click.echo(f"args_list = \n {args_list}")
     click.echo("fre " + ' '.join(args_list))
 
-    result = runner.invoke(fre.fre, args=args_list )
+    result = runner.invoke(fre.fre, args=args_list)
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
 
@@ -226,11 +242,13 @@ def test_cli_fre_app_remap(capfd):
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+
 def test_cli_fre_app_remap_help(capfd):
     """ fre app remap --help """
     result = runner.invoke(fre.fre, args=["app", "remap", "--help"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
+
 
 def test_cli_fre_app_remap_opt_dne(capfd):
     """ fre app remap optionDNE """
@@ -239,17 +257,21 @@ def test_cli_fre_app_remap_opt_dne(capfd):
     _out, _err = capfd.readouterr()
 
 # fre app mask_atmos_plevel
+
+
 def test_cli_fre_app_mask_atmos_plevel(capfd):
     """ fre app mask-atmos-plevel """
     result = runner.invoke(fre.fre, args=["app", "mask-atmos-plevel"])
     assert result.exit_code == 2
     _out, _err = capfd.readouterr()
 
+
 def test_cli_fre_app_mask_atmos_plevel_help(capfd):
     """ fre app mask-atmos-plevel --help """
     result = runner.invoke(fre.fre, args=["app", "mask-atmos-plevel", "--help"])
     assert result.exit_code == 0
     _out, _err = capfd.readouterr()
+
 
 def test_cli_fre_app_mask_atmos_plevel_opt_dne(capfd):
     """ fre app mask-atmos-plevel optionDNE """
@@ -265,6 +287,6 @@ def test_cli_fre_app_mask_atmos_plevel_exception():
                                  "--infile", "foo",
                                  "--outfile", "bar",
                                  "--psfile", "baz"],
-                           catch_exceptions = True)
+                           catch_exceptions=True)
     assert result.exit_code == 1
     assert result.exception.args[0] == 'ERROR: Input file foo does not exist'

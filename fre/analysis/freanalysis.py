@@ -21,7 +21,6 @@ def analysis_cli():
     """Entry point to fre analysis click commands."""
 
 
-
 @analysis_cli.command()
 @click.option("--url", type=str, required=True, help="URL of the github repository.")
 @click.option("--name", type=str, required=False, help="Subdirectory to pip install.")

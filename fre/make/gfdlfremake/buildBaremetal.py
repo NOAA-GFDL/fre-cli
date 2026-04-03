@@ -7,6 +7,7 @@
 import subprocess
 import os
 
+
 def fremake_parallel(fremakeBuildList):
     """
     Brief: Called for parallel execution purposes.  Runs the builds.
@@ -14,6 +15,7 @@ def fremake_parallel(fremakeBuildList):
         - fremakeBuildList : fremakeBuild object list passes by pool.map
     """
     fremakeBuildList.run()
+
 
 class buildBaremetal():
     """
@@ -25,7 +27,8 @@ class buildBaremetal():
         - srcDir : The source directory
         - bldDir : The build directory
     """
-    def __init__(self,exp,mkTemplatePath,srcDir,bldDir,target,env_setup,jobs):
+
+    def __init__(self, exp, mkTemplatePath, srcDir, bldDir, target, env_setup, jobs):
         """
         Initialize variables and set-up the compile script.
         """
@@ -33,26 +36,26 @@ class buildBaremetal():
         self.t = target.gettargetName()
         self.src = srcDir
         self.bld = bldDir
-        self.make = "make --jobs="+str(jobs)+" "+target.getmakeline_add() #make line
+        self.make = "make --jobs="+str(jobs)+" "+target.getmakeline_add()  # make line
         self.mkmf = True
         self.template = mkTemplatePath
 
-        ## Set up the top portion of the compile script
-        self.setup=[   "#!/bin/sh -fx \n",
-                       f"bld_dir={self.bld}/ \n",
-                       f"src_dir={self.src}/ \n",
-                       f"mkmf_template={self.template} \n"]
+        # Set up the top portion of the compile script
+        self.setup = ["#!/bin/sh -fx \n",
+                      f"bld_dir={self.bld}/ \n",
+                      f"src_dir={self.src}/ \n",
+                      f"mkmf_template={self.template} \n"]
 
         # If env_setup is not empty, append array of module initialize, load, and unload commands to setup
         if env_setup != "":
             for setup in env_setup:
                 self.setup.append(f"{setup} \n")
 
-        ## Create the build directory
+        # Create the build directory
         os.system(f"mkdir -p {self.bld}")
 
-        ## Create the compile script
-        self.f=open(f"{self.bld}/compile.sh","w")
+        # Create the compile script
+        self.f = open(f"{self.bld}/compile.sh", "w")
         self.f.writelines(self.setup)
 
     def writeBuildComponents(self, c):
@@ -84,31 +87,31 @@ class buildBaremetal():
             self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir "
                          "-p lib"+comp+".a -t $mkmf_template --use-cpp "
                          "-c \""+c["cppdefs"]+"\" "+c["otherFlags"]
-                         +" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
-        elif c["requires"] == []: # If this lib doesn't have any code dependencies (no -o)
+                         + " $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+        elif c["requires"] == []:  # If this lib doesn't have any code dependencies (no -o)
             self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir "
                          "-p lib"+comp+".a -t $mkmf_template -c \""
-                         +c["cppdefs"]+"\" "+c["otherFlags"]
-                         +" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
-        else: #Has requirements
-            #Set up the requirements as a string to include after the -o
+                         + c["cppdefs"]+"\" "+c["otherFlags"]
+                         + " $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+        else:  # Has requirements
+            # Set up the requirements as a string to include after the -o
             reqstring = ""
             for r in c["requires"]:
                 reqstring = reqstring+"-I$bld_dir/"+r+" "
 
-            #Figure out if we need the preprocessor
+            # Figure out if we need the preprocessor
             if c["doF90Cpp"]:
                 self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir "
                              "-p lib"+comp+".a -t $mkmf_template --use-cpp "
                              "-c \""+c["cppdefs"]+"\" -o \""+reqstring+"\" "
-                             +c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+                             + c["otherFlags"]+" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
             else:
                 self.f.write(" mkmf -m Makefile -a $src_dir -b $bld_dir "
                              "-p lib"+comp+".a -t $mkmf_template -c \""
-                             +c["cppdefs"]+"\" -o \""+reqstring+"\" "+c["otherFlags"]
-                             +" $bld_dir/"+comp+"/pathnames_"+comp+" \n")
+                             + c["cppdefs"]+"\" -o \""+reqstring+"\" "+c["otherFlags"]
+                             + " $bld_dir/"+comp+"/pathnames_"+comp+" \n")
 
-##TODO: add targets input
+# TODO: add targets input
     def writeScript(self):
         """
         Brief: Finishes and writes the build script
@@ -122,7 +125,7 @@ class buildBaremetal():
         # Make compile script executable
         os.chmod(self.bld+"/compile.sh", 0o744)
 
-## TODO run as a batch job on the login cluster
+# TODO run as a batch job on the login cluster
     def run(self):
         """
         Brief: Run the build script
@@ -132,10 +135,10 @@ class buildBaremetal():
         command = [self.bld+"/compile.sh"]
 
         # Run compile script
-        p1 = subprocess.Popen(command, stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        p1 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         # Direct output to log file as well
-        p2 = subprocess.Popen(["tee",self.bld+"/log.compile"], stdin=p1.stdout)
+        p2 = subprocess.Popen(["tee", self.bld+"/log.compile"], stdin=p1.stdout)
 
         # Allow process1 to receive SIGPIPE is process2 exits
         p1.stdout.close()

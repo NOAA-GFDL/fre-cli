@@ -23,13 +23,17 @@ PLATFORM = "FOO"
 TARGET = "BAR"
 
 # yaml file checks
+
+
 def test_modelyaml_exists():
     ''' Test model yaml exists '''
     assert Path(f"{TEST_DIR}/{AM5_EXAMPLE}/{MODEL_YAMLFILE}").exists()
 
+
 def test_settingsyaml_exist():
     ''' Test settings yaml exists '''
     assert Path(f"{TEST_DIR}/{AM5_EXAMPLE}/{SETTINGS_YAMLFILE}").exists()
+
 
 def test_ppyamls_exist():
     ''' Test post-processing yamls exist '''
@@ -37,14 +41,16 @@ def test_ppyamls_exist():
         assert Path(f"{TEST_DIR}/{AM5_EXAMPLE}/{pp_yaml}").exists()
 
 # Test whole tool
+
+
 def test_exp_list(caplog):
     ''' Test fre list pp-components subtool '''
     list_pp_components_script.list_ppcomps_subtool(f"{TEST_DIR}/{AM5_EXAMPLE}/{MODEL_YAMLFILE}", EXP_NAME)
 
     # check the logging output
-    check_out = [ 'Components to be post-processed:',
-                  '   - atmos',
-                  '   - atmos_scalar']
+    check_out = ['Components to be post-processed:',
+                 '   - atmos',
+                 '   - atmos_scalar']
 
     for i in check_out:
         assert i in caplog.text
@@ -54,6 +60,8 @@ def test_exp_list(caplog):
         assert record.levelname == "INFO"
 
 # Test validation
+
+
 def test_yamlvalidate(caplog):
     ''' Test yaml is being validated '''
     # Combine model / experiment

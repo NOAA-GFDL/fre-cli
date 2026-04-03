@@ -6,6 +6,8 @@ them.
 from abc import ABC, abstractmethod
 
 # inherited by pp_info_parser and analysis_info_parser
+
+
 class MergePPANYamls(ABC):
     """
     Scaffolding for merging pp and analysis yamls; inherited by pp_info_parser
@@ -40,6 +42,8 @@ class MergePPANYamls(ABC):
         """
 
 # inherited by compile_info_parser
+
+
 class MergeCompileYamls(ABC):
     """
     Scaffolding for merging compile yamls; inherited by compile_info_parser
@@ -65,7 +69,7 @@ class MergeCompileYamls(ABC):
         with output yaml str from combine_compile
         """
 
-#class ValidateYamls(ABC):
+# class ValidateYamls(ABC):
 #    @abstractmethod
 #    def validate_keys():
 #        pass

@@ -34,7 +34,8 @@ from .gfdlfremake import (
 
 fre_logger = logging.getLogger(__name__)
 
-def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejobs: int = 4,
+
+def compile_create(yamlfile: str, platform: tuple[str], target: tuple[str], makejobs: int = 4,
                    nparallel: int = 1, execute: Optional[bool] = False,
                    verbose: Optional[bool] = None):
     """
@@ -72,7 +73,7 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
 
     baremetal_run = False  # This is needed if there are no bare metal runs
 
-    ## Split and store the platforms and targets in a list
+    # Split and store the platforms and targets in a list
     plist = platform
     tlist = target
 
@@ -84,19 +85,19 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
                                          use="compile",
                                          output=None)
 
-    ## Get the variables in the model yaml
+    # Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
+    # Open the yaml file, validate the yaml, and parse as fremake_yaml
     model_yaml = yamlfre.freyaml(full_combined, fre_vars)
     fremake_yaml = model_yaml.getCompileYaml()
 
-    ## Error checking the targets
+    # Error checking the targets
     for target_name in tlist:
         target = targetfre.fretarget(target_name)
 
     fremake_build_list = []
-    ## Loop through platforms and targets
+    # Loop through platforms and targets
     for platform_name in plist:
         for target_name in tlist:
             target = targetfre.fretarget(target_name)
@@ -104,27 +105,27 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
                 raise ValueError(f"{platform_name} does not exist in platforms.yaml")
 
             platform = model_yaml.platforms.getPlatformFromName(platform_name)
-            ## Make the bld_dir based on the modelRoot, the platform, and the target
+            # Make the bld_dir based on the modelRoot, the platform, and the target
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
-            ## Check for type of build
+            # Check for type of build
             if platform["container"] is False:
                 baremetal_run = True
                 bld_dir = f'{platform["modelRoot"]}/{fremake_yaml["experiment"]}/' + \
-                         f'{platform_name}-{target.gettargetName()}/exec'
-                Path(bld_dir).mkdir(parents = True, exist_ok = True)
+                    f'{platform_name}-{target.gettargetName()}/exec'
+                Path(bld_dir).mkdir(parents=True, exist_ok=True)
 
-                template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
-                                                    model_root = platform["modelRoot"],
-                                                    container_flag = platform["container"])
+                template_path = get_mktemplate_path(mk_template=platform["mkTemplate"],
+                                                    model_root=platform["modelRoot"],
+                                                    container_flag=platform["container"])
 
-                ## Create a list of compile scripts to run in parallel
+                # Create a list of compile scripts to run in parallel
                 fremake_build = buildBaremetal.buildBaremetal(exp=fremake_yaml["experiment"],
-                                                             mkTemplatePath=template_path,
-                                                             srcDir=src_dir,
-                                                             bldDir=bld_dir,
-                                                             target=target,
-                                                             env_setup=platform["envSetup"],
-                                                             jobs=jobs)
+                                                              mkTemplatePath=template_path,
+                                                              srcDir=src_dir,
+                                                              bldDir=bld_dir,
+                                                              target=target,
+                                                              env_setup=platform["envSetup"],
+                                                              jobs=jobs)
                 for c in fremake_yaml['src']:
                     fremake_build.writeBuildComponents(c)
                 fremake_build.writeScript()

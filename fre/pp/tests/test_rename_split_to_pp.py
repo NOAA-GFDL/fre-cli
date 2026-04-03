@@ -32,6 +32,7 @@ from fre.pp.rename_split_script import (
     rename_split
 )
 
+
 @pytest.mark.parametrize(
     "start_date,end_date,expected_freq,expected_format",
     [
@@ -49,6 +50,7 @@ def test_get_freq_and_format_from_two_dates(start_date, end_date, expected_freq,
     """
     assert (expected_freq, expected_format) == get_freq_and_format_from_two_dates(start_date, end_date)
 
+
 @pytest.mark.parametrize(
     "start_date,end_date,expected_duration",
     [
@@ -64,6 +66,7 @@ def test_get_duration_from_two_dates(start_date, end_date, expected_duration):
     """
     assert expected_duration == get_duration_from_two_dates(start_date, end_date)
 
+
 @pytest.mark.parametrize(
     "start_date,end_date",
     [
@@ -77,6 +80,7 @@ def test_get_freq_and_format_from_two_dates_raises_valueerror(start_date, end_da
     """
     with pytest.raises(ValueError, match="Cannot determine frequency and format"):
         get_freq_and_format_from_two_dates(start_date, end_date)
+
 
 @pytest.mark.parametrize(
     "start_date,end_date",
@@ -92,6 +96,7 @@ def test_get_duration_from_two_dates_raises_valueerror(start_date, end_date):
     with pytest.raises(ValueError, match="Could not determine ISO8601 duration"):
         get_duration_from_two_dates(start_date, end_date)
 
+
 ROOTDIR = Path(__file__).parent.parent.parent
 print("Root directory: " + str(ROOTDIR))
 
@@ -101,12 +106,14 @@ INDIR = TEST_DATA_DIR / "input"
 OUTDIR = TEST_DATA_DIR / "output"
 OG = TEST_DATA_DIR / "orig-output"
 
+
 def test_rename_split_to_pp_setup():
     '''
     sets up the test files for the test cases
     '''
-    nc_files = []; ncgen_commands = []
-    for path,subdirs,files in os.walk(TEST_DATA_DIR):
+    nc_files = []
+    ncgen_commands = []
+    for path, subdirs, files in os.walk(TEST_DATA_DIR):
         for name in files:
             if name.endswith("cdl"):
                 name_out = re.sub(".cdl", ".nc", name)
@@ -119,7 +126,8 @@ def test_rename_split_to_pp_setup():
             print(out0.stdout)
     nc_exists = [Path(el).is_file() for el in nc_files]
     assert all(nc_exists)
-    
+
+
 def test_rename_split_to_pp_multiply_setup():
     '''
     Takes every file with 'tile1' in the name and make 5 new copies.
@@ -127,12 +135,14 @@ def test_rename_split_to_pp_multiply_setup():
     but it's not checking on whether the tiles match up with each other, so we can
     take one and copy it 5 times.
     '''
-    nc_tile_files = []; t1 = 'tile1'; tile_patterns = ['tile2', 'tile3', 'tile4', 'tile5', 'tile6']
-    for path,subdirs,files in os.walk(TEST_DATA_DIR):
+    nc_tile_files = []
+    t1 = 'tile1'
+    tile_patterns = ['tile2', 'tile3', 'tile4', 'tile5', 'tile6']
+    for path, subdirs, files in os.walk(TEST_DATA_DIR):
         for name in files:
             if name.endswith(".nc") and re.search(t1, name) is not None:
                 nc_tile_files.append(str(Path(path) / name))
-    assert len(nc_tile_files) == 8 #2 tile cases (daily,mon) * input,orig_output *regrid,native
+    assert len(nc_tile_files) == 8  # 2 tile cases (daily,mon) * input,orig_output *regrid,native
     tp_files = []
     for nct in nc_tile_files:
         for tp in tile_patterns:
@@ -140,21 +150,23 @@ def test_rename_split_to_pp_multiply_setup():
             tp_files.append(tp_file)
             Path(tp_file).hardlink_to(nct)
     assert all([Path(el).is_file() for el in tp_files])
-    
-@pytest.mark.parametrize("hist_source,do_regrid,og_suffix", 
-                          [ 
-                          pytest.param("atmos_daily", False, "P1D/P6M/", id="day-native"),
-                          pytest.param("atmos_daily", True, "P1D/P6M/", id="day-regrid"),
-                          pytest.param("river_month", False, "P1M/P1Y/", id="mon-native"),
-                          pytest.param("river_month", True, "P1M/P1Y/", id="mon-regrid"),
-                          pytest.param("ocean_annual", False, "P1Y/P1Y/", id="year-native"),
-                          pytest.param("ocean_annual", True, "P1Y/P1Y/", id="year-regrid"),
-                          pytest.param("ocean_static", False, "P0Y/P0Y/", id="static-native"),
-                          pytest.param("ocean_static", True, "P0Y/P0Y/", id="static-regrid"),
-                          pytest.param("fail_filenames", False, "", id="fail-badfilename", marks=pytest.mark.xfail()),
-                          pytest.param("fail_nofiles", False, "", id="fail-noinput", marks=pytest.mark.xfail()),
-                          pytest.param("ocean_annual_point", False, "P1Y/P1Y", id="year-native")
-                          ])
+
+
+@pytest.mark.parametrize("hist_source,do_regrid,og_suffix",
+                         [
+                             pytest.param("atmos_daily", False, "P1D/P6M/", id="day-native"),
+                             pytest.param("atmos_daily", True, "P1D/P6M/", id="day-regrid"),
+                             pytest.param("river_month", False, "P1M/P1Y/", id="mon-native"),
+                             pytest.param("river_month", True, "P1M/P1Y/", id="mon-regrid"),
+                             pytest.param("ocean_annual", False, "P1Y/P1Y/", id="year-native"),
+                             pytest.param("ocean_annual", True, "P1Y/P1Y/", id="year-regrid"),
+                             pytest.param("ocean_static", False, "P0Y/P0Y/", id="static-native"),
+                             pytest.param("ocean_static", True, "P0Y/P0Y/", id="static-regrid"),
+                             pytest.param("fail_filenames", False, "",
+                                          id="fail-badfilename", marks=pytest.mark.xfail()),
+                             pytest.param("fail_nofiles", False, "", id="fail-noinput", marks=pytest.mark.xfail()),
+                             pytest.param("ocean_annual_point", False, "P1Y/P1Y", id="year-native")
+                         ])
 def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
     '''
     Tests the running of ``rename-split-to-pp``, which takes 3 input args:
@@ -203,21 +215,21 @@ def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
     #   os.mkdir(outputDir)
     # callstat = call_rename_split_to_pp(inputDir, outputDir, hist_source, do_regrid)
     # # #####
-    
+
     print("do_regrid " + str(do_regrid))
     if do_regrid:
         print("do_regrid is set to True")
         dir_suffix = hist_source + "-regrid"
         origDir = OG / dir_suffix / "regrid" / hist_source / og_suffix
     else:
-        #need to set in this branch b/c env variables aren't getting torn down - 
-        #otherwise the 'True' from prior run sticks around
+        # need to set in this branch b/c env variables aren't getting torn down -
+        # otherwise the 'True' from prior run sticks around
         dir_suffix = hist_source + "-native"
         origDir = OG / dir_suffix / hist_source / og_suffix
-    
+
     inputDir = INDIR / dir_suffix
     outputDir = OUTDIR / dir_suffix
-    
+
     if not Path(outputDir).exists():
         Path(outputDir).mkdir(parents=True, exist_ok=True)
 
@@ -244,6 +256,7 @@ def test_rename_split_to_pp_run(hist_source, do_regrid, og_suffix):
         files_paired = False
     assert all([files_there, files_paired])
 
+
 def test_rename_split_to_pp_cleanup():
     '''
     deletes the test files (any file ending with .nc) and output directories
@@ -251,11 +264,11 @@ def test_rename_split_to_pp_cleanup():
     '''
     el_list = []
     dir_list = []
-    #all dirs under output
+    # all dirs under output
     for path, subdirs, files in os.walk(OUTDIR):
         for name in subdirs:
             dir_list.append(str(Path(path) / name))
-    #all netcdf files
+    # all netcdf files
     for path, subdirs, files in os.walk(TEST_DATA_DIR):
         for name in files:
             if name.endswith(".nc"):
@@ -270,21 +283,23 @@ def test_rename_split_to_pp_cleanup():
     el_deleted = [not Path(el).is_file() for el in el_list]
     assert all(el_deleted + dir_deleted)
 
+
 def test_rename_split_raises_filenotfounderror_no_files():
     """
     Test that FileNotFoundError is raised when no files matching the component are found
     """
     from fre.pp.rename_split_script import rename_split
     import tempfile
-    
+
     with tempfile.TemporaryDirectory() as tmpdir:
         input_dir = Path(tmpdir) / "input"
         output_dir = Path(tmpdir) / "output"
         input_dir.mkdir()
         output_dir.mkdir()
-        
+
         with pytest.raises(FileNotFoundError, match="No 'atmos' files were found"):
             rename_split(str(input_dir), str(output_dir), "atmos", False)
+
 
 def test_rename_file_raises_valueerror_bad_filename():
     """
@@ -293,15 +308,16 @@ def test_rename_file_raises_valueerror_bad_filename():
     from fre.pp.rename_split_script import rename_file
     import tempfile
     import netCDF4
-    
+
     with tempfile.TemporaryDirectory() as tmpdir:
         # Create a temporary netCDF file with a bad filename (doesn't match expected format)
         bad_filename = Path(tmpdir) / "badname.nc"
         ds = netCDF4.Dataset(str(bad_filename), "w")
         ds.close()
-        
+
         with pytest.raises(ValueError, match="cannot be parsed"):
             rename_file(bad_filename)
+
 
 def test_rename_file_raises_filenotfounderror_missing_diag_manifest():
     """
@@ -310,7 +326,7 @@ def test_rename_file_raises_filenotfounderror_missing_diag_manifest():
     from fre.pp.rename_split_script import rename_file
     import tempfile
     import netCDF4
-    
+
     with tempfile.TemporaryDirectory() as tmpdir:
         # Create a valid filename with 3 parts: date.label.var
         valid_filename = Path(tmpdir) / "00010101.atmos_daily.temp.nc"
@@ -324,7 +340,7 @@ def test_rename_file_raises_filenotfounderror_missing_diag_manifest():
         temp_var = ds.createVariable('temp', 'f', ('time',))
         temp_var[:] = [273.15]
         ds.close()
-        
+
         with pytest.raises(FileNotFoundError, match="does not exist"):
             rename_file(valid_filename, diag_manifest=("/nonexistent/manifest.yaml",))
 
@@ -376,5 +392,3 @@ def test_rename_file_raises_exception_missing_in_manifests():
 
         with pytest.raises(Exception, match="not found in diag manifests"):
             rename_file(valid_filename, diag_manifest=(str(manifest),))
-
-

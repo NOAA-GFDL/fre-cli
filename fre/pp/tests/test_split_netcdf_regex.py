@@ -10,6 +10,7 @@ import pathlib
 from pathlib import Path
 from fre.pp.split_netcdf_script import split_netcdf
 
+
 def test_split_netcdf_file_regex_pattern():
     """
     Test that split_netcdf function correctly creates a regex
@@ -18,8 +19,8 @@ def test_split_netcdf_file_regex_pattern():
     This specifically tests: FILE_REGEX = f'.*{history_source}(\\.tile.*)?.nc'
     """
     matching_files = {
-     'atmos_level_cmip' : '00020101.atmos_level_cmip.tile4.nc',
-     'ocean_cobalt_omip_2d' : '00020101.ocean_cobalt_omip_2d.nc'
+        'atmos_level_cmip': '00020101.atmos_level_cmip.tile4.nc',
+        'ocean_cobalt_omip_2d': '00020101.ocean_cobalt_omip_2d.nc'
     }
 
     for history_source in matching_files.keys():
@@ -28,12 +29,12 @@ def test_split_netcdf_file_regex_pattern():
         match = re.search(file_regex, matching_files[history_source])
         assert match is not None, f"File '{matching_files[history_source]}' should match regex pattern {file_regex}'"
     non_matching_files = {
-     'atmos_level_cmip_tile4' : '00020101.atmos_level_cmip.tile4.nc',
-     'ocean_cobalt' : '00020101.ocean_cobalt_omip_2d.nc',
-     'atmos_daily': "atmos_daily.txt",
-     'atmos_daily': "other_file.nc",
-     'atmos_daily': "atmos_daily.nc",
-     'atmos_daily': "atmos_daily_something.nc"  # This should not match as it has extra chars after
+        'atmos_level_cmip_tile4': '00020101.atmos_level_cmip.tile4.nc',
+        'ocean_cobalt': '00020101.ocean_cobalt_omip_2d.nc',
+        'atmos_daily': "atmos_daily.txt",
+        'atmos_daily': "other_file.nc",
+        'atmos_daily': "atmos_daily.nc",
+        'atmos_daily': "atmos_daily_something.nc"  # This should not match as it has extra chars after
     }
     for history_source in non_matching_files.keys():
         file_regex = generate_regex(history_source)
@@ -43,16 +44,16 @@ def test_split_netcdf_file_regex_pattern():
             f"regex pattern {file_regex}'"
         )
 
+
 def generate_regex(history_source):
     '''
     Pull the regex from split_netcdf through a bizarre use of side effects
     :param history_source: history_source for the regex; used to build regex
     :type history_source: string
     '''
-    #temporary directories for testing
+    # temporary directories for testing
     with tempfile.TemporaryDirectory() as temp_input, \
-     tempfile.TemporaryDirectory() as temp_output:
-
+            tempfile.TemporaryDirectory() as temp_output:
 
         # Create some test files that should match the regex pattern
         test_files = [
@@ -71,9 +72,9 @@ def generate_regex(history_source):
 
         # Mock the parse_yaml_for_varlist function to avoid yaml dependency
         with patch('fre.app.helpers.get_variables') as mock_get_variables, \
-             patch('fre.pp.split_netcdf_script.split_file_xarray') as mock_split_file, \
-             patch('fre.pp.split_netcdf_script.os.listdir') as mock_listdir, \
-             patch('fre.pp.split_netcdf_script.re.match') as mock_re_match:
+                patch('fre.pp.split_netcdf_script.split_file_xarray') as mock_split_file, \
+                patch('fre.pp.split_netcdf_script.os.listdir') as mock_listdir, \
+                patch('fre.pp.split_netcdf_script.re.match') as mock_re_match:
 
             # Setup mocks
             mock_get_variables.return_value = ["var1", "var2"]

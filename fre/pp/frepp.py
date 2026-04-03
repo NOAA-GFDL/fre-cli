@@ -4,7 +4,7 @@ import logging
 
 import click
 
-#fre tools
+# fre tools
 from . import checkout_script
 from . import configure_script_yaml
 from . import validate_script
@@ -22,7 +22,9 @@ from . import rename_split_script
 fre_logger = logging.getLogger(__name__)
 
 # fre pp
-@click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
+
+
+@click.group(help=click.style(" - pp subcommands", fg=(57, 139, 210)))
 def pp_cli():
     ''' entry point to fre pp click commands '''
 
@@ -45,6 +47,8 @@ def status(experiment, platform, target):
     status_script.status_subtool(experiment, platform, target)
 
 # fre pp run
+
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -68,6 +72,8 @@ def run(experiment, platform, target, pause, no_wait):
     run_script.pp_run_subtool(experiment, platform, target, pause, no_wait)
 
 # fre pp validate
+
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -85,6 +91,8 @@ def validate(experiment, platform, target):
     validate_script.validate_subtool(experiment, platform, target)
 
 # fre pp install
+
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -101,7 +109,9 @@ def install(experiment, platform, target):
     """
     install_script.install_subtool(experiment, platform, target)
 
-#fre pp configure
+# fre pp configure
+
+
 @pp_cli.command()
 @click.option("-y", "--yamlfile", type=str,
               help="YAML file to be used for parsing",
@@ -115,13 +125,15 @@ def install(experiment, platform, target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-def configure_yaml(yamlfile,experiment,platform,target):
+def configure_yaml(yamlfile, experiment, platform, target):
     """
     Execute fre pp configure
     """
-    configure_script_yaml.yaml_info(yamlfile,experiment,platform,target)
+    configure_script_yaml.yaml_info(yamlfile, experiment, platform, target)
 
-#fre pp checkout
+# fre pp checkout
+
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -132,8 +144,8 @@ def configure_yaml(yamlfile,experiment,platform,target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-@click.option("-b", "--branch", type =str,
-              required=False, default = None,
+@click.option("-b", "--branch", type=str,
+              required=False, default=None,
               help="fre-workflows branch/tag to clone; default is $(fre --version)")
 def checkout(experiment, platform, target, branch=None):
     """
@@ -141,7 +153,9 @@ def checkout(experiment, platform, target, branch=None):
     """
     checkout_script.checkout_template(experiment, platform, target, branch)
 
-#fre pp nccheck
+# fre pp nccheck
+
+
 @pp_cli.command()
 @click.option("--file_path", "-f", type=str, required=True, help="Path to netCDF (.nc) file")
 @click.option("--num_steps", "-n", type=str, required=True, help="Number of expected timesteps")
@@ -149,31 +163,35 @@ def nccheck(file_path, num_steps):
     """
     Check that a netCDF (.nc) file contains expected number of timesteps
     """
-    nccheck_script.check(file_path,num_steps)
+    nccheck_script.check(file_path, num_steps)
 
-#fre pp histval
+# fre pp histval
+
+
 @pp_cli.command()
-@click.option('--history','-hist', required=True, help="Path to directory containing history files")
-@click.option('--date_string','-d', required=True, help="Date string as written in netCDF (.nc) filename")
+@click.option('--history', '-hist', required=True, help="Path to directory containing history files")
+@click.option('--date_string', '-d', required=True, help="Date string as written in netCDF (.nc) filename")
 @click.option('--warn', '-w', is_flag=True, default=False,
-              help = "Warn mode. Instead of raising an error, a warning will be printed in the fre log if no " \
-                     "diag manifest files are present")
-def histval(history,date_string,warn):
+              help="Warn mode. Instead of raising an error, a warning will be printed in the fre log if no "
+              "diag manifest files are present")
+def histval(history, date_string, warn):
     """
     Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps
     for all files in that directory
     """
-    histval_script.validate(history,date_string,warn)
+    histval_script.validate(history, date_string, warn)
 
-#fre pp split-netcdf-wrapper
+# fre pp split-netcdf-wrapper
+
+
 @pp_cli.command()
 @click.option('-i', '--inputdir', required=True,
               help='Path to a directory in which to search for netcdf '
                    'files to split. Files matching the pattern in '
                    '$history-source will be split.')
 @click.option('-o', '--outputdir', required=True,
-             help='Path to a directory to which to write split '
-                  'netcdf files.')
+              help='Path to a directory to which to write split '
+              'netcdf files.')
 @click.option('-c', '--component', required=False, default=None,
               help='component specified in yamlfile under '
                    'postprocess:components. Needs to be the same '
@@ -219,14 +237,16 @@ Either unset --split-all-vars or parse the varlist from the yaml - do not try do
         use_subdirs, yamlfile, split_all_vars
     )
 
-#fre pp split-netcdf
+# fre pp split-netcdf
+
+
 @pp_cli.command()
-@click.option('-f', '--file', type = str, required=True,
+@click.option('-f', '--file', type=str, required=True,
               help='path to a netcdf file')
-@click.option('-o', '--outputdir', type = str, required=True,
+@click.option('-o', '--outputdir', type=str, required=True,
               help='path to a directory to which to write '
                    'single-data-variable output files')
-@click.option('-v', '--variables', type = str, required=True,
+@click.option('-v', '--variables', type=str, required=True,
               help='''Specifies which variables in $file are split and written to $outputdir.
                      Either a string "all" or a comma-separated string of variable names ("tasmax,tasmin,pr")''')
 def split_netcdf(file, outputdir, variables):
@@ -242,15 +262,17 @@ def split_netcdf(file, outputdir, variables):
     split_netcdf_script.split_file_xarray(file, outputdir, variables)
 
 
-#fre pp ppval
+# fre pp ppval
 @pp_cli.command()
-@click.option('--path','-p', required=True, help="Path to postprocessed time-series file")
+@click.option('--path', '-p', required=True, help="Path to postprocessed time-series file")
 def ppval(path):
     """ Determines an estimated number of timesteps from a postprocessed
     time-series file's name and run nccheck on it """
     ppval_script.validate(path)
 
-#fre pp all
+# fre pp all
+
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -278,7 +300,9 @@ def all(experiment, platform, target, config_file, branch, time):
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
     fre_logger.info('(frepp.wrapper) done forwarding context to wrapper.run_all_fre_pp_steps via click.')
 
-#fre pp trigger
+# fre pp trigger
+
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -299,6 +323,8 @@ def trigger(experiment, platform, target, time):
     trigger_script.trigger(experiment, platform, target, time)
 
 # fre pp rename-split
+
+
 @pp_cli.command()
 @click.option("-i", "--input-dir", type=str,
               help="Input directory", required=True)

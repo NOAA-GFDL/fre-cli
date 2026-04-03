@@ -17,21 +17,25 @@ YAMLFILE = "null_model.yaml"
 EXP_NAME = "None"
 
 # yaml file checks
+
+
 def test_modelyaml_exists():
     ''' Test that model yaml exists '''
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}").exists()
 
 # Test whole tool
+
+
 def test_exp_list(caplog):
     ''' Test fre list exps subtool '''
     list_experiments_script.list_experiments_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
     # check the logging output
-    check_out = [ 'Post-processing experiments available:',
-                  '   - null_model_full',
-                  '   - null_model_0',
-                  '   - null_model_1',
-                  '   - null_model_2'     ]
+    check_out = ['Post-processing experiments available:',
+                 '   - null_model_full',
+                 '   - null_model_0',
+                 '   - null_model_1',
+                 '   - null_model_2']
     for i in check_out:
         assert i in caplog.text
 
@@ -40,6 +44,8 @@ def test_exp_list(caplog):
         assert record.levelname == "INFO"
 
 # Test validation
+
+
 @pytest.mark.skip(
     reason='cannot validate with current schema at the moment. Current schemas include final '
     '"combined" schema to validate compile and pp information. Both of these "clean" the final '

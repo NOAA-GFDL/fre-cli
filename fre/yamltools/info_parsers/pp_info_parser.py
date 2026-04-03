@@ -7,7 +7,7 @@ import pprint
 
 from fre.yamltools.helpers import experiment_check, clean_yaml
 from fre.yamltools.abstract_classes import MergePPANYamls
-#from fre.yamltools.val_yml_structures import ModelYmlStructure
+# from fre.yamltools.val_yml_structures import ModelYmlStructure
 
 import yaml
 
@@ -17,6 +17,8 @@ from . import *
 fre_logger = logging.getLogger(__name__)
 
 ## PP CLASS ##
+
+
 class InitPPYaml(MergePPANYamls):
     """ 
     Class holding routines for initializing and combining post-processing yamls
@@ -26,7 +28,8 @@ class InitPPYaml(MergePPANYamls):
     :ivar str platform: Platform name
     :ivar str target: Target name
     """
-    def __init__(self,yamlfile,experiment,platform,target):
+
+    def __init__(self, yamlfile, experiment, platform, target):
         self.yml = yamlfile
         self.name = experiment
         self.platform = platform
@@ -37,7 +40,7 @@ class InitPPYaml(MergePPANYamls):
         self.mainyaml_dir = os.path.dirname(mainyaml_dir)
 
         # Validate required keys are included in model yaml config
-        #val1 = ModelYmlStructure(self.yml).validate()
+        # val1 = ModelYmlStructure(self.yml).validate()
 
     def combine_model(self):
         """
@@ -49,11 +52,11 @@ class InitPPYaml(MergePPANYamls):
         """
         # Define click options in string
         yaml_content_str = (f'name: &name "{self.name}"\n'
-                        f'platform: &platform "{self.platform}"\n'
-                        f'target: &target "{self.target}"\n')
+                            f'platform: &platform "{self.platform}"\n'
+                            f'target: &target "{self.target}"\n')
 
         # Read model yaml as string
-        with open(self.yml,'r') as f:
+        with open(self.yml, 'r') as f:
             model_content = f.read()
 
         # Combine information as strings
@@ -123,19 +126,19 @@ class InitPPYaml(MergePPANYamls):
         """
         # Experiment Check
         # Load string as yaml
-        yml=yaml.load(yaml_content_str,  Loader=yaml.Loader)
-        ey_path, _ = experiment_check(self.mainyaml_dir,self.name,yml)
+        yml = yaml.load(yaml_content_str,  Loader=yaml.Loader)
+        ey_path, _ = experiment_check(self.mainyaml_dir, self.name, yml)
 
         pp_yamls = []
         pp_yamls.append(yaml_content_str)
-        ## COMBINE EXPERIMENT YAML INFO
+        # COMBINE EXPERIMENT YAML INFO
         # If only 1 pp yaml defined, combine with model yaml
         if ey_path is None:
             raise ValueError('if ey_path is None, then pp_yamls will be an empty list. Exit!')
 
         elif len(ey_path) == 1:
-            #expyaml_path = os.path.join(mainyaml_dir, i)
-            with open(ey_path[0],'r') as eyp:
+            # expyaml_path = os.path.join(mainyaml_dir, i)
+            with open(ey_path[0], 'r') as eyp:
                 exp_content = eyp.read()
             exp_info = yaml_content_str + exp_content
             pp_yamls.append(exp_info)
@@ -144,7 +147,7 @@ class InitPPYaml(MergePPANYamls):
         # (Must be done for aliases defined)
         elif len(ey_path) > 1:
             for i in ey_path:
-                with open(i,'r') as eyp:
+                with open(i, 'r') as eyp:
                     exp_content = eyp.read()
 
                 exp_info_i = yaml_content_str + exp_content
@@ -167,8 +170,8 @@ class InitPPYaml(MergePPANYamls):
         :rtype: dict
         """
         # Load string as yaml
-        yml=yaml.load(yaml_content_str, Loader=yaml.Loader)
-        ey_path, _ = experiment_check(self.mainyaml_dir,self.name,yml)
+        yml = yaml.load(yaml_content_str, Loader=yaml.Loader)
+        ey_path, _ = experiment_check(self.mainyaml_dir, self.name, yml)
 
         result = {}
         # If more than one post-processing yaml is listed, update
@@ -190,14 +193,14 @@ class InitPPYaml(MergePPANYamls):
                     if key not in yf.keys():
                         continue
 
-                    if isinstance(result[key],dict) and isinstance(yf[key],dict):
+                    if isinstance(result[key], dict) and isinstance(yf[key], dict):
                         if 'components' in result['postprocess']:
                             result['postprocess']["components"] += yf['postprocess']["components"]
                         else:
                             result['postprocess']["components"] = yf['postprocess']["components"]
         # If only one post-processing yaml listed
 #        elif pp_list is not None and len(pp_list) == 1:
-##            yml_pp = "".join(pp_list[0])
+# yml_pp = "".join(pp_list[0])
 #            result.update(yaml.load(pp_list[0],Loader=yaml.Loader))
 
         if ey_path is not None:

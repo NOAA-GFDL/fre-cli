@@ -26,6 +26,7 @@ from .gfdlfremake import (
 
 fre_logger = logging.getLogger(__name__)
 
+
 def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
                       execute: bool = False, no_format_transfer: bool = False):
     """
@@ -49,15 +50,15 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
               please submit a GFDL helpdesk ticket to request Podman access
     """
 
-    ## Split and store the platforms and targets in a list
+    # Split and store the platforms and targets in a list
     plist = platform
     tlist = target
     yml = yamlfile
     name = yamlfile.split(".")[0]
     run = execute
 
-    ## Combined compile yaml file
-    #combined = Path(f"combined-{name}.yaml")
+    # Combined compile yaml file
+    # combined = Path(f"combined-{name}.yaml")
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yml,
@@ -67,43 +68,43 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
                                          use="compile",
                                          output=None)
 
-    ## Get the variables in the model yaml
+    # Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
-    modelYaml = yamlfre.freyaml(full_combined,fre_vars)
+    # Open the yaml file, validate the yaml, and parse as fremake_yaml
+    modelYaml = yamlfre.freyaml(full_combined, fre_vars)
     fremakeYaml = modelYaml.getCompileYaml()
 
-    ## Loop through platforms and targets
+    # Loop through platforms and targets
     for platformName in plist:
         for targetName in tlist:
             targetObject = targetfre.fretarget(targetName)
             if not modelYaml.platforms.hasPlatform(platformName):
-                raise ValueError (f"{platformName} does not exist in platforms.yaml")
+                raise ValueError(f"{platformName} does not exist in platforms.yaml")
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 
-            ## Check for type of build
+            # Check for type of build
             if not platform["container"]:
                 continue
 
-            image=modelYaml.platforms.getContainerImage(platformName)
+            image = modelYaml.platforms.getContainerImage(platformName)
             stage2image = modelYaml.platforms.getContainer2base(platformName)
             tmpDir = "tmp/"+platformName
 
-            template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
-                                                   model_root = platform["modelRoot"],
-                                                   container_flag = platform["container"])
+            template_path = get_mktemplate_path(mk_template=platform["mkTemplate"],
+                                                model_root=platform["modelRoot"],
+                                                container_flag=platform["container"])
 
-            ## to-do?: add check IN container for if mkTemplate path exists
+            # to-do?: add check IN container for if mkTemplate path exists
 
-            dockerBuild = buildDocker.container(base = image,
-                                              exp = fremakeYaml["experiment"],
-                                              libs = fremakeYaml["container_addlibs"],
-                                              RUNenv = platform["RUNenv"],
-                                              target = targetObject,
-                                              mkTemplate = template_path,
-                                              stage2base = stage2image)
+            dockerBuild = buildDocker.container(base=image,
+                                                exp=fremakeYaml["experiment"],
+                                                libs=fremakeYaml["container_addlibs"],
+                                                RUNenv=platform["RUNenv"],
+                                                target=targetObject,
+                                                mkTemplate=template_path,
+                                                stage2base=stage2image)
             dockerBuild.writeDockerfileCheckout("checkout.sh", tmpDir+"/checkout.sh")
             dockerBuild.writeDockerfileMakefile(tmpDir+"/Makefile", tmpDir+"/linkline.sh")
 
@@ -114,7 +115,7 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
             currDir = os.getcwd()
 
             # create build script for container
-            dockerBuild.createBuildScript(platform, skip_format_transfer = no_format_transfer)
+            dockerBuild.createBuildScript(platform, skip_format_transfer=no_format_transfer)
 
             former_log_level = fre_logger.level
             fre_logger.setLevel(logging.INFO)

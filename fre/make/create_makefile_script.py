@@ -40,11 +40,12 @@ from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 
 fre_logger = logging.getLogger(__name__)
 
+
 def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
     """
     This function makefile_create generates the top level Makefile for the source code
     that is specified in the model compile YAML file.
-    
+
     :param yamlfile: Model compile YAML file
     :type yamlfile: str
     :param platform: FRE platforms that are defined in the platforms.yaml
@@ -59,13 +60,13 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
          key in the `compile.yaml`, a linkline.sh script will be generated to determine paths for the
          additional `-L/[path to libraries]` and `-l[library name]` located inside the container to
          the Makefile.
-         
+
            - Example: `container_addlibs: ['darcy']`
-         
+
        - For a bare-metal build, library flags, `-L/[path to libraries]` and `-l[library name]`, are
          defined via the "baremetal_linkerflags" key in the `compile.yaml` and added to the link line
          in the Makefile.
-         
+
            - Example: `baremetal_linkerflags: ["-L/derbyshire/pemberly -ldarcy"]`
     """
     name = yamlfile.split(".")[0]
@@ -78,40 +79,40 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
                                          use="compile",
                                          output=None)
 
-    ## Get the variables in the model yaml
+    # Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
 
-    ## Open the yaml file, validate the yaml, and parse as fremake_yaml
-    model_yaml = yamlfre.freyaml(full_combined,fre_vars)
+    # Open the yaml file, validate the yaml, and parse as fremake_yaml
+    model_yaml = yamlfre.freyaml(full_combined, fre_vars)
     fremake_yaml = model_yaml.getCompileYaml()
 
-    ## Loop through platforms and targets
+    # Loop through platforms and targets
     for platform_name in platform:
         for target_name in target:
             target_object = targetfre.fretarget(target_name)
             if model_yaml.platforms.hasPlatform(platform_name):
                 pass
             else:
-                raise ValueError (f"{platform_name} does not exist in platforms.yaml")
+                raise ValueError(f"{platform_name} does not exist in platforms.yaml")
 
-            platform=model_yaml.platforms.getPlatformFromName(platform_name)
-            ## Make the bld_dir based on the modelRoot, the platform, and the target
+            platform = model_yaml.platforms.getPlatformFromName(platform_name)
+            # Make the bld_dir based on the modelRoot, the platform, and the target
             src_dir = platform["modelRoot"] + "/" + fremake_yaml["experiment"] + "/src"
-            ## Check for type of build
+            # Check for type of build
             if platform["container"] is False:
                 bld_dir = f'{platform["modelRoot"]}/{fremake_yaml["experiment"]}/' + \
-                         f'{platform_name}-{target_object.gettargetName()}/exec'
-                Path(bld_dir).mkdir(parents = True, exist_ok = True)
+                    f'{platform_name}-{target_object.gettargetName()}/exec'
+                Path(bld_dir).mkdir(parents=True, exist_ok=True)
 
-                template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
-                                                       model_root = platform["modelRoot"],
-                                                       container_flag = platform["container"])
-                ## Create the Makefile
-                fre_makefile = makefilefre.makefile(exp = fremake_yaml["experiment"],
-                                                   libs = fremake_yaml["baremetal_linkerflags"],
-                                                   srcDir = src_dir,
-                                                   bldDir = bld_dir,
-                                                   mkTemplatePath = template_path)
+                template_path = get_mktemplate_path(mk_template=platform["mkTemplate"],
+                                                    model_root=platform["modelRoot"],
+                                                    container_flag=platform["container"])
+                # Create the Makefile
+                fre_makefile = makefilefre.makefile(exp=fremake_yaml["experiment"],
+                                                    libs=fremake_yaml["baremetal_linkerflags"],
+                                                    srcDir=src_dir,
+                                                    bldDir=bld_dir,
+                                                    mkTemplatePath=template_path)
                 # Loop through components and send the component name, requires, and overrides for the Makefile
                 for c in fremake_yaml['src']:
                     fre_makefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
@@ -124,15 +125,15 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
                 bld_dir = f"{platform['modelRoot']}/{fremake_yaml['experiment']}/exec"
                 tmp_dir = f"./tmp/{platform_name}"
 
-                template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
-                                                       model_root = platform["modelRoot"],
-                                                       container_flag = platform["container"])
-                fre_makefile = makefilefre.makefileContainer(exp = fremake_yaml["experiment"],
-                                                      libs = fremake_yaml["container_addlibs"],
-                                                      srcDir = src_dir,
-                                                      bldDir = bld_dir,
-                                                      mkTemplatePath = template_path,
-                                                      tmpDir = tmp_dir)
+                template_path = get_mktemplate_path(mk_template=platform["mkTemplate"],
+                                                    model_root=platform["modelRoot"],
+                                                    container_flag=platform["container"])
+                fre_makefile = makefilefre.makefileContainer(exp=fremake_yaml["experiment"],
+                                                             libs=fremake_yaml["container_addlibs"],
+                                                             srcDir=src_dir,
+                                                             bldDir=bld_dir,
+                                                             mkTemplatePath=template_path,
+                                                             tmpDir=tmp_dir)
 
                 # Loop through components and send the component name and requires for the Makefile
                 for c in fremake_yaml['src']:

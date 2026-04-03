@@ -5,12 +5,12 @@ module of helper/utility functions used in the fre make subtool
 import logging
 from pathlib import Path
 
-def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str = None) -> str:
 
+def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str = None) -> str:
     """
     This function get_mktemplate_path generates the full path to the 
     mkmf mk_template on the bare-metal system or the container image filesystem
-    
+
     :param mk_template: Full path to or the mkmf mk_template filename with .mk extension
     :type mk_template: string
     :param model_root: Path to the root for all model install files (TO CLARIFY)
@@ -35,7 +35,7 @@ def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str 
     if not container_flag:
         if "/" not in mk_template:
             topdir = Path(__file__).resolve().parents[1]
-            template_path = str(topdir)+ "/mkmf/templates/"+mk_template
+            template_path = str(topdir) + "/mkmf/templates/"+mk_template
 
         # Check in template path exists
         if not Path(template_path).exists():
