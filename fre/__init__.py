@@ -4,6 +4,7 @@ module init file for fre. sets the version attribute, and sets up a fre_logger
 
 import logging
 import os
+from typing import NoReturn
 version = os.getenv("GIT_DESCRIBE_TAG", "2026.01.alpha2")
 __version__ = version
 
@@ -16,7 +17,7 @@ logging.basicConfig(level = logging.WARNING,
                     encoding = 'utf-8' )
 
 
-def log_and_raise(msg, exc_type=ValueError, exc=None):
+def log_and_raise(msg, exc_type=ValueError, exc=None) -> NoReturn:
     """
     Log an error message via fre_logger and raise an exception with the same message.
     Avoids the need to duplicate error text in both fre_logger.error() and raise calls.
