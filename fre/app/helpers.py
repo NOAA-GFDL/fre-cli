@@ -56,7 +56,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
                 else:
                     src_vars[static_elem.get("source")] = "all"
 
-        ##offline statics won't use variables filtering ... yet?
+        ##offline statistics won't use variables filtering ... yet?
 
     # If the dictionary is empty (no overlap of pp components and components
     # in pp yaml) --> error

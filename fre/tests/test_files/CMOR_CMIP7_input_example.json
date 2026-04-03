@@ -20,7 +20,7 @@
     "institution_id": "CCCma",
     "source": "CanESM6-MR:",
     "source_id": "CanESM6-MR",
-    "source_type": "AOGCM ISM AER",
+    "source_type": "AOGCM ISM ARE",
     "experiment_id": "esm-piControl",
     "sub_experiment": "none",
     "sub_experiment_id": "none",
@@ -56,7 +56,7 @@
     "output_path_template": "<activity_id><source_id><experiment_id><member_id><variable_id><branding_suffix><grid_label><version>",
     "#_output_file_template": "***** Template for output filename using tables keys or global attributes, these should follow the relevant data reference syntax *****",
     "output_file_template": "<variable_id><branding_suffix><frequency><region><grid_label><source_id><experiment_id><variant_id>[<time_range>].nc",
-    "#_INPUT_CONFIG_PATHS": "***** pathing/templates for input configuation files holding controlled vocabularies *****",
+    "#_INPUT_CONFIG_PATHS": "***** pathing/templates for input configuration files holding controlled vocabularies *****",
     "_controlled_vocabulary_file": "../tables-cvs/cmor-cvs.json",
     "_AXIS_ENTRY_FILE": "CMIP7_coordinate.json",
     "_FORMULA_VAR_FILE": "CMIP7_formula_terms.json"

@@ -138,7 +138,7 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
     # we need 4 pieces of information
     # freq and chunk: used for the shards directories
     #   and formatting for the dates
-    # for statics, freq and chunk are both P0Y
+    # for statistics, freq and chunk are both P0Y
     # otherwise, they are ISO8601 durations
     # date1 and date2: used for the filename
     #   formatted based on freq

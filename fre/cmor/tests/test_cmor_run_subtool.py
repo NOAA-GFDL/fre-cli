@@ -320,7 +320,7 @@ def test_cmor_run_subtool_raise_value_error():
 
 def test_fre_cmor_run_subtool_no_exp_config():
     '''
-    fre cmor run, exception, json_exp_config DNE
+    fre cmor run, exception, json_exp_config DONE
     '''
 
     # test call, where meat of the workload gets done

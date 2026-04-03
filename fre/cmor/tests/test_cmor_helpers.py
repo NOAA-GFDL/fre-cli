@@ -22,7 +22,7 @@ def test_iso_to_bronx_chunk():
         iso_to_bronx_chunk('foo')
 
 def test_find_statics_file_success():
-    ''' what happens when no statics file is found given a bronx directory structure '''
+    ''' what happens when no statistics file is found given a bronx directory structure '''
     target_file = 'fre/tests/test_files/ascii_files/mock_archive/' + \
                   'USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' + \
                   'gfdl.ncrc5-intel23-prod-openmp/pp/ocean_monthly/ts/monthly/5yr/ocean_monthly.000101-000102.sos.nc'
@@ -44,7 +44,7 @@ def test_find_statics_file_success():
 
 
 def test_find_statics_file_nothing_found():
-    ''' what happens when a statics file is found given a bronx directory structure '''
+    ''' what happens when a statistics file is found given a bronx directory structure '''
     statics_file = find_statics_file(
         bronx_file_path = 'fre/tests/test_files/ascii_files/' + \
                           'mock_archive/USER/CMIP7/ESM4/DEV/ESM4.5v01_om5b04_piC/' + \

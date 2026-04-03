@@ -38,7 +38,7 @@ postprocess:
       inputRealm: "atmos"
       postprocess_on: True
 
-    # component used to test variable filtering failure for statics
+    # component used to test variable filtering failure for statistics
     - type: "atmos_scalar_static_test_vars_fail_CNAME"
       sources:
         - history_file: "atmos_scalar_static_test_vars_fail2"

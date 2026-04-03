@@ -133,7 +133,7 @@ def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optiona
 
 
     if put_copy_here is None:
-        fre_logger.warning('put_copy_here is None, cannot stage gold ocean statics file')
+        fre_logger.warning('put_copy_here is None, cannot stage gold ocean statistics file')
         return None
 
     # mirror the archive sub-path under put_copy_here
@@ -157,29 +157,29 @@ def find_gold_ocean_statics_file(put_copy_here: Optional[str] = None) -> Optiona
             shutil.rmtree(working_copy)
             fre_logger.warning('dir removed, moving on')
         else:
-            fre_logger.warning('a previous copy of the ocean statics file exists, not re-copying!')
+            fre_logger.warning('a previous copy of the ocean statistics file exists, not re-copying!')
             return working_copy
 
     if not Path(working_copy).is_file():
-        fre_logger.info('copying archived golden statics file to\n  %s', working_copy)
+        fre_logger.info('copying archived golden statistics file to\n  %s', working_copy)
         try:
             subprocess.run(['cp', archive_gold_file, working_copy], shell=False, check=True)
         except subprocess.CalledProcessError as exc:
-            fre_logger.warning('cp of gold statics file failed: %s', exc)
+            fre_logger.warning('cp of gold statistics file failed: %s', exc)
             return None
 
     if Path(working_copy).is_file():
-        fre_logger.info('gold ocean statics file available at %s', working_copy)
+        fre_logger.info('gold ocean statistics file available at %s', working_copy)
         return working_copy
 
-    fre_logger.warning('gold ocean statics file not available after copy attempt')
+    fre_logger.warning('gold ocean statistics file not available after copy attempt')
     return None
 
 # note, the awkward spacing of the docstring below is for the way sphinx renders reStructuredText, do not change!
 def find_statics_file( bronx_file_path: str) -> Optional[str]:
     """
-    Attempt to find the corresponding statics file given the path to a FRE-bronx output file. The code assumes
-    the output file is in a FRE-bronx directory structure when trying to access the statics file. The structure is
+    Attempt to find the corresponding statistics file given the path to a FRE-bronx output file. The code assumes
+    the output file is in a FRE-bronx directory structure when trying to access the statistics file. The structure is
     mocked in this package within the `fre/tests/test_files/ascii_files/mock_archive` directory structure. `cd`'ing
     there and using the command `tree` will reveal the mocked directory structure, something like:
 
@@ -201,9 +201,9 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
                         └── component.YYYYMM-YYYYMM.var.nc
 
 
-    :param bronx_file_path: File path to use as a reference for statics file location.
+    :param bronx_file_path: File path to use as a reference for statistics file location.
     :type bronx_file_path: str
-    :return: Path to the statics file if found, else None.
+    :return: Path to the statistics file if found, else None.
     :rtype: str or None
 
     .. note:: The function searches upward in the directory structure until it finds a 'pp' directory, then globs
@@ -216,7 +216,7 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
         bronx_file_path_elem.pop()
         num_elem = num_elem-1
     statics_path = '/'.join(bronx_file_path_elem)
-    fre_logger.debug('going to glob the following path for a statics file: \n%s\n', statics_path)
+    fre_logger.debug('going to glob the following path for a statistics file: \n%s\n', statics_path)
     fre_logger.debug('the call is going to be:')
     fre_logger.debug(f"\n glob.glob({statics_path+'/*static*.nc'})  \n")
 
@@ -225,7 +225,7 @@ def find_statics_file( bronx_file_path: str) -> Optional[str]:
     if len(statics_file_glob) == 1:
         return statics_file_glob[0]
 
-    fre_logger.warning('no statics file found, returning None')
+    fre_logger.warning('no statistics file found, returning None')
     return None
 
 

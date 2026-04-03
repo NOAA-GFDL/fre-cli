@@ -74,10 +74,10 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     :type json_exp_config: str
     :param json_table_config: Path to MIP table JSON file.
     :type json_table_config: str
-    :param prev_path: Path to previous file (used for finding statics file for tripolar grids).
+    :param prev_path: Path to previous file (used for finding statistics file for tripolar grids).
     :type prev_path: str, optional
     :raises ValueError: If unsupported vertical dimensions or inconsistent grid dimensions are found.
-    :raises FileNotFoundError: If required statics file for tripolar ocean grid is missing.
+    :raises FileNotFoundError: If required statistics file for tripolar ocean grid is missing.
     :raises Exception: For other errors in the metadata, file IO, or CMOR calls.
     :return: Absolute path to the output file written by cmor.close.
     :rtype: str
@@ -238,26 +238,26 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
         try:
             fre_logger.info('netcdf_file is %s', netcdf_file)
 
-            # first, try the gold-standard archived ocean statics file
+            # first, try the gold-standard archived ocean statistics file
             statics_file_path = find_gold_ocean_statics_file(
                 put_copy_here=f'/net2/{getpass.getuser()}')
 
             # fall back to the legacy FRE-bronx directory convention
             if statics_file_path is None:
-                fre_logger.info('gold statics not available, falling back to find_statics_file')
+                fre_logger.info('gold statistics not available, falling back to find_statics_file')
                 statics_file_path = find_statics_file(prev_path)
 
             fre_logger.info('statics_file_path is %s', statics_file_path)
         except Exception as exc: #uncovered
             fre_logger.warning(
                 f'exc = {exc}\n'
-                'an ocean statics file is needed, but it could not be found.\n'
+                'an ocean statistics file is needed, but it could not be found.\n'
                 '   moving on and doing my best, but I am probably going to break'
             )
             raise FileNotFoundError('statics file not found.') from exc
 
 
-        fre_logger.info("statics file found.")
+        fre_logger.info("statistics file found.")
 
         statics_file_name = Path(statics_file_path).name
         put_statics_file_here = str(Path(netcdf_file).parent)
@@ -267,11 +267,11 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
         statics_file_path = put_statics_file_here + '/' + statics_file_name
         fre_logger.info('statics file path is now: %s', statics_file_path)
 
-        # statics file read
+        # statistics file read
         statics_ds = nc.Dataset(statics_file_path, 'r')
 
         # grab the lat/lon points, have shape (yh, xh)
-        fre_logger.info('reading geolat and geolon coordinates of cell centers from statics file')
+        fre_logger.info('reading geolat and geolon coordinates of cell centers from statistics file')
         statics_lat = from_dis_gimme_dis(statics_ds, 'geolat')
         statics_lon = from_dis_gimme_dis(statics_ds, 'geolon')
 
@@ -293,7 +293,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
         fre_logger.info('')
 
         # grab the corners of the cells, should have shape (yh+1, xh+1)
-        fre_logger.info('reading geolat and geolon coordinates of cell corners from statics file')
+        fre_logger.info('reading geolat and geolon coordinates of cell corners from statistics file')
         lat_c = from_dis_gimme_dis(statics_ds, 'geolat_c')
         lon_c = from_dis_gimme_dis(statics_ds, 'geolon_c')
 
@@ -340,7 +340,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
         xh_dim = len(xh)
 
         # read the q-point native-grid lat lon points
-        fre_logger.info('reading yq, xq from statics file')
+        fre_logger.info('reading yq, xq from statistics file')
         yq = from_dis_gimme_dis(statics_ds, 'yq')
         xq = from_dis_gimme_dis(statics_ds, 'xq')
 

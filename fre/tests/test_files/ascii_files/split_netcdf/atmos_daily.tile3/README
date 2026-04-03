@@ -4,7 +4,7 @@ This consists of 1 main dir and 3 subdirs with a mix of cdl and yaml files.
 The cdl file in the main dir is the one that is split for each of the tests;
 the files that are meant to match the output of the tests are in the subdirs with
 a yamlfile that, when parsed, gives a varlist that, when used on the netcdf
-file in the main dir, produces the netcdf files in teh subdirs.
+file in the main dir, produces the netcdf files in the subdirs.
 
 #####################
 #!/bin/bash

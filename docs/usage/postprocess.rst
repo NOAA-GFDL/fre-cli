@@ -15,7 +15,7 @@ FRE (Bronx frerun) renames and combines the raw model output (that is usually on
 and saves the history files in one tarfile per segment, date-stamped with the date of the beginning of the segment.
 The FMS diagnostic manager requires
 that variables within one history file be the same temporal frequency (e.g. daily, monthly, annual),
-but statics are allowed in any history file. Usually, variables in a history file
+but statistics are allowed in any history file. Usually, variables in a history file
 share a horizontal and vertical grid.
 
 Each history tarfile, again, is date-stamped with the date of the beginning of the segment, in YYYYMMDD format.
@@ -168,10 +168,10 @@ less fine-grained than bronx
 per-component switch coming
 now it's one switch for entire pp
 
-Statics
+Statistics
 -------
 underbaked, known deficiency
-currently, takes statics from "source" history files
+currently, takes statistics from "source" history files
 
 Analysis scripts
 ----------------

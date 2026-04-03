@@ -474,7 +474,7 @@ def test_remap_variable_filtering_fail():
 @pytest.mark.xfail
 def test_remap_static_variable_filtering_fail():
     """
-    Test failure of variable filtering capabilities for statics
+    Test failure of variable filtering capabilities for statistics
     when variable does not exist; variables = bk, no_var
     """
     # run script

@@ -203,10 +203,10 @@ def test_run_avgtype_pkg_calculations( pkg      ,
 
     # the input files should NOT be clobbered
     if isinstance(infile, str):
-        assert Path(infile).exists(), f'AFTER RUNNING DNE (string) infile = {infile}'
+        assert Path(infile).exists(), f'AFTER RUNNING DONE (string) infile = {infile}'
     if isinstance(infile, list):
         for _file in infile:
-            assert Path(_file).exists(), f'AFTER RUNNING DNE (string) _file = {_file} from (list)infile = \n{infile}'
+            assert Path(_file).exists(), f'AFTER RUNNING DONE (string) _file = {_file} from (list)infile = \n{infile}'
 
     # the desired outputfile specified by outfile should exist
     assert Path(outfile).exists(), f'DNE (string) outfile = {outfile}'

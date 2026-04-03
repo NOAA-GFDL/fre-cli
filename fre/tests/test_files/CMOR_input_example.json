@@ -1,6 +1,6 @@
 {
     "#note": " **** The following are set correctly for CMIP6 and should not normally need editing",
-    "source_type": "AOGCM ISM AER",
+    "source_type": "AOGCM ISM ARE",
     "experiment_id": "piControl-withism",
     "activity_id": "ISMIP6",
     "sub_experiment_id": "none",

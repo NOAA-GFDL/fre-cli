@@ -134,7 +134,7 @@ def test_regrid_xy():
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
 def test_regrid_xy_static():
     """
-    Same as test_regrid_xy but flavored for statics
+    Same as test_regrid_xy but flavored for statistics
     """
 
     setup_test()

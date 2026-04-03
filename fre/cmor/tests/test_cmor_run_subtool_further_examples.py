@@ -79,8 +79,8 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar
     Should be iterating over the test dictionary
     '''
 
-    # for native-grid ocean tests, prevent the gold statics lookup from finding
-    # /archive files so the test uses its own locally-generated statics file
+    # for native-grid ocean tests, prevent the gold statistics lookup from finding
+    # /archive files so the test uses its own locally-generated statistics file
     if grid_label == 'gn':
         monkeypatch.setattr(
             'fre.cmor.cmor_mixer.find_gold_ocean_statics_file', lambda **kw: None)
