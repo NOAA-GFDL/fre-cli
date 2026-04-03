@@ -41,7 +41,7 @@
     "calendar": "noleap",
     "#_SPATIAL_INFO": "***** anything to do with describing physical aspects of the experiment *****",
     "grid": "FOO_PLACEHOLDER",
-    "grid_label": "gr1",
+    "grid_label": "g99",
     "frequency": "mon",
     "region": "glb",
     "nominal_resolution": "10000 km",
