@@ -491,6 +491,7 @@ splitmon
 srces
 SRCROOT
 srcs
+statics
 stddevs
 stdoutput
 Stofferahn
