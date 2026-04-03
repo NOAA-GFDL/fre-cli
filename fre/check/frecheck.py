@@ -3,6 +3,7 @@
 import click
 
 from .frecheckexample import check_test_function
+from fre import log_and_raise
 
 @click.group(help=click.style(" - check subcommands !!!NotImplemented!!!", fg=(162,91,232)))
 def check_cli():
@@ -13,4 +14,4 @@ def check_cli():
 def function(uppercase):
     """ - Execute fre check test """
     check_test_function(uppercase)
-    raise NotImplementedError('fre check has not been implemented yet!')
+    log_and_raise('fre check has not been implemented yet!', NotImplementedError)

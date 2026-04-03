@@ -773,12 +773,12 @@ def filter_brands( brands: list,
     if len(filtered_brands) == 0:
         fre_logger.error('cmip7 brand disambiguation eliminated all candidates '
                          'from %s', brands)
-        raise ValueError(
+        log_and_raise(
             f'multiple brands {brands} found for {target_var}, '
             f'but none survived disambiguation filtering')
 
     fre_logger.error('cmip7 brand disambiguation could not resolve between '
                      '%s', filtered_brands)
-    raise ValueError(
+    log_and_raise(
         f'multiple brands {filtered_brands} remain for {target_var} after '
         f'disambiguation \u2014 cannot determine which brand to use')

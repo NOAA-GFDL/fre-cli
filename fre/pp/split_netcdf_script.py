@@ -90,12 +90,7 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
         ydict = yaml.safe_load(Path(yamlfile).read_text())
         vardict = get_variables(ydict, component)
         if vardict is None or history_source not in vardict.keys():
-            fre_logger.error(
-                f"error: either component {component} not defined or "
-                f"source {history_source} not defined under component "
-                f"{component} in yamlfile {yamlfile}."
-            )
-            raise ValueError(
+            log_and_raise(
                 f"error: either component {component} not defined or "
                 f"source {history_source} not defined under component "
                 f"{component} in yamlfile {yamlfile}."
@@ -137,12 +132,12 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
                     files_split += 1
         fre_logger.info(f"{files_split} files split")
         if files_split == 0:
-            fre_logger.error(
+            log_and_raise(
                 f"error: no files found in dirs {sd_string} under "
                 f"{workdir} that match pattern {file_regex}; "
-                "no splitting took place"
+                "no splitting took place",
+                OSError
             )
-            raise OSError
     else:
         files_split = 0
         files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None]
@@ -151,11 +146,11 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
             split_file_xarray(infile, os.path.abspath(outputDir), varlist)
             files_split += 1
         if len(files) == 0:
-            fre_logger.error(
+            log_and_raise(
                 f"error: no files found in {workdir} that match pattern "
-                f"{file_regex}; no splitting took place"
+                f"{file_regex}; no splitting took place",
+                OSError
             )
-            raise OSError
 
     fre_logger.info(f"split-netcdf-wrapper call complete, having split {files_split} files")
     sys.exit(0) #check this

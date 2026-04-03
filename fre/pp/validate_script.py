@@ -3,6 +3,7 @@
 import os
 import subprocess
 from . import make_workflow_name
+from fre import log_and_raise
 
 def validate_subtool(experiment = None, platform = None, target = None):
     """
@@ -10,7 +11,7 @@ def validate_subtool(experiment = None, platform = None, target = None):
     ~/cylc-src/<experiment>__<platform>__<target>
     """
     if None in [experiment, platform, target]:
-        raise ValueError( 'experiment, platform, and target must all not be None.'
+        log_and_raise( 'experiment, platform, and target must all not be None.'
                           'currently, their values are...'
                           f'{experiment} / {platform} / {target}')
 
@@ -26,7 +27,7 @@ def validate_subtool(experiment = None, platform = None, target = None):
         cmd = "rose macro --validate"
         subprocess.run(cmd, shell=True, check=True)
     except:
-        raise Exception('rose macro --validate exited non-zero')
+        log_and_raise('rose macro --validate exited non-zero', Exception)
     finally:
         os.chdir(go_back_here)
 
@@ -38,6 +39,6 @@ def validate_subtool(experiment = None, platform = None, target = None):
         cmd = "cylc validate ."
         subprocess.run(cmd, shell=True, check=True)
     except:
-        raise Exception('cylc validate . exited non-zero')
+        log_and_raise('cylc validate . exited non-zero', Exception)
     finally:
         os.chdir(go_back_here)

@@ -9,6 +9,8 @@ import xarray as xr
 import yaml
 from metomi.isodatetime.parsers import DurationParser, TimePointParser
 
+from fre import log_and_raise
+
 fre_logger = logging.getLogger(__name__)
 duration_parser = DurationParser()
 time_parser = TimePointParser(assumed_time_zone=(0, 0))
@@ -51,7 +53,7 @@ def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.dat
         iso_freq = f"PT{int(minutes)}M"
         format_ = '%Y%m%d%H%M'
     else:
-        raise ValueError(f"Cannot determine frequency and format from '{date1}' and '{date2}'")
+        log_and_raise(f"Cannot determine frequency and format from '{date1}' and '{date2}'")
 
     fre_logger.debug(f"Comparing '{date1}' and '{date2}': returning frequency '{iso_freq}' and format '{format_}'")
     return iso_freq, format_
@@ -82,7 +84,7 @@ def get_duration_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) 
         if years_frac < 0.04:
             duration = f"P{years_round}Y"
         else:
-            raise ValueError(f"Could not determine ISO8601 duration between '{date1}' and '{date2}'")
+            log_and_raise(f"Could not determine ISO8601 duration between '{date1}' and '{date2}'")
 
     fre_logger.debug(f"Comparing '{date1}' and '{date2}': returning duration '{duration}'")
     return duration
@@ -121,7 +123,7 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
         var = parts[2]
         tile = None
     else:
-        raise ValueError(f"File '{input_file}' cannot be parsed")
+        log_and_raise(f"File '{input_file}' cannot be parsed")
 
     # open the nc file
     ds = xr.open_dataset(input_file)
@@ -210,19 +212,19 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                 for manifest in manifests:
                     manifest_path = Path(manifest)
                     if not manifest_path.exists():
-                        raise FileNotFoundError(f"Diag manifest '{manifest}' does not exist")
+                        log_and_raise(f"Diag manifest '{manifest}' does not exist", FileNotFoundError)
                     fre_logger.info(f"Using diag manifest '{manifest}'")
                     with open(manifest_path, 'r') as f:
                         yaml_data = yaml.safe_load(f)
                     for diag_file in yaml_data.get("diag_files", []):
                         if diag_file.get("file_name") == label:
                             if found_entry is not None:
-                                raise Exception(f"Diag file '{label}' found in multiple manifests ('{found_manifest}' and '{manifest}')")
+                                log_and_raise(f"Diag file '{label}' found in multiple manifests ('{found_manifest}' and '{manifest}')", Exception)
                             found_entry = diag_file
                             found_manifest = manifest
 
                 if found_entry is None:
-                    raise Exception(f"File '{label}' not found in diag manifests")
+                    log_and_raise(f"File '{label}' not found in diag manifests", Exception)
 
                 freq_units = found_entry.get("freq_units")
                 freq_value = found_entry.get("freq")
@@ -237,7 +239,7 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                         duration = f"P{freq_value}M"
                         format_ = "%Y%m"
                 else:
-                    raise Exception(f"Diag manifest found but frequency units '{freq_units}' are unexpected; expected 'years' or 'months'.")
+                    log_and_raise(f"Diag manifest found but frequency units '{freq_units}' are unexpected; expected 'years' or 'months'.", Exception)
 
                 duration_object = duration_parser.parse(duration)
                 # since only one timestep, frequency equals duration
@@ -261,7 +263,7 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                 freq_label = duration
                 fre_logger.info(f"'{input_file}' has 1 timesteps without diag manifest (legacy case to be removed); date1='{date1}'; date2='{date2}'; duration='{duration}'")
             else:
-                raise ValueError(f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds")
+                log_and_raise(f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds")
 
     date1_str = date1.strftime(format_)
     date2_str = date2.strftime(format_)
@@ -356,4 +358,4 @@ def rename_split(input_dir: str, output_dir: str, component: str, use_subdirs: b
             link_or_copy(input_file, output_file)
             did_something = True
     if not did_something:
-        raise FileNotFoundError(f"No '{component}' files were found in '{input_dir}'")
+        log_and_raise(f"No '{component}' files were found in '{input_dir}'", FileNotFoundError)

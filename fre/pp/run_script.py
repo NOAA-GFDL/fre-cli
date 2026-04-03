@@ -4,6 +4,7 @@ import subprocess
 import time
 
 from . import make_workflow_name
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     :type no_wait: boolean
     """
     if None in [experiment, platform, target]:
-        raise ValueError( 'experiment, platform, and target must all not be None.'
+        log_and_raise( 'experiment, platform, and target must all not be None.'
                           'currently, their values are...'
                           f'{experiment} / {platform} / {target}')
 
@@ -66,6 +67,6 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
         capture_output = True ).stdout.decode('utf-8')
 
     if not len(result):
-        raise Exception('Cylc scheduler was started without error but is not running after 30 seconds')
+        log_and_raise('Cylc scheduler was started without error but is not running after 30 seconds', Exception)
 
     fre_logger.info(result)

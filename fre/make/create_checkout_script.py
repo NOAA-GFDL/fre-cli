@@ -18,6 +18,7 @@ import logging
 from typing import Optional
 import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
+from fre import log_and_raise
 
 # set up logging
 fre_logger = logging.getLogger(__name__)
@@ -115,7 +116,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     jobs_str = str(njobs)
 
     if isinstance(njobs, bool) and execute:
-        raise ValueError ('njobs must be defined as a number if --execute flag is True')
+        log_and_raise('njobs must be defined as a number if --execute flag is True')
 
     # Determine backgrounding syntax
     # parallel_cmd is the suffix added to shell commands
@@ -151,7 +152,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
 
     for platform_name in platform:
         if not model_yaml.platforms.hasPlatform(platform_name):
-            raise ValueError(f"{platform_name} does not exist in platforms.yaml")
+            log_and_raise(f"{platform_name} does not exist in platforms.yaml")
 
         platform_info = model_yaml.platforms.getPlatformFromName(platform_name)
 
@@ -180,8 +181,9 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                     try:
                         subprocess.run(args=[checkout_sh_path], check=True)
                     except Exception as exc:
-                        raise OSError(f"\nError executing checkout script: {checkout_sh_path}.",
-                                      f"\nTry removing test folder: {platform_info['modelRoot']}\n") from exc
+                        log_and_raise(f"\nError executing checkout script: {checkout_sh_path}."
+                                       f"\nTry removing test folder: {platform_info['modelRoot']}\n",
+                                       OSError, exc=exc)
                 else:
                     return
 

@@ -3,6 +3,7 @@
 import subprocess
 import logging
 from . import make_workflow_name
+from fre import log_and_raise
 fre_logger = logging.getLogger(__name__)
 TIMEOUT_SECS=120#30
 
@@ -21,7 +22,7 @@ def status_subtool(experiment = None, platform = None, target = None):
     """
 
     if None in [experiment, platform, target]:
-        raise ValueError( 'experiment, platform, and target must all not be None.'
+        log_and_raise( 'experiment, platform, and target must all not be None.'
                           'currently, their values are...'
                           f'{experiment} / {platform} / {target}')
 
@@ -33,4 +34,4 @@ def status_subtool(experiment = None, platform = None, target = None):
     try:
         subprocess.run(cmd, shell=True, check=True, timeout=TIMEOUT_SECS)
     except:
-        raise Exception('FAILED: subprocess call to- cylc workflow-state {name}')
+        log_and_raise('FAILED: subprocess call to- cylc workflow-state {name}', Exception)

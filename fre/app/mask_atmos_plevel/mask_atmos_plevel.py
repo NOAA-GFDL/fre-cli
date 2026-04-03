@@ -8,6 +8,8 @@ import logging
 
 import xarray as xr
 
+from fre import log_and_raise
+
 fre_logger = logging.getLogger(__name__)
 
 
@@ -42,7 +44,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
     """
     # check if input file exists, raise an error if not
     if not os.path.exists(infile):
-        raise FileNotFoundError(f"ERROR: Input file {infile} does not exist")
+        log_and_raise(f"ERROR: Input file {infile} does not exist", FileNotFoundError)
 
     # Warn if outfile exists, but continue and recreate
     if os.path.exists(outfile):
@@ -62,7 +64,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
     if "ps" not in list(ds_ps.variables):
         fre_logger.warning('pressure variable ps not found in target pressure file')
         if not warn_no_ps:
-            raise ValueError(f"Surface pressure file {psfile} does not contain surface pressure.")
+            log_and_raise(f"Surface pressure file {psfile} does not contain surface pressure.")
         fre_logger.warning('warn_no_ps is True! this means I\'m going to no-op gracefully instead of raising an error')
         return
 
@@ -143,7 +145,7 @@ def mask_field_above_surface_pressure(ds: xr.Dataset,
     try:
         missing_value = ds[var].encoding['missing_value']
     except Exception as exc:
-        raise KeyError("input file does not contain missing_value, a required variable attribute") from exc
+        log_and_raise("input file does not contain missing_value, a required variable attribute", KeyError, exc=exc)
 
     fre_logger.info('masking do not need looping')
     masked = xr.where(plev_extended > ps_extended, missing_value, ds[var])

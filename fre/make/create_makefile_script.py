@@ -37,6 +37,7 @@ from pathlib import Path
 import fre.yamltools.combine_yamls_script as cy
 from fre.make.make_helpers import get_mktemplate_path
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
             if model_yaml.platforms.hasPlatform(platform_name):
                 pass
             else:
-                raise ValueError (f"{platform_name} does not exist in platforms.yaml")
+                log_and_raise(f"{platform_name} does not exist in platforms.yaml")
 
             platform=model_yaml.platforms.getPlatformFromName(platform_name)
             ## Make the bld_dir based on the modelRoot, the platform, and the target

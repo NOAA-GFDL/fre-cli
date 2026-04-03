@@ -4,6 +4,7 @@ import logging
 import subprocess
 
 from . import make_workflow_name
+from fre import log_and_raise
 
 
 fre_logger = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ def trigger(experiment = None, platform = None, target = None, time = None):
         the first chunk of a filename (19790101.atmos_tracer.tile6.nc).
     """
     if None in [experiment, platform, target, time]:
-        raise ValueError( 'experiment, platform, target and time must all not be None.'
+        log_and_raise( 'experiment, platform, target and time must all not be None.'
                           'currently, their values are...'
                           f'{experiment} / {platform} / {target} / {time}')
 
