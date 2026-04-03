@@ -36,7 +36,7 @@ class frenctoolsTimeAverager(timeAverager):
         """
         exitstatus=1
         if self.avg_type not in ['month','all']:
-            log_and_raise(f'avg_type= {self.avg_type} not supported by this class at this time.')
+            log_and_raise(f'avg_type= {self.avg_type} not supported by this class at this time.', ValueError)
 
         if self.unwgt:
             fre_logger.warning('unwgt=True unsupported by frenctoolsAverager. Ignoring!!!')
@@ -46,7 +46,7 @@ class frenctoolsTimeAverager(timeAverager):
                    ' not currently supported for frenctols time averaging. ignoring!', self.var)
 
         if infile is None:
-            log_and_raise('Need an input file, specify a value for the infile argument')
+            log_and_raise('Need an input file, specify a value for the infile argument', ValueError)
 
         if outfile is None:
             outfile='frenctoolsTimeAverage_'+infile
@@ -54,7 +54,7 @@ class frenctoolsTimeAverager(timeAverager):
 
         #check for existence of timavg.csh. If not found, issue might be that user is not in env with frenctools.
         if shutil.which('timavg.csh') is None:
-            log_and_raise('did not find timavg.csh')
+            log_and_raise('did not find timavg.csh', ValueError)
         fre_logger.info('timeaverager using: %s', shutil.which("timavg.csh"))
 
 
@@ -107,7 +107,7 @@ class frenctoolsTimeAverager(timeAverager):
 
                     if subp.returncode != 0:
                         fre_logger.error('stderror = %s', stderror)
-                        log_and_raise(f'error: timavg.csh had a problem, subp.returncode = {subp.returncode}')
+                        log_and_raise(f'error: timavg.csh had a problem, subp.returncode = {subp.returncode}', ValueError)
 
                     fre_logger.info('%s climatology successfully ran',nc_monthly_file)
                     exitstatus=0
@@ -131,7 +131,7 @@ class frenctoolsTimeAverager(timeAverager):
 
             if subp.returncode != 0:
                 fre_logger.error('stderror  = %s', stderror)
-                log_and_raise(f'error: timavgcsh command not properly executed, subp.returncode = {subp.returncode}')
+                log_and_raise(f'error: timavgcsh command not properly executed, subp.returncode = {subp.returncode}', ValueError)
 
             fre_logger.info('climatology successfully ran')
             exitstatus = 0

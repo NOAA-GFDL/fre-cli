@@ -78,7 +78,7 @@ def generate_wrapper(cycle_point: str,
     input_interval = DurationParser().parse(input_interval)
 
     if frequency not in ["yr", "mon"]:
-        log_and_raise(f"Frequency '{frequency}' not recognized or supported")
+        log_and_raise(f"Frequency '{frequency}' not recognized or supported", ValueError)
 
     # convert frequency 'yr' or 'mon' to ISO8601
     if frequency == 'mon':

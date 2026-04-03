@@ -42,9 +42,9 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     start_time = time.perf_counter()
     fre_logger.debug('called generate_time_average')
     if None in [infile, outfile, pkg]:
-        log_and_raise('infile, outfile, and pkg are required inputs')
+        log_and_raise('infile, outfile, and pkg are required inputs', ValueError)
     if pkg not in ['cdo', 'fre-nctools', 'fre-python-tools']:
-        log_and_raise(f'argument pkg = {pkg} not known, must be one of: cdo, fre-nctools, fre-python-tools')
+        log_and_raise(f'argument pkg = {pkg} not known, must be one of: cdo, fre-nctools, fre-python-tools', ValueError)
     exitstatus = 1
     myavger = None
 

@@ -97,7 +97,7 @@ class platforms ():
                 except:
                     log_and_raise("You must specify the program used to run the container (containerRun) on the "+p["name"]+" platform in the file "+fname+"\n", Exception)
                 if p["containerRun"] != "apptainer" and p["containerRun"] != "singularity":
-                    log_and_raise("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n")
+                    log_and_raise("Container builds only supported with apptainer, but you listed "+p["containerRun"]+"\n", ValueError)
 
                 ## Get the path to where the output model container will be located
                 try:

@@ -183,7 +183,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
                 log_and_raise(
                     f'freq is required for CMIP7 but was not specified for table target {table_name}.\n'
                     f'  CMIP7 MIP tables do not contain frequency metadata.\n'
-                    f'  please set freq explicitly (e.g. "monthly", "daily") in the cmor yaml.')
+                    f'  please set freq explicitly (e.g. "monthly", "daily") in the cmor yaml.', ValueError)
             # CMIP6 tables carry frequency — attempt to derive it
             fre_logger.info('freq not specified in cmor yaml for table %s, '
                             'attempting to derive from CMIP6 MIP table', table_name)
@@ -195,7 +195,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
                 log_and_raise(
                     f'not enough frequency information to process variables for {table_name}.\n'
                     f'  freq was not specified in the cmor yaml, and could not be derived from the MIP table.\n'
-                    f'  please set freq explicitly (e.g. "monthly", "daily") in the cmor yaml.')
+                    f'  please set freq explicitly (e.g. "monthly", "daily") in the cmor yaml.', ValueError)
             fre_logger.info('derived freq = %s from MIP table %s', freq, json_mip_table_config)
 
         # update the table target dict so downstream code sees the resolved freq
@@ -211,7 +211,7 @@ def cmor_yaml_subtool( yamlfile: str = None,
             grid_desc = gridding_dict['grid_desc']
             nom_res = gridding_dict['nom_res']
             if None in [grid_label, grid_desc, nom_res]:
-                log_and_raise('gridding dictionary, if present, must have all three fields be non-empty.')
+                log_and_raise('gridding dictionary, if present, must have all three fields be non-empty.', ValueError)
         # gridding info of data ---- revisit
 
         table_components_list = cmor_yaml_table_target['target_components']

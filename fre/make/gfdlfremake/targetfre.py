@@ -54,19 +54,19 @@ class fretarget:
         if self.debug:
             try:
                 if self.repro or self.prod == True:
-                    log_and_raise(errormsg)
+                    log_and_raise(errormsg, ValueError)
             except ValueError:
                 raise
         elif self.repro:
             try:
                 if self.prod == True:
-                    log_and_raise(errormsg)
+                    log_and_raise(errormsg, ValueError)
             except ValueError:
                 raise
         else:
             try:
                 if self.prod == False:
-                    log_and_raise("Your target '"+self.target+"' needs to include one of the following: prod, repro, debug")
+                    log_and_raise("Your target '"+self.target+"' needs to include one of the following: prod, repro, debug", ValueError)
             except ValueError:
                 raise
 
