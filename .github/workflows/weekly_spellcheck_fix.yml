@@ -1,9 +1,11 @@
 name: Weekly Spell Check Fix
 
 on:
-  schedule:
-    - cron: '0 8 * * 1'  # Every Monday at 08:00 UTC
-  workflow_dispatch:
+  push: # temp / confirm functioning
+
+#  schedule:
+#    - cron: '0 8 * * 1'  # Every Monday at 08:00 UTC
+#  workflow_dispatch:
 
 permissions:
   contents: write
@@ -26,13 +28,14 @@ jobs:
 
       - name: Run codespell auto-fix
         run: |
-          codespell --write-changes \
+          codespell -c --write-changes \
             --skip="*.cdl,./build,./fre_cli.egg-info,./fre/mkmf,./fre/gfdl_msd_schemas,./fre/tests/test_files/cmip6-cmor-tables,.git" \
             --ignore-words=".cspell/ok-unknown-words.txt" \
             fre/ docs/ *.md *.rst 2>&1 || true
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
+        if: false
         with:
           base: main
           branch: automated/weekly-spellcheck-fix
