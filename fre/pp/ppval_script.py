@@ -122,7 +122,7 @@ def getenot(date_start: str,
         enot = (diff.days + 1) * 48
 
     else:
-        log_and_raise(f"Unknown chunk_type '{chunk_type}'")
+        log_and_raise(f"Unknown chunk_type '{chunk_type}'", ValueError)
 
     fre_logger.debug(
         f"date start: {date_start}; date end: {date_end}; "
@@ -185,7 +185,7 @@ def validate(filepath: str):
     try:
         cftime.datetime(1,1,1, calendar = cal)
     except:
-        log_and_raise(f" Calendar name must follow cf convention for validation. {cal} is not a valid calendar.")
+        log_and_raise(f" Calendar name must follow cf convention for validation. {cal} is not a valid calendar.", ValueError)
 
     # date_{end,start} will have a total of date_end.lastindex groups,
     # that are the year (date_end[1]), the month (date_end[2]), the
@@ -238,18 +238,19 @@ def validate(filepath: str):
                 f" Cannot determine frequency from {filepath}. Sub-daily"
                 " files must at minimum be placed in a directory"
                 " corresponding to data frequency: '6hr, 'PT6H', '3hr,"
-                " 'PT3H', '1hr, 'PT1H', '30min, 'PT30M, 'PT0.5H'"
+                " 'PT3H', '1hr, 'PT1H', '30min, 'PT30M, 'PT0.5H'",
+                ValueError
             )
 
     elif date_length == 12:
         enot = getenot(date_start, date_end, '30minute', cal)
 
     else:
-        log_and_raise(f"Cannot determine frequency for date '{date_start}'")
+        log_and_raise(f"Cannot determine frequency for date '{date_start}'", ValueError)
 
     try:
         ncc.check(filepath, enot)
     except:
-        log_and_raise(f"Timesteps found in {filepath} differ from expectation")
+        log_and_raise(f"Timesteps found in {filepath} differ from expectation", ValueError)
 
     return 0

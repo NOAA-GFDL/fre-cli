@@ -116,7 +116,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     jobs_str = str(njobs)
 
     if isinstance(njobs, bool) and execute:
-        log_and_raise('njobs must be defined as a number if --execute flag is True')
+        log_and_raise('njobs must be defined as a number if --execute flag is True', ValueError)
 
     # Determine backgrounding syntax
     # parallel_cmd is the suffix added to shell commands
@@ -152,7 +152,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
 
     for platform_name in platform:
         if not model_yaml.platforms.hasPlatform(platform_name):
-            log_and_raise(f"{platform_name} does not exist in platforms.yaml")
+            log_and_raise(f"{platform_name} does not exist in platforms.yaml", ValueError)
 
         platform_info = model_yaml.platforms.getPlatformFromName(platform_name)
 

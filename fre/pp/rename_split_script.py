@@ -53,7 +53,7 @@ def get_freq_and_format_from_two_dates(date1: cftime.datetime, date2: cftime.dat
         iso_freq = f"PT{int(minutes)}M"
         format_ = '%Y%m%d%H%M'
     else:
-        log_and_raise(f"Cannot determine frequency and format from '{date1}' and '{date2}'")
+        log_and_raise(f"Cannot determine frequency and format from '{date1}' and '{date2}'", ValueError)
 
     fre_logger.debug(f"Comparing '{date1}' and '{date2}': returning frequency '{iso_freq}' and format '{format_}'")
     return iso_freq, format_
@@ -84,7 +84,7 @@ def get_duration_from_two_dates(date1: cftime.datetime, date2: cftime.datetime) 
         if years_frac < 0.04:
             duration = f"P{years_round}Y"
         else:
-            log_and_raise(f"Could not determine ISO8601 duration between '{date1}' and '{date2}'")
+            log_and_raise(f"Could not determine ISO8601 duration between '{date1}' and '{date2}'", ValueError)
 
     fre_logger.debug(f"Comparing '{date1}' and '{date2}': returning duration '{duration}'")
     return duration
@@ -123,7 +123,7 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
         var = parts[2]
         tile = None
     else:
-        log_and_raise(f"File '{input_file}' cannot be parsed")
+        log_and_raise(f"File '{input_file}' cannot be parsed", ValueError)
 
     # open the nc file
     ds = xr.open_dataset(input_file)
@@ -263,7 +263,7 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                 freq_label = duration
                 fre_logger.info(f"'{input_file}' has 1 timesteps without diag manifest (legacy case to be removed); date1='{date1}'; date2='{date2}'; duration='{duration}'")
             else:
-                log_and_raise(f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds")
+                log_and_raise(f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds", ValueError)
 
     date1_str = date1.strftime(format_)
     date2_str = date2.strftime(format_)

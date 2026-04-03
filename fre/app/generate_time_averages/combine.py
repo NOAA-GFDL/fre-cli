@@ -36,7 +36,7 @@ def form_bronx_directory_name(frequency: str,
     elif frequency == "yr":
         frequency_label = "annual"
     else:
-        log_and_raise(f"Frequency '{frequency}' not recognized or supported")
+        log_and_raise(f"Frequency '{frequency}' not recognized or supported", ValueError)
     return frequency_label + '_' + str(interval_object.years) + 'yr'
 
 
@@ -93,7 +93,9 @@ def combine( root_in_dir: str,
     :rtype: None
     """
     if frequency not in ["yr", "mon"]:
-        log_and_raise(f"Frequency '{frequency}' not recognized or supported")
+        log_and_raise(f"Frequency '{frequency}' not recognized or supported", ValueError)
+
+    if frequency == "yr":
         frequency_iso = "P1Y"
     elif frequency == "mon":
         frequency_iso = "P1M"

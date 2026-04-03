@@ -55,7 +55,7 @@ class platforms ():
                 except:
                     log_and_raise("Platform "+p["name"]+": You must specify the program used to build the container (containerBuild) on the "+p["name"]+" platform in the file "+fname+"\n", Exception)
                 if p["containerBuild"] != "podman" and p["containerBuild"] != "docker":
-                    log_and_raise("Platform "+p["name"]+": Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n")
+                    log_and_raise("Platform "+p["name"]+": Container builds only supported with docker or podman, but you listed "+p["containerBuild"]+"\n", ValueError)
                 ## Get the name of the base container
                 try:
                     p["containerBase"]
@@ -80,7 +80,7 @@ class platforms ():
                     except:
                         p["container2base"] = ""
                     else:
-                        log_and_raise("Platform "+p["name"]+": You defined container2base "+p["container2base"]+" but container2step is False\n")
+                        log_and_raise("Platform "+p["name"]+": You defined container2base "+p["container2base"]+" but container2step is False\n", ValueError)
                 ## Get any commands to execute in the dockerfile RUN command
                 try:
                     p["RUNenv"]
@@ -109,7 +109,7 @@ class platforms ():
                 try:
                     p["mkTemplate"]
                 except:
-                    log_and_raise("The platform "+p["name"]+" must specify a mkTemplate \n")
+                    log_and_raise("The platform "+p["name"]+" must specify a mkTemplate \n", ValueError)
 
     def hasPlatform(self,name):
         """

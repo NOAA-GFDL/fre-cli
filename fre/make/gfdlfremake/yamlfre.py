@@ -33,7 +33,7 @@ class compileYaml():
         self.yaml = compileinfo
         # Check if self.yaml is None
         if self.yaml is None:
-            log_and_raise("The provided compileinfo is None. It must be a valid dictionary.")
+            log_and_raise("The provided compileinfo is None. It must be a valid dictionary.", ValueError)
         ## Check for required experiment name
         try:
             self.yaml["experiment"]
