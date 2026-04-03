@@ -35,7 +35,6 @@ jobs:
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
-        if: false
         with:
           base: main
           branch: automated/weekly-spellcheck-fix
