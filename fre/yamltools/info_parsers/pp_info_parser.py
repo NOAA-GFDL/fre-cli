@@ -5,6 +5,7 @@ import os
 import logging
 import pprint
 
+from fre import log_and_raise
 from fre.yamltools.helpers import experiment_check, clean_yaml
 from fre.yamltools.abstract_classes import MergePPANYamls
 #from fre.yamltools.val_yml_structures import ModelYmlStructure
@@ -131,7 +132,7 @@ class InitPPYaml(MergePPANYamls):
         ## COMBINE EXPERIMENT YAML INFO
         # If only 1 pp yaml defined, combine with model yaml
         if ey_path is None:
-            raise ValueError('if ey_path is None, then pp_yamls will be an empty list. Exit!')
+            log_and_raise('if ey_path is None, then pp_yamls will be an empty list. Exit!', ValueError)
 
         elif len(ey_path) == 1:
             #expyaml_path = os.path.join(mainyaml_dir, i)
@@ -239,18 +240,18 @@ class InitPPYaml(MergePPANYamls):
             # Merge model into combined file
             yaml_content_str = self.combine_model()
         except Exception as exc:
-            raise ValueError("ERR: Could not merge model yaml config with name, platform, and target.") from exc
+            log_and_raise("ERR: Could not merge model yaml config with name, platform, and target.", ValueError, exc=exc)
         try:
             # Merge model into combined file
             yaml_content_str = self.combine_settings(yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge setting config with model config.") from exc
+            log_and_raise("ERR: Could not merge setting config with model config.", ValueError, exc=exc)
 
         try:
             # Merge pp yamls, if defined, into combined file
             comb_pp_updated_list = self.combine_yamls(yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge pp yaml config with model and setting config.") from exc
+            log_and_raise("ERR: Could not merge pp yaml config with model and setting config.", ValueError, exc=exc)
 
         try:
             # Merge model/pp yamls if more than 1 is defined
@@ -258,11 +259,11 @@ class InitPPYaml(MergePPANYamls):
             full_combined = self.merge_multiple_yamls(comb_pp_updated_list,
                                                       yaml_content_str)
         except Exception as exc:
-            raise ValueError("ERR: Could not merge multiple pp yaml configs together.") from exc
+            log_and_raise("ERR: Could not merge multiple pp yaml configs together.", ValueError, exc=exc)
 
         try:
             cleaned_yaml = clean_yaml(full_combined)
         except Exception as exc:
-            raise ValueError("The final YAML could not cleaned.") from exc
+            log_and_raise("The final YAML could not cleaned.", ValueError, exc=exc)
 
         return cleaned_yaml

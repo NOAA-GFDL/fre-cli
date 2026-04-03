@@ -33,6 +33,7 @@ from typing import Optional, Union, Any, Dict
 #import logging
 #from typing import Optional
 
+from fre import log_and_raise
 from fre.yamltools.info_parsers import cmor_info_parser as cmip
 from fre.yamltools.info_parsers import compile_info_parser as cip
 from fre.yamltools.info_parsers import pp_info_parser as ppip
@@ -85,7 +86,7 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
         #fre_logger.debug('...CmorYaml =\n %s...', pformat(CmorYaml))
         #assert False # good.
     except Exception as exc:
-        raise ValueError("CMORYaml.combine_model failed") from exc
+        log_and_raise("CMORYaml.combine_model failed", ValueError, exc=exc)
 
 
     # Merge cmor experiment yamls into combined file, calls experiment_check
@@ -97,7 +98,7 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
         #fre_logger.debug('... yaml_content = ...\n %s', pformat(yaml_content))
         #assert False # good.
     except Exception as exc:
-        raise Exception(f"CmorYaml.combine_model failed for some reason.\n exc =\n {exc}") from exc
+        log_and_raise(f"CmorYaml.combine_model failed for some reason.\n exc =\n {exc}", Exception, exc=exc)
 
 
     # settings.yaml is deprecated for the cmor path — cmor yamls are now self-contained.
@@ -113,7 +114,7 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
         #fre_logger.debug('... comb_cmor_updated_list = ...\n %s', pformat(comb_cmor_updated_list))
         ##assert False # good.
     except Exception as exc:
-        raise Exception(f"CmorYaml.combine_experiment failed for some reason.\n exc =\n {exc}") from exc
+        log_and_raise(f"CmorYaml.combine_experiment failed for some reason.\n exc =\n {exc}", Exception, exc=exc)
 
     try:
         fre_logger.info('\ncalling CmorYaml.merge_cmor_yaml(), for full_cmor_yaml.\n'
@@ -123,7 +124,7 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
         #fre_logger.debug('... full_cmor_yaml = ...\n %s', pformat(full_cmor_yaml))
         ##assert False # good.
     except Exception as exc:
-        raise Exception(f"CmorYaml.merge_cmor_yaml failed for some reason.\n exc =\n {exc}") from exc
+        log_and_raise(f"CmorYaml.merge_cmor_yaml failed for some reason.\n exc =\n {exc}", Exception, exc=exc)
 
     cleaned_yaml = CmorYaml.clean_yaml(full_cmor_yaml)
     fre_logger.info("Combined cmor-yaml information cleaned+saved as dictionary")
@@ -211,6 +212,6 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str,
 #        yml_dict = get_combined_cmoryaml( CmorYaml, output )
         fre_logger.info('... done attempting to combine cmor yaml info')
     else:
-        raise ValueError("'use' value is not valid; must be one of: 'compile', 'pp', or 'cmor'")
+        log_and_raise("'use' value is not valid; must be one of: 'compile', 'pp', or 'cmor'", ValueError)
 
     return yml_dict
