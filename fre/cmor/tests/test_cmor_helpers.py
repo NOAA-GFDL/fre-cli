@@ -13,7 +13,7 @@ from fre.cmor.cmor_helpers import ( find_statics_file, print_data_minmax,
                                     create_lev_bnds, get_iso_datetime_ranges, iso_to_bronx_chunk,
                                     create_tmp_dir, get_json_file_data,
                                     update_grid_and_label, get_bronx_freq_from_mip_table, #update_outpath,
-                                    filter_brands )
+                                    filter_brands, calendars_are_equivalent )
 
 def test_iso_to_bronx_chunk():
     ''' tests value error raising by iso_to_bronx_chunk '''
@@ -436,3 +436,45 @@ def test_filter_brands_multiple_remain():
             has_time_bnds=True,
             input_vert_dim=0,
         )
+
+
+# ---- calendars_are_equivalent tests ----
+
+def test_calendars_are_equivalent_noleap_and_365_day():
+    ''' noleap and 365_day are CF aliases for the same calendar '''
+    assert calendars_are_equivalent('noleap', '365_day')
+
+
+def test_calendars_are_equivalent_365_day_and_noleap():
+    ''' 365_day and noleap are CF aliases for the same calendar (reversed order) '''
+    assert calendars_are_equivalent('365_day', 'noleap')
+
+
+def test_calendars_are_equivalent_all_leap_and_366_day():
+    ''' all_leap and 366_day are CF aliases for the same calendar '''
+    assert calendars_are_equivalent('all_leap', '366_day')
+
+
+def test_calendars_are_equivalent_standard_and_gregorian():
+    ''' standard and gregorian are CF aliases for the same calendar '''
+    assert calendars_are_equivalent('standard', 'gregorian')
+
+
+def test_calendars_are_equivalent_same_name():
+    ''' identical calendar names should be equivalent '''
+    assert calendars_are_equivalent('360_day', '360_day')
+    assert calendars_are_equivalent('julian', 'julian')
+    assert calendars_are_equivalent('proleptic_gregorian', 'proleptic_gregorian')
+
+
+def test_calendars_are_equivalent_case_insensitive():
+    ''' comparison is case-insensitive '''
+    assert calendars_are_equivalent('NoLeap', '365_DAY')
+    assert calendars_are_equivalent('STANDARD', 'gregorian')
+
+
+def test_calendars_are_equivalent_different_calendars():
+    ''' distinct calendars should NOT be equivalent '''
+    assert not calendars_are_equivalent('noleap', '360_day')
+    assert not calendars_are_equivalent('gregorian', '360_day')
+    assert not calendars_are_equivalent('julian', 'noleap')

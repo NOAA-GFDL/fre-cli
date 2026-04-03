@@ -45,7 +45,8 @@ import netCDF4 as nc
 from .cmor_helpers import ( print_data_minmax, from_dis_gimme_dis, find_statics_file, create_lev_bnds,
                             get_iso_datetime_ranges, check_dataset_for_ocean_grid, get_vertical_dimension,
                             create_tmp_dir, get_json_file_data, update_grid_and_label, #update_outpath,
-                            update_calendar_type, find_gold_ocean_statics_file, filter_brands )
+                            update_calendar_type, find_gold_ocean_statics_file, filter_brands,
+                            calendars_are_equivalent )
 from .cmor_constants import ( ACCEPTED_VERT_DIMS, NON_HYBRID_SIGMA_COORDS, ALT_HYBRID_SIGMA_COORDS,
                               DEPTH_COORDS, CMOR_NC_FILE_ACTION, CMOR_VERBOSITY,
                               CMOR_EXIT_CTL, CMOR_MK_SUBDIRS, CMOR_LOG )
@@ -206,7 +207,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     else:
         with open(json_exp_config, "r", encoding="utf-8") as file:
             exp_cfg_calendar = json.load(file)['calendar']
-            if exp_cfg_calendar != time_coords_calendar:
+            if not calendars_are_equivalent(time_coords_calendar, exp_cfg_calendar):
                 raise ValueError(f"data calendar type {time_coords_calendar} "
                                  f"does not match input config calendar type: {exp_cfg_calendar}")
 

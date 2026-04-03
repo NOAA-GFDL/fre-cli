@@ -90,6 +90,32 @@ EXCLUDED_TABLE_SUFFIXES = [
 
 
 # ---------------------------------------------------------------------------
+# CF calendar aliases (used by cmor_mixer / cmor_helpers for calendar checks)
+# ---------------------------------------------------------------------------
+# Maps every accepted CF calendar name *and* its aliases to a single
+# canonical string so that equivalent names compare equal.
+# Reference: CF Conventions §4.4.1 – The Calendar Attribute
+#   https://cfconventions.org/cf-conventions/cf-conventions.html#calendar
+CF_CALENDAR_ALIASES: dict = {
+    # 365-day no-leap calendar
+    'noleap':              'noleap',
+    '365_day':             'noleap',
+    # 366-day all-leap calendar
+    'all_leap':            'all_leap',
+    '366_day':             'all_leap',
+    # mixed Gregorian/Julian calendar
+    'standard':            'standard',
+    'gregorian':           'standard',
+    # purely proleptic Gregorian calendar
+    'proleptic_gregorian': 'proleptic_gregorian',
+    # idealised 360-day calendar
+    '360_day':             '360_day',
+    # Julian calendar
+    'julian':              'julian',
+}
+
+
+# ---------------------------------------------------------------------------
 # Output / display flags
 # ---------------------------------------------------------------------------
 # cmor_finder: variable-entry keys to suppress when printing variable info.
