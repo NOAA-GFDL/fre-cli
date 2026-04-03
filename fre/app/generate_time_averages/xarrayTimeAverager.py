@@ -1,13 +1,22 @@
 ''' class using xarray for time-averages and climatology generation '''
 
 import logging
-from pathlib import Path
 
+import numpy as np
 import xarray as xr
 
 from .timeAverager import timeAverager
 
 fre_logger = logging.getLogger(__name__)
+
+# dtypes eligible for weighted averaging
+_NUMERIC_KINDS = frozenset('fiuc')  # float, integer, unsigned int, complex
+
+
+def _is_numeric(data_array):
+    """return True if DataArray has a numeric dtype safe for arithmetic."""
+    return data_array.dtype.kind in _NUMERIC_KINDS
+
 
 class xarrayTimeAverager(timeAverager):
     '''
@@ -83,6 +92,8 @@ class xarrayTimeAverager(timeAverager):
 def _weighted_time_mean(ds):
     """
     compute weighted time-mean using time_bnds for weights.
+    non-numeric variables (e.g. datetime64 metadata like average_T1/T2)
+    retain their first value rather than being averaged.
 
     :param ds: xarray Dataset with 'time_bnds' variable
     :type ds: xr.Dataset
@@ -90,20 +101,28 @@ def _weighted_time_mean(ds):
     :rtype: xr.Dataset
     """
     weights = _compute_time_weights(ds)
-    # apply weights only to data variables that have a time dimension
     weighted_vars = {}
     for var_name in ds.data_vars:
-        if 'time' in ds[var_name].dims and var_name != 'time_bnds':
-            weighted_vars[var_name] = (ds[var_name] * weights).sum(dim='time', keep_attrs=True) / weights.sum()
-        elif var_name != 'time_bnds':
-            # non-time variables: take first value
-            weighted_vars[var_name] = ds[var_name].isel(time=0) if 'time' in ds[var_name].dims else ds[var_name]
+        if var_name == 'time_bnds':
+            continue
+        if 'time' in ds[var_name].dims:
+            if _is_numeric(ds[var_name]):
+                weighted_vars[var_name] = (
+                    (ds[var_name] * weights).sum(dim='time', keep_attrs=True)
+                    / weights.sum()
+                )
+            else:
+                # non-numeric time-dependent var (e.g. decoded datetime64)
+                weighted_vars[var_name] = ds[var_name].isel(time=0)
+        else:
+            weighted_vars[var_name] = ds[var_name]
     return xr.Dataset(weighted_vars, attrs=ds.attrs)
 
 
 def _weighted_seasonal_mean(ds):
     """
     compute weighted seasonal mean using time_bnds for weights.
+    non-numeric time-dependent variables are dropped from the output.
 
     :param ds: xarray Dataset with 'time_bnds' variable
     :type ds: xr.Dataset
@@ -114,21 +133,24 @@ def _weighted_seasonal_mean(ds):
     season = ds['time'].dt.season
     weighted_vars = {}
     for var_name in ds.data_vars:
-        if 'time' in ds[var_name].dims and var_name != 'time_bnds':
-            weighted = ds[var_name] * weights
-            weighted_vars[var_name] = (
-                weighted.groupby(season).sum(dim='time', keep_attrs=True)
-                / weights.groupby(season).sum(dim='time')
-            )
-        elif var_name != 'time_bnds':
-            if 'time' not in ds[var_name].dims:
-                weighted_vars[var_name] = ds[var_name]
+        if var_name == 'time_bnds':
+            continue
+        if 'time' in ds[var_name].dims:
+            if _is_numeric(ds[var_name]):
+                weighted = ds[var_name] * weights
+                weighted_vars[var_name] = (
+                    weighted.groupby(season).sum(dim='time', keep_attrs=True)
+                    / weights.groupby(season).sum(dim='time')
+                )
+        else:
+            weighted_vars[var_name] = ds[var_name]
     return xr.Dataset(weighted_vars, attrs=ds.attrs)
 
 
 def _weighted_monthly_mean(ds):
     """
     compute weighted monthly mean using time_bnds for weights.
+    non-numeric time-dependent variables are dropped from the output.
 
     :param ds: xarray Dataset with 'time_bnds' variable
     :type ds: xr.Dataset
@@ -139,39 +161,52 @@ def _weighted_monthly_mean(ds):
     month = ds['time'].dt.month
     weighted_vars = {}
     for var_name in ds.data_vars:
-        if 'time' in ds[var_name].dims and var_name != 'time_bnds':
-            weighted = ds[var_name] * weights
-            weighted_vars[var_name] = (
-                weighted.groupby(month).sum(dim='time', keep_attrs=True)
-                / weights.groupby(month).sum(dim='time')
-            )
-        elif var_name != 'time_bnds':
-            if 'time' not in ds[var_name].dims:
-                weighted_vars[var_name] = ds[var_name]
+        if var_name == 'time_bnds':
+            continue
+        if 'time' in ds[var_name].dims:
+            if _is_numeric(ds[var_name]):
+                weighted = ds[var_name] * weights
+                weighted_vars[var_name] = (
+                    weighted.groupby(month).sum(dim='time', keep_attrs=True)
+                    / weights.groupby(month).sum(dim='time')
+                )
+        else:
+            weighted_vars[var_name] = ds[var_name]
     return xr.Dataset(weighted_vars, attrs=ds.attrs)
 
 
 def _compute_time_weights(ds):
     """
-    compute per-timestep weights from time_bnds.
+    compute per-timestep weights from time_bnds as float days.
+
+    handles the three cases xarray produces when reading time_bnds:
+      * timedelta64 (difference of decoded datetime64 bounds)
+      * cftime timedelta objects (when use_cftime=True)
+      * numeric float / int (bounds stored as plain numbers)
 
     :param ds: xarray Dataset with 'time_bnds' variable
     :type ds: xr.Dataset
-    :return: DataArray of weights along the time dimension
+    :return: DataArray of float weights along the time dimension
     :rtype: xr.DataArray
     """
     if 'time_bnds' in ds:
         time_bnds = ds['time_bnds']
-        weights = time_bnds[:, 1] - time_bnds[:, 0]
-        # convert to float days for any non-float dtype (timedelta, datetime diffs, etc.)
-        if hasattr(weights.dt, 'days'):
-            weights = weights.dt.days.astype('float64')
-        elif weights.dtype.kind in ('m', 'M'):  # timedelta or datetime
-            # fallback: cast via nanoseconds
-            weights = weights.values.astype('float64')
-            weights = xr.DataArray(weights, dims=['time'])
+        raw_diff = (time_bnds[:, 1] - time_bnds[:, 0]).values  # numpy array
+
+        if raw_diff.dtype.kind == 'm':
+            # timedelta64 — convert to float days via seconds
+            float_days = raw_diff.astype('timedelta64[s]').astype('float64') / 86400.0
+        elif raw_diff.dtype == object:
+            # cftime timedelta objects: .days + .seconds/86400
+            float_days = np.array(
+                [td.days + td.seconds / 86400.0 for td in raw_diff],
+                dtype='float64'
+            )
         else:
-            weights = weights.astype('float64')
+            # already numeric (float or int days)
+            float_days = raw_diff.astype('float64')
+
+        weights = xr.DataArray(float_days, dims=['time'])
     else:
         fre_logger.warning('time_bnds not found, falling back to uniform weights')
         weights = xr.ones_like(ds['time'], dtype='float64')
