@@ -9,7 +9,7 @@ from .timeAverager import timeAverager
 
 fre_logger = logging.getLogger(__name__)
 
-class frepytoolsTimeAverager(timeAverager):
+class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
     '''
     class inheriting from abstract base class timeAverager
     generates time-averages using a python-native approach
@@ -256,3 +256,6 @@ class frepytoolsTimeAverager(timeAverager):
         fre_logger.debug('input file closed')
 
         return 0
+
+# backward-compatible alias
+frepytoolsTimeAverager = NumpyTimeAverager  # pylint: disable=invalid-name
