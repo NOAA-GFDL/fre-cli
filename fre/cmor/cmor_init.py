@@ -207,9 +207,10 @@ def _fetch_tables_curl(repo_url, tables_dir, tag=None):
         Optional git tag / branch. Defaults to ``main`` if *None*.
     """
     ref = tag if tag else 'main'
-    tarball_url = f'{repo_url}/archive/refs/heads/{ref}.tar.gz'
     if tag:
         tarball_url = f'{repo_url}/archive/refs/tags/{ref}.tar.gz'
+    else:
+        tarball_url = f'{repo_url}/archive/refs/heads/{ref}.tar.gz'
 
     tables_path = Path(tables_dir)
     tables_path.mkdir(parents=True, exist_ok=True)
