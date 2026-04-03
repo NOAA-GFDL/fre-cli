@@ -22,7 +22,6 @@ keywords = [
 dependencies = [
         'analysis_scripts',
         'catalogbuilder',
-        'cdo',
         'cftime',
         'click',
         'cmor',
