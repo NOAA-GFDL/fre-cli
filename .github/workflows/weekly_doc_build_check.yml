@@ -1,0 +1,84 @@
+name: Weekly Doc Build Warning Check
+
+on:
+  schedule:
+    - cron: '30 8 * * 1'  # Every Monday at 08:30 UTC
+  workflow_dispatch:
+  push: # temp development
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  doc-build-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install documentation dependencies
+        run: pip install sphinx renku-sphinx-theme sphinx-rtd-theme click pyyaml jsonschema
+
+      - name: Generate API docs
+        run: sphinx-apidoc --ext-autodoc --output-dir docs fre/ --separate
+
+      - name: Build documentation and capture warnings
+        id: sphinx_build
+        run: |
+          sphinx-build -b html docs/ docs/build/ 2>&1 | tee sphinx_output.txt || true
+
+          # extract warnings
+          grep -i "WARNING" sphinx_output.txt > warnings.txt || true
+
+          WARNING_COUNT=$(wc -l < warnings.txt)
+          echo "warning_count=$WARNING_COUNT" >> "$GITHUB_OUTPUT"
+
+          if [ "$WARNING_COUNT" -gt 0 ]; then
+            echo "has_warnings=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_warnings=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update issue with warnings
+        if: steps.sphinx_build.outputs.has_warnings == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          WARNING_COUNT=${{ steps.sphinx_build.outputs.warning_count }}
+
+          ISSUE_BODY="## Weekly Sphinx Documentation Build Warnings
+
+          **Date:** $(date -u '+%Y-%m-%d')
+          **Warning count:** ${WARNING_COUNT}
+
+          <details>
+          <summary>Sphinx build warnings</summary>
+
+          \`\`\`
+          $(cat warnings.txt)
+          \`\`\`
+
+          </details>
+
+          These warnings were detected during the weekly automated Sphinx documentation build.
+          Please review and fix the warnings to improve documentation quality."
+
+          # close any existing weekly doc build warning issues (search by title prefix)
+          gh issue list --state open --search "docs: weekly Sphinx build warnings report" --json number --jq '.[].number' | while read -r ISSUE_NUM; do
+            gh issue close "$ISSUE_NUM" --comment "Superseded by new weekly doc build warning check."
+          done
+
+          # create new issue
+          echo "$ISSUE_BODY" | gh issue create \
+            --title "docs: weekly Sphinx build warnings report (${WARNING_COUNT} warnings)" \
+            --body-file -
+
+      - name: Report success
+        if: steps.sphinx_build.outputs.has_warnings == 'false'
+        run: echo "No Sphinx build warnings detected."

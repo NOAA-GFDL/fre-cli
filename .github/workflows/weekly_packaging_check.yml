@@ -1,0 +1,87 @@
+name: Weekly Packaging Warning Check
+
+on:
+  schedule:
+    - cron: '30 9 * * 1'  # Every Monday at 09:30 UTC
+  workflow_dispatch:
+  push: # temp
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  packaging-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build tools
+        run: pip install build setuptools twine
+
+      - name: Build package and capture warnings
+        id: package_build
+        run: |
+          # build the package, capturing all output
+          python -m build 2>&1 | tee build_output.txt || true
+
+          # check distribution with twine
+          if ls dist/*.tar.gz dist/*.whl 1>/dev/null 2>&1; then
+            twine check dist/* 2>&1 | tee -a build_output.txt || true
+          fi
+
+          # extract warnings
+          grep -iE "(warning|error|deprecat)" build_output.txt > warnings.txt || true
+
+          WARNING_COUNT=$(wc -l < warnings.txt)
+          echo "warning_count=$WARNING_COUNT" >> "$GITHUB_OUTPUT"
+
+          if [ "$WARNING_COUNT" -gt 0 ]; then
+            echo "has_warnings=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_warnings=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update issue with warnings
+        if: steps.package_build.outputs.has_warnings == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          WARNING_COUNT=${{ steps.package_build.outputs.warning_count }}
+
+          ISSUE_BODY="## Weekly Packaging Warning Report
+
+          **Date:** $(date -u '+%Y-%m-%d')
+          **Warning count:** ${WARNING_COUNT}
+
+          <details>
+          <summary>Packaging warnings</summary>
+
+          \`\`\`
+          $(cat warnings.txt)
+          \`\`\`
+
+          </details>
+
+          These warnings were detected during the weekly automated packaging build and check.
+          Please review and fix the warnings to improve packaging quality."
+
+          # close any existing weekly packaging warning issues (search by title prefix)
+          gh issue list --state open --search "build: weekly packaging warnings report" --json number --jq '.[].number' | while read -r ISSUE_NUM; do
+            gh issue close "$ISSUE_NUM" --comment "Superseded by new weekly packaging warning check."
+          done
+
+          # create new issue
+          echo "$ISSUE_BODY" | gh issue create \
+            --title "build: weekly packaging warnings report (${WARNING_COUNT} warnings)" \
+            --body-file -
+
+      - name: Report success
+        if: steps.package_build.outputs.has_warnings == 'false'
+        run: echo "No packaging warnings detected."
