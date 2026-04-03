@@ -198,11 +198,11 @@ def test_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar
 @pytest.mark.parametrize( "testfile_dir,table,opt_var_name,grid_label,start,calendar",
   [
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DEV_PP_DIR}/ocean_monthly_z_1x1deg/ts/monthly/5yr/',
-                  'ocean', 'so',  'gr',  '0001','noleap', id='ocean_so_gr' ),
+                  'ocean', 'so',  'g99', '0001','noleap', id='ocean_so_g99' ),
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DEV_PP_DIR}/ocean_monthly/ts/monthly/5yr/',
-                  'ocean', 'sos', 'gn',  '0001','noleap', id='ocean_sos_gn' ),
+                  'ocean', 'sos', 'g99', '0001','noleap', id='ocean_sos_g99' ),
     pytest.param(f'{MOCK_ARCHIVE_ROOT}/{ESM4_DEV_PP_DIR}/land/ts/monthly/5yr/',
-                  'land',  'lai', 'gr1', '0001','noleap', id='land_lai_gr1' ),
+                  'land',  'lai', 'g99', '0001','noleap', id='land_lai_g99' ),
   ] )
 
 def test_cmip7_case_function(testfile_dir,table,opt_var_name,grid_label,start,calendar,monkeypatch):
@@ -212,11 +212,10 @@ def test_cmip7_case_function(testfile_dir,table,opt_var_name,grid_label,start,ca
     including variable brand extraction and CMIP7 output path/file templates.
     '''
 
-    # for native-grid ocean tests, prevent the gold statics lookup from finding
-    # /archive files so the test uses its own locally-generated statics file
-    if grid_label == 'gn':
-        monkeypatch.setattr(
-            'fre.cmor.cmor_mixer.find_gold_ocean_statics_file', lambda **kw: None)
+    # prevent the gold statics lookup from finding /archive files so the test
+    # uses its own locally-generated statics file
+    monkeypatch.setattr(
+        'fre.cmor.cmor_mixer.find_gold_ocean_statics_file', lambda **kw: None)
 
     # define inputs to the cmor run tool
     indir = testfile_dir
