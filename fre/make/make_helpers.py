@@ -5,6 +5,8 @@ module of helper/utility functions used in the fre make subtool
 import logging
 from pathlib import Path
 
+from fre import log_and_raise
+
 def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str = None) -> str:
 
     """
@@ -39,7 +41,7 @@ def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str 
 
         # Check in template path exists
         if not Path(template_path).exists():
-            raise ValueError("Error w/ mkmf template. Created path from given "
+            log_and_raise("Error w/ mkmf template. Created path from given "
                              f"filename: {template_path} does not exist.")
     else:
         if "/" not in mk_template:

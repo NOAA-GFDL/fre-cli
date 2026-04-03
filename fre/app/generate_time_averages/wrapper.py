@@ -8,6 +8,7 @@ from metomi.isodatetime.parsers import TimePointParser, DurationParser, TimeRecu
 from metomi.isodatetime.dumpers import TimePointDumper
 
 from . import generate_time_averages
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 one_year = DurationParser().parse('P1Y')
@@ -77,7 +78,7 @@ def generate_wrapper(cycle_point: str,
     input_interval = DurationParser().parse(input_interval)
 
     if frequency not in ["yr", "mon"]:
-        raise ValueError(f"Frequency '{frequency}' not recognized or supported")
+        log_and_raise(f"Frequency '{frequency}' not recognized or supported")
 
     # convert frequency 'yr' or 'mon' to ISO8601
     if frequency == 'mon':
@@ -109,7 +110,7 @@ def generate_wrapper(cycle_point: str,
                         fre_logger.debug("Annual ts to annual climo from source %s:%s variables",
                                          source, len(variables))
                     else:
-                        raise FileNotFoundError(f"Expected files not found in {subdir_yr}")
+                        log_and_raise(f"Expected files not found in {subdir_yr}", FileNotFoundError)
                 elif subdir_mon.exists():
                     results = glob.glob(str(subdir_mon / f"{source}.{yyyy}01-{zzzz}12.*.nc"))
                     if results:
@@ -118,7 +119,7 @@ def generate_wrapper(cycle_point: str,
                         fre_logger.debug("monthly ts to annual climo from source %s:%s variables",
                                          source, len(variables))
                     else:
-                        raise FileNotFoundError(f"Expected files not found in {subdir_mon}")
+                        log_and_raise(f"Expected files not found in {subdir_mon}", FileNotFoundError)
                 else:
                     fre_logger.debug('Skipping %s as it does not appear to be monthly or annual frequency', source)
                     fre_logger.debug('neither %s nor %s  exists', subdir_mon, subdir_yr)
@@ -132,7 +133,7 @@ def generate_wrapper(cycle_point: str,
                         fre_logger.debug("monthly ts to monthly climo from source %s:%s variables",
                                          source, len(variables))
                     else:
-                        raise FileNotFoundError(f"Expected files not found in {subdir}")
+                        log_and_raise(f"Expected files not found in {subdir}", FileNotFoundError)
                 else:
                     fre_logger.debug("Skipping %s as it does not appear to be monthly frequency", source)
                     fre_logger.debug(" %s does not exist", subdir)

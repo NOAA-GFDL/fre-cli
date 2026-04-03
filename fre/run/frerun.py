@@ -4,6 +4,7 @@ entry point for fre run subcommands
 
 import click
 from .frerunexample import run_test_function
+from fre import log_and_raise
 
 @click.group(help=click.style(" - run subcommands !!!NotImplemented!!!", fg=(164,29,132)))
 def run_cli():
@@ -14,4 +15,4 @@ def run_cli():
 def function(uppercase):
     """ - Execute fre run test """
     run_test_function(uppercase)
-    raise NotImplementedError('fre run has not been implemented yet!')
+    log_and_raise('fre run has not been implemented yet!', NotImplementedError)

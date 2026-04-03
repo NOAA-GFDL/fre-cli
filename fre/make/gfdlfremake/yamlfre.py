@@ -4,6 +4,7 @@ from pathlib import Path
 import yaml
 from jsonschema import validate, ValidationError, SchemaError
 from . import platformfre
+from fre import log_and_raise
 
 def parseCompile(fname,v):
     """
@@ -32,12 +33,12 @@ class compileYaml():
         self.yaml = compileinfo
         # Check if self.yaml is None
         if self.yaml is None:
-            raise ValueError("The provided compileinfo is None. It must be a valid dictionary.")
+            log_and_raise("The provided compileinfo is None. It must be a valid dictionary.")
         ## Check for required experiment name
         try:
             self.yaml["experiment"]
         except KeyError:
-            raise KeyError("You must set an experiment name to compile \n")
+            log_and_raise("You must set an experiment name to compile \n", KeyError)
         ## Check for optional libraries and packages for linking in container
         try:
             self.yaml["container_addlibs"]
