@@ -59,9 +59,9 @@ def fre(verbose = 0, quiet = False, log_file = None):
     if quiet:
         log_level = logging.ERROR # least verbose
 
-    base_fre_logger=fre_logger.parent
-    base_fre_logger.setLevel(level = log_level)
-    fre_logger.debug('root fre_logger level set')
+    root_logger = logging.getLogger()
+    root_logger.setLevel(level = log_level)
+    fre_logger.debug('root logger level set')
 
     # check if log_file arg was used
     if log_file is not None:
@@ -74,8 +74,8 @@ def fre(verbose = 0, quiet = False, log_file = None):
         fre_log_file_formatter=logging.Formatter(fmt=FORMAT)
         fre_file_handler.setFormatter(fre_log_file_formatter)
 
-        base_fre_logger.addHandler(fre_file_handler)
+        root_logger.addHandler(fre_file_handler)
         # first message that will appear in the log file if used
-        fre_logger.info('fre_file_handler added to base_fre_logger')
+        fre_logger.info('fre_file_handler added to root_logger')
 
     fre_logger.debug('click entry-point function call done.')
