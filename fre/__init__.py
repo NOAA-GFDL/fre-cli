@@ -27,6 +27,9 @@ def log_and_raise(msg, exc_type=ValueError, exc=None) -> NoReturn:
     :param exc_type: Exception class to raise. Defaults to ValueError.
     :type exc_type: type
     :param exc: Optional original exception to chain from (uses ``raise ... from exc``).
+                When provided, logging uses ``fre_logger.exception()`` to capture the
+                traceback. Should be called from within an ``except`` block for full
+                traceback detail.
     :type exc: Exception, optional
     :raises exc_type: Always raised with the given message.
 
@@ -42,7 +45,8 @@ def log_and_raise(msg, exc_type=ValueError, exc=None) -> NoReturn:
         except KeyError as e:
             log_and_raise("update failed", KeyError, exc=e)
     """
-    fre_logger.error(msg, stacklevel=2)
     if exc is not None:
+        fre_logger.exception(msg, stacklevel=2)
         raise exc_type(msg) from exc
+    fre_logger.error(msg, stacklevel=2)
     raise exc_type(msg)
