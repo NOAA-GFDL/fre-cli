@@ -194,7 +194,7 @@ def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
 
     # Returns the exit status for multiprocessing pool command
     if execute:
-        if baremetal_run
+        if baremetal_run:
             # Create a multiprocessing Pool
             pool = Pool(processes=nparallel)
             # process data_inputs iterable with pool
