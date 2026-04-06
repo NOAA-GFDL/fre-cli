@@ -34,9 +34,41 @@ from .gfdlfremake import (
 
 fre_logger = logging.getLogger(__name__)
 
-def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejobs: int = 4,
+def compile_call(fremake_yaml, template_path, src_dir, bld_dir, target, platform, jobs):
+    """
+    lkjsdlfkjs
+
+    :param fremake_yaml:
+    :type fremake_yaml:
+    :param template_path:
+    :type template_path:
+    :param src_dir:
+    :type src_dir:
+    :param bld_dir:
+    :type bld_dir:
+    :param target:
+    :type target:
+    :param platform:
+    :type platform:
+    :param jobs:
+    :type jobs:
+    """
+    fremake_build = buildBaremetal.buildBaremetal(exp=fremake_yaml["experiment"],
+                                                 mkTemplatePath=template_path,
+                                                 srcDir=src_dir,
+                                                 bldDir=bld_dir,
+                                                 target=target,
+                                                 env_setup=platform["envSetup"],
+                                                 jobs=jobs)
+    for c in fremake_yaml['src']:
+        fremake_build.writeBuildComponents(c)
+    fremake_build.writeScript()
+    fre_logger.info("Compile script created: %s/compile.sh", bld_dir)
+
+def compile_create(yamlfile:str, platform:str, target:str, njobs: int = 4,
                    nparallel: int = 1, execute: Optional[bool] = False,
-                   verbose: Optional[bool] = None):
+                   verbose: Optional[bool] = False,
+                   force_compile: Optional[bool] = False):
     """
     This function compile_create generates the compile script for bare-metal build.
 
@@ -55,6 +87,8 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
     :type execute: bool
     :param verbose: If True, increase verbosity output
     :type verbose: bool
+    :param force_compile: Re-create compile script if specified
+    :type force_compile: bool
     :raises ValueError:
         - Error if platform does not exist in platforms yaml configuration 
         - Error if the mkmf template defined in platforms yaml does not exist
@@ -91,6 +125,7 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
     model_yaml = yamlfre.freyaml(full_combined, fre_vars)
     fremake_yaml = model_yaml.getCompileYaml()
 
+    tlist = target
     ## Error checking the targets
     for target_name in tlist:
         target = targetfre.fretarget(target_name)
@@ -117,21 +152,58 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
                                                     model_root = platform["modelRoot"],
                                                     container_flag = platform["container"])
 
-                ## Create a list of compile scripts to run in parallel
-                fremake_build = buildBaremetal.buildBaremetal(exp=fremake_yaml["experiment"],
-                                                             mkTemplatePath=template_path,
-                                                             srcDir=src_dir,
-                                                             bldDir=bld_dir,
-                                                             target=target,
-                                                             env_setup=platform["envSetup"],
-                                                             jobs=jobs)
-                for c in fremake_yaml['src']:
-                    fremake_build.writeBuildComponents(c)
-                fremake_build.writeScript()
-                fremake_build_list.append(fremake_build)
-                fre_logger.info("Compile script created here: %s/compile.sh", bld_dir)
+                if not Path(f"{bld_dir}/compile.sh").exists():
+                    ## Create a list of compile scripts to run in parallel
+                    compile_call(fremake_yaml = fremake_yaml,
+                                 template_path = template_path,
+                                 src_dir = src_dir,
+                                 bld_dir = bld_dir,
+                                 target = target,
+                                 platform = platform,
+                                 jobs = jobs)
+                    fremake_build_list.append(f"{bld_dir}/compile.sh")
+                elif Path(f"{bld_dir}/compile.sh").exists() and force_compile:
+                    # Remove old compile script
+                    fre_logger.warning("Compile script PREVIOUSLY created: %s/compile.sh", bld_dir)
+                    fre_logger.warning("*** REMOVING COMPILE SCRIPT ***")
+                    Path(f"{bld_dir}/compile.sh").unlink()
 
+                    # Re-create compile script
+                    compile_call(fremake_yaml = fremake_yaml,
+                                 template_path = template_path,
+                                 src_dir = src_dir,
+                                 bld_dir = bld_dir,
+                                 target = target,
+                                 platform = platform,
+                                 jobs = jobs)
+
+                    fremake_build_list.append(f"{bld_dir}/compile.sh")
+                elif Path(f"{bld_dir}/compile.sh").exists() and not force_compile:
+                    fre_logger.warning("Compile script PREVIOUSLY created: %s/compile.sh", bld_dir)
+                    fremake_build_list.append(f"{bld_dir}/compile.sh")
+                    ###COMPARE THE TWO TO SEE IF IT'S CHANGED###--> filecmp or difflib
+                    ###IF CHANGED, THROW ERROR###
+                    ###SHOULD IT ALSO BE RE-CREATED IF CHECKOUT RE-CREATED?? -->
+                    ### I THINK THIS WILL BE FOR "ALL" SUBTOOL###
+
+    fre_logger.setLevel(level=logging.INFO)
+    fre_logger.info("Compile scripts available/generated with specified platform-target combination: ")
+    for i in fremake_build_list:
+        fre_logger.info("  - %s", i)
+    fre_logger.setLevel(level=logging.WARNING)
+
+    # Returns the exit status for multiprocessing pool command
     if execute:
         if baremetal_run:
-            pool = Pool(processes=nparallel)  # Create a multiprocessing Pool
-            pool.map(buildBaremetal.fremake_parallel, fremake_build_list)  # process data_inputs iterable with pool
+            # Create a multiprocessing Pool
+            pool = Pool(processes=nparallel)
+            # process data_inputs iterable with pool
+            results = pool.map(buildBaremetal.fremake_parallel, fremake_build_list)
+
+            for r in results:
+                for key,value in r.items():
+                    if key == 1:
+                        fre_logger.error("ERROR: compile NOT successful")
+                        fre_logger.error("Check the generated log: %s", value)
+                    elif key == 0:
+                        fre_logger.info("Compile successful")

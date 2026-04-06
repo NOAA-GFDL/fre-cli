@@ -142,3 +142,4 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
                 fre_logger.setLevel(logging.INFO)
                 fre_logger.info("Makefile created: %s/Makefile", tmp_dir)
                 fre_logger.setLevel(former_log_level)
+    fre_logger.warning("")

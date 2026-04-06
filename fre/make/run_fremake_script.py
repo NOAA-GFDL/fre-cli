@@ -22,7 +22,8 @@ def fremake_run(yamlfile:str, platform:str, target:str,
                 no_format_transfer: Optional[bool] = False,
                 execute: Optional[bool] = False,
                 verbose: Optional[bool] = None,
-                force_checkout: Optional[bool] = False):
+                force_checkout: Optional[bool] = False,
+                force_compile: Optional[bool] = False):
     """
     Runs all of fre make code
 
@@ -49,13 +50,15 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     :type execute: bool
     :param force_checkout: Re-create the checkout script if changes were made to configurations
     :type force_checkout: bool
+    :param force_compile: Re-create compile script if specified
+    :type force_compile: bool
     :param verbose: Increase verbosity output
     :type verbose: bool
     """
-#    if verbose:
-#        fre_logger.setLevel(level = logging.DEBUG)
-#    else:
-#        fre_logger.setLevel(level = logging.INFO)
+    if verbose:
+        fre_logger.setLevel(level = logging.DEBUG)
+    else:
+        fre_logger.setLevel(level = logging.INFO)
 
     # Define variables
     name = yamlfile.split(".")[0]
@@ -102,7 +105,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
         #compile
         fre_logger.info("Running fre make: calling compile_create")
         compile_create(yamlfile, bm_platforms, target, makejobs, nparallel,
-                       execute, verbose)
+                       execute, verbose, force_compile)
     if container_platforms:
         fre_logger.info("Running fre make: calling dockerfile_create")
         dockerfile_create(yamlfile, container_platforms, target, execute, no_format_transfer)
