@@ -107,8 +107,8 @@ def _cmip7_exp_config_template():
     """Return an ordered dict-like structure for an empty CMIP7 experiment config."""
     return {
         "#note": " **** CMIP7 experiment configuration template – fill in values below ****",
-        "contact": "",
-        "comment": "",
+        "contact": "MIP participant mipmember@foobar.c.om",
+        "comment": "additional important information not fitting into other fields can be placed here",
         "license": "",
         "references": "",
         "drs_specs": "MIP-DRS7",
@@ -118,8 +118,8 @@ def _cmip7_exp_config_template():
         "_cmip7_option": 1,
         "mip_era": "CMIP7",
         "parent_mip_era": "CMIP7",
-        "activity_id": "",
-        "parent_activity_id": "",
+        "activity_id": "CMIP",
+        "parent_activity_id": "CMIP",
         "institution": "",
         "institution_id": "",
         "source": "",
@@ -141,8 +141,8 @@ def _cmip7_exp_config_template():
         "branch_time_in_child": 0.0,
         "branch_time_in_parent": 0.0,
         "calendar": "",
-        "grid": "",
-        "grid_label": "",
+        "grid": "PLACEHOLD",
+        "grid_label": "g99",
         "frequency": "",
         "region": "",
         "nominal_resolution": "",
@@ -154,11 +154,11 @@ def _cmip7_exp_config_template():
         "outpath": ".",
         "output_path_template": (
             "<activity_id><source_id><experiment_id><member_id>"
-            "<variable_id><branding_suffix><grid_label><version>"
+            "<variable_id><branding_suffix><grid_label>"
         ),
         "output_file_template": (
             "<variable_id><branding_suffix><frequency><region>"
-            "<grid_label><source_id><experiment_id><variant_id>[<time_range>].nc"
+            "<grid_label><source_id><experiment_id><variant_label>"
         ),
         "_controlled_vocabulary_file": "../tables-cvs/cmor-cvs.json",
         "_AXIS_ENTRY_FILE": "CMIP7_coordinate.json",
