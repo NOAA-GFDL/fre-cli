@@ -317,7 +317,7 @@ def test_cli_fre_cmor_run_cmip7_case1():
     cmor_creates_dir = \
         f'CMIP/CanESM6-MR/esm-piControl/r3i1p1f3/sos/tavg-u-hxy-sea/{grid_label}'
     full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
+        f"{outdir}/{cmor_creates_dir}"
     full_outputfile = f"{full_outputdir}/" + \
         f"sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
 
@@ -363,7 +363,7 @@ def test_cli_fre_cmor_run_cmip7_case2():
     cmor_creates_dir = \
         f'CMIP/CanESM6-MR/esm-piControl/r3i1p1f3/sos/tavg-u-hxy-sea/{grid_label}'
     full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
+        f"{outdir}/{cmor_creates_dir}"
     full_outputfile = f"{full_outputdir}/" + \
         f"sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
 
