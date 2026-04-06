@@ -15,7 +15,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: "noaa-gfdl/ubuntu-20-frecli-2025"
+  IMAGE_NAME: "noaa-gfdl/ubuntu-20-fre-cli-2025"
 
 jobs:
   build-and-push:
@@ -55,7 +55,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./container-files/Dockerfile-frecli
+          file: ./container-files/Dockerfile-fre-cli
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.set_tag.outputs.docker_tag }}

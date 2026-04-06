@@ -3,7 +3,7 @@
 Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE workflow at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build and runscript, this post-processing container work allows for more effective sharing of the workflow.
 
 ## PULLING CONTAINER FROM REGISTRY
-To pull the frecli container image from the NOAA-GFDL github container registry, use this command:
+To pull the fre-cli container image from the NOAA-GFDL github container registry, use this command:
 
 docker pull ghcr.io/noaa-gfdl/hpc-me/ppp:latest
 
@@ -14,7 +14,7 @@ docker pull ghcr.io/noaa-gfdl/hpc-me/ppp:latest
 
 Files used to build container:
 
-- Dockerfile-frecli
+- Dockerfile-fre-cli
 - cylc-flow-tools environment yaml
 - runscript.sh
     
@@ -30,7 +30,7 @@ git clone https://github.com/NOAA-GFDL/fre-cli.git
 cd fre-cli/container-files
 
 ## Build a container image
-podman build -f Dockerfile-frecli -t latest
+podman build -f Dockerfile-fre-cli -t latest
 
 ## Save the image to a local tar file
 # It is recommended to name the container after the post-processing experiment name
@@ -50,9 +50,9 @@ In order to run the post-processing workflow, certain repositories and files are
 1. `fre-workflows` cloned repository
     - Can be found here: https://github.com/NOAA-GFDL/fre-workflows 
 
-2. Directory that will include folders and files for container set-up and running (could be named `frecli-container-setup` for example)
+2. Directory that will include folders and files for container set-up and running (could be named `fre-cli-container-setup` for example)
     - The setup/output directory consists of a few subdirectories: pp, ptmp, and temp (these are created through the runscript.sh in this repository for the container)
-    - ***Ensure you create the empty `frecli-container-setup` folder in an area with enough space as this is where the post-processing run output will be populated.***
+    - ***Ensure you create the empty `fre-cli-container-setup` folder in an area with enough space as this is where the post-processing run output will be populated.***
 
 3. Yaml configuration files are also needed. 
     - Publicly available example yaml configuration files can be found here: https://github.com/NOAA-GFDL/fre-examples 
@@ -65,10 +65,10 @@ Additionally, history files and grid spec files are needed.
     
 - Paths to the history folder and grid spec file will be mounted into the container as read only folders/files 
 
-**If not on Gaea**, history file and grid spec data should be transferred to the `frecli-container-setup` location in:
+**If not on Gaea**, history file and grid spec data should be transferred to the `fre-cli-container-setup` location in:
 
-- `frecli-container-setup/history/`
-- `frecli-container-setup/[experiment]_grid/`
+- `fre-cli-container-setup/history/`
+- `fre-cli-container-setup/[experiment]_grid/`
 
 FOR CLOUD USERS: Preparing for cloud usage requires history files and container image/runscript to be transferred to the cloud resource. The recommended method of file transfer is with Globus in which files should be transferred to the cloud resource’s lustre folder. 
 
