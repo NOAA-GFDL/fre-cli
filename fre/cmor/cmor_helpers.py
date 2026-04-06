@@ -594,9 +594,7 @@ def calendars_are_equivalent(cal1: str, cal2: str) -> bool:
     :return: ``True`` if both names refer to the same calendar, ``False`` otherwise.
     :rtype: bool
     """
-    canonical1 = CF_CALENDAR_ALIASES.get(cal1.lower(), cal1.lower())
-    canonical2 = CF_CALENDAR_ALIASES.get(cal2.lower(), cal2.lower())
-    return canonical1 == canonical2
+    return CF_CALENDAR_ALIASES.get(cal1.lower(), cal1.lower()) == CF_CALENDAR_ALIASES.get(cal2.lower(), cal2.lower())
 
 
 def iso_to_bronx_chunk(cmor_chunk_in: str) -> str:
