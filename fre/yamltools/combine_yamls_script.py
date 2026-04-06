@@ -137,7 +137,9 @@ def get_combined_cmoryaml( yamlfile: Union[str, Path],
 
     return cleaned_yaml
 
-def consolidate_yamls(yamlfile:str, experiment:str, platform:str, target:str, use:str, output: Optional[str]=None) -> dict:
+def consolidate_yamls(yamlfile:str, experiment:str, platform:str,
+                      target:str, use:str,
+                      output: Optional[str]=None) -> dict:
     """
     Depending on `use` argument passed, either create the final
     combined yaml for compilation or post-processing

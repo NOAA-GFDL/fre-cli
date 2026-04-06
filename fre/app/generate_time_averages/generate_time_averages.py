@@ -125,6 +125,3 @@ def generate(inf = None,
         fre_logger.warning('time averaging exited non-zero, exitstatus == %s', exitstatus)
     else:
         fre_logger.info('time averaging finished successfully')
-
-
-

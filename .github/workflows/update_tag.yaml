@@ -11,11 +11,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Fetch tags
         run: |
           git fetch --tags origin
-
+ 
       - name: Get the new tag
         id: get_tag
         run: |
@@ -24,7 +24,9 @@ jobs:
       - name: Get previous tag
         id: get_prev_tag
         run: |
-          prev_tag=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
+          new_tag="${{ steps.get_tag.outputs.tag }}"
+          prev_tag=$(git tag --sort=-version:refname | grep -v "^${new_tag}$" | head -n 1)
+          #prev_tag=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
           echo "prev_tag=${prev_tag}" >> $GITHUB_OUTPUT
 
       - name: Replace old tag with new tag in all relevant files

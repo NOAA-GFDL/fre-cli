@@ -43,31 +43,30 @@ non_regriddable_variables = [
     "average_T2",
     "average_DT",
     "time_bnds",
+    "lat",
+    "lon",
 ]
 
 
 def get_grid_spec(datadict: dict) -> str:
 
     """
-    Gets the grid_spec.nc file from the tar file specified in
+    Gets the mosaic.nc or grid_spec.nc file from the tar file specified in
     yaml["postprocess"]["settings"]["pp_grid_spec"]
 
     :param datadict: dictionary containing relevant regrid parameters
     :type datadict: dict
 
-    :raises IOError:  Error if grid_spec.nc file cannot be found in the
+    :raises IOError:  Error if neither mosaic.nc nor grid_spec.nc file can be found in the
                       current directory
 
     :return: grid_spec filename
     :rtype: str
 
-    .. note:: All grid_spec files are expected to be named "grid_spec.nc".
+    .. note:: Grid spec files are expected to be named "mosaic.nc" or "grid_spec.nc".
               The grid_spec file is required in order to determine the
               input mosaic filename
     """
-
-    #grid spec filename
-    grid_spec = "grid_spec.nc"
 
     #get tar file containing the grid_spec file
     pp_grid_spec_tar = datadict["yaml"]["postprocess"]["settings"]["pp_grid_spec"]
@@ -78,13 +77,17 @@ def get_grid_spec(datadict: dict) -> str:
         with tarfile.open(pp_grid_spec_tar, "r") as tar:
             tar.extractall()
 
-    #error if grid_spec file is not found after extracting from tar file
-    if not Path(grid_spec).exists():
-        raise IOError(f"Cannot find {grid_spec} in tar file {pp_grid_spec_tar}")
+    #check for mosaic.nc first
+    if Path("mosaic.nc").exists():
+        grid_spec = "mosaic.nc"
+    elif Path("grid_spec.nc").exists():
+        grid_spec = "grid_spec.nc"
+    else:
+        raise IOError(f"Cannot find mosaic.nc or grid_spec.nc in tar file {pp_grid_spec_tar}")
 
     fre_logger.debug(f"Current directory: {Path.cwd()}")
 
-    fre_logger.debug(f"Found grid_spec file: {grid_spec}")
+    fre_logger.debug(f"Found grid spec file: {grid_spec}")
     return grid_spec
 
 
@@ -346,6 +349,10 @@ def regrid_xy(yamlfile: str,
                                     "Skipping {source}")
                 continue
 
+            # skip component if xyInterp is not set
+            if 'xyInterp' not in component:
+                fre_logger.info(f"Skipping native component '{component}'")
+                continue
             datadict["inputRealm"] = component["inputRealm"]
             datadict["input_mosaic"] = get_input_mosaic(datadict)
             datadict["output_nlat"], datadict["output_nlon"] = component["xyInterp"].split(",")
@@ -361,7 +368,10 @@ def regrid_xy(yamlfile: str,
                 continue
 
             # create the output dir
-            output_subdir = Path(output_dir) / f"{datadict['output_nlat']}_{datadict['output_nlon']}.{datadict['interp_method']}"
+            output_subdir = (
+                Path(output_dir)
+                / f"{datadict['output_nlat']}_{datadict['output_nlon']}.{datadict['interp_method']}"
+            )
             output_subdir.mkdir(parents=True, exist_ok=True)
 
             #construct fregrid command

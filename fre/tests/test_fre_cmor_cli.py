@@ -435,7 +435,7 @@ def test_cli_fre_cmor_config_case1():
 
     # put an annual directory in to make sure we're not targeting that at the moment
     (mock_pp_dir / 'ocean' / 'ts' / 'annual').mkdir(parents=True, exist_ok=True)
-    
+
     # symlink the test nc file into the mock tree
     src_nc = Path(f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc')
     dst_nc = comp_ts_dir / src_nc.name
@@ -446,9 +446,10 @@ def test_cli_fre_cmor_config_case1():
     varlist_out_dir = Path(f'{ROOTDIR}/mock_writer_varlists')
     varlist_out_dir.mkdir(exist_ok=True)
 
-    # create an empty variable list of one we want to create. it should be remade. 
+    # create an empty variable list of one we want to create. it should be remade.
     (varlist_out_dir / 'CMIP6_CMIP6_Omon_ocean.list').touch()
-    assert (varlist_out_dir / 'CMIP6_CMIP6_Omon_ocean.list').exists(), 'pre-existing variable list failed to be created for tests'
+    assert (varlist_out_dir / 'CMIP6_CMIP6_Omon_ocean.list').exists(), \
+        'pre-existing variable list failed to be created for tests'
 
     output_yaml = Path(f'{ROOTDIR}/mock_writer_output.yaml')
     output_data_dir = Path(f'{ROOTDIR}/mock_writer_outdir')
@@ -478,7 +479,8 @@ def test_cli_fre_cmor_config_case1():
     ])
     assert result.exit_code == 0, f'config failed: {result.output}'
     assert output_yaml.exists(), 'output YAML was not created'
-    assert (varlist_out_dir / 'CMIP6_CMIP6_Omon_ocean.list').exists(), 'CMIP6_CMIP6_Omon_ocean.list was not created for some reason'
+    assert (varlist_out_dir / 'CMIP6_CMIP6_Omon_ocean.list').exists(), \
+        'CMIP6_CMIP6_Omon_ocean.list was not created for some reason'
 
     # basic sanity: the written file should contain "cmor:" and "table_targets:"
     yaml_text = output_yaml.read_text(encoding='utf-8')

@@ -2,9 +2,12 @@
 Test fre make compile-script
 """
 import shutil
-import pytest
 from pathlib import Path
+
+import pytest
+
 from fre.make import create_compile_script
+
 
 ## SET-UP
 TEST_DIR = Path("fre/make/tests")
@@ -68,7 +71,7 @@ def test_compile_creation(stdout_fixture):
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = PLATFORM,
                                          target = TARGET,
-                                         njobs = 4,
+                                         makejobs = 4,
                                          nparallel = 1,
                                          execute = False,
                                          verbose = False,
@@ -120,7 +123,7 @@ def test_compile_executable_failure(stdout_fixture):
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = PLATFORM,
                                          target = TARGET,
-                                         njobs = 4,
+                                         makejobs = 4,
                                          nparallel = 1,
                                          execute = True,
                                          verbose = False,
@@ -145,7 +148,7 @@ def test_bad_platform(stdout_fixture):
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = BAD_PLATFORM,
                                          target = TARGET,
-                                         njobs = 4,
+                                         makejobs = 4,
                                          nparallel = 1,
                                          execute = False,
                                          verbose = False,
@@ -163,7 +166,7 @@ def test_bad_platform_compilelog(stdout_fixture):
         create_compile_script.compile_create(yamlfile = yamlfile_path,
                                              platform = BAD_PLATFORM,
                                              target = TARGET,
-                                             njobs = 4,
+                                             makejobs = 4,
                                              nparallel = 1,
                                              execute = False,
                                              verbose = False,
@@ -183,7 +186,7 @@ def test_bad_target(stdout_fixture):
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = PLATFORM,
                                          target = BAD_TARGET,
-                                         njobs = 4,
+                                         makejobs = 4,
                                          nparallel = 1,
                                          execute = False,
                                          verbose = False,
@@ -201,7 +204,7 @@ def test_bad_target_compilelog(stdout_fixture):
         create_compile_script.compile_create(yamlfile = yamlfile_path,
                                              platform = PLATFORM,
                                              target = BAD_TARGET,
-                                             njobs = 4,
+                                             makejobs = 4,
                                              nparallel = 1,
                                              execute = False,
                                              verbose = False,
@@ -219,7 +222,7 @@ def test_multi_target(stdout_fixture):
     create_compile_script.compile_create(yamlfile = yamlfile_path,
                                          platform = PLATFORM,
                                          target = MULTI_TARGET,
-                                         njobs = 4,
+                                         makejobs = 4,
                                          nparallel = 1,
                                          execute = False,
                                          verbose = False,

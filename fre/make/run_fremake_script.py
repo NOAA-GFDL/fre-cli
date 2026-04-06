@@ -17,11 +17,11 @@ from .gfdlfremake import (varsfre, yamlfre)
 fre_logger = logging.getLogger(__name__)
 
 def fremake_run(yamlfile:str, platform:str, target:str,
-                nparallel: int = 1, njobs: int = 4,
-                no_parallel_checkout: Optional[bool] = False,
+                nparallel: int = 1, makejobs: int = 4, gitjobs: int = 4,
+                no_parallel_checkout: Optional[bool] = None,
                 no_format_transfer: Optional[bool] = False,
                 execute: Optional[bool] = False,
-                verbose: Optional[bool] = False,
+                verbose: Optional[bool] = None,
                 force_checkout: Optional[bool] = False,
                 force_compile: Optional[bool] = False):
     """
@@ -36,9 +36,11 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     :type target: str
     :param nparallel: Number of concurrent model builds (default 1)
     :type nparallel: int
-    :param njobs: Number of jobs to run simultaneously; used for parallelism with make and
-                  recursive cloning with checking out source code (default 4)
-    :type njobs: int
+    :param makejobs: Number of jobs to run simultaneously; used for parallelism with make (default 4)
+    :type makejobs: int
+    :param gitjobs: Number of jobs to run simultaneously; used for parallelism with
+                    recursive cloning with checking out source code (default 4)
+    :type gitjobs: int
     :param no_parallel_checkout: Use this option if you do not want a parallel checkout
     :type no_parallel_checkout: bool
     :param no_format_transfer: Skip the container format conversion to a .sif file
@@ -79,7 +81,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     #checkout
     fre_logger.info("Running fre make: calling checkout_create")
     checkout_create(yamlfile, platform, target, no_parallel_checkout,
-                    njobs, execute, force_checkout)
+                    gitjobs, execute, force_checkout)
 
     #makefile
     fre_logger.info("Running fre make: calling makefile_create")
@@ -102,7 +104,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     if bm_platforms:
         #compile
         fre_logger.info("Running fre make: calling compile_create")
-        compile_create(yamlfile, bm_platforms, target, njobs, nparallel,
+        compile_create(yamlfile, bm_platforms, target, makejobs, nparallel,
                        execute, verbose, force_compile)
     if container_platforms:
         fre_logger.info("Running fre make: calling dockerfile_create")
