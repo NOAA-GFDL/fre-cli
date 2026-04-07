@@ -94,21 +94,22 @@ def test_time_avg_file_dir_exists():
 
 FULL_TEST_FILE_PATH = TIME_AVG_FILE_DIR + TEST_FILE_NAME
 cases=[
-    #cdo cases, monthly, one/multiple files, weighted
+    # cdo cases — CDO removed, but entry point still works (redirects to xarray)
+    # monthly, one/multiple files, weighted
     pytest.param( 'cdo', 'month', True ,
                   FULL_TEST_FILE_PATH,
                   TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'month', True ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'ymonmean_unwgt_' + TWO_OUT_FILE_NAME),
-    #cdo cases, seasonal, one/multiple files, unweighted
+    # seasonal, one/multiple files, unweighted
     pytest.param( 'cdo', 'seas', True ,
                   FULL_TEST_FILE_PATH,
                   TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TEST_FILE_NAME),
     pytest.param( 'cdo', 'seas', True ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'yseasmean_unwgt_' + TWO_OUT_FILE_NAME),
-    #cdo cases, all, one/multiple files, weighted/unweighted
+    # all, one/multiple files, weighted/unweighted
     pytest.param( 'cdo', 'all', True ,
                   FULL_TEST_FILE_PATH,
                   STR_UNWGT_CDO_INF),
@@ -121,6 +122,43 @@ cases=[
     pytest.param( 'cdo', 'all', False ,
                   TWO_TEST_FILE_NAMES,
                   TIME_AVG_FILE_DIR + 'timmean_' + TWO_OUT_FILE_NAME),
+    # xarray cases — all avg_types, single and multi-file
+    pytest.param( 'xarray', 'all', True ,
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'xarray_unwgt_timavg_' + TEST_FILE_NAME),
+    pytest.param( 'xarray', 'all', False ,
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'xarray_wgt_timavg_' + TEST_FILE_NAME),
+    pytest.param( 'xarray', 'all', True ,
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'xarray_unwgt_timavg_' + TWO_OUT_FILE_NAME),
+    pytest.param( 'xarray', 'all', False ,
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'xarray_wgt_timavg_' + TWO_OUT_FILE_NAME),
+    pytest.param( 'xarray', 'seas', True ,
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'xarray_seas_unwgt_' + TEST_FILE_NAME),
+    pytest.param( 'xarray', 'seas', False ,
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'xarray_seas_wgt_' + TEST_FILE_NAME),
+    pytest.param( 'xarray', 'month', True ,
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'xarray_month_unwgt_' + TEST_FILE_NAME),
+    pytest.param( 'xarray', 'month', False ,
+                  FULL_TEST_FILE_PATH,
+                  TIME_AVG_FILE_DIR + 'xarray_month_wgt_' + TEST_FILE_NAME),
+    pytest.param( 'xarray', 'seas', True ,
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'xarray_seas_unwgt_' + TWO_OUT_FILE_NAME),
+    pytest.param( 'xarray', 'seas', False ,
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'xarray_seas_wgt_' + TWO_OUT_FILE_NAME),
+    pytest.param( 'xarray', 'month', True ,
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'xarray_month_unwgt_' + TWO_OUT_FILE_NAME),
+    pytest.param( 'xarray', 'month', False ,
+                  TWO_TEST_FILE_NAMES,
+                  TIME_AVG_FILE_DIR + 'xarray_month_wgt_' + TWO_OUT_FILE_NAME),
     #fre-python-tools cases, all, one/multiple files, weighted/unweighted flag
     pytest.param( 'fre-python-tools', 'all',  False ,
                   FULL_TEST_FILE_PATH,
@@ -243,10 +281,10 @@ def test_compare_fre_cli_to_fre_nctools():
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between frepy / frenctools were found"
 
 
-@pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
+@pytest.mark.xfail(reason = 'cdo entry-point now uses xarray — result format differs from old CDO output')
 def test_compare_fre_cli_to_cdo():
     '''
-    compares fre_cli pkg answer to cdo pkg answer
+    compares fre_cli pkg answer to cdo pkg answer (cdo now redirects to xarray)
     '''
     assert Path(STR_FRE_PYTOOLS_INF).exists(), f'DNE: STR_FRE_PYTOOLS_INF = {STR_FRE_PYTOOLS_INF}'
     fre_pytools_inf = Dataset(STR_FRE_PYTOOLS_INF, 'r')
@@ -273,6 +311,7 @@ def test_compare_fre_cli_to_cdo():
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frepytools were found"
 
 
+@pytest.mark.xfail(reason = 'cdo entry-point now uses xarray — result format differs from old CDO output')
 def test_compare_unwgt_fre_cli_to_unwgt_cdo():
     '''
     compares fre_cli pkg answer to cdo pkg answer
@@ -301,10 +340,10 @@ def test_compare_unwgt_fre_cli_to_unwgt_cdo():
     non_zero_count = np.count_nonzero(diff_pytools_cdo_timavg[:])
     assert not( (non_zero_count > 0.) or (non_zero_count < 0.) ), "non-zero diffs between cdo / frepytools were found"
 
-@pytest.mark.xfail(reason = 'test fails b.c. cdo cannot bitwise-reproduce fre-nctools answer')
+@pytest.mark.xfail(reason = 'cdo entry-point now uses xarray — result format differs from old CDO output')
 def test_compare_cdo_to_fre_nctools():
     '''
-    compares cdo pkg answer to fre_nctools pkg answer
+    compares cdo pkg answer to fre_nctools pkg answer (cdo now redirects to xarray)
     '''
 
     assert Path(STR_FRENCTOOLS_INF).exists(), f'DNE: STR_FRENCTOOLS_INF = {STR_FRENCTOOLS_INF}'
