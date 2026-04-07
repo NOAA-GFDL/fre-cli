@@ -1,7 +1,7 @@
 ## Describe your changes
 
 ## Issue ticket number and link (if applicable)
-
+Fixes #XXX (replace XXX with the issue number and GitHub will autolink the PR to the issue)
 ## Checklist before requesting a review
 
 - [ ] I ran my code
