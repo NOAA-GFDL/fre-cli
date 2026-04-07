@@ -1004,6 +1004,31 @@ def cmor_run_subtool(indir: str = None,
     mip_fullvar_list = mip_var_cfgs["variable_entry"].keys()
     fre_logger.debug('the following variables were read from the table: %s', mip_fullvar_list)
 
+    # CHECK for mip_era mismatch between exp config and the MIP table format.
+    # CMIP7 tables use branded variable names where the brand suffix (after the first '_') contains
+    # hyphens, e.g. 'sos_tavg-u-hxy-sea'. CMIP6 tables use plain variable names, e.g. 'sos'.
+    # Detecting a mismatch early provides a clear error instead of a confusing 'empty variable list' failure.
+    _table_vars_are_branded = (
+        bool(mip_fullvar_list) and
+        all('_' in v and '-' in v.split('_', 1)[1] for v in mip_fullvar_list)
+    )
+    if exp_cfg_mip_era == 'CMIP6' and _table_vars_are_branded:
+        raise ValueError(
+            'mip_era in experiment config is "CMIP6", but the MIP table appears to be a CMIP7 table. '
+            'CMIP7 tables have branded variable names (e.g., "sos_tavg-u-hxy-sea"), while CMIP6 tables '
+            'use plain variable names (e.g., "sos"). '
+            f'Please set mip_era to "CMIP7" in your experiment config ({json_exp_config}), '
+            f'or use a CMIP6 table instead of: {json_table_config}.'
+        )
+    if exp_cfg_mip_era == 'CMIP7' and not _table_vars_are_branded:
+        raise ValueError(
+            'mip_era in experiment config is "CMIP7", but the MIP table appears to be a CMIP6 table. '
+            'CMIP6 tables use plain variable names (e.g., "sos"), while CMIP7 tables have branded '
+            'variable names (e.g., "sos_tavg-u-hxy-sea"). '
+            f'Please set mip_era to "CMIP6" in your experiment config ({json_exp_config}), '
+            f'or use a CMIP7 table instead of: {json_table_config}.'
+        )
+
     # make the TABLE's variable list, and brand list (if CMIP7)
     mip_var_list, mip_var_brand_list = None, None
     if exp_cfg_mip_era == 'CMIP7':

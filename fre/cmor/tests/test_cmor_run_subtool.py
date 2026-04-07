@@ -431,3 +431,60 @@ def test_fre_cmor_run_subtool_unsupported_mip_era(tmp_path):
             json_exp_config = str(bad_exp),
             outdir = OUTDIR,
         )
+
+
+def test_fre_cmor_run_subtool_cmip6_config_cmip7_table_mismatch(tmp_path):
+    '''
+    Test that a ValueError with an informative message is raised when exp config says CMIP6
+    but the table is a CMIP7-style table (all variable names have brand suffixes, e.g.
+    "sos_tavg-u-hxy-sea").
+    '''
+    # create a minimal CMIP7-style table JSON (variables have underscore brand suffixes)
+    fake_cmip7_table = tmp_path / 'CMIP7_fake.json'
+    fake_cmip7_table.write_text(json.dumps({
+        "variable_entry": {
+            "sos_tavg-u-hxy-sea": {"dimensions": "longitude latitude time"},
+            "tas_tavg-u-hxy-u": {"dimensions": "longitude latitude time"},
+        }
+    }))
+
+    # exp config says CMIP6
+    with pytest.raises(ValueError, match='mip_era in experiment config is "CMIP6"'):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST,
+            json_table_config = str(fake_cmip7_table),
+            json_exp_config = EXP_CONFIG,
+            outdir = OUTDIR,
+        )
+
+
+def test_fre_cmor_run_subtool_cmip7_config_cmip6_table_mismatch(tmp_path):
+    '''
+    Test that a ValueError with an informative message is raised when exp config says CMIP7
+    but the table is a CMIP6-style table (variable names do not have brand suffixes, e.g. "sos").
+    '''
+    # create a minimal CMIP6-style table JSON (plain variable names, no underscore brands)
+    fake_cmip6_table = tmp_path / 'CMIP6_fake.json'
+    fake_cmip6_table.write_text(json.dumps({
+        "variable_entry": {
+            "sos": {"dimensions": "longitude latitude time"},
+            "tas": {"dimensions": "longitude latitude time"},
+        }
+    }))
+
+    # exp config says CMIP7
+    cmip7_exp = tmp_path / 'cmip7_exp.json'
+    with open(EXP_CONFIG, 'r', encoding='utf-8') as f:
+        exp_data = json.load(f)
+    exp_data['mip_era'] = 'CMIP7'
+    cmip7_exp.write_text(json.dumps(exp_data))
+
+    with pytest.raises(ValueError, match='mip_era in experiment config is "CMIP7"'):
+        cmor_run_subtool(
+            indir = INDIR,
+            json_var_list = VARLIST,
+            json_table_config = str(fake_cmip6_table),
+            json_exp_config = str(cmip7_exp),
+            outdir = OUTDIR,
+        )
