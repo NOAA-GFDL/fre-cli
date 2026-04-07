@@ -16,6 +16,7 @@ The quickstart instructions builds the null model using yaml files located in th
 
 Users can clone the fre-cli repository and invoke the commands below from the root of the repository. 
 ### Bare-metal Build (Single target)
+For the bare-metal build, the parallel checkout feature is the default behavior.
 
 ```bash
 # Create and run checkout script
