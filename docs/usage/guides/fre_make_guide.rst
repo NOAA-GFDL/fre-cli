@@ -1,6 +1,5 @@
 Guide
 ----------
-To follow along with the guide, refer to the quickstart instructions `here <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/make/README.md>`_.
 
 1. Bare-metal Build:
 

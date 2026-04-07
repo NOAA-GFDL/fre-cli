@@ -3,39 +3,40 @@ Through the fre-cli, `fre make` can be used to create and run a checkout script,
 
 * Fre make Supports:
    - multiple targets; use `-t` flag to define each target
+   - multiple platforms; use `-p` flag to define each platform
    - bare-metal build
    - container creation
-   - parallel checkouts for bare-metal build**
+   - parallel checkouts for bare-metal build
 
 **Note: Users will not be able to create containers without access to podman**
 
 ## Quickstart
 
-The quickstart instructions can be used with the null model example located in the fre-cli repository: https://github.com/NOAA-GFDL/fre-cli/tree/main/fre/make/tests/null_example
+The quickstart instructions builds the null model using yaml files located in the fre-cli repository [here](https://github.com/NOAA-GFDL/fre-cli/tree/main/fre/make/tests/null_example)
 
 Users can clone the fre-cli repository and invoke the commands below from the root of the repository. 
-### Bare-metal Build:
+### Bare-metal Build (Single target)
 
 ```bash
-# Create and run checkout script: checkout script will check out source code as defined in the compile.yaml
+# Create and run checkout script
 fre make checkout-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod --execute
 
-# Create Makefile
+# Create the Makefile
 fre make makefile -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod
 
-# Create and run the compile script to generate a model executable
+# Create and run the compile script
 fre make compile-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod --execute
 ```
-### Bare-metal Build (Multi-target):
+### Bare-metal Build (Multiple targets):
 
 ```bash
-# Create and run checkout script: checkout script will check out source code as defined in the compile.yaml
+# Create and run checkout script
 fre make checkout-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
-# Create Makefile
+# Create the Makefile
 fre make makefile -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod -t debug
 
-# Create and run a compile script for each target specified; generates model executables
+# Create and run a compile script for each target specified
 fre make compile-script -y fre/make/tests/null_example/null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 ```
 
@@ -46,10 +47,10 @@ In order for the container to build successfully, the parallel checkout feature 
 # Create checkout script
 fre make checkout-script -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod
 
-# Create Makefile
+# Create the Makefile
 fre make makefile -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod
 
-# Create the Dockerfile and container build script: the container build script (createContainer.sh) uses the Dockerfile to build a model container
+# Create the Dockerfile and container build script
 fre make dockerfile -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod --execute
 ```
 
@@ -76,12 +77,14 @@ fre make all -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t pro
         - `-npc, --no-parallel-checkout`
         - `--execute`
         - `--force-checkout`
+
 - `fre make makefile [options]`
    - Purpose: Create a Makefile.
    - Options:
         - `-y, --yamlfile [model yaml] (required)`
         - `-p, --platform [platform]   (required)`
         - `-t, --target [target]       (required)`
+
 - `fre make compile-script [options]`
    - Purpose: Create and run a compile script to generate a model executable.
    - Options:
@@ -92,6 +95,7 @@ fre make all -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t pro
         - `-mj --makejobs`
         - `-e, --execute`
         - `-v, --verbose`
+
 - `fre make dockerfile [options]`
    - Purpose: Create and run a Dockerfile to generate a model container.
    - Options:
@@ -100,6 +104,7 @@ fre make all -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t pro
         - `-t, --target [target]       (required)`
         - `-nft, --no-format-transfer`
         - `-e, --execute`
+
 - `fre make all [options]`
    - Purpose: 
         - For a bare-metal build: Create a checkout script, Makefile, and compile script to generate a model executable
