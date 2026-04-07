@@ -90,6 +90,21 @@ EXCLUDED_TABLE_SUFFIXES = [
 
 
 # ---------------------------------------------------------------------------
+# CF calendar aliases (used by cmor_mixer / cmor_helpers for calendar checks)
+# ---------------------------------------------------------------------------
+# Maps CF calendar *alias* names to their canonical equivalents.
+# Only entries where key != value are needed: calendars_are_equivalent falls
+# back to the bare name when a key is absent (via dict.get(key, key)).
+# Reference: CF Conventions §4.4.1 – The Calendar Attribute
+#   https://cfconventions.org/cf-conventions/cf-conventions.html#calendar
+CF_CALENDAR_ALIASES: dict = {
+    '365_day':  'noleap',    # 365-day no-leap alias
+    '366_day':  'all_leap',  # 366-day all-leap alias
+    'gregorian': 'standard', # mixed Gregorian/Julian alias
+}
+
+
+# ---------------------------------------------------------------------------
 # Output / display flags
 # ---------------------------------------------------------------------------
 # cmor_finder: variable-entry keys to suppress when printing variable info.
