@@ -1,6 +1,6 @@
 Quickstart
 -----------------
-The quickstart instructions builds the null model using yaml files located in the fre-cli repository [here](https://github.com/NOAA-GFDL/fre-cli/tree/main/fre/make/tests/null_example)
+The quickstart instructions builds the null model using yaml files located in the fre-cli repository `here <https://github.com/NOAA-GFDL/fre-cli/tree/main/fre/make/tests/null_example>`__.
 
 Users can clone the fre-cli repository and invoke the commands below from the root of the repository. 
 
