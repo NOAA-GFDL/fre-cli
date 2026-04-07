@@ -55,7 +55,7 @@ fre make makefile -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -
 fre make dockerfile -y fre/make/tests/null_example/null_model.yaml -p hpcme.2023 -t prod --execute
 ```
 
-### Run all of fremake:
+### All-in-one fre make subtool:
 
 `all` kicks off the compilation automatically
 
