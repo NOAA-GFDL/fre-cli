@@ -8,7 +8,8 @@ Through the fre-cli, `fre make` can be used to create and run a checkout script,
    - container creation
    - parallel checkouts for bare-metal build
 
-**Note: Users will not be able to create containers without access to podman**
+**Note: The container engine used to create the container (such as podman or docker) is specified in the `platforms.yaml` with the `containerBuild` key. 
+Please ensure the container engine is acccesible before running fre make.**
 
 ## Quickstart
 
