@@ -317,9 +317,9 @@ def test_cli_fre_cmor_run_cmip7_case1():
     cmor_creates_dir = \
         f'CMIP/CanESM6-MR/esm-piControl/r3i1p1f3/sos/tavg-u-hxy-sea/{grid_label}'
     full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
+        f"{outdir}/{cmor_creates_dir}"
     full_outputfile = f"{full_outputdir}/" + \
-        f"sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
+        f"sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_r3i1p1f3_199301-199302.nc"
 
     # FYI/unneeded, this is mostly for reference
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
@@ -363,9 +363,9 @@ def test_cli_fre_cmor_run_cmip7_case2():
     cmor_creates_dir = \
         f'CMIP/CanESM6-MR/esm-piControl/r3i1p1f3/sos/tavg-u-hxy-sea/{grid_label}'
     full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
+        f"{outdir}/{cmor_creates_dir}"
     full_outputfile = f"{full_outputdir}/" + \
-        f"sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
+        f"sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_r3i1p1f3_199301-199302.nc"
 
     # FYI/unneeded, this is mostly for reference
     filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
@@ -604,3 +604,97 @@ def test_cli_fre_cmor_varlist_cmip7_table_filter():
     assert 'sosV2' not in var_list, 'sosV2 should NOT be in the CMIP7-filtered list'
 
     output_varlist.unlink()
+
+
+# fre cmor init
+def test_cli_fre_cmor_init():
+    ''' fre cmor init '''
+    result = runner.invoke(fre.fre, args=["cmor", "init"])
+    assert result.exit_code == 2
+
+def test_cli_fre_cmor_init_help():
+    ''' fre cmor init --help '''
+    result = runner.invoke(fre.fre, args=["cmor", "init", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_cmor_init_opt_dne():
+    ''' fre cmor init optionDNE '''
+    result = runner.invoke(fre.fre, args=["cmor", "init", "optionDNE"])
+    assert result.exit_code == 2
+
+
+def test_cli_fre_cmor_init_cmip6_exp_config():
+    '''
+    fre cmor init -- generate a CMIP6 experiment config template.
+    '''
+    output_path = Path(f'{ROOTDIR}/test_cmip6_init_template.json')
+    if output_path.exists():
+        output_path.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "cmor", "init",
+        "--mip_era", "cmip6",
+        "--exp_config", str(output_path)
+    ])
+    assert result.exit_code == 0, f'init failed: {result.output}'
+    assert output_path.exists(), 'output config was not created'
+
+    with open(output_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+
+    assert config['mip_era'] == 'CMIP6'
+    assert config['_cmip6_option'] == 'CMIP6'
+    assert 'experiment_id' in config
+    assert 'output_path_template' in config
+
+    output_path.unlink()
+
+
+def test_cli_fre_cmor_init_cmip7_exp_config():
+    '''
+    fre cmor init -- generate a CMIP7 experiment config template.
+    '''
+    output_path = Path(f'{ROOTDIR}/test_cmip7_init_template.json')
+    if output_path.exists():
+        output_path.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "cmor", "init",
+        "--mip_era", "cmip7",
+        "--exp_config", str(output_path)
+    ])
+    assert result.exit_code == 0, f'init failed: {result.output}'
+    assert output_path.exists(), 'output config was not created'
+
+    with open(output_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+
+    assert config['mip_era'] == 'CMIP7'
+    assert config['_cmip7_option'] == 1
+    assert 'experiment_id' in config
+    assert 'output_path_template' in config
+
+    output_path.unlink()
+
+
+def test_cli_fre_cmor_init_default_name():
+    '''
+    fre cmor init -- when no --exp_config is given and no --tables_dir,
+    a default-named file should be created.
+    '''
+    default_path = Path('CMOR_cmip6_template.json')
+    if default_path.exists():
+        default_path.unlink()
+
+    result = runner.invoke(fre.fre, args=[
+        "cmor", "init",
+        "--mip_era", "cmip6"
+    ])
+    assert result.exit_code == 0, f'init failed: {result.output}'
+    assert default_path.exists(), 'default output config was not created'
+
+    with open(default_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    assert config['mip_era'] == 'CMIP6'
+
+    default_path.unlink()

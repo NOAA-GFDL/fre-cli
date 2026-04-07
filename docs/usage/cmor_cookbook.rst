@@ -10,9 +10,54 @@ Overview
 
 The ``fre cmor`` process typically follows this pattern:
 
-1. Setup and Configuration - Identify your experiment parameters, create variable lists, and prepare experiment configuration
-2. CMORization - Use ``fre cmor run`` to process individual directories or ``fre cmor yaml`` for bulk processing
-3. Troubleshooting - Diagnose issues as needed (note: ``fre yamltools combine-yamls --use cmor`` can help debug YAML configurations)
+1. Initialisation - Use ``fre cmor init`` to generate an experiment-config template and fetch MIP tables
+2. Setup and Configuration - Fill in experiment parameters, create variable lists, and prepare experiment configuration
+3. Auto-generate YAML (optional) - Use ``fre cmor config`` to scan a post-processing directory tree and generate the YAML that ``fre cmor yaml`` expects
+4. CMORization - Use ``fre cmor run`` to process individual directories or ``fre cmor yaml`` for bulk processing
+5. Troubleshooting - Diagnose issues as needed (note: ``fre yamltools combine-yamls --use cmor`` can help debug YAML configurations)
+
+Initialisation
+--------------
+
+Use ``fre cmor init`` to bootstrap your CMORization setup. This command generates an empty experiment-config
+JSON template for the target MIP era and can optionally fetch the official MIP tables from their trusted
+GitHub repositories.
+
+Generating an Experiment Config Template
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   # CMIP6 template
+   fre cmor init --mip_era cmip6 --exp_config my_cmip6_experiment.json
+
+   # CMIP7 template
+   fre cmor init --mip_era cmip7 --exp_config my_cmip7_experiment.json
+
+The generated JSON file contains all fields expected by ``fre cmor run`` and the underlying CMOR library,
+with empty placeholder values that you fill in for your specific experiment (e.g. ``experiment_id``,
+``source_id``, ``calendar``, ``grid_label``, output path templates, etc.).
+
+Fetching MIP Tables
+~~~~~~~~~~~~~~~~~~~
+
+``fre cmor init`` can also fetch the official MIP tables for you:
+
+.. code-block:: bash
+
+   # Fetch CMIP6 tables via git (default, shallow clone)
+   fre cmor init --mip_era cmip6 --tables_dir ./cmip6-cmor-tables
+
+   # Fetch CMIP7 tables at a specific release tag using curl (fast mode)
+   fre cmor init --mip_era cmip7 --tables_dir ./cmip7-cmor-tables --tag v1.0.0 --fast
+
+   # Generate a template AND fetch tables in one call
+   fre cmor init --mip_era cmip7 --exp_config my_exp.json --tables_dir ./cmip7-tables
+
+Trusted sources:
+
+* CMIP6: `pcmdi/cmip6-cmor-tables <https://github.com/pcmdi/cmip6-cmor-tables>`_
+* CMIP7: `WCRP-CMIP/cmip7-cmor-tables <https://github.com/WCRP-CMIP/cmip7-cmor-tables>`_
 
 Setup and Configuration
 -----------------------
@@ -86,6 +131,39 @@ This file should include:
 * Calendar type
 
 Refer to CMIP6 controlled vocabularies and your project's requirements when filling in these fields.
+You can use ``fre cmor init`` to generate a template with all of these fields pre-populated with empty
+placeholder values.
+
+Auto-Generating CMOR YAML Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you have an existing post-processing directory tree from FRE workflows, ``fre cmor config`` can scan it
+to auto-generate the CMOR YAML configuration file that ``fre cmor yaml`` expects. It cross-references found
+variables against MIP tables, creates per-component variable list JSON files, and writes the structured YAML.
+
+.. code-block:: bash
+
+   fre cmor config \
+       --pp_dir /archive/user/experiment/pp \
+       --mip_tables_dir /path/to/cmip7-cmor-tables/tables \
+       --mip_era cmip7 \
+       --exp_config /path/to/CMOR_input.json \
+       --output_yaml cmor_config.yaml \
+       --output_dir /path/to/cmor_output \
+       --varlist_dir /path/to/varlists \
+       --freq monthly --chunk 5yr --grid gn \
+       --calendar noleap
+
+This command:
+
+* Scans ``--pp_dir`` for component directories (e.g. ``ocean_monthly_1x1deg``)
+* Looks for time-series data under each component at ``ts/<freq>/<chunk>/``
+* Matches variable names from netCDF files against all MIP tables in ``--mip_tables_dir``
+* Writes per-component variable list JSON files to ``--varlist_dir``
+* Produces a YAML file at ``--output_yaml`` that can be fed directly to ``fre cmor yaml``
+
+Pass ``--overwrite`` to regenerate existing variable list files. Adjust ``--freq``, ``--chunk``, and
+``--grid`` to match your post-processing directory structure.
 
 Running Your CMORization
 ------------------------
@@ -342,12 +420,13 @@ Full processing:
 Tips
 ----
 
+* Use ``fre cmor init`` to bootstrap your setup — it generates an experiment-config template and can fetch MIP tables in one step
+* Use ``fre cmor config`` to auto-generate a CMOR YAML configuration from a post-processing directory tree — it scans components, cross-references against MIP tables, and writes both variable lists and the YAML that ``fre cmor yaml`` expects
 * Use ``fre yamltools combine-yamls`` before attempting CMORization to help figure out YAML issues
 * Use ``--dry_run`` with ``fre cmor yaml`` to preview the equivalent ``fre cmor run`` calls before execution
 * Use ``--no-print_cli_call`` with ``--dry_run`` to see the Python ``cmor_run_subtool(...)`` call instead of the CLI invocation — useful for debugging
 * Use ``--run_one`` with ``fre cmor run`` for testing to only process a single file and catch issues early
 * Use ``--run_one`` with ``fre cmor yaml`` to process a single file per ``fre cmor run`` call for quicker debugging
-* Use ``fre cmor config`` to auto-generate a CMOR YAML configuration from a post-processing directory tree — it scans components, cross-references against MIP tables, and writes both variable lists and the YAML that ``fre cmor yaml`` expects
 * Increase verbosity when debugging - Use ``-v`` to see ``INFO`` logging, and ``-vv`` (or ``-v -v``) for ``DEBUG`` logging
 * Version control your YAML files - Track changes to your CMORization configuration and commit them to git!
 * Check controlled vocabulary - Verify grid labels and nominal resolutions are CV-compliant

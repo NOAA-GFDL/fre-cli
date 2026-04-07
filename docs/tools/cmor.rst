@@ -6,11 +6,39 @@ CMOR Subcommands Overview
 ``fre cmor`` rewrites climate model output files with CMIP-compliant metadata. Both CMIP6 and CMIP7
 workflows are supported. Available subcommands:
 
+* ``fre cmor init`` - Initialise CMOR resources: generate experiment-config templates and/or fetch MIP tables
 * ``fre cmor run`` - Rewrite individual directories of netCDF files
 * ``fre cmor yaml`` - Process multiple directories/tables using YAML configuration
 * ``fre cmor find`` - Search MIP tables for variable definitions
 * ``fre cmor varlist`` - Generate variable lists from netCDF files
 * ``fre cmor config`` - Generate a CMOR YAML configuration from a post-processing directory tree
+
+``init``
+--------
+
+* Initialise CMOR resources for a new experiment: generate an empty experiment-config JSON template and/or fetch official MIP tables
+* Tables are fetched via ``git clone --depth 1`` by default; pass ``--fast`` to download a tarball via ``curl`` instead
+* Trusted sources: `pcmdi/cmip6-cmor-tables <https://github.com/pcmdi/cmip6-cmor-tables>`_, `WCRP-CMIP/cmip7-cmor-tables <https://github.com/WCRP-CMIP/cmip7-cmor-tables>`_
+* Minimal Syntax: ``fre cmor init -m [mip_era] [options]``
+* Required Options:
+   - ``-m, --mip_era [cmip6|cmip7]`` - MIP era for the template
+* Optional:
+   - ``-e, --exp_config TEXT`` - Output path for the template experiment-config JSON file (default name used when omitted)
+   - ``-t, --tables_dir TEXT`` - Directory into which MIP tables will be fetched
+   - ``--tag TEXT`` - Specific git tag or release for the MIP tables repository
+   - ``--fast`` - Use ``curl`` to download a tarball instead of ``git clone``
+* Examples:
+
+  .. code-block:: bash
+
+     # Generate an empty CMIP6 experiment config template
+     fre cmor init -m cmip6 -e my_experiment.json
+
+     # Generate a CMIP7 template and fetch the latest MIP tables via git
+     fre cmor init -m cmip7 -e my_cmip7_exp.json -t ./cmip7-tables
+
+     # Fetch CMIP6 tables at a specific tag using curl (fast mode)
+     fre cmor init -m cmip6 -t ./cmip6-tables --tag v6.2.7.18 --fast
 
 ``run``
 -------

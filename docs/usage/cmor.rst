@@ -16,6 +16,7 @@ Getting Started
 
 ``fre cmor`` provides several subcommands:
 
+* ``fre cmor init`` - Initialise CMOR resources: generate experiment-config templates and/or fetch MIP tables from trusted sources
 * ``fre cmor run`` - Core engine for rewriting individual directories of netCDF files according to a MIP table 
 * ``fre cmor yaml`` - Higher-level tool for processing multiple directories / MIP tables using YAML configuration
 * ``fre cmor find`` - Helper for exploring MIP table configurations for information on a specific variable
@@ -34,6 +35,7 @@ Additional Resources
 --------------------
 
 * `CMIP6 Tables <https://github.com/pcmdi/cmip6-cmor-tables>`_
+* `CMIP7 Tables <https://github.com/WCRP-CMIP/cmip7-cmor-tables>`_
 * `CMIP6 Controlled Vocabulary <https://github.com/WCRP-CMIP/CMIP6_CVs>`_
 * `PCMDI CMOR User Guide <http://cmor.llnl.gov/>`_
 * `fre cmor README <https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/cmor/README.md>`_
