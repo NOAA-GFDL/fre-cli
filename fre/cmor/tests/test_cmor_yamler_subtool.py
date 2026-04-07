@@ -633,3 +633,14 @@ def test_dry_run_prints_python_call(mock_consolidate, tmp_path):
 
     output_nc = list(Path(str(outdir)).rglob('*.nc'))
     assert len(output_nc) == 0
+
+def test_modelyaml_dne_raise_filenotfound():
+    '''
+    tests that a FileNotFoundError is raised when the yamlfile input does not exist
+    '''
+    with pytest.raises(FileNotFoundError):
+        cmor_yaml_subtool( yamlfile = "MODEL YAML DOESN'T EXIST",
+                           exp_name = "FOO",
+                           platform = "BAR",
+                           target = "BAZ",
+                           dry_run_mode = True )

@@ -30,17 +30,14 @@ requirements:
     - python>=3.11
     - noaa-gfdl::analysis_scripts==0.0.1
     - noaa-gfdl::catalogbuilder==2025.01.01
-#    - noaa-gfdl::fre-nctools==2022.02.01
     - conda-forge::cftime
     - conda-forge::click>=8.2
-    - conda-forge::cmor>=3.14
+    - conda-forge::cmor>=3.14.1
     - conda-forge::cylc-flow>=8.2
     - conda-forge::cylc-rose
     - conda-forge::jinja2>=3
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
-    - conda-forge::nccmp
-#    - conda-forge::numpy==1.26.4
     - conda-forge::numpy>=2
     - conda-forge::pyyaml
     - conda-forge::xarray>=2024.*
