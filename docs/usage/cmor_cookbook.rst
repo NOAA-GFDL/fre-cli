@@ -45,9 +45,9 @@ Creating Variable Lists
 Variable lists are JSON files mapping modeler variable names to MIP table variable names. Each
 entry is a key/value pair where:
 
-* The **key** is the modeler's variable name — used for targeting filenames in the input directory
+* The **key** is the modeler's variable name -- used for targeting filenames in the input directory
   AND expected as the name of the data array inside those files (they must match).
-* The **value** is the corresponding MIP table variable name — used for CMIP metadata lookups.
+* The **value** is the corresponding MIP table variable name -- used for CMIP metadata lookups.
 
 In many cases, the key and value are identical (e.g., ``"sos": "sos"``), but they may differ when
 the modeler uses a different name than the MIP standard (e.g., ``"sst_model": "tos"``).
@@ -56,8 +56,7 @@ the modeler uses a different name than the MIP standard (e.g., ``"sst_model": "t
 
    The variable name in the filename **must** match the variable name inside the file. If they
    differ, ``fre cmor run`` will raise an error with a helpful message listing the variables
-   found in the file. This enforces data integrity: post-processed files should always have
-   consistent filename and internal variable naming.
+   found in the file.
 
 Generate a variable list from a directory of netCDF files:
 

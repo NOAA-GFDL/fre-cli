@@ -34,7 +34,7 @@ repository, and the user directly.
   is a key/value pair where the **key** is the modeler's variable name (used in the filename AND expected inside the file) and
   the **value** is the corresponding MIP table variable name. The key and value are often the same, but may differ when the
   modeler uses a different name than the MIP standard. The variable name in the filename **must** match the variable name
-  inside the file — if they differ, `fre cmor run` will raise an error. An example in the repository is included
+  inside the file -- if they differ, `fre cmor run` will raise an error. An example in the repository is included
   [here](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json).
   Additionally, see `fre cmor varlist` and the `--opt_var_name` flag for more information.
 
