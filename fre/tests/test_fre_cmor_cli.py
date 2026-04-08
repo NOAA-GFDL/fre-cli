@@ -38,14 +38,14 @@ ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1d
 def test_setup_test_files():
     """ set-up test: copy and rename NetCDF file created in test_fre_cmor_run_subtool.py """
 
-    assert Path(ORIGINAL_NC_FILEPATH).exists()
+    assert Path(ORIGINAL_NC_FILEPATH).exists(), 'original nc file does not exist, but it should'
 
     if Path(COPIED_NC_FILEPATH).exists():
         Path(COPIED_NC_FILEPATH).unlink()
-    assert not Path(COPIED_NC_FILEPATH).exists()
+    assert not Path(COPIED_NC_FILEPATH).exists(), 'copied nc file exists, but it should not yet'
 
     shutil.copy(Path(ORIGINAL_NC_FILEPATH), Path(COPIED_NC_FILEPATH))
-    assert Path(COPIED_NC_FILEPATH).exists()
+    assert Path(COPIED_NC_FILEPATH).exists(), 'copied nc file does not exist, but it should by now'
 
 
 
