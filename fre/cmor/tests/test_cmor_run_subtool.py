@@ -234,7 +234,7 @@ def test_fre_cmor_run_subtool_case2(capfd):
         nom_res = NOM_RES,
         calendar_type = CALENDAR_TYPE
     )
-    assert result != 0, 'expected non-zero return status for filename/variable mismatch'
+    assert result != 0, f'expected non-zero return status for filename/variable mismatch, got {result}'
     _out, _err = capfd.readouterr()
 
 
