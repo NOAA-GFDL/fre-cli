@@ -117,7 +117,7 @@ def test_bm_checkout_force_checkout(caplog, monkeypatch):
     shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
 
     ## Mock checkout script with some content we can check
-    # Create come checkout script
+    # Create some checkout script
     mock_checkout = Path(f"{OUT}/fremake_canopy/test/null_model_full/src")
     mock_checkout.mkdir(parents = True)
 
@@ -140,15 +140,18 @@ def test_bm_checkout_force_checkout(caplog, monkeypatch):
                                            execute = False,
                                            force_checkout = True)
 
-    # Check it exists, check output, check content
+    renamed_src_dir = list(Path(f"{OUT}/fremake_canopy/test/null_model_full/").glob("src.*"))
+    # Check it exists, check previous src_dir was renamed check output, check content
     assert all([Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists(),
+                renamed_src_dir[0].exists(),
+                Path(f"{renamed_src_dir[0]}/checkout.sh").exists(),
                 "Checkout script PREVIOUSLY created" in caplog.text,
-                "*** REMOVING CHECKOUT SCRIPT ***" in caplog.text,
+                "*** SRC DIR RENAMED:" in caplog.text,
+                "*** RE-CREATING CHECKOUT ***" in caplog.text,
                 "Checkout script created" in caplog.text])
 
     # Check one expected line is now populating the re-created checkout script
     expected_line = f"({EXPECTED_LINE}) &"
-
     with open(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh", 'r') as f2:
         content = f2.read()
 
