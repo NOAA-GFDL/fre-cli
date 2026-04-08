@@ -604,3 +604,56 @@ def test_cli_fre_cmor_varlist_cmip7_table_filter():
     assert 'sosV2' not in var_list, 'sosV2 should NOT be in the CMIP7-filtered list'
 
     output_varlist.unlink()
+
+
+def test_cli_fre_cmor_run_with_logfile():
+    '''
+    fre -vv -l LOGFILE cmor run ...
+
+    Runs a real CMOR workflow with the -l flag and verifies that the resulting
+    log file contains log lines from both fre.py (the CLI entry point) and
+    fre.cmor.cmor_mixer (the CMOR processing module).
+    '''
+    log_path = Path('TEST_CMOR_RUN.log')
+    if log_path.exists():
+        log_path.unlink()
+    assert not log_path.exists()
+
+    indir = f'{ROOTDIR}/ocean_sos_var_file/'
+    varlist = f'{ROOTDIR}/varlist'
+    table_config = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
+    exp_config = f'{ROOTDIR}/CMOR_input_example.json'
+    outdir = f'{ROOTDIR}/outdir'
+    grid_label = 'gr'
+    grid_desc = 'FOO_BAR_PLACEHOLD'
+    nom_res = '10000 km'
+    calendar = 'julian'
+
+    result = runner.invoke(fre.fre, args=[
+        '-vv', '-l', str(log_path),
+        'cmor', 'run', '--run_one',
+        '--indir', indir,
+        '--varlist', varlist,
+        '--table_config', table_config,
+        '--exp_config', exp_config,
+        '--outdir', outdir,
+        '--calendar', calendar,
+        '--grid_label', grid_label,
+        '--grid_desc', grid_desc,
+        '--nom_res', nom_res,
+    ])
+
+    assert result.exit_code == 0, f'cmor run failed: {result.output}'
+    assert log_path.exists(), 'log file was not created'
+
+    log_text = log_path.read_text(encoding='utf-8')
+
+    # fre.py entry-point must have written this line when setting up the file handler
+    assert 'fre_file_handler added to base_fre_logger' in log_text, \
+        'expected fre.py log line not found in log file'
+
+    # fre.cmor.cmor_mixer must have emitted at least one line carrying its module filename
+    assert 'cmor_mixer.py' in log_text, \
+        'expected cmor_mixer.py log line not found in log file'
+
+    log_path.unlink()
