@@ -657,3 +657,73 @@ def test_cli_fre_cmor_run_with_logfile():
         'expected cmor_mixer.py log line not found in log file'
 
     log_path.unlink()
+
+
+def test_cli_fre_cmor_run_with_logfile_omission_case():
+    '''
+    fre -vv -l LOGFILE cmor run ...
+
+    Uses a varlist where sos->sos succeeds and sosV2->tob fails (tob is a valid
+    CMIP6_Omon variable but the sosV2 file contains sos data, not tob).
+    Verifies the OMISSION LOG appears in the log file with the failed variable info.
+    '''
+    import json as _json
+    import tempfile as _tempfile
+
+    log_path = Path('TEST_CMOR_RUN_OMISSION.log')
+    if log_path.exists():
+        log_path.unlink()
+    assert not log_path.exists()
+
+    # create a temporary varlist: sos->sos will succeed, sosV2->tob will fail
+    varlist_data = {'sos': 'sos', 'sosV2': 'tob'}
+    varlist_fd, varlist_path = _tempfile.mkstemp(suffix='.json')
+    with os.fdopen(varlist_fd, 'w') as f:
+        _json.dump(varlist_data, f)
+
+    indir = f'{ROOTDIR}/ocean_sos_var_file/'
+    table_config = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
+    exp_config = f'{ROOTDIR}/CMOR_input_example.json'
+    outdir = f'{ROOTDIR}/outdir'
+    grid_label = 'gr'
+    grid_desc = 'FOO_BAR_PLACEHOLD'
+    nom_res = '10000 km'
+    calendar = 'julian'
+
+    result = runner.invoke(fre.fre, args=[
+        '-vv', '-l', str(log_path),
+        'cmor', 'run',
+        '--indir', indir,
+        '--varlist', varlist_path,
+        '--table_config', table_config,
+        '--exp_config', exp_config,
+        '--outdir', outdir,
+        '--calendar', calendar,
+        '--grid_label', grid_label,
+        '--grid_desc', grid_desc,
+        '--nom_res', nom_res,
+    ])
+
+    assert result.exit_code == 0, f'cmor run failed: {result.output}'
+    assert log_path.exists(), 'log file was not created'
+
+    log_text = log_path.read_text(encoding='utf-8')
+
+    # the omission log summary must appear
+    assert 'OMISSION LOG' in log_text, \
+        'expected OMISSION LOG not found in log file'
+
+    # the failed variable (sosV2/tob) must be mentioned in the omission
+    assert 'OMITTED local_var=sosV2 / target_var=tob' in log_text, \
+        'expected omission entry for sosV2/tob not found in log file'
+
+    # the expected file path for the omitted variable must appear
+    assert '.sosV2.nc' in log_text, \
+        'expected file path for omitted variable not found in log file'
+
+    # the CMOR module must have emitted log lines
+    assert 'cmor_mixer.py' in log_text, \
+        'expected cmor_mixer.py log line not found in log file'
+
+    log_path.unlink()
+    Path(varlist_path).unlink(missing_ok=True)
