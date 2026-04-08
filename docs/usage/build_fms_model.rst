@@ -7,6 +7,7 @@ Capabilities
 -----------------
 Fremake Canopy Supports:
   - multiple target use; ``-t`` flag to define each target (for multiple platform-target combinations)
+  - multiple platform use; ``-p`` flag to define each platform (for multiple platform-target combinations)
   - bare-metal build
   - container creation
   - parallel checkouts for bare-metal build
