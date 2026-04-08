@@ -23,7 +23,7 @@ from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 # set up logging
 fre_logger = logging.getLogger(__name__)
 
-def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str, 
+def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str,
                              parallel_cmd: str, execute: bool):
     """
     This function baremetal_checkout_write is called by checkout_create in order to
@@ -140,7 +140,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
 
     # Validate the targets
     for t in target:
-      valid_t = targetfre.fretarget(t)
+        valid_t = targetfre.fretarget(t)
 
     fre_logger.setLevel(level=logging.INFO)
 
@@ -174,10 +174,10 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                 # New folder name
                 timestamp = datetime.now().strftime("%Y%m%d.%H%M%S")
                 new_src_dirname = f"{Path(src_dir).name}.{timestamp}"
-                # Create path and rename folder in same directory 
+                # Create path and rename folder in same directory
                 new_src_dir =  Path(src_dir).with_name(new_src_dirname)
                 Path(src_dir).rename(new_src_dir)
-                fre_logger.info(f" *** SRC DIR RENAMED: {new_src_dir} *** ")
+                fre_logger.info(" *** SRC DIR RENAMED: %s *** ", new_src_dir)
 
                 fre_logger.info(" *** RE-CREATING CHECKOUT *** ")
                 baremetal_checkout_write(model_yaml, src_dir, jobs_str, parallel_cmd, execute)
@@ -189,7 +189,8 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                         subprocess.run(args=[checkout_sh_path], check=True)
                     except Exception as exc:
                         raise OSError(f"\nError executing checkout script: {checkout_sh_path}.",
-                                      f"\nTry removing test folder: {platform_info['modelRoot']} or specifying --force-checkout\n") from exc
+                                      f"\nTry removing test folder: {platform_info['modelRoot']}"
+                                       "or  specifying --force-checkout\n") from exc
                 else:
                     return
 
