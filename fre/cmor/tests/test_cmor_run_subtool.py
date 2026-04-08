@@ -215,21 +215,14 @@ def test_setup_fre_cmor_run_subtool_case2(capfd):
     _out, _err = capfd.readouterr()
 
 def test_fre_cmor_run_subtool_case2(capfd):
-    ''' fre cmor run, test-use case2 '''
+    ''' fre cmor run, test-use case2: filename variable != file variable should error.
+    The sosV2 file has variable "sos" inside, but the varlist expects "sosV2" as the
+    modeler variable name (in both the filename and inside the file). This mismatch
+    should cause cmor_run_subtool to return a non-zero status. '''
 
-    #debug
-    #print(
-    #    f"cmor_run_subtool("
-    #    f"\'{INDIR}\',"
-    #    f"\'{VARLIST_DIFF}\',"
-    #    f"\'{TABLE_CONFIG}\',"
-    #    f"\'{EXP_CONFIG}\',"
-    #    f"\'{OUTDIR}\'"
-    #    ")"
-    #)
-
-    # test call, where meat of the workload gets done
-    cmor_run_subtool(
+    # test call, expecting a non-zero return status because the filename variable "sosV2"
+    # does not match the variable inside the file ("sos")
+    result = cmor_run_subtool(
         indir = INDIR,
         json_var_list = VARLIST_DIFF,
         json_table_config = TABLE_CONFIG,
@@ -241,52 +234,9 @@ def test_fre_cmor_run_subtool_case2(capfd):
         nom_res = NOM_RES,
         calendar_type = CALENDAR_TYPE
     )
-
-    # check we ran on the right input file.
-    assert all( [ Path(FULL_OUTPUTFILE).exists(),
-                  Path(FULL_INPUTFILE_DIFF).exists() ] )
+    assert result != 0, 'expected non-zero return status for filename/variable mismatch'
     _out, _err = capfd.readouterr()
 
-
-def test_fre_cmor_run_subtool_case2_output_compare_data(capfd):
-    ''' I/O data-only comparison of test case2 '''
-    print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
-    print(f'FULL_INPUTFILE_DIFF={FULL_INPUTFILE_DIFF}')
-
-    nccmp_cmd= [ "nccmp", "-f", "-d",
-                 f"{FULL_INPUTFILE_DIFF}",
-                 f"{FULL_OUTPUTFILE}"    ]
-    print(f"via subprocess, running {' '.join(nccmp_cmd)}")
-    result = subprocess.run( ' '.join(nccmp_cmd),
-                             shell=True,
-                             check=False,
-                             capture_output=True
-                          )
-
-    err_list = result.stderr.decode().split('\n')#length two if end in newline
-    expected_err="DIFFER : FILE FORMATS : NC_FORMAT_NETCDF4 <> NC_FORMAT_NETCDF4_CLASSIC"
-    assert all( [result.returncode == 1,
-                 len(err_list)==2,
-                 '' in err_list,
-                 expected_err in err_list ] )
-    _out, _err = capfd.readouterr()
-
-def test_fre_cmor_run_subtool_case2_output_compare_metadata(capfd):
-    ''' I/O metadata-only comparison of test case2 '''
-    print(f'FULL_OUTPUTFILE={FULL_OUTPUTFILE}')
-    print(f'FULL_INPUTFILE_DIFF={FULL_INPUTFILE_DIFF}')
-
-    nccmp_cmd= [ "nccmp", "-f", "-m", "-g",
-                 f"{FULL_INPUTFILE_DIFF}",
-                 f"{FULL_OUTPUTFILE}"    ]
-    print(f"via subprocess, running {' '.join(nccmp_cmd)}")
-    result = subprocess.run( ' '.join(nccmp_cmd),
-                             shell=True,
-                             check=False
-                          )
-
-    assert result.returncode == 1
-    _out, _err = capfd.readouterr()
 
 def test_git_cleanup():
     '''

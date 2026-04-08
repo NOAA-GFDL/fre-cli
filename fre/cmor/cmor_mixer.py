@@ -64,11 +64,11 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
 
     :param mip_var_cfgs: Variable table, as loaded from the MIP table JSON config.
     :type mip_var_cfgs: dict
-    :param local_var: Variable name used for finding files locally.
+    :param local_var: Modeler's variable name, used for finding files and reading data from them.
     :type local_var: str
     :param netcdf_file: Path to the input NetCDF file to be CMORized.
     :type netcdf_file: str
-    :param target_var: Name of the variable to be processed.
+    :param target_var: MIP table variable name for metadata lookups.
     :type target_var: str
     :param json_exp_config: Path to experiment configuration JSON file (for dataset metadata).
     :type json_exp_config: str
@@ -86,16 +86,27 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
               ocean grids.
     """
     fre_logger.info("input data:")
-    fre_logger.info("     local_var = %s", local_var)
-    fre_logger.info("    target_var = %s", target_var)
+    fre_logger.info("     local_var = %s (modeler variable name, in filename and file)", local_var)
+    fre_logger.info("    target_var = %s (MIP table variable name)", target_var)
 
     # open the input file
     fre_logger.info("opening %s", netcdf_file)
     ds = nc.Dataset(netcdf_file, 'r+')
 
-    # read the input variable data
-    fre_logger.info('attempting to read variable data, %s', target_var)
-    var = from_dis_gimme_dis(from_dis=ds, gimme_dis=target_var)
+    # validate that the variable name in the filename matches the variable inside the file
+    if local_var not in ds.variables:
+        ds.close()
+        raise ValueError(
+            f'variable name in filename ({local_var}) does not match any variable in the file.\n'
+            f'  file: {netcdf_file}\n'
+            f'  variables found in file: {list(ds.variables.keys())}\n'
+            f'  the variable name in the filename must be equivalent to the name of the data array '
+            f'within the file.'
+        )
+
+    # read the input variable data using the modeler's variable name (local_var)
+    fre_logger.info('attempting to read variable data, %s', local_var)
+    var = from_dis_gimme_dis(from_dis=ds, gimme_dis=local_var)
 
     ## var type
     #var_dtype = var.dtype
@@ -141,7 +152,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                 var_brand = filter_brands(
                     brands, target_var, mip_var_cfgs,
                     has_time_bnds = 'time_bnds' in ds.variables,
-                    input_vert_dim = get_vertical_dimension(ds, target_var)
+                    input_vert_dim = get_vertical_dimension(ds, local_var)
                 )
         else:
             fre_logger.error('cmip7 case detected, but dimensions of input data do not match '
@@ -215,8 +226,8 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     time_bnds = from_dis_gimme_dis(from_dis=ds, gimme_dis='time_bnds')
 
     # determine the vertical dimension by looping over netcdf variables
-    vert_dim = get_vertical_dimension(ds, target_var)  # returns int(0) if not present
-    fre_logger.info("Vertical dimension of %s: %s", target_var, vert_dim)
+    vert_dim = get_vertical_dimension(ds, local_var)  # returns int(0) if not present
+    fre_logger.info("Vertical dimension of %s: %s", local_var, vert_dim)
 
     # Check var_dim and vert_dim and assign lev if relevant.
     lev, lev_units = None, "1"
@@ -534,7 +545,7 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
 
         elif vert_dim in ALT_HYBRID_SIGMA_COORDS:
             # find the ps file nearby
-            ps_file = netcdf_file.replace(f'.{target_var}.nc', '.ps.nc')
+            ps_file = netcdf_file.replace(f'.{local_var}.nc', '.ps.nc')
             ds_ps = nc.Dataset(ps_file)
             ps = from_dis_gimme_dis(ds_ps, 'ps')
 
@@ -694,9 +705,9 @@ def cmorize_target_var_files(indir: str = None,
 
     :param indir: Path to the directory containing NetCDF files to process.
     :type indir: str
-    :param target_var: Name of the variable to process in each file.
+    :param target_var: MIP table variable name for metadata lookups.
     :type target_var: str
-    :param local_var: Local/filename variable name (often identical to target_var).
+    :param local_var: Modeler's variable name, used for file-targeting and reading data from files.
     :type local_var: str
     :param iso_datetime_range_arr: List of ISO datetime strings, each identifying a specific file.
     :type iso_datetime_range_arr: list of str
@@ -721,9 +732,8 @@ def cmorize_target_var_files(indir: str = None,
     .. note:: Copies files to a temporary directory, runs CMORization, moves results to output, cleans up temp files.
     """
 
-    fre_logger.info("local_var = %s to be used for file-targeting.\n"
-                    "target_var = %s to be used for reading the data \n"
-                    "from the file\n"
+    fre_logger.info("local_var = %s to be used for file-targeting and reading data.\n"
+                    "target_var = %s to be used for MIP table lookups.\n"
                     "outdir = %s", local_var, target_var, outdir)
 
     # determine a tmp dir for working on files.
@@ -851,7 +861,7 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
     """
     CMORize all variables in a directory according to a variable mapping.
 
-    :param vars_to_run: Mapping of local variable names (in filenames) to target variable names (in NetCDF).
+    :param vars_to_run: Mapping of modeler variable names to MIP table variable names.
     :type vars_to_run: dict
     :param indir: Directory containing NetCDF files to process.
     :type indir: str
@@ -875,15 +885,15 @@ def cmorize_all_variables_in_dir(vars_to_run: Dict[str, Any],
     .. note:: Errors for individual variables are logged and processing continues (except for run_one_mode).
     """
 
-    # loop over local-variable:target-variable pairs in vars_to_run
+    # loop over modeler-variable:mip-variable pairs in vars_to_run
     return_status = -1
     for local_var in vars_to_run:
-        # if the target-variable is "good", get the name of the data inside the netcdf file.
         target_var = vars_to_run[local_var]  # often equiv to local_var but not necessarily.
         if local_var != target_var:
-            fre_logger.warning('local_var == %s != %s == target_var\n'
-                               'i am expecting %s to be in the filename, and i expect the variable\n'
-                               'in that file to be named %s', local_var, target_var, local_var, target_var)
+            fre_logger.info('local_var == %s != %s == target_var\n'
+                            'modeler variable name differs from MIP table variable name.\n'
+                            'i am expecting %s in both the filename and the file, and will map it\n'
+                            'to MIP table variable %s', local_var, target_var, local_var, target_var)
 
         fre_logger.info('........beginning CMORization for %s/%s..........', local_var, target_var)
         try:
@@ -923,7 +933,7 @@ def cmor_run_subtool(indir: str = None,
 
     :param indir: Directory containing NetCDF files to process.
     :type indir: str
-    :param json_var_list: Path to JSON file with variable mapping (local to target names).
+    :param json_var_list: Path to JSON file with variable mapping (modeler names to MIP table names).
     :type json_var_list: str
     :param json_table_config: Path to MIP table JSON file (per-variable metadata).
     :type json_table_config: str
