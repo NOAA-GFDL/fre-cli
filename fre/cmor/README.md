@@ -30,8 +30,12 @@ repository, and the user directly.
 
 ### Required User Configuration
 
-- A variable list as a JSON dictionary is required, to assist with targeting the right input files for CMORization. An example
-  in the repository is included [here](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json).
+- A variable list as a JSON dictionary is required, to assist with targeting the right input files for CMORization. Each entry
+  is a key/value pair where the **key** is the modeler's variable name (used in the filename AND expected inside the file) and
+  the **value** is the corresponding MIP table variable name. The key and value are often the same, but may differ when the
+  modeler uses a different name than the MIP standard. The variable name in the filename **must** match the variable name
+  inside the file — if they differ, `fre cmor run` will raise an error. An example in the repository is included
+  [here](https://github.com/NOAA-GFDL/fre-cli/blob/main/fre/tests/test_files/CMORbite_var_list.json).
   Additionally, see `fre cmor varlist` and the `--opt_var_name` flag for more information.
 
 - An experiment configuration file as a JSON dictionary, an example provided by PCMDI is included in the repository
@@ -103,7 +107,8 @@ effectively contain this exact example, which is run automatically in as a unit-
 Here, `fre cmor run` will process one file before exiting (`--run_one`), use the input gridding information metadata provided by the
 `--grid_label`, `--grid_desc`, and `--nom_res` arguments. `--table_config` is pointing to a specific external configuration table known
 as a MIP table, while `--exp_config` will contain the requisite information on output directory structure, calendar, and more. `--varlist`
-specifies which files in `--indir` will be processed. The output directory structure's final location will be at `--outdir`.
+specifies a JSON dictionary mapping modeler variable names (keys, used for filename targeting) to MIP table variable names (values, used
+for CMIP metadata lookups). The output directory structure's final location will be at `--outdir`.
 
 
 ### `fre cmor yaml`
@@ -154,8 +159,9 @@ for `sos` within will be printed to screen by this call.
 
 ### `fre cmor varlist`
 
-Generate a variable list of NetCDF files in a target directory. Only works if the targeted files have names containing the
-variable in the right spot. Each entry in the output list should be unique.
+Generate a variable list from NetCDF files in a target directory. Only works if the targeted files have names containing the
+variable in the right spot. Each entry in the output list is a key/value pair mapping the modeler's variable name to itself
+by default (e.g., `"sos": "sos"`). Edit the values as needed to map to the correct MIP table variable names.
 
 
 #### Example and Description
@@ -165,8 +171,9 @@ fre cmor varlist --dir_targ fre/tests/test_files/ocean_sos_var_file/ \
 cat simple_varlist.txt # shows the result
 ```
 
-Here, `simple_varlist.txt` will be a simple JSON file, containing a dictionary with the variable(s) `sos` and `sosV2` listed.
-Note that `sosV2` is made-up variable for software testing purposes only.
+Here, `simple_varlist.txt` will be a simple JSON file, containing a dictionary with the variable(s) `sos` and `sosV2` listed,
+each mapping to itself (e.g., `"sos": "sos"`). Review and edit the values to map to the correct MIP table variable names.
+Note that `sosV2` is a made-up variable for software testing purposes only.
 
 Optionally, pass `--mip_table` with a path to a MIP table JSON file to filter the generated variable list so that only variables
 present in the MIP table are included.
