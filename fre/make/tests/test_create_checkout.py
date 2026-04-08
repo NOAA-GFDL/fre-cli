@@ -3,6 +3,8 @@ Test fre make checkout-script
 """
 from pathlib import Path
 import shutil
+import pytest
+import re
 from fre.make import create_checkout_script
 
 # Set example yaml paths, input directory
@@ -80,6 +82,28 @@ def test_checkout_execute(monkeypatch):
                 any(Path(f"{OUT}/fremake_canopy/test/null_model_full/src/FMS").iterdir()),
                 Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").is_dir(),
                 any(Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").iterdir())])
+
+def test_bm_checkout_again(caplog, monkeypatch):
+    """
+    """
+    monkeypatch.setenv("TEST_BUILD_DIR", OUT)
+
+    # Check for checkout script and for some resulting folders from previous test 
+    assert all([Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists(),
+                Path(f"{OUT}/fremake_canopy/test/null_model_full/src/FMS").exists()])
+
+    # Run checkout again and check for error output
+    with pytest.raises(OSError) as excinfo: #, match = re.escape(expected_failure)):
+        create_checkout_script.checkout_create(YAMLFILE,
+                                               PLATFORM,
+                                               TARGET,
+                                               no_parallel_checkout = False,
+                                               njobs = 2,
+                                               execute = True,
+                                               force_checkout = False)
+    assert ([f"\nError executing checkout script: {OUT}/fremake_canopy/test/null_model_full/src/checkout.sh." in str(excinfo.value),
+             f"\nTry removing test folder: {OUT}/fremake_canopy/test or  specifying --force-checkout" in str(excinfo.value)])
+    
 
 def test_checkout_no_parallel_checkout(monkeypatch):
     """
@@ -210,5 +234,3 @@ def test_container_checkout_force_checkout(caplog):
     assert all([expected_line in content,
                "pids" not in content,
                "mock container checkout content" not in content])
-
-##test checkout w/o force but if it already exists
