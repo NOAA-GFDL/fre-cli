@@ -71,7 +71,7 @@ def _run_fre_subprocess(argv):
     )
 
 def test_traceback_suppressed_by_default():
-    '''fre run function — default verbosity should suppress traceback'''
+    '''fre run function - default verbosity should suppress traceback'''
     result = _run_fre_subprocess(["fre", "run", "function"])
     assert result.returncode != 0
     assert "NotImplementedError" in result.stderr
@@ -79,7 +79,7 @@ def test_traceback_suppressed_by_default():
     assert "fre -vv" in result.stderr
 
 def test_traceback_suppressed_with_single_v():
-    '''fre -v run function — single -v should still suppress traceback'''
+    '''fre -v run function - single -v should still suppress traceback'''
     result = _run_fre_subprocess(["fre", "-v", "run", "function"])
     assert result.returncode != 0
     assert "NotImplementedError" in result.stderr
@@ -87,7 +87,7 @@ def test_traceback_suppressed_with_single_v():
     assert "fre -vv" in result.stderr
 
 def test_traceback_shown_with_vv():
-    '''fre -vv run function — double -v should show full traceback'''
+    '''fre -vv run function - double -v should show full traceback'''
     result = _run_fre_subprocess(["fre", "-vv", "run", "function"])
     assert result.returncode != 0
     assert "NotImplementedError" in result.stderr
