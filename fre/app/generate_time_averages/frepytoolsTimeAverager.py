@@ -95,58 +95,33 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
             fre_logger.debug('wgts_sum = %s', wgts_sum)
 
 
-        # initialize arrays, is there better practice for reserving the memory necessary
-        # for holding the day? is something that does more write-on-demand possible like
-        # reading data on-demand? (TODO)
-        num_lat_bnds = fin_dims['lat'].size
-        fre_logger.debug('num_lat_bnds = %s', num_lat_bnds)
-        num_lon_bnds = fin_dims['lon'].size
-        fre_logger.debug('num_lon_bnds = %s', num_lon_bnds)
-        # Use masked array only if there's actually masked data
-        if has_masked_data:
-            avgvals = numpy.ma.zeros((1, num_lat_bnds, num_lon_bnds), dtype = float)
-        else:
-            avgvals = numpy.zeros((1, num_lat_bnds, num_lon_bnds), dtype = float)
+        # compute time-averaged values using vectorized numpy operations
+        # this handles variables with any number of dimensions (scalar, 3-D, 4-D, etc.)
+        fre_logger.debug('var_data shape = %s', var_data.shape)
 
-        # this loop behavior 100% should be re-factored into generator functions.
-        # they should be slightly faster, and much more readable. (TODO)
-        # the average/stddev cpu settings should also be genfunctions, their behavior
-        # (e.g. stddev_pop v stddev_samp) should be set given user inputs. (TODO)
-        # the computations can lean on numpy.stat more- i imagine it's faster (TODO)
-        # parallelism via multiprocessing shouldn't be too bad- explore an alt [dask] too (TODO)
-        # compute average, for each lat/lon coordinate over time record in file
         if not self.unwgt: #weighted case
             fre_logger.info('computing weighted statistics')
-            for lat in range(num_lat_bnds):
-                lon_val_array = numpy.moveaxis( nc_fin[targ_var][:], 0, -1)[lat].copy()
-
-                for lon in range(num_lon_bnds):
-                    tim_val_array = lon_val_array[lon].copy()
-                    # Use numpy.ma.sum only if there are actually masked values
-                    if has_masked_data:
-                        avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array * wgts) / wgts_sum
-                    else:
-                        # Use numpy.sum for consistent dtype handling across numpy versions
-                        avgvals[0][lat][lon] = numpy.sum(tim_val_array * wgts, dtype=numpy.float64) / wgts_sum
-
-                    del tim_val_array
-                del lon_val_array
+            # broadcast weights to match data dimensions: (T,) -> (T, 1, 1, ...)
+            wgts_shape = (num_time_bnds,) + (1,) * (var_data.ndim - 1)
+            wgts_expanded = wgts.reshape(wgts_shape)
+            if has_masked_data:
+                avgvals = numpy.ma.sum(
+                    var_data * wgts_expanded, axis=0, keepdims=True
+                ) / wgts_sum
+            else:
+                avgvals = numpy.sum(
+                    numpy.asarray(var_data, dtype=numpy.float64) * wgts_expanded,
+                    axis=0, keepdims=True, dtype=numpy.float64
+                ) / wgts_sum
         else: #unweighted case
             fre_logger.info('computing unweighted statistics')
-            for lat in range(num_lat_bnds):
-                lon_val_array = numpy.moveaxis( nc_fin[targ_var][:], 0, -1)[lat].copy()
-
-                for lon in range(num_lon_bnds):
-                    tim_val_array = lon_val_array[lon].copy()
-                    # Use numpy.ma.sum only if there are actually masked values
-                    if has_masked_data:
-                        avgvals[0][lat][lon] = numpy.ma.sum(tim_val_array) / num_time_bnds
-                    else:
-                        # Use numpy.sum for consistent dtype handling across numpy versions
-                        avgvals[0][lat][lon] = numpy.sum(tim_val_array, dtype=numpy.float64) / num_time_bnds
-
-                    del tim_val_array
-                del lon_val_array
+            if has_masked_data:
+                avgvals = numpy.ma.sum(var_data, axis=0, keepdims=True) / num_time_bnds
+            else:
+                avgvals = numpy.sum(
+                    numpy.asarray(var_data, dtype=numpy.float64),
+                    axis=0, keepdims=True, dtype=numpy.float64
+                ) / num_time_bnds
 
 
 
