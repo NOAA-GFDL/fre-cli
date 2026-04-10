@@ -532,3 +532,274 @@ class TestMaskedDataNumericalAccuracy:
             rtol=1e-5,
             err_msg='unweighted mean with masked data does not match expected'
         )
+
+
+# ===========================================================================
+# Helper – scalar (time-only) data with average_T1/T2/DT
+# ===========================================================================
+
+def _create_scalar_nc(path, *, n_time=24, var_name='temp_scalar',
+                      calendar='noleap'):
+    """
+    Create a NetCDF file that mimics atmos_scalar data:
+    - target variable has only a time dimension (no spatial dims)
+    - includes average_T1, average_T2, average_DT, time, time_bnds
+    """
+    ds = Dataset(path, 'w', format='NETCDF4')
+    ds.title = 'synthetic scalar test data'
+
+    ds.createDimension('time', n_time)
+    ds.createDimension('bnds', 2)
+
+    # time variable – days since 0001-01-01
+    time_var = ds.createVariable('time', 'f8', ('time',))
+    time_var.units = 'days since 0001-01-01 00:00:00'
+    time_var.calendar = calendar
+    time_var.long_name = 'time'
+    time_var.bounds = 'time_bnds'
+
+    # time_bnds – 30-day months
+    tb = ds.createVariable('time_bnds', 'f8', ('time', 'bnds'))
+    tb.units = 'days since 0001-01-01 00:00:00'
+    tb.long_name = 'time axis boundaries'
+    tb_data = np.zeros((n_time, 2), dtype='f8')
+    for t in range(n_time):
+        tb_data[t, 0] = float(t * 30)
+        tb_data[t, 1] = float((t + 1) * 30)
+    tb[:] = tb_data
+
+    # time midpoints
+    time_var[:] = (tb_data[:, 0] + tb_data[:, 1]) / 2.0
+
+    # average_T1 – start time for each average period
+    at1 = ds.createVariable('average_T1', 'f8', ('time',))
+    at1.units = 'days since 0001-01-01 00:00:00'
+    at1.long_name = 'Start time for average period'
+    at1[:] = tb_data[:, 0]
+
+    # average_T2 – end time for each average period
+    at2 = ds.createVariable('average_T2', 'f8', ('time',))
+    at2.units = 'days since 0001-01-01 00:00:00'
+    at2.long_name = 'End time for average period'
+    at2[:] = tb_data[:, 1]
+
+    # average_DT – length of each average period (in days)
+    adt = ds.createVariable('average_DT', 'f8', ('time',))
+    adt.units = 'days'
+    adt.long_name = 'Length of average period'
+    adt[:] = tb_data[:, 1] - tb_data[:, 0]  # each = 30 days
+
+    # target data variable – scalar, time-only
+    v = ds.createVariable(var_name, 'f4', ('time',))
+    v.units = 'K'
+    v.long_name = 'Scalar Temperature'
+    np.random.seed(99)
+    v[:] = np.random.rand(n_time).astype('f4') * 10.0
+
+    ds.close()
+
+
+# ===========================================================================
+# Test: _write_output time-metadata correctness (bug fix)
+# ===========================================================================
+
+class TestWriteOutputTimeMetadata:
+    """
+    Verify that _write_output correctly reduces time-dependent metadata
+    variables (time, time_bnds, average_T1, average_T2, average_DT)
+    when averaging N timesteps → 1 output timestep.
+
+    This tests the fix for the bug where _write_output wrote
+    nc_fin[var][0] for ALL time-dep vars, producing wrong values
+    for time_bnds, time, average_T2, and average_DT.
+    """
+
+    def test_all_timavg_time_bnds_spans_full_period(self, tmp_dir):
+        """time_bnds should span [first_start, last_end] for avg_type=all."""
+        path = os.path.join(tmp_dir, 'test.0001-0001.temp_scalar.nc')
+        _create_scalar_nc(path, n_time=24)
+
+        avger = NumpyTimeAverager(pkg='fre-python-tools', var='temp_scalar',
+                                   unwgt=False, avg_type='all')
+        outfile = os.path.join(tmp_dir, 'out.nc')
+        result = avger.generate_timavg(infile=path, outfile=outfile)
+        assert result == 0
+
+        ds_in = Dataset(path, 'r')
+        ds_out = Dataset(outfile, 'r')
+
+        # time_bnds output should be [first_start, last_end]
+        out_tb = ds_out['time_bnds'][:]
+        in_tb = ds_in['time_bnds'][:]
+        assert out_tb.shape == (1, 2)
+        np.testing.assert_allclose(float(out_tb[0, 0]), float(in_tb[0, 0]),
+                                   err_msg='time_bnds start should be first input start')
+        np.testing.assert_allclose(float(out_tb[0, 1]), float(in_tb[-1, 1]),
+                                   err_msg='time_bnds end should be last input end')
+
+        ds_in.close()
+        ds_out.close()
+
+    def test_all_timavg_time_is_midpoint(self, tmp_dir):
+        """time should be the midpoint of the full time_bnds span."""
+        path = os.path.join(tmp_dir, 'test.0001-0001.temp_scalar.nc')
+        _create_scalar_nc(path, n_time=24)
+
+        avger = NumpyTimeAverager(pkg='fre-python-tools', var='temp_scalar',
+                                   unwgt=False, avg_type='all')
+        outfile = os.path.join(tmp_dir, 'out.nc')
+        avger.generate_timavg(infile=path, outfile=outfile)
+
+        ds_in = Dataset(path, 'r')
+        ds_out = Dataset(outfile, 'r')
+
+        in_tb = ds_in['time_bnds'][:]
+        expected_mid = (float(in_tb[0, 0]) + float(in_tb[-1, 1])) / 2.0
+        actual_time = float(ds_out['time'][0])
+        np.testing.assert_allclose(actual_time, expected_mid,
+                                   err_msg='time should be midpoint of full period')
+
+        ds_in.close()
+        ds_out.close()
+
+    def test_all_timavg_average_T1_is_first(self, tmp_dir):
+        """average_T1 should be the start of the first timestep."""
+        path = os.path.join(tmp_dir, 'test.0001-0001.temp_scalar.nc')
+        _create_scalar_nc(path, n_time=24)
+
+        avger = NumpyTimeAverager(pkg='fre-python-tools', var='temp_scalar',
+                                   unwgt=False, avg_type='all')
+        outfile = os.path.join(tmp_dir, 'out.nc')
+        avger.generate_timavg(infile=path, outfile=outfile)
+
+        ds_in = Dataset(path, 'r')
+        ds_out = Dataset(outfile, 'r')
+
+        np.testing.assert_allclose(
+            float(ds_out['average_T1'][0]), float(ds_in['average_T1'][0]),
+            err_msg='average_T1 should equal first input average_T1')
+
+        ds_in.close()
+        ds_out.close()
+
+    def test_all_timavg_average_T2_is_last(self, tmp_dir):
+        """average_T2 should be the end of the LAST timestep, not the first."""
+        path = os.path.join(tmp_dir, 'test.0001-0001.temp_scalar.nc')
+        _create_scalar_nc(path, n_time=24)
+
+        avger = NumpyTimeAverager(pkg='fre-python-tools', var='temp_scalar',
+                                   unwgt=False, avg_type='all')
+        outfile = os.path.join(tmp_dir, 'out.nc')
+        avger.generate_timavg(infile=path, outfile=outfile)
+
+        ds_in = Dataset(path, 'r')
+        ds_out = Dataset(outfile, 'r')
+
+        np.testing.assert_allclose(
+            float(ds_out['average_T2'][0]), float(ds_in['average_T2'][-1]),
+            err_msg='average_T2 should equal LAST input average_T2')
+        # Verify it's NOT the first value (the old bug)
+        assert float(ds_out['average_T2'][0]) != float(ds_in['average_T2'][0]), \
+            'average_T2 should not equal first input average_T2 (24 timesteps)'
+
+        ds_in.close()
+        ds_out.close()
+
+    def test_all_timavg_average_DT_is_sum(self, tmp_dir):
+        """average_DT should be the SUM of all per-timestep durations."""
+        path = os.path.join(tmp_dir, 'test.0001-0001.temp_scalar.nc')
+        _create_scalar_nc(path, n_time=24)
+
+        avger = NumpyTimeAverager(pkg='fre-python-tools', var='temp_scalar',
+                                   unwgt=False, avg_type='all')
+        outfile = os.path.join(tmp_dir, 'out.nc')
+        avger.generate_timavg(infile=path, outfile=outfile)
+
+        ds_in = Dataset(path, 'r')
+        ds_out = Dataset(outfile, 'r')
+
+        expected_dt = np.sum(np.asarray(ds_in['average_DT'][:], dtype=np.float64))
+        actual_dt = float(ds_out['average_DT'][0])
+        np.testing.assert_allclose(
+            actual_dt, expected_dt,
+            err_msg='average_DT should be sum of all input average_DT values')
+        # For 24 months of 30 days each, total should be 720
+        np.testing.assert_allclose(actual_dt, 720.0, rtol=1e-10)
+
+        ds_in.close()
+        ds_out.close()
+
+    def test_monthly_timavg_time_bnds_per_month(self, tmp_dir):
+        """Monthly avg: each month's time_bnds should span that month's timesteps only."""
+        path = os.path.join(tmp_dir, 'test.0001-0001.temp_scalar.nc')
+        _create_scalar_nc(path, n_time=24)  # 24 months = 2 years
+
+        avger = NumpyTimeAverager(pkg='fre-python-tools', var='temp_scalar',
+                                   unwgt=False, avg_type='month')
+        outfile = os.path.join(tmp_dir, 'out.nc')
+        avger.generate_timavg(infile=path, outfile=outfile)
+
+        ds_in = Dataset(path, 'r')
+        in_tb = ds_in['time_bnds'][:]
+
+        # Check month 01 (January): indices 0, 12 (first Jan of each year)
+        month_file = os.path.join(tmp_dir, 'out.01.nc')
+        assert Path(month_file).exists(), 'month 01 file should exist'
+        ds_m = Dataset(month_file, 'r')
+        out_tb = ds_m['time_bnds'][:]
+        # Should span from first January start to last January end
+        # Index 0 = first Jan, index 12 = second Jan
+        np.testing.assert_allclose(float(out_tb[0, 0]), float(in_tb[0, 0]),
+                                   err_msg='month 01 time_bnds start')
+        np.testing.assert_allclose(float(out_tb[0, 1]), float(in_tb[12, 1]),
+                                   err_msg='month 01 time_bnds end')
+        ds_m.close()
+
+        ds_in.close()
+
+    def test_monthly_timavg_average_T2_per_month(self, tmp_dir):
+        """Monthly avg: each month's average_T2 should be from that month's last timestep."""
+        path = os.path.join(tmp_dir, 'test.0001-0001.temp_scalar.nc')
+        _create_scalar_nc(path, n_time=24)
+
+        avger = NumpyTimeAverager(pkg='fre-python-tools', var='temp_scalar',
+                                   unwgt=False, avg_type='month')
+        outfile = os.path.join(tmp_dir, 'out.nc')
+        avger.generate_timavg(infile=path, outfile=outfile)
+
+        ds_in = Dataset(path, 'r')
+
+        # Check month 06 (June): indices 5, 17 (both Junes in 2-yr span)
+        month_file = os.path.join(tmp_dir, 'out.06.nc')
+        assert Path(month_file).exists()
+        ds_m = Dataset(month_file, 'r')
+        # average_T2 should be the last June's end time (index 17)
+        np.testing.assert_allclose(
+            float(ds_m['average_T2'][0]), float(ds_in['average_T2'][17]),
+            err_msg='month 06 average_T2 should be last June value')
+        ds_m.close()
+
+        ds_in.close()
+
+    def test_monthly_timavg_average_DT_per_month(self, tmp_dir):
+        """Monthly avg: each month's average_DT should be the sum of that month's durations."""
+        path = os.path.join(tmp_dir, 'test.0001-0001.temp_scalar.nc')
+        _create_scalar_nc(path, n_time=24)
+
+        avger = NumpyTimeAverager(pkg='fre-python-tools', var='temp_scalar',
+                                   unwgt=False, avg_type='month')
+        outfile = os.path.join(tmp_dir, 'out.nc')
+        avger.generate_timavg(infile=path, outfile=outfile)
+
+        ds_in = Dataset(path, 'r')
+
+        # Check month 01 (Jan): 2 Januaries, each 30 days → total = 60 days
+        month_file = os.path.join(tmp_dir, 'out.01.nc')
+        ds_m = Dataset(month_file, 'r')
+        actual_dt = float(ds_m['average_DT'][0])
+        # Both Januaries have DT=30, so sum should be 60
+        np.testing.assert_allclose(actual_dt, 60.0, rtol=1e-10,
+                                   err_msg='month 01 average_DT should be 60 (2 × 30)')
+        ds_m.close()
+
+        ds_in.close()

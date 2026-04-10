@@ -236,7 +236,9 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
                         axis=0, keepdims=True, dtype=numpy.float64) / num_steps)
 
             month_file = f'{outfile_root}.{month_val:02d}.nc'
-            self._write_output(nc_fin, month_file, targ_var, avgvals)
+            time_indices = numpy.where(mask)[0]
+            self._write_output(nc_fin, month_file, targ_var, avgvals,
+                               time_indices=time_indices)
             fre_logger.debug('wrote month file: %s', month_file)
 
         nc_fin.close()
@@ -244,7 +246,7 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
         return 0
 
 
-    def _write_output(self, nc_fin, outfile, targ_var, avgvals):
+    def _write_output(self, nc_fin, outfile, targ_var, avgvals, time_indices=None):
         """
         write averaged values and metadata to a new NetCDF file.
 
@@ -256,18 +258,19 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
         :type targ_var: str
         :param avgvals: averaged data array
         :type avgvals: numpy.ndarray
+        :param time_indices: indices of timesteps used in this average.
+            When None, all timesteps are assumed (avg_type='all').
+        :type time_indices: numpy.ndarray or None
         """
         nc_fin_vars = nc_fin.variables
         fin_dims = nc_fin.dimensions
 
+        if time_indices is None:
+            time_indices = numpy.arange(fin_dims['time'].size)
+
         # write output file
-        # (TODO) make this a sep function, make tests, extend,
-        # (TODO) consider compression particularly for NETCDF file writing
-        # consider this approach instead:
-        #     with Dataset( outfile, 'w', format = 'NETCDF4', persist = True ) as nc_fout:
         nc_fout = Dataset( outfile, 'w', format = nc_fin.file_format, persist = True )
 
-        # (TODO) make this a sep function, make tests, extend
         # write file global attributes
         fre_logger.info('------- writing output attributes. --------')
         unwritten_ncattr_list = []
@@ -290,19 +293,12 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
             fre_logger.warning('Some global attributes were not written: %s', unwritten_ncattr_list)
         fre_logger.info('DONE writing output attributes.')
 
-        # (TODO) make this a sep function, make tests, extend
         # write file dimensions
         fre_logger.info('writing output dimensions.')
         unwritten_dims_list = []
         for key in fin_dims:
             try:
                 if key == 'time':
-                    # this strongly influences the final data structure shape of the averages.
-                    # if set to None, and lets say you try to write
-                    # e.g. the original 'time_bnds' (which has 60 time steps)
-                    # the array holding the avg. value will suddenly have 60 time steps
-                    # even though only 1 is needed, 59 time steps will have no data
-                    #nc_fout.createDimension( dimname = key, size = None )
                     nc_fout.createDimension( dimname = key, size = 1)
                 else:
                     nc_fout.createDimension( dimname = key, size = fin_dims[key].size )
@@ -314,11 +310,7 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
             fre_logger.warning('Some dimensions were not written: %s', unwritten_dims_list)
         fre_logger.info('DONE writing output dimensions')
 
-        # (TODO) make this a sep function, make tests, extend
         # first write the data we care most about- those we computed
-        # copying metadata, not fully correct
-        # but not far from wrong according to CF
-        # cell_methods must be changed TO DO
         fre_logger.info('writing data for data %s', targ_var)
         nc_fout.createVariable(targ_var, nc_fin[targ_var].dtype, nc_fin[targ_var].dimensions)
         nc_fout.variables[targ_var].setncatts(nc_fin[targ_var].__dict__)
@@ -326,8 +318,7 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
         nc_fout.variables[targ_var][:] = avgvals
         fre_logger.info('DONE writing output variables.')
 
-        # (TODO) make this a sep function, make tests, extend
-        # write OTHER output variables (aka data) #prev code.
+        # write OTHER output variables (aka data)
         fre_logger.info('now writing other output variables. ')
         unwritten_var_list = []
         unwritten_var_ncattr_dict = {}
@@ -337,16 +328,17 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
             fre_logger.info('attempting to create output variable: %s', var)
             nc_fout.createVariable(var, nc_fin[var].dtype, nc_fin[var].dimensions)
             nc_fout.variables[var].setncatts(nc_fin[var].__dict__)
-            try:
-                nc_fout.variables[var][:] = nc_fin[var][:]
-            except Exception as exc:
-                fre_logger.warning('shape problem? could not write var = %s', var)
-                fre_logger.warning('exception is = %s', exc)
-                fre_logger.warning('nc_fin[var].shape = %s', nc_fin[var].shape)
 
-                nc_fout.variables[var][:] = [ nc_fin[var][0] ]
-                fre_logger.warning('time variable? %s',
-                                   self.var_has_time_units( nc_fin.variables[var] ) )
+            if 'time' in nc_fin[var].dimensions:
+                # Variable has a time dimension that must be reduced N → 1
+                self._write_time_reduced_var(nc_fin, nc_fout, var, time_indices)
+            else:
+                try:
+                    nc_fout.variables[var][:] = nc_fin[var][:]
+                except Exception as exc:
+                    fre_logger.warning('could not write non-time var = %s', var)
+                    fre_logger.warning('exception is = %s', exc)
+                    unwritten_var_list.append(var)
 
         if len(unwritten_var_list)>0:
             fre_logger.warning('some variables\' data (%s) was not written.', unwritten_var_list)
@@ -360,3 +352,65 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
         fre_logger.debug('closing output file: %s', outfile)
         nc_fout.close()
         fre_logger.debug('output file closed')
+
+
+    def _write_time_reduced_var(self, nc_fin, nc_fout, var, time_indices):
+        """
+        Write a time-dependent variable reduced from N timesteps to 1.
+
+        Handles well-known time-metadata variables correctly:
+        - time_bnds  → outer bounds spanning the full averaging period
+        - time       → midpoint of the full time_bnds span
+        - average_T2 → end of averaging period (last timestep's value)
+        - average_DT → total duration (sum of all timestep values)
+        - average_T1 and others → start of averaging period (first timestep's value)
+
+        :param nc_fin: open input Dataset
+        :param nc_fout: open output Dataset
+        :param var: variable name
+        :param time_indices: array of timestep indices used in this average
+        """
+        try:
+            fin_data = nc_fin[var][:]
+            i_first = time_indices[0]
+            i_last = time_indices[-1]
+
+            if var == 'time_bnds':
+                # Span the full averaging period: [first start, last end]
+                val = numpy.array(
+                    [[numpy.asarray(fin_data[i_first, 0], dtype=numpy.float64),
+                      numpy.asarray(fin_data[i_last, 1], dtype=numpy.float64)]]
+                )
+                nc_fout.variables[var][:] = val
+            elif var == 'time':
+                # Midpoint of the full averaging period
+                if 'time_bnds' in nc_fin.variables:
+                    tb = nc_fin['time_bnds'][:]
+                    mid = (numpy.asarray(tb[i_first, 0], dtype=numpy.float64)
+                           + numpy.asarray(tb[i_last, 1], dtype=numpy.float64)) / 2.0
+                else:
+                    mid = (numpy.asarray(fin_data[i_first], dtype=numpy.float64)
+                           + numpy.asarray(fin_data[i_last], dtype=numpy.float64)) / 2.0
+                nc_fout.variables[var][:] = [mid]
+            elif var == 'average_T2':
+                # End time of the averaging period (last timestep's value)
+                nc_fout.variables[var][:] = [fin_data[i_last]]
+            elif var == 'average_DT':
+                # Total duration = sum of per-timestep durations
+                nc_fout.variables[var][:] = [numpy.sum(
+                    numpy.asarray(fin_data[time_indices], dtype=numpy.float64)
+                )]
+            else:
+                # Default: take the first relevant timestep's value
+                nc_fout.variables[var][:] = [fin_data[i_first]]
+                fre_logger.debug('reduced time-dep var %s to first timestep value', var)
+
+        except Exception as exc:
+            fre_logger.warning('could not write time-dep var = %s', var)
+            fre_logger.warning('exception is = %s', exc)
+            fre_logger.warning('nc_fin[var].shape = %s', nc_fin[var].shape)
+            # Last-resort fallback: try first value
+            try:
+                nc_fout.variables[var][:] = [nc_fin[var][0]]
+            except Exception as exc2:
+                fre_logger.warning('fallback also failed for %s: %s', var, exc2)
