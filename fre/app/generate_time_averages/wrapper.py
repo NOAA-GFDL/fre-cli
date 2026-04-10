@@ -161,6 +161,7 @@ def generate_wrapper(cycle_point: str,
                 else:
                     input_files.append(str(subdir / f"{source}.{yyyy}01-{zzzz}12.{var}.nc"))
 
+            fre_logger.debug('input files are...')
             fre_logger.debug(input_files)
 
             # form output filename
@@ -174,9 +175,12 @@ def generate_wrapper(cycle_point: str,
             # create output directory
             subdir.mkdir(parents=True, exist_ok=True)
 
+            fre_logger.info('calling generate_time_average for pkg=%s', pkg)
             if frequency == "yr":
+                fre_logger.debug('yearly average')
                 generate_time_averages.generate_time_average(infile = input_files, outfile = str(output_file),
                                                              pkg = pkg, var = var, unwgt = True, avg_type = 'all')
             elif frequency == "mon":
+                fre_logger.debug('monthly_average')
                 generate_time_averages.generate_time_average(infile = input_files, outfile = str(output_file),
                                                              pkg = pkg, var = var, unwgt = True, avg_type = 'month')
