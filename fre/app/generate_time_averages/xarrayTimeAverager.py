@@ -101,11 +101,10 @@ def _write_clean(ds, outfile):
     """
     enc = dict(ds.encoding) if ds.encoding else {}
     unlim = enc.get('unlimited_dims', set())
-    if unlim:
-        enc['unlimited_dims'] = {d for d in unlim if d in ds.dims}
+    # keep only unlimited dims that are actually present in the dataset
+    valid_unlim = [d for d in unlim if d in ds.dims]
+    enc['unlimited_dims'] = set(valid_unlim)
     ds.encoding = enc
-    # also pass only valid unlimited_dims as kwarg
-    valid_unlim = [d for d in ['time'] if d in ds.dims]
     ds.to_netcdf(outfile, unlimited_dims=valid_unlim if valid_unlim else None)
 
 
