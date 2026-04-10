@@ -13,7 +13,7 @@ from fre.make.create_checkout_script import checkout_create
 from fre.make.create_makefile_script import makefile_create
 from fre.make.create_compile_script import compile_create
 from fre.make.create_docker_script import dockerfile_create
-from .gfdlfremake import (varsfre, yamlfre, targetfre)
+from .gfdlfremake import (varsfre, yamlfre)
 
 fre_logger = logging.getLogger(__name__)
 
