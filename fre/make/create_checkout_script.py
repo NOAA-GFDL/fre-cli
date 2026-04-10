@@ -103,7 +103,8 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     :type njobs: int
     :param execute: If True, run checkout.sh
     :type execute: bool
-    :param force_checkout: If True, overwrite locally existing checkout script and source code
+    :param force_checkout: If True, for bare-metal: add timestamp to source directory and create new checkout script,
+                           for container: overwrite locally existing checkout script
     :type force_checkout: bool
 
     :raises ValueError:
@@ -207,10 +208,10 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
             if not Path(tmp_checkout_path).exists():
                 container_checkout_write(model_yaml, src_dir, tmp_dir, jobs_str, container_pc)
 
-            elif Path(tmp_checkout_path).exists() and force_checkout:
+            elif tmp_checkout_path.exists() and force_checkout:
                 fre_logger.info("Checkout script PREVIOUSLY created in %s", tmp_checkout_path)
                 fre_logger.info("*** REMOVING CHECKOUT SCRIPT ***")
-                shutil.rmtree(tmp_dir)
+                tmp_checkout_path.unlink()
                 container_checkout_write(model_yaml, src_dir, tmp_dir, jobs_str, container_pc)
 
             elif Path(tmp_checkout_path).exists() and not force_checkout:
