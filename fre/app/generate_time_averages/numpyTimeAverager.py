@@ -262,7 +262,7 @@ class NumpyTimeAverager(timeAverager):  # pylint: disable=invalid-name
 
         # write output file
         # (TODO) make this a sep function, make tests, extend,
-        # (TODO) consider compression particular;y for NETCDF file writing
+        # (TODO) consider compression particularly for NETCDF file writing
         # consider this approach instead:
         #     with Dataset( outfile, 'w', format = 'NETCDF4', persist = True ) as nc_fout:
         nc_fout = Dataset( outfile, 'w', format = nc_fin.file_format, persist = True )
