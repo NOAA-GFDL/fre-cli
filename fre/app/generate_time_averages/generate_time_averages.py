@@ -9,12 +9,12 @@ from typing import Optional, List, Union
 import xarray as xr
 
 from .frenctoolsTimeAverager import frenctoolsTimeAverager
-from .frepytoolsTimeAverager import NumpyTimeAverager
+from .numpyTimeAverager import NumpyTimeAverager
 from .xarrayTimeAverager import xarrayTimeAverager
 
 fre_logger = logging.getLogger(__name__)
 
-VALID_PKGS = ['cdo', 'fre-nctools', 'fre-python-tools', 'xarray']
+VALID_PKGS = ['cdo', 'fre-nctools', 'fre-python-tools', 'xarray', 'numpy']
 
 def generate_time_average(infile: Union[str, List[str]] = None,
                           outfile: str = None,
@@ -101,7 +101,7 @@ def generate_time_average(infile: Union[str, List[str]] = None,
                                           var = var,
                                           unwgt = unwgt,
                                           avg_type = avg_type )
-    elif pkg == 'fre-python-tools':
+    elif pkg in ('fre-python-tools', 'numpy'):
         #fre-python-tools addresses var in a unique way, which is addressed here
         if merged and var is None:
             fre_logger.warning('special variable id logic underway...')
