@@ -52,7 +52,7 @@ class xarrayTimeAverager(timeAverager):
                     ds_avg = ds.mean(dim='time', keep_attrs=True)
                 else:
                     ds_avg = _weighted_time_mean(ds)
-                ds_avg.to_netcdf(outfile)
+                _write_clean(ds_avg, outfile)
                 fre_logger.info('done averaging over all time.')
 
             elif self.avg_type == 'seas':
@@ -61,7 +61,7 @@ class xarrayTimeAverager(timeAverager):
                     ds_avg = ds.groupby('time.season').mean(dim='time', keep_attrs=True)
                 else:
                     ds_avg = _weighted_seasonal_mean(ds)
-                ds_avg.to_netcdf(outfile)
+                _write_clean(ds_avg, outfile)
                 fre_logger.info('done averaging over seasons.')
 
             elif self.avg_type == 'month':
@@ -73,7 +73,7 @@ class xarrayTimeAverager(timeAverager):
 
                 # write full monthly file, then split into per-month files
                 outfile_str = str(outfile)
-                ds_avg.to_netcdf(outfile_str)
+                _write_clean(ds_avg, outfile_str)
                 fre_logger.info('done averaging over months.')
 
                 fre_logger.info('splitting by month')
@@ -81,12 +81,32 @@ class xarrayTimeAverager(timeAverager):
                 for month_val in ds_avg['month'].values:
                     month_ds = ds_avg.sel(month=month_val)
                     month_file = f'{outfile_root}.{int(month_val):02d}.nc'
-                    month_ds.to_netcdf(month_file)
+                    _write_clean(month_ds, month_file)
                     fre_logger.debug('wrote month file: %s', month_file)
 
         fre_logger.info('done averaging')
         fre_logger.info('output file created: %s', outfile)
         return 0
+
+
+def _write_clean(ds, outfile):
+    """
+    write a Dataset to NetCDF, stripping any stale unlimited-dims encoding
+    that references dimensions no longer present (e.g. 'time' after groupby).
+
+    :param ds: xarray Dataset to write
+    :type ds: xr.Dataset
+    :param outfile: path to output file
+    :type outfile: str
+    """
+    enc = dict(ds.encoding) if ds.encoding else {}
+    unlim = enc.get('unlimited_dims', set())
+    if unlim:
+        enc['unlimited_dims'] = {d for d in unlim if d in ds.dims}
+    ds.encoding = enc
+    # also pass only valid unlimited_dims as kwarg
+    valid_unlim = [d for d in ['time'] if d in ds.dims]
+    ds.to_netcdf(outfile, unlimited_dims=valid_unlim if valid_unlim else None)
 
 
 def _weighted_time_mean(ds):
