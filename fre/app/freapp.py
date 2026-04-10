@@ -139,8 +139,11 @@ def mask_atmos_plevel(infile, psfile, outfile, warn_no_ps):
               help = "Output file name")
 @click.option("-p", "--pkg",
               type = click.Choice(["cdo","fre-nctools","fre-python-tools","xarray","numpy"]),
-              default = "cdo",
-              help = "Time average approach")
+              default = "xarray",
+              help = "Time average backend. 'xarray' supports all/seas/month; "
+                     "'fre-python-tools'/'numpy' support all/month; "
+                     "'fre-nctools' wraps Fortran timavg.csh (all/month). "
+                     "'cdo' is deprecated and redirects to xarray.")
 @click.option("-v", "--var",
               type = str,
               default = None,
@@ -152,9 +155,8 @@ def mask_atmos_plevel(infile, psfile, outfile, warn_no_ps):
 @click.option("-a", "--avg_type",
               type = click.Choice(["month","seas","all"]),
               default = "all",
-              help = "Type of time average to generate. \n \
-                     currently, fre-nctools and fre-python-tools pkg options\n \
-                     do not support seasonal and monthly averaging.\n")
+              help = "Type of time average to generate. "
+                     "'seas' is only supported by the xarray backend.")
 def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
     """
     generate time averages for specified set of netCDF files.
@@ -193,8 +195,8 @@ def gen_time_averages(inf, outf, pkg, var, unwgt, avg_type):
               help = "Frequency of desired climatology: 'mon' or 'yr'")
 @click.option("-p", "--pkg",
               type = click.Choice(["cdo","fre-nctools","fre-python-tools","xarray","numpy"]),
-              default = "cdo",
-              help = "Time average approach")
+              default = "xarray",
+              help = "Time average backend. 'cdo' is deprecated and redirects to xarray.")
 def gen_time_averages_wrapper(cycle_point, dir_, sources, output_interval, input_interval, grid, frequency, pkg):
     """
     Wrapper for climatology tool.
