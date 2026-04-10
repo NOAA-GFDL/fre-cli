@@ -9,7 +9,7 @@ Two tiers of comparison:
 
 2. **Cross-implementation consistency** – xarray and numpy (fre-python-tools)
    use different accumulation orders, so they are NOT expected to be bitwise
-   identical.  We require very tight tolerance instead (rtol=1e-12).
+   identical.  We require very tight tolerance instead (rtol=1e-6).
 
 Packages tested: 'xarray', 'fre-python-tools' (NumpyTimeAverager), 'cdo' (stub → xarray).
 """
