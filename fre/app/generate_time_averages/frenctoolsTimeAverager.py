@@ -120,8 +120,8 @@ class frenctoolsTimeAverager(timeAverager):
             return exitstatus
 
         exitstatus = 1
-        fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
         timavgcsh_command = [ shutil.which('timavg.csh'), '-dmb', '-o', outfile, infile]
+        fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
         with Popen(timavgcsh_command,
                    stdout = PIPE, stderr = PIPE, shell = False) as subp:
             stdout, stderr = subp.communicate()
