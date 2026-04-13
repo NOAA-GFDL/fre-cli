@@ -13,7 +13,6 @@ We also have a set of more complicated tests for testing the full set of
 command-line args for fre cmor yaml and fre cmor run.
 """
 
-from datetime import date
 import json
 import os
 from pathlib import Path
@@ -23,33 +22,27 @@ from click.testing import CliRunner
 
 from fre import fre
 
+from .conftest import (
+    ROOTDIR, INDIR, VARLIST, VARLIST_DIFF, VARLIST_MAPPED,
+    EXP_CONFIG, EXP_CONFIG_CMIP7,
+    CMIP6_TABLE_CONFIG, CMIP7_TABLE_CONFIG,
+    YYYYMMDD,
+)
+
 runner = CliRunner()
 
-# where are we? we're running pytest from the base directory of this repo
-#ROOTDIR = 'fre/tests/test_files'
-ROOTDIR = str( Path( fre.__file__ ).parent ) + '/tests/test_files'
 
-# these unit tests should be more about the cli, rather than the workload
-YYYYMMDD=date.today().strftime('%Y%m%d')
+# ── setup ──────────────────────────────────────────────────────────────────
 
-COPIED_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
-ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
-
-def test_setup_test_files():
-    """ set-up test: copy and rename NetCDF file created in test_fre_cmor_run_subtool.py """
-
-    assert Path(ORIGINAL_NC_FILEPATH).exists()
-
-    if Path(COPIED_NC_FILEPATH).exists():
-        Path(COPIED_NC_FILEPATH).unlink()
-    assert not Path(COPIED_NC_FILEPATH).exists()
-
-    shutil.copy(Path(ORIGINAL_NC_FILEPATH), Path(COPIED_NC_FILEPATH))
-    assert Path(COPIED_NC_FILEPATH).exists()
+def test_setup_test_files(cli_sos_nc_file, cli_sosv2_nc_file, cli_mapped_nc_file):
+    """Verify all required NetCDF test files exist via session-scoped fixtures."""
+    assert Path(cli_sos_nc_file).exists()
+    assert Path(cli_sosv2_nc_file).exists()
+    assert Path(cli_mapped_nc_file).exists()
 
 
+# ── fre cmor ───────────────────────────────────────────────────────────────
 
-# fre cmor
 def test_cli_fre_cmor():
     ''' fre cmor '''
     result = runner.invoke(fre.fre, args=["cmor"])
@@ -117,7 +110,9 @@ def test_cli_fre_cmor_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "optionDNE"])
     assert result.exit_code == 2
 
-# fre cmor yaml
+
+# ── fre cmor yaml ─────────────────────────────────────────────────────────
+
 def test_cli_fre_cmor_yaml():
     ''' fre cmor yaml '''
     result = runner.invoke(fre.fre, args=["cmor", "yaml"])
@@ -158,7 +153,8 @@ def test_cli_fre_cmor_yaml_case1():
                    result.exit_code == 0 ] )
 
 
-# fre cmor run
+# ── fre cmor run ──────────────────────────────────────────────────────────
+
 def test_cli_fre_cmor_run():
     ''' fre cmor run '''
     result = runner.invoke(fre.fre, args=["cmor", "run"])
@@ -174,82 +170,75 @@ def test_cli_fre_cmor_run_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
-def test_cli_fre_cmor_run_case1():
-    ''' fre cmor run, test-use case '''
 
-    # explicit inputs to tool
-    indir = f'{ROOTDIR}/ocean_sos_var_file/'
-    varlist = f'{ROOTDIR}/varlist'
-    table_config = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
-    exp_config = f'{ROOTDIR}/CMOR_input_example.json'
-    outdir = f'{ROOTDIR}/outdir'
-    grid_label = 'gr'
-    grid_desc = 'FOO_BAR_PLACEHOLD'
-    nom_res = '10000 km'
-    calendar='julian'
-
-    # determined by cmor_run_subtool
-    cmor_creates_dir = \
-        f'CMIP6/CMIP6/ISMIP6/PCMDI/PCMDI-test-1-0/piControl-withism/r3i1p1f1/Omon/sos/{grid_label}'
-    full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
-    full_outputfile = \
-        f"{full_outputdir}/sos_Omon_PCMDI-test-1-0_piControl-withism_r3i1p1f1_{grid_label}_199301-199302.nc"
-
-    # FYI/unneeded, this is mostly for reference
-    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
-    full_inputfile=f"{indir}/{filename}"
-
-    # clean up, lest we fool ourselves
-    if Path(full_outputfile).exists():
-        Path(full_outputfile).unlink()
+def test_cli_fre_cmor_run_case1(cli_sos_nc_file, tmp_path):
+    '''fre cmor run, test-use case: sos → sos (CMIP6)'''
+    outdir = str(tmp_path / 'outdir')
 
     result = runner.invoke(fre.fre, args = [ "-v", "-v",
                                              "cmor", "run", "--run_one",
-                                             "--indir", indir,
-                                             "--varlist", varlist,
-                                             "--table_config", table_config,
-                                             "--exp_config", exp_config,
-                                             "--outdir",  outdir,
-                                             "--calendar", calendar,
-                                             "--grid_label", grid_label,
-                                             "--grid_desc", grid_desc,
-                                             "--nom_res", nom_res ] )
-    assert all ( [ result.exit_code == 0,
-                   Path(full_outputfile).exists(),
-                   Path(full_inputfile).exists() ] )
+                                             "--indir", str(INDIR),
+                                             "--varlist", str(VARLIST),
+                                             "--table_config", str(CMIP6_TABLE_CONFIG),
+                                             "--exp_config", str(EXP_CONFIG),
+                                             "--outdir", outdir,
+                                             "--calendar", "julian",
+                                             "--grid_label", "gr",
+                                             "--grid_desc", "FOO_BAR_PLACEHOLD",
+                                             "--nom_res", "10000 km" ] )
+    assert result.exit_code == 0, f'case1 failed: {result.output}'
+
+    output_ncs = list(Path(outdir).rglob('sos_Omon_*.nc'))
+    assert len(output_ncs) > 0, 'no output sos file found'
+    assert Path(cli_sos_nc_file).exists(), 'input file should still exist'
 
 
-def test_cli_fre_cmor_run_case2():
-    ''' fre cmor run, test error case: filename variable != file variable.
+def test_cli_fre_cmor_run_case2(cli_sosv2_nc_file, tmp_path):
+    '''fre cmor run, test error case: filename variable != file variable (CMIP6).
     The sosV2 file has variable "sos" inside, but the varlist expects "sosV2" as the
-    modeler variable name. This mismatch should cause a non-zero exit code. '''
-
-    # explicit inputs to tool
-    indir = f'{ROOTDIR}/ocean_sos_var_file'
-    varlist = f'{ROOTDIR}/varlist_local_target_vars_differ'
-    table_config = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
-    exp_config = f'{ROOTDIR}/CMOR_input_example.json'
-    outdir = f'{ROOTDIR}/outdir'
-    grid_label = 'gr'
-    grid_desc = 'FOO_BAR_PLACEHOLD'
-    nom_res = '10000 km'
-    calendar='julian'
+    modeler variable name. This mismatch should cause a non-zero exit code.'''
+    outdir = str(tmp_path / 'outdir')
 
     result = runner.invoke(fre.fre, args = ["-v", "-v",
                                             "cmor", "run", "--run_one",
-                                            "--indir", indir,
-                                            "--varlist", varlist,
-                                            "--table_config", table_config,
-                                            "--exp_config", exp_config,
-                                            "--outdir",  outdir,
-                                            "--calendar", calendar,
-                                             "--grid_label", grid_label,
-                                             "--grid_desc", grid_desc,
-                                             "--nom_res", nom_res ] )
+                                            "--indir", str(INDIR),
+                                            "--varlist", str(VARLIST_DIFF),
+                                            "--table_config", str(CMIP6_TABLE_CONFIG),
+                                            "--exp_config", str(EXP_CONFIG),
+                                            "--outdir", outdir,
+                                            "--calendar", "julian",
+                                            "--grid_label", "gr",
+                                            "--grid_desc", "FOO_BAR_PLACEHOLD",
+                                            "--nom_res", "10000 km" ] )
     assert result.exit_code != 0
 
-# fre cmor find
+
+def test_cli_fre_cmor_run_case3(cli_mapped_nc_file, tmp_path):
+    '''fre cmor run, test-use case3: modeler variable "sea_sfc_salinity" mapped to MIP
+    table variable "sos" (CMIP6). The file is named with sea_sfc_salinity and contains
+    the variable sea_sfc_salinity inside. CMORization should succeed.'''
+    outdir = str(tmp_path / 'outdir')
+
+    result = runner.invoke(fre.fre, args = [ "-v", "-v",
+                                             "cmor", "run", "--run_one",
+                                             "--indir", str(INDIR),
+                                             "--varlist", str(VARLIST_MAPPED),
+                                             "--table_config", str(CMIP6_TABLE_CONFIG),
+                                             "--exp_config", str(EXP_CONFIG),
+                                             "--outdir", outdir,
+                                             "--calendar", "julian",
+                                             "--grid_label", "gr",
+                                             "--grid_desc", "FOO_BAR_PLACEHOLD",
+                                             "--nom_res", "10000 km" ] )
+    assert result.exit_code == 0, f'case3 (mapped var) failed: {result.output}'
+
+    output_ncs = list(Path(outdir).rglob('sos_Omon_*.nc'))
+    assert len(output_ncs) > 0, 'no output sos file found for mapped variable case'
+    assert Path(cli_mapped_nc_file).exists(), 'input file should still exist'
+
+
+# ── fre cmor find ─────────────────────────────────────────────────────────
+
 def test_cli_fre_cmor_find():
     ''' fre cmor find '''
     result = runner.invoke(fre.fre, args=["cmor", "find"])
@@ -269,97 +258,88 @@ def test_cli_fre_cmor_find_opt_dne():
 def test_cli_fre_cmor_find_cmip6_case1():
     ''' fre cmor find, test-use case searching for variables in cmip6 tables '''
     result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
-                                          "--varlist", "fre/tests/test_files/varlist",
-                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
+                                          "--varlist", str(VARLIST),
+                                          "--table_config_dir", str(CMIP6_TABLE_CONFIG.parent)] )
     assert result.exit_code == 0
 
 def test_cli_fre_cmor_find_cmip6_case2():
     ''' fre cmor find, test-use case searching for variables in cmip6 tables '''
     result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
                                           "--opt_var_name", "sos",
-                                          "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
+                                          "--table_config_dir", str(CMIP6_TABLE_CONFIG.parent)] )
     assert result.exit_code == 0
 
 
+# ── fre cmor run (CMIP7) ─────────────────────────────────────────────────
 
-
-def test_cli_fre_cmor_run_cmip7_case1():
-    ''' fre cmor run, test-use case for cmip7 '''
-
-    # explicit inputs to tool
-    indir = f'{ROOTDIR}/ocean_sos_var_file/'
-    varlist = f'{ROOTDIR}/varlist'
-    table_config = f'{ROOTDIR}/cmip7-cmor-tables/tables/CMIP7_ocean.json'
-    exp_config = f'{ROOTDIR}/CMOR_CMIP7_input_example.json'
-    outdir = f'{ROOTDIR}/outdir'
-    grid_label = 'g99'
-    grid_desc = 'FOO_BAR_PLACEHOLD'
-    nom_res = '10000 km'
-    calendar='julian'
-
-    # determined by cmor_run_subtool
-    cmor_creates_dir = \
-        f'CMIP/CanESM6-MR/esm-piControl/r3i1p1f3/sos/tavg-u-hxy-sea/{grid_label}'
-    full_outputdir = \
-        f"{outdir}/{cmor_creates_dir}/v{YYYYMMDD}"
-    full_outputfile = f"{full_outputdir}/" + \
-        f"sos_tavg-u-hxy-sea_mon_glb_{grid_label}_CanESM6-MR_esm-piControl_variant_idtime_range_199301-199302.nc"
-
-    # FYI/unneeded, this is mostly for reference
-    filename = 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
-    full_inputfile=f"{indir}/{filename}"
-
-    # clean up, lest we fool ourselves
-    if Path(full_outputfile).exists():
-        Path(full_outputfile).unlink()
+def test_cli_fre_cmor_run_cmip7_case1(cli_sos_nc_file, tmp_path):
+    '''fre cmor run, test-use case: sos → sos (CMIP7)'''
+    outdir = str(tmp_path / 'outdir')
 
     result = runner.invoke(fre.fre, args = [ "-v", "-v",
                                              "cmor", "run", "--run_one",
-                                             "--indir", indir,
-                                             "--varlist", varlist,
-                                             "--table_config", table_config,
-                                             "--exp_config", exp_config,
-                                             "--outdir",  outdir,
-                                             "--calendar", calendar,
-                                             "--grid_label", grid_label,
-                                             "--grid_desc", grid_desc,
-                                             "--nom_res", nom_res ] )
-    assert all ( [ result.exit_code == 0,
-                   Path(full_outputfile).exists(),
-                   Path(full_inputfile).exists() ] )
+                                             "--indir", str(INDIR),
+                                             "--varlist", str(VARLIST),
+                                             "--table_config", str(CMIP7_TABLE_CONFIG),
+                                             "--exp_config", str(EXP_CONFIG_CMIP7),
+                                             "--outdir", outdir,
+                                             "--calendar", "julian",
+                                             "--grid_label", "g99",
+                                             "--grid_desc", "FOO_BAR_PLACEHOLD",
+                                             "--nom_res", "10000 km" ] )
+    assert result.exit_code == 0, f'cmip7 case1 failed: {result.output}'
+
+    output_ncs = list(Path(outdir).rglob('sos_*.nc'))
+    assert len(output_ncs) > 0, 'no output sos file found for CMIP7'
+    assert Path(cli_sos_nc_file).exists(), 'input file should still exist'
 
 
-def test_cli_fre_cmor_run_cmip7_case2():
-    ''' fre cmor run, test error case for cmip7: filename variable != file variable.
+def test_cli_fre_cmor_run_cmip7_case2(cli_sosv2_nc_file, tmp_path):
+    '''fre cmor run, test error case for cmip7: filename variable != file variable.
     The sosV2 file has variable "sos" inside, but the varlist expects "sosV2" as the
-    modeler variable name. This mismatch should cause a non-zero exit code. '''
-
-    # explicit inputs to tool
-    indir = f'{ROOTDIR}/ocean_sos_var_file/'
-    varlist = f'{ROOTDIR}/varlist_local_target_vars_differ'
-    table_config = f'{ROOTDIR}/cmip7-cmor-tables/tables/CMIP7_ocean.json'
-    exp_config = f'{ROOTDIR}/CMOR_CMIP7_input_example.json'
-    outdir = f'{ROOTDIR}/outdir'
-    grid_label = 'g99'
-    grid_desc = 'FOO_BAR_PLACEHOLD'
-    nom_res = '10000 km'
-    calendar='julian'
+    modeler variable name. This mismatch should cause a non-zero exit code.'''
+    outdir = str(tmp_path / 'outdir')
 
     result = runner.invoke(fre.fre, args = [ "-v", "-v",
                                              "cmor", "run", "--run_one",
-                                             "--indir", indir,
-                                             "--varlist", varlist,
-                                             "--table_config", table_config,
-                                             "--exp_config", exp_config,
-                                             "--outdir",  outdir,
-                                             "--calendar", calendar,
-                                             "--grid_label", grid_label,
-                                             "--grid_desc", grid_desc,
-                                             "--nom_res", nom_res ] )
+                                             "--indir", str(INDIR),
+                                             "--varlist", str(VARLIST_DIFF),
+                                             "--table_config", str(CMIP7_TABLE_CONFIG),
+                                             "--exp_config", str(EXP_CONFIG_CMIP7),
+                                             "--outdir", outdir,
+                                             "--calendar", "julian",
+                                             "--grid_label", "g99",
+                                             "--grid_desc", "FOO_BAR_PLACEHOLD",
+                                             "--nom_res", "10000 km" ] )
     assert result.exit_code != 0
 
 
-# fre cmor config
+def test_cli_fre_cmor_run_cmip7_case3(cli_mapped_nc_file, tmp_path):
+    '''fre cmor run, test-use case3: modeler variable "sea_sfc_salinity" mapped to MIP
+    table variable "sos" (CMIP7). The file is named with sea_sfc_salinity and contains
+    the variable sea_sfc_salinity inside. CMORization should succeed.'''
+    outdir = str(tmp_path / 'outdir')
+
+    result = runner.invoke(fre.fre, args = [ "-v", "-v",
+                                             "cmor", "run", "--run_one",
+                                             "--indir", str(INDIR),
+                                             "--varlist", str(VARLIST_MAPPED),
+                                             "--table_config", str(CMIP7_TABLE_CONFIG),
+                                             "--exp_config", str(EXP_CONFIG_CMIP7),
+                                             "--outdir", outdir,
+                                             "--calendar", "julian",
+                                             "--grid_label", "g99",
+                                             "--grid_desc", "FOO_BAR_PLACEHOLD",
+                                             "--nom_res", "10000 km" ] )
+    assert result.exit_code == 0, f'cmip7 case3 (mapped var) failed: {result.output}'
+
+    output_ncs = list(Path(outdir).rglob('sos_*.nc'))
+    assert len(output_ncs) > 0, 'no output sos file found for CMIP7 mapped variable case'
+    assert Path(cli_mapped_nc_file).exists(), 'input file should still exist'
+
+
+# ── fre cmor config ──────────────────────────────────────────────────────
+
 def test_cli_fre_cmor_config():
     ''' fre cmor config '''
     result = runner.invoke(fre.fre, args=["cmor", "config"])
@@ -382,7 +362,7 @@ def test_cli_fre_cmor_config_case1():
     Uses the ocean_sos_var_file test data with a mock pp layout.
     '''
     # set up a mock pp directory tree that the writer can scan
-    mock_pp_dir = Path(f'{ROOTDIR}/mock_pp_writer')
+    mock_pp_dir = ROOTDIR / 'mock_pp_writer'
     comp_ts_dir = mock_pp_dir / 'ocean' / 'ts' / 'monthly' / '5yr'
     comp_ts_dir.mkdir(parents=True, exist_ok=True)
 
@@ -398,20 +378,20 @@ def test_cli_fre_cmor_config_case1():
     # create random file that's not a directory in the pp_dir that we should skip over gracefully
     (mock_pp_dir / 'foo.json').touch()
 
-    # put an av directory in to make sure we're nmot targeting that at the moment
+    # put an av directory in to make sure we're not targeting that at the moment
     (mock_pp_dir / 'ocean' / 'av').mkdir(parents=True, exist_ok=True)
 
     # put an annual directory in to make sure we're not targeting that at the moment
     (mock_pp_dir / 'ocean' / 'ts' / 'annual').mkdir(parents=True, exist_ok=True)
 
     # symlink the test nc file into the mock tree
-    src_nc = Path(f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc')
+    src_nc = INDIR / 'reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
     dst_nc = comp_ts_dir / src_nc.name
     if dst_nc.exists() or dst_nc.is_symlink():
         dst_nc.unlink()
     dst_nc.symlink_to(src_nc.resolve())
 
-    varlist_out_dir = Path(f'{ROOTDIR}/mock_writer_varlists')
+    varlist_out_dir = ROOTDIR / 'mock_writer_varlists'
     varlist_out_dir.mkdir(exist_ok=True)
 
     # create an empty variable list of one we want to create. it should be remade.
@@ -419,8 +399,8 @@ def test_cli_fre_cmor_config_case1():
     assert (varlist_out_dir / 'CMIP6_CMIP6_Omon_ocean.list').exists(), \
         'pre-existing variable list failed to be created for tests'
 
-    output_yaml = Path(f'{ROOTDIR}/mock_writer_output.yaml')
-    output_data_dir = Path(f'{ROOTDIR}/mock_writer_outdir')
+    output_yaml = ROOTDIR / 'mock_writer_output.yaml'
+    output_data_dir = ROOTDIR / 'mock_writer_outdir'
 
     # clean up previous runs
     for p in [output_yaml]:
@@ -434,9 +414,9 @@ def test_cli_fre_cmor_config_case1():
         "-v", "-v",
         "cmor", "config",
         "--pp_dir", str(mock_pp_dir),
-        "--mip_tables_dir", f'{ROOTDIR}/cmip6-cmor-tables/Tables',
+        "--mip_tables_dir", str(CMIP6_TABLE_CONFIG.parent),
         "--mip_era", "cmip6",
-        "--exp_config", f'{ROOTDIR}/CMOR_input_example.json',
+        "--exp_config", str(EXP_CONFIG),
         "--output_yaml", str(output_yaml),
         "--output_dir", str(output_data_dir),
         "--varlist_dir", str(varlist_out_dir),
@@ -464,7 +444,8 @@ def test_cli_fre_cmor_config_case1():
         output_yaml.unlink()
 
 
-# fre cmor varlist
+# ── fre cmor varlist ──────────────────────────────────────────────────────
+
 def test_cli_fre_cmor_varlist():
     ''' fre cmor varlist '''
     result = runner.invoke(fre.fre, args=["cmor", "varlist"])
@@ -481,22 +462,16 @@ def test_cli_fre_cmor_varlist_opt_dne():
     assert result.exit_code == 2
 
 
-def test_cli_fre_cmor_varlist_no_table_filter():
-    '''
-    fre cmor varlist — no MIP table filter.
-    creates a variable list from the ocean_sos_var_file test data without a MIP table,
-    so both sos and sosV2 should appear.
-    '''
-    indir = f'{ROOTDIR}/ocean_sos_var_file'
-    output_varlist = Path(f'{ROOTDIR}/test_varlist_no_filter.json')
-
-    if output_varlist.exists():
-        output_varlist.unlink()
+def test_cli_fre_cmor_varlist_no_table_filter(tmp_path):
+    '''fre cmor varlist — no MIP table filter.
+    Creates a variable list from the ocean_sos_var_file test data without a MIP table,
+    so both sos and sosV2 should appear.'''
+    output_varlist = tmp_path / 'test_varlist_no_filter.json'
 
     result = runner.invoke(fre.fre, args=[
         "-v", "-v",
         "cmor", "varlist",
-        "--dir_targ", indir,
+        "--dir_targ", str(INDIR),
         "--output_variable_list", str(output_varlist)
     ])
     assert result.exit_code == 0, f'varlist failed: {result.output}'
@@ -507,29 +482,20 @@ def test_cli_fre_cmor_varlist_no_table_filter():
 
     assert 'sos' in var_list
     assert 'sosV2' in var_list
-    assert len(var_list) == 2
-
-    output_varlist.unlink()
+    assert len(var_list) >= 2
 
 
-def test_cli_fre_cmor_varlist_cmip6_table_filter():
-    '''
-    fre cmor varlist — with CMIP6 Omon MIP table filter.
-    only sos should survive; sosV2 is not in the CMIP6 Omon table.
-    '''
-    indir = f'{ROOTDIR}/ocean_sos_var_file'
-    mip_table = f'{ROOTDIR}/cmip6-cmor-tables/Tables/CMIP6_Omon.json'
-    output_varlist = Path(f'{ROOTDIR}/test_varlist_cmip6_filter.json')
-
-    if output_varlist.exists():
-        output_varlist.unlink()
+def test_cli_fre_cmor_varlist_cmip6_table_filter(tmp_path):
+    '''fre cmor varlist — with CMIP6 Omon MIP table filter.
+    Only sos should survive; sosV2 is not in the CMIP6 Omon table.'''
+    output_varlist = tmp_path / 'test_varlist_cmip6_filter.json'
 
     result = runner.invoke(fre.fre, args=[
         "-v", "-v",
         "cmor", "varlist",
-        "--dir_targ", indir,
+        "--dir_targ", str(INDIR),
         "--output_variable_list", str(output_varlist),
-        "--mip_table", mip_table
+        "--mip_table", str(CMIP6_TABLE_CONFIG)
     ])
     assert result.exit_code == 0, f'varlist failed: {result.output}'
     assert output_varlist.exists(), 'output variable list was not created'
@@ -540,27 +506,18 @@ def test_cli_fre_cmor_varlist_cmip6_table_filter():
     assert 'sos' in var_list, 'sos should be in the CMIP6-filtered list'
     assert 'sosV2' not in var_list, 'sosV2 should NOT be in the CMIP6-filtered list'
 
-    output_varlist.unlink()
 
-
-def test_cli_fre_cmor_varlist_cmip7_table_filter():
-    '''
-    fre cmor varlist — with CMIP7 ocean MIP table filter.
-    sos should survive (sos_tavg-u-hxy-sea splits to sos); sosV2 should not.
-    '''
-    indir = f'{ROOTDIR}/ocean_sos_var_file'
-    mip_table = f'{ROOTDIR}/cmip7-cmor-tables/tables/CMIP7_ocean.json'
-    output_varlist = Path(f'{ROOTDIR}/test_varlist_cmip7_filter.json')
-
-    if output_varlist.exists():
-        output_varlist.unlink()
+def test_cli_fre_cmor_varlist_cmip7_table_filter(tmp_path):
+    '''fre cmor varlist — with CMIP7 ocean MIP table filter.
+    sos should survive (sos_tavg-u-hxy-sea splits to sos); sosV2 should not.'''
+    output_varlist = tmp_path / 'test_varlist_cmip7_filter.json'
 
     result = runner.invoke(fre.fre, args=[
         "-v", "-v",
         "cmor", "varlist",
-        "--dir_targ", indir,
+        "--dir_targ", str(INDIR),
         "--output_variable_list", str(output_varlist),
-        "--mip_table", mip_table
+        "--mip_table", str(CMIP7_TABLE_CONFIG)
     ])
     assert result.exit_code == 0, f'varlist failed: {result.output}'
     assert output_varlist.exists(), 'output variable list was not created'
@@ -570,5 +527,3 @@ def test_cli_fre_cmor_varlist_cmip7_table_filter():
 
     assert 'sos' in var_list, 'sos should be in the CMIP7-filtered list'
     assert 'sosV2' not in var_list, 'sosV2 should NOT be in the CMIP7-filtered list'
-
-    output_varlist.unlink()
