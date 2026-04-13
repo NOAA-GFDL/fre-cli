@@ -157,11 +157,10 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
               required = False)
 def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         grid_label, grid_desc, nom_res, start, stop, calendar):
-    # pylint: disable=unused-argument
     """
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
     """
-    return_status = cmor_run_subtool(
+    cmor_run_subtool(
         indir = indir,
         json_var_list = varlist,
         json_table_config = table_config,
@@ -176,11 +175,6 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         stop = stop,
         calendar_type = calendar
     )
-    if return_status != 0:
-        raise click.ClickException(
-            f'fre cmor run completed with errors (return_status={return_status}). '
-            'check the log output above for details.'
-        )
 
 
 @cmor_cli.command()

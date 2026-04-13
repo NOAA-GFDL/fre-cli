@@ -93,17 +93,6 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
     fre_logger.info("opening %s", netcdf_file)
     ds = nc.Dataset(netcdf_file, 'r+')
 
-    # validate that the variable name in the filename matches the variable inside the file
-    if local_var not in ds.variables:
-        ds.close()
-        raise ValueError(
-            f'variable name in filename ({local_var}) does not match any variable in the file.\n'
-            f'  file: {netcdf_file}\n'
-            f'  variables found in file: {list(ds.variables.keys())}\n'
-            f'  the variable name in the filename must be equivalent to the name of the data array '
-            f'within the file.'
-        )
-
     # read the input variable data using the modeler's variable name (local_var)
     fre_logger.info('attempting to read variable data, %s', local_var)
     var = from_dis_gimme_dis(from_dis=ds, gimme_dis=local_var)
