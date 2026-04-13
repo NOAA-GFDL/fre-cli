@@ -160,7 +160,7 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
     """
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
     """
-    cmor_run_subtool(
+    result = cmor_run_subtool(
         indir = indir,
         json_var_list = varlist,
         json_table_config = table_config,
@@ -175,6 +175,8 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         stop = stop,
         calendar_type = calendar
     )
+    if result != 0:
+        raise click.ClickException(f'cmor_run_subtool returned non-zero status: {result}')
 
 
 @cmor_cli.command()
