@@ -179,7 +179,7 @@ def test_run_fremake_run_script_creation_container():
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
 
 def test_run_fremake_container_force_checkout():
-   '''run run-fremake with options for containerized build and force-checkout'''
+    '''run run-fremake with options for containerized build and force-checkout'''
     # double check the checkout script exists
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists()
 
