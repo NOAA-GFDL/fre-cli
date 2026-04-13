@@ -248,7 +248,6 @@ def split_netcdf(file, outputdir, variables, rename, diag_manifest):
         If --rename is set, split files are additionally reorganized into a nested
         directory structure under $outputdir with frequency and duration
         (e.g. atmos_daily/P1D/P6M/atmos_daily.00010101-00010630.temp.tile1.nc).'''
-    var_list = variables.split(",")
     split_netcdf_script.split_file_xarray(file, outputdir, variables,
                                           rename=rename,
                                           diag_manifest=diag_manifest)

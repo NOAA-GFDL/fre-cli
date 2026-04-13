@@ -210,6 +210,8 @@ def test_cli_fre_pp_split_netcdf_help():
     ''' fre pp split-netcdf --help '''
     result = runner.invoke(fre.fre, args=["pp", "split-netcdf", "--help"])
     assert result.exit_code == 0
+    assert "--rename" in result.output, "--rename not found in help output"
+    assert "--diag-manifest" in result.output, "--diag-manifest not found in help output"
 
 def test_cli_fre_pp_split_netcdf_opt_dne():
     ''' fre pp split-netcdf optionDNE '''

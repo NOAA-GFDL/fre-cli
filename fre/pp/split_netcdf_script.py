@@ -347,16 +347,19 @@ def split_file_xarray(infile, outfiledir, var_list='all', rename=False, diag_man
     #lead to the weird adding a _FillValue behavior
     fre_logger.info(f"var patterns: {VAR_PATTERNS}")
     fre_logger.info(f"1 or 2-d vars: {var_shortvars}")
-    #both combined gets you a decent list of non-diagnostic variables
-    var_exclude = list(set(VAR_PATTERNS + [str(el) for el in var_shortvars] ))
+    #short vars are excluded by exact name match, not as regex substrings
+    var_shortvars_set = set(str(el) for el in var_shortvars)
     def matchlist(xstr):
-        ''' checks a string for matches in a list of patterns
+        ''' checks whether a variable name should be treated as metadata.
 
-            xstr: string to search for matches
-            var_exclude: list of patterns defined in VAR_EXCLUDE'''
-        allmatch = [re.search(el, xstr)for el in var_exclude]
-        #If there's at least one match in the var_exclude list (average_bnds is OK)
-        return len(list(set(allmatch))) > 1
+            A variable is metadata if:
+            - its name exactly matches a known short/low-dimensional variable, OR
+            - its name contains one of the VAR_PATTERNS substrings
+
+            xstr: variable name to check'''
+        if xstr in var_shortvars_set:
+            return True
+        return any(re.search(pat, xstr) for pat in VAR_PATTERNS)
     metavars = [el for el in allvars if matchlist(el)]
     datavars = [el for el in allvars if not matchlist(el)]
     fre_logger.debug(f"metavars: {metavars}")
@@ -390,7 +393,7 @@ def split_file_xarray(infile, outfiledir, var_list='all', rename=False, diag_man
                 #drop all data vars (diagnostics) that are not the current var of interest
                 #but KEEP the metadata vars
                 #(seriously, we need the time_bnds)
-                data2 = dataset.drop_vars([el for el in datavars if el is not variable])
+                data2 = dataset.drop_vars([el for el in datavars if el != variable])
                 v_encode= set_var_encoding(dataset, metavars)
                 #combine 2 dicts into 1 dict - should be no shared keys,
                 #so the merge is straightforward
@@ -414,27 +417,7 @@ def split_file_xarray(infile, outfiledir, var_list='all', rename=False, diag_man
         finally:
             if decoded_dataset is not None:
                 decoded_dataset.close()
-## from main, may be needed, added during conflict resolution
-#        vc_encode = set_coord_encoding(dataset, dataset._coord_names)
-#        for variable in write_vars:
-#            fre_logger.info(f"splitting var {variable}")
-#            #drop all data vars (diagnostics) that are not the current var of interest
-#            #but KEEP the metadata vars
-#            #(seriously, we need the time_bnds)
-#            data2 = dataset.drop_vars([el for el in datavars if el is not variable])
-#            v_encode= set_var_encoding(dataset, metavars)
-#            #combine 2 dicts into 1 dict - should be no shared keys,
-#            #so the merge is straightforward
-#            var_encode = {**vc_encode, **v_encode}
-#            fre_logger.debug(f"var_encode settings: {var_encode}")
-#            #Encoding principles for xarray:
-#            #  - no coords have a _FillValue
-#            #  - Everything is written out with THE SAME precision it was read in
-#            #  - Everything has THE SAME UNITS as it did when it was read in
-#            var_outfile = fre_outfile_name(os.path.basename(infile), variable)
-#            var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
-#            data2.to_netcdf(var_out, encoding = var_encode)
-#            fre_logger.debug(f"Wrote '{var_out}'")
+
 
 def get_max_ndims(dataset):
     '''
