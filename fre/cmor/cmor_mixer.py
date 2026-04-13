@@ -154,10 +154,12 @@ def rewrite_netcdf_file_var( mip_var_cfgs: dict = None,
                     has_time_bnds = 'time_bnds' in ds.variables,
                     input_vert_dim = get_vertical_dimension(ds, local_var)
                 )
+
         else:
             fre_logger.error('cmip7 case detected, but dimensions of input data do not match '
                              'any of those found for the associated brands.')
-            raise ValueError
+            raise ValueError('no variable brand was able to be identified for this CMIP7 case')
+        fre_logger.debug('cmip7 case, filtered possible brands to %s', var_brand)
     else:
         fre_logger.debug('non-cmip7 case detected, skipping variable brands')
 
