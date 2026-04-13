@@ -482,7 +482,8 @@ def test_cli_fre_cmor_varlist_no_table_filter(tmp_path):
 
     assert 'sos' in var_list
     assert 'sosV2' in var_list
-    assert len(var_list) >= 2
+    assert 'sea_sfc_salinity' in var_list
+    assert len(var_list) == 3
 
 
 def test_cli_fre_cmor_varlist_cmip6_table_filter(tmp_path):

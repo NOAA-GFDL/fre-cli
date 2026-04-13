@@ -207,8 +207,8 @@ def test_fre_cmor_run_subtool_case3_output_compare_data(mapped_nc_file, cmip6_ta
     assert expected_format_err in err_list
     # variable names differ (sea_sfc_salinity vs sos), so nccmp also reports
     # that each variable is missing from the other file — this is expected
-    assert any('sea_sfc_salinity' in line for line in err_list), \
-        'expected nccmp to mention the mapped variable name sea_sfc_salinity'
+    assert any('Failed to find variable' in line and 'sea_sfc_salinity' in line for line in err_list), \
+        'expected nccmp to report sea_sfc_salinity as missing from one of the files'
     _out, _err = capfd.readouterr()
 
 
