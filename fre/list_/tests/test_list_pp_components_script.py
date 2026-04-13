@@ -2,13 +2,7 @@
 Test fre list pp-comps
 """
 from pathlib import Path
-
-import pytest
-import yaml
-
 from fre.list_ import list_pp_components_script
-from fre.yamltools import combine_yamls_script as cy
-from fre.yamltools import helpers
 
 
 # SET-UP
@@ -37,7 +31,7 @@ def test_ppyamls_exist():
         assert Path(f"{TEST_DIR}/{AM5_EXAMPLE}/{pp_yaml}").exists()
 
 # Test whole tool
-def test_exp_list(caplog):
+def test_pp_comp_list(caplog):
     ''' Test fre list pp-components subtool '''
     list_pp_components_script.list_ppcomps_subtool(f"{TEST_DIR}/{AM5_EXAMPLE}/{MODEL_YAMLFILE}", EXP_NAME)
 
@@ -71,4 +65,4 @@ def test_yamlvalidate(caplog):
         assert i in caplog.text
 
     for record in caplog.records:
-        record.levelname == "INFO"
+        assert record.levelname == "INFO"
