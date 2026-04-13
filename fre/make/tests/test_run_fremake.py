@@ -178,7 +178,7 @@ def test_run_fremake_run_script_creation_container():
     ''' checks (internal) container run script creation from previous test '''
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
 
-def test_run_fremake_container_force_checkout():
+def test_run_fremake_container_force_checkout(caplog):
     '''run run-fremake with options for containerized build and force-checkout'''
     # double check the checkout script exists
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists()
