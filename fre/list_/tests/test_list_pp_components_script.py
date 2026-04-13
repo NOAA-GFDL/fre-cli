@@ -43,7 +43,12 @@ def test_exp_list(caplog):
 
     # check the logging output
     check_out = [ 'Components to be post-processed:',
+                  '   - atmos_cmip',
                   '   - atmos',
+                  '   - atmos_level_cmip',
+                  '   - atmos_level',
+                  '   - atmos_month_aer',
+                  '   - atmos_diurnal',
                   '   - atmos_scalar']
 
     for i in check_out:
