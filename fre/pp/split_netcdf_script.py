@@ -32,7 +32,7 @@ fre_logger = logging.getLogger(__name__)
 #*_average: calculated averages for a variable.
 #These vars may also be covered by the var_shortvars query, but it doesn't
 #hurt to double-check.
-VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
+VAR_EXCLUDE_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
 
 def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
                  yamlfile, split_all_vars=False):
@@ -198,21 +198,30 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
     #If they were, I could get away with the following:
     #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
     #instead of this:
-    var_shortvars = [v for v in allvars if (len(dataset[v].shape) < varsize) and v not in dataset._coord_names]
+    shortvars_to_exclude = [v for v in allvars if (len(dataset[v].shape) < varsize) and v not in dataset._coord_names]
+    fre_logger.debug(f"Variables to be excluded (due to small number of dimensions): '{shortvars_to_exclude}'")
     #having a variable listed as both a metadata var and a coordinate var seems to
     #lead to the weird adding a _FillValue behavior
-    fre_logger.info(f"var patterns: {VAR_PATTERNS}")
-    fre_logger.info(f"1 or 2-d vars: {var_shortvars}")
+    fre_logger.info(f"To exclude: var patterns matching '{VAR_EXCLUDE_PATTERNS}'")
+    fre_logger.info(f"To exclude: 1 or 2-d vars: '{shortvars_to_exclude}'")
     #both combined gets you a decent list of non-diagnostic variables
-    var_exclude = list(set(VAR_PATTERNS + [str(el) for el in var_shortvars] ))
     def matchlist(xstr):
-        ''' checks a string for matches in a list of patterns
+        """
+        Checks a string for matches in patterns or exact names.
 
-            xstr: string to search for matches
-            var_exclude: list of patterns defined in VAR_EXCLUDE'''
-        allmatch = [re.search(el, xstr)for el in var_exclude]
-        #If there's at least one match in the var_exclude list (average_bnds is OK)
-        return len(list(set(allmatch))) > 1
+        xstr: string to search for matches
+        VAR_EXCLUDE_PATTERNS: list of patterns defined to exclude from output
+        shortvars_to_exclude: list of variables to exclude from output
+        """
+        # Check substring patterns from VAR_EXCLUDE_PATTERNS
+        for pattern in VAR_EXCLUDE_PATTERNS:
+            if re.search(pattern, xstr):
+                return True
+        # Check exact matches from shortvars_to_exclude
+        for name in shortvars_to_exclude:
+            if xstr == name:
+                return True
+        return False
     metavars = [el for el in allvars if matchlist(el)]
     datavars = [el for el in allvars if not matchlist(el)]
     fre_logger.debug(f"metavars: {metavars}")
