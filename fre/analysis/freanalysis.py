@@ -1,10 +1,15 @@
 """
-Module defining the `click <click link_>`_ interfaces fo the following subcommands:
+The package analysis-scripts (https://github.com/NOAA-GFDL/analysis-scripts.git) contains
+user-defined analysis scripts/plug-ins and the core engine to run the scripts/plug-ins.  
+This module defines the Click `fre analysis` command and the following subcommands to interface
+with the analysis-scripts package:
 * fre analysis install [ARGS]:  installs NOAA-GFDL/analysis-scripts package.  If specified,
   also installs the user-analysis-script plug-ins, and a venv virtual environment
 * fre analysis list [ARGS]:  lists all the installed user-analysis-script plug-ins
 * fre analysis run [ARGS]: runs the user-analysis-script plug-in
 * fre analysis uninstall [ARGS]: uninstalls the specified user-analysis-script plug-in
+
+
 """
 
 import logging
@@ -32,7 +37,8 @@ def analysis_cli():
 
 @analysis_cli.command('install', short_help="Installs 'NOAA-GFDL'-based analysis-scripts")
 @click.option("--url", type=str, required=True, help="""
-  Github repository URL to the NOAA-GFDL/analysis-scripts package or to its fork/variants
+  Github repository URL to the NOAA-GFDL/analysis-scripts package or to its fork/variants.
+  For example, url = https://github.com/NOAA-GFDL/analysis-scripts.git
 """)
 @click.option("--name", type=str, required=False, help="""
   Name of the user-analysis-script to pip install in addition as a plug-in.
