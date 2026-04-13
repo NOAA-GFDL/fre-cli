@@ -10,6 +10,14 @@ Through the fre-cli, `fre make` can be used to create and run a checkout script,
 
 **Note: The container engine used to create the container (such as podman or docker) is specified in the `platforms.yaml` with the `containerBuild` key. Please ensure the container engine is acccesible before running fre make.**
 
+## Getting Started
+
+The quickstart instructions [here](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#quickstart), will build the null model using YAML configurations located in the fre-cli repository. These configurations are combined to create a resolved dictionary that will then be parsed for information to:
+
+1. Create and run a checkout script (using source code for the `FMS`, `ice_param`, and `coupler` components defined in the `compile.yaml`)
+2. Create a Makefile
+3. Create and run either a compile.sh (for bare-metal builds) or a Dockerfile and createContainer.sh (for container builds)
+
 ## Subtools
 - `fre make checkout-script [options]`
    - Purpose: Create and run a checkout script. 
