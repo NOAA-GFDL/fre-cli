@@ -185,6 +185,10 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
 
             elif Path(checkout_sh_path).exists() and not force_checkout:
                 fre_logger.info("Checkout script PREVIOUSLY created here: %s", checkout_sh_path)
+                fre_logger.warning("If editing source code after creating and running the checkout script for the "
+                                   "bare-metal build, continue to follow each fre make subtool individually ('makefile', "
+                                   "'compile-script' or 'dockerfile') to avoid conflicting 'existing checkout script' "
+                                   "errors (advise against using fre make all)")
                 if execute:
                     try:
                         subprocess.run(args=[checkout_sh_path], check=True)
