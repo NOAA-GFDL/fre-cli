@@ -122,6 +122,7 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     """
     pp=yamlfile.get("postprocess")
     dirs=yamlfile.get("directories")
+    analysis=yamlfile.get("analysis")
 
     # set rose-suite items
     pa_scripts = ""
@@ -184,6 +185,30 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
                         value = quote_rose_values(pa_scripts.rstrip()) )
     else:
         rose_suite.set( keys = ['template variables', 'DO_PREANALYSIS'],
+                        value = 'False' )
+
+    # Set DO_ANALYSIS switch
+    # analysis_on key is optional:
+    # if analysis_on is NOT set, the default is True; set DO_ANALYSIS=True
+    # if ALL analysis_on keys are False, set DO_ANALYSIS=False in the rose_suite
+    # if ANY analysis_on is True, set DO_ANALYSIS=True in the rose_suite
+    do_analysis_switch = []
+    for an_key, an_value in analysis.items():
+        an_workflow_info = an_value["workflow"]
+        # if analysis_on key is actually set, evaluate and save its value in a list
+        if "analysis_on" in an_workflow_info:
+            do_analysis_switch.append(an_workflow_info["analysis_on"])
+        #if analysis_on key is NOT set, save its value as True in the list
+        else:
+            do_analysis_switch.append("True")
+
+    # if ANY of the analysis components do not set analysis_on or set analysis_on: True,
+    # set DO_ANALYSIS=True in the rose_suite.conf
+    if any(do_analysis_switch):
+        rose_suite.set( keys = ['template variables', 'DO_ANALYSIS'],
+                        value = 'True' )
+    else:
+        rose_suite.set( keys = ['template variables', 'DO_ANALYSIS'],
                         value = 'False' )
 
     if dirs is not None:
