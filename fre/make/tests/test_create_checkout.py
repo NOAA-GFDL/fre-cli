@@ -83,8 +83,10 @@ def test_checkout_execute(monkeypatch):
                 Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").is_dir(),
                 any(Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").iterdir())])
 
-def test_bm_checkout_again(caplog, monkeypatch):
+def test_bm_checkout_failure(caplog, monkeypatch):
     """
+    check for the raised OSError when the checkout script has been run,
+    but is executed again (without --force-checkout)
     """
     monkeypatch.setenv("TEST_BUILD_DIR", OUT)
 
@@ -101,10 +103,10 @@ def test_bm_checkout_again(caplog, monkeypatch):
                                                njobs = 2,
                                                execute = True,
                                                force_checkout = False)
+
     assert ([f"\nError executing checkout script: {OUT}/fremake_canopy/test/null_model_full/src/checkout.sh." in str(excinfo.value),
              f"\nTry removing test folder: {OUT}/fremake_canopy/test or  specifying --force-checkout" in str(excinfo.value)])
     
-
 def test_checkout_no_parallel_checkout(monkeypatch):
     """
     check if --no_parallel_checkout option works
