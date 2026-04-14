@@ -7,6 +7,7 @@ import xarray as xr
 import yaml
 
 from fre.app import helpers
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 
@@ -83,7 +84,7 @@ def get_grid_spec(datadict: dict) -> str:
     elif Path("grid_spec.nc").exists():
         grid_spec = "grid_spec.nc"
     else:
-        raise IOError(f"Cannot find mosaic.nc or grid_spec.nc in tar file {pp_grid_spec_tar}")
+        log_and_raise(f"Cannot find mosaic.nc or grid_spec.nc in tar file {pp_grid_spec_tar}", IOError)
 
     fre_logger.debug(f"Current directory: {Path.cwd()}")
 
@@ -122,7 +123,7 @@ def get_input_mosaic(datadict: dict) -> str:
 
     #check if the mosaic file exists in the current directory
     if not Path(mosaic_file).exists():
-        raise IOError(f"Cannot find mosaic file {mosaic_file} in current work directory {work_dir}")
+        log_and_raise(f"Cannot find mosaic file {mosaic_file} in current work directory {work_dir}", IOError)
 
     return mosaic_file
 
@@ -299,16 +300,15 @@ def regrid_xy(yamlfile: str,
 
     #check if input_dir exists
     if not Path(input_dir).exists():
-        raise RuntimeError(f"Input directory {input_dir} containing the input data files does not exist")
+        log_and_raise(f"Input directory {input_dir} containing the input data files does not exist", RuntimeError)
 
     #check if output_dir exists
     if not Path(output_dir).exists():
-        raise RuntimeError(f"Output directory {output_dir} where regridded data" \
-                            "will be outputted does not exist")
+        log_and_raise(f"Output directory {output_dir} where regridded data will be outputted does not exist", RuntimeError)
 
     #check if work_dir exists
     if not Path(work_dir).exists():
-        raise RuntimeError(f"Specified working directory {work_dir} does not exist")
+        log_and_raise(f"Specified working directory {work_dir} does not exist", RuntimeError)
 
     #work in working directory
     with helpers.change_directory(work_dir):
@@ -399,4 +399,4 @@ def regrid_xy(yamlfile: str,
             if fregrid_job.returncode == 0:
                 fre_logger.info(fregrid_job.stdout.split("\n")[-3:])
             else:
-                raise RuntimeError(fregrid_job.stderr)
+                log_and_raise(fregrid_job.stderr, RuntimeError)

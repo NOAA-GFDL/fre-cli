@@ -11,6 +11,7 @@ import subprocess
 
 from . import make_workflow_name
 from ..fre import version as fre_ver
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 
@@ -50,8 +51,8 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     # check args + set the name of the directory
     if None in [experiment, platform, target]:
         os.chdir(go_back_here)
-        raise ValueError( 'one of these are None: experiment / platform / target = \n'
-                         f'{experiment} / {platform} / {target}' )
+        log_and_raise( 'one of these are None: experiment / platform / target = \n'
+                         f'{experiment} / {platform} / {target}', ValueError)
     #name = f"{experiment}__{platform}__{target}"
     workflow_name = make_workflow_name(experiment, platform, target)
 
@@ -60,8 +61,8 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     try:
         os.makedirs(directory, exist_ok = True)
     except Exception as exc:
-        raise OSError(
-            f"(checkoutScript) directory {directory} wasn't able to be created. exit!") from exc
+        log_and_raise(
+            f"(checkoutScript) directory {directory} wasn't able to be created. exit!", OSError, exc=exc)
     finally:
         os.chdir(go_back_here)
 
@@ -96,7 +97,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
             fre_logger.info(
                 f"ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
             os.chdir(go_back_here)
-            raise ValueError('neither tag nor branch matches the git clone branch arg') #exit(1)
+            log_and_raise('neither tag nor branch matches the git clone branch arg', ValueError)
 
     # make sure we are back where we should be
     if os.getcwd() != go_back_here:

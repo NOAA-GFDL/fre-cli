@@ -6,6 +6,8 @@ from pathlib import Path
 
 import yaml
 
+from fre import log_and_raise
+
 
 fre_logger = logging.getLogger(__name__)
 
@@ -25,7 +27,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     fre_logger.debug(f"Yaml file information: {yml}")
     fre_logger.debug(f"PP component: {pp_comp}")
     if not isinstance(yml, dict):
-        raise TypeError("yml should be of type dict, but was of type " + str(type(yml)))
+        log_and_raise("yml should be of type dict, but was of type " + str(type(yml)), TypeError)
 
     src_vars={}
 
@@ -61,7 +63,7 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     # If the dictionary is empty (no overlap of pp components and components
     # in pp yaml) --> error
     if not src_vars:
-        raise ValueError(f"PP component, {pp_comp}, not found in pp yaml configuration!")
+        log_and_raise(f"PP component, {pp_comp}, not found in pp yaml configuration!", ValueError)
 
     return src_vars
 

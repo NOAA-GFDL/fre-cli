@@ -23,6 +23,7 @@ from .gfdlfremake import (
     yamlfre
 )
 
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
         for targetName in tlist:
             targetObject = targetfre.fretarget(targetName)
             if not modelYaml.platforms.hasPlatform(platformName):
-                raise ValueError (f"{platformName} does not exist in platforms.yaml")
+                log_and_raise(f"{platformName} does not exist in platforms.yaml", ValueError)
 
             platform = modelYaml.platforms.getPlatformFromName(platformName)
 

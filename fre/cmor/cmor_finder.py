@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Optional, Dict, IO
 from .cmor_helpers import get_json_file_data
 
+from fre import log_and_raise
 from .cmor_constants import DO_NOT_PRINT_LIST
 
 fre_logger = logging.getLogger(__name__)
@@ -97,12 +98,12 @@ def cmor_find_subtool( json_var_list: Optional[str] = None,
               CMIP6 tables. Information is printed via the logger.
     """
     if not Path(json_table_config_dir).exists():
-        raise OSError(f'ERROR directory {json_table_config_dir} does not exist! exit.')
+        log_and_raise(f'ERROR directory {json_table_config_dir} does not exist! exit.', OSError)
 
     fre_logger.info('attempting to find and open files in dir: \n %s ', json_table_config_dir)
     json_table_configs = glob.glob(f'{json_table_config_dir}/*.json')
     if not json_table_configs:
-        raise OSError(f'ERROR directory {json_table_config_dir} contains no JSON files, exit.')
+        log_and_raise(f'ERROR directory {json_table_config_dir} contains no JSON files, exit.', OSError)
     fre_logger.info('found content in json_table_config_dir')
 
     var_list = None
@@ -111,7 +112,7 @@ def cmor_find_subtool( json_var_list: Optional[str] = None,
             var_list = json.load(var_list_file)
 
     if opt_var_name is None and var_list is None:
-        raise ValueError('ERROR: no opt_var_name given but also no content in variable list!!! exit!')
+        log_and_raise('ERROR: no opt_var_name given but also no content in variable list!!! exit!', ValueError)
 
     if opt_var_name is not None:
         fre_logger.info('opt_var_name is not None: looking for only ONE variables worth of info!')
@@ -172,8 +173,8 @@ def make_simple_varlist( dir_targ: str,
             full_mip_vars_list=get_json_file_data(json_mip_table)["variable_entry"].keys()
 
         except Exception as exc:
-            raise Exception( 'problem opening mip table and getting variable entry data.'
-                            f'exc = {exc}') from exc
+            log_and_raise('problem opening mip table and getting variable entry data.'
+                          f'exc = {exc}', Exception, exc=exc)
 
         fre_logger.debug('attempting to make mip variable list')
         mip_vars=[ key.split('_')[0] for key in full_mip_vars_list ]
@@ -201,5 +202,5 @@ def make_simple_varlist( dir_targ: str,
             with open(output_variable_list, 'w', encoding='utf-8') as f:
                 json.dump(var_list, f, indent=4)
         except Exception as exc:
-            raise OSError('output variable list created but cannot be written') from exc
+            log_and_raise('output variable list created but cannot be written', OSError, exc=exc)
     return var_list

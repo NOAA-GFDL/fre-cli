@@ -14,6 +14,7 @@ from jsonschema import (
 
 from . import *
 
+from fre import log_and_raise
 
 import fre
 
@@ -122,7 +123,7 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
         exp_list.append(i.get("name"))
 
     if experiment not in exp_list:
-        raise NameError(f"{experiment} is not in the list of experiments")
+        log_and_raise(f"{experiment} is not in the list of experiments", NameError)
 
     # Extract yaml path for exp. provided
     # if experiment matches name in list of experiments in yaml, extract file path
@@ -136,12 +137,12 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
         analysisyaml=i.get("analysis")
 
         if expyaml is None:
-            raise ValueError("No experiment yaml path given!")
+            log_and_raise("No experiment yaml path given!", ValueError)
 
         for e in expyaml:
             ey = Path( os.path.join(mainyaml_dir, e) )
             if not ey.exists():
-                raise ValueError(f"Experiment yaml path given ({e}) does not exist.")
+                log_and_raise(f"Experiment yaml path given ({e}) does not exist.", ValueError)
             ey_path.append(ey)
 
         # Currently, if there are no analysis scripts defined, set None
@@ -152,7 +153,7 @@ def experiment_check(mainyaml_dir, experiment, loaded_yaml):
                 # prepend the directory containing the yaml
                 ay = Path(os.path.join(mainyaml_dir,a))
                 if not ay.exists():
-                    raise ValueError("Incorrect analysis yaml path given; does not exist.")
+                    log_and_raise("Incorrect analysis yaml path given; does not exist.", ValueError)
                 ay_path.append(ay)
 
         return (ey_path, ay_path)
@@ -207,6 +208,6 @@ def validate_yaml(yaml, schema_path):
         fre_logger.info("    YAML dictionary VALID.\n")
         return True
     except:
-        raise ValueError("    YAML dictionary NOT VALID.\n")
+        log_and_raise("    YAML dictionary NOT VALID.\n", ValueError)
     finally:
         fre_logger.setLevel(former_log_level)

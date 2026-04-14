@@ -11,6 +11,7 @@ import metomi.isodatetime.parsers
 import xarray as xr
 
 from ..helpers import change_directory
+from fre import log_and_raise
 
 fre_logger = logging.getLogger(__name__)
 duration_parser = metomi.isodatetime.parsers.DurationParser()
@@ -35,7 +36,7 @@ def form_bronx_directory_name(frequency: str,
     elif frequency == "yr":
         frequency_label = "annual"
     else:
-        raise ValueError(f"Frequency '{frequency}' not recognized or supported")
+        log_and_raise(f"Frequency '{frequency}' not recognized or supported", ValueError)
     interval_object = duration_parser.parse(interval)
     return frequency_label + '_' + str(interval_object.years) + 'yr'
 
@@ -57,9 +58,9 @@ def merge_netcdfs(input_file_glob: str, output_file: str) -> None:
     if len(input_files) >= 1:
         fre_logger.debug(f"Input file search string '{input_file_glob}' matched {len(input_files)} files")
     else:
-        raise FileNotFoundError(f"'{input_file_glob}' resolves to no files")
+        log_and_raise(f"'{input_file_glob}' resolves to no files", FileNotFoundError)
     if Path(output_file).exists():
-        raise FileExistsError(f"Output file '{output_file}' already exists")
+        log_and_raise(f"Output file '{output_file}' already exists", FileExistsError)
 
     ds = xr.open_mfdataset(input_files, compat='override', coords='minimal')
     ds.to_netcdf(output_file, unlimited_dims=['time'])
@@ -93,7 +94,7 @@ def combine( root_in_dir: str,
     :rtype: None
     """
     if frequency not in ["yr", "mon"]:
-        raise ValueError(f"Frequency '{frequency}' not recognized or supported")
+        log_and_raise(f"Frequency '{frequency}' not recognized or supported", ValueError)
 
     if frequency == "yr":
         frequency_iso = "P1Y"
