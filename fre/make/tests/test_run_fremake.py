@@ -122,8 +122,8 @@ def test_run_fremake_force_checkout_serial(caplog):
                 "Checkout script created" in caplog.text,
                 Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists(),
                 renamed_src_dir[0].exists(),
-                Path(f"{renamed_src_dir[0]}/checkout.sh").exists()])
-#                "Running fre make: (from force-checkout) removing previously generated compile script" in caplog.text])
+                Path(f"{renamed_src_dir[0]}/checkout.sh").exists(),
+                "Running fre make: (from force-checkout) removing previously generated compile script" in caplog.text])
 
 # same tests with multijob compile and non-parallel-checkout options enabled
 def test_run_fremake_multijob():
