@@ -188,12 +188,12 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
                         value = 'False' )
 
     # Set DO_ANALYSIS switch
-    # analysis_on key is optional:
-    # if analysis_on is NOT set, the default is True; set DO_ANALYSIS=True
-    # if ALL analysis_on keys are False, set DO_ANALYSIS=False in the rose_suite
-    # if ANY analysis_on is True, set DO_ANALYSIS=True in the rose_suite
+    # analysis_on is optional key for each component in the analysis yaml and 
+    # defaults to True if not specified.
+    # In the rose_suite.conf:
+    #  - if 'analysis_on: False' for all analysis components, set DO_ANALYSIS=False
+    #  - if 'analysis_on: True' for any analysis components, set DO_ANALYSIS=True
     do_analysis_switch = []
-
     if not analysis:
         return
         
