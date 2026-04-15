@@ -6,8 +6,8 @@ fre_properties:
   # amip
   - &EXP_AMIP_START     "19790101T0000Z"
   - &EXP_AMIP_END       "20200101T0000Z"
-  - &ANA_AMIP_START     "19800101T0000Z"
-  - &ANA_AMIP_END       "20200101T0000Z"
+  - &ANA_AMIP_START     "1980"
+  - &ANA_AMIP_END       "2020"
 
   - &PP_AMIP_CHUNK96    "P1Y"
   - &PP_AMIP_CHUNK384   "P1Y"
@@ -49,6 +49,8 @@ experiments:
     pp:
       - "yaml_include/pp.c96_amip.yaml"
       - "yaml_include/pp-test.c96_amip.yaml"
+    analysis: 
+      - "yaml_include/land_analysis.yaml"
   - name: "c96L65_am5f7b12r1_pdclim1850F"
     pp:
       - "yaml_include/pp.c96_clim.yaml"
