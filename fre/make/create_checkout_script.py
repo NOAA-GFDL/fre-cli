@@ -103,8 +103,9 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     :type njobs: int
     :param execute: If True, run checkout.sh
     :type execute: bool
-    :param force_checkout: If True, for bare-metal: add timestamp to source directory and create new checkout script,
-                           for container: overwrite locally existing checkout script
+    :param force_checkout: If True, for bare-metal build: add timestamp to source directory and create a new checkout script
+                           If True, for container build: overwrite locally existing checkout script before COPY-ing to the 
+                           container image filesystem
     :type force_checkout: bool
 
     :raises ValueError:

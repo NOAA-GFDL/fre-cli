@@ -85,8 +85,8 @@ def test_checkout_execute(monkeypatch):
 
 def test_bm_checkout_failure(caplog, monkeypatch):
     """
-    check for the raised OSError when the checkout script has been run,
-    but is executed again (without --force-checkout)
+    check for the raised OSError when the checkout script is executed twice without
+    the --force-checkout option specified in the second execution
     """
     monkeypatch.setenv("TEST_BUILD_DIR", OUT)
 
