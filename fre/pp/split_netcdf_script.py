@@ -25,15 +25,6 @@ from fre.app.helpers import get_variables
 
 fre_logger = logging.getLogger(__name__)
 
-#These are patterns used to match known kinds of metadata-like variables
-#in netcdf files
-#*_bnds, *_bounds: bounds variables. Defines the edges of a coordinate var
-#*_offset: i and j offsets. Constants added to a coordinate var to get
-#   actual coordinate values, used to compress data
-#*_average: calculated averages for a variable.
-#These vars may also be covered by the metadata_vars query, but it doesn't
-#hurt to double-check.
-METADATA_VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
 
 def split_netcdf(
     inputDir: str,
@@ -212,6 +203,17 @@ def split_file_xarray(
     fre_logger.debug(f"Variables to be excluded (due to small number of dimensions): '{metadata_vars_to_exclude_by_name}'")
     #having a variable listed as both a metadata var and a coordinate var seems to
     #lead to the weird adding a _FillValue behavior
+
+    # These are patterns used to match known kinds of metadata-like variables
+    # in netcdf files.
+    # *_bnds, *_bounds: bounds variables. Defines the edges of a coordinate var
+    # *_offset: i and j offsets. Constants added to a coordinate var to get
+    #       actual coordinate values, used to compress data
+    # *_average: calculated averages for a variable.
+    # These vars may also be covered by the metadata_vars query, but it doesn't
+    # hurt to double-check.
+    METADATA_VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
+
     fre_logger.info(f"To exclude: var patterns matching '{METADATA_VAR_PATTERNS}'")
     fre_logger.info(f"To exclude: 1 or 2-d vars: '{metadata_vars_to_exclude_by_name}'")
     #both combined gets you a decent list of non-diagnostic variables
@@ -226,10 +228,13 @@ def split_file_xarray(
         Values are TRUE if the criteria for a metadata-like variable are met (the two checked cases)
         and FALSE if they are not (the fall-through case)
 
-        xstr: string to search for matches
         METADATA_VAR_PATTERNS: list of patterns defined to exclude from output
         metadata_vars_to_exclude_by_name: list of variables to exclude from output
+
+        :param var_to_check: string to search for matches
+        :type var_to_check: string
         """
+
         # Check substring patterns from METADATA_VAR_PATTERNS
         for pattern in METADATA_VAR_PATTERNS:
             if re.search(pattern, var_to_check):
