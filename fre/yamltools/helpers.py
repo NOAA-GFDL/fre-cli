@@ -15,6 +15,8 @@ from jsonschema import (
 from . import *
 
 
+import fre
+
 fre_logger = logging.getLogger(__name__)
 
 def yaml_load(yamlfile):
@@ -31,6 +33,45 @@ def yaml_load(yamlfile):
         y = yaml.load(yf, Loader = yaml.Loader)
 
     return y
+
+
+def check_fre_version(yamlfile: str) -> None:
+    """
+    Check that the fre_cli_version specified in the model yaml matches the
+    installed version of fre-cli. If fre_cli_version is not specified, a
+    warning is logged. If fre_cli_version does not match, a ValueError is raised.
+
+    :param yamlfile: Path to model YAML configuration file
+    :type yamlfile: str
+    :raises ValueError: if the fre_cli_version in the YAML does not match the installed fre-cli version
+    """
+    try:
+        loaded_yaml = yaml_load(yamlfile)
+    except Exception as exc:
+        fre_logger.warning(
+            "Could not load %s for fre_cli_version check: %s",
+            yamlfile, exc
+        )
+        return
+
+    yaml_fre_version = loaded_yaml.get("fre_cli_version")
+    installed_version = fre.version
+
+    if yaml_fre_version is None:
+        fre_logger.info(
+            "fre_cli_version not specified in %s. "
+            "It is recommended to add 'fre_cli_version' to your model yaml "
+            "to ensure compatibility with the correct version of fre-cli.",
+            yamlfile
+        )
+        return
+
+    if str(yaml_fre_version) != str(installed_version):
+        raise ValueError(
+            f"The fre_cli_version specified in the model yaml ({yaml_fre_version}) "
+            f"does not match the installed version of fre-cli ({installed_version}). "
+            f"Please update your model yaml or install the correct version of fre-cli."
+        )
 
 
 def output_yaml(cleaned_yaml, output):
@@ -131,7 +172,7 @@ def clean_yaml(yml_dict):
     """
     # Clean the yaml
     # If keys exists, delete:
-    keys_clean=["fre_properties", "experiments"]
+    keys_clean=["fre_properties", "fre_cli_version", "experiments"]
     for kc in keys_clean:
         if kc in yml_dict.keys():
             del yml_dict[kc]
