@@ -49,8 +49,6 @@ experiments:
     pp:
       - "yaml_include/pp.c96_amip.yaml"
       - "yaml_include/pp-test.c96_amip.yaml"
-    analysis: 
-      - "yaml_include/land_analysis.yaml"
   - name: "c96L65_am5f7b12r1_pdclim1850F"
     pp:
       - "yaml_include/pp.c96_clim.yaml"
