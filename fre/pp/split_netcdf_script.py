@@ -15,6 +15,7 @@ import sys
 from itertools import chain
 from os import path
 from pathlib import Path
+from typing import Dict, List, NoReturn, Optional, Union
 
 import xarray as xr
 import yaml
@@ -34,8 +35,15 @@ fre_logger = logging.getLogger(__name__)
 #hurt to double-check.
 METADATA_VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
 
-def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
-                 yamlfile, split_all_vars=False):
+def split_netcdf(
+    inputDir: str,
+    outputDir: str,
+    component: str,
+    history_source: str,
+    use_subdirs: bool,
+    yamlfile: str,
+    split_all_vars: bool = False,
+) -> NoReturn:
     '''
     Given a directory of netcdf files, splits those netcdf files into separate
     files for each data variable and copies the data variable files of interest
@@ -160,7 +168,9 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     fre_logger.info(f"split-netcdf-wrapper call complete, having split {files_split} files")
     sys.exit(0) #check this
 
-def split_file_xarray(infile, outfiledir, var_list='all'):
+def split_file_xarray(
+    infile: str, outfiledir: str, var_list: Union[str, List[str]] = "all"
+) -> None:
     '''
     Given a netcdf infile containing one or more data variables,
     writes out a separate file for each data variable in the file, including the
@@ -205,7 +215,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
     fre_logger.info(f"To exclude: var patterns matching '{METADATA_VAR_PATTERNS}'")
     fre_logger.info(f"To exclude: 1 or 2-d vars: '{metadata_vars_to_exclude_by_name}'")
     #both combined gets you a decent list of non-diagnostic variables
-    def is_metadata_var(var_to_check):
+    def is_metadata_var(var_to_check: str) -> bool:
         """
         Checks a variable name and determines whether it is a metadata variable
         and therefore should not be one of the split-by-variable output files, by
@@ -270,7 +280,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
             data2.to_netcdf(var_out, encoding = var_encode)
             fre_logger.debug(f"Wrote '{var_out}'")
 
-def get_max_ndims(dataset):
+def get_max_ndims(dataset: xr.Dataset) -> int:
     '''
     Gets the maximum number of dimensions of a single var in an xarray
     Dataset object. Excludes coord vars, which should be single-dim anyway.
@@ -284,7 +294,7 @@ def get_max_ndims(dataset):
     ndims = [len(dataset[v].shape) for v in allvars]
     return max(ndims)
 
-def set_coord_encoding(dset, vcoords):
+def set_coord_encoding(dset: xr.Dataset, vcoords: List[str]) -> Dict[str, Dict[str, Union[None, str, type]]]:
     '''
     Gets the encoding settings needed for xarray to write out the coordinates
     as expected
@@ -318,7 +328,7 @@ def set_coord_encoding(dset, vcoords):
             encode_dict[vc]['units'] = dset[vc].encoding['units']
     return encode_dict
 
-def set_var_encoding(dset, varnames):
+def set_var_encoding(dset: xr.Dataset, varnames: List[str]) -> Dict[str, Dict[str, Union[None, str, type]]]:
     '''
     Gets the encoding settings needed for xarray to write out the variables
     as expected
@@ -345,7 +355,7 @@ def set_var_encoding(dset, varnames):
             encode_dict[v]['units'] = dset[v].encoding['units']
     return encode_dict
 
-def fre_outfile_name(infile, varname):
+def fre_outfile_name(infile: str, varname: str) -> str:
     '''
     Builds split  var filenames the way that fre expects them
     (and in a way that should work for any .nc file)
