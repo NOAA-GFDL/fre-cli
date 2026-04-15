@@ -30,9 +30,9 @@ fre_logger = logging.getLogger(__name__)
 #*_offset: i and j offsets. Constants added to a coordinate var to get
 #   actual coordinate values, used to compress data
 #*_average: calculated averages for a variable.
-#These vars may also be covered by the var_shortvars query, but it doesn't
+#These vars may also be covered by the metadata_vars query, but it doesn't
 #hurt to double-check.
-VAR_EXCLUDE_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
+METADATA_VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
 
 def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
                  yamlfile, split_all_vars=False):
@@ -198,32 +198,39 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
     #If they were, I could get away with the following:
     #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
     #instead of this:
-    shortvars_to_exclude = [v for v in allvars if (len(dataset[v].shape) < varsize) and v not in dataset._coord_names]
-    fre_logger.debug(f"Variables to be excluded (due to small number of dimensions): '{shortvars_to_exclude}'")
+    metadata_vars_to_exclude_by_name = [v for v in allvars if (len(dataset[v].shape) < varsize) and v not in dataset._coord_names]
+    fre_logger.debug(f"Variables to be excluded (due to small number of dimensions): '{metadata_vars_to_exclude_by_name}'")
     #having a variable listed as both a metadata var and a coordinate var seems to
     #lead to the weird adding a _FillValue behavior
-    fre_logger.info(f"To exclude: var patterns matching '{VAR_EXCLUDE_PATTERNS}'")
-    fre_logger.info(f"To exclude: 1 or 2-d vars: '{shortvars_to_exclude}'")
+    fre_logger.info(f"To exclude: var patterns matching '{METADATA_VAR_PATTERNS}'")
+    fre_logger.info(f"To exclude: 1 or 2-d vars: '{metadata_vars_to_exclude_by_name}'")
     #both combined gets you a decent list of non-diagnostic variables
-    def matchlist(xstr):
+    def is_metadata_var(var_to_check):
         """
-        Checks a string for matches in patterns or exact names.
+        Checks a variable name and determines whether it is a metadata variable
+        and therefore should not be one of the split-by-variable output files, by
+        comparing the variable name to exact matches or pattern matches of known metadata variables.
+
+        This nested method is intended to be used only internally within this method (split_file_xarray),
+        and returns a list of true/false values for the list comprehensions around lines 225/226.
+        Values are TRUE if the criteria for a metadata-like variable are met (the two checked cases)
+        and FALSE if they are not (the fall-through case)
 
         xstr: string to search for matches
-        VAR_EXCLUDE_PATTERNS: list of patterns defined to exclude from output
-        shortvars_to_exclude: list of variables to exclude from output
+        METADATA_VAR_PATTERNS: list of patterns defined to exclude from output
+        metadata_vars_to_exclude_by_name: list of variables to exclude from output
         """
-        # Check substring patterns from VAR_EXCLUDE_PATTERNS
-        for pattern in VAR_EXCLUDE_PATTERNS:
-            if re.search(pattern, xstr):
+        # Check substring patterns from METADATA_VAR_PATTERNS
+        for pattern in METADATA_VAR_PATTERNS:
+            if re.search(pattern, var_to_check):
                 return True
-        # Check exact matches from shortvars_to_exclude
-        for name in shortvars_to_exclude:
-            if xstr == name:
+        # Check exact matches from metadata_vars_to_exclude_by_name
+        for name in metadata_vars_to_exclude_by_name:
+            if var_to_check == name:
                 return True
         return False
-    metavars = [el for el in allvars if matchlist(el)]
-    datavars = [el for el in allvars if not matchlist(el)]
+    metavars = [el for el in allvars if is_metadata_var(el)]
+    datavars = [el for el in allvars if not is_metadata_var(el)]
     fre_logger.debug(f"metavars: {metavars}")
     fre_logger.debug(f"datavars: {datavars}")
     fre_logger.debug(f"var filter list: {var_list}")
