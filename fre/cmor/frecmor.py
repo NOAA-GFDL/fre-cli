@@ -12,9 +12,10 @@ OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process onl
                   "matching that variable name. I.e., this string help target local_vars, not " + \
                   "target_vars."
 VARLIST_HELP="path pointing to a json file containing directory of key/value pairs. " + \
-             "the keys are the \'local\' names used in the filename, and the values " + \
-             "pointed to by those keys are strings representing the name of the variable " + \
-             "contained in targeted files. the key and value are often the same, " + \
+             "the keys are the modeler\'s variable names used in the filename and " + \
+             "expected as the variable name within the targeted files. the values " + \
+             "pointed to by those keys are strings representing the corresponding " + \
+             "MIP table variable name. the key and value are often the same, " + \
              "but it is not required."
 RUN_ONE_HELP="process only one file, then exit. mostly for debugging and isolating issues."
 DRY_RUN_HELP="don't call the cmor_mixer subtool, just printout what would be called and move on until natural exit"
@@ -156,11 +157,10 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
               required = False)
 def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         grid_label, grid_desc, nom_res, start, stop, calendar):
-    # pylint: disable=unused-argument
     """
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
     """
-    cmor_run_subtool(
+    result = cmor_run_subtool(
         indir = indir,
         json_var_list = varlist,
         json_table_config = table_config,
@@ -175,6 +175,8 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
         stop = stop,
         calendar_type = calendar
     )
+    if result != 0:
+        raise click.ClickException(f'cmor_run_subtool returned non-zero status: {result}')
 
 
 @cmor_cli.command()

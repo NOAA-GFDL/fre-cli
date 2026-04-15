@@ -56,6 +56,8 @@ def print_var_content(table_config_file: IO[str],
         table_name = proj_table_vars["Header"].get('table_id').split(' ')[1]
     except KeyError:
         fre_logger.warning("couldn't get header and table_name field")
+    except IndexError:
+        fre_logger.warning("couldn't get header and table_name, probably not a variable table")
 
     if table_name is not None:
         fre_logger.info('looking for %s data in table %s!', var_name, table_name)

@@ -20,7 +20,7 @@ workflows are supported. Available subcommands:
 * Minimal Syntax: ``fre cmor run -d [indir] -l [varlist] -r [table_config] -p [exp_config] -o [outdir] [options]``
 * Required Options:
    - ``-d, --indir TEXT`` - Input directory with netCDF files
-   - ``-l, --varlist TEXT`` - Variable list dictionary mapping local to MIP variable names
+   - ``-l, --varlist TEXT`` - Variable list dictionary mapping modeler variable names to MIP table variable names
    - ``-r, --table_config TEXT`` - MIP table JSON configuration
    - ``-p, --exp_config TEXT`` - Experiment/model metadata JSON
    - ``-o, --outdir TEXT`` - Output directory prefix
