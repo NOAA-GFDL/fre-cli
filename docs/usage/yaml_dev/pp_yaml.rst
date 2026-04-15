@@ -53,8 +53,6 @@ This file can follow the format below:
      switches:
        clean_work: "switch to remove intermediate data files when they are no longer needed"                              (boolean)
        do_atmos_plevel_masking: "switch to mask atmos pressure-level output above/below surface pressure/atmos top"       (boolean)
-       do_analysis: "switch to launch analysis scripts"                                                                   (boolean)
-       do_analysis_only: "switch to only launch analysis scripts"                                                         (boolean)
 
 Required keys include:
 
@@ -70,5 +68,3 @@ Required keys include:
     - clean_work
     - do_timeavgs
     - do_atmos_plevel_masking
-    - do_analysis
-    - do_analysis_only
