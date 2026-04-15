@@ -228,8 +228,8 @@ def split_file_xarray(
         Values are TRUE if the criteria for a metadata-like variable are met (the two checked cases)
         and FALSE if they are not (the fall-through case)
 
-        METADATA_VAR_PATTERNS: list of patterns defined to exclude from output
-        metadata_vars_to_exclude_by_name: list of variables to exclude from output
+        METADATA_VAR_PATTERNS: list of regex patterns defined that match variables that should be excluded from the split-out files.
+        metadata_vars_to_exclude_by_name: list of variable names that should be excluded from the split-out files.
 
         :param var_to_check: string to search for matches
         :type var_to_check: string
