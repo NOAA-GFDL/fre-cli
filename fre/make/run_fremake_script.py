@@ -116,7 +116,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
             if force_checkout:
                 # remove Dockerfile
                 dockerfile = Path(f"{Path.cwd()}/Dockerfile")
-                if Dockerfile.exists():
+                if dockerfile.exists():
                     fre_logger.warning("Running fre make: (from force-checkout) removing previously generated Dockerfile")
                     dockerfile.unlink()
 
