@@ -99,6 +99,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
         if not platform_info["container"]:
             bm_platforms = bm_platforms + (platform_name,)
 
+            # If force-checkout is passed, re-create the compile script
             # This will eventually just turn into if force_checkout, force_compile = True (once force_compile exists)
             if force_checkout:
                 for target_name in tlist:
