@@ -194,8 +194,8 @@ def test_run_fremake_container_force_checkout(caplog):
     assert all(["Checkout script PREVIOUSLY created" in caplog.text,
                 "*** REMOVING CHECKOUT SCRIPT ***" in caplog.text,
                 "Checkout script created" in caplog.text,
-                Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists()])
-#                "Running fre make: (from force-checkout) removing previously generated Dockerfile" in caplog.text])
+                Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists(),
+                "Running fre make: (from force-checkout) removing previously generated Dockerfile" in caplog.text])
 
 # tests container 2 stage build script/makefile/dockerfile creation
 def test_run_fremake_container_2stage():

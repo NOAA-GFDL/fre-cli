@@ -110,6 +110,15 @@ def fremake_run(yamlfile:str, platform:str, target:str,
                         compile_script.unlink()
         else:
             container_platforms = container_platforms + (platform_name,)
+            # If force-checkout is passed, re-create the Dockerfile
+            # If the Dockerfile is not removed after force-checkout, it uses the cache (with the old checkout)
+            # This will eventually just turn into if force_checkout, force_dockerfile = True (once force_compile exists)
+            if force_checkout:
+                # remove Dockerfile
+                dockerfile = Path(f"{Path.cwd()}/Dockerfile")
+                if Dockerfile.exists():
+                    fre_logger.warning("Running fre make: (from force-checkout) removing previously generated Dockerfile")
+                    dockerfile.unlink()
 
     if bm_platforms:
         #compile
