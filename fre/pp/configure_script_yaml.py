@@ -124,6 +124,10 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     dirs=yamlfile.get("directories")
     analysis=yamlfile.get("analysis")
 
+    if dirs is not None:
+        for key,value in dirs.items():
+            rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
+
     # set rose-suite items
     pa_scripts = ""
     rd_scripts = ""
@@ -217,10 +221,6 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     else:
         rose_suite.set( keys = ['template variables', 'DO_ANALYSIS'],
                         value = 'False' )
-
-    if dirs is not None:
-        for key,value in dirs.items():
-            rose_suite.set(keys=['template variables', key.upper()], value=quote_rose_values(value))
 
 ####################
 def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None, target: str = None) -> None:
