@@ -14,8 +14,9 @@ import pytest
 
 from fre.make import run_fremake_script
 
-# command options
-YAMLDIR = "fre/make/tests/null_example"
+# command options — use __file__ so tests work from any working directory
+_TEST_DIR = Path(__file__).resolve().parent
+YAMLDIR = str(_TEST_DIR.parent / "null_example")
 YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
 PLATFORM = [ "ci.gnu" ]
@@ -28,10 +29,9 @@ VERBOSE = False
 # set up some paths for the tests to build in
 # the TEST_BUILD_DIR env var is used in the null model's platform.yaml
 # so the model root directory path can be changed
-currPath=os.getcwd()
-SERIAL_TEST_PATH=f"{currPath}/fre/make/tests/compilation/serial_build"
-MULTIJOB_TEST_PATH=f"{currPath}/fre/make/tests/compilation/multijob_build"
-CONTAINER_BUILD_TEST_PATH=f"{currPath}/fre/make/tests/compilation/container"
+SERIAL_TEST_PATH = str(_TEST_DIR / "serial_build")
+MULTIJOB_TEST_PATH = str(_TEST_DIR / "multijob_build")
+CONTAINER_BUILD_TEST_PATH = str(_TEST_DIR / "container")
 Path(SERIAL_TEST_PATH).mkdir(parents=True,exist_ok=True)
 Path(MULTIJOB_TEST_PATH).mkdir(parents=True,exist_ok=True)
 Path(CONTAINER_BUILD_TEST_PATH).mkdir(parents=True,exist_ok=True)
@@ -106,7 +106,7 @@ def test_run_fremake_container_build_notransfer():
 def test_run_fremake_cleanup():
     ''' removes directories created by the test and checks to make sure they're gone '''
     dirstrings = ["test_run_fremake_multijob", "test_run_fremake_serial", "test_run_fremake_multitarget"]
-    test_paths = [f"fre/make/tests/{el}/" for el in dirstrings]
+    test_paths = [str(_TEST_DIR.parent / el) for el in dirstrings]
     for tp in test_paths:
         try:
             rmtree(tp)
@@ -118,27 +118,30 @@ def test_run_fremake_cleanup():
 @pytest.mark.skipif(not has_podman, reason="missing podman")
 def test_run_fremake_container_build_fail():
     ''' check createContainer script would fail and exit if one step failed (incorrect Dockerfile name)'''
-    if Path(f"{currPath}/createContainer.sh").exists():
-        os.remove(f"{currPath}/createContainer.sh")
+    if Path("createContainer.sh").exists():
+        os.remove("createContainer.sh")
 
     # Create the createContainer.sh script but do not run
     run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
         nparallel=1, makejobs=1, gitjobs=1, no_parallel_checkout=True,
         no_format_transfer=False, execute=False, verbose=VERBOSE)
-    assert Path(f"{currPath}/createContainer.sh").exists()
+    assert Path("createContainer.sh").exists()
 
     # Alter script to fail
     new_script = []
-    with open(Path(f"{currPath}/createContainer.sh"), "r") as f:
+    with open("createContainer.sh", "r", encoding='utf-8') as f:
         lines = f.readlines()
         for line in lines:
             new_script.append(line.replace("Dockerfile", "Dockerfile-wrong"))
 
-    with open(Path(f"{currPath}/createContainer.sh"), "w") as f2:
+    with open("createContainer.sh", "w", encoding='utf-8') as f2:
         f2.writelines(new_script)
 
     # Run altered script and compare error
-    run = subprocess.run(Path(f"{currPath}/createContainer.sh"), capture_output=True, check=False)
+    # Use a plain string "./createContainer.sh" (not a Path object) so the "./"
+    # prefix is preserved — Path("./x") normalises to PosixPath("x"), losing
+    # the directory separator and causing subprocess to search $PATH.
+    run = subprocess.run("./createContainer.sh", capture_output=True, check=False)
     stderr = run.stderr
 
     #Check that the incorrect line specifically prints in the stderr
