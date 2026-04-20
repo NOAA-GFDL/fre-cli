@@ -109,19 +109,22 @@ def make_cli():
               is_flag = True,
               default = False, 
               help = "Force a git checkout if the source directory already exists.")
+@click.option("--force-compile",
+              is_flag = True,
+              help = "Re-create the compile script in case it exists already.")
 @click.option("-v",
               "--verbose",
               is_flag = True,
               help = _VERBOSE_OPT_HELP)
 def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_checkout, no_format_transfer, execute,
-        verbose, force_checkout):
+        verbose, force_checkout, force_compile):
     """
     - Perform all fre make functions; for baremetal platforms: create checkout script, makefile, and compile scripts;
     for container platforms: create checkout script, makefile, Dockerfile, and createContainer script
     """
     run_fremake_script.fremake_run(
         yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_checkout, no_format_transfer, execute,
-        verbose, force_checkout)
+        verbose, force_checkout, force_compile)
 
 @make_cli.command('checkout-script')
 @click.option("-y",
@@ -216,14 +219,17 @@ def makefile(yamlfile, platform, target):
               default = False,
               help = """Execute the compile script immediately following its generation.
               The default behavior is to generate the script, but not execute.""")
+@click.option("--force-compile",
+              is_flag = True,
+              help = "Re-create the compile script in case it exists already.")
 @click.option("-v",
               "--verbose",
               is_flag = True,
               help = _VERBOSE_OPT_HELP)
-def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, verbose):
+def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, verbose, force_compile):
     """ - Write the compile script """
     create_compile_script.compile_create(
-        yamlfile, platform, target, makejobs, nparallel, execute, verbose)
+        yamlfile, platform, target, makejobs, nparallel, execute, verbose, force_compile)
 
 @make_cli.command('dockerfile')
 @click.option("-y",

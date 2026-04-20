@@ -140,11 +140,12 @@ def test_bm_checkout_force_checkout(caplog, monkeypatch):
                                            execute = False,
                                            force_checkout = True)
 
+    checkout_script = f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh"
     # Check it exists, check output, check content
-    assert all([Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists(),
+    assert all([Path(checkout_script).exists(),
                 "Checkout script PREVIOUSLY created" in caplog.text,
                 "*** REMOVING CHECKOUT SCRIPT ***" in caplog.text,
-                "Checkout script created" in caplog.text])
+                f"Checkout script created: {checkout_script}" in caplog.text])
 
     # Check one expected line is now populating the re-created checkout script
     expected_line = f"({EXPECTED_LINE}) &"
@@ -194,7 +195,7 @@ def test_container_checkout_force_checkout(caplog):
     assert all([Path(f"{mock_checkout}/checkout.sh").exists(),
                 "Checkout script PREVIOUSLY created" in caplog.text,
                 "*** REMOVING CHECKOUT SCRIPT ***" in caplog.text,
-                "Checkout script created in ./tmp" in caplog.text])
+                f"Checkout script created: ./tmp/{CONTAINER_PLATFORM[0]}/checkout.sh" in caplog.text])
 
     # Check for an expected line that should be populating the re-created checkout script
     # Check no parenthesis (no parallel checkouts)
