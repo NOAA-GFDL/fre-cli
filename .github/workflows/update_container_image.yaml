@@ -30,18 +30,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine image tag
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Determine latest tag
         id: set_tag
         run: |
-          # Use the pushed tag if this is a tag ref; otherwise fall back.
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            TAG="${GITHUB_REF#refs/tags/}"
-          elif [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            TAG="latest"
-          else
-            TAG="${GITHUB_SHA::7}"
-          fi
-          echo "docker_tag=$TAG" >> "$GITHUB_OUTPUT"
+          TAG=$(git describe --tags --abbrev=0)
+          echo "container tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
