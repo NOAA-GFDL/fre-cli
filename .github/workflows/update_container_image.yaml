@@ -37,7 +37,7 @@ jobs:
         id: set_tag
         run: |
           TAG=$(git describe --tags --abbrev=0)
-          echo "docker_tag=$TAG" >> $GITHUB_OUTPUT
+          echo "container tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
