@@ -79,9 +79,9 @@ Required configuration
 
  postprocess:
    settings:
-     pp_start: 1979-01-01T0000Z
+     pp_start: "1979-01-01T0000Z"
 
-     pp_stop: 2020-01-01T0000Z
+     pp_stop: "2020-01-01T0000Z"
 
 Postprocess components
 ----------------------
