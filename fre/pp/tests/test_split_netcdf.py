@@ -11,6 +11,7 @@ from pathlib import Path
 
 import click
 import pytest
+import xarray as xr
 from click.testing import CliRunner
 
 from fre import fre
@@ -218,6 +219,72 @@ def test_split_file_metadata(workdir,newdir, origdir):
             print("comparison of " + nccmp_cmd[-1] + " and " + nccmp_cmd[-2] + " did not match")
             print(sp.stdout, sp.stderr)
     assert all_files_equal and same_count_files
+
+def test_variable_filtering_bug_fix():
+    ''' Test that variables with names containing short metadata var names are not excluded.
+    
+    This test verifies the fix for a bug where the matching logic was incorrectly applied
+    to both known patterns and the list of short variable names (e.g., "a", "b"), causing
+    variables like "drybc" to be excluded because they contain "b".
+    
+    The bug was that short vars were treated as patterns instead of exact matches.
+    '''
+    # Create a mock dataset with variables that would trigger the old bug
+    import numpy as np
+    import tempfile
+    
+    # Create dimensions
+    time = xr.DataArray(np.arange(10), dims=['time'])
+    lat = xr.DataArray(np.arange(5), dims=['lat'])
+    lon = xr.DataArray(np.arange(5), dims=['lon'])
+    
+    # Create variables: some data vars with names that contain short var letters
+    data_vars = {
+        'drybc': (['time', 'lat', 'lon'], np.random.rand(10, 5, 5)),  # Should be included
+        'wetbc': (['time', 'lat', 'lon'], np.random.rand(10, 5, 5)),  # Should be included
+        'temp': (['time', 'lat', 'lon'], np.random.rand(10, 5, 5)),   # Should be included
+        'a': (['time'], np.random.rand(10)),                          # Short var, should be excluded
+        'b': (['lat'], np.random.rand(5)),                            # Short var, should be excluded
+        'time_bnds': (['time', 'nv'], np.random.rand(10, 2)),         # Pattern match, should be excluded
+        'average_T1': (['time'], np.random.rand(10)),                 # Pattern match, should be excluded
+    }
+    
+    # Create coordinates
+    coords = {
+        'time': time,
+        'lat': lat,
+        'lon': lon,
+        'nv': [0, 1],
+    }
+    
+    ds = xr.Dataset(data_vars=data_vars, coords=coords)
+    
+    # Use a temporary directory for output
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Call split_file_xarray with "all" to get all data vars
+        split_file_xarray.__wrapped__ = split_file_xarray  # Access the original function
+        
+        # We need to test the internal logic. Since split_file_xarray writes files,
+        # let's test the filtering logic by inspecting the datavars.
+        # Actually, let's modify the function to return the datavars for testing.
+        
+        # For now, let's call it and check the output files
+        output_file = osp.join(tmpdir, 'test.nc')
+        # But split_file_xarray expects an input file, so we need to save ds first
+        input_file = osp.join(tmpdir, 'input.nc')
+        ds.to_netcdf(input_file)
+        
+        split_file_xarray(input_file, tmpdir, "all")
+        
+        # Check which files were created
+        output_files = [f for f in os.listdir(tmpdir) if f.endswith('.nc') and f != 'input.nc']
+        
+        # Expected data vars: drybc, wetbc, temp (3D+ vars)
+        # Excluded: a, b (1D), time_bnds (pattern), average_T1 (pattern)
+        expected_vars = {'drybc', 'wetbc', 'temp'}
+        actual_vars = {f.replace('input.', '').replace('.nc', '') for f in output_files}
+        
+        assert actual_vars == expected_vars, f"Expected {expected_vars}, got {actual_vars}"
 
 #clean up splitting files
 def test_split_file_cleanup():
