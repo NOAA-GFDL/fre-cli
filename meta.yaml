@@ -13,19 +13,12 @@ build:
     - cp fre/mkmf/bin/git-version-string $PREFIX/bin
   noarch: python
 
-channels:
-    - conda-forge
-    - noaa-gfdl
-
 requirements:
-  build:
+  host:
     - python>=3.11
     - pip
     - setuptools
     - wheel
-  host:
-    - python>=3.11
-    - setuptools
   run:
     - python>=3.11
     - noaa-gfdl::analysis_scripts==0.0.1
