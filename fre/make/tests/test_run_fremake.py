@@ -114,11 +114,16 @@ def test_run_fremake_force_checkout_serial(caplog):
         no_format_transfer=False, execute=False, verbose=VERBOSE,
         force_checkout=True)
 
+    renamed_src_dir = list(Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/").glob("src.*"))
     # Check it exists, check output, check content
     assert all(["Checkout script PREVIOUSLY created" in caplog.text,
-                "*** REMOVING CHECKOUT SCRIPT ***" in caplog.text,
+                "*** SRC DIR RENAMED:" in caplog.text,
+                "*** RE-CREATING CHECKOUT ***" in caplog.text,
                 "Checkout script created" in caplog.text,
-                Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists()])
+                Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/src/checkout.sh").exists(),
+                renamed_src_dir[0].exists(),
+                Path(f"{renamed_src_dir[0]}/checkout.sh").exists(),
+                "Running fre make: (from force-checkout) removing previously generated compile script" in caplog.text])
 
 # same tests with multijob compile and non-parallel-checkout options enabled
 def test_run_fremake_multijob():
@@ -172,6 +177,25 @@ def test_run_fremake_makefile_creation_container():
 def test_run_fremake_run_script_creation_container():
     ''' checks (internal) container run script creation from previous test '''
     assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/execrunscript.sh").exists()
+
+def test_run_fremake_container_force_checkout(caplog):
+    '''run run-fremake with options for containerized build and force-checkout'''
+    # double check the checkout script exists
+    assert Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists()
+
+    # run with force-checkout option
+    run_fremake_script.fremake_run(YAMLPATH, CONTAINER_PLATFORM, TARGET,
+        nparallel=False, makejobs=1, gitjobs=1, no_parallel_checkout=True,
+        no_format_transfer=False, execute=False, verbose=VERBOSE,
+        force_checkout=True)
+
+    renamed_src_dir = list(Path(f"{SERIAL_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/").glob("src.*"))
+    # Check it exists, check output, check content
+    assert all(["Checkout script PREVIOUSLY created" in caplog.text,
+                "*** REMOVING CHECKOUT SCRIPT ***" in caplog.text,
+                "Checkout script created" in caplog.text,
+                Path(f"tmp/{CONTAINER_PLATFORM[0]}/checkout.sh").exists(),
+                "Running fre make: (from force-checkout) removing previously generated Dockerfile" in caplog.text])
 
 # tests container 2 stage build script/makefile/dockerfile creation
 def test_run_fremake_container_2stage():
