@@ -1,0 +1,55 @@
+name: pylint
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+
+# cancel running jobs if theres a newer push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pylint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - name: Checkout Files
+        uses: actions/checkout@v4
+
+      - name: Setup Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: fre-cli
+          environment-file: environment.yaml
+          auto-activate: false
+          miniforge-version: latest
+          conda-remove-defaults: true
+
+      - name: Configure Conda
+        run: |
+          echo "removing main and r channels from defaults"
+          conda config --remove channels defaults || true
+          conda config --remove channels main || true
+          conda config --remove channels r || true
+
+          echo "setting strict channel priority"
+          conda config --set channel_priority strict
+
+          echo "printing conda config just in case"
+          conda config --show
+
+      - name: Install fremor
+        run: |
+          pip install .
+
+      - name: Run pylint
+        run: |
+          pylint --rcfile pylintrc fre/
