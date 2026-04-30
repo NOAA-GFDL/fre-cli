@@ -46,7 +46,7 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
-      - name: Install fremor
+      - name: Install fre
         run: |
           pip install .
 
