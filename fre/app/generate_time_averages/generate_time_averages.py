@@ -3,15 +3,18 @@
 import os
 import logging
 import time
+import warnings
 from typing import Optional, List, Union
 
-from cdo import Cdo
+import xarray as xr
 
-from .cdoTimeAverager import cdoTimeAverager
 from .frenctoolsTimeAverager import frenctoolsTimeAverager
-from .frepytoolsTimeAverager import frepytoolsTimeAverager
+from .numpyTimeAverager import NumpyTimeAverager
+from .xarrayTimeAverager import xarrayTimeAverager
 
 fre_logger = logging.getLogger(__name__)
+
+VALID_PKGS = ['cdo', 'fre-nctools', 'fre-python-tools', 'xarray', 'numpy']
 
 def generate_time_average(infile: Union[str, List[str]] = None,
                           outfile: str = None,
@@ -26,7 +29,9 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     :type infile: str, list
     :param outfile: path to where output file should be stored
     :type outfile: str
-    :param pkg: which package to use to calculate climatology (cdo, fre-nctools, fre-python-tools)
+    :param pkg: which package to use to calculate climatology
+                ('xarray', 'fre-python-tools', 'fre-nctools', or 'cdo')
+                'cdo' is kept for backward compat but silently uses xarray.
     :type pkg: str
     :param var: optional, not currently supported and defaults to None
     :type var: str
@@ -41,12 +46,12 @@ def generate_time_average(infile: Union[str, List[str]] = None,
     fre_logger.debug('called generate_time_average')
     if None in [infile, outfile, pkg]:
         raise ValueError('infile, outfile, and pkg are required inputs')
-    if pkg not in ['cdo', 'fre-nctools', 'fre-python-tools']:
-        raise ValueError(f'argument pkg = {pkg} not known, must be one of: cdo, fre-nctools, fre-python-tools')
+    if pkg not in VALID_PKGS:
+        raise ValueError(f'argument pkg = {pkg} not known, must be one of: {", ".join(VALID_PKGS)}')
     exitstatus = 1
     myavger = None
 
-    # multiple files case Use cdo to merge multiple files if present
+    # multiple files case - merge multiple files if present
     merged = False
     orig_infile_list = None
     if all ( [ type(infile).__name__ == 'list',
@@ -54,13 +59,13 @@ def generate_time_average(infile: Union[str, List[str]] = None,
         fre_logger.info('list input argument detected')
         infile_str = [str(item) for item in infile]
 
-        _cdo = Cdo()
         merged_file = "merged_output.nc"
 
-        fre_logger.info('calling cdo mergetime')
+        fre_logger.info('merging input files with xarray')
         fre_logger.debug('output: %s', merged_file)
         fre_logger.debug('inputs: \n %s', ' '.join(infile_str) )
-        _cdo.mergetime(input = ' '.join(infile_str), output = merged_file)
+        with xr.open_mfdataset(infile_str, combine='by_coords') as ds:
+            ds.to_netcdf(merged_file)
 
         # preserve the original file names for later
         orig_infile_list = infile
@@ -69,29 +74,45 @@ def generate_time_average(infile: Union[str, List[str]] = None,
         fre_logger.info('file merging success')
 
     if pkg == 'cdo':
-        fre_logger.info('creating a cdoTimeAverager')
-        myavger = cdoTimeAverager( pkg = pkg,
-                                   var = var,
-                                   unwgt = unwgt,
-                                   avg_type = avg_type )
+        # CDO has been removed — warn loudly, use xarray instead
+        msg = (
+            "WARNING *** CDO/python-cdo has been REMOVED from fre-cli. "
+            "pkg='cdo' now uses the xarray time-averager under the hood. "
+            "Please switch to pkg='xarray' or pkg='fre-python-tools'. ***"
+        )
+        warnings.warn(msg, FutureWarning, stacklevel=2)
+        fre_logger.warning(msg)
+        fre_logger.info('creating an xarrayTimeAverager (via pkg=cdo redirect)')
+        myavger = xarrayTimeAverager( pkg = pkg,
+                                      var = var,
+                                      unwgt = unwgt,
+                                      avg_type = avg_type )
+
+    elif pkg == 'xarray':
+        fre_logger.info('creating an xarrayTimeAverager')
+        myavger = xarrayTimeAverager( pkg = pkg,
+                                      var = var,
+                                      unwgt = unwgt,
+                                      avg_type = avg_type )
+
     elif pkg == 'fre-nctools':
         fre_logger.info('creating a frenctoolsTimeAverager')
         myavger = frenctoolsTimeAverager( pkg = pkg,
                                           var = var,
                                           unwgt = unwgt,
                                           avg_type = avg_type )
-    elif pkg == 'fre-python-tools':
+    elif pkg in ('fre-python-tools', 'numpy'):
         #fre-python-tools addresses var in a unique way, which is addressed here
         if merged and var is None:
             fre_logger.warning('special variable id logic underway...')
             var = orig_infile_list[0].split('/').pop().split('.')[-2]
             fre_logger.warning('extracted var = %s from orig_infile_list[0] = %s', var, orig_infile_list[0] )
 
-        fre_logger.info('creating a frepytoolsTimeAverager')
-        myavger = frepytoolsTimeAverager( pkg = pkg,
-                                          var = var,
-                                          unwgt = unwgt,
-                                          avg_type = avg_type )
+        fre_logger.info('creating a NumpyTimeAverager')
+        myavger = NumpyTimeAverager( pkg = pkg,
+                                     var = var,
+                                     unwgt = unwgt,
+                                     avg_type = avg_type )
 
     # workload
     if myavger is not None:
