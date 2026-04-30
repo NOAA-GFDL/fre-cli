@@ -5,6 +5,7 @@ script, with 'fre' as the entry point
 """
 
 import logging
+import sys
 
 import click
 
@@ -38,7 +39,8 @@ fre_logger = logging.getLogger(__name__)
 )
 @click.option( '-v', '--verbose', default = 0, required = False, count = True, type = int,
                help = "Increment logging verbosity from default (logging.WARNING) to logging.INFO. " + \
-                      "use -vv for logging.DEBUG. will be overridden by -q/--quiet" )
+                      "use -vv for logging.DEBUG and to show full tracebacks on errors. " + \
+                      "will be overridden by -q/--quiet" )
 @click.option( '-q', '--quiet', default = False, required = False, is_flag = True, type = bool,
                help = "Set logging verbosity from default (logging.WARNING) to logging.ERROR, printing " + \
                       "less output to screen. overrides -v[v]/--verbose" )
@@ -79,3 +81,10 @@ def fre(verbose = 0, quiet = False, log_file = None):
         fre_logger.info('fre_file_handler added to base_fre_logger')
 
     fre_logger.debug('click entry-point function call done.')
+
+    # install custom exception hook to suppress tracebacks unless -vv is used
+    if log_level > logging.DEBUG:
+        def _brief_excepthook(exc_type, exc_value, exc_tb):
+            click.echo(f"{exc_type.__name__}: {exc_value}", err=True)
+            click.echo("(use 'fre -vv ...' for the full traceback)", err=True)
+        sys.excepthook = _brief_excepthook

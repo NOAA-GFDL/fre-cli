@@ -20,6 +20,7 @@ arguments
 * (optional) ``-v[v]``, verbosity flag, up to two
   
   - increments ``fre``'s verbosity from the default ``logging.WARNING`` to ``logging.INFO`` with one ``-v``, and again to ``logging.DEBUG`` with ``-vv``
+  - at default verbosity or ``-v``, unhandled exceptions print only the error message; use ``-vv`` to show the full traceback
 	
 * (optional) ``-q``, quiet flag, up to one
   
