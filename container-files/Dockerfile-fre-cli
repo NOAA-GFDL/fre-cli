@@ -18,12 +18,16 @@ RUN apt update \
 RUN conda update -n base -c conda-forge conda
 
 # Copy runscript in container and make it executable
-COPY container-files/runscript.sh /app/exec/runscript.sh
+COPY runscript.sh /app/exec/runscript.sh
 RUN chmod +x /app/exec/runscript.sh
 
 # Set up conda environment directory for cylc workflow
-COPY container-files/cylc-flow-tools.yaml ${conda_location}/cylc-flow-tools.yaml
+COPY cylc-flow-tools.yaml ${conda_location}/cylc-flow-tools.yaml
 RUN mamba env create --file ${conda_location}/cylc-flow-tools.yaml -p ${conda_location}
+
+## NOT IDEAL but these changes are needed for the hsm conda package (specifically hsmput.mk) to work 
+RUN sed -i '28p' /app/cylc-flow-tools/mk/hsmput.mk
+RUN sed -i 's/>& \/dev\/null/> \/dev\/null 2>\&1/g' /app/cylc-flow-tools/mk/hsmput.mk
 
 # Maybe perhaps tag an external mounted volume /mnt2 as being safe...
 # RUN git config --global --add safe.directory /mnt2
