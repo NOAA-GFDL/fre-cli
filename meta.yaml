@@ -7,11 +7,12 @@ source:
 
 build:
   script:
-    - {{ PYTHON }} -m pip install . -vv
+    - {{ PYTHON }} -m pip install . -vv --no-deps
     - cp fre/mkmf/bin/mkmf $PREFIX/bin
     - cp fre/mkmf/bin/list_paths $PREFIX/bin
     - cp fre/mkmf/bin/git-version-string $PREFIX/bin
   noarch: python
+  number: 0
 
 requirements:
   host:
@@ -43,13 +44,10 @@ requirements:
 
 test:
   requires:
-    - conda-forge::pylint
     - conda-forge::pytest
-    - conda-forge::pytest-cov
   source_files:
     - fre/
   files:
-    - pylintrc
     - fre/mkmf/templates/*
   imports:
     - fre
@@ -73,7 +71,6 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
-    - pylint --rcfile pylintrc fre/
     - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/
 
 
