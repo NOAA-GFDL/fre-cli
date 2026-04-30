@@ -15,6 +15,7 @@ import sys
 from itertools import chain
 from os import path
 from pathlib import Path
+from typing import Dict, List, NoReturn, Optional, Union
 
 import xarray as xr
 import yaml
@@ -24,18 +25,16 @@ from fre.app.helpers import get_variables
 
 fre_logger = logging.getLogger(__name__)
 
-#These are patterns used to match known kinds of metadata-like variables
-#in netcdf files
-#*_bnds, *_bounds: bounds variables. Defines the edges of a coordinate var
-#*_offset: i and j offsets. Constants added to a coordinate var to get
-#   actual coordinate values, used to compress data
-#*_average: calculated averages for a variable.
-#These vars may also be covered by the var_shortvars query, but it doesn't
-#hurt to double-check.
-VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
 
-def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
-                 yamlfile, split_all_vars=False):
+def split_netcdf(
+    inputDir: str,
+    outputDir: str,
+    component: str,
+    history_source: str,
+    use_subdirs: bool,
+    yamlfile: str,
+    split_all_vars: bool = False,
+) -> NoReturn:
     '''
     Given a directory of netcdf files, splits those netcdf files into separate
     files for each data variable and copies the data variable files of interest
@@ -160,7 +159,9 @@ def split_netcdf(inputDir, outputDir, component, history_source, use_subdirs,
     fre_logger.info(f"split-netcdf-wrapper call complete, having split {files_split} files")
     sys.exit(0) #check this
 
-def split_file_xarray(infile, outfiledir, var_list='all'):
+def split_file_xarray(
+    infile: str, outfiledir: str, var_list: Union[str, List[str]] = "all"
+) -> None:
     '''
     Given a netcdf infile containing one or more data variables,
     writes out a separate file for each data variable in the file, including the
@@ -198,23 +199,53 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
     #If they were, I could get away with the following:
     #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
     #instead of this:
-    var_shortvars = [v for v in allvars if (len(dataset[v].shape) < varsize) and v not in dataset._coord_names]
+    metadata_vars_to_exclude_by_name = [v for v in allvars if (len(dataset[v].shape) < varsize) and v not in dataset._coord_names]
+    fre_logger.debug(f"Variables to be excluded (due to small number of dimensions): '{metadata_vars_to_exclude_by_name}'")
     #having a variable listed as both a metadata var and a coordinate var seems to
     #lead to the weird adding a _FillValue behavior
-    fre_logger.info(f"var patterns: {VAR_PATTERNS}")
-    fre_logger.info(f"1 or 2-d vars: {var_shortvars}")
-    #both combined gets you a decent list of non-diagnostic variables
-    var_exclude = list(set(VAR_PATTERNS + [str(el) for el in var_shortvars] ))
-    def matchlist(xstr):
-        ''' checks a string for matches in a list of patterns
 
-            xstr: string to search for matches
-            var_exclude: list of patterns defined in VAR_EXCLUDE'''
-        allmatch = [re.search(el, xstr)for el in var_exclude]
-        #If there's at least one match in the var_exclude list (average_bnds is OK)
-        return len(list(set(allmatch))) > 1
-    metavars = [el for el in allvars if matchlist(el)]
-    datavars = [el for el in allvars if not matchlist(el)]
+    # These are patterns used to match known kinds of metadata-like variables
+    # in netcdf files.
+    # *_bnds, *_bounds: bounds variables. Defines the edges of a coordinate var
+    # *_offset: i and j offsets. Constants added to a coordinate var to get
+    #       actual coordinate values, used to compress data
+    # *_average: calculated averages for a variable.
+    # These vars may also be covered by the metadata_vars query, but it doesn't
+    # hurt to double-check.
+    METADATA_VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
+
+    fre_logger.info(f"To exclude: var patterns matching '{METADATA_VAR_PATTERNS}'")
+    fre_logger.info(f"To exclude: 1 or 2-d vars: '{metadata_vars_to_exclude_by_name}'")
+    #both combined gets you a decent list of non-diagnostic variables
+    def is_metadata_var(var_to_check: str) -> bool:
+        """
+        Checks a variable name and determines whether it is a metadata variable
+        and therefore should not be one of the split-by-variable output files, by
+        comparing the variable name to exact matches or pattern matches of known metadata variables.
+
+        This nested method is intended to be used only internally within this method (split_file_xarray),
+        and returns a list of true/false values for the list comprehensions around lines 225/226.
+        Values are TRUE if the criteria for a metadata-like variable are met (the two checked cases)
+        and FALSE if they are not (the fall-through case)
+
+        METADATA_VAR_PATTERNS: list of regex patterns defined that match variables that should be excluded from the split-out files.
+        metadata_vars_to_exclude_by_name: list of variable names that should be excluded from the split-out files.
+
+        :param var_to_check: string to search for matches
+        :type var_to_check: string
+        """
+
+        # Check substring patterns from METADATA_VAR_PATTERNS
+        for pattern in METADATA_VAR_PATTERNS:
+            if re.search(pattern, var_to_check):
+                return True
+        # Check exact matches from metadata_vars_to_exclude_by_name
+        for name in metadata_vars_to_exclude_by_name:
+            if var_to_check == name:
+                return True
+        return False
+    metavars = [el for el in allvars if is_metadata_var(el)]
+    datavars = [el for el in allvars if not is_metadata_var(el)]
     fre_logger.debug(f"metavars: {metavars}")
     fre_logger.debug(f"datavars: {datavars}")
     fre_logger.debug(f"var filter list: {var_list}")
@@ -254,7 +285,7 @@ def split_file_xarray(infile, outfiledir, var_list='all'):
             data2.to_netcdf(var_out, encoding = var_encode)
             fre_logger.debug(f"Wrote '{var_out}'")
 
-def get_max_ndims(dataset):
+def get_max_ndims(dataset: xr.Dataset) -> int:
     '''
     Gets the maximum number of dimensions of a single var in an xarray
     Dataset object. Excludes coord vars, which should be single-dim anyway.
@@ -268,7 +299,7 @@ def get_max_ndims(dataset):
     ndims = [len(dataset[v].shape) for v in allvars]
     return max(ndims)
 
-def set_coord_encoding(dset, vcoords):
+def set_coord_encoding(dset: xr.Dataset, vcoords: List[str]) -> Dict[str, Dict[str, Union[None, str, type]]]:
     '''
     Gets the encoding settings needed for xarray to write out the coordinates
     as expected
@@ -302,7 +333,7 @@ def set_coord_encoding(dset, vcoords):
             encode_dict[vc]['units'] = dset[vc].encoding['units']
     return encode_dict
 
-def set_var_encoding(dset, varnames):
+def set_var_encoding(dset: xr.Dataset, varnames: List[str]) -> Dict[str, Dict[str, Union[None, str, type]]]:
     '''
     Gets the encoding settings needed for xarray to write out the variables
     as expected
@@ -329,7 +360,7 @@ def set_var_encoding(dset, varnames):
             encode_dict[v]['units'] = dset[v].encoding['units']
     return encode_dict
 
-def fre_outfile_name(infile, varname):
+def fre_outfile_name(infile: str, varname: str) -> str:
     '''
     Builds split  var filenames the way that fre expects them
     (and in a way that should work for any .nc file)
