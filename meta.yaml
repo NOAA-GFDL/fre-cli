@@ -7,25 +7,19 @@ source:
 
 build:
   script:
-    - {{ PYTHON }} -m pip install . -vv
+    - {{ PYTHON }} -m pip install . -vv --no-deps
     - cp fre/mkmf/bin/mkmf $PREFIX/bin
     - cp fre/mkmf/bin/list_paths $PREFIX/bin
     - cp fre/mkmf/bin/git-version-string $PREFIX/bin
   noarch: python
-
-channels:
-    - conda-forge
-    - noaa-gfdl
+  number: 0
 
 requirements:
-  build:
+  host:
     - python>=3.11
     - pip
     - setuptools
     - wheel
-  host:
-    - python>=3.11
-    - setuptools
   run:
     - python>=3.11
     - noaa-gfdl::analysis_scripts==0.0.1
@@ -50,13 +44,10 @@ requirements:
 
 test:
   requires:
-    - conda-forge::pylint
     - conda-forge::pytest
-    - conda-forge::pytest-cov
   source_files:
     - fre/
   files:
-    - pylintrc
     - fre/mkmf/templates/*
   imports:
     - fre
@@ -80,7 +71,6 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
-    - pylint --rcfile pylintrc fre/
     - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/
 
 

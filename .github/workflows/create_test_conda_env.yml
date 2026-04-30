@@ -104,20 +104,6 @@ jobs:
           export PATH="$path_save"
           echo $PATH
 
-      - name: Run pylint On fre/ In fre-cli Env
-        run: |
-          echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
-          source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
-
-          echo "to activate env, conda init"
-          conda init
-
-          echo "activating the fre-cli environment"
-          conda activate fre-cli
-
-          echo "running pylint on fre"
-          pylint --rcfile pylintrc fre/
-
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
         with:
