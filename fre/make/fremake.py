@@ -107,6 +107,7 @@ def make_cli():
               The default behavior is to generate the scripts, but not execute.""")
 @click.option("--force-checkout",
               is_flag = True,
+              default = False, 
               help = "Force a git checkout if the source directory already exists.")
 @click.option("-v",
               "--verbose",
@@ -156,6 +157,7 @@ def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_ch
               The default behavior is to generate the script, but not execute.""")
 @click.option("--force-checkout",
               is_flag = True,
+              default = False,
               help = "Force a git checkout if the source directory already exists.")
 def checkout_script(yamlfile, platform, target, no_parallel_checkout, gitjobs, execute, force_checkout):
     """ - Write the checkout script """
