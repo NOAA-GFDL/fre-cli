@@ -9,5 +9,3 @@ postprocess:
     site:               "ppan"
   switches:
     clean_work:         True
-    do_refinediag:      False
-    do_analysis:        True
