@@ -269,7 +269,6 @@ def test_variable_filtering_bug_fix():
         # Actually, let's modify the function to return the datavars for testing.
         
         # For now, let's call it and check the output files
-        output_file = osp.join(tmpdir, 'test.nc')
         # But split_file_xarray expects an input file, so we need to save ds first
         input_file = osp.join(tmpdir, 'input.nc')
         ds.to_netcdf(input_file)
