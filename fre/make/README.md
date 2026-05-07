@@ -3,55 +3,72 @@ Through the fre-cli, `fre make` can be used to create and run a checkout script,
 
 * Fre make Supports:
    - multiple targets; use `-t` flag to define each target
+   - multiple platforms; use `-p` flag to define each platform
    - bare-metal build
    - container creation
-   - parallel checkouts for bare-metal build**
+   - parallel checkouts for bare-metal build
 
-** **Note: Users will not be able to create containers without access to podman**
+**Note: The container engine used to create the container (such as podman or docker) is specified in the `platforms.yaml` with the `containerBuild` key. Please ensure the container engine is acccesible before running fre make.**
 
-## Guide
+## Getting Started
 
-### **Bare-metal Build:**
+The quickstart instructions [here](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/usage.html#quickstart), will build the null model using YAML configurations located in the fre-cli repository. These configurations are combined to create a resolved dictionary that will then be parsed for information to:
 
-Use fre make subtools to checkout code, create a Makefile, and compile code:
+1. Create and run a checkout script (using source code for the `FMS`, `ice_param`, and `coupler` components defined in the `compile.yaml`)
+2. Create a Makefile
+3. Create and run either a compile.sh (for bare-metal builds) or a Dockerfile and createContainer.sh (for container builds)
 
-```bash
-# Create and run checkout script
-fre make checkout-script -y [model yaml file] -p [platform] -t [target] --execute
+## Subtools
+- `fre make checkout-script [options]`
+   - Purpose: Create and run a checkout script. 
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-gj, --gitjobs`
+        - `-npc, --no-parallel-checkout`
+        - `--execute`
+        - `--force-checkout`
 
-# Create Makefile
-fre make makefile -y [model yaml file] -p [platform] -t [target]
+- `fre make makefile [options]`
+   - Purpose: Create a Makefile.
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
 
-# Create and run the compile script
-fre make compile-script -y [model yaml file] -p [platform] -t [target] --execute
-```
+- `fre make compile-script [options]`
+   - Purpose: Create and run a compile script to generate a model executable.
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-n --nparallel`
+        - `-mj --makejobs`
+        - `-e, --execute`
+        - `-v, --verbose`
 
-Or use `fre make all` to do the job of all 3 subtools in one step:
+- `fre make dockerfile [options]`
+   - Purpose: Create and run a Dockerfile to generate a model container.
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-nft, --no-format-transfer`
+        - `-e, --execute`
 
-```bash
-# Run fre make checkout-script, fre make makefile, and fre make compile-script in order
-fre make all -y [model yaml file] -p [platform] -t [target] [other options...]
-```
-
-### **Container Build:**
-***To reiterate, users will not be able to create containers unless they have podman access on gaea.***
-
-Use fre make subtools to checkout code, create a Makefile, and build a container:
-
-```bash
-# Create and run checkout script
-fre make checkout-script -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
-
-# Create Makefile
-fre make makefile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target]
-
-# Create and run the Dockerfile
-fre make dockerfile -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
-```
-
-Use `fre make all` to do the job of all 3 subtools in one step:
-
-```bash
-# Run fre make checkout-script, fre make makefile, and fre make dockerfile in order
-fre make all -y [model yaml file] -p [CONTAINER PLATFORM] -t [target] --execute
-```
+- `fre make all [options]`
+   - Purpose: 
+        - For a bare-metal build: Create a checkout script, Makefile, and compile script to generate a model executable
+        - For a container build: Create a checkout script, Makefile, and Dockerfile to generate a model container.
+   - Options:
+        - `-y, --yamlfile [model yaml] (required)`
+        - `-p, --platform [platform]   (required)`
+        - `-t, --target [target]       (required)`
+        - `-n --nparallel`
+        - `-mj --makejobs`
+        - `gj, --gitjobs`
+        - `-npc, --no-parallel-checkout`
+        - `-nft, --no-format-transfer`
+        - `-e, --execute`
+        - `-v, --verbose`
