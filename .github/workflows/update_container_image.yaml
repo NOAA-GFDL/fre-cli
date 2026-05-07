@@ -44,7 +44,7 @@ jobs:
 
       - name: Update fre-cli version in cylc-flow-tools.yaml
         run: |
-          sed -i 's/^[[:space:]]*-[[:space:]]*noaa-gfdl::fre-cli==.*/  - noaa-gfdl::fre-cli==${{ steps.set_tag.outputs.docker_tag }}/' cylc-flow-tools.yaml
+          sed -i 's/^[[:space:]]*-[[:space:]]*noaa-gfdl::fre-cli==.*/  - noaa-gfdl::fre-cli==${{ steps.set_tag.outputs.docker_tag }}/' ./container-files/cylc-flow-tools.yaml
 
       - name: Log in to the Container registry
         if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' }}
