@@ -11,7 +11,7 @@ on:
         options: ["true", "false"]
 
   workflow_run:
-    workflows: ["Publish Conda"]
+    workflows: ["publish_conda"]
     types: [completed]
 
 env:
