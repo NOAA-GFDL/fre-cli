@@ -2,21 +2,13 @@ name: Build and Push Container Image
 
 on:
   workflow_dispatch:
-    inputs:
-      dry_run:
-        description: "Skip pushing container image"
-        required: true
-        default: "true"
-        type: choice
-        options: ["true", "false"]
-
   workflow_run:
     workflows: ["publish_conda"]
     types: [completed]
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: "noaa-gfdl/ubuntu-20-fre-cli-2025"
+  IMAGE_NAME: "noaa-gfdl/fre-cli"
 
 jobs:
   build-and-push:
