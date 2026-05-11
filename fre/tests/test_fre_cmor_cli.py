@@ -592,14 +592,11 @@ def test_cli_fre_cmor_varlist_opt_dne():
 def test_cli_fre_cmor_varlist_disabled(tmp_path):
     ''' fre cmor varlist required args reaches disabled placeholder '''
     output_varlist = tmp_path / 'varlist.json'
-    result = runner.invoke(
-        fre.fre,
-        args=["cmor", "varlist", "--dir_targ", "indir", "--output_variable_list", str(output_varlist)]
+    assert_cmor_disabled(
+        ["cmor", "varlist", "--dir_targ", "indir", "--output_variable_list", str(output_varlist)],
+        "varlist",
+        output_paths=[output_varlist]
     )
-    assert result.exit_code == 1
-    assert '`fre cmor varlist` is disabled in fre-cli' in result.output
-    assert FREMOR_URL in result.output
-    assert not output_varlist.exists()
 
 
 @DISABLED_CMOR_CASE
