@@ -470,25 +470,25 @@ def update_grid_and_label( json_file_path: str,
             fre_logger.info('Original "grid": %s', data["grid"])
             data["grid"] = new_grid
             fre_logger.info('Updated "grid": %s', data["grid"])
-        except KeyError as e:
-            fre_logger.error("Failed to update 'grid': %s", e)
-            raise KeyError("Error while updating 'grid'. Ensure the field exists and is modifiable.") from e
+        except KeyError as exc:
+            fre_logger.exception("Failed to update 'grid': %s", exc)
+            raise KeyError("Error while updating 'grid'. Ensure the field exists and is modifiable.") from exc
 
         try:
             fre_logger.info('Original "grid_label": %s', data["grid_label"])
             data["grid_label"] = new_grid_label
             fre_logger.info('Updated "grid_label": %s', data["grid_label"])
-        except KeyError as e:
-            fre_logger.error("Failed to update 'grid_label': %s", e)
-            raise KeyError("Error while updating 'grid_label'. Ensure the field exists and is modifiable.") from e
+        except KeyError as exc:
+            fre_logger.exception("Failed to update 'grid_label': %s", exc)
+            raise KeyError("Error while updating 'grid_label'. Ensure the field exists and is modifiable.") from exc
 
         try:
             fre_logger.info('Original "nominal_resolution": %s', data["nominal_resolution"])
             data["nominal_resolution"] = new_nom_res
             fre_logger.info('Updated "nominal_resolution": %s', data["nominal_resolution"])
-        except KeyError as e:
-            fre_logger.error("Failed to update 'nominal_resolution': %s", e)
-            raise KeyError("Error updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from e
+        except KeyError as exc:
+            fre_logger.exception("Failed to update 'nominal_resolution': %s", exc)
+            raise KeyError("Error updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from exc
 
         output_file_path = output_file_path or json_file_path
 
@@ -498,13 +498,13 @@ def update_grid_and_label( json_file_path: str,
         fre_logger.info('Successfully updated fields and saved to %s', output_file_path)
 
     except FileNotFoundError:
-        fre_logger.error("The file '%s' does not exist.", json_file_path)
+        fre_logger.exception("The file '%s' does not exist.", json_file_path)
         raise
     except json.JSONDecodeError:
-        fre_logger.error("Failed to decode JSON from the file '%s'.", json_file_path)
+        fre_logger.exception("Failed to decode JSON from the file '%s'.", json_file_path)
         raise
-    except Exception as e:
-        fre_logger.error("An unexpected error occurred: %s", e)
+    except Exception as exc:
+        fre_logger.exception("An unexpected error occurred: %s", exc)
         raise
 
 
@@ -543,9 +543,9 @@ def update_calendar_type( json_file_path: str,
             fre_logger.info('Original "calendar": %s', data["calendar"])
             data["calendar"] = new_calendar_type
             fre_logger.info('Updated "calendar": %s', data["calendar"])
-        except KeyError as e:
-            fre_logger.error("Failed to update 'calendar': %s", e)
-            raise KeyError("Error while updating 'calendar'. Ensure the field exists and is modifiable.") from e
+        except KeyError as exc:
+            fre_logger.exception("Failed to update 'calendar': %s", exc)
+            raise KeyError("Error while updating 'calendar'. Ensure the field exists and is modifiable.") from exc
 
         output_file_path = output_file_path or json_file_path
 
@@ -555,13 +555,13 @@ def update_calendar_type( json_file_path: str,
         fre_logger.info('Successfully updated fields and saved to %s', output_file_path)
 
     except FileNotFoundError:
-        fre_logger.error("The file '%s' does not exist.", json_file_path)
+        fre_logger.exception("The file '%s' does not exist.", json_file_path)
         raise
     except json.JSONDecodeError:
-        fre_logger.error("Failed to decode JSON from the file '%s'.", json_file_path)
+        fre_logger.exception("Failed to decode JSON from the file '%s'.", json_file_path)
         raise
-    except Exception as e:
-        fre_logger.error("An unexpected error occurred: %s", e)
+    except Exception as exc:
+        fre_logger.exception("An unexpected error occurred: %s", exc)
         raise
 
 def check_path_existence(some_path: str):

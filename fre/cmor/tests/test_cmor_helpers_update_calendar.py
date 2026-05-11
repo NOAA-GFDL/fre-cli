@@ -2,6 +2,7 @@
 tests for fre.cmor.cmor_helpers.update_calendar_type
 '''
 import json
+from unittest.mock import patch
 
 import pytest
 
@@ -111,3 +112,13 @@ def test_update_calendar_type_jsonDNE_raise():
     """
     with pytest.raises(FileNotFoundError):
         update_calendar_type('DOES_NOT_EXIST.json','365_day')
+
+def test_update_calendar_type_jsonDNE_logs_exception():
+    """
+    Test FileNotFoundError paths use logger.exception before re-raising.
+    """
+    with patch('fre.cmor.cmor_helpers.fre_logger.exception') as mock_exception:
+        with pytest.raises(FileNotFoundError):
+            update_calendar_type('DOES_NOT_EXIST.json', '365_day')
+
+    mock_exception.assert_called_once_with("The file '%s' does not exist.", 'DOES_NOT_EXIST.json')
