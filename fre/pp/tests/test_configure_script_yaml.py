@@ -4,6 +4,7 @@ Test configure_script_yaml
 import os
 import shutil
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 import yaml
@@ -100,6 +101,18 @@ def test_validate_fail():
         val_fail = csy.validate_yaml(wrong_yml_dict)
 
     assert execinfo.type is ValueError
+
+def test_validate_invalid_schema_logs_exception():
+    """
+    Test schema loading failures use logger.exception before re-raising.
+    """
+    with patch("fre.pp.configure_script_yaml.open", side_effect=OSError), \
+         patch("fre.pp.configure_script_yaml.fre_logger.exception") as mock_exception:
+        with pytest.raises(OSError):
+            csy.validate_yaml({})
+
+    schema_path = Path(csy.__file__).resolve().parents[1] / "gfdl_msd_schemas" / "FRE" / "fre_pp.json"
+    mock_exception.assert_called_once_with("Schema '%s' is not valid. Contact the FRE team.", str(schema_path))
 
 def test_set_rose_suite_missing_postprocess():
     """

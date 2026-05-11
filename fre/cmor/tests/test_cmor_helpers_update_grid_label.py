@@ -5,6 +5,7 @@ unit tests for cmor_helpers.update_grid_and_label
 import json
 
 from pathlib import Path
+from unittest.mock import patch
 import pytest
 
 from fre.cmor.cmor_helpers import update_grid_and_label
@@ -146,3 +147,13 @@ def test_nonexistent_file():
     # Act & Assert
     with pytest.raises(FileNotFoundError):
         update_grid_and_label(nonexistent_file, new_grid_label, new_grid, new_nom_res)
+
+def test_nonexistent_file_logs_exception():
+    """
+    Test FileNotFoundError paths use logger.exception before re-raising.
+    """
+    with patch('fre.cmor.cmor_helpers.fre_logger.exception') as mock_exception:
+        with pytest.raises(FileNotFoundError):
+            update_grid_and_label(Path("nonexistent.json"), "updated_label", "updated_grid", "updated_nom_res")
+
+    mock_exception.assert_called_once_with("The file '%s' does not exist.", Path("nonexistent.json"))

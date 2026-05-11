@@ -38,8 +38,8 @@ def validate_yaml(yamlfile: dict) -> None:
     try:
         with open(schema_path,'r', encoding='utf-8') as s:
             schema = json.load(s)
-    except:
-        fre_logger.error("Schema '%s' is not valid. Contact the FRE team.", schema_path)
+    except Exception:
+        fre_logger.exception("Schema '%s' is not valid. Contact the FRE team.", schema_path)
         raise
 
     # Validate yaml
