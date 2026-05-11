@@ -23,9 +23,9 @@ from click.testing import CliRunner
 import pytest
 
 from fre import fre
+from fre.cmor import FREMOR_URL
 
 runner = CliRunner()
-FREMOR_URL = 'https://github.com/NOAA-GFDL/fremor'
 DISABLED_CMOR_CASE = pytest.mark.skip(reason='fre.cmor is disabled in fre-cli; use fremor instead.')
 
 # where are we? we're running pytest from the base directory of this repo
@@ -39,12 +39,15 @@ COPIED_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg
 ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
 
 
-def assert_cmor_disabled(args, subcommand):
+def assert_cmor_disabled(args, subcommand, output_paths=None):
     ''' assert a fre cmor subcommand exits with the disabled message '''
     result = runner.invoke(fre.fre, args=args)
     assert result.exit_code == 1
     assert f'`fre cmor {subcommand}` is disabled in fre-cli' in result.output
     assert FREMOR_URL in result.output
+    if output_paths is not None:
+        for output_path in output_paths:
+            assert not Path(output_path).exists()
 
 @DISABLED_CMOR_CASE
 def test_setup_test_files():
@@ -146,11 +149,16 @@ def test_cli_fre_cmor_yaml_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "yaml", "optionDNE"])
     assert result.exit_code == 2
 
-def test_cli_fre_cmor_yaml_disabled():
+def test_cli_fre_cmor_yaml_disabled(tmp_path):
     ''' fre cmor yaml required args reaches disabled placeholder '''
+    output_yaml = tmp_path / 'disabled.yaml'
     assert_cmor_disabled(
-        ["cmor", "yaml", "-y", "dummy.yaml", "-e", "exp", "-p", "platform", "-t", "target"],
-        "yaml"
+        [
+            "cmor", "yaml", "-y", "dummy.yaml", "-e", "exp", "-p", "platform", "-t", "target",
+            "--output", str(output_yaml)
+        ],
+        "yaml",
+        output_paths=[output_yaml]
     )
 
 TEST_AM5_YAML_PATH="fre/yamltools/tests/AM5_example/am5.yaml"
@@ -197,8 +205,9 @@ def test_cli_fre_cmor_run_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
-def test_cli_fre_cmor_run_disabled():
+def test_cli_fre_cmor_run_disabled(tmp_path):
     ''' fre cmor run required args reaches disabled placeholder '''
+    output_dir = tmp_path / 'outdir'
     assert_cmor_disabled(
         [
             "cmor", "run",
@@ -206,9 +215,10 @@ def test_cli_fre_cmor_run_disabled():
             "--varlist", "varlist.json",
             "--table_config", "table.json",
             "--exp_config", "exp.json",
-            "--outdir", "outdir"
+            "--outdir", str(output_dir)
         ],
-        "run"
+        "run",
+        output_paths=[output_dir]
     )
 
 @DISABLED_CMOR_CASE
@@ -453,8 +463,11 @@ def test_cli_fre_cmor_config_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "config", "optionDNE"])
     assert result.exit_code == 2
 
-def test_cli_fre_cmor_config_disabled():
+def test_cli_fre_cmor_config_disabled(tmp_path):
     ''' fre cmor config required args reaches disabled placeholder '''
+    output_yaml = tmp_path / 'out.yaml'
+    output_dir = tmp_path / 'outdir'
+    varlist_dir = tmp_path / 'varlists'
     assert_cmor_disabled(
         [
             "cmor", "config",
@@ -462,11 +475,12 @@ def test_cli_fre_cmor_config_disabled():
             "--mip_tables_dir", "tables",
             "--mip_era", "cmip6",
             "--exp_config", "exp.json",
-            "--output_yaml", "out.yaml",
-            "--output_dir", "outdir",
-            "--varlist_dir", "varlists"
+            "--output_yaml", str(output_yaml),
+            "--output_dir", str(output_dir),
+            "--varlist_dir", str(varlist_dir)
         ],
-        "config"
+        "config",
+        output_paths=[output_yaml, output_dir, varlist_dir]
     )
 
 
