@@ -471,7 +471,7 @@ def update_grid_and_label( json_file_path: str,
             data["grid"] = new_grid
             fre_logger.info('Updated "grid": %s', data["grid"])
         except KeyError as exc:
-            fre_logger.exception("Failed to update 'grid'")
+            fre_logger.exception("Failed to update 'grid': %s", exc)
             raise KeyError("Error while updating 'grid'. Ensure the field exists and is modifiable.") from exc
 
         try:
@@ -479,7 +479,7 @@ def update_grid_and_label( json_file_path: str,
             data["grid_label"] = new_grid_label
             fre_logger.info('Updated "grid_label": %s', data["grid_label"])
         except KeyError as exc:
-            fre_logger.exception("Failed to update 'grid_label'")
+            fre_logger.exception("Failed to update 'grid_label': %s", exc)
             raise KeyError("Error while updating 'grid_label'. Ensure the field exists and is modifiable.") from exc
 
         try:
@@ -487,7 +487,7 @@ def update_grid_and_label( json_file_path: str,
             data["nominal_resolution"] = new_nom_res
             fre_logger.info('Updated "nominal_resolution": %s', data["nominal_resolution"])
         except KeyError as exc:
-            fre_logger.exception("Failed to update 'nominal_resolution'")
+            fre_logger.exception("Failed to update 'nominal_resolution': %s", exc)
             raise KeyError("Error updating 'nominal_resolution'. Ensure the field exists and is modifiable.") from exc
 
         output_file_path = output_file_path or json_file_path
@@ -544,7 +544,7 @@ def update_calendar_type( json_file_path: str,
             data["calendar"] = new_calendar_type
             fre_logger.info('Updated "calendar": %s', data["calendar"])
         except KeyError as exc:
-            fre_logger.exception("Failed to update 'calendar'")
+            fre_logger.exception("Failed to update 'calendar': %s", exc)
             raise KeyError("Error while updating 'calendar'. Ensure the field exists and is modifiable.") from exc
 
         output_file_path = output_file_path or json_file_path
