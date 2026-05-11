@@ -2,11 +2,7 @@
 
 import click
 
-from . import cmor_find_subtool
-from . import cmor_run_subtool
-from . import cmor_yaml_subtool
-from . import cmor_config_subtool
-from .cmor_finder import make_simple_varlist
+from . import FREMOR_URL
 
 OPT_VAR_NAME_HELP="optional, specify a variable name to specifically process only filenames " + \
                   "matching that variable name. I.e., this string help target local_vars, not " + \
@@ -21,10 +17,16 @@ DRY_RUN_HELP="don't call the cmor_mixer subtool, just printout what would be cal
 START_YEAR_HELP = 'string representing the minimum calendar year CMOR should start processing for. ' + \
                   'currently, only YYYY format is supported.'
 STOP_YEAR_HELP = 'string representing the maximum calendar year CMOR should stop processing for. ' + \
-                  'currently, only YYYY format is supported.'
+                 'currently, only YYYY format is supported.'
 
 
-@click.group(help=click.style(" - cmor subcommands", fg=(232,91,204)))
+def _raise_cmor_disabled(subcommand):
+    raise click.ClickException(
+        f'`fre cmor {subcommand}` is disabled in fre-cli; use fremor instead: {FREMOR_URL}'
+    )
+
+
+@click.group(help=click.style(f" - cmor subcommands (disabled; use fremor: {FREMOR_URL})", fg=(232,91,204)))
 def cmor_cli():
     ''' entry point to fre cmor click commands '''
 
@@ -62,22 +64,10 @@ def cmor_cli():
               required = False)
 def yaml(yamlfile, experiment, target, platform, output, run_one, dry_run, start, stop, print_cli_call):
     """
-    Processes a CMOR (Climate Model Output Rewriter) YAML configuration file. This function takes a YAML file
-    and various parameters related to a climate model experiment, and processes the YAML file using the CMOR
-    YAML subtool.
+    Disabled placeholder for future fremor integration.
     """
-    cmor_yaml_subtool(
-        yamlfile = yamlfile,
-        exp_name = experiment,
-        target = target,
-        platform = platform,
-        output = output,
-        run_one_mode = run_one,
-        dry_run_mode = dry_run,
-        start = start,
-        stop = stop,
-        print_cli_call = print_cli_call
-    )
+    del yamlfile, experiment, target, platform, output, run_one, dry_run, start, stop, print_cli_call
+    _raise_cmor_disabled('yaml')
 
 
 @cmor_cli.command()
@@ -97,11 +87,8 @@ def find(varlist, table_config_dir, opt_var_name): #uncovered
     an opt_var_name in addition to varlist, only that variable name will be printed out.
     accepts 3 arguments, two of the three required.
     '''
-    cmor_find_subtool(
-        json_var_list = varlist,
-        json_table_config_dir = table_config_dir,
-        opt_var_name = opt_var_name
-    )
+    del varlist, table_config_dir, opt_var_name
+    _raise_cmor_disabled('find')
 
 
 @cmor_cli.command()
@@ -160,21 +147,9 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
     """
     Rewrite climate model output files with CMIP-compliant metadata for down-stream publishing
     """
-    cmor_run_subtool(
-        indir = indir,
-        json_var_list = varlist,
-        json_table_config = table_config,
-        json_exp_config = exp_config,
-        outdir = outdir,
-        run_one_mode = run_one,
-        opt_var_name = opt_var_name,
-        grid = grid_desc,
-        grid_label = grid_label,
-        nom_res = nom_res,
-        start = start,
-        stop = stop,
-        calendar_type = calendar
-    )
+    del indir, varlist, table_config, exp_config, outdir, run_one
+    del opt_var_name, grid_label, grid_desc, nom_res, start, stop, calendar
+    _raise_cmor_disabled('run')
 
 
 @cmor_cli.command()
@@ -184,11 +159,10 @@ def run(indir, varlist, table_config, exp_config, outdir, run_one, opt_var_name,
               help="Target MIP table for making variable list")
 def varlist(dir_targ, output_variable_list, mip_table):
     """
-    Create a simple variable list from netCDF files in the target directory.
+    Disabled placeholder for future fremor integration.
     """
-    make_simple_varlist(dir_targ = dir_targ,
-                        output_variable_list = output_variable_list,
-                        json_mip_table = mip_table)
+    del dir_targ, output_variable_list, mip_table
+    _raise_cmor_disabled('varlist')
 
 
 @cmor_cli.command()
@@ -219,21 +193,8 @@ def varlist(dir_targ, output_variable_list, mip_table):
 def config(pp_dir, mip_tables_dir, mip_era, exp_config, output_yaml,
            output_dir, varlist_dir, freq, chunk, grid, overwrite, calendar):
     """
-    Generate a CMOR YAML configuration file from a post-processing directory tree.
-    Scans pp_dir for components and time-series data, cross-references against MIP tables,
-    and writes a YAML configuration that 'fre cmor yaml' can consume.
+    Disabled placeholder for future fremor integration.
     """
-    cmor_config_subtool(
-        pp_dir=pp_dir,
-        mip_tables_dir=mip_tables_dir,
-        mip_era=mip_era,
-        exp_config=exp_config,
-        output_yaml=output_yaml,
-        output_dir=output_dir,
-        varlist_dir=varlist_dir,
-        freq=freq,
-        chunk=chunk,
-        grid=grid,
-        overwrite=overwrite,
-        calendar_type=calendar
-    )
+    del pp_dir, mip_tables_dir, mip_era, exp_config, output_yaml, output_dir
+    del varlist_dir, freq, chunk, grid, overwrite, calendar
+    _raise_cmor_disabled('config')

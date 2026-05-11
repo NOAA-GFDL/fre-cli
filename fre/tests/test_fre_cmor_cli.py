@@ -20,10 +20,13 @@ from pathlib import Path
 import shutil
 
 from click.testing import CliRunner
+import pytest
 
 from fre import fre
 
 runner = CliRunner()
+FREMOR_URL = 'https://github.com/NOAA-GFDL/fremor'
+DISABLED_CMOR_CASE = pytest.mark.skip(reason='fre.cmor is disabled in fre-cli; use fremor instead.')
 
 # where are we? we're running pytest from the base directory of this repo
 #ROOTDIR = 'fre/tests/test_files'
@@ -35,6 +38,15 @@ YYYYMMDD=date.today().strftime('%Y%m%d')
 COPIED_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sosV2.nc'
 ORIGINAL_NC_FILEPATH = f'{ROOTDIR}/ocean_sos_var_file/reduced_ocean_monthly_1x1deg.199301-199302.sos.nc'
 
+
+def assert_cmor_disabled(args, subcommand):
+    ''' assert a fre cmor subcommand exits with the disabled message '''
+    result = runner.invoke(fre.fre, args=args)
+    assert result.exit_code == 1
+    assert f'`fre cmor {subcommand}` is disabled in fre-cli' in result.output
+    assert FREMOR_URL in result.output
+
+@DISABLED_CMOR_CASE
 def test_setup_test_files():
     """ set-up test: copy and rename NetCDF file created in test_fre_cmor_run_subtool.py """
 
@@ -53,7 +65,8 @@ def test_setup_test_files():
 def test_cli_fre_cmor():
     ''' fre cmor '''
     result = runner.invoke(fre.fre, args=["cmor"])
-    assert result.exit_code == 2
+    assert result.exit_code == 0
+    assert FREMOR_URL in result.output
 
 def test_cli_fre_cmor_help():
     ''' fre cmor --help '''
@@ -133,8 +146,18 @@ def test_cli_fre_cmor_yaml_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "yaml", "optionDNE"])
     assert result.exit_code == 2
 
+def test_cli_fre_cmor_yaml_disabled():
+    ''' fre cmor yaml required args reaches disabled placeholder '''
+    assert_cmor_disabled(
+        ["cmor", "yaml", "-y", "dummy.yaml", "-e", "exp", "-p", "platform", "-t", "target"],
+        "yaml"
+    )
+
 TEST_AM5_YAML_PATH="fre/yamltools/tests/AM5_example/am5.yaml"
 TEST_CMOR_YAML_PATH="fre/yamltools/tests/AM5_example/cmor_yamls/cmor.am5.yaml"
+
+
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_yaml_case1():
     ''' fre cmor yaml --dry_run -y TEST_AM5_YAML_PATH ... --output FOO_cmor.yaml '''
     # only pp_dir is needed by cmor_yamler; history/analysis dirs came from settings.yaml
@@ -174,6 +197,21 @@ def test_cli_fre_cmor_run_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "run", "optionDNE"])
     assert result.exit_code == 2
 
+def test_cli_fre_cmor_run_disabled():
+    ''' fre cmor run required args reaches disabled placeholder '''
+    assert_cmor_disabled(
+        [
+            "cmor", "run",
+            "--indir", "indir",
+            "--varlist", "varlist.json",
+            "--table_config", "table.json",
+            "--exp_config", "exp.json",
+            "--outdir", "outdir"
+        ],
+        "run"
+    )
+
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_run_case1():
     ''' fre cmor run, test-use case '''
 
@@ -220,6 +258,7 @@ def test_cli_fre_cmor_run_case1():
                    Path(full_inputfile).exists() ] )
 
 
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_run_case2():
     ''' fre cmor run, test-use case '''
 
@@ -281,7 +320,15 @@ def test_cli_fre_cmor_find_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "find", "optionDNE"])
     assert result.exit_code == 2
 
+def test_cli_fre_cmor_find_disabled():
+    ''' fre cmor find required args reaches disabled placeholder '''
+    assert_cmor_disabled(
+        ["cmor", "find", "--table_config_dir", "tables"],
+        "find"
+    )
 
+
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_find_cmip6_case1():
     ''' fre cmor find, test-use case searching for variables in cmip6 tables '''
     result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
@@ -289,16 +336,14 @@ def test_cli_fre_cmor_find_cmip6_case1():
                                           "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
     assert result.exit_code == 0
 
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_find_cmip6_case2():
     ''' fre cmor find, test-use case searching for variables in cmip6 tables '''
     result = runner.invoke(fre.fre, args=["-v", "cmor", "find",
                                           "--opt_var_name", "sos",
                                           "--table_config_dir", "fre/tests/test_files/cmip6-cmor-tables/Tables"] )
     assert result.exit_code == 0
-
-
-
-
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_run_cmip7_case1():
     ''' fre cmor run, test-use case for cmip7 '''
 
@@ -345,6 +390,7 @@ def test_cli_fre_cmor_run_cmip7_case1():
                    Path(full_inputfile).exists() ] )
 
 
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_run_cmip7_case2():
     ''' fre cmor run, test-use case for cmip7 '''
 
@@ -407,7 +453,24 @@ def test_cli_fre_cmor_config_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "config", "optionDNE"])
     assert result.exit_code == 2
 
+def test_cli_fre_cmor_config_disabled():
+    ''' fre cmor config required args reaches disabled placeholder '''
+    assert_cmor_disabled(
+        [
+            "cmor", "config",
+            "--pp_dir", "pp",
+            "--mip_tables_dir", "tables",
+            "--mip_era", "cmip6",
+            "--exp_config", "exp.json",
+            "--output_yaml", "out.yaml",
+            "--output_dir", "outdir",
+            "--varlist_dir", "varlists"
+        ],
+        "config"
+    )
 
+
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_config_case1():
     '''
     fre cmor config -- generate a CMOR YAML config from a mock pp directory tree.
@@ -512,7 +575,20 @@ def test_cli_fre_cmor_varlist_opt_dne():
     result = runner.invoke(fre.fre, args=["cmor", "varlist", "optionDNE"])
     assert result.exit_code == 2
 
+def test_cli_fre_cmor_varlist_disabled(tmp_path):
+    ''' fre cmor varlist required args reaches disabled placeholder '''
+    output_varlist = tmp_path / 'varlist.json'
+    result = runner.invoke(
+        fre.fre,
+        args=["cmor", "varlist", "--dir_targ", "indir", "--output_variable_list", str(output_varlist)]
+    )
+    assert result.exit_code == 1
+    assert '`fre cmor varlist` is disabled in fre-cli' in result.output
+    assert FREMOR_URL in result.output
+    assert not output_varlist.exists()
 
+
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_varlist_no_table_filter():
     '''
     fre cmor varlist — no MIP table filter.
@@ -544,6 +620,7 @@ def test_cli_fre_cmor_varlist_no_table_filter():
     output_varlist.unlink()
 
 
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_varlist_cmip6_table_filter():
     '''
     fre cmor varlist — with CMIP6 Omon MIP table filter.
@@ -575,6 +652,7 @@ def test_cli_fre_cmor_varlist_cmip6_table_filter():
     output_varlist.unlink()
 
 
+@DISABLED_CMOR_CASE
 def test_cli_fre_cmor_varlist_cmip7_table_filter():
     '''
     fre cmor varlist — with CMIP7 ocean MIP table filter.
