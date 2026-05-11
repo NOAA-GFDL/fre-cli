@@ -503,8 +503,8 @@ def update_grid_and_label( json_file_path: str,
     except json.JSONDecodeError:
         fre_logger.exception("Failed to decode JSON from the file '%s'.", json_file_path)
         raise
-    except Exception:
-        fre_logger.exception("An unexpected error occurred")
+    except Exception as exc:
+        fre_logger.exception("An unexpected error occurred: %s", exc)
         raise
 
 
@@ -560,8 +560,8 @@ def update_calendar_type( json_file_path: str,
     except json.JSONDecodeError:
         fre_logger.exception("Failed to decode JSON from the file '%s'.", json_file_path)
         raise
-    except Exception:
-        fre_logger.exception("An unexpected error occurred")
+    except Exception as exc:
+        fre_logger.exception("An unexpected error occurred: %s", exc)
         raise
 
 def check_path_existence(some_path: str):

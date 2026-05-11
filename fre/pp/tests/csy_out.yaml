@@ -1,0 +1,179 @@
+name: c96L65_am5f7b12r1_amip
+platform: gfdl.ncrc5-intel22-classic
+target: prod-openmp
+fre_properties:
+- am5f7b12r1
+- am5/am5f7b12r1
+- 19790101T0000Z
+- 20200101T0000Z
+- '1980'
+- '2020'
+- P1Y
+- P1Y
+- 180,288
+- 720,1152
+- '0001'
+- '0011'
+- '0002'
+- '0011'
+- '0001'
+- '0006'
+- '0002'
+- '0006'
+- P5Y
+- P20Y
+- /archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar
+- f1a1r1
+- intel-classic
+- -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include
+- -Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include
+build:
+  compileYaml: compile.yaml
+  platformYaml: yaml_include/platforms.yaml
+directories:
+  history_dir: /archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/gfdl.ncrc5-intel22-classic-prod-openmp/history
+  refined_history_dir: /archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/gfdl.ncrc5-intel22-classic-prod-openmp/history_dir_refined
+  pp_dir: /archive/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip/gfdl.ncrc5-intel22-classic-prod-openmp/pp
+  analysis_dir: /nbhome/$USER/am5/am5f7b12r1/c96L65_am5f7b12r1_amip
+  ptmp_dir: /xtmp/$USER/ptmp
+postprocess:
+  settings:
+    history_segment: P1Y
+    site: ppan
+    pp_start: '1980'
+    pp_stop: '2020'
+    pp_chunks:
+    - P1Y
+    pp_grid_spec: /archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar
+  switches:
+    clean_work: true
+    do_atmos_plevel_masking: true
+  preanalysis:
+    vitals:
+      script: /path/to/vitals-script
+      inputs:
+      - atmos_month
+      - aerosol_month
+      do_preanalysis: true
+  refinediag:
+    ocean:
+      script: /path/to/ocean-script
+      inputs:
+      - ocean_monthly
+      - ocean_bgc
+      outputs:
+      - ocean_refined
+      do_refinediag: true
+    aerosol:
+      script: /path/to/aerosol-script
+      inputs:
+      - aerosol_month
+      outputs:
+      - aerosol_refined
+      do_refinediag: true
+  components:
+  - type: atmos_cmip
+    sources:
+    - history_file: atmos_month_cmip
+    - history_file: atmos_8xdaily_cmip
+    - history_file: atmos_daily_cmip
+    sourceGrid: cubedsphere
+    xyInterp: 180,360
+    interpMethod: conserve_order2
+    inputRealm: atmos
+  - type: atmos
+    sources:
+    - history_file: atmos_month
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order2
+    inputRealm: atmos
+  - type: atmos_level_cmip
+    sources:
+    - history_file: atmos_level_cmip
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order2
+    inputRealm: atmos
+  - type: atmos_level
+    sources:
+    - history_file: atmos_month
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order2
+    inputRealm: atmos
+  - type: atmos_month_aer
+    sources:
+    - history_file: atmos_month_aer
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order1
+    inputRealm: atmos
+  - type: atmos_diurnal
+    sources:
+    - history_file: atmos_diurnal
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order2
+    inputRealm: atmos
+  - type: atmos_scalar
+    sources:
+    - history_file: atmos_scalar
+  - type: aerosol_cmip
+    xyInterp: 180,288
+    sources:
+    - history_file: aerosol_month_cmip
+    sourceGrid: cubedsphere
+    interpMethod: conserve_order1
+    inputRealm: atmos
+    postprocess_on: false
+  - type: land
+    sources:
+    - history_file: land_month
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order1
+    inputRealm: land
+    postprocess_on: false
+  - type: land_cmip
+    sources:
+    - history_file: land_month_cmip
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order1
+    inputRealm: land
+    postprocess_on: false
+  - type: tracer_level
+    sources:
+    - history_file: atmos_tracer
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order1
+    inputRealm: atmos
+    postprocess_on: false
+  - type: atmos_cmip-TEST
+    sources:
+    - history_file: atmos_month_cmip
+    - history_file: atmos_8xdaily_cmip
+    - history_file: atmos_daily_cmip
+    sourceGrid: cubedsphere
+    xyInterp: 200,200
+    interpMethod: conserve_order2
+    inputRealm: atmos
+    postprocess_on: false
+  - type: atmos-TEST
+    sources:
+    - history_file: atmos_month
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order2
+    inputRealm: atmos
+    postprocess_on: false
+  - type: atmos_level_cmip-TEST
+    sources:
+    - history_file: atmos_level_cmip
+    sourceGrid: cubedsphere
+    xyInterp: 180,288
+    interpMethod: conserve_order2
+    inputRealm: atmos
+    postprocess_on: false
