@@ -20,7 +20,7 @@ class XML:
         self.soup = BeautifulSoup(xml_content, "lxml-xml")
 
 
-    def get_attributes(self, attribute: str, element: dict, tolist: bool = False, fieldsep: str = ","):
+    def get_attributes(self, attribute: str, element: dict, tolist: bool = False, fieldsep: str = None):
         """
         Get attribute value from an XML element.  For example, 
 
@@ -30,6 +30,9 @@ class XML:
         element = <component name="am5_phys" requires="fms rte-rrtmgp rte-ecckd">
         get_attributes("requires", element, tolist=True) returns ["fms", "rte-rrtmgp", "rte-ecckd"]
         """
+
+        if element is None:
+            return None
 
         value = element.get(attribute)
 
@@ -51,17 +54,23 @@ class XML:
         get_elements("component", soup, name="am5_phys") returns the <component> element block with name="am5_phys"
         """ 
 
+        if xml_content is None:
+            return None
+
         search_dict = {}
         if name is not None:
             search_dict["name"] = name
 
-        find = xml_content.find_all if find_all else xml_content.find
-        element = find(element, search_dict)
+        if find_all:
+            search_results = xml_content.find_all(element, search_dict)
+            if search_results:
+                return search_results
+            return None
+        else:
+            return xml_content.find(element, search_dict)
 
-        return element
 
-
-    def get_values(self, element, tolist: bool = False, fieldsep: str = ","):
+    def get_values(self, element, tolist: bool = False, fieldsep: str = None):
         """
         Get value for an XML element.  For example, 
 
@@ -69,12 +78,13 @@ class XML:
         get_values(element, tolist=True) returns ["-DDEBUG", "-Iinclude"]
         """
 
+        if element is None:
+            return None
+            
         value = element.text.strip()
 
         if value:
             if tolist:
-                if fieldsep is None:
-                    return value.split()
                 return [val.strip() for val in value.split(fieldsep)]
             return value
 
