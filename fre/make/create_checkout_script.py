@@ -1,20 +1,13 @@
 """
-Create_checkout_script provides methods to generate a ``checkout.sh`` script from a resolved
-YAML configuration. The script ``git clone``'s all component source repositories listed under the
+Create_checkout_script provides methods to generate a ``checkout.sh`` script from a YAML configuration
+file, where ``checkout.sh`` git clone's all component source repositories listed under the
 ``src`` key of the compile YAML.
 
 ``checkout_create`` is the entry point called by ``fre make checkout-script`` and
 ``fre make all``. Depending on the user-specified platform type (bare-metal or container), 
-checkout_create then calls either
-
-- ``baremetal_checkout_write`` for bare-metal platforms: writes ``checkout.sh`` directly on the local platform
-  into ``[modelRoot]/[experiment]/src/`` and optionally executes the script.
-- ``container_checkout_write`` for container platforms: writes ``checkout.sh`` into a local
-  temporary directory (``tmp/[platform-name]/``).  
-
-Build type defaults:
-  - Bare-metal build: parallel checkout
-  - Container build: sequential checkout 
+checkout_create then calls for baremetal_checkout_write for a bare-metal platform or 
+``container_checkout_write`` to write  ``checkout.sh`` into a local
+temporary directory (``tmp/[platform-name]/``) in preparation to build the model in a container.
 """
 import shutil
 from pathlib import Path
@@ -31,41 +24,36 @@ fre_logger = logging.getLogger(__name__)
 def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str,
                              parallel_cmd: str, execute: bool):
     """
-    Baremetal_checkout_write generates and optionally executes ``checkout.sh`` for 
-    model compilation on the bare-metal.
+    Baremetal_checkout_write generates ``checkout.sh`` and optionally executes the script to 
+    check out the component repositories in preparation for model compilation.
 
-    Called by ``checkout_create`` for each bare-metal platform.  Reads the ``compile``
-    section of the parsed YAML to determine which source repositories to clone, writes
-    ``checkout.sh`` into ``src_dir``, sets its permissions to ``rwxr--r--`` (0o744), and
-    optionally runs it immediately.
 
-    Because all bare-metal platforms in a single ``fre make`` invocation share the same
-    physical source tree, ``checkout_create`` calls this function only once per experiment
-    and skips subsequent bare-metal platforms if the script already exists (unless
-    ``--force-checkout`` is set).
+    Called by ``checkout_create`` for each bare-metal platform, this method
+    - reads the ``compile`` section of the resolved YAML to determine source repositories to clone, 
+    - writes ``checkout.sh`` into ``src_dir``, 
+    - sets its permissions to ``rwxr--r--`` (0o744), 
+    - optionally executes ``checkout.sh`` afterwards
 
-    :param model_yaml: Parsed and validated YAML object produced by ``yamlfre.freyaml``,
-                       containing the ``compile`` specifications (source repositories, experiment
-                       name, etc.).
+    :param model_yaml: is the parsed and validated YAML object containing the ``compile`` 
+                       specifications (source repositories, experiment name, etc.).
     :type model_yaml: yamlfre.freyaml
-    :param src_dir: Absolute path of the source directory where ``checkout.sh`` is written and
-                    where the source repositories will be cloned.  Typically
-                    ``[modelRoot]/[experiment]/src``, with ``modelRoot`` defined in
-                    ``platforms.yaml``.
+    :param src_dir: is the absolute path of the directory where ``checkout.sh`` is
+                    written and where the source repositories will be cloned.  Typically, 
+                    src_dir = ``[modelRoot]/[experiment]/src`` where ``modelRoot`` is defined in
+                    platforms.yaml.
     :type src_dir: str
-    :param jobs: Number of git submodules to fetch simultaneously, passed to ``git clone
-                 --jobs``.  Supplied as a string because it is written directly into the
-                 shell script.
+    :param jobs: is the number of git submodules to fetch simultaneously, passed to ``git clone
+                 --jobs``, if the component repository contain submodules. 
     :type jobs: str
-    :param parallel_cmd: Shell suffix appended to each ``git clone`` command to control
+    :param parallel_cmd: is the shell suffix appended to each ``git clone`` command to control
                          concurrency.  Pass ``" &"`` to background each clone (parallel
                          checkout) or ``""`` to clone sequentially.
     :type parallel_cmd: str
-    :param execute: If ``True``, run ``checkout.sh`` immediately after writing it.
+    :param execute: is a flag where if ``True``, ``checkout.sh`` is executed immediately after creation.
                     Defaults to ``False``.
     :type execute: bool
     """
-     fre_checkout = checkout.checkout("checkout.sh", src_dir)
+    fre_checkout = checkout.checkout("checkout.sh", src_dir)
     fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(), jobs, parallel_cmd)
     fre_checkout.finish(model_yaml.compile.getCompileYaml(), parallel_cmd)
 
@@ -80,36 +68,28 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
 def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir: str,
                              jobs: str, parallel_cmd: str):
     """
-    Generates ``checkout.sh`` for a container build.
+    Container_checkout_write generates ``checkout.sh`` for a container build.
 
-    Called by ``checkout_create`` for each container platform.  Writes ``checkout.sh``
-    into a local temporary directory on the host (``tmp/[platform-name]/``).  The
-    Dockerfile produced by ``fre make dockerfile`` subsequently COPYs this script into
-    the container image filesystem; it is executed inside the container when the image
-    is launched to clone the model source code into ``src_dir``.
+    Called by ``checkout_create`` for each container platform, this method
+    writes ``checkout.sh`` into a temporary directory on the host (``tmp/[platform-name]/``)
+    where the script eventually will be COPY-ed to the container image filesystem elsewhere in the
+    fre make workflow.  The script will be executed during the container build to git clone the component 
+    repositories serially.
 
-    Unlike the bare-metal variant, this function never executes the script directly — the
-    container build step (``createContainer.sh``) handles that.  Parallel checkout with
-    ``&`` is also not used for container builds because backgrounded shell processes are
-    not reliably supported during the container image build stage.
-
-    :param model_yaml: Parsed and validated YAML object produced by ``yamlfre.freyaml``,
-                       containing the ``compile`` specifications (source repositories, experiment
-                       name, etc.).
+    :param model_yaml: is the parsed and validated YAML object containing the ``compile`` 
+                       specifications (source repositories, experiment name, etc.).
     :type model_yaml: yamlfre.freyaml
-    :param src_dir: Source-code path *inside* the running container where repositories will
+    :param src_dir: is the source-code path inside the running container where repositories will
                     be cloned.  Defined by ``modelRoot`` in ``platforms.yaml``.
     :type src_dir: str
-    :param tmp_dir: Local temporary directory on the host (outside the container) where
+    :param tmp_dir: is the local temporary directory on the host (outside the container) where
                     ``checkout.sh`` is staged before being COPYed into the image.
                     Typically ``tmp/[platform-name]``.
     :type tmp_dir: str
-    :param jobs: Number of git submodules to fetch simultaneously, passed to ``git clone
-                 --jobs``.  Supplied as a string because it is written directly into the
-                 shell script.
+    :param jobs: is the number of git submodules to fetch simultaneously, passed to ``git clone
+                 --jobs``.
     :type jobs: str
-    :param parallel_cmd: Shell suffix for concurrency control.  For container builds this
-                         should always be ``""`` (sequential checkout).
+    :param parallel_cmd: is a flag not used in this method and should be removed.
     :type parallel_cmd: str
     """
     fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
@@ -121,44 +101,33 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                     no_parallel_checkout: Optional[bool] = None, njobs: int = 4,
                     execute: Optional[bool] = False, force_checkout: Optional[bool] = False):
     """
-    Entry point for ``fre make checkout-script``.  Resolves the YAML configuration and
-    dispatches to ``baremetal_checkout_write`` or ``container_checkout_write`` for each
-    platform supplied on the command line.
+    Checkout_create is the entry point for ``fre make checkout-script``.  The method resolves 
+    the YAML configuration and calls ``baremetal_checkout_write`` or ``container_checkout_write`` 
+    for each specified platform.
 
-    Bare-metal platforms share a single source directory
-    (``[modelRoot]/[experiment]/src``), so the checkout script is written once and
-    reused across targets.  Container platforms each receive their own staging directory
-    (``tmp/[platform-name]/``).
-
-    :param yamlfile: Path to the model YAML file (e.g. ``am5.yaml``).  The experiment
-                     name is derived by stripping the ``.yaml`` extension.
+    :param yamlfile: is the path to the model YAML configuration file (e.g. ``am5.yaml``).  
+                     The experiment name is derived by stripping the ``.yaml`` extension.
     :type yamlfile: str
-    :param platform: One or more FRE platform strings as defined in ``platforms.yaml``.
-                     Repeat the ``-p`` flag on the command line to specify multiple
-                     platforms.
+    :param platform: is one or more FRE platform strings as defined in ``platforms.yaml``.
     :type platform: tuple[str]
-    :param target: One or more ``mkmf`` target strings (e.g. ``debug``, ``prod``).
-                   Repeat the ``-t`` flag to specify multiple targets.
+    :param target: is one or more ``mkmf`` target strings (e.g. ``debug``, ``prod``).
     :type target: tuple[str]
-    :param no_parallel_checkout: If ``True``, clone repositories sequentially (no ``&``
-                                 backgrounding).  Defaults to ``False`` (parallel checkout)
-                                 for bare-metal builds; container builds are always
-                                 sequential regardless of this flag.
+    :param no_parallel_checkout: is a flag where if True, git clone component repositories sequentially.  
+                                 Defaults to ``False`` to enable parallel checkout for bare-metal builds; 
+                                 Is not used for container builds
     :type no_parallel_checkout: bool, optional
-    :param njobs: Number of git submodules to fetch simultaneously, passed to
+    :param njobs: is the number of git submodules to fetch simultaneously, passed to
                   ``git clone --jobs``.  Defaults to ``4``.
     :type njobs: int
     :param execute: If ``True``, execute ``checkout.sh`` immediately after writing it
                     (bare-metal only).  Defaults to ``False``.
     :type execute: bool, optional
-    :param force_checkout: Controls behaviour when ``checkout.sh`` already exists.
-
-                           - **Bare-metal**: renames the existing ``src`` directory with a
-                             ``YYYYmmdd.HHMMSS`` timestamp suffix, then writes a fresh
-                             ``checkout.sh`` in a new ``src`` directory.
-                           - **Container**: deletes the existing ``tmp/[platform]/checkout.sh``
-                             and writes a new one in its place.
-
+    :param force_checkout: is a flag to controls behavior when ``checkout.sh`` already exists.
+                           For bare-metal build, renames the existing ``src`` directory with a
+                            ``YYYYmmdd.HHMMSS`` timestamp suffix, then writes a fresh
+                            ``checkout.sh`` in a new ``src`` directory.
+                           For container build, deletes the existing ``tmp/[platform]/checkout.sh``
+                           and writes a new one in its place.
                            Defaults to ``False``.
     :type force_checkout: bool, optional
 
