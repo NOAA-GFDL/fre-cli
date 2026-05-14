@@ -19,8 +19,6 @@ postprocess:
   switches: &shared_switches
     clean_work:              True
     do_atmos_plevel_masking: True
-    do_analysis:             True
-    do_analysis_only:        False
   preanalysis:
     vitals:
       script: "/path/to/vitals-script"

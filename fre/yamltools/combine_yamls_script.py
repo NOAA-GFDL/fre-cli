@@ -37,7 +37,7 @@ from fre.yamltools.info_parsers import cmor_info_parser as cmip
 from fre.yamltools.info_parsers import compile_info_parser as cip
 from fre.yamltools.info_parsers import pp_info_parser as ppip
 from fre.yamltools.info_parsers import analysis_info_parser as aip
-from fre.yamltools.helpers import output_yaml
+from fre.yamltools.helpers import output_yaml, check_fre_version
 
 from . import *
 
@@ -161,6 +161,10 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str,
     ..note:: The output file name should include a .yaml extension to indicate
              it is a YAML configuration file
     """
+    # Check fre_cli_version compatibility before any YAML combining
+    fre_logger.info('checking fre_cli_version compatibility...')
+    check_fre_version(yamlfile)
+
     if use == "compile":
         fre_logger.info('initializing a compile yaml instance...')
         compilecombined = cip.InitCompileYaml(yamlfile, platform, target)

@@ -1,5 +1,12 @@
 The model yaml defines reusable variables and paths to compile, post-processing, analysis, and cmor yamls. Required fields in the model yaml include: ``fre_properties``, ``build``,  and ``experiments``.
 
+* `fre_cli_version`: Version of fre-cli this yaml is compatible with
+
+  - value type: string
+  - when specified, fre-cli will verify that the installed version matches this value
+  - if the versions do not match, a clear error message will be displayed
+  - if not specified, a warning will be logged recommending its addition
+
 * `fre_properties`: Reusable variables
 
   - list of variables
@@ -13,6 +20,8 @@ The model yaml defines reusable variables and paths to compile, post-processing,
 The model.yaml can follow the structure below:
 
   .. code-block::
+
+     fre_cli_version: "2025.04"
 
      fre_properties: 
        - &variable1  "value1"  (string)

@@ -7,6 +7,7 @@ For a container build: Creates the checkout script and makefile, and creates and
 '''
 import logging
 from typing import Optional
+from pathlib import Path
 import fre.yamltools.combine_yamls_script as cy
 from fre.make.create_checkout_script import checkout_create
 from fre.make.create_makefile_script import makefile_create
@@ -60,6 +61,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     # Define variables
     name = yamlfile.split(".")[0]
     plist = platform
+    tlist = target
 
     # Combine model, compile, and platform yamls
     full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
@@ -74,6 +76,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
 
     ## Open the yaml file, validate the yaml, and parse as fremake_yaml
     model_yaml = yamlfre.freyaml(full_combined,fre_vars)
+    fremake_yaml = model_yaml.getCompileYaml()
 
     #checkout
     fre_logger.info("Running fre make: calling checkout_create")
@@ -95,8 +98,27 @@ def fremake_run(yamlfile:str, platform:str, target:str,
 
         if not platform_info["container"]:
             bm_platforms = bm_platforms + (platform_name,)
+
+            # If force-checkout is passed, re-create the compile script
+            # This will eventually just turn into if force_checkout, force_compile = True (once force_compile exists)
+            if force_checkout:
+                for target_name in tlist:
+                    compile_script = Path(f'{platform_info["modelRoot"]}/{fremake_yaml["experiment"]}/' + \
+                                          f'{platform_name}-{target_name}/exec/compile.sh')
+                    if compile_script.exists():
+                        fre_logger.warning("Running fre make: (from force-checkout) removing previously generated compile script")
+                        compile_script.unlink()
         else:
             container_platforms = container_platforms + (platform_name,)
+            # If force-checkout is passed, re-create the Dockerfile
+            # If the Dockerfile is not removed after force-checkout, it uses the cache (with the old checkout)
+            # This will eventually just turn into if force_checkout, force_dockerfile = True (once force_compile exists)
+            if force_checkout:
+                # remove Dockerfile
+                dockerfile = Path(f"{Path.cwd()}/Dockerfile")
+                if dockerfile.exists():
+                    fre_logger.warning("Running fre make: (from force-checkout) removing previously generated Dockerfile")
+                    dockerfile.unlink()
 
     if bm_platforms:
         #compile
