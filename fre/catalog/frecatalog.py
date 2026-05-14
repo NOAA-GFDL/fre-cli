@@ -23,6 +23,7 @@ def catalog_cli():
 #, help = 'Specify output filename suffix only. e.g. catalog')
 @click.option('--config', required = False, type = click.Path(exists = True), nargs = 1,
               help = 'Path to your yaml config, Use the config_template in intakebuilder repo')
+@click.option('--fill', '-f', default=True, type=bool, help="Fill all empty CSV column values with 'NA'. Defaults to True. Use --fill=False to disable.")
 @click.option('--filter_realm',  nargs = 1)
 @click.option('--filter_freq',  nargs = 1)
 @click.option('--filter_chunk',  nargs = 1)
@@ -34,7 +35,7 @@ def catalog_cli():
 @click.option('--strict', is_flag = True, default = False,
     help = "Ensure output catalog is strictly compliant with schema")
 @click.pass_context
-def build(context, input_path = None, output_path = None, config = None, filter_realm = None,
+def build(context, input_path = None, output_path = None, config = None, fill = True, filter_realm = None,
           filter_freq = None, filter_chunk = None, verbose = False, overwrite = False,
           append = False, slow = False, strict = False):
     # pylint: disable=unused-argument
