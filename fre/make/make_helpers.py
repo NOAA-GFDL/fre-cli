@@ -1,5 +1,8 @@
-''' 
-module of helper/utility functions used in the fre make subtool
+'''
+Helper/utility functions shared across the ``fre make`` sub-commands.
+
+Functions here are imported by ``create_compile_script``, ``create_makefile_script``,
+and ``create_docker_script`` to avoid duplicating path-resolution logic.
 '''
 
 import logging
@@ -8,24 +11,51 @@ from pathlib import Path
 def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str = None) -> str:
 
     """
-    This function get_mktemplate_path generates the full path to the 
-    mkmf mk_template on the bare-metal system or the container image filesystem
-    
-    :param mk_template: Full path to or the mkmf mk_template filename with .mk extension
-    :type mk_template: string
-    :param model_root: Path to the root for all model install files (TO CLARIFY)
-    :type model_root: str
-    :param container_flag: if True and the full path to the mk_template is not specified, 
-                           return model_root+"/mkmf/templates/"+mk_template; else if True
-                           and mk_template is the filename, return mk_template
-    :type container_flag: boolean
+    Resolves the full path to an ``mkmf`` template file (``.mk``) for either a
+    bare-metal system or a container image filesystem.
 
-    :raises ValueError: Error if the mk_template file does not exist in the generated full path
+    ``mk_template`` may be either a bare filename (e.g. ``intel.mk``) or an
+    absolute path (e.g. ``/path/to/intel.mk``).  The presence of ``/`` in the
+    value is used to distinguish the two cases.
 
-    :return: Full path to the mkmf mk_template
-    :rtype: string
+    Resolution rules:
 
-    .. note:: model_root must be specified if container_flag is True
+    - **Bare-metal** (``container_flag=False``):
+
+      - If ``mk_template`` is a bare filename, the path is constructed as
+        ``[fre package root]/mkmf/templates/[mk_template]`` using the bundled
+        ``mkmf`` git submodule.
+      - If ``mk_template`` is already an absolute path, it is used as-is.
+      - The resolved path is validated; a ``ValueError`` is raised if the file
+        does not exist.
+
+    - **Container** (``container_flag=True``):
+
+      - If ``mk_template`` is a bare filename, the path is constructed as
+        ``[model_root]/mkmf/templates/[mk_template]`` inside the container
+        image filesystem.  ``model_root`` must be provided.
+      - If ``mk_template`` is already an absolute path, it is used as-is.
+      - No filesystem validation is performed (the path is inside the container).
+
+    :param mk_template: Bare filename (e.g. ``intel.mk``) or absolute path to the
+                        ``mkmf`` template.  Defined as ``mkTemplate`` in
+                        ``platforms.yaml``.
+    :type mk_template: str
+    :param container_flag: ``True`` for container builds; ``False`` for bare-metal
+                           builds.  Controls both path construction and whether the
+                           resolved path is validated on the host filesystem.
+    :type container_flag: bool
+    :param model_root: Root directory for model install files inside the container
+                       (defined as ``modelRoot`` in ``platforms.yaml``).  Required
+                       when ``container_flag=True`` and ``mk_template`` is a bare
+                       filename; unused otherwise.
+    :type model_root: str, optional
+
+    :raises ValueError: If ``container_flag=False`` and the resolved template path
+                        does not exist on the host filesystem.
+
+    :return: Resolved full path to the ``mkmf`` template file.
+    :rtype: str
     """
 
     template_path = mk_template
