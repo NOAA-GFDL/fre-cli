@@ -69,7 +69,7 @@ conda activate fre-2026.01.alpha2
 # optional: install or load fre-nctools to gain access to regridding and certain time-averaging routines
 # add to your path like: export PATH=/path/to/your/fre-nctools/build/bin:$PATH
 # or if you have lmod/modules: module load fre-nctools/<version>
-# or compile/install from source: see github.comNOAA-GDFL/FRE-NCTools documentation on compilation/installation
+# or compile/install from source: see github.com/NOAA-GDFL/FRE-NCTools documentation on compilation/installation
 # DO NOT USE noaa-gfdl::fre-nctools==2022.01 at this time, it is being deprecated
 ```
 

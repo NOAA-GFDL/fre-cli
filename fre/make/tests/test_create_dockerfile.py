@@ -1,6 +1,5 @@
 ''' test "fre make dockerfile" calls '''
 
-import os
 from shutil  import rmtree
 from pathlib import Path
 
@@ -12,8 +11,9 @@ from fre.make import create_docker_script
 
 runner=CliRunner()
 
-# command options
-YAMLDIR = "fre/make/tests/null_example"
+# command options — use __file__ so tests work from any working directory
+_TEST_DIR = Path(__file__).resolve().parent
+YAMLDIR = str(_TEST_DIR / "null_example")
 YAMLFILE = "null_model.yaml"
 YAMLPATH = f"{YAMLDIR}/{YAMLFILE}"
 PLATFORM = ["hpcme.2023"]
@@ -46,41 +46,43 @@ def test_platformyaml_exists():
     """
     assert Path(f"{YAMLDIR}/platforms.yaml").exists()
 
-# expected failures for incorrect options
-@pytest.mark.xfail()
+
 def test_bad_platform_option():
     """
     Test -fremake with a invalid platform option
     """
-    create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET,
-    	execute=False, no_format_transfer=False)
+    with pytest.raises(ValueError):
+        create_docker_script.dockerfile_create(YAMLPATH, BADOPT, TARGET,
+    	                                       execute=False, no_format_transfer=False)
 
-@pytest.mark.xfail()
+
 def test_bad_target_option():
     """
     Test create-dockerfile with a invalid target option
     """
-    create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, BADOPT,
-    	execute=False, no_format_transfer=False)
+    with pytest.raises(ValueError):
+        create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, BADOPT,
+    	                                       execute=False, no_format_transfer=False)
 
-@pytest.mark.xfail()
+
 def test_bad_yamlpath_option():
     """
     Test create-dockerfile with a invalid target option
     """
-    create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET,
-    	execute=False, no_format_transfer=False)
+    with pytest.raises(ValueError):
+        create_docker_script.dockerfile_create(BADOPT[0], PLATFORM, TARGET,
+    	                                       execute=False, no_format_transfer=False)
 
 
 def test_no_op_platform():
     """
     Test create-dockerfile will do nothing if non-container platform is given
     """
-    if Path(os.getcwd()+"/tmp").exists():
-        rmtree(os.getcwd()+"/tmp") # clear out any past runs
+    if Path("tmp").exists():
+        rmtree("tmp") # clear out any past runs
     create_docker_script.dockerfile_create(YAMLPATH, ["ci.gnu"], TARGET,
-    	execute=False, no_format_transfer=False)
-    assert not Path(os.getcwd()+"/tmp").exists()
+    	                                   execute=False, no_format_transfer=False)
+    assert not Path("tmp").exists()
 
 # tests container build script/makefile/dockerfile creation
 def test_create_dockerfile():
@@ -88,7 +90,7 @@ def test_create_dockerfile():
     Run create-dockerfile with options for containerized build
     """
     create_docker_script.dockerfile_create(YAMLPATH, PLATFORM, TARGET,
-    	execute=False, no_format_transfer=False)
+    	                                   execute=False, no_format_transfer=False)
 
 def test_container_dir_creation():
     """
@@ -120,7 +122,7 @@ def test_dockerfile_contents():
     """
 
     # for simplicity's sake just checks COPY commands for created files on the host
-    with open('Dockerfile', 'r') as f:
+    with open('Dockerfile', 'r', encoding='utf-8') as f:
         lines = f.readlines()
     assert len(lines) > 2
     copy_lines = [ l for l in lines if l.startswith("COPY") ]
@@ -140,7 +142,7 @@ def test_build_script_contents():
     Specifically - testing the volume mount is added correctly. 
     """
     # Open container build script
-    with open('createContainer.sh', 'r') as f:
+    with open('createContainer.sh', 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
     expected_volume_mount = "podman build --volume /gpfs/f5:/gpfs/f5 -f Dockerfile -t null_model_full:debug"
