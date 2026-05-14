@@ -1,16 +1,12 @@
-'''
-FRE Checkout Script Generator
+"""
+Create_checkout_script provides methods to generate a checkout.sh script from a resolved YAML
+configuration. The script git clones all component repositories defined in the
+compile YAML.
 
-Retrieves information from the resolved YAML configuration to generate a 
-checkout.sh script that git clones the model source code. 
-
-The checkout script will clone component repositories defined in the 
-compile YAML to build the model.
-
-Note, a bare-metal build defaults to a parallel checkout.
-A container build defaults to a non-parallel checkout.
-
-'''
+Build type defaults:
+  - Bare-metal build: parallel checkout (multiple repositories cloned concurrently)
+  - Container build: non-parallel checkout (repositories cloned sequentially)
+"""
 import shutil
 from pathlib import Path
 from datetime import datetime
@@ -26,26 +22,27 @@ fre_logger = logging.getLogger(__name__)
 def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str,
                              parallel_cmd: str, execute: bool):
     """
-    This function baremetal_checkout_write is called by checkout_create in order to
-    
-      - Extract compilation specifications from the parsed YAML configuration
-      - Generate a checkout script to the source directory. The source directory is
-        defined within the 'modelRoot' variable in the "platforms" section of the combined YAML
-      
+    Baremetal_checkout_write generates and optionally executes a checkout.sh script for 
+    bare-metal builds.  This method is called by ``checkout_create`` to extract compilation 
+    specifications from the parsed YAML configuration and write checkout.sh to the source 
+    directory. The source directory is defined by the ``modelRoot`` variable in the ``platforms`` 
+    specifications in the yaml.
 
-    :param model_yaml: "freyaml" class object containing a parsed and validated yaml dictionary 
-                       containing the "compile" specification
+    :param model_yaml: is the parsed and validated YAML object containing ``compile`` specifications.
     :type model_yaml: yamlfre.freyaml
-    :param src_dir: Absolute directory path to git clone the source code
+    :param src_dir: is the absolute path to the directory where the checkout script is written
+                    and source code is cloned.
     :type src_dir: str
-    :param jobs: Number of git submodules to clone simultaneously (TO CLARIFY)
+    :param jobs: is the number of git repositories to clone simultaneously.
     :type jobs: str
-    :param parallel_cmd: Set to " &" for parallel checkouts and "" for non-parallel checkouts
+    :param parallel_cmd: is the shell suffix controlling parallelism. Use ``" &"`` for parallel
+                         checkout or ``""`` for sequential checkout.
     :type parallel_cmd: str
-    :param execute: If True, run the generated checkout.sh
+    :param execute: is a flag where if ``True``, checkout.sh is executed after being written. 
+                    This is set to ``False`` by default.
     :type execute: bool
     """
-    fre_checkout = checkout.checkout("checkout.sh", src_dir)
+     fre_checkout = checkout.checkout("checkout.sh", src_dir)
     fre_checkout.writeCheckout(model_yaml.compile.getCompileYaml(), jobs, parallel_cmd)
     fre_checkout.finish(model_yaml.compile.getCompileYaml(), parallel_cmd)
 
@@ -60,23 +57,25 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
 def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir: str,
                              jobs: str, parallel_cmd: str):
     """
-    This function container_checkout_write is called by checkout_create in order to
-    
-      - Extract compilation specifications from the parsed YAML configuration
-      - Generate a checkout script in a local ./tmp directory, where it will later be
-        copied to the directory of the container image filesystem for execution
+    Container_checkout_write generates a checkout.sh script for container builds.
+    This method is called by ``checkout_create`` to extract compilation specifications 
+    from the parsed YAML configuration and write checkout.sh to a local temporary directory
+    on the physical host system. The script is copied elsewhere into the container image filesystem 
+    and is executed when the container is launched.
 
-    :param model_yaml: "freyaml" class object containing a parsed and validated yaml dictionary 
-                       containing the "compile" specification
+    :param model_yaml: is the parsed and validated YAML object containing ``compile`` specification.
     :type model_yaml: yamlfre.freyaml
-    :param src_dir: Internal path for source code in the running container. The source directory is
-                    defined within the 'modelRoot' variable in the "platforms" section of the combined YAML
+    :param src_dir: is the internal source-code path used inside the running container.
+                    This value is defined by ``modelRoot`` in the ``platforms``
+                    specifications in the yaml.
     :type src_dir: str
-    :param tmp_dir: Temporary directory (outside of container) that hosts the created checkout script
+    :param tmp_dir: is the local temporary directory (outside the container) where
+                                    checkout.sh is created.
     :type tmp_dir: str
-    :param jobs: Number of git submodules to clone simultaneously (TO CLARIFY)
+    :param jobs: is the number of git repositories to clone simultaneously.
     :type jobs: str
-    :param parallel_cmd: Since container builds are not parallelized, set to ""
+    :param parallel_cmd: is the shell suffix controlling parallelism. For container
+                                                builds, this is typically ``""`` (sequential checkout).
     :type parallel_cmd: str
     """
     fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
