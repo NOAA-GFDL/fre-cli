@@ -1,30 +1,29 @@
-'''
-Generates a Dockerfile and an accompanying ``createContainer.sh`` script for
-container builds.  ``dockerfile_create`` is the entry point called by
-``fre make dockerfile`` and (for container platforms only) by ``fre make all``.
+
+"""
+Create_docker_script provides methods to generate a Dockerfile and 
+an accompanying createContainer.sh script to build container images.  
+The method dockerfile_create is the entry point called by
+fre make dockerfile and by fre make all.
 
 The Dockerfile uses a two-stage build:
 
-1. **Build stage** — starts from the base container image (``image`` field in
-   ``platforms.yaml``), copies in the ``checkout.sh`` and ``Makefile`` that were
-   staged under ``tmp/[platform]/`` by ``fre make checkout-script`` and
-   ``fre make makefile``, runs ``mkmf`` and ``make`` to compile the model
+1. Build stage — starts from the base container image (image field in
+   platforms yaml), copies in the checkout.sh and Makefile that were
+   staged under tmp/[platform]/ by fre make checkout-script and
+   fre make makefile, runs mkmf and make to compile the model
    executable.
-2. **Runtime stage** — copies the compiled executable and its runtime dependencies
-   into a leaner second base image (``containerBase2`` in ``platforms.yaml``).
+2. Runtime stage — copies the compiled executable and its runtime dependencies
+   into a leaner second base image (containerBase2 in platforms.yaml).
 
-``createContainer.sh`` builds the Docker image and, unless ``--no-format-transfer``
-is specified, converts it to a Singularity Image File (``.sif``) that can be
+createContainer.sh builds the container image and, unless --no-format-transfer
+is specified, converts it to a Singularity Image File (.sif) that can be
 launched with Singularity/Apptainer on HPC systems.
-
-Bare-metal platforms are silently skipped — their compilation is handled by
-``compile_create``.
 
 .. note::
    Once a container image is built, the source code and compiled executable
    inside it cannot be modified.  To incorporate source changes, re-run
-   ``fre make all`` (or the individual sub-commands) and rebuild the image.
-'''
+   fre make all (or the individual sub-commands) and rebuild the image.
+"""
 
 import logging
 import os
@@ -46,41 +45,31 @@ fre_logger = logging.getLogger(__name__)
 def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
                       execute: bool = False, no_format_transfer: bool = False):
     """
-    Generates a Dockerfile and ``createContainer.sh`` for each container platform/target
+    Dockerfile_create generates a Dockerfile and createContainer.sh for each container platform/target
     combination and optionally executes the build script to produce a container image.
 
-    For each container platform, the following artifacts are written to the current
-    working directory and ``tmp/[platform-name]/``:
-
-    - ``Dockerfile`` — two-stage build definition (compile stage + runtime stage)
-    - ``tmp/[platform]/execrunscript.sh`` — script executed when the container is launched
-    - ``createContainer.sh`` — builds the Docker image and (unless ``--no-format-transfer``)
-      converts it to a ``.sif`` Singularity image via ``docker2singularity`` or equivalent
-
-    This function relies on ``checkout.sh`` and ``Makefile`` having already been staged
-    in ``tmp/[platform-name]/`` by ``checkout_create`` and ``makefile_create``.
-
-    Bare-metal platforms in ``platform`` are silently skipped.
-
-    :param yamlfile: Path to the model YAML file (e.g. ``am5.yaml``).  The experiment
-                     name is derived by stripping the ``.yaml`` extension.
+    fre make checkout-script and fre make makefile should be invoked
+    beforehand to stage the checkout.sh script and Makefile in tmp/[platform-name]/.  
+    
+    :param yamlfile: is the path to the model YAML file (e.g. am5.yaml).  The experiment
+                     name is derived by stripping the .yaml extension.
     :type yamlfile: str
-    :param platform: One or more FRE platform strings as defined in ``platforms.yaml``.
-                     Only container platforms (``container: true``) are processed; bare-metal
+    :param platform: is one or more FRE platform strings as defined in platforms.yaml.
+                     Only container platforms (container: true) are processed; bare-metal
                      platforms are skipped.
     :type platform: tuple[str]
-    :param target: One or more ``mkmf`` target strings (e.g. ``prod``, ``debug``).
+    :param target: is one or more mkmf target strings (e.g. prod, repro, debug).
                    One Dockerfile is generated per platform/target pair.
     :type target: tuple[str]
-    :param execute: If ``True``, run ``createContainer.sh`` immediately after generating it
-                    to build the container image.  Defaults to ``False``.
+    :param execute: is a flag where if True, run createContainer.sh immediately after generation
+                    to build the container image.  Defaults to False.
     :type execute: bool
-    :param no_format_transfer: If ``True``, skip the OCI-to-Singularity (``.sif``) format
-                               conversion step in ``createContainer.sh``.  Defaults to
-                               ``False``.
+    :param no_format_transfer: is a flag where if True, skip the OCI-to-Singularity (.sif) format
+                               conversion step in createContainer.sh.  Defaults to
+                               False.
     :type no_format_transfer: bool
 
-    :raises ValueError: If a specified platform does not exist in ``platforms.yaml``.
+    :raises ValueError: If a specified platform does not exist in platforms.yaml.
 
     .. note:: If building the container image on GFDL's RDHPCS GAEA with the Podman
               container engine, submit a GFDL helpdesk ticket to request Podman access
