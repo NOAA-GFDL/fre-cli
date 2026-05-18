@@ -1,28 +1,24 @@
-'''
-Orchestrates all ``fre make`` sub-commands in the correct order for a complete
-build.  ``fremake_run`` is the entry point called by ``fre make all``.
+"""
+run_fremake_script contains the main orchestration function, fremake_run, which executes all
+fre make sub-commands in the correct order to compile the model src code into an executable.  
+fremake_run is the entry point called by fre make all.
 
-For **bare-metal** platforms, ``fremake_run`` calls in sequence:
+For bare-metal platforms, fremake_run calls:
 
-1. ``checkout_create`` — clones all source repositories into
-   ``[modelRoot]/[experiment]/src/``
-2. ``makefile_create`` — writes the top-level Makefile into
-   ``[modelRoot]/[experiment]/[platform]-[target]/exec/``
-3. ``compile_create`` — writes ``compile.sh`` to the same ``exec/`` directory
-   and, if ``--execute`` is set, runs it to build the model executable
+1. checkout_create — creates and executes checkout.sh to clone all source repositories 
+   into [modelRoot]/[experiment]/src/
+2. makefile_create — creates the top-level Makefile into
+   [modelRoot]/[experiment]/[platform]-[target]/exec/
+3. compile_create — creates compile.sh to the
+   [modelRoot]/[experiment]/[platform]-[target]/exec/ and executes the script 
 
-For **container** platforms, ``fremake_run`` calls in sequence:
-
-1. ``checkout_create`` — stages ``checkout.sh`` under ``tmp/[platform]/``
-2. ``makefile_create`` — stages the Makefile under ``tmp/[platform]/``
-3. ``dockerfile_create`` — writes the Dockerfile and ``createContainer.sh``,
-   and, if ``--execute`` is set, runs the build script to produce a
-   Singularity image file (``.sif``)
-
-When ``--force-checkout`` is specified, previously generated ``compile.sh``
-scripts (bare-metal) or Dockerfiles (container) are removed so they are
-regenerated with the updated source configuration.
-'''
+For container platforms, fremake_run calls:
+1. checkout_create — stages checkout.sh under tmp/[platform]/
+2. makefile_create — stages the Makefile under tmp/[platform]/
+3. dockerfile_create — creates the Dockerfile and createContainer.sh,
+   and, if --execute is set, runs the build script to produce a
+   Singularity image file (.sif) for each platform/target combination.
+"""
 import logging
 from typing import Optional
 from pathlib import Path
@@ -43,64 +39,48 @@ def fremake_run(yamlfile:str, platform:str, target:str,
                 verbose: Optional[bool] = None,
                 force_checkout: Optional[bool] = False):
     """
-    Runs all ``fre make`` sub-commands in sequence to produce a model executable
-    (bare-metal) or a Singularity container image (container).
+    fremake_run runs all fre make sub-commands in sequence to produce a model executable
+    (bare-metal) or a container image.
 
-    Platforms in ``platform`` are split into bare-metal and container groups.
-    Both groups share the ``checkout_create`` and ``makefile_create`` steps; they
-    then diverge — bare-metal proceeds to ``compile_create`` and container proceeds
-    to ``dockerfile_create``.
-
-    When ``force_checkout=True``, any previously generated ``compile.sh`` scripts
-    (bare-metal) or ``Dockerfile`` (container) are deleted before the corresponding
-    create function is called, ensuring the build reflects the latest YAML
-    configuration.
-
-    :param yamlfile: Path to the model YAML file (e.g. ``am5.yaml``).  The experiment
-                     name is derived by stripping the ``.yaml`` extension.
+    :param yamlfile: is the path to the model YAML file (e.g. am5.yaml).  The experiment
+                     name is derived by stripping the .yaml extension.
     :type yamlfile: str
-    :param platform: One or more FRE platform strings as defined in ``platforms.yaml``
-                     (e.g. ``ncrc5.intel23`` for a bare-metal GAEA C5 platform).
-                     Repeat the ``-p`` flag to specify multiple platforms.
+    :param platform: is one or more FRE platform strings as defined in platforms.yaml
+                     (e.g. ncrc5.intel23 for a bare-metal GAEA C5 platform).
     :type platform: tuple[str]
-    :param target: One or more ``mkmf`` target strings (e.g. ``prod``, ``debug``,
-                   ``repro``, ``prod-openmp``).  Repeat the ``-t`` flag to specify
-                   multiple targets.
+    :param target: is one or more mkmf target strings (e.g. prod, repro debug)
     :type target: tuple[str]
-    :param nparallel: Number of ``compile.sh`` scripts to execute concurrently when
-                      ``execute=True`` (bare-metal only).  Defaults to ``1``
+    :param nparallel: is the number of compile.sh scripts to execute concurrently when
+                      execute=True (bare-metal only).  Defaults to 1
                       (sequential).
     :type nparallel: int
-    :param makejobs: Number of Makefile recipes to run simultaneously, passed to
-                     ``make -j``.  Defaults to ``4``.
+    :param makejobs: is the number of Makefile recipes to run simultaneously, passed to
+                     make -j.  Defaults to 4.
     :type makejobs: int
-    :param gitjobs: Number of git submodules to clone simultaneously, passed to
-                    ``git clone --jobs`` inside ``checkout.sh``.  Defaults to ``4``.
+    :param gitjobs: is the number of git submodules to clone simultaneously, passed to
+                    git clone --jobs inside checkout.sh.  Defaults to 4.
     :type gitjobs: int
-    :param no_parallel_checkout: If ``True``, clone source repositories sequentially
-                                 (disables ``&`` backgrounding in ``checkout.sh``).
-                                 Defaults to ``False`` (parallel checkout for
-                                 bare-metal builds).
+    :param no_parallel_checkout: is a flag where if True, clone source repositories sequentially
+                                 Defaults to False to enable parallel checkout for bare-metal builds.
+                                 Only sequential checkouts are available for container builds.
     :type no_parallel_checkout: bool, optional
-    :param no_format_transfer: If ``True``, skip the Docker-to-Singularity (``.sif``)
-                               format conversion in ``createContainer.sh`` (container
-                               builds only).  Defaults to ``False``.
+    :param no_format_transfer: is a flag where if True, skip the Docker-to-Singularity (.sif)
+                               format conversion in createContainer.sh.   Defaults to False.
     :type no_format_transfer: bool, optional
-    :param execute: If ``True``, execute ``checkout.sh`` and ``compile.sh`` (bare-metal)
-                    or ``createContainer.sh`` (container) immediately after generating
-                    them.  Defaults to ``False``.
+    :param execute: is a flag where if True, execute checkout.sh and compile.sh (bare-metal)
+                    or createContainer.sh (container) immediately after generation.  
+                    Defaults to False.
     :type execute: bool, optional
-    :param verbose: If ``True``, set log level to ``DEBUG`` for detailed output from
-                    ``compile_create``.  Defaults to ``False`` (``INFO`` level).
+    :param verbose: is a flag where if True, set logger level to DEBUG for detailed output from
+                    compile_create.  Defaults to False and sets logger level to INFO.
     :type verbose: bool, optional
-    :param force_checkout: If ``True``, re-create all build artifacts even if they
-                           already exist.  For bare-metal: removes existing
-                           ``compile.sh`` before regenerating.  For container: removes
-                           the existing ``Dockerfile`` before regenerating.  Defaults
-                           to ``False``.
+    :param force_checkout: is a flag where if True, for bare-metal: remove existing
+                           compile.sh before regenerating.  For container: remove
+                           the existing Dockerfile before regenerating.  Defaults
+                           to False.
     :type force_checkout: bool, optional
 
-    :raises ValueError: If a specified platform does not exist in ``platforms.yaml``.
+    :raises ValueError: If a specified platform does not exist in platforms.yaml.
     """
 #    if verbose:
 #        fre_logger.setLevel(level = logging.DEBUG)
