@@ -1,43 +1,41 @@
-'''
-Generates the top-level ``Makefile`` used for model compilation.
-``makefile_create`` is the entry point called by ``fre make makefile`` and by
-``fre make all`` (for both bare-metal and container platforms).
+"""
+create_makefile_script contains methods to generate the top-level Makefile used for model compilation.
+makefile_create is the entry point called by fre make makefile and by fre make all.
 
-Output locations differ by platform type:
-
-- **Bare-metal**: ``[modelRoot]/[experiment]/[platform]-[target]/exec/Makefile``
-- **Container**: ``./tmp/[platform]/Makefile`` (staged for inclusion in the Dockerfile)
+The top-level Makefile is outputted to:
+- for bare-metal platforms: [modelRoot]/[experiment]/[platform]-[target]/exec/Makefile
+- for container platforms: ./tmp/[platform]/Makefile (staged for COPY during container image build)
 
 where
 
-- ``modelRoot`` is defined in ``platforms.yaml``
-- ``experiment`` is the basename of the model YAML file (e.g. ``am5`` from ``am5.yaml``)
-- ``platform`` and ``target`` are passed via the ``-p`` / ``-t`` CLI options
+- modelRoot is defined in platforms.yaml
+- experiment is the basename of the model YAML file (e.g. am5 from am5.yaml)
+- platform and target are passed via the -p / -t CLI options to fre make makefile 
+and fre make all.
 
 The generated Makefile
 
-1. Sets ``SRCROOT`` — path to the checked-out source code
-2. Sets ``BUILDROOT`` — path to the directory where the executable is placed
-3. Sets ``MK_TEMPLATE_PATH`` — path to the ``mkmf`` template file (``mkTemplate``
-   from ``platforms.yaml``); templates live in the bundled
-   `mkmf repository <https://github.com/NOAA-GFDL/mkmf>`_
-4. Defines build and link recipes for each component listed under ``src`` in
-   ``compile.yaml``, following standard Makefile structure::
+1. Sets SRCROOT — path to the checked-out source code
+2. Sets BUILDROOT — path to the directory where the executable is placed
+3. Sets MK_TEMPLATE_PATH — path to the mkmf template file (mkTemplate
+   from platforms.yaml); templates can be found in 
+   mkmf repository <https://github.com/NOAA-GFDL/mkmf>
+4. Defines build and link recipes (as shown below) for each component listed under src in
+   compile.yaml:
 
       [target]: [prerequisites]
           [recipe]
 
-Additional library flags are handled differently per build type:
+Additional library flags are handled as below:
 
-- **Bare-metal**: ``baremetal_linkerflags`` from ``compile.yaml`` are embedded
-  directly as ``-L`` / ``-l`` flags in the Makefile link line.
-- **Container**: ``container_addlibs`` from ``compile.yaml`` are resolved at
-  build time via a generated ``linkline.sh`` script that locates the library
-  paths inside the container image.
+- Bare-metal: baremetal_linkerflags from compile.yaml are added
+  directly as -L / -l flags to the Makefile.
+- Container: container_addlibs from the compile yaml are resolved at
+  build time.
 
 For more information about the Makefile, see the fre-cli glossary:
 https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
-'''
+"""
 
 import logging
 from pathlib import Path
@@ -49,40 +47,38 @@ fre_logger = logging.getLogger(__name__)
 
 def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
     """
-    Generates the top-level ``Makefile`` for each platform/target combination and
-    writes it to the appropriate output directory.
+    Makefile_create generates the top-level Makefile for each platform/target combination.
 
-    For bare-metal platforms the Makefile is written to
-    ``[modelRoot]/[experiment]/[platform]-[target]/exec/``.  For container platforms
-    it is staged in ``./tmp/[platform]/`` so the Dockerfile can COPY it into the
-    image at build time.  One Makefile is produced per platform/target pair.
+    For bare-metal platforms, the Makefile is written to 
+    [modelRoot]/[experiment]/[platform]-[target]/exec/.  
+    
+    For container platforms, the Makefile is staged in 
+    ./tmp/[platform]/ and is COPYed into the container image at image build time.  
 
-    :param yamlfile: Path to the model YAML file (e.g. ``am5.yaml``).  The experiment
-                     name is derived by stripping the ``.yaml`` extension.
+    :param yamlfile: is the path to the model YAML file (e.g. am5.yaml).  The experiment
+                     name is derived by stripping the .yaml extension.
     :type yamlfile: str
-    :param platform: One or more FRE platform strings as defined in ``platforms.yaml``
-                     (e.g. ``ncrc5.intel23``).  Both bare-metal and container platforms
+    :param platform: is one or more FRE platform strings as defined in platforms.yaml
+                     (e.g. ncrc5.intel23).  Both bare-metal and container platforms
                      are supported.
     :type platform: tuple[str]
-    :param target: One or more ``mkmf`` target strings (e.g. ``prod``, ``debug``,
-                   ``repro``, ``prod-openmp``).  One Makefile is generated per
+    :param target: is one or more mkmf target strings (e.g. prod, debug,
+                   repro, prod-openmp).  One Makefile is generated per
                    platform/target pair.
     :type target: tuple[str]
 
-    :raises ValueError: If a specified platform does not exist in ``platforms.yaml``.
+    :raises ValueError: If a specified platform does not exist in platforms.yaml.
 
     .. note:: Additional library dependencies are handled differently per build type:
 
-       - **Container build** — list library names under ``container_addlibs`` in
-         ``compile.yaml`` (e.g. ``container_addlibs: ['darcy']``).  A ``linkline.sh``
-         script is generated alongside the Makefile; it resolves the ``-L`` / ``-l``
-         flags at container-image build time by locating the libraries inside the
-         container.
+       - Container build — list library names under container_addlibs in
+         compile.yaml (e.g. container_addlibs: ['darcy']).  A linkline.sh
+         script, generated alongside the Makefile, locates the libraries inside
+         the container and resolves the  -L / -l flags at container image build time.
 
-       - **Bare-metal build** — provide full linker flags under
-         ``baremetal_linkerflags`` in ``compile.yaml``
-         (e.g. ``baremetal_linkerflags: ["-L/path/to/libs -ldarcy"]``).  These flags
-         are embedded directly in the Makefile link line.
+       - Bare-metal build — provide full linker flags under baremetal_linkerflags in compile.yaml
+         (e.g. baremetal_linkerflags: ["-L/path/to/libs -ldarcy"]).  These flags
+         are added directly to the Makefile.
     """
     name = yamlfile.split(".")[0]
 
