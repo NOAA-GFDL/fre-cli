@@ -116,7 +116,8 @@ def consolidate_yamls(yamlfile:str, experiment:str, platform:str,
         else:
             yml_dict = pp_yml_dict.copy()
             fre_logger.info("No analysis yamls were combined")
-
+    else:
+        raise ValueError("'use' value is not valid; must be one of: 'compile' or 'pp'")
         # OUTPUT IF NEEDED
         if output is not None:
             output_yaml(yml_dict, output)
