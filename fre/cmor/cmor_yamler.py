@@ -1,7 +1,7 @@
 """
 use NOAA-GFDL/fremor
 """
-
+import logging
 fre_logger = logging.getLogger(__name__)
 
 def cmor_yaml_subtool( yamlfile: str = None,

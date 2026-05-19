@@ -2,6 +2,8 @@
 use NOAA-GFDL/fremor
 """
 
+import logging
+
 fre_logger = logging.getLogger(__name__)
 
 def cmor_run_subtool(indir: str = None,
