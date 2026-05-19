@@ -2,12 +2,6 @@
 CLI Tests to make sure fre cmor * exit the right way
 """
 
-from datetime import date
-import json
-import os
-from pathlib import Path
-import shutil
-
 from click.testing import CliRunner
 
 from fre import fre
