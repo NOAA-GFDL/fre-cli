@@ -1,0 +1,110 @@
+compile:
+    experiment: !join [*AM5_VERSION, "_compile"]
+    container_addlibs:
+    baremetal_linkerflags:
+    src:
+        - component: "FMS"
+          repo: "https://github.com/NOAA-GFDL/FMS.git"
+          branch: "2026.01"
+          cppdefs: "-DHAVE_GETTID -DINTERNAL_FILE_NML -Duse_libMPI -Duse_netCDF -Duse_yaml"
+          otherFlags: *FMSincludes
+        - component: "rte-rrtmgp"
+          requires: ["FMS"]
+          repo: "http://github.com/NOAA-GFDL/rte-rrtmgp.git"
+          branch: "2024.01"
+          paths: ["rte-rrtmgp/rte-frontend",
+                  "rte-rrtmgp/rte-kernels/mo_fluxes_broadband_kernels.F90",
+                  "rte-rrtmgp/rte-kernels/mo_optical_props_kernels.F90",
+                  "rte-rrtmgp/rte-kernels/mo_rte_solver_kernels.F90",
+                  "rte-rrtmgp/rte-kernels/mo_rte_util_array.F90",
+                  "rte-rrtmgp/gas-optics",
+                  "rte-rrtmgp/rrtmgp-frontend/mo_gas_optics_rrtmgp.F90",
+                  "rte-rrtmgp/rrtmgp-kernels/mo_gas_optics_rrtmgp_kernels.F90",
+                  "rte-rrtmgp/extensions/mo_heating_rates.F90",
+                  "rte-rrtmgp/examples/mo_load_coefficients.F90"]
+          cppdefs: "-heap-arrays -DRTE_USE_SP"
+          makeOverrides: 'OPENMP=""'
+          otherFlags: *FMSincludes
+        - component: "rte-ecckd"
+          requires: ["FMS", "rte-rrtmgp"]
+          repo: "http://github.com/NOAA-GFDL/rte-ecckd.git"
+          branch: "2024.03"
+          paths: ["rte-ecckd/src/gas_optics_ecckd.f90"]
+          otherFlags: *FMSincludes
+        - component: "am5_phys"
+          requires: ["FMS", "rte-rrtmgp", "rte-ecckd"]
+          repo: "https://gitlab.gfdl.noaa.gov/fms/am5_phys.git"
+          branch: "2026.01"
+          paths: ["am5_phys/atmos_param", "am5_phys/atmos_shared"]
+          cppdefs: "-DINTERNAL_FILE_NML"
+          otherFlags: *FMSincludes
+        - component: "GFDL_atmos_cubed_sphere"
+          requires: ["FMS", "am5_phys"]
+          repo: "https://github.com/NOAA-GFDL/GFDL_atmos_cubed_sphere.git"
+          branch: "2024.01_am5"
+          paths: ["GFDL_atmos_cubed_sphere/driver/GFDL",
+                  "GFDL_atmos_cubed_sphere/model",
+                  "GFDL_atmos_cubed_sphere/driver/SHiELD/cloud_diagnosis.F90",
+                  "GFDL_atmos_cubed_sphere/driver/SHiELD/gfdl_cloud_microphys.F90",
+                  "GFDL_atmos_cubed_sphere/tools",
+                  "GFDL_atmos_cubed_sphere/GFDL_tools"]
+          cppdefs: "-DINTERNAL_FILE_NML -DSPMD -DCLIMATE_NUDGE"
+          otherFlags: *FMSincludes
+        - component: "atmos_drivers"
+          requires: ["FMS", "am5_phys", "GFDL_atmos_cubed_sphere", "rte-rrtmgp", "rte-ecckd"]
+          repo: "https://github.com/NOAA-GFDL/atmos_drivers.git"
+          branch: "2025.03"
+          paths: ["atmos_drivers/coupled"]
+          cppdefs: "-DINTERNAL_FILE_NML -DSPMD -DCLIMATE_NUDGE"
+          otherFlags: *FMSincludes
+        - component: "land_lad2"
+          requires: ["FMS"]
+          repo: "https://gitlab.gfdl.noaa.gov/FMS/land_lad2.git"
+          branch: "2025.02"
+          doF90Cpp: True
+          cppdefs: "-DINTERNAL_FILE_NML -nostdinc"
+          otherFlags: *FMSincludes
+        - component: "ocean_BGC"
+          requires: ["FMS"]
+          repo: "https://github.com/NOAA-GFDL/ocean_BGC.git"
+          branch: "2023.01"
+          paths: ["mom6/src/MOM6/config_src/infra/FMS2",
+                  "mom6/src/MOM6/config_src/memory/dynamic_nonsymmetric",
+                  "mom6/src/MOM6/config_src/drivers/FMS_cap",
+                  "mom6/src/MOM6/config_src/external",
+                  "mom6/src/MOM6/src/*",
+                  "mom6/src/MOM6/src/*/*"]
+          cppdefs: "-DINTERNAL_FILE_NML -DMAX_FIELDS_=100 -DNOT_SET_AFFINITY -D_USE_MOM6_DIAG -D_USE_GENERIC_TRACER  -DUSE_PRECISION=2"
+          otherFlags: !join [*FMSincludes, " ", *momIncludes]
+          makeOverrides: 'OPENMP=""'
+          additionalInstructions: !join ["git clone https://github.com/NOAA-GFDL/MOM6-examples.git mom6 \n",
+                                         "cd mom6\n",
+                                         "git checkout ", *MOM6_EXAMPLES_GIT_TAG, "\n",
+                                         "git submodule update --recursive --init src/MOM6 src/SIS2 src/icebergs\n",
+                                         "git pull --no-edit https://github.com/uramirez8707/MOM6-examples.git use_diag_yaml \n",
+                                         "cd src/MOM6\n",
+                                         "git checkout 792a0616c16050dfe74ac5bfc887f99d9c765376 \n",
+                                         "cd ../SIS2\n",
+                                         "git checkout dec9ee38424eceded0da635671e7c03e5d97d928 \n",
+                                         "cd ../icebergs\n",
+                                         "git checkout 6a8944fc7544608942de9a42bd3b96f6e56684e0 \n",
+                                         "cd ../.. \n",
+                                         "ln -s /gpfs/f5/gfdl_o/world-shared/datasets .datasets \n",
+                                         "cd .. \n"]
+        - component: "sis2"
+          requires: ["FMS", "ocean_BGC"]
+          repo: "https://github.com/NOAA-GFDL/ice_param.git"
+          branch: "2024.02"
+          paths: ["mom6/src/SIS2/config_src/dynamic_symmetric",
+                  "mom6/src/SIS2/config_src/external/Icepack_interfaces",
+                  "mom6/src/SIS2/src",
+                  "mom6/src/icebergs/src",
+                  "sis2"]
+          otherFlags: !join [*FMSincludes, " ", *momIncludes]
+          cppdefs: "-DUSE_FMS2_IO -DINTERNAL_FILE_NML"
+        - component: "FMScoupler"
+          requires: ["FMS", "GFDL_atmos_cubed_sphere", "atmos_drivers", "am5_phys", "land_lad2", "sis2", "ocean_BGC"]
+          repo: "https://github.com/NOAA-GFDL/FMScoupler.git"
+          branch: "2026.01"
+          paths: ["FMScoupler/full", "FMScoupler/shared"]
+          otherFlags: !join [*FMSincludes, " ", *momIncludes]
