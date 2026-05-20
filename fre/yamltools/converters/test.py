@@ -1,6 +1,4 @@
 import pytest
-import tempfile
-import os
 import yaml
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -361,7 +359,7 @@ class TestParseExperiment:
 class TestXmlToYaml:
     """Test xml_to_yaml main conversion function."""
     
-    def test_basic_xml_to_yaml_conversion(self):
+    def test_basic_xml_to_yaml_conversion(self, tmp_path):
         """Test basic XML to YAML conversion."""
         xml_content = '''
         <compile>
@@ -370,25 +368,21 @@ class TestXmlToYaml:
             </experiment>
         </compile>
         '''
-        
-        with tempfile.TemporaryDirectory() as tmpdir:
-            xml_file = os.path.join(tmpdir, 'test.xml')
-            yaml_file = os.path.join(tmpdir, 'test.yaml')
-            
-            with open(xml_file, 'w') as f:
-                f.write(xml_content)
-            
-            xml_to_yaml(xml_file, yaml_file)
-            
-            assert os.path.exists(yaml_file)
-            with open(yaml_file, 'r') as f:
-                data = yaml.safe_load(f)
-            
-            assert 'compile' in data
-            assert data['compile']['experiment'] == 'exp1'
-            assert len(data['compile']['src']) == 1
+        xml_file = tmp_path / 'test.xml'
+        yaml_file = tmp_path / 'test.yaml'
+
+        xml_file.write_text(xml_content)
+
+        xml_to_yaml(xml_file, yaml_file)
+
+        assert yaml_file.exists()
+        data = yaml.safe_load(yaml_file.read_text())
+
+        assert 'compile' in data
+        assert data['compile']['experiment'] == 'exp1'
+        assert len(data['compile']['src']) == 1
     
-    def test_xml_to_yaml_with_specific_experiment(self):
+    def test_xml_to_yaml_with_specific_experiment(self, tmp_path):
         """Test XML to YAML conversion with specific experiment filter."""
         xml_content = '''
         <compile>
@@ -400,24 +394,20 @@ class TestXmlToYaml:
             </experiment>
         </compile>
         '''
-        
-        with tempfile.TemporaryDirectory() as tmpdir:
-            xml_file = os.path.join(tmpdir, 'test.xml')
-            yaml_file = os.path.join(tmpdir, 'test.yaml')
-            
-            with open(xml_file, 'w') as f:
-                f.write(xml_content)
-            
-            xml_to_yaml(xml_file, yaml_file, experiment_name='exp2')
-            
-            with open(yaml_file, 'r') as f:
-                data = yaml.safe_load(f)
-            
-            assert data['compile']['experiment'] == 'exp2'
-            assert len(data['compile']['src']) == 1
-            assert data['compile']['src'][0]['component'] == 'comp2'
+        xml_file = tmp_path / 'test.xml'
+        yaml_file = tmp_path / 'test.yaml'
+
+        xml_file.write_text(xml_content)
+
+        xml_to_yaml(xml_file, yaml_file, experiment_name='exp2')
+
+        data = yaml.safe_load(yaml_file.read_text())
+
+        assert data['compile']['experiment'] == 'exp2'
+        assert len(data['compile']['src']) == 1
+        assert data['compile']['src'][0]['component'] == 'comp2'
     
-    def test_xml_to_yaml_multiple_components(self):
+    def test_xml_to_yaml_multiple_components(self, tmp_path):
         """Test XML to YAML with multiple components."""
         xml_content = '''
         <compile>
@@ -428,42 +418,36 @@ class TestXmlToYaml:
             </experiment>
         </compile>
         '''
-        
-        with tempfile.TemporaryDirectory() as tmpdir:
-            xml_file = os.path.join(tmpdir, 'test.xml')
-            yaml_file = os.path.join(tmpdir, 'test.yaml')
-            
-            with open(xml_file, 'w') as f:
-                f.write(xml_content)
-            
-            xml_to_yaml(xml_file, yaml_file)
-            
-            with open(yaml_file, 'r') as f:
-                data = yaml.safe_load(f)
-            
-            assert len(data['compile']['src']) == 3
-            assert data['compile']['src'][0]['component'] == 'comp1'
-            assert data['compile']['src'][1]['component'] == 'comp2'
-            assert data['compile']['src'][2]['component'] == 'comp3'
+        xml_file = tmp_path / 'test.xml'
+        yaml_file = tmp_path / 'test.yaml'
+
+        xml_file.write_text(xml_content)
+
+        xml_to_yaml(xml_file, yaml_file)
+
+        data = yaml.safe_load(yaml_file.read_text())
+
+        assert len(data['compile']['src']) == 3
+        assert data['compile']['src'][0]['component'] == 'comp1'
+        assert data['compile']['src'][1]['component'] == 'comp2'
+        assert data['compile']['src'][2]['component'] == 'comp3'
     
     def test_xml_to_yaml_nonexistent_file(self):
         """Test error handling for non-existent XML file."""
         with pytest.raises(FileNotFoundError):
             xml_to_yaml('/nonexistent/path/test.xml', '/tmp/output.yaml')
     
-    def test_xml_to_yaml_invalid_xml(self):
+    def test_xml_to_yaml_invalid_xml(self, tmp_path):
         """Test error handling for invalid XML."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            xml_file = os.path.join(tmpdir, 'invalid.xml')
-            yaml_file = os.path.join(tmpdir, 'output.yaml')
-            
-            with open(xml_file, 'w') as f:
-                f.write('<invalid>This is not well-formed XML</')
-            
-            with pytest.raises(Exception):  # XML parsing error
-                xml_to_yaml(xml_file, yaml_file)
+        xml_file = tmp_path / 'invalid.xml'
+        yaml_file = tmp_path / 'output.yaml'
+
+        xml_file.write_text('<invalid>This is not well-formed XML</')
+
+        with pytest.raises(Exception):  # XML parsing error
+            xml_to_yaml(xml_file, yaml_file)
     
-    def test_xml_to_yaml_output_file_created(self):
+    def test_xml_to_yaml_output_file_created(self, tmp_path):
         """Test that output file is created with correct permissions."""
         xml_content = '''
         <compile>
@@ -472,18 +456,15 @@ class TestXmlToYaml:
             </experiment>
         </compile>
         '''
-        
-        with tempfile.TemporaryDirectory() as tmpdir:
-            xml_file = os.path.join(tmpdir, 'test.xml')
-            yaml_file = os.path.join(tmpdir, 'test.yaml')
-            
-            with open(xml_file, 'w') as f:
-                f.write(xml_content)
-            
-            xml_to_yaml(xml_file, yaml_file)
-            
-            assert Path(yaml_file).exists()
-            assert os.path.getsize(yaml_file) > 0
+        xml_file = tmp_path / 'test.xml'
+        yaml_file = tmp_path / 'test.yaml'
+
+        xml_file.write_text(xml_content)
+
+        xml_to_yaml(xml_file, yaml_file)
+
+        assert Path(yaml_file).exists()
+        assert yaml_file.stat().st_size > 0
 
 
 if __name__ == "__main__":
