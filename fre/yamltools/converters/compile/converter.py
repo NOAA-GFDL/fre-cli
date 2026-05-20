@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 import argparse
 import yaml
 
-def parse_component(component: ET.Element) -> dict[str, any]:
+def parse_component(component: ET.Element) -> dict[str, str | list] | None:
     """Parse a single <component> XML element into a YAML-friendly dictionary."""
 
     def get_compile_flag(flag: str) -> str | None:
@@ -128,7 +128,7 @@ def parse_component(component: ET.Element) -> dict[str, any]:
     # Remove None values
     return {k: v for k, v in d.items() if v is not None}
 
-def parse_experiment(experiment: ET.Element) -> Dict[str, Any]:
+def parse_experiment(experiment: ET.Element) -> [str, str | list]:
     """Parse one <experiment> element into the compile YAML object."""
     components = [parse_component(c) for c in experiment.findall('component')]
     return {
