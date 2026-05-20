@@ -2,16 +2,13 @@ import pytest
 import yaml
 import xml.etree.ElementTree as ET
 from pathlib import Path
-import importlib.util
 
-# Import functions from compile-converter (hyphenated module name)
-spec = importlib.util.spec_from_file_location("compile_converter", "compile-converter.py")
-compile_converter = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(compile_converter)
+from . import converter
 
-parse_component = compile_converter.parse_component
-parse_experiment = compile_converter.parse_experiment
-xml_to_yaml = compile_converter.xml_to_yaml
+
+parse_component = converter.parse_component
+parse_experiment = converter.parse_experiment
+xml_to_yaml = converter.xml_to_yaml
 
 
 class TestGetCompileFlag:

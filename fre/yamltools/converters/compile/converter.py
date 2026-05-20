@@ -7,6 +7,12 @@ import yaml
 def parse_component(component: ET.Element) -> dict[str, str | list] | None:
     """Parse a single <component> XML element into a YAML-friendly dictionary."""
 
+    def clean_text(string: str) -> list[str] | None:        
+        clean_string = re.sub(r'\s+', ' ', string.replace('\t', '')).strip()
+        if clean_string:
+            return clean_string
+        return None
+
     def get_compile_flag(flag: str) -> str | None:
         """
         Return text for cppDefs or makeOverrides in compile element block
@@ -23,8 +29,10 @@ def parse_component(component: ET.Element) -> dict[str, str | list] | None:
         compile_elem = component.find('compile')
         if compile_elem is not None:
             elem = compile_elem.find(flag)
-            if elem is not None and elem.text:
-                return elem.text.strip()
+            if elem is not None:
+                elem_text = clean_text(elem.text)
+                if elem_text:
+                    return elem_text
         return None
 
     def get_paths() -> list[str] | None:
@@ -81,8 +89,8 @@ def parse_component(component: ET.Element) -> dict[str, str | list] | None:
                 cleaned_lines = []
                 for line in csh_elem.text.splitlines():
                     # Remove tabs and normalize extra spaces
-                    clean_line = re.sub(r'\s+', ' ', line.replace('\t', '')).strip()
-                    if clean_line:
+                    clean_line = clean_text(line)
+                    if clean_line is not None:
                         cleaned_lines.append(clean_line)
                 return cleaned_lines if cleaned_lines else None
         return None
