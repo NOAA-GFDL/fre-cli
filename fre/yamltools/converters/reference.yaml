@@ -78,7 +78,7 @@ compile:
           otherFlags: !join [*FMSincludes, " ", *momIncludes]
           makeOverrides: 'OPENMP=""'
           additionalInstructions: !join ["git clone https://github.com/NOAA-GFDL/MOM6-examples.git mom6 \n",
-                                         "cd mom6\n",
+                                         "pushd mom6\n",
                                          "git checkout ", *MOM6_EXAMPLES_GIT_TAG, "\n",
                                          "git submodule update --recursive --init src/MOM6 src/SIS2 src/icebergs\n",
                                          "git pull --no-edit https://github.com/uramirez8707/MOM6-examples.git use_diag_yaml \n",
@@ -88,8 +88,14 @@ compile:
                                          "git checkout dec9ee38424eceded0da635671e7c03e5d97d928 \n",
                                          "cd ../icebergs\n",
                                          "git checkout 6a8944fc7544608942de9a42bd3b96f6e56684e0 \n",
-                                         "cd ../.. \n",
-                                         "ln -s /gpfs/f5/gfdl_o/world-shared/datasets .datasets \n",
+                                         "popd \n",
+                                         "pushd mom6 \n"
+                                         "ln -s", *(GFDL_O_INPUTS), ".datasets \n",
+                                         "popd \n",
+                                         "test -e mom6/.datasets \n",
+                                         "if ($status != 0) then\n",
+                                         'echo ""; echo "" ; echo "   WARNING:  .datasets link in MOM6 examples directory is invalid"; echo ""; echo ""',
+                                         "endif",
                                          "cd .. \n"]
         - component: "sis2"
           requires: ["FMS", "ocean_BGC"]
