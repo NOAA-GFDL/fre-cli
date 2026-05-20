@@ -2,10 +2,7 @@ from pathlib import Path
 import re
 import yaml
 
-try:
-    from .xml import XML
-except ImportError:
-    from xml import XML
+from xml import XML
 
 
 class CompileConverter(XML):
@@ -25,7 +22,7 @@ class CompileConverter(XML):
         Parse the XML and save each compile experiment block 
         """
 
-        #prettify name
+        # prettify name
         prettify = lambda name: name.strip().replace("$(", "").replace(")", "")
 
         # if a particular experiment is not provided, get all compile experiments in xml    
@@ -34,7 +31,10 @@ class CompileConverter(XML):
         if experiments:
             experiment_dict = {}
             for experiment in experiments:
-                name = prettify(self.get_attributes("name", experiment))
+                raw_name = self.get_attributes("name", experiment)
+                if raw_name is None:
+                    raise RuntimeError("Found <experiment> element with no name attribute")
+                name = prettify(raw_name)
                 experiment_dict[name] = experiment
             return experiment_dict
 
@@ -47,11 +47,12 @@ class CompileConverter(XML):
         """
         
         for experiment_name, experiment_content in self.experiments.items():                    
+            parsed_components = self.parse_components(experiment_content) or []
             compile_yaml = {"compile": {
                 "experiment": self.get_attributes("name", experiment_content),
                 "container_addlibs": "",
                 "baremetal_linkerflags": "",
-                "src": self.parse_components(experiment_content)}
+                "src": parsed_components}
             }
             self.yaml_dicts[experiment_name] = compile_yaml                    
             self.write_yaml(compile_yaml, "compile_"+experiment_name +".yaml")
@@ -92,6 +93,9 @@ class CompileConverter(XML):
             
         parsed_components = []
         for component in components:
+            component_name_value = self.get_attributes("name", component)
+            if component_name_value is None:
+                raise RuntimeError("Found <component> element with no name attribute")
 
             codebase = self.get_elements("codeBase", component, find_all=False)
             source = self.get_elements("source", component, find_all=False)
@@ -111,7 +115,7 @@ class CompileConverter(XML):
                 "otherFlags": self.get_attributes("includeDir", component, tolist=True),
                 "cppdefs": self.get_values(cppdefs),
                 "makeOverrides": self.get_values(make_overrides),
-                "doF90Cpp": self.get_attributes("doF90Cpp", compile_),
+                "doF90Cpp": self.parse_bool(self.get_attributes("doF90Cpp", compile_)),
                 "additionalInstructions": self.get_values(csh, tolist=True, fieldsep="\n")
             }
             
@@ -120,6 +124,24 @@ class CompileConverter(XML):
             parsed_components.append(component_yaml)
             
         return parsed_components
+
+
+    @staticmethod
+    def parse_bool(value: str | None):
+        """
+        Normalize common XML boolean-like strings to Python booleans.
+        """
+
+        if value is None:
+            return None
+
+        normalized = value.strip().lower()
+        if normalized in {"yes", "true", "1", "on"}:
+            return True
+        if normalized in {"no", "false", "0", "off"}:
+            return False
+
+        return value
 
 
     def write_yaml(self, yamldict: dict, yamlfile: str|Path):           
