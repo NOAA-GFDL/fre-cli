@@ -17,7 +17,7 @@ dependencies:
   - conda-forge::jinja2>=3
   - conda-forge::jsonschema
   - conda-forge::metomi-rose
-#  - conda-forge::nccmp
+  - conda-forge::nccmp
 #  - conda-forge::numpy==1.26.4
   - conda-forge::numpy>=2
   - conda-forge::pytest
