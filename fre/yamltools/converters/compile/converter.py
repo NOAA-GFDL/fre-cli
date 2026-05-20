@@ -146,6 +146,11 @@ def parse_experiment(experiment: ET.Element) -> [str, str | list]:
         'src': components if components else [],
     }
 
+def write_yaml(yamldict: dict, yaml_path: str):
+    """Write the YAML dictionary to a file."""
+    with open(yaml_path, 'w', encoding='utf-8') as f:
+        yaml.dump(yamldict, f, sort_keys=False)
+
 def xml_to_yaml(xml_path: str, yaml_path: str, experiment_name: str = None):
     """
     Convert compile XML to YAML.
@@ -154,15 +159,15 @@ def xml_to_yaml(xml_path: str, yaml_path: str, experiment_name: str = None):
     tree = ET.parse(xml_path)
     root = tree.getroot()
     experiments = root.findall('experiment')
-    out = {}
+
+    if experiment_name is not None:
+        experiments = [exp for exp in experiments if exp.get('name') == experiment_name]
+
     for exp in experiments:
-        if experiment_name and exp.attrib.get('name') != experiment_name:
-            continue
+        print(f"Converting experiment '{exp.attrib.get('name')}' to YAML...")
         yamldict = {'compile': parse_experiment(exp)}
-        if experiment_name:
-            break
-    with open(yaml_path, 'w', encoding='utf-8') as f:
-        yaml.dump(yamldict, f, sort_keys=False)
+        write_yaml(yamldict, yaml_path)
+        print(f"Experiment '{exp.attrib.get('name')}' converted to YAML.")
 
 
 if __name__ == "__main__":
