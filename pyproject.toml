@@ -21,6 +21,7 @@ keywords = [
 
 dependencies = [
         'analysis_scripts',
+        'beautifulsoup4', 
         'catalogbuilder',
         'cdo',
         'cftime',

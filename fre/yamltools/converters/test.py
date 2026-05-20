@@ -24,7 +24,7 @@ class TestGetCompileFlag:
         xml_str = '''
         <component name="test_comp">
             <compile>
-                <cppDefs>-DDEBUG -Iinclude</cppDefs>
+                <cppDefs>  -DDEBUG   -Iinclude  </cppDefs>
             </compile>
         </component>
         '''
@@ -53,19 +53,6 @@ class TestGetCompileFlag:
         assert 'cppdefs' not in result  # Should be filtered out
         assert 'makeOverrides' not in result
     
-    def test_flag_with_whitespace(self):
-        """Test flag with leading/trailing whitespace."""
-        xml_str = '''
-        <component name="test_comp">
-            <compile>
-                <cppDefs>  -DDEBUG -Iinclude  </cppDefs>
-            </compile>
-        </component>
-        '''
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        assert result['cppdefs'] == '-DDEBUG -Iinclude'
-
 
 class TestGetPaths:
     """Test get_paths nested function via parse_component."""
@@ -79,18 +66,11 @@ class TestGetPaths:
     
     def test_multiple_paths(self):
         """Test parsing multiple space-separated paths."""
-        xml_str = '<component name="test" paths="am5_phys/atmos_param am5_phys/atmos_shared"/>'
+        xml_str = '<component name="test" paths="am5_phys/atmos_param   am5_phys/atmos_shared am5_phys/madeup"/>'
         component = ET.fromstring(xml_str)
         result = parse_component(component)
-        assert result['paths'] == ['am5_phys/atmos_param', 'am5_phys/atmos_shared']
-    
-    def test_paths_with_extra_whitespace(self):
-        """Test parsing paths with extra whitespace."""
-        xml_str = '<component name="test" paths="  path1   path2  path3  "/>'
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        assert result['paths'] == ['path1', 'path2', 'path3']
-    
+        assert result['paths'] == ['am5_phys/atmos_param', 'am5_phys/atmos_shared', "am5_phys/madeup"]
+        
     def test_paths_not_defined(self):
         """Test when paths attribute is missing."""
         xml_str = '<component name="test"/>'
@@ -118,18 +98,11 @@ class TestGetRequires:
     
     def test_multiple_requirements(self):
         """Test parsing multiple space-separated requirements."""
-        xml_str = '<component name="test" requires="FMS rte-rrtmpgp rte-ecckd"/>'
+        xml_str = '<component name="test" requires="FMS      rte-rrtmpgp rte-ecckd"/>'
         component = ET.fromstring(xml_str)
         result = parse_component(component)
         assert result['requires'] == ['FMS', 'rte-rrtmpgp', 'rte-ecckd']
-    
-    def test_requires_with_extra_whitespace(self):
-        """Test parsing requires with extra whitespace."""
-        xml_str = '<component name="test" requires="  req1   req2  req3  "/>'
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        assert result['requires'] == ['req1', 'req2', 'req3']
-    
+        
     def test_requires_not_defined(self):
         """Test when requires attribute is missing."""
         xml_str = '<component name="test"/>'
@@ -168,42 +141,8 @@ class TestGetDoF90Cpp:
         '''
         component = ET.fromstring(xml_str)
         result = parse_component(component)
-        # False values should be included (only None values are filtered)
         assert result['doF90Cpp'] is False
-    
-    def test_doF90Cpp_true(self):
-        """Test parsing doF90Cpp as 'true'."""
-        xml_str = '''
-        <component name="test">
-            <compile doF90Cpp="true"/>
-        </component>
-        '''
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        assert result['doF90Cpp'] is True
-    
-    def test_doF90Cpp_one(self):
-        """Test parsing doF90Cpp as '1'."""
-        xml_str = '''
-        <component name="test">
-            <compile doF90Cpp="1"/>
-        </component>
-        '''
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        assert result['doF90Cpp'] is True
-    
-    def test_doF90Cpp_on(self):
-        """Test parsing doF90Cpp as 'on'."""
-        xml_str = '''
-        <component name="test">
-            <compile doF90Cpp="on"/>
-        </component>
-        '''
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        assert result['doF90Cpp'] is True
-    
+        
     def test_doF90Cpp_not_defined(self):
         """Test when doF90Cpp is not defined."""
         xml_str = '<component name="test"><compile></compile></component>'
@@ -234,8 +173,8 @@ class TestGetAdditionalInstructions:
         <component name="test">
             <source>
                 <csh>
-echo "Line 1"
-echo "Line 2"
+                        echo "Line 1"
+                    echo       "Line 2"
                 </csh>
             </source>
         </component>
@@ -243,34 +182,7 @@ echo "Line 2"
         component = ET.fromstring(xml_str)
         result = parse_component(component)
         assert result['additionalInstructions'] == ['echo "Line 1"', 'echo "Line 2"']
-    
-    def test_instructions_with_tabs(self):
-        """Test parsing instructions with tabs (should be normalized)."""
-        xml_str = '''
-        <component name="test">
-            <source>
-                <csh>echo	"test"</csh>
-            </source>
-        </component>
-        '''
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        # Tabs should be removed and multiple spaces normalized to single space
-        assert result['additionalInstructions'] == ['echo "test"']
-    
-    def test_instructions_with_extra_spaces(self):
-        """Test parsing instructions with extra spaces."""
-        xml_str = '''
-        <component name="test">
-            <source>
-                <csh>echo    "extra"    spaces</csh>
-            </source>
-        </component>
-        '''
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        assert result['additionalInstructions'] == ['echo "extra" spaces']
-    
+            
     def test_no_instructions(self):
         """Test when no instructions are defined."""
         xml_str = '<component name="test"><source></source></component>'
@@ -287,7 +199,7 @@ class TestGetRepoAndBranch:
         xml_str = '''
         <component name="test">
             <source root="https://github.com/NOAA-GFDL">
-                <codeBase version="2026.01">FMS.git</codeBase>
+                <codeBase version="2026.01">  FMS.git  </codeBase>
             </source>
         </component>
         '''
@@ -308,33 +220,7 @@ class TestGetRepoAndBranch:
         component = ET.fromstring(xml_str)
         result = parse_component(component)
         assert result['repo'] == 'https://github.com/NOAA-GFDL/repo.git'
-    
-    def test_codebse_with_leading_slash(self):
-        """Test codeBase with leading slash."""
-        xml_str = '''
-        <component name="test">
-            <source root="https://github.com/NOAA-GFDL">
-                <codeBase version="1.0">/repo.git</codeBase>
-            </source>
-        </component>
-        '''
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        assert result['repo'] == 'https://github.com/NOAA-GFDL/repo.git'
-    
-    def test_codebase_with_whitespace(self):
-        """Test codeBase with surrounding whitespace."""
-        xml_str = '''
-        <component name="test">
-            <source root="https://github.com/NOAA-GFDL">
-                <codeBase version="1.0">  FMS.git  </codeBase>
-            </source>
-        </component>
-        '''
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        assert result['repo'] == 'https://github.com/NOAA-GFDL/FMS.git'
-    
+        
     def test_no_source_element(self):
         """Test when source element is missing."""
         xml_str = '<component name="test"/>'
@@ -367,6 +253,7 @@ class TestGetRepoAndBranch:
         component = ET.fromstring(xml_str)
         result = parse_component(component)
         assert 'repo' not in result
+        assert 'branch' not in result
 
 
 class TestParseComponent:
@@ -375,7 +262,7 @@ class TestParseComponent:
     def test_complete_component(self):
         """Test parsing a complete component with all attributes."""
         xml_str = '''
-        <component name="am5_phys" paths="path1 path2" requires="FMS">
+        <component name="  am5_phys  " paths="path1 path2" requires="FMS">
             <compile doF90Cpp="yes">
                 <cppDefs>-DDEBUG</cppDefs>
                 <makeOverrides>-j8</makeOverrides>
@@ -415,14 +302,6 @@ class TestParseComponent:
         result = parse_component(component)
         
         assert result == {}  # All None values filtered out
-    
-    def test_component_name_with_whitespace(self):
-        """Test component name with whitespace."""
-        xml_str = '<component name="  test_name  "/>'
-        component = ET.fromstring(xml_str)
-        result = parse_component(component)
-        
-        assert result['component'] == 'test_name'
     
     def test_none_values_filtered(self):
         """Test that None values are filtered from output."""

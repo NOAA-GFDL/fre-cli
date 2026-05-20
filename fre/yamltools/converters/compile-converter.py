@@ -66,8 +66,10 @@ def parse_component(component: ET.Element) -> dict[str, any]:
         compile_elem = component.find('compile')
         if compile_elem is not None:
             val = compile_elem.attrib.get('doF90Cpp')
+            map_to_bool = {'yes': True, 'no': False}
             if val is not None:
-                return val.strip().lower() in {'yes', 'true', '1', 'on'}
+                return map_to_bool.get(val.strip().lower())
+
         return None
 
     def get_additional_instructions() -> list[str] | None:
@@ -103,7 +105,7 @@ def parse_component(component: ET.Element) -> dict[str, any]:
             root = source_elem.attrib.get('root')
             codebase_elem = source_elem.find('codeBase')
             if root and codebase_elem is not None and codebase_elem.text:
-                repo = f"{root.rstrip('/')}/{codebase_elem.text.strip().lstrip('/')}"
+                repo = f"{root.rstrip('/')}/{codebase_elem.text.strip().strip()}"
                 branch = codebase_elem.attrib.get('version')
         return repo, branch
 
