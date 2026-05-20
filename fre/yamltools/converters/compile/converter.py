@@ -149,7 +149,7 @@ def parse_experiment(experiment: ET.Element) -> [str, str | list]:
 def write_yaml(yamldict: dict, yaml_path: str):
     """Write the YAML dictionary to a file."""
     with open(yaml_path, 'w', encoding='utf-8') as f:
-        yaml.dump(yamldict, f, sort_keys=False)
+        yaml.safe_dump(yamldict, f, sort_keys=False)
 
 def xml_to_yaml(xml_path: str, yaml_path: str, experiment_name: str = None):
     """
