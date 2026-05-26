@@ -7,7 +7,7 @@ platforms:
                  "module load fre/bronx-23",
                  "module load cray-hdf5/1.12.2.11",
                  "module load cray-netcdf/4.9.0.11"]
-     mkTemplate: "/home/Dana.Singh/fre/singh/fre-make-updates/fre/mkmf/templates/ncrc5-intel-classic.mk" #!join ["/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/", *INTEL, ".mk"]
+     mkTemplate: !join ["/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/", *INTEL, ".mk"]
      modelRoot: ${HOME}/fremake_canopy/test
 
    ## one-stage build
