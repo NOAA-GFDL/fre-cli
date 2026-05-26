@@ -198,7 +198,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                                        "2. If editing checked out source code directly for the bare-metal build:\n"
                                        "    - users should now follow up with running each fre make subtool individually\n"
                                        "      ('makefile', 'compile-script' or 'dockerfile') to avoid conflicting 'existing\n"
-                                       "      checkout script' errors seen with 'fre make all'\n") from exc
+                                       "      checkout script/SRC DIR` errors seen with 'fre make all'\n") from exc
                 else:
                     return
 
