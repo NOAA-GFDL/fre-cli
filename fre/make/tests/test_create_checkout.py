@@ -13,7 +13,7 @@ YAMLFILE = str(Path(f"{TEST_DIR}/null_example/null_model.yaml"))
 
 # Set platform and target
 PLATFORM = ["ci.gnu"]
-CONTAINER_PLATFORM = ["hpcme.2023"]
+CONTAINER_PLATFORM = ["hpcme.intel25"]
 TARGET = ["debug"]
 
 # Set output directory

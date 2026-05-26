@@ -7,17 +7,19 @@ platforms:
                  "module load fre/bronx-23",
                  "module load cray-hdf5/1.12.2.11",
                  "module load cray-netcdf/4.9.0.11"]
-     mkTemplate: !join ["/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/", *INTEL, ".mk"]
+     mkTemplate: "/home/Dana.Singh/fre/singh/fre-make-updates/fre/mkmf/templates/ncrc5-intel-classic.mk" #!join ["/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/", *INTEL, ".mk"]
      modelRoot: ${HOME}/fremake_canopy/test
-   - name: hpcme.2023
+
+   ## one-stage build
+   - hpcme.intel25
      compiler: intel
-     RUNenv: [". /spack/share/spack/setup-env.sh", "spack load libyaml", "spack load netcdf-fortran@4.5.4", "spack load hdf5@1.14.0"]
+     RUNenv: ""
      modelRoot: /apps
      container: True
      containerBuild: "podman"
-     containerRun: "apptainer" 
-     containerBase: "docker.io/ecpe4s/noaa-intel-prototype:2023.09.25" 
-     mkTemplate: "/apps/mkmf/templates/hpcme-intel21.mk"
+     containerRun: "apptainer"
+     containerBase: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3"
+     mkTemplate: "/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk"
      volume: *VOLUME
    - name: ci.gnu
      compiler: gnu
@@ -40,14 +42,27 @@ platforms:
      containerBase: "ghcr.io/rem1776/hpc-mini:alpine3gcc14.2"
      mkTemplate: "linux-ubuntu-xenial-gnu.mk"
      containerOutputLocation: ${TEST_BUILD_DIR}/fremake_canopy/test
+#   - name: con.twostep
+#     compiler: intel
+#     RUNenv: [". /spack/share/spack/setup-env.sh", "spack load libyaml", "spack load netcdf-fortran@4.5.4", "spack load hdf5@1.14.0"]
+#     modelRoot: /apps
+#     container: True
+#     containerBuild: "podman"
+#     containerRun: "apptainer"
+#     containerBase: "ecpe4s/noaa-intel-prototype:2023.09.25"
+#     mkTemplate: "/apps/mkmf/templates/hpcme-intel21.mk"
+#     container2step: True
+#     container2base: "ecpe4s/noaa-intel-prototype:2023.09.25"
+
+    ## hpcme.intel25
    - name: con.twostep
      compiler: intel
-     RUNenv: [". /spack/share/spack/setup-env.sh", "spack load libyaml", "spack load netcdf-fortran@4.5.4", "spack load hdf5@1.14.0"]
+     RUNenv: ""
      modelRoot: /apps
      container: True
      containerBuild: "podman"
      containerRun: "apptainer"
-     containerBase: "ecpe4s/noaa-intel-prototype:2023.09.25"
-     mkTemplate: "/apps/mkmf/templates/hpcme-intel21.mk"
+     containerBase: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3"
+     mkTemplate: "/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk"
      container2step: True
-     container2base: "ecpe4s/noaa-intel-prototype:2023.09.25"
+     container2base: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3rte"

@@ -20,7 +20,7 @@ To access the null_model configuration, clone the fre-cli repository:
     fre make all -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
     # Container: create checkout script, makefile, create dockerfile, and create and RUN the container build script to generate a model container
-    fre make all -y null_model.yaml -p hpcme.2023 -t prod --execute
+    fre make all -y null_model.yaml -p hpcme.intel25 -t prod --execute
 
 2. Bare-metal Build (Single target)
 
@@ -57,10 +57,10 @@ In order for the container to build successfully, the parallel checkout feature 
 .. code-block::
 
     # Create checkout script
-    fre make checkout-script -y null_model.yaml -p hpcme.2023 -t prod
+    fre make checkout-script -y null_model.yaml -p hpcme.intel25 -t prod
 
     # Create the Makefile
-    fre make makefile -y null_model.yaml -p hpcme.2023 -t prod
+    fre make makefile -y null_model.yaml -p hpcme.intel25 -t prod
 
     # Create the Dockerfile and container build script
-    fre make dockerfile -y null_model.yaml -p hpcme.2023 -t prod --execute
+    fre make dockerfile -y null_model.yaml -p hpcme.intel25 -t prod --execute
