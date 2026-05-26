@@ -108,13 +108,13 @@ def test_cli_fre_make_create_checkout_baremetal_npc():
                  os.access(Path(f"{OUT_PATH}/fremake_canopy/test/null_model_full/src/checkout.sh"), os.X_OK)])
 
 def test_cli_fre_make_create_checkout_container():
-    ''' fre make checkout-script -y null_model.yaml -p hpcme.2023 -t debug'''
+    ''' fre make checkout-script -y null_model.yaml -p hpcme.intel25 -t debug'''
 
     OUT_PATH=f"{OUT_PATH_BASE}/fremake_out_container"
 
     # Set paths and click options
     yamlfile = Path("fre/make/tests/null_example/")
-    platform = "hpcme.2023"
+    platform = "hpcme.intel25"
     target = "debug"
 
     # Delete existing checkout.sh if it exists
