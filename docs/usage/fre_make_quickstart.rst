@@ -1,6 +1,6 @@
 Quickstart
 -----------------
-The quickstart instructions build the null model by loading the FRE module and using yaml files located in the fre-cli repository.
+The quickstart instructions build the null model by loading the FRE module on Gaea C5, and using yaml files located in the fre-cli repository.
 
 To access the null_model configuration, clone the fre-cli repository:
 
