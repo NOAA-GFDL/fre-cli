@@ -1,6 +1,4 @@
-'''
-entry point for fre catalog subcommands
-'''
+"""This module defines the fre catalog command group and its subcommands."""
 
 import click
 
@@ -11,7 +9,7 @@ from catalogbuilder.scripts import combine_cats
 
 @click.group(help=click.style(" - catalog subcommands", fg=(64,94,213)))
 def catalog_cli():
-    ''' entry point for click into fre catalog cli calls '''
+    """This command group provides entry points for fre catalog CLI commands."""
 
 
 
@@ -38,7 +36,7 @@ def build(context, input_path = None, output_path = None, config = None, filter_
           filter_freq = None, filter_chunk = None, verbose = False, overwrite = False,
           append = False, slow = False, strict = False):
     # pylint: disable=unused-argument
-    """ - Generate .csv and .json files for catalog """
+    """Generate catalog CSV and JSON files from input datasets."""
     context.forward(gen_intake_gfdl.create_catalog_cli)
 
 @catalog_cli.command()
@@ -53,9 +51,7 @@ def build(context, input_path = None, output_path = None, config = None, filter_
 @click.pass_context
 def validate(context, json_path, json_template_path, vocab, proper_generation, test_failure):
     # pylint: disable=unused-argument
-    """ - Validate catalogs against controlled vocabulary as provided by particular JSON schemas
-    per vocabulary type (vocabulary validation) OR Validate a catalog against catalog schema
-    template (proper generation checking) """
+    """Validate catalog files against vocabulary schemas or a catalog template schema."""
     context.forward(compval.main)
 
 @catalog_cli.command()
@@ -65,5 +61,5 @@ def validate(context, json_path, json_template_path, vocab, proper_generation, t
               help = 'Merged catalog')
 @click.pass_context
 def merge(context, input, output):
-    """ - Merge two or more more catalogs into one """
+    """Merge two or more catalogs into a single catalog file."""
     context.invoke(combine_cats.combine_cats, inputfiles=input, output_path=output)
