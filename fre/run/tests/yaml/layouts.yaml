@@ -1,0 +1,43 @@
+layouts:
+  c96L65_production:
+    job_wallclock: '16:00:00'
+    seg_runtime: '3:00:00'
+    atm:
+      ranks: '576'
+      threads: null
+      layout: 4,24
+      io_layout: 1,4
+      mask_table: null
+    lnd:
+      ranks: null
+      threads: null
+      layout: 4,24
+      io_layout: 1,4
+      mask_table: null
+    ocn:
+      ranks: '0'
+      threads: null
+      layout: 96,6
+      io_layout: 1,3
+      mask_table: null
+    ice:
+      ranks: null
+      threads: null
+      layout: 96,6
+      io_layout: 1,3
+      mask_table: null
+  c384L65_production:
+    job_wallclock: '16:00:00'
+    seg_runtime: '8:00:00'
+    atm:
+      ranks: '4608'
+      threads: null
+      layout: 24,32
+      io_layout: 1,4
+      mask_table: null
+    lnd:
+      ranks: null
+      threads: null
+      layout: 24,32
+      io_layout: 1,4
+      mask_table: null
