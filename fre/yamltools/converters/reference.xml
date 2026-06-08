@@ -1,0 +1,148 @@
+<!-- This XML is used to house the compile experiment that is used for all AM5 experiments, including coupled experiments using AM5 prototype and 0.25-deg MOM6 -->
+ <experimentSuite rtsVersion="4" xmlns:xi="http://www.w3.org/2003/XInclude">
+  <experiment name="$(AM5_VERSION)_compile_canopy">
+    <container file="$(CONTAINER_PATH)"/>
+    <executable file="$root/$(AM5_VERSION)_compile/$(platform)-$(target)/exec/$(AM5_VERSION)_compile.x"/>
+  </experiment>
+
+  <experiment name="$(AM5_VERSION)_compile">
+    <description>
+Experiment to build executable. See git log for source code provenance.
+    </description>
+    <component name="fms" paths="FMS">
+     <description domainName="infrastructure" communityName="FMS" communityVersion="2022.01" communityGrid=""/>
+      <source versionControl="git" root="https://github.com/NOAA-GFDL">
+        <codeBase version="2026.01"> FMS.git </codeBase>
+      </source>
+      <compile>
+        <cppDefs>$(F2003_FLAGS) -Duse_libMPI -Duse_netCDF -Duse_yaml</cppDefs>
+      </compile>
+    </component>
+
+    <component name="rte-rrtmgp" requires="fms" paths="rte-rrtmgp/rte-frontend
+                                                       rte-rrtmgp/rte-kernels/mo_fluxes_broadband_kernels.F90
+                                                       rte-rrtmgp/rte-kernels/mo_optical_props_kernels.F90
+                                                       rte-rrtmgp/rte-kernels/mo_rte_solver_kernels.F90
+                                                       rte-rrtmgp/rte-kernels/mo_rte_util_array.F90
+                                                       rte-rrtmgp/gas-optics
+                                                       rte-rrtmgp/rrtmgp-frontend/mo_gas_optics_rrtmgp.F90
+                                                       rte-rrtmgp/rrtmgp-kernels/mo_gas_optics_rrtmgp_kernels.F90
+                                                       rte-rrtmgp/extensions/mo_heating_rates.F90
+                                                       rte-rrtmgp/examples/mo_load_coefficients.F90">
+      <source versionControl="git" root="http://github.com/NOAA-GFDL">
+        <codeBase version="2024.01">rte-rrtmgp.git</codeBase>
+      </source>
+      <compile>
+        <cppDefs>-heap-arrays -DRTE_USE_SP</cppDefs>
+        <makeOverrides>OPENMP=""</makeOverrides>
+      </compile>
+    </component>
+
+    <component name="rte-ecckd" requires="fms rte-rrtmgp" paths="rte-ecckd/src/gas_optics_ecckd.f90">
+      <source versionControl="git" root="http://github.com/NOAA-GFDL">
+        <codeBase version="2024.03">rte-ecckd.git</codeBase>
+      </source>
+    </component>
+
+    <component name="am5_phys" requires="fms rte-rrtmgp rte-ecckd" paths="am5_phys/atmos_param am5_phys/atmos_shared">
+      <description domainName="" communityName="" communityVersion="2024.12" communityGrid=""/>
+        <source versionControl="git" root="http://gitlab.gfdl.noaa.gov/fms">
+          <codeBase version="2026.01">am5_phys.git</codeBase>
+        </source>
+      <compile>
+        <cppDefs>$(F2003_FLAGS) </cppDefs>
+      </compile>
+    </component>
+    <component name="atmos_cubed_sphere" paths="GFDL_atmos_cubed_sphere/driver/GFDL
+                                       GFDL_atmos_cubed_sphere/model
+                                       GFDL_atmos_cubed_sphere/driver/SHiELD/cloud_diagnosis.F90
+                                       GFDL_atmos_cubed_sphere/driver/SHiELD/gfdl_cloud_microphys.F90
+                                       GFDL_atmos_cubed_sphere/tools
+                                       GFDL_atmos_cubed_sphere/GFDL_tools"
+                                requires="fms am5_phys">
+      <source versionControl="git" root="https://github.com/NOAA-GFDL">
+        <codeBase version="2024.01_am5">GFDL_atmos_cubed_sphere.git</codeBase>
+      </source>
+      <compile>
+        <makeOverrides>USE_R4=$(USE_MIXED_MODE) ISA="-march=core-avx2 -qno-opt-dynamic-align"</makeOverrides>
+        <cppDefs>$(F2003_FLAGS) -DSPMD -DCLIMATE_NUDGE</cppDefs>
+      </compile>
+    </component>
+    <component name="atmos_dyn" paths="atmos_drivers/coupled"
+                                requires="fms am5_phys atmos_cubed_sphere">
+      <source versionControl="git" root="https://github.com/NOAA-GFDL">
+        <codeBase version="2025.03">atmos_drivers.git</codeBase>
+      </source>
+      <compile>
+        <cppDefs>$(F2003_FLAGS) -DSPMD -DCLIMATE_NUDGE</cppDefs>
+      </compile>
+    </component>
+    <component name="land_lad2" requires="fms" paths="land_lad2">
+      <description domainName="LM3" communityName="land_lad2" communityVersion="2021.02" communityGrid=""/>
+      <source versionControl="git" root="http://gitlab.gfdl.noaa.gov/fms">
+        <codeBase version="2025.04">land_lad2.git</codeBase>
+      </source>
+      <compile doF90Cpp="yes">
+       <cppDefs>$(F2003_FLAGS) -nostdinc</cppDefs>
+      </compile>
+    </component>
+
+    <component name="mom6" requires="fms" paths="mom6/src/MOM6/config_src/{infra/FMS2,memory/dynamic_nonsymmetric,drivers/FMS_cap,external} mom6/src/MOM6/src/{*,*/*}" >
+       <source versionControl="git" root="https://github.com/NOAA-GFDL">
+        <codeBase version="2023.01"> ocean_BGC.git </codeBase>
+        <csh><![CDATA[
+          git clone -b dev/gfdl https://github.com/NOAA-GFDL/MOM6-examples.git mom6
+	  pushd mom6
+	  git checkout $(MOM6_EXAMPLES_GIT_TAG)
+	  git submodule update --recursive --init src/MOM6 src/SIS2 src/icebergs
+          git pull --no-edit https://github.com/uramirez8707/MOM6-examples.git use_diag_yaml
+
+          cd src/MOM6
+          git checkout 792a0616c16050dfe74ac5bfc887f99d9c765376
+
+          cd ../SIS2
+          git checkout dec9ee38424eceded0da635671e7c03e5d97d928
+
+          cd ../icebergs
+          git checkout 6a8944fc7544608942de9a42bd3b96f6e56684e0
+
+          popd
+
+          pushd mom6
+          ln -s $(GFDL_O_INPUTS) .datasets
+          popd
+
+          test -e mom6/.datasets
+          if ($status != 0) then
+            echo ""; echo "" ; echo "   WARNING:  .datasets link in MOM6 examples directory is invalid"; echo ""; echo ""
+          endif
+
+        ]]></csh>
+      </source>
+      <compile>
+        <cppDefs><![CDATA[ $(F2003_FLAGS) -DMAX_FIELDS_=100 -DNOT_SET_AFFINITY -D_USE_MOM6_DIAG -D_USE_GENERIC_TRACER  -DUSE_PRECISION=2 -D_FILE_VERSION="'"`git-version-string $<`"'" ]]></cppDefs>
+        <makeOverrides>OPENMP=""</makeOverrides> <!-- openmp switch for MOM6 may cause crash -->
+      </compile>
+    </component>
+
+    <component name="sis2" paths="mom6/src/SIS2/config_src/dynamic_symmetric mom6/src/SIS2/config_src/external/Icepack_interfaces mom6/src/SIS2/src mom6/src/icebergs/src ice_param" requires="fms mom6" includeDir="$(srcDir)/mom6/src/MOM6/src/framework" >
+       <source versionControl="git" root="https://github.com/NOAA-GFDL">
+            <codeBase version="2024.02"> ice_param.git </codeBase>
+       </source>
+       <compile>
+            <cppDefs><![CDATA[-DUSE_FMS2_IO $(F2003_FLAGS) -D_FILE_VERSION="'"`git-version-string $<`"'"]]></cppDefs>
+       </compile>
+    </component>
+
+    <component name="coupler" paths="coupler/shared coupler/full" requires="fms atmos_cubed_sphere atmos_dyn am5_phys land_lad2 sis2 mom6">
+        <description domainName="FMS Coupler" communityName="coupler" communityVersion="2023.01" communityGrid=""/>  
+        <source versionControl="git" root="https://github.com/NOAA-GFDL">
+          <codeBase version="2026.01"> coupler.git </codeBase>
+        </source>
+        <compile>
+          <cppDefs><![CDATA[$(F2003_FLAGS) -D_FILE_VERSION="'"`git-version-string $<`"'"]]></cppDefs>
+         </compile>
+    </component>
+
+  </experiment>
+ </experimentSuite>
