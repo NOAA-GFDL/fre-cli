@@ -22,3 +22,9 @@ experiments:
       - "pp1.yaml"
     analysis:
       - "analysis1.yaml"
+
+# Though it may seems repetitive, I personally like the "run", "pp", "analysis", and "settings" keys
+# 1. more explicit
+# 2. easy to flatten
+# 3. probably easier if user just wants postprocessing yamls (if on ppan) or no post-processing (just on gaea)
+# 4. easier to see/manage the order yamls are combined (if order matters in some cases)
