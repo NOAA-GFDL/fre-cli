@@ -1,3 +1,8 @@
+#Potential process for combining:
+# 1. model, settings, layouts, datasets, experiment yamls combined
+# 2. experiment yaml references bits in layouts and datasets
+# 3. layouts and datasets are cleaned out (all of them are not needed and makes the final config giant)
+
 fre_properties:
   shared_yamls:
     - "run/layouts.yaml"
