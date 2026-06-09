@@ -22,7 +22,8 @@ fre_logger = logging.getLogger(__name__)
 # click and lazy group loading
 @click.group(
     cls = LazyGroup,
-    lazy_subcommands = {"pp": ".pp.frepp.pp_cli",
+    lazy_subcommands = {"workflow": ".workflow.freworkflow.workflow_cli",
+                       "pp": ".pp.frepp.pp_cli",
                        "catalog": ".catalog.frecatalog.catalog_cli",
                        "list": ".list_.frelist.list_cli",
                        "check": ".check.frecheck.check_cli",
