@@ -2,13 +2,18 @@ fre_properties:
   shared_yamls:
     - "run/layouts.yaml"
     - "run/input_datasets.yaml"
+
 build:
   compile: "compile.yaml"
   platform: "platforms.yaml"
 
 experiments:
-  experiment_name:
+  foo_experiment:
     settings: "settings.yaml"
-    run: ["{{ fre_properties.shared_yamls }}", "run/exp.yaml"]
+    run:
+      - "{{ fre_properties.shared_yamls }}"
+      - "run/exp.yaml"
     postprocess:
+      - "pp1.yaml"
     analysis:
+      - "analysis1.yaml"
