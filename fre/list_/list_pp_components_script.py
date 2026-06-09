@@ -44,8 +44,8 @@ def list_ppcomps_subtool(yamlfile: str, experiment: str):
     # log the experiment names, which should show up on screen for sure
     fre_logger.info("Components to be post-processed:")
     for i in yml_dict["postprocess"]["components"]:
-        if "postprocess_on" in i:
-            if i.get("postprocess_on") is True:
+        if "postprocess-on" in i:
+            if i.get("postprocess-on") is True:
                 fre_logger.info('   - %s', i.get("type"))
         else:
             fre_logger.info('   - %s', i.get("type"))

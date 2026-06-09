@@ -75,8 +75,6 @@ def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config
     rose_suite = metomi.rose.config.ConfigNode()
     # disagreeable; these should be optional
     rose_suite.set(keys=['template variables', 'DO_ANALYSIS_ONLY'],  value='False')
-    rose_suite.set(keys=['template variables', 'DO_MDTF'],  value='False')
-    rose_suite.set(keys=['template variables', 'PP_DEFAULT_XYINTERP'],  value='0,0')
 
     # set some rose suite vars
     rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{experiment}"')
@@ -122,7 +120,7 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     """
     pp=yamlfile.get("postprocess")
     dirs=yamlfile.get("directories")
-    analysis=yamlfile.get("analysis")
+    analysis=yamlfile.get("final-step-user-scripts")
 
     if dirs is not None:
         for key,value in dirs.items():
@@ -148,9 +146,9 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
 
         # Account for multiple scripts for refinediag
         # Fail if multiple scripts defined for preanalysis (not implemented yet)
-        if pp_key == "preanalysis":
+        if pp_key == "first-step-user-scripts":
             for k2, v2 in pp_value.items():
-                switch = v2["do_preanalysis"]
+                switch = v2["user-script-on"]
                 if switch is True:
                     script = v2["script"]
 
@@ -162,9 +160,9 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
 
                     pa_scripts += f"{script} "
 
-        if pp_key == "refinediag":
+        if pp_key == "refinediag-user-scripts":
             for k2, v2 in pp_value.items():
-                switch = v2["do_refinediag"]
+                switch = v2["user-script-on"]
                 if switch is True:
                     script = v2["script"]
                     rd_scripts += f"{script} "
@@ -205,16 +203,14 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
 
     do_analysis_switch = []    
     for an_key, an_value in analysis.items():
-        an_workflow_info = an_value["workflow"]
-        # if analysis_on key is actually set, evaluate and save its value in a list
-        if "analysis_on" in an_workflow_info:
-            do_analysis_switch.append(an_workflow_info["analysis_on"])
-        #if analysis_on key is NOT set, save its value as True in the list
+        # if user_script_on key is set, save its value in a list
+        if "user-script-on" in an_value:
+            do_analysis_switch.append(an_value["user-script-on"])
+        # if it's not set, save its value as True (i.e. default on)
         else:
             do_analysis_switch.append("True")
 
-    # if ANY of the analysis components do not set analysis_on or set analysis_on as True,
-    # set DO_ANALYSIS=True in the rose_suite.conf
+    # if ANY of the analysis components are on set DO_ANALYSIS=True in the rose_suite.conf
     if any(do_analysis_switch):
         rose_suite.set( keys = ['template variables', 'DO_ANALYSIS'],
                         value = 'True' )
