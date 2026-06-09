@@ -148,7 +148,7 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
         # Fail if multiple scripts defined for preanalysis (not implemented yet)
         if pp_key == "first-step-user-scripts":
             for k2, v2 in pp_value.items():
-                switch = v2["user_script_on"]
+                switch = v2["user-script-on"]
                 if switch is True:
                     script = v2["script"]
 
@@ -162,7 +162,7 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
 
         if pp_key == "refinediag-user-scripts":
             for k2, v2 in pp_value.items():
-                switch = v2["user_script_on"]
+                switch = v2["user-script-on"]
                 if switch is True:
                     script = v2["script"]
                     rd_scripts += f"{script} "
@@ -204,8 +204,8 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     do_analysis_switch = []    
     for an_key, an_value in analysis.items():
         # if user_script_on key is set, save its value in a list
-        if "user_script_on" in an_value:
-            do_analysis_switch.append(an_value["user_script_on"])
+        if "user-script-on" in an_value:
+            do_analysis_switch.append(an_value["user-script-on"])
         # if it's not set, save its value as True (i.e. default on)
         else:
             do_analysis_switch.append("True")

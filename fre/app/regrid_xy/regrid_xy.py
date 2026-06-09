@@ -344,9 +344,9 @@ def regrid_xy(yamlfile: str,
         for component in components:
             # If postprocess_on is not defined, it should have the default value of True
             # If postprocess_on is defined, check for a True or False value
-            if "postprocess_on" in component:
+            if "postprocess-on" in component:
                 # skip component if postprocess_on = False
-                if not component["postprocess_on"]:
+                if not component["postprocess-on"]:
                     fre_logger.warning(f"postprocess_on=False for {source} in component {component['type']}." \
                                         "Skipping {source}")
                     continue

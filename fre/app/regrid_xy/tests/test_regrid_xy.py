@@ -38,20 +38,20 @@ components = [
      "inputRealm": "atmos",
      "type": "pride_and_prejudice",
      "sources": input_files,
-     "postprocess_on": True},
+     "postprocess-on": True},
     {"xyInterp": f"{nxy},{nxy}",
      "interpMethod": "conserve_order2",
      "inputRealm": "atmos",
      "type": "my_component",
      "sources": input_files,
      "static": input_files_static,
-     "postprocess_on": True},
+     "postprocess-on": True},
     {"xyInterp": f"{nxy},{nxy}",
      "interpMethod": "conserve_order2",
      "inputRealm": "atmos",
      "type": "this_comp_is_off",
      "sources": input_files_donotregrid,
-     "postprocess_on": False}
+     "postprocess-on": False}
 ]
 
 

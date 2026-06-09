@@ -60,7 +60,7 @@ postprocess:
       sourceGrid: "cubedsphere"
       interpMethod: "conserve_order1"
       inputRealm: 'atmos'
-      postprocess_on: False
+      postprocess-on: False
     - type: "land"
       sources:
         - history_file: "land_month"
@@ -68,7 +68,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'land'
-      postprocess_on: False
+      postprocess-on: False
     - type: "land_cmip"
       sources:
         - history_file: "land_month_cmip"
@@ -76,7 +76,7 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'land'
-      postprocess_on: False
+      postprocess-on: False
     - type: "tracer_level"
       sources:
         - history_file: "atmos_tracer"
@@ -84,4 +84,4 @@ postprocess:
       xyInterp: *PP_XYINTERP96
       interpMethod: "conserve_order1"
       inputRealm: 'atmos'
-      postprocess_on: False
+      postprocess-on: False
