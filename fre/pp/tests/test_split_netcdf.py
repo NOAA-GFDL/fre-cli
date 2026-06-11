@@ -286,8 +286,8 @@ def test_variable_filtering_bug_fix():
         assert actual_vars == expected_vars, f"Expected {expected_vars}, got {actual_vars}"
 
 def test_makedirs_subdir_preexists(tmp_path):
-    '''Regression test: makedirs with exist_ok=True does not raise FileExistsError
-    when the output subdirectory already exists before split_netcdf runs.
+    '''Regression test: Check that makedirs with exist_ok=True does not raise
+    an error when the output subdirectory already exists before split_netcdf runs.
 
     Covers the race condition fix: os.mkdir -> os.makedirs(exist_ok=True).
     '''
@@ -318,6 +318,8 @@ def test_makedirs_subdir_preexists(tmp_path):
         split_all_vars=True,
     )
 
+    assert Path(output_dir/subdir_name).exists()
+    assert Path(output_dir/subdir_name).is_dir()
 
 #clean up splitting files
 def test_split_file_cleanup():

@@ -156,7 +156,7 @@ def split_netcdf(
             raise OSError
 
     fre_logger.info(f"split-netcdf-wrapper call complete, having split {files_split} files")
-    sys.exit(0) #check this
+#    sys.exit(0) #check this
 
 def split_file_xarray(
     infile: str, outfiledir: str, var_list: Union[str, List[str]] = "all"
