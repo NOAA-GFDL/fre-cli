@@ -129,8 +129,7 @@ def split_netcdf(
                 fre_logger.info(f"No input files found; skipping subdir {sd}")
             else:
                 output_subdir = os.path.join(os.path.abspath(outputDir), sd)
-                if not os.path.isdir(output_subdir):
-                    os.mkdir(output_subdir)
+                os.mkdir(output_subdir, exist_ok=True)
                 for infile in files:
                     split_file_xarray(infile, output_subdir, varlist)
                     files_split += 1
