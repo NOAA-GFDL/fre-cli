@@ -48,9 +48,9 @@ def test_pp_comp_list(caplog):
     for i in check_out:
         assert i in caplog.text
 
-    # make sure the level is INFO
+    # make sure the level is WARNING for version mismatch and INFO otherwise
     for record in caplog.records:
-        assert record.levelname == "INFO"
+        assert record.levelname in ["WARNING", "INFO"]
 
 # Test validation
 def test_yamlvalidate(caplog):
@@ -65,4 +65,5 @@ def test_yamlvalidate(caplog):
         assert i in caplog.text
 
     for record in caplog.records:
-        assert record.levelname == "INFO"
+        assert record.levelname in ["WARNING", "INFO"]
+

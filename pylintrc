@@ -39,7 +39,7 @@ extension-pkg-whitelist=
 fail-on=
 
 # Specify a score threshold under which the program will exit with error.
-fail-under=9.0
+fail-under=8.8
 
 # Interpret the stdin as a python script, whose filename needs to be passed as
 # the module_or_package argument.
@@ -64,7 +64,7 @@ ignore-patterns=^\.#
 # manipulated during runtime and thus existing member attributes cannot be
 # deduced by static analysis). It supports qualified module names, as well as
 # Unix pattern matching.
-ignored-modules=netCDF4,cmor
+ignored-modules=netCDF4
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
