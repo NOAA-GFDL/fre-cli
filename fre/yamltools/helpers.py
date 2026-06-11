@@ -55,10 +55,8 @@ def check_fre_version(yamlfile: str) -> None:
         return
 
     yaml_fre_version = loaded_yaml.get("fre_cli_version")
-    installed_version = fre.version
-
     if yaml_fre_version is None:
-        fre_logger.info(
+        fre_logger.warning(
             "fre_cli_version not specified in %s. "
             "It is recommended to add 'fre_cli_version' to your model yaml "
             "to ensure compatibility with the correct version of fre-cli.",
@@ -66,6 +64,7 @@ def check_fre_version(yamlfile: str) -> None:
         )
         return
 
+    installed_version = fre.version
     if str(yaml_fre_version) != str(installed_version):
         raise ValueError(
             f"The fre_cli_version specified in the model yaml ({yaml_fre_version}) "

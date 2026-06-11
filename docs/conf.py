@@ -31,7 +31,6 @@ autodoc_mock_imports = [
     'catalogbuilder',
     'cdo',
     'cftime',
-    'cmor',
     'cylc',
     'cylc-flow',
     'cylc-rose',
