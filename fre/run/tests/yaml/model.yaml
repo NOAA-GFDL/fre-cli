@@ -1,0 +1,36 @@
+#Potential process for combining:
+# 1. model, settings, layouts, datasets, experiment yamls combined
+# 2. experiment yaml references bits in layouts and datasets
+# 3. layouts and datasets are cleaned out (all of them are not needed and makes the final config giant)
+
+fre_properties:
+  shared_yamls:
+    - "run/layouts.yaml"
+    - "run/input_datasets.yaml"
+  shared_nml:
+    - "$(includeDir)/nml/ocean_g12.nml"
+    - "$(includeDir)/nml/am5_common.nml"
+    - "$(includeDir)/nml/lm4p2_common.nml"
+    - "$(includeDir)/nml/am5_c96L65.nml"
+    - "$(includeDir)/nml/am5_amip.nml"
+
+build:
+  compile: "compile.yaml"
+  platform: "platforms.yaml"
+
+experiments:
+  foo_experiment:
+    settings: "settings.yaml"
+    run:
+      - "{{ fre_properties.shared_yamls }}"
+      - "run/exp.yaml"
+    postprocess:
+      - "pp1.yaml"
+    analysis:
+      - "analysis1.yaml"
+
+# Though it may seems repetitive, I personally like the "run", "pp", "analysis", and "settings" keys
+# 1. more explicit
+# 2. easy to flatten
+# 3. probably easier if user just wants postprocessing yamls (if on ppan) or no post-processing (just on gaea)
+# 4. easier to see/manage the order yamls are combined (if order matters in some cases)
