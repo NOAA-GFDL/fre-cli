@@ -13,6 +13,9 @@
 gives users intuitive and easy-to-understand access to both newly developed, and legacy `FRE` tools via a `click`-driven
 CLI, delivered as a `conda` package.
 
+### Contributors
+[![Contributors](https://contrib.rocks/image?repo=NOAA-GFDL/fre-cli)](https://github.com/NOAA-GFDL/fre-cli/graphs/contributors)
+
 ## **Where to find information**
 
 [Fre-cli Documentation](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/index.html) is hosted on
