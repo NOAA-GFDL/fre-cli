@@ -1,5 +1,5 @@
 """
-Module defining the `click <click link_>`_ interfaces for the following **fre make** subcommands:
+fremake is the module defining the `click <click link_>`_ interfaces for the following **fre make** subcommands:
 
 * fre make checkout-script [ARGS]: writes a script that will clone (checkout) the model code from respective git
   repositories
@@ -116,7 +116,7 @@ def make_cli():
 def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_checkout, no_format_transfer, execute,
         verbose, force_checkout):
     """
-    - Perform all fre make functions; for baremetal platforms: create checkout script, makefile, and compile scripts;
+    fre make all perform all fre make functions; for baremetal platforms: create checkout script, makefile, and compile scripts;
     for container platforms: create checkout script, makefile, Dockerfile, and createContainer script
     """
     run_fremake_script.fremake_run(
@@ -160,7 +160,10 @@ def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_ch
               default = False,
               help = "Force a git checkout if the source directory already exists.")
 def checkout_script(yamlfile, platform, target, no_parallel_checkout, gitjobs, execute, force_checkout):
-    """ - Write the checkout script """
+    """ - Write checkout.sh, which git-clones all component source repositories defined
+    in the compile YAML.  For bare-metal platforms, the script is written to
+    ``[modelRoot]/[experiment]/src/``; for container platforms it is staged under
+    ``tmp/[platform]/`` for later inclusion in the Dockerfile. """
     create_checkout_script.checkout_create(
         yamlfile, platform, target, no_parallel_checkout, gitjobs, execute, force_checkout)
 
@@ -181,7 +184,9 @@ def checkout_script(yamlfile, platform, target, no_parallel_checkout, gitjobs, e
               help = _TARGET_OPT_HELP,
               required = True)
 def makefile(yamlfile, platform, target):
-    """ - Write the makefile """
+    """ fre make makefile write the top-level Makefile for model compilation.  For bare-metal platforms,
+    the Makefile is written to ``[modelRoot]/[experiment]/[platform]-[target]/exec/``;
+    for container platforms it is staged under ``tmp/[platform]/``. """
     create_makefile_script.makefile_create(yamlfile, platform, target)
 
 @make_cli.command('compile-script')
@@ -221,7 +226,10 @@ def makefile(yamlfile, platform, target):
               is_flag = True,
               help = _VERBOSE_OPT_HELP)
 def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, verbose):
-    """ - Write the compile script """
+    """ fre make compile-script write compile.sh for bare-metal platforms.  The script configures the compile
+    environment (loads modules), calls mkmf to generate per-component Makefiles, and
+    runs make to build the model executable.  Written to
+    ``[modelRoot]/[experiment]/[platform]-[target]/exec/``. """
     create_compile_script.compile_create(
         yamlfile, platform, target, makejobs, nparallel, execute, verbose)
 
@@ -252,5 +260,8 @@ def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, ver
               help = """Execute the createContainer script immediately following its generation.
               The default behavior is to generate the script, but not execute.""")
 def dockerfile(yamlfile, platform, target, no_format_transfer, execute):
-    """ - Write the Dockerfile and createContainer script"""
+    """ fre make dockerfile write the Dockerfile and createContainer.sh for container platforms.  The
+    Dockerfile defines a two-stage build (compile + runtime); createContainer.sh builds
+    the Docker image and converts it to a Singularity Image File (.sif) unless
+    --no-format-transfer is specified. """
     create_docker_script.dockerfile_create(yamlfile, platform, target, no_format_transfer, execute)

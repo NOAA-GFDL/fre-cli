@@ -1,6 +1,7 @@
-''' 
-module of helper/utility functions used in the fre make subtool
-'''
+"""
+make_helpers contain helper/utility functions 
+create_compile_script, create_makefile_script, and create_docker_script.
+"""
 
 import logging
 from pathlib import Path
@@ -8,24 +9,27 @@ from pathlib import Path
 def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str = None) -> str:
 
     """
-    This function get_mktemplate_path generates the full path to the 
-    mkmf mk_template on the bare-metal system or the container image filesystem
-    
-    :param mk_template: Full path to or the mkmf mk_template filename with .mk extension
-    :type mk_template: string
-    :param model_root: Path to the root for all model install files (TO CLARIFY)
-    :type model_root: str
-    :param container_flag: if True and the full path to the mk_template is not specified, 
-                           return model_root+"/mkmf/templates/"+mk_template; else if True
-                           and mk_template is the filename, return mk_template
-    :type container_flag: boolean
+    get_mktemplate_path resolves the full path to an mkmf template file (.mk) for either a
+    bare-metal system or a container image filesystem.
 
-    :raises ValueError: Error if the mk_template file does not exist in the generated full path
+    mk_template may be a bare filename (e.g. intel.mk) or an absolute path (e.g. /path/to/intel.mk). 
 
-    :return: Full path to the mkmf mk_template
-    :rtype: string
+    :param mk_template: is the bare filename (e.g. intel.mk) or absolute path to the
+                        mkmf template.  Defined as mkTemplate in platforms yaml.
+    :type mk_template: str
+    :param container_flag: is a flag where True for container builds and False for bare-metal builds.  
+    :type container_flag: bool
+    :param model_root: Root directory for model install files inside the container
+                       (defined as modelRoot in platforms yaml).  Required
+                       when container_flag=True and mk_template is a bare
+                       filename; unused otherwise.
+    :type model_root: str, optional
 
-    .. note:: model_root must be specified if container_flag is True
+    :raises ValueError: If container_flag=False and the resolved template path
+                        does not exist on the host filesystem.
+
+    :return: a resolved full path to the mkmf template file.
+    :rtype: str
     """
 
     template_path = mk_template
