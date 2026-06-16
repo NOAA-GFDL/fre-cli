@@ -1,7 +1,7 @@
 # Test of list_datasets_script.py by creatinga  temporary 
 import yaml
 
-def test_your_dataset_function(tmp_path):
+def test_fre_list_datasets():
     # Raw yaml based on combined.yaml
     yaml_content = """run:
   workflow:
@@ -20,7 +20,7 @@ def test_your_dataset_function(tmp_path):
         source: $(MODEL_GEN5_INPUTS)/common_LM4/soil_type_gsde_5minute.nc"""
 
     # Create the temporary file path using pytest's tmp_path
-    tmp_yaml = tmp_path / "test_config.yaml"
+    tmp_yaml = "test_config.yaml"
     
     # Write the content to the temporary file
     tmp_yaml.write_text(yaml_content)
@@ -28,4 +28,14 @@ def test_your_dataset_function(tmp_path):
     # (Optional) Verify it loads correctly in your test
     with open(tmp_yaml, "r") as f:
         data = yaml.safe_load(f)
-        
+
+        # Call the function
+    try:
+        datasets = list_datasets_subtool(tmp_yaml)
+        # Print out the returned list of dataset absolute paths
+        print("\nSuccessfully retrieved datasets:")
+        for path in datasets:
+            print(path)
+            
+    except Exception as e:
+        print(f"An error occurred during execution: {e}")
