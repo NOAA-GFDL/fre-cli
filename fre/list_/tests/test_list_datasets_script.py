@@ -31,7 +31,7 @@ def test_fre_list_datasets():
 
         # Call the function
     try:
-        datasets = list_datasets_subtool(tmp_yaml)
+         assert list_datasets_subtool(tmp_yaml)
         # Print out the returned list of dataset absolute paths
         print("\nSuccessfully retrieved datasets:")
         for path in datasets:
