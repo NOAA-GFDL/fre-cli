@@ -7,9 +7,10 @@
         - ``-y, --yamlfile [experiment yaml] (required)``
         - ``-p, --platform [platform] (required)``
         - ``-t, --target [target] (required)``
-        - ``-j, --njobs [number of jobs to run simultaneously]``
+        - ``-gj, --gitjobs [number of submodules to clone in parallel]``
         - ``-npc, --no-parallel-checkout (for container build)``
         - ``-e, --execute``
+        - ``force-checkout``
 
 ``makefile`` 
 -------------
@@ -30,7 +31,7 @@
         - ``-y, --yamlfile [experiment yaml] (required)``
         - ``-p, --platform [platform] (required)``
         - ``-t, --target [target] (required)``
-        - ``-j, --njobs [number of jobs to run simultaneously]``
+        - ``-mj, --makejobs [number of recipes from the Makefile to run in parallel]``
         - ``-n, --parallel [number of concurrent module compiles]``
         - ``-e, --execute``
 
@@ -44,6 +45,8 @@
         - ``-y, --yamlfile [experiment yaml] (required)``
         - ``-p, --platform [platform] (required)``
         - ``-t, --target [target] (required)``
+        - ``-nft, --no-format-transfer``
+        - ``-e, --execute``
 
 ``all``
 -------
@@ -54,6 +57,9 @@
         - ``-y, --yamlfile [experiment yaml] (required)``
         - ``-p, --platform [platform] (required)``
         - ``-t, --target [target] (required)``
-        - ``-npc, --no-parallel-checkout (for container build)``
-        - ``-j, --njobs [number of jobs to run simultaneously]``
         - ``-n, --parallel [number of concurrent module compiles]``
+        - ``-mj --makejobs [number of recipes from the Makefile to run in parallel]``
+        - ``-gj, --gitjobs [number of submodules to clone in parallel]`` 
+        - ``-npc, --no-paralel-checkout``
+        - ``-nft, --no-format-transfer``
+        - ``-e, --execute``

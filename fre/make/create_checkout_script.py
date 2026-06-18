@@ -186,17 +186,19 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
 
             elif Path(checkout_sh_path).exists() and not force_checkout:
                 fre_logger.info("Checkout script PREVIOUSLY created here: %s", checkout_sh_path)
-                fre_logger.warning("If editing source code after creating and running the checkout script for the "
-                                   "bare-metal build, continue to follow each fre make subtool individually ('makefile', "
-                                   "'compile-script' or 'dockerfile') to avoid conflicting 'existing checkout script' "
-                                   "errors (advise against using fre make all)")
                 if execute:
                     try:
                         subprocess.run(args=[checkout_sh_path], check=True)
                     except Exception as exc:
-                        raise OSError(f"\nError executing checkout script: {checkout_sh_path}.",
-                                      "\nSRC DIR might exist already. Try removing test folder: "
-                                      f"{platform_info['modelRoot']} or  specifying --force-checkout\n") from exc
+                        raise OSError(f"Error executing checkout script: {checkout_sh_path}.",
+                                       "\n\n!!SRC DIR might exist already!!\n"
+                                       "1. If not editing the checked out source code directly, try either:\n"
+                                      f"    - removing the output folder ({platform_info['modelRoot']})\n"
+                                       "    - specifying --force-checkout\n"
+                                       "2. If editing checked out source code directly for the bare-metal build:\n"
+                                       "    - users should now follow up with running each fre make subtool individually\n"
+                                       "      ('makefile', 'compile-script' or 'dockerfile') to avoid conflicting 'existing\n"
+                                       "      checkout script/SRC DIR` errors seen with 'fre make all'\n") from exc
                 else:
                     return
 
