@@ -39,3 +39,5 @@ def test_fre_list_datasets():
             
     except Exception as e:
         print(f"An error occurred during execution: {e}")
+    #delete the temporary yaml
+    if os.path.exists(tmp_yaml): os.remove(tmp_yaml)
