@@ -3,8 +3,11 @@
 run:
   inputs:
     namelist:
+      # can be put into tmp_nml/atmos.nml
       atmos_nml: "have to figure this one out"
-      files: {{ fre_properties.shared_nml }}
+      files:
+        - "$(includeDir)/nml/am5_common.nml"
+        - "$(includeDir)/nml/am5_amip.nml"
     datasets: ## reference specific sections of input.yaml[datasets]
       common_LM4p2: '{{ input.datasets.common_LM4_ex1 }}'
   runtime_mode:

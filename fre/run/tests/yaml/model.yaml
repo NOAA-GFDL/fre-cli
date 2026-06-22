@@ -7,12 +7,6 @@ fre_properties:
   shared_yamls:
     - "run/layouts.yaml"
     - "run/input_datasets.yaml"
-  shared_nml:
-    - "$(includeDir)/nml/ocean_g12.nml"
-    - "$(includeDir)/nml/am5_common.nml"
-    - "$(includeDir)/nml/lm4p2_common.nml"
-    - "$(includeDir)/nml/am5_c96L65.nml"
-    - "$(includeDir)/nml/am5_amip.nml"
 
 build:
   compile: "compile.yaml"
