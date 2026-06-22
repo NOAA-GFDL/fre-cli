@@ -5,6 +5,8 @@ run:
     namelist:
       # can be put into tmp_nml/atmos.nml
       atmos_nml: "have to figure this one out"
+      # common nml_files can be put into a shared_nml reusable yaml
+      # variable and referenced here 
       files:
         - "$(includeDir)/nml/am5_common.nml"
         - "$(includeDir)/nml/am5_amip.nml"
