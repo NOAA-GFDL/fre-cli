@@ -1,5 +1,8 @@
 name: Update Tag Version References
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     tags:
