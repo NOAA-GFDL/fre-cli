@@ -19,8 +19,7 @@ flowchart LR
     subgraph model_yaml_runtime_configs
         direction LR
         2["platforms.yaml (tbd)"]
-        3[settings.yaml
-            - experiment runtime and postprocessing settings]
+        3[settings.yaml]
         4[layouts.yaml]
         5[input_datasets.yaml]
         6[run_experiment.yaml]
@@ -31,5 +30,5 @@ flowchart LR
 3 --> experiment_settings_info
 4 --> layouts_info
 5 --> input_datasets_info
-6 --> experiment_info
+6 --> runtime_experiment_info
 ```
