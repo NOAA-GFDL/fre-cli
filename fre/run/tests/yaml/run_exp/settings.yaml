@@ -1,8 +1,0 @@
-run:
-  workflow:
-    repository: "some_url.git"
-    version: "main"
-  settings:
-    site: "gaea"
-  switches:
-    clean_work: True
