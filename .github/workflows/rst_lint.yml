@@ -11,22 +11,23 @@ jobs:
     steps:
       - name: Code Checkout
         uses: actions/checkout@v4
-      - name: Make Sphinx Requirements
-        run: |
-          echo "sphinx" > requirements.txt
-          echo "sphinx_rtd_theme" >> requirements.txt
-          echo "sphinx_design" >> requirements.txt
-          echo "sphinx-sitemap" >> requirements.txt
-          echo "sphinxcontrib-mermaid" >> requirements.txt
-          echo "doc8" >> requirements.txt  
+        with:
+          path: 'fre-cli'
+      - name: Checkout external catalogbuilder repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'NOAA-GFDL/CatalogBuilder'
+          path: 'CatalogBuilder'
       - name: Prepare Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pip'
+      - name: Install CatalogBuilder
+        run: pip install ./CatalogBuilder
       - name: Install Python Requirements
-        run: |
-          pip install -r requirements.txt
-          pip install doc8
+        working-directory: ./fre-cli
+        run: pip install .[docs]
       - name: Lint RST files
+        working-directory: ./fre-cli
         run: doc8 *
