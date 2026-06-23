@@ -1,11 +1,12 @@
-# Post-Processing Container
+# FRE-cli Container
 
-Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE workflow at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build and runscript, this post-processing container work allows for more effective sharing of the workflow.
+Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE workflow at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build and runscript, this fre-cli container work allows for more effective sharing of the workflow.
 
 ## PULLING CONTAINER FROM REGISTRY
 To pull the fre-cli container image from the NOAA-GFDL github container registry, use this command:
 
-docker pull ghcr.io/noaa-gfdl/hpc-me/ppp:latest
+(TO BE UPDATED)
+#docker pull ghcr.io/noaa-gfdl/hpc-me/ppp:latest
 
 
 ## BUILDING LOCALLY
@@ -23,8 +24,12 @@ The container will house the fre-cli tools and subtools, and any necessary packa
 Using podman and apptainer to build, follow these steps:
 
 ```
+## Navigate to /tmp/containers/$USER
+# Users will have to create their own directory here
+cd /tmp/containers/$USER
+
 ## Clone the fre-cli repository
-git clone https://github.com/NOAA-GFDL/fre-cli.git
+git clone --recursive https://github.com/NOAA-GFDL/fre-cli.git
 
 ## Navigate into fre-cli/container-files
 cd fre-cli/container-files
@@ -50,14 +55,11 @@ Now that the FRE workflows container is created, certain files and directories m
 
 In order to run the post-processing workflow, certain repositories and files are needed: 
 
-1. `fre-workflows` cloned repository
-    - Can be found here: https://github.com/NOAA-GFDL/fre-workflows 
-
-2. Directory that will include folders and files for container set-up and running (could be named `fre-cli-container-setup` for example)
+1. Directory that will include folders and files for container set-up and running (could be named `fre-cli-container-setup` for example)
     - The setup/output directory consists of a few subdirectories: pp, ptmp, and temp (these are created through the runscript.sh in this repository for the container)
     - ***Ensure you create the empty `fre-cli-container-setup` folder in an area with enough space as this is where the post-processing run output will be populated.***
 
-3. Yaml configuration files are also needed. 
+2. Yaml configuration files are also needed. 
     - Publicly available example yaml configuration files can be found here: https://github.com/NOAA-GFDL/fre-examples 
 
 #### <ins>Data files
@@ -94,7 +96,7 @@ To run the container, follow these steps:
 ## Use apptainer or singularity to run
 # Make sure directories are writable
 # Bind in necessary locations (setup folder, workflow folder, data locations)
-apptainer exec --writable-tmpfs --bind [Path/to/setup/folder]:/mnt --bind [Path/to/fre-worflows]:/mnt2 --bind [Path/to/gridspec location]:/mnt/[experiment-name]_grid:ro --bind [Path/to/history/files]:/mnt/history:ro [Path/to/created/container] /app/exec/runscript.sh
+apptainer exec --writable-tmpfs --bind [Path/to/setup/folder]:/mnt --bind [Path/to/gridspec location]:/mnt/[experiment-name]_grid:ro --bind [Path/to/history/files]:/mnt/history:ro [Path/to/created/container] /app/exec/runscript.sh
 ```
 NOTE: It is essential that binding is done correctly as the container’s runscript relies heavily on these paths.
 
