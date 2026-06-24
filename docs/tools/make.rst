@@ -1,94 +1,90 @@
-==========================
-Make Subcommands Reference
-==========================
+``checkout``
+------------
 
-checkout
-========
-
-``fre make checkout-script [options]`` [cite: 2]
+``fre make checkout-script [options]``
 
 **Purpose:**
-  Writes a script that will clone (checkout) the model code from respective git repositories[cite: 3].
+  Writes a script that will clone (checkout) the model code from respective git repositories.
 
 **Options:**
-  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME[cite: 5].
-  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument[cite: 6].
-  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument[cite: 7].
-  -gj, --gitjobs [number]          Number of git submodules to clone simultaneously (optional) (default 4)[cite: 8].
-  -npc, --no-parallel-checkout     Turns off parallel git clones. By default, fre make will clone each git repository in parallel[cite: 9].
-  -e, --execute                    Execute the checkout script immediately following its generation[cite: 10]. The default behavior is to generate the script, but not execute[cite: 11].
-  --force-checkout                 Force a git checkout if the source directory already exists[cite: 12].
+  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME.
+  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument.
+  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument.
+  -gj, --gitjobs [number]          Number of git submodules to clone simultaneously (optional) (default 4).
+  -npc, --no-parallel-checkout     Turns off parallel git clones. By default, fre make will clone each git repository in parallel.
+  -e, --execute                    Execute the checkout script immediately following its generation. The default behavior is to generate the script, but not execute.
+  --force-checkout                 Force a git checkout if the source directory already exists.
 
 ---
 
-makefile
-========
+``makefile``
+------------
 
-``fre make makefile [options]`` [cite: 14]
+``fre make makefile [options]``
 
 **Purpose:**
-  Writes a Makefile that will compile the model code[cite: 15].
+  Writes a Makefile that will compile the model code[
 
 **Options:**
-  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME[cite: 17].
-  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument[cite: 18].
-  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument[cite: 19].
+  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME.
+  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument.
+  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument.
 
 ---
 
-compile
-=======
+``compile``
+-----------
 
-``fre make compile-script [options]`` [cite: 21]
+``fre make compile-script [options]``
 
 **Purpose:**
-  Writes a compile script that will configure the compile environment and execute make[cite: 22].
+  Writes a compile script that will configure the compile environment and execute make.
 
 **Options:**
-  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME[cite: 24].
-  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument[cite: 25].
-  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument[cite: 26].
-  -mj, --makejobs [number]         Number of make recipes to compile simultaneously (optional) (default 4)[cite: 27].
-  -n, --nparallel [number]         Number of concurrent compile scripts to execute (optional) (default 1)[cite: 28]. This option is ignored when the argument --execute/-e is missing[cite: 29].
-  -e, --execute                    Execute the compile script immediately following its generation[cite: 30]. The default behavior is to generate the script, but not execute[cite: 31].
-  -v, --verbose                    Turns on debug level logging[cite: 32].
+  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME.
+  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument.
+  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument.
+  -mj, --makejobs [number]         Number of make recipes to compile simultaneously (optional) (default 4).
+  -n, --nparallel [number]         Number of concurrent compile scripts to execute (optional) (default 1). This option is ignored when the argument --execute/-e is missing.
+  -e, --execute                    Execute the compile script immediately following its generation. The default behavior is to generate the script, but not execute.
+  -v, --verbose                    Turns on debug level logging.
 
 ---
 
-dockerfile
-==========
+``dockerfile``
+--------------
 
-``fre make dockerfile [options]`` [cite: 34]
+``fre make dockerfile [options]``
 
 **Purpose:**
-  Writes a Dockerfile and createContainer.sh script that will generate a container image (.sif format) containing the source code, Makefile, model executable, and dependent libraries[cite: 35].
+  Writes a Dockerfile and createContainer.sh script that will generate a container image (.sif format) containing the source code, Makefile, model executable, and dependent libraries.
 
 **Options:**
-  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME[cite: 37].
-  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument[cite: 38].
-  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument[cite: 39].
-  -nft, --no-format-transfer       Skip the container format conversion to a Singularity Image File (.sif)[cite: 40].
-  -e, --execute                    Execute the createContainer script immediately following its generation[cite: 41]. The default behavior is to generate the script, but not execute[cite: 42].
+  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME.
+  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument.
+  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument.
+  -nft, --no-format-transfer       Skip the container format conversion to a Singularity Image File (.sif).
+  -e, --execute                    Execute the createContainer script immediately following its generation. The default behavior is to generate the script, but not execute.
 
 ---
 
-all
-===
+``all``
+-------
 
-``fre make all [options]`` [cite: 44]
+``fre make all [options]``
 
 **Purpose:**
-  Executes the above fre make subcommands in the appropriate order to generate a model executable or container image (platform dependent)[cite: 45].
+  Executes the above fre make subcommands in the appropriate order to generate a model executable or container image (platform dependent).
 
 **Options:**
-  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME[cite: 47].
-  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument[cite: 48].
-  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument[cite: 49].
-  -n, --nparallel [number]         Number of concurrent compile scripts to execute (optional) (default 1)[cite: 50]. This option is ignored when the argument --execute/-e is missing[cite: 51].
-  -mj, --makejobs [number]         Number of make recipes to compile simultaneously (optional) (default 4)[cite: 52].
-  -gj, --gitjobs [number]          Number of git submodules to clone simultaneously (optional) (default 4)[cite: 53].
-  -npc, --no-parallel-checkout     Turns off parallel git clones. By default, fre make will clone each git repository in parallel[cite: 54].
-  -nft, --no-format-transfer       Skip the container format conversion to a Singularity Image File (.sif)[cite: 55].
-  -e, --execute                    Execute the checkout and compile/createContainer scripts immediately following their generation[cite: 56]. The default behavior is to generate the scripts, but not execute[cite: 57].
-  --force-checkout                 Force a git checkout if the source directory already exists[cite: 58].
-  -v, --verbose                    Turns on debug level logging[cite: 59].
+  -y, --yamlfile [model yaml file]  (required): Model configuration yaml FILENAME.
+  -p, --platform [platform]        (required) (repeatable): FRE platform string. Define multiple platforms by repeating this argument.
+  -t, --target [target]            (required) (repeatable): mkmf target string. Define multiple targets by repeating this argument.
+  -n, --nparallel [number]         Number of concurrent compile scripts to execute (optional) (default 1). This option is ignored when the argument --execute/-e is missing.
+  -mj, --makejobs [number]         Number of make recipes to compile simultaneously (optional) (default 4).
+  -gj, --gitjobs [number]          Number of git submodules to clone simultaneously (optional) (default 4).
+  -npc, --no-parallel-checkout     Turns off parallel git clones. By default, fre make will clone each git repository in parallel.
+  -nft, --no-format-transfer       Skip the container format conversion to a Singularity Image File (.sif).
+  -e, --execute                    Execute the checkout and compile/createContainer scripts immediately following their generation. The default behavior is to generate the scripts, but not execute.
+  --force-checkout                 Force a git checkout if the source directory already exists.
+  -v, --verbose                    Turns on debug level logging.
