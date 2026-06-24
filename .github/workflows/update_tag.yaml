@@ -17,7 +17,7 @@ jobs:
 
       - name: Fetch tags
         run: |
-          git fetch --tags origin
+          git fetch --tags --force origin
  
       - name: Get the new tag
         id: get_tag
