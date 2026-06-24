@@ -11,24 +11,13 @@ jobs:
     steps:
       - name: Code Checkout
         uses: actions/checkout@v4
-        with:
-          path: 'fre-cli'
-      - name: Checkout external catalogbuilder repo
-        uses: actions/checkout@v4
-        with:
-          repository: 'NOAA-GFDL/CatalogBuilder'
-          ref: '2026.01.01'
-          path: 'CatalogBuilder'
       - name: Prepare Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-      - name: Install CatalogBuilder
-        run: pip install ./CatalogBuilder
       - name: Install Python Requirements
         working-directory: ./fre-cli
-        run: pip install .[docs]
+        run: pip install doc8
       - name: Lint RST files
-        working-directory: ./fre-cli
         run: doc8 *
