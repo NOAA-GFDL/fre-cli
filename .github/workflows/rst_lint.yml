@@ -17,7 +17,6 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
       - name: Install Python Requirements
-        working-directory: ./fre-cli
         run: pip install doc8
       - name: Lint RST files
         run: doc8 *
