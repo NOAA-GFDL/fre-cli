@@ -1,9 +1,7 @@
-=====
 Guide
-=====
+------
 
 Bare-metal Build:
------------------
 
 .. code-block:: bash
 
@@ -30,7 +28,6 @@ Users can also run all fre make commands in one subtool:
    fre make all -y [model yaml file] -p [platform] -t [target] [other options...] --execute
 
 Container Build:
-----------------
 
 For the container build, parallel checkouts are not supported (use the -npc flag). 
 In addition, the platform must be a container platform. 
@@ -64,7 +61,6 @@ Quickstart
 The quickstart instructions can be used with the null model example located in the fre-cli repository: https://github.com/NOAA-GFDL/fre-cli/tree/main/fre/make/tests/null_example
 
 Bare-metal Build:
-^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -78,7 +74,6 @@ Bare-metal Build:
    fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod --execute
 
 Bare-metal Build Multi-target:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
@@ -92,7 +87,6 @@ Bare-metal Build Multi-target:
    fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
 
 Container Build:
-^^^^^^^^^^^^^^^^
 
 In order for the container to build successfully, the parallel checkout feature is disabled using the -npc option.
 
@@ -108,7 +102,6 @@ In order for the container to build successfully, the parallel checkout feature 
    fre make dockerfile -y null_model.yaml -p hpcme.2023 -t prod --execute
 
 Run all of fremake:
-^^^^^^^^^^^^^^^^^^^
 
 The all command kicks off the entire process automatically when using --execute.
 
