@@ -1,33 +1,47 @@
-FROM condaforge/mambaforge:24.9.2-0 as builder
-#LABEL maintainer "Ciheim Brown"
-## Description ##
-# condaforge is based on a stripped down ubuntu image.  We need some extra bits for frerun + fremake
+FROM ubuntu:24.04 as builder
+####
+#ubuntu:24.04 chosen at the moment because it is a long-standing, commonly used standard release
 ####
 
+# Install micromamba: micromamba is a tinier and faster version of mamba
 # Set where the conda installation goes
-ARG conda_location=/app/cylc-flow-tools
+ARG micromamba_location=/app/cylc-flow-tools
+## needed for micromamba installation: curl, bzip2, ca-certificate (used to securly connect to pkg repos over HTTPS)
+## needed for stage-history pp task: uuid-runtime, time
+## needed for refine-diag pp task: csh
+RUN apt-get update && apt-get install -y \
+  curl \
+  bzip2 \
+  ca-certificates \
+  uuid-runtime \
+  time \
+  csh
 
-# Change to encrypted HTTP
-RUN sed -i 's/http/https/g' /etc/apt/sources.list
+RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
 
-# apt installs to /usr/bin/
-RUN apt update \
-  && apt -y install uuid-runtime time csh python bc 
+#needed?
+# Change to encrypted HTTP for apt usage
+#RUN sed -i 's/http/https/g' /etc/apt/sources.list
 
-# Update conda because this build container may be stale.
-RUN conda update -n base -c conda-forge conda
+#needed?
+## apt installs to /usr/bin/
+#RUN apt update \
+#  && apt -y install uuid-runtime time csh python bc
 
 # Copy runscript in container and make it executable
-COPY container-files/runscript.sh /app/exec/runscript.sh
+COPY runscript.sh /app/exec/runscript.sh
 RUN chmod +x /app/exec/runscript.sh
 
-# Set up conda environment directory for cylc workflow
-COPY container-files/cylc-flow-tools.yaml ${conda_location}/cylc-flow-tools.yaml
-RUN mamba env create --file ${conda_location}/cylc-flow-tools.yaml -p ${conda_location}
+## Set up conda environment directory for cylc workflow
+COPY cylc-flow-tools.yaml ${micromamba_location}/cylc-flow-tools.yaml
 
-# Maybe perhaps tag an external mounted volume /mnt2 as being safe...
-# RUN git config --global --add safe.directory /mnt2
+RUN micromamba env create --file ${micromamba_location}/cylc-flow-tools.yaml -p ${micromamba_location}/env \
+  && micromamba clean --all --yes
 
-RUN conda install urwid==2.*
+# Keeping in comment for now - might be useful for cylc workflow-state or tui things
+#RUN micromamba install urwid==2.*
+
+# Put env in path so it is already activated upon runtime
+ENV PATH=/app/cylc-flow-tools/env/bin:$PATH
 
 ENTRYPOINT ["/bin/bash"]

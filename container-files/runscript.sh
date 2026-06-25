@@ -1,7 +1,6 @@
 #!/bin/bash
 
 ## TO-DO: 
-##    - automate rebuilding container when there is an update in fre-cli
 ##    - checks for the status of the workflow (before installation step)
 
 # Initialize ppp-setup
@@ -12,13 +11,6 @@ export HOME=/mnt
 ## Set path to defined global.cylc file
 ## Currently just using degault global.cylc; jobs run in bcakground
 # export CYLC_CONF_PATH=/mnt
-
-## TO-DO: run on non-cloud environment to assess if conda initializations steps are the same
-# Initializations for conda environment in container
-conda init --all
-source /opt/conda/etc/profile.d/conda.sh
-conda deactivate
-conda activate /app/cylc-flow-tools
 
 get_user_input () {
     # User input
