@@ -16,8 +16,8 @@ def yamltools_cli():
               help="Platform name", required=True)
 @click.option("-t", "--target", type=str,
               help="Target name", required=True)
-@click.option("--use", type=click.Choice(['compile','pp', 'cmor']),
-              help="Process user is combining yamls for. Can pass 'compile', 'pp', or 'cmor'", required=True)
+@click.option("--use", type=click.Choice(['compile','pp']),
+              help="Process user is combining yamls for. Can pass 'compile' or 'pp'", required=True)
 @click.option("-o", "--output", type=str,
               help="Output")
 def combine_yamls(yamlfile,
