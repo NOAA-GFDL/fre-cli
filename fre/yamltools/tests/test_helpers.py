@@ -9,22 +9,14 @@ from fre.yamltools.helpers import yaml_load, check_fre_version
 
 
 @pytest.fixture
-def temp_path():
+def temp_yaml_and_path():
     """Fixture that creates a temporary YAML file and returns its path, then cleans up."""
     data = {'foo': 'bar', 'list': [1, 2, 3]}
     with tempfile.NamedTemporaryFile('w', delete=False, suffix=".yml") as tf:
         yaml.dump(data, tf)
-        temp_path = tf.name
-    yield temp_path
-    os.remove(temp_path)
-
-def test_yaml_load_reads_yaml_file_correctly(temp_path):
-    loaded = yaml_load(temp_path)
-    assert loaded == {'foo': 'bar', 'list': [1, 2, 3]}
-
-def test_yaml_load_raises_file_not_found():
-    with pytest.raises(FileNotFoundError):
-        yaml_load("this_file_should_not_exist.yml")
+        temp_yaml_and_path = tf.name
+    yield temp_yaml_and_path
+    os.remove(temp_yaml_and_path)
 
 ## fre_cli_version checks
 @pytest.fixture
@@ -54,6 +46,14 @@ def yaml_without_version(tmp_path):
         yaml.dump(data, f)
     return str(path)
 
+def test_yaml_load_reads_yaml_file_correctly(temp_yaml_and_path):
+    loaded = yaml_load(temp_yaml_and_path)
+    assert loaded == {'foo': 'bar', 'list': [1, 2, 3]}
+
+def test_yaml_load_raises_file_not_found():
+    with pytest.raises(FileNotFoundError):
+        yaml_load("this_file_should_not_exist.yml")
+
 def test_check_fre_version_matching(yaml_with_matching_version):
     """check_fre_version should pass when fre_cli_version matches installed version."""
     check_fre_version(yaml_with_matching_version)
@@ -66,6 +66,6 @@ def test_check_fre_version_mismatch(yaml_with_wrong_version):
 def test_check_fre_version_missing(yaml_without_version, caplog):
     """check_fre_version should log info but not error when fre_cli_version is missing."""
     import logging
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(logging.WARNING):
         check_fre_version(yaml_without_version)
-    assert "fre_cli_version not specified" in caplog.text
+    assert "fre_cli_version not specified" in caplog.text, f"i'd suspect the 'import fre' in fre/yamltools/helpers"
