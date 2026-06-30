@@ -1,10 +1,10 @@
 """
 Create_checkout_script provides methods to generate a checkout.sh script from a YAML configuration
-file, where checkout.sh git clone's all component source repositories listed under the
+file.  Checkout.sh git clones all component source repositories listed under the
 src key of the compile YAML.
 
 The method checkout_create is the entry point called by fre make checkout-script and
-fre make all.  Checkout_create then calls baremetal_checkout_write for a bare-metal platform or 
+fre make all.  Checkout_create calls baremetal_checkout_write for a bare-metal platform or 
 container_checkout_write for a container platform to write checkout.sh.
 """
 import shutil
@@ -26,7 +26,7 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
     git clone the component repositories in preparation for model compilation.
 
     Called by checkout_create for each bare-metal platform, this method
-    - reads the compile section of the resolved YAML to determine source repositories to clone, 
+    - reads the compile section of the resolved YAML to determine source repositories for each component, 
     - writes checkout.sh into src_dir, 
     - optionally executes checkout.sh afterwards
 
@@ -68,7 +68,7 @@ def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir:
 
     Called by checkout_create for each container platform, this method
     writes checkout.sh into a temporary directory on the host (tmp/[platform-name]/)
-    where the script eventually will be COPY-ed to the container image filesystem.  
+    where the script will eventually be COPY-ed to the container image filesystem.  
     The script will be executed during the container build to git clone the component 
     repositories serially.
 
@@ -83,7 +83,7 @@ def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir:
                     Typically tmp/[platform-name].
     :type tmp_dir: str
     :param jobs: is the number of git submodules to fetch simultaneously, passed to git clone
-                 --jobs.
+                 --jobs.  Unused argument for this method and should be removed.
     :type jobs: str
     :param parallel_cmd: is a flag not used in this method and should be removed.
     :type parallel_cmd: str
@@ -102,11 +102,10 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     for each specified platform.
 
     :param yamlfile: is the path to the model YAML configuration file (e.g. am5.yaml).  
-                     The experiment name is derived by stripping the .yaml extension.
     :type yamlfile: str
     :param platform: is one or more FRE platform strings as defined in platforms.yaml.
     :type platform: tuple[str]
-    :param target: is one or more mkmf target strings (e.g. debug, repro, prod).
+    :param target: is one or more mkmf target strings (e.g. debug-openmp, repro-openmp, prod-openmp).
     :type target: tuple[str]
     :param no_parallel_checkout: is a flag where if True, git clone component repositories sequentially.  
                                  Defaults to False to enable parallel checkout for bare-metal builds; 
@@ -118,10 +117,10 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     :param execute: If True, execute checkout.sh immediately after writing it
                     (bare-metal only).  Defaults to False.
     :type execute: bool, optional
-    :param force_checkout: is a flag to controls behavior when checkout.sh already exists.
-                           For bare-metal build, renames the existing src directory with a
-                            YYYYmmdd.HHMMSS timestamp suffix, then writes a fresh
-                            checkout.sh in a new src directory.
+    :param force_checkout: is a flag to control behavior when checkout.sh already exists.
+                           If True for for bare-metal build, renames the existing src directory with a
+                           YYYYmmdd.HHMMSS timestamp suffix, then writes a fresh
+                           checkout.sh in a new src directory.
                            For container build, deletes the existing tmp/[platform]/checkout.sh
                            and writes a new one in its place.
                            Defaults to False.
@@ -131,9 +130,9 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
         - If njobs is passed as a boolean while --execute is also set (ambiguous
           intent — njobs must be an explicit integer).
         - If a specified platform name does not exist in platforms.yaml.
-    :raises OSError: If --execute is set and running an existing checkout.sh
-                     returns a non-zero exit code (e.g. the source directory already
-                     contains conflicting content).
+    :raises OSError: When checkout.sh returns a non-zero exit code during execution.
+                     (applicable when execute is True for a bare-metal build).
+
     """
     # Standardize inputs
     jobs_str = str(njobs)

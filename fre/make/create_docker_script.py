@@ -1,9 +1,6 @@
-
 """
-Create_docker_script provides methods to generate a Dockerfile and 
-an accompanying createContainer.sh script to build container images.  
-The method dockerfile_create is the entry point called by
-fre make dockerfile and by fre make all.
+Create_docker_script contains one method called dockerfile_create to 
+to generate a Dockerfile and an accompanying createContainer.sh script to build container images.  
 
 The Dockerfile uses a two-stage build:
 
