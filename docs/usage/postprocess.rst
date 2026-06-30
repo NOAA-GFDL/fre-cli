@@ -1,10 +1,19 @@
-``fre pp`` regrids FMS history files and generates timeseries, climatologies, and static postprocessed files, with instructions specified in YAML.
+About postprocessing
+--------------------
+``fre pp`` regrids FMS history files and generates timeseries, climatologies, and static
+postprocessed files, with instructions specified in YAML. Postprocessing is orchestrated via a
+Cylc workflow (fre-workflows) that is configured, installed, and run with the ``fre pp``
+subtools.
 
-User plug-in scripts — refineDiag, preAnalysis, and legacy cshell analysis scripts — can be configured to run before and after postprocessing; see the dedicated sections below.
+In the future, output NetCDF files will be rewritten by CMOR by default, ready for publication
+to community archives (e.g. ESGF). Presently, standalone CMOR tooling is available as
+``fre cmor``.
 
-In the future, output NetCDF files will be rewritten by CMOR by default, ready for publication to community archives (e.g. ESGF). Presently, standalone CMOR tooling is available as ``fre cmor``.
+By default, an intake-esm-compatible data catalog is generated and updated, containing a
+programmatic metadata-enriched searchable interface to the postprocessed output. The catalog
+tooling can be independently assessed as ``fre catalog``.
 
-By default, an intake-esm-compatible data catalog is generated and updated, containing a programmatic metadata-enriched searchable interface to the postprocessed output. The catalog tooling can be independently assessed as ``fre catalog``.
+User plug-in scripts can be configured to run at various stages; see the User plugins section.
 
 FMS history files
 -----------------
@@ -115,6 +124,61 @@ Required configuration
          - history_file: "ocean_month"
          - history_file: "ocean_annual"
 
+Online postprocessing
+---------------------
+In online postprocessing, Bronx ``frerun`` automatically triggers ``fre pp`` after each model
+segment completes. This mechanism is provisional and will be improved in a future release.
+
+**Requirements for online postprocessing:**
+
+1. The pp yaml must be named identically to the XML file, with only the extension changed
+   (e.g. ``am5.xml`` → ``am5.yaml``).
+2. The yaml must be placed in the FRE ``includeDir`` so that ``frerun`` transfers it to GFDL
+   along with the runscript.
+3. The experiment name in the yaml must match the experiment name in the XML exactly.
+4. The ``pp_start`` and ``pp_stop`` years in the yaml must match the run years in the XML.
+5. Validate the yaml against the schema on gaea before submitting the run:
+
+.. code-block:: console
+
+ fre yamltools validate-yaml -y am5.yaml -e experiment_name -p platform -t target
+
+When these conditions are met, Bronx's ``pp.starter`` runs ``fre pp all`` after each completed
+segment. ``fre pp all`` checks whether the postprocessing workflow is already installed and
+running — if so, it calls ``fre pp trigger`` to process that segment; if not, it runs the full
+setup sequence (``fre pp checkout``, ``configure-yaml``, ``install``, ``run``) before triggering.
+
+Offline postprocessing
+----------------------
+In offline postprocessing, all history files already exist on archive and postprocessing is
+run after the fact. This is the typical case when reprocessing an experiment or postprocessing
+data from a completed run.
+
+Set ``history_dir``, ``pp_start``, and ``pp_stop`` to cover the existing history, then run
+``fre pp all`` (or ``fre pp run`` followed by manual triggers):
+
+.. code-block:: console
+
+ fre pp all -e experiment -p platform -T target -c model.yaml
+
+To process specific time windows, use ``fre pp trigger`` for each segment:
+
+.. code-block:: console
+
+ fre pp trigger -e experiment -p platform -T target -t 19790101
+ fre pp trigger -e experiment -p platform -T target -t 19800101
+
+Postprocessing another experiment's output
+-------------------------------------------
+To postprocess history files from another experiment (including someone else's data), set
+``history_dir`` to the path of that experiment's history archive. No other changes are required
+— fre pp reads history files from whatever path ``history_dir`` points to.
+
+.. code-block:: console
+
+ directories:
+   history_dir: /archive/otherusername/am5/am5f7c1r0/c96L65_am5f7c1r0_amip/gfdl.ncrc5-deploy-prod-openmp/history
+
 XY-regridding
 -------------
 Commonly, native grid history files are regridded during postprocessing. To regrid to a lat/lon grid, configure your
@@ -163,6 +227,30 @@ Optional configuration (i.e. if xy-regridding is desired)
 
        interpMethod: conserve_order1
 
+Pressure-level history output
+------------------------------
+There are two approaches to obtaining postprocessed atmosphere output on pressure levels.
+
+**New approach (recommended):** Request pressure-level interpolation directly from the model
+by configuring the desired pressure levels in the diag yaml. The model produces history files
+already on pressure levels. Because these files contain data at all configured pressure levels
+across the full column — including levels below the Earth's surface or above the model top —
+those unphysical values must be masked. Enable surface masking with:
+
+.. code-block:: console
+
+ postprocess:
+   switches:
+     do_atmos_plevel_masking: True
+
+When enabled, atmosphere pressure-level variables are masked below the surface pressure and
+above the model top.
+
+**Old approach (no longer supported):** In FRE Bronx, the model output native vertical levels
+and frepp regridded vertically to standard pressure-level sets (ncep, am3, hs20). This
+vertical-regrid approach is not available in fre-cli; use the diag yaml interpolation approach
+instead.
+
 Timeseries
 ----------
 Timeseries output is the most common type of postprocessed output. Each timeseries file contains
@@ -178,6 +266,21 @@ length — how many years of data to combine into one file — is configured glo
        - P5Y
 
 Timeseries files are organized under ``pp/<component>/ts/<frequency>/<chunklength>/``.
+
+Sub-year postprocessing
+-----------------------
+Sub-year chunk lengths are supported using sub-year ISO8601 durations in ``pp_chunks``. For
+example, to produce 6-month timeseries files:
+
+.. code-block:: console
+
+ postprocess:
+   settings:
+     pp_chunks:
+       - P6M
+
+Any ISO8601 period is valid: ``P1M`` (monthly), ``P3M`` (quarterly), ``P6M`` (semi-annual).
+The history segment length must be a multiple of the chunk length.
 
 Climatologies
 -------------
@@ -206,91 +309,39 @@ Static fields are time-invariant diagnostics such as grid geometry, land/sea mas
 topography. They are extracted from the nominated source history files and placed in
 ``pp/<component>/ts/static/1yr/``.
 
-Surface masking for FMS pressure-level history
-----------------------------------------------
-Pressure-level atmosphere history files contain data at all configured pressure levels, including
-levels below the Earth's surface or above the model top. These out-of-range values are unphysical
-and should be masked. Enable surface masking with the following switch:
+Monthly data from daily data
+-----------------------------
+This feature is not yet implemented in fre-cli. See the legacy FRE Bronx documentation for the
+equivalent ``frepp`` functionality (the ``averageOf`` timeSeries attribute).
+
+Long timeseries from existing timeseries
+-----------------------------------------
+This feature is not yet implemented in fre-cli. See the legacy FRE Bronx documentation for the
+equivalent ``frepp`` functionality (the ``from`` timeSeries attribute).
+
+Checking for missing postprocessed files
+-----------------------------------------
+To verify that postprocessed timeseries files contain the expected number of time records:
 
 .. code-block:: console
 
- postprocess:
-   switches:
-     do_atmos_plevel_masking: True
+ fre pp ppval --path /path/to/pp/component/ts/mon/5yr/
 
-When enabled, atmosphere pressure-level variables are masked below the surface pressure and above
-the model top.
-
-refineDiag scripts
-------------------
-refineDiag scripts are user-provided cshell scripts that run on raw history files before
-postprocessing and produce new "spoofed" history files. These new files are then postprocessed
-alongside native model output, allowing users to define custom derived diagnostics as if they were
-native model output.
-
-Configure refineDiag scripts under ``postprocess.refinediag``:
+To validate history files before postprocessing:
 
 .. code-block:: console
 
- directories:
-   refined_history_dir: /path/to/refined/history/output
+ fre pp histval --history /path/to/history/ --date_string 19790101
 
- postprocess:
-   refinediag:
-     my_script_label:
-       script: /absolute/path/to/script.csh
-       inputs:
-         - atmos_month
-       outputs:
-         - atmos_month_refined
-       do_refinediag: true
-
-Output file names must differ from any existing history file names. Multiple refineDiag scripts
-can be defined, each under its own label.
-
-preAnalysis scripts
--------------------
-preAnalysis scripts are user-provided cshell scripts that run on raw history files before
-postprocessing, similar to refineDiag scripts, but do not produce new history files. They are
-suited for user-specific tasks such as populating custom databases or producing output outside the
-FRE managed directory structure.
-
-Configure preAnalysis scripts under ``postprocess.preanalysis``:
+Filling gaps in postprocessed output
+--------------------------------------
+If postprocessing failed or was interrupted for some segments, use ``fre pp trigger`` to
+re-trigger processing for specific time windows:
 
 .. code-block:: console
 
- postprocess:
-   preanalysis:
-     my_preanalysis_label:
-       script: /absolute/path/to/script.csh
-       inputs:
-         - atmos_month
-       do_preanalysis: true
+ fre pp trigger -e experiment -p platform -T target -t 19820101
 
-Legacy cshell analysis scripts
--------------------------------
-Legacy cshell analysis scripts are user-provided scripts that run after postprocessing using
-postprocessed output to produce figures or other user-specified output. Unlike refineDiag and
-preAnalysis scripts, analysis scripts have no downstream dependencies in the FRE postprocessing
-workflow.
-
-Analysis scripts are configured under the top-level ``analysis:`` key, separate from
-``postprocess:``:
-
-.. code-block:: console
-
- directories:
-   analysis_dir: /path/to/analysis/scripts
-
- analysis:
-   my_analysis_label:
-     legacy:
-       script: /path/to/analysis_script.csh
-     required:
-       data_frequency: mon
-       date_range: ['1979', '2020']
-
-Each analysis script is associated with one data frequency. For scripts that span multiple
-components, associate the script with the component that has the longest run interval.
-
-A new Python-native analysis framework is being developed for the FRE 2026.02 release.
+Common causes of gaps: filesystem failures, history files not yet available on archive, or
+interrupted workflow runs. Identify missing segments by comparing the expected date range
+against the files present in ``pp_dir``, or use ``fre pp ppval`` to report incomplete files.

@@ -45,3 +45,8 @@ Assuming one has ``conda`` in their path, then do the following::
 
   # optional: load fre-nctools into your PATH to gain access to regridding and certain time-averaging routines
   # module load fre-nctools
+
+Using the container
+===================
+
+.. include:: container.rst
