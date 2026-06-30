@@ -1,0 +1,28 @@
+input:
+  datasets:
+    common_LM4_ex1:
+      - label: input
+        target: INPUT/soil_type.nc
+        chksum: ''
+        timestamp: ''
+        platform: {{ platform }}
+        source: /some/path/soil_type.nc
+      - label: input
+        target: INPUT/
+        chksum: ''
+        timestamp: ''
+        platform: {{ platform }}
+        source: /some/path/biodata.nc
+    common_LM4_ex2:
+      - label: input
+        target: INPUT/soil_type.nc
+        chksum: ''
+        timestamp: ''
+        platform: {{ platform }}
+        source: /some/path/soil_type_gsde_5minute.nc
+      - label: input
+        target: INPUT/
+        chksum: ''
+        timestamp: ''
+        platform: {{ platform }}
+        source: /some/path/biodata.nc
