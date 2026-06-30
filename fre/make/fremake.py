@@ -1,13 +1,14 @@
 """
 fremake is the module defining the `click <click link_>`_ interfaces for the following **fre make** subcommands:
 
-* fre make checkout-script [ARGS]: writes a script that will clone (checkout) the model code from respective git
+* `fre make checkout-script [ARGS]`: writes a script that will clone (checkout) the model code from respective git
   repositories
-* fre make makefile [ARGS]: writes a Makefile that will compile the model code
-* fre make compile-script [ARGS]: writes a compile script that will configure the compile environment and execute make
-* fre make dockerfile [ARGS]: writes a Dockerfile and ``createContainer.sh`` script that will generate a container image
-  (``.sif`` format) that contains the source code, Makefile, model executable and its dependent libraries
-* fre make all [ARGS]: executes the above fre make subcommands in the appropriate order to generate a model executable
+* `fre make makefile [ARGS]`: writes a root Makefile to compile the model.
+* `fre make compile-script [ARGS]`: writes a compile script that generates component Makefiles
+   and sets the compile environment. 
+* `fre make dockerfile [ARGS]`: writes a Dockerfile and ``createContainer.sh`` script that builds a container image
+   containing the source code, Makefile, model executable and its dependent libraries
+* `fre make all [ARGS]`: executes the above fre make subcommands in the appropriate order to compile a model executable
   or container
 
 Please see README.md at `fre-cli/fre/make/README.md <readme link_>`_ for a quickstart guide.

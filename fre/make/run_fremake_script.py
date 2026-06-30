@@ -1,23 +1,23 @@
 """
-run_fremake_script contains the main orchestration function, fremake_run, which executes all
-fre make sub-commands in the correct order to compile the model src code into an executable.  
-fremake_run is the entry point called by fre make all.
+run_fremake_script contains the main orchestration function, `fremake_run`, that executes all
+`fre make` sub-commands in the correct order to compile the model src code into an executable.  
+`fremake_run` is the entry point called by `fre make all`.
 
-For bare-metal platforms, fremake_run calls:
+For bare-metal platforms, `fremake_run` calls:
 
-1. checkout_create — creates and executes checkout.sh to clone all source repositories 
-   into [modelRoot]/[experiment]/src/
-2. makefile_create — creates the top-level Makefile into
+1. `checkout_create` — writes and optionally executes `checkout.sh` to 
+   clone all source repositories into [modelRoot]/[experiment]/src/
+2. `makefile_create` — writes the root `Makefile` into
    [modelRoot]/[experiment]/[platform]-[target]/exec/
-3. compile_create — creates compile.sh to the
-   [modelRoot]/[experiment]/[platform]-[target]/exec/ and executes the script 
+3. `compile_create` — writes `compile.sh` to the
+   [modelRoot]/[experiment]/[platform]-[target]/exec/ and optionally executes the script 
 
-For container platforms, fremake_run calls:
-1. checkout_create — stages checkout.sh under tmp/[platform]/
-2. makefile_create — stages the Makefile under tmp/[platform]/
-3. dockerfile_create — creates the Dockerfile and createContainer.sh,
+For container platforms, `fremake_run` calls:
+1. `checkout_create` — writes and stages `checkout.sh` under tmp/[platform]/
+2. `makefile_create` — writes and stages the `Makefile` under tmp/[platform]/
+3. `dockerfile_create` — writes the `Dockerfile` and `createContainer.sh`,
    and, if --execute is set, runs the build script to produce a
-   Singularity image file (.sif) for each platform/target combination.
+   Singularity image file (.sif).
 """
 import logging
 from typing import Optional
@@ -39,20 +39,18 @@ def fremake_run(yamlfile:str, platform:str, target:str,
                 verbose: Optional[bool] = None,
                 force_checkout: Optional[bool] = False):
     """
-    fremake_run runs all fre make sub-commands in sequence to produce a model executable
+    `fremake_run` runs all `fre make` sub-commands in sequence to produce a model executable
     (bare-metal) or a container image.
 
-    :param yamlfile: is the path to the model YAML file (e.g. am5.yaml).  The experiment
-                     name is derived by stripping the .yaml extension.
+    :param yamlfile: is the path to the model YAML file (e.g. am5.yaml).
     :type yamlfile: str
-    :param platform: is one or more FRE platform strings as defined in platforms.yaml
-                     (e.g. ncrc5.intel23 for a bare-metal GAEA C5 platform).
+    :param platform: is one or more `FRE` platform strings as defined in platforms.yaml
+                     (e.g. ncrc5.intel23).
     :type platform: tuple[str]
-    :param target: is one or more mkmf target strings (e.g. prod, repro debug)
+    :param target: is one or more mkmf target strings (e.g. debug-openmp, repro-openmp, prod-openmp).
     :type target: tuple[str]
     :param nparallel: is the number of compile.sh scripts to execute concurrently when
-                      execute=True (bare-metal only).  Defaults to 1
-                      (sequential).
+                      `execute` is True (bare-metal only).  Defaults to 1.
     :type nparallel: int
     :param makejobs: is the number of Makefile recipes to run simultaneously, passed to
                      make -j.  Defaults to 4.
@@ -71,12 +69,12 @@ def fremake_run(yamlfile:str, platform:str, target:str,
                     or createContainer.sh (container) immediately after generation.  
                     Defaults to False.
     :type execute: bool, optional
-    :param verbose: is a flag where if True, set logger level to DEBUG for detailed output from
-                    compile_create.  Defaults to False and sets logger level to INFO.
+    :param verbose: is a flag where if True, set logger level to DEBUG for detailed output.  
+                    Defaults to False and sets logger level to INFO.
     :type verbose: bool, optional
     :param force_checkout: is a flag where if True, for bare-metal: remove existing
-                           compile.sh before regenerating.  For container: remove
-                           the existing Dockerfile before regenerating.  Defaults
+                           `compile.sh` before regenerating.  For container: remove
+                           the existing `Dockerfile` before regenerating.  Defaults
                            to False.
     :type force_checkout: bool, optional
 
