@@ -1,7 +1,7 @@
 =====
 Usage
 =====
-Using a set of YAML configuration files, ``fre make`` compiles a FMS-based model, and ``fre pp`` postprocesses the history output and runs diagnostic analysis scripts. Please note that model running is not yet supported in FRE 2025; continue to use FRE Bronx frerun.
+Using a set of YAML configuration files, ``fre make`` compiles a FMS-based model, and ``fre pp`` postprocesses the history output and runs diagnostic analysis scripts. Model running is slated for the FRE 2026.03 release; continue to use FRE Bronx frerun in the meantime.
 
 YAML Framework
 ==============
@@ -34,7 +34,9 @@ Build FMS model
 
 Run FMS model
 =============
-Check back in the latter half of 2025 or so.
+Running experiments via fre-cli is slated for the FRE 2026.03 release. In the meantime, continue
+to use the legacy FRE Bronx ``frerun`` tool; documentation is available at the
+`FRE Bronx running an experiment <https://sites.google.com/noaa.gov/oar-gfdl-msd-docs/fre-documentation/fre-documentation/running-an-experiment>`_ page.
 
 Postprocess FMS history output
 ==============================

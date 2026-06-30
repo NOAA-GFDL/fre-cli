@@ -1,6 +1,4 @@
-.. NEEDS UPDATING #TODO
-
-
+For conceptual background and step-by-step workflow instructions, see the "Postprocess FMS history output" section in the Usage guide.
 
 ``all``
 -------

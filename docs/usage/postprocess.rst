@@ -1,6 +1,6 @@
 ``fre pp`` regrids FMS history files and generates timeseries, climatologies, and static postprocessed files, with instructions specified in YAML.
 
-Bronx plug-in refineDiag and analysis scripts can also be used, and a reimagined analysis script ecosystem is being developed and is available now (for adventurous users). The new analysis script framework is independent of and compatible with FRE (https://github.com/NOAA-GFDL/analysis-scripts). The goal is to combine the ease-of-use of legacy FRE analysis scripts with the standardization of model output data catalogs and python virtual environments.
+User plug-in scripts — refineDiag, preAnalysis, and legacy cshell analysis scripts — can be configured to run before and after postprocessing; see the dedicated sections below.
 
 In the future, output NetCDF files will be rewritten by CMOR by default, ready for publication to community archives (e.g. ESGF). Presently, standalone CMOR tooling is available as ``fre cmor``.
 
@@ -165,25 +165,132 @@ Optional configuration (i.e. if xy-regridding is desired)
 
 Timeseries
 ----------
-Timeseries output is the most common type of postprocessed output.
+Timeseries output is the most common type of postprocessed output. Each timeseries file contains
+one variable from one postprocess component, spanning the requested date range. The temporal chunk
+length — how many years of data to combine into one file — is configured globally in
+``postprocess.settings.pp_chunks`` as an ISO8601 duration:
+
+.. code-block:: console
+
+ postprocess:
+   settings:
+     pp_chunks:
+       - P5Y
+
+Timeseries files are organized under ``pp/<component>/ts/<frequency>/<chunklength>/``.
 
 Climatologies
 -------------
-annual and monthly climatologies
-less fine-grained than bronx
-per-component switch coming
-now it's one switch for entire pp
+Climatologies are time-averaged files. All variables from a component appear in one file, with one
+time-averaged level per file. Climatology output is configured per-component under a
+``climatology:`` list, with ``frequency`` (``yr`` for annual, ``mon`` for monthly) and
+``interval_years`` specifying the averaging period length:
+
+.. code-block:: console
+
+ postprocess:
+   components:
+     - type: atmos_month
+       climatology:
+         - frequency: yr
+           interval_years: 2
+         - frequency: mon
+           interval_years: 2
+
+Annual climatologies produce one annually-averaged file per interval. Monthly climatologies produce
+twelve monthly-mean files per interval.
 
 Statics
 -------
-underbaked, known deficiency
-currently, takes statics from "source" history files
-
-Analysis scripts
-----------------
+Static fields are time-invariant diagnostics such as grid geometry, land/sea masks, and
+topography. They are extracted from the nominated source history files and placed in
+``pp/<component>/ts/static/1yr/``.
 
 Surface masking for FMS pressure-level history
 ----------------------------------------------
+Pressure-level atmosphere history files contain data at all configured pressure levels, including
+levels below the Earth's surface or above the model top. These out-of-range values are unphysical
+and should be masked. Enable surface masking with the following switch:
 
-Legacy refineDiag scripts
--------------------------
+.. code-block:: console
+
+ postprocess:
+   switches:
+     do_atmos_plevel_masking: True
+
+When enabled, atmosphere pressure-level variables are masked below the surface pressure and above
+the model top.
+
+refineDiag scripts
+------------------
+refineDiag scripts are user-provided cshell scripts that run on raw history files before
+postprocessing and produce new "spoofed" history files. These new files are then postprocessed
+alongside native model output, allowing users to define custom derived diagnostics as if they were
+native model output.
+
+Configure refineDiag scripts under ``postprocess.refinediag``:
+
+.. code-block:: console
+
+ directories:
+   refined_history_dir: /path/to/refined/history/output
+
+ postprocess:
+   refinediag:
+     my_script_label:
+       script: /absolute/path/to/script.csh
+       inputs:
+         - atmos_month
+       outputs:
+         - atmos_month_refined
+       do_refinediag: true
+
+Output file names must differ from any existing history file names. Multiple refineDiag scripts
+can be defined, each under its own label.
+
+preAnalysis scripts
+-------------------
+preAnalysis scripts are user-provided cshell scripts that run on raw history files before
+postprocessing, similar to refineDiag scripts, but do not produce new history files. They are
+suited for user-specific tasks such as populating custom databases or producing output outside the
+FRE managed directory structure.
+
+Configure preAnalysis scripts under ``postprocess.preanalysis``:
+
+.. code-block:: console
+
+ postprocess:
+   preanalysis:
+     my_preanalysis_label:
+       script: /absolute/path/to/script.csh
+       inputs:
+         - atmos_month
+       do_preanalysis: true
+
+Legacy cshell analysis scripts
+-------------------------------
+Legacy cshell analysis scripts are user-provided scripts that run after postprocessing using
+postprocessed output to produce figures or other user-specified output. Unlike refineDiag and
+preAnalysis scripts, analysis scripts have no downstream dependencies in the FRE postprocessing
+workflow.
+
+Analysis scripts are configured under the top-level ``analysis:`` key, separate from
+``postprocess:``:
+
+.. code-block:: console
+
+ directories:
+   analysis_dir: /path/to/analysis/scripts
+
+ analysis:
+   my_analysis_label:
+     legacy:
+       script: /path/to/analysis_script.csh
+     required:
+       data_frequency: mon
+       date_range: ['1979', '2020']
+
+Each analysis script is associated with one data frequency. For scripts that span multiple
+components, associate the script with the component that has the longest run interval.
+
+A new Python-native analysis framework is being developed for the FRE 2026.02 release.
