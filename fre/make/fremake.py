@@ -7,7 +7,7 @@ fremake is the module defining the `click <click link_>`_ interfaces for the fol
 * `fre make compile-script [ARGS]`: writes a compile script that generates component Makefiles
    and sets the compile environment. 
 * `fre make dockerfile [ARGS]`: writes a Dockerfile and ``createContainer.sh`` script that builds a container image
-   containing the source code, Makefile, model executable and its dependent libraries
+   containing the source code, Makefile, model executable, and its dependent libraries
 * `fre make all [ARGS]`: executes the above fre make subcommands in the appropriate order to compile a model executable
   or container
 
@@ -41,7 +41,7 @@ See https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/glossary.html#te
 _PARALLEL_OPT_HELP = """Number of concurrent compile scripts to execute. (optional) (default 1).
 This option is ignored when the argument --execute/-x is missing.
 """
-_MAKE_JOBS_OPT_HELP = """Number of make recipes to compile simultaneously. (optional) (default 4)"""
+_MAKE_JOBS_OPT_HELP = """Number of make recipes to compile in parallel. (optional) (default 4)"""
 _GIT_JOBS_OPT_HELP = """Number of git submodules to clone simultaneously. (optional) (default 4)"""
 _NO_PARALLEL_CHECKOUT_OPT_HELP =  """Turns off parallel git clones.
 By default, fre make will clone each git repository defined in the compile.yaml configuration file
