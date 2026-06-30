@@ -36,6 +36,12 @@ jobs:
         with:
           submodules: 'recursive'
 
+      # For tagged releases, determine the tag from the __init__.py.
+      # Then make it available for the conda-build steps by setting the env var
+      # $GIT_DESCRIBE_TAG to the determined tag.
+      # $GITHUB_ENV is a special file path provided by the Actions runner.
+      # When you write KEY=VALUE lines into it, those variables become available
+      # as environment variables for all subsequent steps in the same job.
       - name: Set version for tagged release
         if: github.event_name == 'pull_request'
         run: |
