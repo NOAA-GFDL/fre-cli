@@ -1,11 +1,73 @@
 =====
 Usage
 =====
-Using a set of YAML configuration files, ``fre make`` compiles a FMS-based model, and ``fre pp`` postprocesses the history output and runs diagnostic analysis scripts. Please note that model running is not yet supported in FRE 2025; continue to use FRE Bronx frerun.
+Using a set of YAML configuration files, ``fre make`` compiles a FMS-based model and ``fre pp``
+postprocesses the history output and runs diagnostic analysis scripts. Model running is slated for
+the FRE 2026.03 release; continue to use FRE Bronx frerun in the meantime.
 
-YAML Framework
-==============
-In order to utilize these FRE tools, a distributed YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with ``[key]: [value]`` fields.
+Yaml files
+==========
+
+About Yaml files
+----------------
+FRE uses a distributed set of YAML configuration files that together define a model experiment.
+Four types of files are required:
+
+- **Model yaml** — the hub file that defines reusable properties, paths to the other yamls, and
+  the list of experiments
+- **Compile yaml** — source code repositories, component dependencies, and build instructions
+- **Platforms yaml** — site- and compiler-specific settings for each target computing environment
+- **Post-processing yamls** — postprocess component definitions, settings, and switches
+
+The compile and platforms yamls are described in detail under `Build a model`_. The
+post-processing yamls are described under `Postprocessing`_.
+
+Yaml schema
+-----------
+Machine-readable schemas for all FRE YAML files are maintained in the
+`NOAA-GFDL/gfdl_msd_schemas <https://github.com/NOAA-GFDL/gfdl_msd_schemas/tree/main/FRE>`_
+repository. To validate a yaml against the schema locally:
+
+.. code-block:: console
+
+ fre yamltools validate-yaml -y model.yaml -e experiment_name -p platform -t target
+
+Variables in FRE Yaml files
+----------------------------
+FRE expands several types of variables when processing yaml files.
+
+*Environment variables* — Standard shell environment variables such as ``$USER``, ``$HOME``,
+and ``$ARCHIVE`` are expanded by FRE at runtime.
+
+*User-defined properties* — The ``fre_properties`` block in the model yaml defines YAML anchors
+(``&name value``) that can be referenced elsewhere with ``*name``:
+
+.. code-block:: console
+
+ fre_properties:
+   - &group_name "am5"
+   - &version    "2024.01"
+
+*The* ``!join`` *constructor* — Combines multiple anchors and strings into a single value,
+useful for building directory paths:
+
+.. code-block:: console
+
+ pp_dir: !join [/archive/$USER/, *group_name, /, *version, /, pp]
+
+Directories
+-----------
+The ``directories:`` key in the post-processing settings yaml sets the paths for all managed FRE
+output:
+
+.. code-block:: console
+
+ directories:
+   history_dir:         /path/to/raw/model/history/tarballs   (required)
+   pp_dir:              /path/to/postprocessed/output          (required)
+   ptmp_dir:            /path/to/scratch/working/space         (required)
+   refined_history_dir: /path/to/refinediag/output             (required if using refineDiag)
+   analysis_dir:        /path/to/analysis/script/output        (required if running analysis scripts)
 
 Yaml Formatting
 ---------------
@@ -27,20 +89,22 @@ Post-processing Yamls
 ---------------------
 .. include:: usage/yaml_dev/pp_yaml.rst
 
-Build FMS model
-===============
+Build a model
+=============
 .. include:: usage/build_fms_model.rst
 .. include:: usage/guides/fre_make_guide.rst
 
-Run FMS model
-=============
-Check back in the latter half of 2025 or so.
+Running an experiment
+=====================
+Running experiments via fre-cli is slated for the FRE 2026.03 release. In the meantime, continue
+to use the legacy FRE Bronx ``frerun`` tool; documentation is available at the
+`FRE Bronx running an experiment <https://sites.google.com/noaa.gov/oar-gfdl-msd-docs/fre-documentation/fre-documentation/running-an-experiment>`_ page.
 
-Postprocess FMS history output
-==============================
+Postprocessing
+==============
 .. include:: usage/postprocess.rst
 .. include:: usage/guides/fre_pp_guide.rst
 
-Generate data catalogs
-======================
-.. include:: tools/catalog.rst
+User plugins
+============
+.. include:: usage/user_plugins.rst
