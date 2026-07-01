@@ -19,7 +19,6 @@ Welcome to ``fre-cli``'s documentation!
    tools
    usage
    examples
-   ai-assistance
    api
    for-developers
    glossary
