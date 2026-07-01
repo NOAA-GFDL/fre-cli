@@ -150,7 +150,8 @@ def all(yamlfile, platform, target, nparallel, makejobs, gitjobs, no_parallel_ch
               "--no-parallel-checkout",
               is_flag = True,
               help = _NO_PARALLEL_CHECKOUT_OPT_HELP)
-@click.option("--execute",
+@click.option("-e",
+              "--execute",
               is_flag = True,
               default = False,
               help = """Execute the checkout script immediately following its generation.
@@ -211,7 +212,8 @@ def makefile(yamlfile, platform, target):
               type = int,
               metavar = '', default = 1,
               help = _PARALLEL_OPT_HELP)
-@click.option("--execute",
+@click.option("-e",
+              "--execute",
               is_flag = True,
               default = False,
               help = """Execute the compile script immediately following its generation.
@@ -246,7 +248,8 @@ def compile_script(yamlfile, platform, target, makejobs, nparallel, execute, ver
               is_flag = True,
               default = False,
               help = "Skip the container format conversion to a Singularity Image File.")
-@click.option("--execute",
+@click.option("-e",
+              "--execute",
               is_flag = True,
               default = False,
               help = """Execute the createContainer script immediately following its generation.
