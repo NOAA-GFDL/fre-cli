@@ -1,10 +1,24 @@
-'''
-For a bare-metal build: Creates and runs the checkout script to check out source code,
-                        creates the makefile, and creates the compile script to generate
-                        a model executable.
-For a container build: Creates the checkout script and makefile, and creates and runs a
-                       dockerfile to generate a singularity image file.
-'''
+"""
+run_fremake_script contains the main orchestration function, `fremake_run`, that executes all
+`fre make` sub-commands in the correct order to compile the model src code into an executable.  
+`fremake_run` is the entry point called by `fre make all`.
+
+For bare-metal platforms, `fremake_run` calls:
+
+1. `checkout_create` — writes and optionally executes `checkout.sh` to 
+   clone all source repositories into [modelRoot]/[experiment]/src/
+2. `makefile_create` — writes the root `Makefile` into
+   [modelRoot]/[experiment]/[platform]-[target]/exec/
+3. `compile_create` — writes `compile.sh` to the
+   [modelRoot]/[experiment]/[platform]-[target]/exec/ and optionally executes the script 
+
+For container platforms, `fremake_run` calls:
+1. `checkout_create` — writes and stages `checkout.sh` under tmp/[platform]/
+2. `makefile_create` — writes and stages the `Makefile` under tmp/[platform]/
+3. `dockerfile_create` — writes the `Dockerfile` and `createContainer.sh`,
+   and, if --execute is set, runs the build script to produce a
+   Singularity image file (.sif).
+"""
 import logging
 from typing import Optional
 from pathlib import Path
@@ -25,33 +39,46 @@ def fremake_run(yamlfile:str, platform:str, target:str,
                 verbose: Optional[bool] = None,
                 force_checkout: Optional[bool] = False):
     """
-    Runs all of fre make code
+    `fremake_run` runs all `fre make` sub-commands in sequence to produce a model executable
+    (bare-metal) or a container image.
 
-    :param yamlfile: Model compile YAML file
+    :param yamlfile: is the path to the model YAML file (e.g. am5.yaml).
     :type yamlfile: str
-    :param platform: FRE platform; defined in the platforms yaml
-                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
-    :type platform: str
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
-    :type target: str
-    :param nparallel: Number of concurrent model builds (default 1)
+    :param platform: is one or more `FRE` platform strings as defined in platforms.yaml
+                     (e.g. ncrc5.intel23).
+    :type platform: tuple[str]
+    :param target: is one or more mkmf target strings (e.g. debug-openmp, repro-openmp, prod-openmp).
+    :type target: tuple[str]
+    :param nparallel: is the number of compile.sh scripts to execute concurrently when
+                      `execute` is True (bare-metal only).  Defaults to 1.
     :type nparallel: int
-    :param makejobs: Number of jobs to run simultaneously; used for parallelism with make (default 4)
+    :param makejobs: is the number of Makefile recipes to run simultaneously, passed to
+                     make -j.  Defaults to 4.
     :type makejobs: int
-    :param gitjobs: Number of jobs to run simultaneously; used for parallelism with
-                    recursive cloning with checking out source code (default 4)
+    :param gitjobs: is the number of git submodules to clone simultaneously, passed to
+                    git clone --jobs inside checkout.sh.  Defaults to 4.
     :type gitjobs: int
-    :param no_parallel_checkout: Use this option if you do not want a parallel checkout
-    :type no_parallel_checkout: bool
-    :param no_format_transfer: Skip the container format conversion to a .sif file
-    :type no_format_transfer: bool
-    :param execute: Run the created compile script or dockerfile to create a model executable
-                    or container
-    :type execute: bool
-    :param force_checkout: Re-create the checkout script if changes were made to configurations
-    :type force_checkout: bool
-    :param verbose: Increase verbosity output
-    :type verbose: bool
+    :param no_parallel_checkout: is a flag where if True, clone source repositories sequentially
+                                 Defaults to False to enable parallel checkout for bare-metal builds.
+                                 Only sequential checkouts are available for container builds.
+    :type no_parallel_checkout: bool, optional
+    :param no_format_transfer: is a flag where if True, skip the Docker-to-Singularity (.sif)
+                               format conversion in createContainer.sh.   Defaults to False.
+    :type no_format_transfer: bool, optional
+    :param execute: is a flag where if True, execute checkout.sh and compile.sh (bare-metal)
+                    or createContainer.sh (container) immediately after generation.  
+                    Defaults to False.
+    :type execute: bool, optional
+    :param verbose: is a flag where if True, set logger level to DEBUG for detailed output.  
+                    Defaults to False and sets logger level to INFO.
+    :type verbose: bool, optional
+    :param force_checkout: is a flag where if True, for bare-metal: rename existing
+                           `compile.sh` before regenerating.  For container: remove
+                           the existing `Dockerfile` before regenerating.  Defaults
+                           to False.
+    :type force_checkout: bool, optional
+
+    :raises ValueError: If a specified platform does not exist in platforms.yaml.
     """
 #    if verbose:
 #        fre_logger.setLevel(level = logging.DEBUG)
