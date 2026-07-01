@@ -2,14 +2,15 @@
 Create_docker_script contains one method called dockerfile_create to 
 to generate a Dockerfile and an accompanying createContainer.sh script to build container images.  
 
-The Dockerfile uses a two-stage build:
+A two-stage build is recommended:
 
-1. Build stage — starts from the base container image (containerBuild in platforms.yaml),
+1. Build stage — starts from the base container image (containerBase in platforms.yaml),
    copies in the `checkout.sh` and `Makefile` that were
    staged under tmp/[platform]/ by `fre make checkout-script` and
    `fre make makefile`, runs `mkmf` and `make` to compile the model.
 2. Runtime stage — copies the compiled executable and its runtime dependencies
-   into a leaner second base image (containerBase2 in platforms.yaml).
+   into a leaner second base image (containerBase2 in platforms.yaml), and removes
+   the Intel compiler used in the Build stage.
 
 createContainer.sh builds the container image and, unless --no-format-transfer
 is specified, converts it to a Singularity Image File (.sif) that can be
@@ -67,7 +68,7 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
     :raises ValueError: If a specified platform does not exist in platforms.yaml.
 
     .. note:: If building the container image on GFDL's RDHPCS GAEA with the Podman
-              container engine, please submit a GFDL helpdesk ticket to request Podman access
+              container engine, please submit a GFDL servicedesk ticket to request Podman access
               before running this command.
     """
 

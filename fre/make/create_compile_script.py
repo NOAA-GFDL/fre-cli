@@ -52,10 +52,8 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
     Generates the compile.sh script for each bare-metal platform and target combination, and
     optionally executes compile.sh to compile a model executable.
 
-    For each bare-metal platform in the platform yaml, a compile.sh is written to
-    [modelRoot]/[experiment]/[platform]-[target]/exec/.  Container platforms are
-    silently skipped here; their compilation is handled by the Dockerfile produced from
-    the `dockerfile_create` method.
+    For each bare-metal platform-target combination, a compile.sh script is written to
+    [modelRoot]/[experiment]/[platform]-[target]/exec/.  
 
     :param yamlfile: is the path to the model YAML file (e.g. am5.yaml). 
     :type yamlfile: str

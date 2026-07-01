@@ -1,11 +1,11 @@
 """
 Create_checkout_script provides methods to generate a checkout.sh script from a YAML configuration
 file.  Checkout.sh git clones all component source repositories listed under the
-src key of the compile YAML.
+src key of the compile.yaml.
 
 The method checkout_create is the entry point called by fre make checkout-script and
-fre make all.  Checkout_create calls baremetal_checkout_write for a bare-metal platform or 
-container_checkout_write for a container platform to write checkout.sh.
+fre make all.  Checkout_create calls baremetal_checkout_write for a bare-metal build or 
+container_checkout_write for a container build to write checkout.sh.
 """
 import shutil
 from pathlib import Path
@@ -76,7 +76,8 @@ def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir:
                        specifications (source repositories, experiment name, etc.).
     :type model_yaml: yamlfre.freyaml
     :param src_dir: is the source-code path inside the running container where repositories will
-                    be cloned.  Defined by modelRoot in platforms.yaml.
+                    be cloned.   Set to [modelRoot]/[experiment]/src where modelRoot is defined 
+                    in platforms.yaml.
     :type src_dir: str
     :param tmp_dir: is the local temporary directory on the host (outside the container) where
                     checkout.sh is staged before being COPYed into the image.
@@ -109,7 +110,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     :type target: tuple[str]
     :param no_parallel_checkout: is a flag where if True, git clone component repositories sequentially.  
                                  Defaults to False to enable parallel checkout for bare-metal builds; 
-                                 Is not used for container builds
+                                 Option will be removed for container builds in the future.
     :type no_parallel_checkout: bool, optional
     :param njobs: is the number of git submodules to fetch simultaneously, passed to
                   git clone --jobs.  Defaults to 4.

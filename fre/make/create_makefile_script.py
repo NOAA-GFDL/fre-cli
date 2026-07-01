@@ -1,5 +1,5 @@
 """
-create_makefile_script contains methods to generate the top-level Makefile used for model compilation.
+Create_makefile_script contains methods to generate the top-level Makefile used for model compilation.
 makefile_create is the entry point called by fre make makefile and by fre make all.
 
 The top-level Makefile is outputted to:
@@ -73,8 +73,8 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
 
        - Container build — list library names under container_addlibs in
          compile.yaml (e.g. container_addlibs: ['darcy']).  A linkline.sh
-         script, generated alongside the Makefile, locates the libraries inside
-         the container and resolves the  -L / -l flags at container image build time.
+         script, generated alongside the Makefile, locates the spack-built libraries
+         inside the container and resolves the  -L / -l flags at container image build time.
 
        - Bare-metal build — provide full linker flags under baremetal_linkerflags in compile.yaml
          (e.g. baremetal_linkerflags: ["-L/path/to/libs -ldarcy"]).  These flags

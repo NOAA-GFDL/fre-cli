@@ -72,7 +72,7 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     :param verbose: is a flag where if True, set logger level to DEBUG for detailed output.  
                     Defaults to False and sets logger level to INFO.
     :type verbose: bool, optional
-    :param force_checkout: is a flag where if True, for bare-metal: remove existing
+    :param force_checkout: is a flag where if True, for bare-metal: rename existing
                            `compile.sh` before regenerating.  For container: remove
                            the existing `Dockerfile` before regenerating.  Defaults
                            to False.

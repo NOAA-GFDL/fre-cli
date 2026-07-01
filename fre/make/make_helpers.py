@@ -25,8 +25,7 @@ def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str 
                        filename; unused otherwise.
     :type model_root: str, optional
 
-    :raises ValueError: If container_flag is False and the resolved template path
-                        does not exist on the host filesystem.
+    :raises ValueError: If the resolved template path does not exist on the host filesystem when container_flag is False.
 
     :return: a resolved full path to the mkmf template file.
     :rtype: str
