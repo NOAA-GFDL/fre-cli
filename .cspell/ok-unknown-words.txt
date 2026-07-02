@@ -552,6 +552,7 @@ validatefail
 variablescan
 vardict
 varlist
+VARNAME
 varnames
 varsfre
 varsize
