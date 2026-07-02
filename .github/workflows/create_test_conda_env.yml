@@ -53,8 +53,7 @@ jobs:
           conda update -y --all --override-channels -c noaa-gfdl
 
           echo "adding conda lib path to LD_LIBRARY_PATH to resolve shared library conflicts"
-          export LD_LIBRARY_PATH="$CONDA_PREFIX/lib:$LD_LIBRARY_PATH"
-          echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
       - name: Create fre-cli Environment
         run: |
