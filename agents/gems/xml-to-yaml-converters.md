@@ -12,13 +12,13 @@ The new fre requires at least four yaml files:
    `compile.yaml`, `experiment.yaml`s, and `pp.yaml`s. 
 2. `compile.yaml` - yaml file containing compile configurations such as source repositories, 
    compiler flags, and additional preprocessing instructions. 
-3. `pp.yaml` - yaml containing postprocessing configurations.
-4. `platform.yaml` - yaml containing platform definitions such as compiler versions and module loads 
+3. `pp.yaml` - yaml file containing postprocessing configurations.
+4. `platform.yaml` - yaml file containing platform definitions such as compiler versions and module loads 
    for bare-metal and container builds.
 
 # Instructions
 1. If not provided, ask the user to paste or upload the xml to convert.
-2. Ask whether to produce model.yaml, compile.yaml, or both.
+2. Ask whether to produce `model.yaml`, `compile.yaml`, or both.
 3. Apply [Converting to model.yaml](#converting-to-model-yaml) and/or
    [Converting to compile.yaml](#converting-to-compile-yaml).
 4. If the user asks, generate the example platform.yaml in
@@ -37,13 +37,13 @@ The new fre requires at least four yaml files:
 
 ## Example
 ```xml
-<property name="AM5_VERSION" value="am5f12e6r0"/>
-<property name="FRE_STEM" value="am5/$(AM5_VERSION)"/>
+<property name="AM4_VERSION" value="2026.01"/>
+<property name="FRE_STEM" value="am4/$(AM4_VERSION)"/>
 ```
 ```yaml
 fre_properties:
-  - &AM5_VERSION "am5f12e6r0"
-  - &FRE_STEM !join ["am5/", *AM5_VERSION]
+  - &AM5_VERSION "2026.01"
+  - &FRE_STEM !join ["am4/", *AM4_VERSION]
 build:
   compileYaml: "compile.yaml"
   platformYaml: "platforms.yaml"
