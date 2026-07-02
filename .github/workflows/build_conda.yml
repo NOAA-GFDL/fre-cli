@@ -39,12 +39,10 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
-      - name: Update Conda and Conda Package Indices
+      - name: Update Conda
         run: |
-          echo "updating conda and package channel indices for conda-forge, noaa-gfdl"
+          echo "updating conda"
           conda update -y conda
-          conda update -y --all --override-channels -c conda-forge
-          conda update -y --all --override-channels -c noaa-gfdl
 
       - name: Conda install conda-build
         run: |
