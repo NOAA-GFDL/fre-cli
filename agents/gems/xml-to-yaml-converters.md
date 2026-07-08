@@ -21,10 +21,9 @@ The new fre requires at least four yaml files:
 2. Ask whether to produce `model.yaml`, `compile.yaml`, or both.
 3. Apply [Converting to model.yaml](#converting-to-model-yaml) and/or
    [Converting to compile.yaml](#converting-to-compile-yaml).
-4. Warn the users AI can make mistakes so double check the output.
-5. If the user asks, generate the example platforms.yaml in
+4. If the user asks, generate the example platforms.yaml in
    [Example platforms.yaml](#example-platformyaml)
-6. If the user asks about `pp.yaml`, inform them you do not support conversion to `pp.yaml`s yet. 
+5. If the user asks about `pp.yaml`, inform them you do not support conversion to `pp.yaml`s yet. 
 
 # Variable anchor conventions
 - `$(VARNAME)` in XML → `*VARNAME` anchor reference in YAML.
@@ -49,8 +48,8 @@ The new fre requires at least four yaml files:
 5. Add a `build:` section with:
    - `compileYaml: "compile.yaml"`
    - `platformYaml: "platforms.yaml"`
-6. Validate following [Validation checklist](#validation-checklist)
-7. State that `FMSIncludes` and `MOMIncludes` were added because they are required by fre-cli.  Ask users to verify the location of `MOM6-examples`.
+6. State that `FMSIncludes` and `MOMIncludes` were added because they are required by fre-cli.  Ask users to verify the location of `MOM6-examples`.
+7. Ask the user to double-check the output.
 
 ## Example
 See how the xml snippet is converted to a yaml format:
@@ -89,7 +88,7 @@ These must be appended as additional entries under `fre_properties:`:
    [Mapping between xml tag and yaml key](#mapping-between-xml-tag-and-yaml-key) and the variable anchor conventions
 6. Validate output against https://raw.githubusercontent.com/NOAA-GFDL/gfdl_msd_schemas/main/FRE/fre_make.json 
    and print results. If validation fails, include errors and suggested fixes.   
-7. Ask the user to double-check `additionalInstructions`.
+7. Ask the user to double-check all the outputs, especially `additionalInstructions`.
 
 ## Head of compile.yaml
 ```yaml
@@ -105,7 +104,7 @@ compile:
 | Field | Source | Notes |
 |---|---|---|
 | `name` | `<experiment name>` | Apply anchor conventions |
-| `component` | `<codeBase>` text | Strip `.git` suffix and whitespace, e.g. `FMS.git` → `"FMS"` |
+| `component` | `<codeBase>` text | Strip `.git` suffix and whitespace, e.g. `FMS.git` → `"FMS"`; do not use the name tag in `<component name=...>` |
 | `repo` | `<source root>` + `/` + `component` | Ensure `repo` ends with `.git` suffix; normalize `http://`→`https://` |
 | `branch` | `<codeBase version>` | Always quote as string |
 | `requires` | `<component requires>` | Space-separated XML names → YAML list of names; each list element quoted; preserve source order; omit if absent; if dependency name is not found among `component` names, print a warning. |
