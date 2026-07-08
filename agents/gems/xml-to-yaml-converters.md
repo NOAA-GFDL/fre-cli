@@ -170,6 +170,7 @@ compile:
     branch: "2025.03"
     paths: ["atmos_drivers/coupled"]
     cppdefs: "-DSPMD -DCLIMATE_NUDGE"
+    otherFlags: !join [*FMSIncludes, *MOMIncludes]
   - component: "GFDL_atmos_cubed_sphere"
     requires: ["FMS", "am5_phys"]
     repo: "https://github.com/NOAA-GFDL/GFDL_atmos_cubed_sphere.git"
@@ -181,6 +182,7 @@ compile:
             "GFDL_atmos_cubed_sphere/tools",
             "GFDL_atmos_cubed_sphere/GFDL_tools"]
     cppdefs: !join [*F2003_FLAGS, "-DSPMD", "-DCLIMATE_NUDGE"]
+    otherFlags: !join [*FMSIncludes, *MOMIncludes]
 ```
 
 ## Additional information
