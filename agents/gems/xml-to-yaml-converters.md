@@ -21,7 +21,8 @@ The new fre requires at least four yaml files:
 2. Ask whether to produce `model.yaml`, `compile.yaml`, or both.
 3. Apply [Converting to model.yaml](#converting-to-model-yaml) and/or
    [Converting to compile.yaml](#converting-to-compile-yaml).
-4. If the user asks, generate the example platforms.yaml in
+4. Warn the users AI can make mistakes so double check the output.
+5. If the user asks, generate the example platforms.yaml in
   [Example platforms.yaml](#example-platformyaml)
 
 # Variable anchor conventions
@@ -48,7 +49,7 @@ The new fre requires at least four yaml files:
    - `compileYaml: "compile.yaml"`
    - `platformYaml: "platforms.yaml"`
 6. Validate following [Validation checklist](#validation-checklist)
-7. State that `FMSIncludes` and `MOMIncludes` were added because they are required by fre-cli.
+7. State that `FMSIncludes` and `MOMIncludes` were added because they are required by fre-cli.  Ask users to verify the location of `MOM6-examples`.
 
 ## Example
 See how the xml snippet is converted to a yaml format:
@@ -84,9 +85,9 @@ These must be appended as additional entries under `fre_properties:`:
 2. Locate the selected `<experiment>` in the XML.  This `<experiment>` will be converted to the yaml format.
 3. Start `compile.yaml` using the structure in [Head of compile.yaml](#head-of-compileyaml).
 4. Convert each `<component>` in the selected `<experiment>` into one `src` list item following 
-   [Mapping between xml tag and yaml key](#mapping-between-xml-tag-and-yaml-key) and the variable anchor conventions.
-5. Validate output against https://raw.githubusercontent.com/NOAA-GFDL/gfdl_msd_schemas/main/FRE/fre_make.json 
-   and print results. If validation fails, include errors and suggested fixes.
+   [Mapping between xml tag and yaml key](#mapping-between-xml-tag-and-yaml-key) and the variable anchor conventions
+6. Validate output against https://raw.githubusercontent.com/NOAA-GFDL/gfdl_msd_schemas/main/FRE/fre_make.json 
+   and print results. If validation fails, include errors and suggested fixes.   
 7. Ask the user to double-check `additionalInstructions`.
 
 ## Head of compile.yaml
@@ -106,11 +107,12 @@ compile:
 | `component` | `<codeBase>` text | Strip `.git` suffix and whitespace, e.g. `FMS.git` → `"FMS"` |
 | `repo` | `<source root>` + `/` + `component` | Ensure `repo` ends with `.git` suffix; normalize `http://`→`https://` |
 | `branch` | `<codeBase version>` | Always quote as string |
-| `requires` | `<component requires>` | Space-separated XML names → YAML list of names; each list element quoted; preserve source order; omit if absent |
+| `requires` | `<component requires>` | Space-separated XML names → YAML list of names; each list element quoted; preserve source order; omit if absent; if dependency name is not found among `component` names, print a warning. |
 | `paths` | `<component paths>` | YAML list with each list element quoted; expand `{a,b,c}` brace notation into separate entries; glob patterns kept as-is; omit if absent |
 | `cppdefs` | `<cppDefs>` (incl. CDATA) | Apply anchor conventions; omit if absent |
 | `makeOverrides` | `<makeOverrides>` text | Preserve exactly; use single quotes if it contains `"`; omit if absent |
 | `doF90Cpp` | `<compile doF90Cpp>` | `"yes"` → `true`; omit otherwise |
+| `otherFlags` | no xml equivalent | mandatory field, if `requires` includes `ocean` or `MOM6`, put `!join [*FMSIncludes, *MOMIncludes]`; else put `*FMSIncludes`
 | `additionalInstructions` | `<source><csh><![CDATA[...]]>` | `!join` list split at newlines (keep each Bash command intact), each line suffixed `"\n"`, omit if absent |
 
 `additionalInstructions` example:
