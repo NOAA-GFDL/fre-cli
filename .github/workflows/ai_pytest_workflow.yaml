@@ -9,11 +9,6 @@ on:
 jobs:
   ai-pytest-check:
     runs-on: ubuntu-latest
-    
-    # Required for conda-incubator to work correctly in the runner
-    defaults:
-      run:
-        shell: bash -el {0} 
 
     steps:
       - name: Checkout repository
@@ -21,33 +16,27 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set up Conda environment
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          miniforge-version: latest
-          channels: conda-forge,noaa-gfdl
-          python-version: 3.14
-          conda-remove-defaults: true
-          environment-file: environment.yml
-          activate-environment: fre-cli
-
-      - name: Install fre-cli (Developer Style)
+      - name: Fetch recent workflow logs from main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Upgrade pip and install standard test requirements
-          python -m pip install --upgrade pip
-          pip install pytest
+          # Get the ID of the most recent workflow run on the main branch.
+          # Note: If you want logs from a *specific* workflow, add `--workflow "Your Workflow Name"` to this command.
+          RUN_ID=$(gh run list --branch main --limit 1 --json databaseId --jq '.[0].databaseId')
           
-          # Editable pip install as requested
-          pip install -e .
-
-      - name: Run Pytest and capture output
-        run: |
-          # Run pytest and pipe output to a file. 
-          # Using `|| true` ensures the workflow continues even if tests fail/warn.
-          pytest > pytest_output.log 2>&1 || true
+          if [ -z "$RUN_ID" ]; then
+            echo "No recent runs found on the main branch."
+            exit 1
+          fi
           
-          echo "Captured Pytest Output:"
-          cat pytest_output.log
+          echo "Fetching logs for Run ID: $RUN_ID"
+          
+          # Download the logs and pipe output to a file. 
+          # Using `|| true` ensures the workflow continues even if the command has a hiccup.
+          gh run view $RUN_ID --log > pytest_output.log || true
+          
+          echo "Captured Logs Preview:"
+          head -n 20 pytest_output.log
 
       - name: Setup GitHub Copilot CLI
         env:
@@ -66,12 +55,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Read the pytest output into a variable
-          # You might want to filter this with grep if the log is too long for the prompt limit
-          TEST_OUTPUT=$(cat pytest_output.log | grep -B 5 -A 5 'warn')
+          # Filtering with grep for warnings/errors (case-insensitive) to stay within the prompt limit
+          TEST_OUTPUT=$(cat pytest_output.log | grep -i -E -B 5 -A 5 'warn|error|fail')
           
-          echo "Feeding pytest output to Copilot..."
+          echo "Feeding workflow logs to Copilot..."
           
           # Pass the prompt and the context to Copilot
           # Note: `gh copilot suggest` is usually interactive, but we feed it as a single string here
-          gh copilot --prompt "Fix these warnings/errors from pytest: \n\n ${TEST_OUTPUT}" --add-dir "${PWD}" --allow-all --attachment pytest_output.log --attachment .github/copilot-instructions.md --model 'Claude Sonnet 4.6' --mode 'autopilot'
-          
+          gh copilot --prompt "Fix these warnings/errors from the recent test run: \n\n ${TEST_OUTPUT}" --add-dir "${PWD}" --allow-all --attachment pytest_output.log --attachment .github/copilot-instructions.md --model 'Claude Sonnet 4.6' --mode 'autopilot'
