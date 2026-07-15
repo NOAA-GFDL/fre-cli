@@ -59,4 +59,4 @@ jobs:
           
           # Pass the prompt and the context to Copilot
           # Note: `gh copilot suggest` is usually interactive, but we feed it as a single string here
-          gh copilot --prompt "Fix these warnings/errors from the recent test run: \n\n ${TEST_OUTPUT}" --add-dir "${PWD}" --allow-all --attachment pytest_output.log --attachment .github/copilot-instructions.md --model 'Claude Sonnet 4.6' --mode 'autopilot'
+          gh copilot --prompt "The following warnings and errors come from pytest_output.log. Fix these warnings/errors from the recent test run: \n\n ${TEST_OUTPUT}" --add-dir "${PWD}" --allow-all --model 'Claude Sonnet 4.6' --mode 'autopilot'
