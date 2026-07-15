@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Set up Conda environment
         uses: conda-incubator/setup-miniconda@v3
@@ -26,8 +28,8 @@ jobs:
           channels: conda-forge,noaa-gfdl
           python-version: 3.14
           conda-remove-defaults: true
-          environment-file: environment.yaml
-          activate-environment: fre-cli-dev
+          environment-file: environment.yml
+          activate-environment: fre-cli
 
       - name: Install fre-cli (Developer Style)
         run: |
