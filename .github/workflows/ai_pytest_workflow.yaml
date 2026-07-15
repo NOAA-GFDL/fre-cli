@@ -43,12 +43,9 @@ jobs:
           # A token is required to authenticate the GitHub CLI extension
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # The GitHub CLI (gh) is pre-installed on standard Ubuntu runners.
-          # We install the official Copilot extension here.
-          gh extension install github/gh-copilot
           
-          echo "Testing Copilot Help Command:"
-          gh copilot -- --help
+          echo "Testing Copilot command"
+          gh copilot
 
       - name: Query Copilot for Fixes
         env:
