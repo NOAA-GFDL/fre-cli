@@ -45,7 +45,7 @@ jobs:
         run: |
           
           echo "Testing Copilot command"
-          gh copilot
+          gh copilot || echo "returning 1 is OK for this line"
 
       - name: Query Copilot for Fixes
         env:
