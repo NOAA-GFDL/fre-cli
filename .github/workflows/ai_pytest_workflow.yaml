@@ -22,8 +22,11 @@ jobs:
       - name: Set up Conda environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-update-conda: true
-          python-version: '3.10' # Adjust based on fre-cli's requirements
+          miniforge-version: latest
+          channels: conda-forge,noaa-gfdl
+          python-version: 3.14
+          conda-remove-defaults: true
+          environment-file: environment.yaml
           activate-environment: fre-cli-dev
 
       - name: Install fre-cli (Developer Style)
