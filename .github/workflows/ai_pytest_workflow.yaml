@@ -59,7 +59,7 @@ jobs:
           gh extension install github/gh-copilot
           
           echo "Testing Copilot Help Command:"
-          gh copilot --help
+          gh copilot -- --help
 
       - name: Query Copilot for Fixes
         env:
@@ -67,10 +67,11 @@ jobs:
         run: |
           # Read the pytest output into a variable
           # You might want to filter this with grep if the log is too long for the prompt limit
-          TEST_OUTPUT=$(cat pytest_output.log)
+          TEST_OUTPUT=$(cat pytest_output.log | grep -B 5 -A 5 'warn')
           
           echo "Feeding pytest output to Copilot..."
           
           # Pass the prompt and the context to Copilot
           # Note: `gh copilot suggest` is usually interactive, but we feed it as a single string here
-          gh copilot suggest -t shell "Fix these warnings/errors from pytest: $TEST_OUTPUT"
+          gh copilot --prompt "Fix these warnings/errors from pytest: \n\n ${TEST_OUTPUT}" --add-dir "${PWD}" --allow-all --attachment pytest_output.log --attachment .github/copilot-instructions.md --model 'Claude Sonnet 4.6' --mode 'autopilot'
+          
