@@ -51,10 +51,10 @@ experiments:
       - ''
 
   - name: "ESM4_TOAR_2014climo_2050ozone_v2"
+    settings: "pp_yamls/settings.yaml"
     grid_yaml:
       - "grid_yamls/TEST_grids.yaml"
     pp:
-      - "pp_yamls/settings.yaml"
       - "pp_yamls/pp.yaml"
     cmor:
       - "cmor_yamls/cmor.yaml"
