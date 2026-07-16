@@ -85,7 +85,7 @@ def list(library_directory):
 @click.option("--output-yaml", type=str, required=True, help="""
   Name of the output yaml file.  A yaml file listing the paths to all the
   generated images will be generated at the end of the run to the output-directory.
-"""
+""")
 @click.option("--experiment-yaml", type=str, required=True, help="""
   Path to the experiment yaml file containing the configurations required by the 
   user-analysis-script plug-in.  Configurations must be specified under the key
