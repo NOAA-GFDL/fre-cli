@@ -1,5 +1,8 @@
 name: Update Tag Version References
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     tags:
@@ -14,7 +17,7 @@ jobs:
 
       - name: Fetch tags
         run: |
-          git fetch --tags origin
+          git fetch --tags --force origin
  
       - name: Get the new tag
         id: get_tag

@@ -88,6 +88,18 @@ def test_yaml_ex_exists():
     """
     assert Path(YAML_EX).exists()
 
+## UNIT TESTS ##
+def test_chunk_to_legacy():
+    """
+    Test conversion of ISO8601 durations to Bronx-style chunk
+    frequencies, including multi-digit values
+    """
+    assert rmp.chunk_to_legacy("P1Y") == "1yr"
+    assert rmp.chunk_to_legacy("P10Y") == "10yr"
+    assert rmp.chunk_to_legacy("P5M") == "5mo"
+    assert rmp.chunk_to_legacy("P12M") == "12mo"
+    assert rmp.chunk_to_legacy("P1D") == "error"
+
 ## CREATE TEST FILES ##
 def test_create_ncfile_with_ncgen_cdl():
     """

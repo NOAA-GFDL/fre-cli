@@ -1,12 +1,17 @@
 name: create_test_conda_env
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   pull_request:
     branches:
-
   push:
     branches:
       - main
+  schedule:
+    # Runs at 00:00 UTC every day (testing with 17:00 UTC == 1 PM eastern)
+    - cron: '10 17 * * *'
 
 # cancel running jobs if theres a newer push
 concurrency:
@@ -42,12 +47,10 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
-      - name: Update Conda and Channel Package Indices
+      - name: Update Conda
         run: |
-          echo "updating conda and package channel indices for conda-forge, noaa-gfdl"
+          echo "updating conda"
           conda update -y conda
-          conda update -y --all --override-channels -c conda-forge
-          conda update -y --all --override-channels -c noaa-gfdl
 
       - name: Create fre-cli Environment
         run: |

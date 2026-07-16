@@ -11,9 +11,9 @@ dependencies:
   - conda-forge::cdo>=2
   - conda-forge::cftime
   - conda-forge::click>=8.2
-  - conda-forge::cmor>=3.14
   - conda-forge::cylc-flow>=8.2
   - conda-forge::cylc-rose
+  - conda-forge::git
   - conda-forge::jinja2>=3
   - conda-forge::jsonschema
   - conda-forge::metomi-rose
