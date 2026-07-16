@@ -75,7 +75,7 @@ def change_directory(new_path: str):
     :type new_path: str
     """
     ## Get current working directory
-    original_path = os.getcwd()
+    original_path = Path.cwd()
 
     ## Change into path passed
     os.chdir(new_path)

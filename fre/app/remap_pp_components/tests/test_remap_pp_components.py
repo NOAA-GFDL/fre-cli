@@ -7,9 +7,9 @@ import pytest
 import fre.app.remap_pp_components.remap_pp_components as rmp
 
 # Test paths
-CWD = os.getcwd()
-TEST_DIR = Path(f"{CWD}/fre/app/remap_pp_components/tests")
-DATA_DIR = Path(f"{CWD}/fre/app/remap_pp_components/tests/test-data")
+CWD = Path.cwd()
+TEST_DIR = CWD / "fre" / "app" / "remap_pp_components" / "tests"
+DATA_DIR = TEST_DIR / "test-data"
 
 # YAML configuration example file
 YAML_EX = f"{DATA_DIR}/yaml_ex.yaml"

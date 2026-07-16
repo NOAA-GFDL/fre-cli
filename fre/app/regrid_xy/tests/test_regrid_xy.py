@@ -2,7 +2,6 @@
 tests for fre.app.regrid_xy submodule
 '''
 
-import os
 from pathlib import Path
 import shutil
 from shutil import which
@@ -20,13 +19,13 @@ HAVE_FREGRID = WHICH_FREGRID is not None and WHICH_FREGRID.split('/')[-1] == 'fr
 nxy = 20
 date = "20250729"
 
-curr_dir = os.getcwd()
-yamlfile = Path(curr_dir)/"test_yaml.yaml"
-grid_spec_tar = Path(curr_dir)/"grid_spec.tar"
-input_dir = Path(curr_dir)/"test_inputs"
-output_dir = Path(curr_dir)/"test_outputs"
-remap_dir= Path(curr_dir)/"test_remap"
-work_dir = Path(curr_dir)/"test_work"
+curr_dir = Path.cwd()
+yamlfile = curr_dir / "test_yaml.yaml"
+grid_spec_tar = curr_dir / "grid_spec.tar"
+input_dir = curr_dir / "test_inputs"
+output_dir = curr_dir / "test_outputs"
+remap_dir = curr_dir / "test_remap"
+work_dir = curr_dir / "test_work"
 
 input_files             = [{"history_file":"pemberley"}, {"history_file":"longbourn"}]
 input_files_donotregrid = [{"history_file":"nope"}]
