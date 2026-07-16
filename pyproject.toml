@@ -25,7 +25,6 @@ dependencies = [
         'cdo',
         'cftime',
         'click',
-        'cmor',
         'cylc-flow',
         'cylc-rose',
         'jsonschema',
