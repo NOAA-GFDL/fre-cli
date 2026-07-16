@@ -4,6 +4,7 @@
 '''
 
 import os
+from pathlib import Path
 
 class container():
     """
@@ -259,4 +260,4 @@ class container():
         self.userScriptFile.writelines(self.userScript)
         self.userScriptFile.close()
         os.chmod("createContainer.sh", 0o744)
-        self.userScriptPath = os.getcwd()+"/createContainer.sh"
+        self.userScriptPath = str(Path.cwd()) + "/createContainer.sh"

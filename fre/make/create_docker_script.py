@@ -12,6 +12,7 @@ executable cannot be modified.
 import logging
 import os
 import subprocess
+from pathlib import Path
 
 import fre.yamltools.combine_yamls_script as cy
 from fre.make.make_helpers import get_mktemplate_path
@@ -111,7 +112,7 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
                 dockerBuild.writeDockerfileMkmf(c)
 
             dockerBuild.writeRunscript(platform["RUNenv"], platform["containerRun"], tmpDir+"/execrunscript.sh")
-            currDir = os.getcwd()
+            currDir = str(Path.cwd())
 
             # create build script for container
             dockerBuild.createBuildScript(platform, skip_format_transfer = no_format_transfer)
