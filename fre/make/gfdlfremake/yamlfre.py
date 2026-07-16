@@ -5,6 +5,9 @@ import yaml
 from jsonschema import validate, ValidationError, SchemaError
 from . import platformfre
 
+import logging
+fre_logger = logging.getLogger(__name__)
+
 def parseCompile(fname,v):
     """
     Brief: Open the yaml file and parse as fremakeYaml
@@ -52,22 +55,19 @@ class compileYaml():
         try:
             self.yaml["src"]
         except:
-            print("You must set a src to specify the sources in modelRoot/"+self.yaml["experiment"]+"\n")
-            raise
+            raise ValueError(f"You must set a src to specify the sources in modelRoot/{self.yaml['experiment']}")
         ## Loop through the src array
         for c in self.yaml['src']:
         ## Check for required component name
             try:
                 c['component']
             except:
-                print("You must set the 'component' name for each src component")
-                raise
+                raise ValueError("You must set the 'component' name for each src component")
             ## Check for required repo url
             try:
                 c['repo']
             except:
-                print("'repo' is missing from the component "+c['component']+" in "+self.yaml["experiment"]+"\n")
-                raise
+                raise ValueError(f"'repo' is missing from the component {c['component']} in {self.yaml['experiment']}")
             # Check for optional branch. Otherwise set it to blank
             try:
                 c['branch']
@@ -116,8 +116,7 @@ class compileYaml():
         try:
             self.yaml
         except:
-            print ("You must initialize the compile YAML object before you try to get the yaml \n")
-            raise
+            raise ValueError("You must initialize the compile YAML object before you try to get the yaml")
         return self.yaml
 
 class freyaml():
@@ -163,7 +162,7 @@ class freyaml():
         schema = json.loads(s)
 
         validate(instance=self.freyaml,schema=schema)
-        print("\nCOMBINED YAML VALID")
+        fre_logger.info(" *** COMBINED YAML VALID ***")
 
     def getCompileYaml(self):
         """

@@ -223,7 +223,7 @@ def test_container_checkout_force_checkout(caplog):
     assert all([Path(f"{mock_checkout}/checkout.sh").exists(),
                 "Checkout script PREVIOUSLY created" in caplog.text,
                 "*** REMOVING CHECKOUT SCRIPT ***" in caplog.text,
-                "Checkout script created in ./tmp" in caplog.text])
+                f"Checkout script created: ./tmp/{CONTAINER_PLATFORM[0]}/checkout.sh" in caplog.text])
 
     # Check for an expected line that should be populating the re-created checkout script
     # Check no parenthesis (no parallel checkouts)
