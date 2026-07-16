@@ -4,7 +4,7 @@
 
 
 <!-- this section seems more general than should be in fre/pp
-# **Frepp Canopy**
+# **fre pp**
 _Brief description of tool group's purpose._
 
 * [Tool Group] Supports:
@@ -47,7 +47,8 @@ etc.
 1. Checkout postprocessing workflow template
 This will clone the postprocessing repository into `/home/$USER/cylc-src/EXPNAME__PLATFORM__TARGET`.
 ```
-module load fre/canopy
+module load cylc
+module load fre/2026.01
 fre pp checkout -e EXPNAME -p PLATFORM -t TARGET
 ```
 
@@ -86,20 +87,9 @@ If you are running postprocessing gaea, you'll need to change the `SITE` variabl
 fre pp install -e EXPNAME -p PLATFORM -t TARGET
 ```
 
-If you are attempting this on gaea, you'll need to make two one-time changes before installing.
-- Currently, `cylc`, `rose`, and `isodatetime` must be in your PATH for new shells. One approach to do this is
-to symlink the fms-user-installed fre-cli cylc/rose/isodatetime scripts into your local `~/bin` directory,
-and then add that `~/bin` directory to your PATH in your `.bashrc` or `.cshrc`. (If you don't do this, Cylc tasks
-will fail complaining those 3 tools are not available.)
-
-```
-cd ~/bin
-ln -s /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli/bin/{cylc,rose,isodatetime} .
-echo 'setenv PATH ${PATH}:~/bin' >> ~/.cshrc
-```
-- Currently, the cylc available on gaea (through `module load cylc` or the `PATH` trick above) does not
-include any global configuration, so you'll need to create a file `~/.cylc/flow/global.cylc` that contains the following.
-If you don't do this, Cylc will use your home directory for the scratch space and rapidly fill your quota.)
+If you are attempting this on gaea, create `~/.cylc/flow/global.cylc` with the following
+configuration before installing. This prevents Cylc from using your home directory for scratch space
+and rapidly filling your quota.
 
 ```
 [install]

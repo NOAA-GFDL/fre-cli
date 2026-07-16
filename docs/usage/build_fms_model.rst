@@ -5,7 +5,7 @@ Through the fre-cli, ``fre make`` can be used to create and run a checkout scrip
 
 Capabilities
 -----------------
-Fremake Canopy Supports:
+``fre make`` supports:
   - multiple target use; ``-t`` flag to define each target (for multiple platform-target combinations)
   - bare-metal build
   - container creation
