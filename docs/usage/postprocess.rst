@@ -73,15 +73,21 @@ Required configuration
    settings:
      history_segment: P1Y
 
-3. Set the date range to postprocess as ISO8601 dates
+3. Set the date range to postprocess as ISO8601 dates (preferred) or four-digit year (YYYY).
 
 .. code-block:: console
 
  postprocess:
    settings:
-     pp_start: 1979-01-01T0000Z
+     pp_start: "1979-01-01T0000Z"
+     pp_stop:  "2020-01-01T0000Z"
 
-     pp_stop: 2020-01-01T0000Z
+ or
+
+ postprocess:
+   settings:
+     pp_start: "1979"
+     pp_stop:  "2020"
 
 Postprocess components
 ----------------------

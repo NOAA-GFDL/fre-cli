@@ -342,12 +342,14 @@ def regrid_xy(yamlfile: str,
 
         # submit fregrid job for each component
         for component in components:
-
-            # skip component if postprocess_on = False
-            if not component["postprocess_on"]:
-                fre_logger.warning(f"postprocess_on=False for {source} in component {component['type']}." \
-                                    "Skipping {source}")
-                continue
+            # If postprocess_on is not defined, it should have the default value of True
+            # If postprocess_on is defined, check for a True or False value
+            if "postprocess_on" in component:
+                # skip component if postprocess_on = False
+                if not component["postprocess_on"]:
+                    fre_logger.warning(f"postprocess_on=False for {source} in component {component['type']}." \
+                                        "Skipping {source}")
+                    continue
 
             # skip component if xyInterp is not set
             if 'xyInterp' not in component:

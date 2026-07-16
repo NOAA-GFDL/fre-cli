@@ -159,6 +159,31 @@ def test_cleanup():
     shutil.rmtree(f"{TEST_DIR}/configure_yaml_out")
     assert not Path(f"{TEST_DIR}/configure_yaml_out").exists()
 
+def test_rose_suite_DO_ANALYSIS():
+    """
+    """
+    rose_suite = metomi.rose.config.ConfigNode()
+    yaml_dict = {
+        "postprocess": {"settings": {"some_setting": "value"}},
+        "directories": {"pp_dir": "/some/path"},
+        "analysis": {
+                     "land-test": {
+                       "required": {
+                         "data_frequency": "mon",
+                         "date_range": ["19800101T0000Z", "20200101T0000Z"]
+                       },
+                       "workflow": {
+                         "components": ["land-test"],
+                         "script_type": "one-shot",
+                         "product": "ts",
+                         "chunk_size": "P1Y"
+                       }
+                     }
+                   }
+        }
+    csy.set_rose_suite(yaml_dict, rose_suite)
+    assert rose_suite.get(['template variables', 'DO_ANALYSIS']).value == 'True'
+
 ## to-do:
 # - mock wrong schema path
 # - any other raises missed
