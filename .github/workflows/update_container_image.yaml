@@ -1,14 +1,15 @@
 name: Build and Push Container Image
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: "noaa-gfdl/fre-cli"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   workflow_dispatch:
   workflow_run:
     workflows: ["publish_conda"]
     types: [completed]
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: "noaa-gfdl/fre-cli"
 
 jobs:
   build-and-push:
