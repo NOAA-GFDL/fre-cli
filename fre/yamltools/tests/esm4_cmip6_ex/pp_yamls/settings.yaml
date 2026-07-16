@@ -14,5 +14,3 @@ postprocess:
     do_timeavgs:        True
     clean_work:         True
     do_atmos_plevel_masking: True
-    do_analysis:        True
-    do_analysis_only:   False

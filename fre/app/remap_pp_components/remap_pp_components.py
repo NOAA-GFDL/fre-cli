@@ -131,9 +131,9 @@ def chunk_to_legacy(iso_dura: str) -> str:
 
     if iso_dura[0]=='P':
         if iso_dura[-1:]=='M':
-            brx_freq=iso_dura[1]+'mo'
+            brx_freq=iso_dura[1:-1]+'mo'
         elif iso_dura[-1:]=='Y':
-            brx_freq=iso_dura[1]+'yr'
+            brx_freq=iso_dura[1:-1]+'yr'
         else:
             brx_freq = 'error'
     else:

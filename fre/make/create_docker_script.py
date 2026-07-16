@@ -120,7 +120,7 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
             fre_logger.setLevel(logging.INFO)
             fre_logger.info("tmpDir created in " + currDir + "/tmp")
             fre_logger.info("Dockerfile created in " + currDir)
-            fre_logger.info("Container build script created at "+dockerBuild.userScriptPath)
+            fre_logger.info("Container build script created in "+dockerBuild.userScriptPath)
             fre_logger.setLevel(former_log_level)
 
             # run the script if option is given
