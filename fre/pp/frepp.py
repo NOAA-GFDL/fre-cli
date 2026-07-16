@@ -1,8 +1,8 @@
 ''' fre pp '''
 
-import click
 import logging
-fre_logger = logging.getLogger(__name__)
+
+import click
 
 #fre tools
 from . import checkout_script
@@ -17,6 +17,9 @@ from . import trigger_script
 from . import status_script
 from . import wrapper_script
 from . import split_netcdf_script
+from . import rename_split_script
+
+fre_logger = logging.getLogger(__name__)
 
 # fre pp
 @click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
@@ -165,19 +168,36 @@ def histval(history,date_string,warn):
 #fre pp split-netcdf-wrapper
 @pp_cli.command()
 @click.option('-i', '--inputdir', required=True,
-              help='Path to a directory in which to search for netcdf files to split. Files matching the pattern in $history-source will be split.')
+              help='Path to a directory in which to search for netcdf '
+                   'files to split. Files matching the pattern in '
+                   '$history-source will be split.')
 @click.option('-o', '--outputdir', required=True,
-             help='Path to a directory to which to write split netcdf files.')
+             help='Path to a directory to which to write split '
+                  'netcdf files.')
 @click.option('-c', '--component', required=False, default=None,
-              help='component specified in yamlfile under postprocess:components. Needs to be the same component that contains the sources:history-file. Conflicts with --split-all-vars.')
+              help='component specified in yamlfile under '
+                   'postprocess:components. Needs to be the same '
+                   'component that contains the '
+                   'sources:history-file. '
+                   'Conflicts with --split-all-vars.')
 @click.option('-s', '--history-source', required=True, default=None,
-              help='history-file specification under postprocess:components:type=component:sources in the fre postprocess config yamlfile. Used to match files in inputdir.')
+              help='history-file specification under '
+                   'postprocess:components:type=component:sources '
+                   'in the fre postprocess config yamlfile. '
+                   'Used to match files in inputdir.')
 @click.option('-y', '--yamlfile', required=False, default=None,
-              help='fre postprocessing .yml file from which to get the variable filtering list under postprocess:components:type=component:variables. Conflicts with --split-all-vars.')
+              help='fre postprocessing .yml file from which to get '
+                   'the variable filtering list under '
+                   'postprocess:components:type=component:variables. '
+                   'Conflicts with --split-all-vars.')
 @click.option('--use-subdirs', '-u', is_flag=True, default=False,
-              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
+              help="Whether to search subdirs underneath $inputdir "
+                   "for netcdf files. Defaults to false. This option "
+                   "is used in flow.cylc when regridding.")
 @click.option('--split-all-vars', '-a', is_flag=True, default=False,
-              help="Whether to ignore other config options and split all vars in the file. Defaults to false. Conflicts with -c, -s and -y options.")
+              help="Whether to ignore other config options and split "
+                   "all vars in the file. Defaults to false. "
+                   "Conflicts with -c, -s and -y options.")
 def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars):
     ''' Splits all netcdf files matching the pattern specified by $history_source in $inputdir
         into files with a single data variable written to $outputdir. If $yamlfile contains
@@ -194,12 +214,18 @@ def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_sub
             fre_logger.error('''Error in split_netcdf_wrapper arg parsing: --split-all-vars was set and one or more of
 mutually exclusive options --component and --yamlfile was also set!
 Either unset --split-all-vars or parse the varlist from the yaml - do not try do do both!''')
-    split_netcdf_script.split_netcdf(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars)
+    split_netcdf_script.split_netcdf(
+        inputdir, outputdir, component, history_source,
+        use_subdirs, yamlfile, split_all_vars
+    )
 
 #fre pp split-netcdf
 @pp_cli.command()
-@click.option('-f', '--file', type = str, required=True, help='path to a netcdf file')
-@click.option('-o', '--outputdir', type = str, required=True, help='path to a directory to which to write single-data-variable output files')
+@click.option('-f', '--file', type = str, required=True,
+              help='path to a netcdf file')
+@click.option('-o', '--outputdir', type = str, required=True,
+              help='path to a directory to which to write '
+                   'single-data-variable output files')
 @click.option('-v', '--variables', type = str, required=True,
               help='''Specifies which variables in $file are split and written to $outputdir.
                      Either a string "all" or a comma-separated string of variable names ("tasmax,tasmin,pr")''')
@@ -220,7 +246,8 @@ def split_netcdf(file, outputdir, variables):
 @pp_cli.command()
 @click.option('--path','-p', required=True, help="Path to postprocessed time-series file")
 def ppval(path):
-    """ Determines an estimated number of timesteps from a postprocessed time-series file's name and run nccheck on it """
+    """ Determines an estimated number of timesteps from a postprocessed
+    time-series file's name and run nccheck on it """
     ppval_script.validate(path)
 
 #fre pp all
@@ -270,3 +297,21 @@ def trigger(experiment, platform, target, time):
     Start postprocessing history files that represent a specific chunk of time
     """
     trigger_script.trigger(experiment, platform, target, time)
+
+# fre pp rename-split
+@pp_cli.command()
+@click.option("-i", "--input-dir", type=str,
+              help="Input directory", required=True)
+@click.option("-o", "--output-dir", type=str,
+              help="Output directory", required=True)
+@click.option("-c", "--component", type=str,
+              help="Component name to process", required=True)
+@click.option("-u", '--use-subdirs', is_flag=True, default=False,
+              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
+@click.option("-d", "--diag-manifest", multiple=True, type=click.Path(exists=True),
+              help="Path to FMS diag manifest associated with the component (history file). Optional, but required when the history file has one timestep and no time bounds. If there are multiple manifests, specify multiple --diag-manifest options.")
+def rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest):
+    """
+    Create per-variable timeseries from shards
+    """
+    rename_split_script.rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest)

@@ -1,11 +1,14 @@
 """
 Test ppval_script
 """
-import pytest
 import re
-from pathlib import Path
-from fre.pp import ppval_script as ppval
 import subprocess
+from pathlib import Path
+
+import pytest
+
+from fre.pp import ppval_script as ppval
+
 
 # Test annual, monthly, daily input files
 # Set example input paths

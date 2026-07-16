@@ -1,10 +1,12 @@
-import os
-from pathlib import Path
-import yaml
-from contextlib import contextmanager
-
 # set up logging
 import logging
+import os
+from contextlib import contextmanager
+from pathlib import Path
+
+import yaml
+
+
 fre_logger = logging.getLogger(__name__)
 
 def get_variables(yml: dict, pp_comp: str) -> dict:
@@ -30,7 +32,9 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
     for component_info in yml["postprocess"]["components"]:
         # if component in yaml not an active pp component, skip
         if component_info.get("type") != pp_comp:
-            fre_logger.info(f'Component in pp yaml config (%s) does not match active pp component (%s). Skipping component remapping ...', component_info.get("type"), pp_comp)
+            fre_logger.info(
+                'Component in pp yaml config (%s) does not match active pp component (%s). '
+                'Skipping component remapping ...', component_info.get("type"), pp_comp)
             continue
 
         # non-static

@@ -1,11 +1,14 @@
 """
 Test fre list platforms
 """
-import pytest
 from pathlib import Path
+
+import pytest
 import yaml
+
 from fre.list_ import list_platforms_script
 from fre.yamltools import combine_yamls_script as cy
+
 
 # SET-UP
 TEST_DIR = Path("fre/make/tests")
@@ -33,7 +36,7 @@ def test_platformyaml_exists():
     ''' Test platforms yaml exists '''
     assert Path(f"{TEST_DIR}/{NM_EXAMPLE}/platforms.yaml").exists()
 
-# Test whole tool 
+# Test whole tool
 def test_platforms_list_correct(caplog):
     ''' Test fre list platforms subtool '''
     list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")

@@ -17,7 +17,6 @@ class MergePPANYamls(ABC):
         Function that will combine model yaml information with
         passed click options name, platform, and target
         """
-        pass
 
     @abstractmethod
     def combine_settings(self, yaml_content_str):
@@ -25,7 +24,6 @@ class MergePPANYamls(ABC):
         Function that will combine settings yaml information
         with output yaml str from combine_model
         """
-        pass
 
     @abstractmethod
     def combine_yamls(self):
@@ -33,7 +31,6 @@ class MergePPANYamls(ABC):
         Function that will combine output yaml str (from merging 
         the model and settings yaml) with pp/experiment yaml information
         """
-        pass
 
     @abstractmethod
     def merge_multiple_yamls(self):
@@ -41,7 +38,6 @@ class MergePPANYamls(ABC):
         Function that will merge multiple yaml dictionaries
         to produce final combined yaml of information
         """
-        pass
 
 # inherited by compile_info_parser
 class MergeCompileYamls(ABC):
@@ -54,7 +50,6 @@ class MergeCompileYamls(ABC):
         Function that will combine model yaml information with
         passed click options name, platform, and target
         """
-        pass
 
     @abstractmethod
     def combine_compile(self):
@@ -62,7 +57,6 @@ class MergeCompileYamls(ABC):
         Function that will combine compile yaml information
         with output yaml str from combine_model
         """
-        pass
 
     @abstractmethod
     def combine_platforms(self):
@@ -70,7 +64,6 @@ class MergeCompileYamls(ABC):
         Function that will combine platform yaml information
         with output yaml str from combine_compile
         """
-        pass
 
 #class ValidateYamls(ABC):
 #    @abstractmethod

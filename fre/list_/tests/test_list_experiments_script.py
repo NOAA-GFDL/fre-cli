@@ -1,11 +1,14 @@
 """
 Test fre list exps
 """
-import pytest
 from pathlib import Path
+
+import pytest
 import yaml
+
 from fre.list_ import list_experiments_script
 from fre.yamltools import helpers
+
 
 # SET-UP
 TEST_DIR = Path("fre/make/tests")
@@ -31,13 +34,18 @@ def test_exp_list(caplog):
                   '   - null_model_2'     ]
     for i in check_out:
         assert i in caplog.text
-        
+
     # make sure the level is INFO
     for record in caplog.records:
         assert record.levelname == "INFO"
 
 # Test validation
-@pytest.mark.skip(reason='cannot validate with current schema at the moment. Current schemas include final "combined" schema to validate compile and pp information. Both of these "clean" the final yaml information for only what is needed. This final combined yaml info does not include the "experiments" section, which is the section being read and parsed for information')
+@pytest.mark.skip(
+    reason='cannot validate with current schema at the moment. Current schemas include final '
+    '"combined" schema to validate compile and pp information. Both of these "clean" the final '
+    'yaml information for only what is needed. This final combined yaml info does not include the '
+    '"experiments" section, which is the section being read and parsed for information'
+)
 def test_yamlvalidate():
     ''' Test yaml is being validated '''
     yamlfilepath = Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")

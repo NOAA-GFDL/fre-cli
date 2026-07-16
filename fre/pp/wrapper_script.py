@@ -23,15 +23,19 @@ from .status_script import status_subtool
 
 fre_logger = logging.getLogger(__name__)
 
-def run_all_fre_pp_steps(experiment = None, platform = None, target = None, config_file = None, branch = None, time = None):
+def run_all_fre_pp_steps(experiment = None, platform = None, target = None,
+                         config_file = None, branch = None, time = None):
     '''
     Wrapper script for all the steps of the fre2 pp infrastructure. 
     
-    Calls config_file, checkout_template, yaml_info, install_subtool, pp_run_subtool, (trigger) and status_subtool in sequence. (trigger) is an optional step. 
+    Calls config_file, checkout_template, yaml_info, install_subtool, pp_run_subtool,
+    (trigger) and status_subtool in sequence. (trigger) is an optional step.
     
-    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
+    :param experiment: One of the postprocessing experiment names from the yaml displayed
+        by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str
-    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
+    :param platform: The location + compiler that was used to run the model
+        (e.g. gfdl.ncrc5-deploy), default None
     :type platform: str
     :param target: Options used for the model compiler (e.g. prod-openmp), default None
     :type target: str
@@ -39,7 +43,8 @@ def run_all_fre_pp_steps(experiment = None, platform = None, target = None, conf
     :type config_file: string
     :param branch: which git branch to pull from, default None
     :type branch: string
-    :param time: The start time of the segment to postprocess, if any. Formatted as a series of integers. For more information, see trigger().
+    :param time: The start time of the segment to postprocess, if any.
+        Formatted as a series of integers. For more information, see trigger().
     :type time: Cylc representation of a time point
     '''
     fre_logger.info('(run_all_fre_pp_steps) config_file path resolving...')

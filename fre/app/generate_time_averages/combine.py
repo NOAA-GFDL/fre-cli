@@ -94,7 +94,7 @@ def combine( root_in_dir: str,
     """
     if frequency not in ["yr", "mon"]:
         raise ValueError(f"Frequency '{frequency}' not recognized or supported")
-    
+
     if frequency == "yr":
         frequency_iso = "P1Y"
     elif frequency == "mon":

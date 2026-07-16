@@ -35,7 +35,8 @@ def catalog_cli():
     help = "Ensure output catalog is strictly compliant with schema")
 @click.pass_context
 def build(context, input_path = None, output_path = None, config = None, filter_realm = None,
-          filter_freq = None, filter_chunk = None, verbose = False, overwrite = False, append = False, slow = False, strict = False):
+          filter_freq = None, filter_chunk = None, verbose = False, overwrite = False,
+          append = False, slow = False, strict = False):
     # pylint: disable=unused-argument
     """ - Generate .csv and .json files for catalog """
     context.forward(gen_intake_gfdl.create_catalog_cli)
@@ -52,7 +53,9 @@ def build(context, input_path = None, output_path = None, config = None, filter_
 @click.pass_context
 def validate(context, json_path, json_template_path, vocab, proper_generation, test_failure):
     # pylint: disable=unused-argument
-    """ - Validate catalogs against controlled vocabulary as provided by particular JSON schemas per vocabulary type (vocabulary validation) OR Validate a catalog against catalog schema template (proper generation checking) """
+    """ - Validate catalogs against controlled vocabulary as provided by particular JSON schemas
+    per vocabulary type (vocabulary validation) OR Validate a catalog against catalog schema
+    template (proper generation checking) """
     context.forward(compval.main)
 
 @catalog_cli.command()

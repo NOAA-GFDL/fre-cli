@@ -5,15 +5,14 @@ Description: Checkout script which accounts for 4 different scenarios:
 3. branch not given, folder exists,
 4. branch given and folder exists
 '''
+import logging
 import os
 import subprocess
 
-import logging
-fre_logger = logging.getLogger(__name__)
-
 from . import make_workflow_name
-
 from ..fre import version as fre_ver
+
+fre_logger = logging.getLogger(__name__)
 
 FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 
@@ -21,7 +20,9 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     """
     Create a directory and checkout the workflow template files from the repo
 
-    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
+    :param experiment: One of the postprocessing experiment names from the
+        yaml displayed by fre list exps -y $yamlfile
+        (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str
     :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
     :type platform: str

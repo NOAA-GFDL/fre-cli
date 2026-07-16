@@ -1,15 +1,20 @@
 ''' fre pp trigger '''
 
-import subprocess
-from . import make_workflow_name
 import logging
+import subprocess
+
+from . import make_workflow_name
+
+
 fre_logger = logging.getLogger(__name__)
 
 def trigger(experiment = None, platform = None, target = None, time = None):
     """
     Trigger the postprocessing tasks for one segment of the history.
     
-    :param experiment: One of the postprocessing experiment names from the yaml displayed by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
+    :param experiment: One of the postprocessing experiment names from the
+        yaml displayed by fre list exps -y $yamlfile
+        (e.g. c96L65_am5f4b4r0_amip), default None
     :type experiment: str
     :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
     :type platform: str
