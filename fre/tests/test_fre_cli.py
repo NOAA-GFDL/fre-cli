@@ -35,11 +35,11 @@ def test_cli_fre_option_dne():
 
 def test_fre_version():
     ''' module import flavor of below cli test '''
-    assert '2026.01.beta1' == fre.version
+    assert '2026.01' == fre.version
 
 def test_cli_fre_version():
     ''' fre --version '''
     result = runner.invoke(fre.fre, args='--version')
-    expected_out = 'fre, version 2026.01.beta1'
+    expected_out = 'fre, version 2026.01'
     assert all( [ result.exit_code == 0,
                   expected_out in result.output ] )
