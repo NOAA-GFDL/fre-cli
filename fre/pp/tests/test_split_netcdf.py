@@ -285,6 +285,42 @@ def test_variable_filtering_bug_fix():
         
         assert actual_vars == expected_vars, f"Expected {expected_vars}, got {actual_vars}"
 
+def test_makedirs_subdir_preexists(tmp_path):
+    '''Regression test: Check that makedirs with exist_ok=True does not raise
+    an error when the output subdirectory already exists before split_netcdf runs.
+
+    Covers the race condition fix: os.mkdir -> os.makedirs(exist_ok=True).
+    '''
+    import numpy as np
+
+    subdir_name = "sub1"
+    history_source = "atmos_daily"
+
+    input_subdir = tmp_path / "input" / subdir_name
+    input_subdir.mkdir(parents=True)
+
+    nc_file = input_subdir / f"00010101.{history_source}.nc"
+    ds = xr.Dataset({"temp": (["time"], np.arange(5, dtype=float))})
+    ds.to_netcdf(str(nc_file))
+
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+    # Pre-create output subdir to simulate race condition
+    (output_dir / subdir_name).mkdir()
+
+    split_netcdf_script.split_netcdf(
+        inputDir=str(tmp_path / "input"),
+        outputDir=str(output_dir),
+        component="atmos",
+        history_source=history_source,
+        use_subdirs=True,
+        yamlfile=None,
+        split_all_vars=True,
+    )
+
+    assert Path(output_dir/subdir_name).exists()
+    assert Path(output_dir/subdir_name).is_dir()
+
 #clean up splitting files
 def test_split_file_cleanup():
     ''' Cleaning up files and dirs created for this set of tests.
