@@ -1,4 +1,18 @@
-"""This module defines the ``fre catalog`` CLI commands."""
+""" This module defines the ``fre catalog`` CLI commands.
+
+It builds catalog CSV and JSON files that form a structured index of datasets and 
+their metadata, allowing analysis tools to discover, query, and load data consistently.
+
+These data catalogs enable data discoverability regardless of the underlying data format 
+(e.g., NetCDF, Zarr). The cataloging ecosystem is composed of three main components:
+
+1. Catalog Specification (JSON): A single file that provides overarching metadata about 
+   the catalog. It supports extensible metadata and identifies how multiple distinct 
+   files can be aggregated into a single cohesive "dataset."
+2. Catalog (CSV): A file that acts as the index for the data collection, providing 
+   the paths to the data files and their associated metadata at a user-defined granularity.
+3. Intake-ESM API: Provides a Pythonic interface to query the catalog's contents and 
+   automatically loads the queried results into an xarray dataset object for analysis."""
 
 import click
 
@@ -9,7 +23,7 @@ from catalogbuilder.scripts import combine_cats
 
 @click.group(help=click.style(" - catalog subcommands", fg=(64,94,213)))
 def catalog_cli():
-    """This command group exposes the ``fre catalog`` subcommands."""
+    """This click command group contains the ``fre catalog`` subcommands."""
 
 
 
@@ -24,9 +38,9 @@ def catalog_cli():
 @click.option('--filter_realm',  nargs = 1)
 @click.option('--filter_freq',  nargs = 1)
 @click.option('--filter_chunk',  nargs = 1)
-@click.option('--verbose', is_flag = True, default = False)
-@click.option('--overwrite', is_flag = True, default = False)
-@click.option('--append', is_flag = True, default = False)
+@click.option('--verbose', is_flag = True, default = False, help = "Enables verbose mode (Prints additional diagnostic information during catalog generation)")
+@click.option('--overwrite', is_flag = True, default = False, help = "Overwrite existing catalog output files if they already exist")
+@click.option('--append', is_flag = True, default = False, help = "Append to existing catalog output files")
 @click.option('--slow', is_flag = True, default = False,
     help = "Open NetCDF files to retrieve additional vocabulary (standard_name and intrafile static variables")
 @click.option('--strict', is_flag = True, default = False,
@@ -51,7 +65,7 @@ def build(context, input_path = None, output_path = None, config = None, filter_
 @click.pass_context
 def validate(context, json_path, json_template_path, vocab, proper_generation, test_failure):
     # pylint: disable=unused-argument
-    """ - Validate catalogs against controlled vocabulary as provided by particular JSON schemas
+    """Validate catalogs against controlled vocabulary as provided by particular JSON schemas
     per vocabulary type (vocabulary validation) OR Validate a catalog against catalog schema
     template (proper generation checking) """
     context.forward(compval.main)
