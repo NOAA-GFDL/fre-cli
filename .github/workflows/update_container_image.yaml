@@ -36,13 +36,11 @@ jobs:
         id: tag_classification
         run: |
           incoming_tag="${{ steps.set_tag.outputs.docker_tag }}"
-          period_count=$(printf '%s' "$incoming_tag" | awk -F. '{print NF-1}')
 
-          if [ "$period_count" -gt 1 ]; then
-            echo "image_tag=development" >> "$GITHUB_OUTPUT"
-          else
-            echo "image_tag=production" >> "$GITHUB_OUTPUT"
-          fi
+          case "$incoming_tag" in
+            *.alpha*|*.beta*) echo "image_tag=development" >> "$GITHUB_OUTPUT" ;;
+            *) echo "image_tag=production" >> "$GITHUB_OUTPUT" ;;
+          esac
 
       - name: Show image tag
         run: |
