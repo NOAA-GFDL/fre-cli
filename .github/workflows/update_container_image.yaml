@@ -69,6 +69,7 @@ jobs:
             .
           file: ./container-files/Dockerfile-fre-cli
           push: ${{ github.event_name == 'workflow_run' }}
+          load: ${{ github.event_name == 'workflow_dispatch' }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.set_tag.outputs.docker_tag }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag_classification.outputs.image_tag }}
