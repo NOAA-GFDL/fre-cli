@@ -61,3 +61,4 @@ jobs:
           delete-branch: true          # delete afer merge
           title: Update refs to version number post-release
           body: automated change, replaces references to the old version number with the new version number upon releases. This PR will need to be closed and reopened to run CI testing.
+          exclude: container-files/cylc-flow-tools.yaml
