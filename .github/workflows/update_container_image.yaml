@@ -56,8 +56,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: NOAA-GFDL
+          password: ${{ secrets.FRECLI_CONT_BUILD_AND_PUSH }}
 
       - name: Build Docker image
         if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
