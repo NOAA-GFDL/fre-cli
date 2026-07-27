@@ -50,7 +50,7 @@ jobs:
         run: |
           new_tag="${{ steps.get_tag.outputs.tag }}"
           # Targeted update: only replace version on the fre-cli dependency line
-          sed -i "s/\(noaa-gfdl::fre-cli==\)[0-9.]\+/\1$new_tag/" container-files/cylc-flow-tools.yaml
+          sed -i "s/\(noaa-gfdl::fre-cli==\)[0-9A-Za-z.]\+/\1$new_tag/" container-files/cylc-flow-tools.yaml
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
@@ -61,3 +61,4 @@ jobs:
           delete-branch: true          # delete afer merge
           title: Update refs to version number post-release
           body: automated change, replaces references to the old version number with the new version number upon releases. This PR will need to be closed and reopened to run CI testing.
+          exclude: container-files/cylc-flow-tools.yaml
