@@ -1,6 +1,11 @@
 """
-Script combines the model yaml with experiment, platform, and target 
-information to list experiment information.
+List_experiments_script provides a method to list experiments
+found in the `model.yaml`. The yaml is resolved in case experiment
+names use fre_properties.
+
+
+The experiments should mainly be listed and defined in the
+`model.yaml`, therefore it is the only yaml needed to parse.
 """
 
 import logging
@@ -18,9 +23,10 @@ fre_logger = logging.getLogger(__name__)
 
 def list_experiments_subtool(yamlfile: str):
     """
-    List the post-processing experiments available
+    List_experiments_subtool loads and parses the model yaml configuration
+    to list the experiments defined.
 
-    :param yamlfile: path to yaml configuration file
+    :param yamlfile: is the path to model.yaml configuration file
     :type yamlfile: str
     """
     exp = None

@@ -1,6 +1,9 @@
 """
-Script combines the model yaml with the compile and platforms yaml.
-Merged yaml dictionary is parsed to list experiment information.
+List_platforms_script provides a method to list platforms defined in
+the platforms.yaml. With this subtool, the `model.yaml` is passed and
+combined with the `compile.yaml` and `platforms.yaml` in case the
+`platforms.yaml` uses `fre_properties` references defined in the two
+previous YAML configurations.
 """
 
 from pathlib import Path
@@ -12,9 +15,12 @@ fre_logger = logging.getLogger(__name__)
 
 def list_platforms_subtool(yamlfile: str):
     """
-    List the platforms available
+    List_platforms_subtool uses the "fre yamltools combine-yamls"
+    subtool to combine the model, compile, and platform YAML
+    configurations in order to parse a fully resolved YAML configuration
+    to list the platforms available/defined in the `platforms.yaml`.
 
-    :param yamlfile: path to the yaml configuration file
+    :param yamlfile: is the path to the model.yaml configuration file
     :type yamlfile: str
     """
     # set logger level to INFO
