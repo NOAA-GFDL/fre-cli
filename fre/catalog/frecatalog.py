@@ -9,7 +9,7 @@ These data catalogs enable data discoverability regardless of the underlying dat
 1. Catalog Specification (JSON): A single file that provides overarching metadata about 
    the catalog. It supports extensible metadata and identifies how multiple distinct 
    files can be aggregated into a single cohesive "dataset."
-2. Catalog (CSV): A file that acts as the index for the data collection, providing 
+2. Catalog (CSV): A file that acts as the index file for the data collection, providing 
    the paths to the data files and their associated metadata at a user-defined granularity.
 3. Intake-ESM API: Provides a Pythonic interface to query the catalog's contents and 
    automatically loads the queried results into an xarray dataset object for analysis."""
@@ -40,7 +40,7 @@ def catalog_cli():
 @click.option('--filter_chunk',  nargs = 1)
 @click.option('--verbose', is_flag = True, default = False, help = "Enables verbose mode (Prints additional diagnostic information during catalog generation)")
 @click.option('--overwrite', is_flag = True, default = False, help = "Overwrite existing catalog output files if they already exist")
-@click.option('--append', is_flag = True, default = False, help = "Append to existing catalog output files")
+@click.option('--append', is_flag = True, default = False, help = "Append to existing catalog output CSV file")
 @click.option('--slow', is_flag = True, default = False,
     help = "Open NetCDF files to retrieve additional vocabulary (standard_name and intrafile static variables")
 @click.option('--strict', is_flag = True, default = False,
