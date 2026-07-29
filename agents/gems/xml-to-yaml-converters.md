@@ -16,7 +16,7 @@ The new FRE requires at least five yaml files:
 3.  `pp.yaml`:  yaml file containing postprocessing configurations to process model outputs for data analysis.
 4.  `platforms.yaml`:  yaml file containing platform definitions such as compiler versions and module loads 
     for bare-metal and container builds.
-5.  `settings.yaml`:  yaml file containing experiment-specific postprocessing parameters such as flags
+5.  `settings.yaml`:  yaml file containing experiment-specific parameters such as flags
     to turn on/off postprocessing tasks; path to the grid_spec file; and time segments of model outputs to postprocess. 
 
 # Instructions
