@@ -1,6 +1,6 @@
-""" This module defines the ``fre catalog`` CLI commands.
+""" This module defines the ``fre catalog`` click subcommands.
 
-It builds catalog CSV and JSON files that form a structured index of datasets and 
+It builds catalog CSV and JSON files that form a structured index of climate model output datasets and 
 their metadata, allowing analysis tools to discover, query, and load data consistently.
 
 These data catalogs enable data discoverability regardless of the underlying data format 
