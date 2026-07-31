@@ -52,17 +52,17 @@ Example output:
 
 ```
 # List yamls to be combined
-fre list yamls -y fre/list_/tests/AM5_example/am5.yaml
+fre list yamls -y fre/list_/tests/yamls/model.yaml
 ```
 
 Example output:
 ```
 [ INFO:    list_yamls_script.py:      list_yamls_subtool] YAMLS to be combined (Experiment => None):
-[ INFO:    list_yamls_script.py:      list_yamls_subtool]   - /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/AM5_example/am5.yaml
-[ INFO:    list_yamls_script.py:      list_yamls_subtool]   - /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/AM5_example/compile.yaml
-[ INFO:    list_yamls_script.py:      list_yamls_subtool]   - /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/AM5_example/platforms.yaml
-[WARNING:    list_yamls_script.py:      list_yamls_subtool] **DNE**: /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/AM5_example/compile.yaml
-[WARNING:    list_yamls_script.py:      list_yamls_subtool] **DNE**: /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/AM5_example/platforms.yaml
+[ INFO:    list_yamls_script.py:      list_yamls_subtool]   - /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/yamls/model.yaml
+[ INFO:    list_yamls_script.py:      list_yamls_subtool]   - /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/yamls/compile.yaml
+[ INFO:    list_yamls_script.py:      list_yamls_subtool]   - /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/yamls/platforms.yaml
+[WARNING:    list_yamls_script.py:      list_yamls_subtool] **DNE**: /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/yamls/compile.yaml
+[WARNING:    list_yamls_script.py:      list_yamls_subtool] **DNE**: /home/Dana.Singh/fre/singh/cli-dev/gen-yaml-ser-2.0/fre/list_/tests/yamls/platforms.yaml
 ```
 
 ## Subtools

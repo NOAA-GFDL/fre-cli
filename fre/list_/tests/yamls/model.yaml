@@ -1,7 +1,7 @@
 # reusable variables
 fre_properties:
-  AM5_VERSION:       "am5f7b12r1"
-  FRE_STEM:          "am5/{{ fre_properties.AM5_VERSION }}"
+  VERSION:           "foo"
+  FRE_STEM:          "test_list/{{ fre_properties.VERSION }}"
 
   # amip
   EXP_AMIP_START:     "19790101T0000Z"
@@ -10,26 +10,10 @@ fre_properties:
   ANA_AMIP_END:       "2020"
 
   PP_AMIP_CHUNK96:    "P1Y"
-  PP_AMIP_CHUNK384:   "P1Y"
   PP_XYINTERP96:      "180,288"
   PP_XYINTERP384:     "720,1152"
 
-  # climo
-  EXP_CLIMO_START96:  "0001"
-  EXP_CLIMO_END96:    "0011"
-  ANA_CLIMO_START96:  "0002"
-  ANA_CLIMO_END96:    "0011"
-
-  EXP_CLIMO_START384: "0001"
-  EXP_CLIMO_END384:   "0006"
-  ANA_CLIMO_START384: "0002"
-  ANA_CLIMO_END384:   "0006"
-
-  # grids
-  GRID_SPEC96:         "/archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar"
-
   # compile information
-  release:             "f1a1r1"
   INTEL:               "intel-classic"
   FMSincludes:         "-IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include"
   momIncludes:         "-Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include"
@@ -40,7 +24,7 @@ build:
   platformYaml: "platforms.yaml"
 
 experiments:
-  c96L65_am5f7b12r1_amip:
+  experiment1:
     settings: "yaml_include/settings.yaml"
     run:
       - "run1.yaml"
