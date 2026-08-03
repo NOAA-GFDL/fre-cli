@@ -4,7 +4,7 @@ FROM ubuntu:26.04 as builder
 # Install micromamba: micromamba is a tinier and faster version of mamba
 # Set where the conda installation goes
 ARG micromamba_location=/app/cylc-flow-tools
-## needed for micromamba installation: curl, bzip2, ca-certificate (used to securly connect to pkg repos over HTTPS)
+## needed for micromamba installation: curl, bzip2, ca-certificate (used to securely connect to pkg repos over HTTPS)
 ## needed for stage-history pp task: uuid-runtime, time
 ## needed for refine-diag pp task: csh
 RUN apt-get update && apt-get install -y \
