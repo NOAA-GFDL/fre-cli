@@ -5,9 +5,9 @@ Previously, many GFDL workflows and configurations have only been accessible on 
 ## PULLING CONTAINER FROM REGISTRY
 To pull the fre-cli container image from the NOAA-GFDL github container registry, use this command:
 
-(TO BE UPDATED)
-#docker pull ghcr.io/noaa-gfdl/hpc-me/ppp:latest
-
+```
+docker pull ghcr.io/noaa-gfdl/fre-cli:production
+```
 
 ## BUILDING LOCALLY
 
