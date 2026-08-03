@@ -9,7 +9,7 @@ export TMPDIR=/mnt/temp
 export HOME=/mnt
 
 ## Set path to defined global.cylc file
-## Currently just using degault global.cylc; jobs run in bcakground
+## Currently just using default global.cylc; jobs run in background
 # export CYLC_CONF_PATH=/mnt
 
 get_user_input () {

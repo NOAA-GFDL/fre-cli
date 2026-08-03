@@ -34,7 +34,7 @@ git clone --recursive https://github.com/NOAA-GFDL/fre-cli.git
 ## Navigate into fre-cli/container-files
 cd fre-cli/container-files
 
-## Add the desired frecli version number in cylc-flow-tools.yaml
+## Add the desired fre-cli version number in cylc-flow-tools.yaml
 ex: noaa-gfdl::fre-cli==2026.01
 
 ## Build a container image
