@@ -65,9 +65,7 @@ def build(context, input_path = None, output_path = None, config = None, filter_
 @click.pass_context
 def validate(context, json_path, json_template_path, vocab, proper_generation, test_failure):
     # pylint: disable=unused-argument
-    """Validate catalogs against controlled vocabulary as provided by particular JSON schemas
-    per vocabulary type (vocabulary validation) OR Validate a catalog against catalog schema
-    template (proper generation checking) """
+    """Validate the JSON file against controlled CMIP/GFDL vocabulary (vocabulary validation) and/or ensure correct file syntax (proper generation checking). """
     context.forward(compval.main)
 
 @catalog_cli.command()
