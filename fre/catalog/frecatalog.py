@@ -75,5 +75,5 @@ def validate(context, json_path, json_template_path, vocab, proper_generation, t
               help = 'Merged catalog')
 @click.pass_context
 def merge(context, input, output):
-    """Merge two or more catalogs into one catalog file."""
+    """Details coming soon."""
     context.invoke(combine_cats.combine_cats, inputfiles=input, output_path=output)
