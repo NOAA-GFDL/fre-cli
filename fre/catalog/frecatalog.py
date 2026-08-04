@@ -38,7 +38,7 @@ def catalog_cli():
 @click.option('--filter_realm',  nargs = 1)
 @click.option('--filter_freq',  nargs = 1)
 @click.option('--filter_chunk',  nargs = 1)
-@click.option('--verbose', is_flag = True, default = False, help = "Enables verbose mode (Prints additional diagnostic information during catalog generation)")
+@click.option('--verbose', is_flag = True, default = False, help = "Prints additional diagnostic information during catalog generation")
 @click.option('--overwrite', is_flag = True, default = False, help = "Overwrite existing catalog output files if they already exist")
 @click.option('--append', is_flag = True, default = False, help = "Append to existing catalog output CSV file")
 @click.option('--slow', is_flag = True, default = False,
