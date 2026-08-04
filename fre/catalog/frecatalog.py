@@ -1,7 +1,8 @@
 """ This module defines the ``fre catalog`` click subcommands.
 
-It builds catalog CSV and JSON files that form a structured index of climate model output datasets and 
-their metadata, allowing analysis tools to discover, query, and load data consistently.
+The frecatalog module generates CSV and JSON files to catalog the database of climate model output files and metadata generated,
+for example, from an experiment run or from post-processing. Both CSV and JSON files can be used with Intake_ESM APIs to discover,
+query, and load data consistently.
 
 The cataloging ecosystem is composed of three main components:
 
