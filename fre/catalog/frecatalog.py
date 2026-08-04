@@ -10,6 +10,7 @@ The cataloging ecosystem is composed of three main components:
    the catalog (variable_id, experiment, file paths, etc.).
 2. Catalog (CSV): A file that acts as the index file for the data collection, providing 
    the paths to the data files and their associated metadata at a user-defined granularity.
+   (Additional information to be added)
 3. Intake-ESM API: Provides a Pythonic interface to query the catalog's contents and 
    automatically loads the queried results into an xarray dataset object for analysis."""
 
