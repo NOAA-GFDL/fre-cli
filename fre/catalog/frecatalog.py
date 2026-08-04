@@ -7,7 +7,7 @@ query, and load data consistently.
 The cataloging ecosystem is composed of three main components:
 
 1. Catalog Specification (JSON): A single file that provides metadata about 
-   the catalog (instituion_id, experiment, file paths, etc.). It supports extensible metadata and identifies how multiple distinct 
+   the catalog (variable_id, experiment, file paths, etc.). It supports extensible metadata and identifies how multiple distinct 
    files can be aggregated into a single cohesive "dataset."
 2. Catalog (CSV): A file that acts as the index file for the data collection, providing 
    the paths to the data files and their associated metadata at a user-defined granularity.
