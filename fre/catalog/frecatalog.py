@@ -3,8 +3,7 @@
 It builds catalog CSV and JSON files that form a structured index of climate model output datasets and 
 their metadata, allowing analysis tools to discover, query, and load data consistently.
 
-These data catalogs enable data discoverability regardless of the underlying data format 
-(e.g., NetCDF, Zarr). The cataloging ecosystem is composed of three main components:
+The cataloging ecosystem is composed of three main components:
 
 1. Catalog Specification (JSON): A single file that provides overarching metadata about 
    the catalog (instituion_id, experiment, file paths, etc.). It supports extensible metadata and identifies how multiple distinct 
