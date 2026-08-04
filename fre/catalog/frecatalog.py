@@ -50,7 +50,7 @@ def build(context, input_path = None, output_path = None, config = None, filter_
           filter_freq = None, filter_chunk = None, verbose = False, overwrite = False,
           append = False, slow = False, strict = False):
     # pylint: disable=unused-argument
-    """Build catalog CSV and JSON files from the provided input data."""
+    """Build catalog CVS and JSON files. The input_path contains the files that make up the database and can be accessed by Intake-ESM."""
     context.forward(gen_intake_gfdl.create_catalog_cli)
 
 @catalog_cli.command()
