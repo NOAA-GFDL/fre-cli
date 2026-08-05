@@ -24,11 +24,12 @@ FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 
 def checkout_template(experiment = None, platform = None, target = None, branch = None):
     """
-    Check out or validate workflow template files from the repository into local Cylc source path.
+    Check out or validate workflow template files from https://github.com/NOAA-GFDL/fre-workflows.git 
+    into the default ~/cylc-src path.
 
     Constructs a standardized workflow name from the given experiment, platform, and target settings,
-    ensures the Cylc source directory (`~/cylc-src`) exists, and either clones the `fre-workflows`
-    repository or verifies that an existing checkout matches the required Git branch/tag version.
+    ensures ~/cylc-src exists, and either clones the `fre-workflows`
+    repository or verifies that an existing checkout matches the specified Git branch/tag version.
 
     :param experiment: Post-processing experiment name as listed in the model YAML file
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.

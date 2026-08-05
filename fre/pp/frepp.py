@@ -58,13 +58,13 @@ def status(experiment, platform, target):
               help="Target name",
               required=True)
 @click.option("--pause", is_flag=True, default=False,
-              help="Pause the workflow immediately upon start up",
+              help="Pause the workflow immediately after start up",
               required=False)
 @click.option("--no_wait", is_flag=True, default=False,
               help="Do not wait to confirm workflow submission success with Cylc scheduler",
               required=False)
 def run(experiment, platform, target, pause, no_wait):
-    """Start or trigger execution of an installed post-processing workflow."""
+    """Start or trigger execution of a Cylc-installed post-processing workflow."""
     run_script.pp_run_subtool(experiment, platform, target, pause, no_wait)
 
 
