@@ -1,7 +1,7 @@
 """
 Post-Processed Time-Series Validation Utility for FRE Post-Processing (fre pp).
 
-This module estimates the expected number of time steps contained within a post-processed
+The ppval_script module estimates the expected number of time steps contained within a post-processed
 time-series NetCDF file based on date strings in its filename and data sampling frequency.
 It then validates the actual time step count in the NetCDF file using `nccheck_script`.
 
@@ -11,6 +11,7 @@ Executed during `rename-split-to-pp` and `make-timeseries` workflow tasks.
 import logging
 import os
 import re
+
 import cftime
 import netCDF4
 
@@ -19,7 +20,10 @@ from . import nccheck_script as ncc
 fre_logger = logging.getLogger(__name__)
 
 
-def getenot(date_start: re.Match, date_end: re.Match, chunk_type: str, cal: str) -> int:
+def getenot(date_start: str,
+            date_end: str,
+            chunk_type: str,
+            cal: str):
     """
     Calculate estimated number of timesteps (ENOT) for a given date range and sampling frequency.
 
@@ -52,77 +56,83 @@ def getenot(date_start: re.Match, date_end: re.Match, chunk_type: str, cal: str)
         enot = (int(date_end[1]) * 12 + int(date_end[2])) - (int(date_start[1]) * 12 + int(date_start[2])) + 1
 
     elif chunk_type == 'daily':
-        start = cftime.datetime(
-            int(date_start[1]), int(date_start[2].lstrip('0')), int(date_start[3].lstrip('0')),
-            calendar=cal
-        )
-        end = cftime.datetime(
-            int(date_end[1]), int(date_end[2].lstrip('0')), int(date_end[3].lstrip('0')),
-            calendar=cal
-        )
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                calendar = cal)
         diff = end - start
         enot = diff.days + 1
 
     elif chunk_type == '4xdaily':
-        start = cftime.datetime(
-            int(date_start[1]), int(date_start[2].lstrip('0')), int(date_start[3].lstrip('0')),
-            hour=int(date_start[4]), calendar=cal
-        )
-        end = cftime.datetime(
-            int(date_end[1]), int(date_end[2].lstrip('0')), int(date_end[3].lstrip('0')),
-            hour=int(date_end[4]), calendar=cal
-        )
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                hour = int(date_start[4]),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                hour = int(date_end[4]),
+                                calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 4
 
     elif chunk_type == '8xdaily':
-        start = cftime.datetime(
-            int(date_start[1]), int(date_start[2].lstrip('0')), int(date_start[3].lstrip('0')),
-            hour=int(date_start[4]), calendar=cal
-        )
-        end = cftime.datetime(
-            int(date_end[1]), int(date_end[2].lstrip('0')), int(date_end[3].lstrip('0')),
-            hour=int(date_end[4]), calendar=cal
-        )
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                hour = int(date_start[4]),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                hour = int(date_end[4]),
+                                calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 8
 
     elif chunk_type == 'hourly':
-        start = cftime.datetime(
-            int(date_start[1]), int(date_start[2].lstrip('0')), int(date_start[3].lstrip('0')),
-            hour=int(date_start[4]), calendar=cal
-        )
-        end = cftime.datetime(
-            int(date_end[1]), int(date_end[2].lstrip('0')), int(date_end[3].lstrip('0')),
-            hour=int(date_end[4]), calendar=cal
-        )
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                hour = int(date_start[4]),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                hour = int(date_end[4]),
+                                calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 24
 
     elif chunk_type == '30minute':
-        start = cftime.datetime(
-            int(date_start[1]), int(date_start[2].lstrip('0')), int(date_start[3].lstrip('0')),
-            hour=int(date_start[4]), calendar=cal
-        )
-        end = cftime.datetime(
-            int(date_end[1]), int(date_end[2].lstrip('0')), int(date_end[3].lstrip('0')),
-            hour=int(date_end[4]), minute=int(date_end[5]), calendar=cal
-        )
+        start = cftime.datetime(int(date_start[1]),
+                                int(date_start[2].lstrip('0')),
+                                int(date_start[3].lstrip('0')),
+                                hour = int(date_start[4]),
+                                calendar = cal)
+        end =   cftime.datetime(int(date_end[1]),
+                                int(date_end[2].lstrip('0')),
+                                int(date_end[3].lstrip('0')),
+                                hour = int(date_end[4]),
+                                minute = int(date_end[5]),
+                                calendar = cal)
         diff = end - start
         enot = (diff.days + 1) * 48
 
     else:
         raise ValueError(f"Unknown chunk_type '{chunk_type}'")
 
-    fre_logger.debug(
-        f"date start: {date_start.group()}; date end: {date_end.group()}; "
-        f"chunk_type: {chunk_type}; calendar: {cal}; timesteps: {enot}"
-    )
+    fre_logger.debug(f"date start: {date_start.group()}; date end: {date_end.group()}; chunk_type: {chunk_type}; calendar: {cal}; timesteps: {enot}")
 
     return enot
 
 
-def validate(filepath: str) -> int:
+def validate(filepath: str):
     """
     Validate time step counts in a post-processed time-series NetCDF file against expectation.
 
@@ -138,11 +148,11 @@ def validate(filepath: str) -> int:
     :return: Returns 0 upon successful validation.
     :rtype: int
     """
+
+
+    import re
     # Regex matching filename date ranges: .YYYY[MM[DD[HH[:mm]]]]-YYYY[MM[DD[HH[:mm]]]]
-    match = re.compile(
-        r"\.((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)-((?:\d{4})"
-        r"(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)\."
-    )
+    match = re.compile(r"\.((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)-((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)\.")
     filename = os.path.basename(filepath)
     date_range = match.search(filename)
 
@@ -150,20 +160,20 @@ def validate(filepath: str) -> int:
         raise ValueError(f"Filename '{filename}' does not contain valid date range pattern")
 
     d_regex = re.compile(r"(\d{4})(\d{2})?(\d{2})?(\d{2})?(?::(\d{2}))?")
-    date_start = d_regex.search(date_range[1])
     date_end = d_regex.search(date_range[2])
+    date_start = d_regex.search(date_range[1])
     date_length = len(date_start.group())
 
-    fre_logger.debug(f"date_start: {date_start.group()}; date_end: {date_end.group()}; date_length: {date_length}")
+    fre_logger.debug(f"date_start: {date_start}; date_end: {date_end}; date_length: {date_length}")
 
     # Inspect NetCDF metadata for CF calendar
     dataset = netCDF4.Dataset(filepath, 'r')
     cal = dataset.variables['time'].calendar.lower()
 
     try:
-        cftime.datetime(1, 1, 1, calendar=cal)
-    except Exception as exc:
-        raise ValueError(f"Calendar name must follow CF convention for validation. '{cal}' is not valid.") from exc
+        cftime.datetime(1,1,1, calendar = cal)
+    except:
+        raise ValueError(f" Calendar name must follow CF convention for validation. '{cal}' is not a valid calendar.")
 
     enot = None
 
@@ -175,31 +185,42 @@ def validate(filepath: str) -> int:
         enot = getenot(date_start, date_end, 'daily', cal)
     elif date_length == 10:
         path_elements = os.path.abspath(filepath).split('/')
-        expected_frequencies = ['6hr', 'PT6H', '3hr', 'PT3H', '1hr', 'PT1H', '30min', 'PT30M', 'PT0.5H']
+        expected_frequencies  = ['6hr', 'PT6H', '3hr', 'PT3H', '1hr', 'PT1H', '30min', 'PT30M', 'PT0.5H']
 
+        # 4x Daily
         if 'PT6H' in path_elements or '6hr' in path_elements:
-            enot = getenot(date_start, date_end, '4xdaily', cal)
-        elif 'PT3H' in path_elements or '3hr' in path_elements:
-            enot = getenot(date_start, date_end, '8xdaily', cal)
-        elif 'PT1H' in path_elements or '1hr' in path_elements:
-            enot = getenot(date_start, date_end, 'hourly', cal)
-        elif any(freq in path_elements for freq in ['PT30M', 'PT0.5H', '30min']):
-            enot = getenot(date_start, date_end, '30minute', cal)
+            enot = getenot(date_start,date_end,'4xdaily',cal)
 
+        # 8x Daily
+        if 'PT3H' in path_elements or '3hr' in path_elements:
+            enot = getenot(date_start,date_end,'8xdaily',cal)
+
+        # HOURLY
+        if 'PT1H' in path_elements or '1hr' in path_elements:
+            enot = getenot(date_start,date_end,'hourly',cal)
+
+        # 30 MINUTE
+        if 'PT30M' in path_elements or 'PT0.5H' in path_elements or '30min' in path_elements:
+            enot = getenot(date_start,date_end,'30minute',cal)
+
+        # If none of the expected frequencies are found in filepath, raise ValueError
         if all(freq not in path_elements for freq in expected_frequencies):
             raise ValueError(
-                f"Cannot determine frequency from {filepath}. Sub-daily files must at minimum "
-                "be located in a directory path corresponding to data frequency: "
-                "'6hr', 'PT6H', '3hr', 'PT3H', '1hr', 'PT1H', '30min', 'PT30M', 'PT0.5H'"
+                f" Cannot determine frequency from {filepath}. Sub-daily"
+                " files must at minimum be placed in a directory"
+                " corresponding to data frequency: '6hr, 'PT6H', '3hr,"
+                " 'PT3H', '1hr, 'PT1H', '30min, 'PT30M, 'PT0.5H'"
             )
+
     elif date_length == 12:
         enot = getenot(date_start, date_end, '30minute', cal)
+
     else:
-        raise ValueError(f"Cannot determine frequency for date '{date_start.group()}'")
+        raise ValueError(f"Cannot determine frequency for date '{date_start}'")
 
     try:
         ncc.check(filepath, enot)
-    except Exception as exc:
-        raise ValueError(f"Timesteps found in {filepath} differ from expectation ({enot})") from exc
+    except:
+        raise ValueError(f"Timesteps found in {filepath} differ from expectation")
 
     return 0

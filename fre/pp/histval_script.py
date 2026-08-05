@@ -1,7 +1,7 @@
 """
 History Data Validation Utility for FRE Post-Processing (fre pp).
 
-This module verifies that history NetCDF files produced by FMS models match expected
+The histval_script module verifies that history NetCDF files produced by FMS models match expected
 time step counts recorded in FMS `diag_manifest` YAML files.
 
 Executed during the `Stage-History` workflow step.
@@ -34,19 +34,21 @@ def validate(history: str, date_string: str, warn: bool) -> int:
     :return: Returns 0 upon successful validation.
     :rtype: int
     """
-    mega_manifest = []
-    mismatches = []
-    info = {}
+    mega_manifest=[]
+    mismatches=[]
+    info={}
 
     # Locate diag_manifest files in history directory
     files = os.listdir(history)
     diag_count = 0
     for _file in files:
-        if not all([_file[-1].isdigit(), 'diag_manifest' in _file, not _file.startswith('.')]):
+        if not all([  _file[-1].isdigit(),
+                  'diag_manifest' in _file,
+                  not _file.startswith('.')]):
             continue
         diag_count += 1
-        filepath = os.path.join(history, _file)
-        with open(filepath, 'r', encoding='utf-8') as f:
+        filepath = os.path.join(history,_file)
+        with open(filepath, 'r') as f:
             fre_logger.info(f" Grabbing data from {filepath}")
             data = yaml.safe_load(f)
             mega_manifest.append(data)
@@ -55,44 +57,45 @@ def validate(history: str, date_string: str, warn: bool) -> int:
     if diag_count < 1:
         if not warn:
             raise FileNotFoundError(
-                f" No diag_manifest files were found in {history}. History files cannot be validated."
-            )
+                f" No diag_manifest files were found in {history}. History files cannot be validated.")
         fre_logger.warning(
-            f" Warning: No diag_manifest files were found in {history}. History files cannot be validated."
-        )
+            f" Warning: No diag_manifest files were found in {history}. History files cannot be validated.")
         return 0
 
     # Aggregate expected timelevels and tile numbers from manifests
-    for manifest in mega_manifest:
-        for diag_entry in manifest.get('diag_files', []):
-            filename = diag_entry['file_name']
-            expected_timelevels = diag_entry['number_of_timelevels']
-            num_tiles = diag_entry['number_of_tiles']
-            info[str(filename)] = (expected_timelevels, num_tiles)
+    for y in range(len(mega_manifest)):
+        for x in range(len(mega_manifest[y]['diag_files'])):
+            filename = mega_manifest[y]['diag_files'][x]['file_name']
+            expected_timelevels = mega_manifest[y]['diag_files'][x]['number_of_timelevels']
+            num_tiles = mega_manifest[y]['diag_files'][x]['number_of_tiles']
+            levels_and_tiles = (expected_timelevels, num_tiles)
+            info.update({str(filename):levels_and_tiles})
 
     # Validate each tile/file with nccheck
-    for filename, (expected_levels, num_tiles) in info.items():
-        for tile_idx in range(num_tiles):
-            if num_tiles > 1:
-                tile_num = tile_idx + 1
-                filepath = os.path.join(history, f"{date_string}.{filename}.tile{tile_num}.nc")
+    for filename in info:
+        for z in range(info[filename][1]):
+            if info[filename][1] > 1:
+                tile_num = z+1
+                filepath = os.path.join(
+                           f"{history}",
+                           f"{date_string}.{filename}.tile{tile_num}.nc")
             else:
-                filepath = os.path.join(history, f"{date_string}.{filename}.nc")
+                filepath = os.path.join(
+                           f"{history}",
+                           f"{date_string}.{filename}.nc")
 
             try:
-                ncc.check(filepath, expected_levels)
+                ncc.check(filepath,info[filename][0])
             except ValueError:
-                fre_logger.error(
-                    f" Timesteps found in {filepath} differ from expectation ({expected_levels}) in diag manifest"
-                )
+                fre_logger.error(f" Timesteps found in {filepath} differ from expectation in diag manifest")
                 mismatches.append(filepath)
 
     # Raise error if any mismatches were encountered
-    if mismatches:
+    if len(mismatches)!=0:
         fre_logger.error("Unexpected number of timesteps found")
         raise ValueError(
-            f"\n{len(mismatches)} file(s) contain(s) an unexpected number of timesteps:\n" +
-            "\n".join(mismatches)
-        )
+              "\n" + str(len(mismatches)) + 
+              " file(s) contain(s) an unexpected number of timesteps:\n" + 
+              "\n".join(mismatches))
 
     return 0

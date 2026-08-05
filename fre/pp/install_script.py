@@ -1,7 +1,7 @@
 """
 Cylc Workflow Installation Utility for FRE Post-Processing (fre pp).
 
-This module handles copying and installing post-processing workflow definitions from
+The install_script module handles copying and installing post-processing workflow definitions from
 the Cylc source area (`~/cylc-src/<workflow_name>`) into the active Cylc execution
 directory (`~/cylc-run/<workflow_name>`).
 
@@ -53,31 +53,18 @@ def install_subtool(experiment: str, platform: str, target: str) -> None:
 
     if os.path.isdir(install_dir):
         # Compare expanded Cylc definitions to check if reinstall is required
-        installed_def = subprocess.run(
-            ["cylc", "config", workflow_name],
-            capture_output=True
-        ).stdout.decode('utf-8')
+        installed_def = subprocess.run(["cylc", "config", workflow_name],capture_output=True).stdout.decode('utf-8')
 
         go_back_here = os.getcwd()
         os.chdir(source_dir)
-        source_def = subprocess.run(
-            ['cylc', 'config', '.'],
-            capture_output=True
-        ).stdout.decode('utf-8')
-        os.chdir(go_back_here)
+        source_def = subprocess.run(['cylc', 'config', '.'], capture_output=True).stdout.decode('utf-8')
 
         if installed_def == source_def:
-            fre_logger.warning(
-                f"NOTE: Workflow '{install_dir}' already installed, and the definition is unchanged."
-            )
+            fre_logger.warning(f"NOTE: Workflow '{install_dir}' already installed, and the definition is unchanged.")
         else:
-            fre_logger.error(
-                f"ERROR: Please remove installed workflow with 'cylc clean {workflow_name}' "
-                f"or move the workflow run directory '{install_dir}'"
-            )
-            raise Exception(
-                f"ERROR: Workflow '{install_dir}' already installed, and the definition has changed!"
-            )
+            fre_logger.error(f"ERROR: Please remove installed workflow with 'cylc clean {workflow_name}' "
+                " or move the workflow run directory '{install_dir}'")
+            raise Exception(f"ERROR: Workflow '{install_dir}' already installed, and the definition has changed!")
     else:
         fre_logger.info(f"NOTE: About to install workflow into ~/cylc-run/{workflow_name}")
         cmd = f"cylc install --no-run-name {workflow_name}"

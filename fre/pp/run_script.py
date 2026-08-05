@@ -1,27 +1,22 @@
 """
 Cylc Workflow Execution Utility for FRE Post-Processing (fre pp).
 
-This module manages the execution lifecycle of post-processing Cylc workflows.
+The run_script module manages the execution lifecycle of post-processing Cylc workflows.
 It checks for active running workflows, starts or restarts workflows using `cylc play`,
 and verifies successful scheduler initialization.
 """
 
-import logging
 import subprocess
 import time
+import logging
+fre_logger = logging.getLogger(__name__)
 
 from . import make_workflow_name
 
-fre_logger = logging.getLogger(__name__)
 
 
-def pp_run_subtool(
-    experiment: str = None,
-    platform: str = None,
-    target: str = None,
-    pause: bool = False,
-    no_wait: bool = False
-) -> None:
+def pp_run_subtool(experiment = None, platform = None, target = None,
+                   pause = False, no_wait = False):
     """
     Start, pause, or resume execution of a Cylc post-processing workflow.
 
@@ -45,26 +40,26 @@ def pp_run_subtool(
     :rtype: None
     """
     if None in [experiment, platform, target]:
-        raise ValueError(
-            'experiment, platform, and target must all not be None. '
-            f'Received: experiment={experiment} / platform={platform} / target={target}'
-        )
+        raise ValueError( 'experiment, platform, and target must all not be None.'
+                          'currently, their values are...'
+                          f'{experiment} / {platform} / {target}')
 
     # Check whether the Cylc workflow is already active
     name = make_workflow_name(experiment, platform, target)
     first_cmd = f'cylc scan --name ^{name}$'
-    fre_logger.debug('running status scan command: %s', first_cmd)
-    result = subprocess.run(['cylc', 'scan', '--name', f"^{name}$"], capture_output=True).stdout.decode('utf-8')
+    fre_logger.debug('running the following command: ')
+    fre_logger.debug(first_cmd)
+    result = subprocess.run(['cylc', 'scan', '--name', f"^{name}$"], capture_output = True ).stdout.decode('utf-8')
 
     if len(result):
-        fre_logger.info("Workflow '%s' is already running!", name)
+        fre_logger.info("Workflow already running!")
         return
 
     # Initiate workflow execution with cylc play
-    cmd = "cylc play"
+    cmd  = "cylc play"
     if pause:
-        cmd += " --pause"
-    cmd += f" {name}"
+        cmd+= " --pause"
+    cmd +=f" {name}"
     subprocess.run(cmd, shell=True, check=True)
 
     if no_wait:
@@ -77,10 +72,9 @@ def pp_run_subtool(
     # Confirm scheduler process is running
     result = subprocess.run(
         ['cylc', 'scan', '--name', f"^{name}$"],
-        capture_output=True
-    ).stdout.decode('utf-8')
+        capture_output = True ).stdout.decode('utf-8')
 
     if not len(result):
-        raise Exception(f"Cylc scheduler for '{name}' was started without error but is not running after 30 seconds.")
+        raise Exception('Cylc scheduler was started without error but is not running after 30 seconds.')
 
-    fre_logger.info("Workflow running: %s", result)
+    fre_logger.info(result)

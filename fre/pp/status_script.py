@@ -1,21 +1,17 @@
 """
 Cylc Workflow Status Query Utility for FRE Post-Processing (fre pp).
 
-This module reports the operational execution state of an installed post-processing
+The status_script module reports the operational execution state of an installed post-processing
 Cylc workflow (`$(experiment)__$(platform)__$(target)`) using the `cylc workflow-state` CLI.
 """
 
-import logging
 import subprocess
-
+import logging
 from . import make_workflow_name
-
 fre_logger = logging.getLogger(__name__)
-
 TIMEOUT_SECS = 120
 
-
-def status_subtool(experiment: str = None, platform: str = None, target: str = None) -> None:
+def status_subtool(experiment = None, platform = None, target = None):
     """
     Query and display current task execution status for a Cylc post-processing workflow.
 
@@ -35,17 +31,16 @@ def status_subtool(experiment: str = None, platform: str = None, target: str = N
     :rtype: None
     """
     if None in [experiment, platform, target]:
-        raise ValueError(
-            'experiment, platform, and target must all not be None. '
-            f'Received: experiment={experiment} / platform={platform} / target={target}'
-        )
+        raise ValueError( 'experiment, platform, and target must all not be None. '
+                          'currently, their values are...'
+                          f'{experiment} / {platform} / {target}')
 
     workflow_name = make_workflow_name(experiment, platform, target)
-    cmd = f"cylc workflow-state {workflow_name}"
-    fre_logger.debug('Executing command: %s', cmd)
+    cmd = f"cylc workflow-state {workflow_name}" 
+    fre_logger.debug('running the following command: ')
+    fre_logger.debug(cmd)
 
     try:
         subprocess.run(cmd, shell=True, check=True, timeout=TIMEOUT_SECS)
-    except Exception as exc:
-        fre_logger.error("Failed to retrieve workflow status for '%s'", workflow_name)
-        raise Exception(f"FAILED: subprocess call to 'cylc workflow-state {workflow_name}'") from exc
+    except:
+        raise Exception(f"FAILED: subprocess call to- cylc workflow-state {name}")

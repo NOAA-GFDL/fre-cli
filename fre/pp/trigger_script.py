@@ -1,7 +1,7 @@
 """
 Workflow Segment Trigger Utility for FRE Post-Processing (fre pp).
 
-This module triggers the execution of post-processing tasks for a specific time segment
+The trigger_script module triggers the execution of post-processing tasks for a specific time segment
 of history output in an installed Cylc workflow (``$(experiment)__$(platform)__$(target)``).
 
 It invokes the Cylc CLI to trigger the ``pp-starter`` task for a given cycle time point:
@@ -13,14 +13,10 @@ import subprocess
 
 from . import make_workflow_name
 
+
 fre_logger = logging.getLogger(__name__)
 
-def trigger(
-    experiment: str = None,
-    platform: str = None,
-    target: str = None,
-    time: str = None
-) -> None:
+def trigger(experiment = None, platform = None, target = None, time = None):
     """
     Trigger post-processing tasks for a specific history time segment in a Cylc workflow.
 
@@ -53,14 +49,12 @@ def trigger(
        datetime cycling to process time chunks sequentially across the experiment duration.
     """
     if None in [experiment, platform, target, time]:
-        raise ValueError(
-            'experiment, platform, target, and time must all not be None. '
-            f'Received: experiment={experiment} / platform={platform} / '
-            f'target={target} / time={time}'
-        )
+        raise ValueError( 'experiment, platform, target and time must all not be None.'
+                          'currently, their values are...'
+                          f'{experiment} / {platform} / {target} / {time}')
 
     workflow_name = make_workflow_name(experiment, platform, target)
     cmd = f"cylc trigger {workflow_name}//{time}/pp-starter"
-    fre_logger.debug("Executing command: %s", cmd)
-
+    fre_logger.debug('running the following command: ')
+    fre_logger.debug(cmd)
     subprocess.run(cmd, shell=True, check=True, timeout=30)

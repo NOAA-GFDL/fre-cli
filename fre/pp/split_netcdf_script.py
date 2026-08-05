@@ -1,7 +1,8 @@
+#!/bin/python
 """
 NetCDF Single-Variable Splitting Utility for FRE Post-Processing (fre pp).
 
-This module provides tools to split multi-variable NetCDF history files into single-variable
+The split_netcdf_script module provides tools to split multi-variable NetCDF history files into single-variable
 NetCDF files while preserving time coordinates, coordinate encodings, bounds, and metadata.
 
 It supports processing both flat input directories and nested subdirectory hierarchies (e.g., regridded output),
@@ -21,6 +22,7 @@ import xarray as xr
 import yaml
 
 from fre.app.helpers import get_variables
+
 
 fre_logger = logging.getLogger(__name__)
 
@@ -79,7 +81,9 @@ def split_netcdf(
     fre_logger.debug(f"input dir: {inputDir}")
     fre_logger.debug(f"output dir: {outputDir}")
 
-    # Determine variable filter list from YAML configuration or select all
+    #note to self: if CYLC_TASK_PARAM_component isn't doing what we think it's
+    #doing, we can also use history_source to get the component but it's
+    #going to be a bit of a pain
     if split_all_vars:
         varlist = "all"
     else:
@@ -99,18 +103,29 @@ def split_netcdf(
         else:
             varlist = vardict[history_source]
 
-    # Regex matching tiled and non-tiled NetCDF files (e.g., '00010101.atmos_daily.tile1.nc')
+    #extend globbing used to find both tiled and non-tiled files
+    #all files that contain the current source:history_file name,
+    #0-1 instances of "tile" and end in .nc
+    #under most circumstances, this should match 1 file
+    #older regex - not currently working
+    #file_regex = f'*.{history_source}?(.tile?).nc'
+    #file_regex = f'*.{history_source}*.*.nc'
+    #glob.glob is NOT sufficient for this. It needs to match:
+    #  '00020101.atmos_level_cmip.tile4.nc'
+    #  '00020101.ocean_cobalt_omip_2d.nc'
     file_regex = f'.*{history_source}(\\.tile.*)?.nc'
 
+    #If in sub-dir mode, process the sub-directories instead of the main one
+    # and write to $outputdir/$subdir
     if use_subdirs:
-        subdirs = [el for el in os.listdir(workdir) if os.path.isdir(os.path.join(workdir, el))]
+        subdirs = [el for el in os.listdir(workdir) if os.path.isdir(os.path.join(workdir,el))]
         num_subdirs = len(subdirs)
-        fre_logger.info(f"checking {num_subdirs} subdirectories under {workdir}")
+        fre_logger.info(f"checking {num_subdirs} under {workdir}")
         files_split = 0
         sd_string = ",".join(subdirs)
         for sd in subdirs:
-            sdw = os.path.join(workdir, sd)
-            files = [os.path.join(sdw, el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
+            sdw = os.path.join(workdir,sd)
+            files=[os.path.join(sdw,el) for el in os.listdir(sdw) if re.match(file_regex, el) is not None]
             if len(files) == 0:
                 fre_logger.info(f"No input files found; skipping subdir {sd}")
             else:
@@ -123,22 +138,26 @@ def split_netcdf(
         if files_split == 0:
             fre_logger.error(
                 f"error: no files found in dirs {sd_string} under "
-                f"{workdir} that match pattern {file_regex}; no splitting took place"
+                f"{workdir} that match pattern {file_regex}; "
+                "no splitting took place"
             )
             raise OSError
     else:
         files_split = 0
-        files = [os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None]
+        files=[os.path.join(workdir, el) for el in os.listdir(workdir) if re.match(file_regex, el) is not None]
+        # Split the files by variable
         for infile in files:
             split_file_xarray(infile, os.path.abspath(outputDir), varlist)
             files_split += 1
         if len(files) == 0:
             fre_logger.error(
-                f"error: no files found in {workdir} that match pattern {file_regex}; no splitting took place"
+                f"error: no files found in {workdir} that match pattern "
+                f"{file_regex}; no splitting took place"
             )
             raise OSError
 
     fre_logger.info(f"split-netcdf-wrapper call complete, having split {files_split} files")
+#    sys.exit(0) #check this
 
 
 def split_file_xarray(
@@ -172,20 +191,36 @@ def split_file_xarray(
     dataset = xr.load_dataset(infile, decode_cf=False, decode_times=False, decode_coords="all")
     allvars = dataset.data_vars.keys()
 
-    # Determine threshold dimension count for metadata variable exclusion
+    #If you have a file of 3 or more dim vars, 2d-or-fewer vars are likely to be
+    #metadata vars; if your file is 2d vars, 1d vars are likely to be metadata.
     max_ndims = get_max_ndims(dataset)
-    varsize = 2 if max_ndims >= 3 else 1
+    if max_ndims >= 3:
+        varsize = 2
+    else:
+        varsize = 1
     fre_logger.debug(f"varsize: {varsize}")
-
-    metadata_vars_to_exclude_by_name = [
-        v for v in allvars if (len(dataset[v].shape) < varsize) and v not in dataset._coord_names
-    ]
+    #note: netcdf dimensions and xarray coords are NOT ALWAYS THE SAME THING.
+    #If they were, I could get away with the following:
+    #var_zerovars = [v for v in datavars if not len(dataset[v].coords) > 0])
+    #instead of this:
+    metadata_vars_to_exclude_by_name = [v for v in allvars if (len(dataset[v].shape) < varsize) and v not in dataset._coord_names]
     fre_logger.debug(f"Variables to be excluded (due to small number of dimensions): '{metadata_vars_to_exclude_by_name}'")
+    #having a variable listed as both a metadata var and a coordinate var seems to
+    #lead to the weird adding a _FillValue behavior
 
+    # These are patterns used to match known kinds of metadata-like variables
+    # in netcdf files.
+    # *_bnds, *_bounds: bounds variables. Defines the edges of a coordinate var
+    # *_offset: i and j offsets. Constants added to a coordinate var to get
+    #       actual coordinate values, used to compress data
+    # *_average: calculated averages for a variable.
+    # These vars may also be covered by the metadata_vars query, but it doesn't
+    # hurt to double-check.
     METADATA_VAR_PATTERNS = ["_bnds", "_bounds", "_offset", "average_"]
 
     fre_logger.info(f"To exclude: var patterns matching '{METADATA_VAR_PATTERNS}'")
     fre_logger.info(f"To exclude: 1 or 2-d vars: '{metadata_vars_to_exclude_by_name}'")
+    #both combined gets you a decent list of non-diagnostic variables
 
     def is_metadata_var(var_to_check: str) -> bool:
         """
@@ -196,20 +231,23 @@ def split_file_xarray(
         :return: True if variable is considered metadata/coordinate bounds, False otherwise.
         :rtype: bool
         """
+        # Check substring patterns from METADATA_VAR_PATTERNS
         for pattern in METADATA_VAR_PATTERNS:
             if re.search(pattern, var_to_check):
                 return True
+        # Check exact matches from metadata_vars_to_exclude_by_name
         for name in metadata_vars_to_exclude_by_name:
             if var_to_check == name:
                 return True
         return False
-
     metavars = [el for el in allvars if is_metadata_var(el)]
     datavars = [el for el in allvars if not is_metadata_var(el)]
     fre_logger.debug(f"metavars: {metavars}")
     fre_logger.debug(f"datavars: {datavars}")
     fre_logger.debug(f"var filter list: {var_list}")
 
+    #datavars does 2 things: keep track of which vars to write, and tell xarray
+    #which vars to drop. we need to separate those things for the variable filtering.
     if var_list == "all":
         write_vars = datavars
     else:
@@ -225,14 +263,22 @@ def split_file_xarray(
         vc_encode = set_coord_encoding(dataset, dataset._coord_names)
         for variable in write_vars:
             fre_logger.info(f"splitting var {variable}")
+            #drop all data vars (diagnostics) that are not the current var of interest
+            #but KEEP the metadata vars
+            #(seriously, we need the time_bnds)
             data2 = dataset.drop_vars([el for el in datavars if el is not variable])
-            v_encode = set_var_encoding(dataset, metavars)
+            v_encode= set_var_encoding(dataset, metavars)
+            #combine 2 dicts into 1 dict - should be no shared keys,
+            #so the merge is straightforward
             var_encode = {**vc_encode, **v_encode}
             fre_logger.debug(f"var_encode settings: {var_encode}")
-
+            #Encoding principles for xarray:
+            #  - no coords have a _FillValue
+            #  - Everything is written out with THE SAME precision it was read in
+            #  - Everything has THE SAME UNITS as it did when it was read in
             var_outfile = fre_outfile_name(os.path.basename(infile), variable)
             var_out = os.path.join(outfiledir, os.path.basename(var_outfile))
-            data2.to_netcdf(var_out, encoding=var_encode)
+            data2.to_netcdf(var_out, encoding = var_encode)
             fre_logger.debug(f"Wrote '{var_out}'")
 
 
@@ -314,5 +360,5 @@ def fre_outfile_name(infile: str, varname: str) -> str:
     :return: Formatted single-variable filename string.
     :rtype: str
     """
-    var_outfile = re.sub(r"\.nc", f".{varname}.nc", infile)
+    var_outfile = re.sub(".nc", f".{varname}.nc", infile)
     return var_outfile

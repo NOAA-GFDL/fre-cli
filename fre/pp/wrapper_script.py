@@ -1,7 +1,7 @@
 """
 End-to-End Post-Processing Pipeline Orchestrator for FRE Post-Processing (fre pp).
 
-This module serves as the primary Python orchestrator replacing legacy FRE bash tooling (``frepp``).
+The wrapper_script module serves as the primary Python orchestrator replacing legacy FRE bash tooling (``frepp``).
 It coordinates the complete post-processing lifecycle by executing configuration, checkout,
 installation, launch, optional triggering, and status reporting steps sequentially.
 
@@ -26,14 +26,7 @@ from .status_script import status_subtool
 
 fre_logger = logging.getLogger(__name__)
 
-def run_all_fre_pp_steps(
-    experiment: str = None,
-    platform: str = None,
-    target: str = None,
-    config_file: str = None,
-    branch: str = None,
-    time: str = None
-) -> None:
+def run_all_fre_pp_steps(experiment = None, platform = None, target = None, config_file = None, branch = None, time = None):
     """
     Execute all FRE post-processing pipeline steps in sequential order.
 
@@ -66,29 +59,27 @@ def run_all_fre_pp_steps(
     .. note::
        This function corresponds to the CLI command ``fre pp all``.
     """
-    fre_logger.info('(run_all_fre_pp_steps) Resolving config_file path...')
+    fre_logger.info('(run_all_fre_pp_steps) config_file path resolving...')
     config_file = os.path.abspath(config_file)
     fre_logger.info(f'config_file={config_file}')
 
-    fre_logger.info('(run_all_fre_pp_steps) Step 1/6: Executing checkout_template...')
+    fre_logger.info('(run_all_fre_pp_steps) calling checkout_template')
     checkout_template(experiment, platform, target, branch)
 
-    fre_logger.info('(run_all_fre_pp_steps) Step 2/6: Executing yaml_info (configure)...')
+    fre_logger.info('(run_all_fre_pp_steps) calling yaml_info')
     yaml_info(config_file, experiment, platform, target)
 
-    fre_logger.info('(run_all_fre_pp_steps) Step 3/6: Executing install_subtool...')
+    fre_logger.info('(run_all_fre_pp_steps) calling install_subtool')
     install_subtool(experiment, platform, target)
 
-    fre_logger.info('(run_all_fre_pp_steps) Step 4/6: Executing pp_run_subtool...')
+    fre_logger.info('(run_all_fre_pp_steps) calling pp_run_subtool')
     pp_run_subtool(experiment, platform, target)
 
     if time is not None:
-        fre_logger.info('(run_all_fre_pp_steps) Step 5/6: Triggering history segment for time=%s...', time)
+        fre_logger.info('(run_all_fre_pp_steps) calling trigger')
         trigger(experiment, platform, target, time)
-    else:
-        fre_logger.info('(run_all_fre_pp_steps) Step 5/6: Time not specified; skipping segment trigger.')
 
-    fre_logger.info('(run_all_fre_pp_steps) Step 6/6: Executing status_subtool...')
+    fre_logger.info('(run_all_fre_pp_steps) calling status_subtool')
     status_subtool(experiment, platform, target)
 
-    fre_logger.info('(run_all_fre_pp_steps) Pipeline execution complete.')
+    fre_logger.info('(run_all_fre_pp_steps) done.')

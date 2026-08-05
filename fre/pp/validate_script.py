@@ -1,7 +1,7 @@
 """
 Workflow Suite Definition Validation Utility for FRE Post-Processing (fre pp).
 
-This module validates the Rose suite configuration and Cylc workflow definition files
+The validate_script module validates the Rose suite configuration and Cylc workflow definition files
 located in ``~/cylc-src/<experiment>__<platform>__<target>``.
 
 Validation sequence:
@@ -10,18 +10,10 @@ Validation sequence:
 """
 
 import os
-import logging
 import subprocess
-
 from . import make_workflow_name
 
-fre_logger = logging.getLogger(__name__)
-
-def validate_subtool(
-    experiment: str = None,
-    platform: str = None,
-    target: str = None
-) -> None:
+def validate_subtool(experiment = None, platform = None, target = None):
     """
     Validate Rose macro configurations and Cylc workflow definitions for an experiment.
 
@@ -49,32 +41,28 @@ def validate_subtool(
        ``rose-suite.conf`` or ensuring required file system locations exist before workflow execution.
     """
     if None in [experiment, platform, target]:
-        raise ValueError(
-            'experiment, platform, and target must all not be None. '
-            f'Received: experiment={experiment} / platform={platform} / target={target}'
-        )
+        raise ValueError( 'experiment, platform, and target must all not be None.'
+                          'currently, their values are...'
+                          f'{experiment} / {platform} / {target}')
 
     go_back_here = os.getcwd()
     directory = os.path.expanduser(
-        '~/cylc-src/' + make_workflow_name(experiment, platform, target)
-    )
+        '~/cylc-src/' + make_workflow_name(experiment, platform, target) )
 
     try:
         os.chdir(directory)
         cmd = "rose macro --validate"
-        fre_logger.debug("Executing Rose macro validation: %s", cmd)
         subprocess.run(cmd, shell=True, check=True)
-    except Exception as exc:
-        raise Exception(f"rose macro --validate exited non-zero in '{directory}'") from exc
+    except:
+        raise Exception('rose macro --validate exited non-zero')
     finally:
         os.chdir(go_back_here)
 
     try:
         os.chdir(directory)
         cmd = "cylc validate ."
-        fre_logger.debug("Executing Cylc validation: %s", cmd)
         subprocess.run(cmd, shell=True, check=True)
-    except Exception as exc:
-        raise Exception(f"cylc validate . exited non-zero in '{directory}'") from exc
+    except:
+        raise Exception('cylc validate . exited non-zero')
     finally:
         os.chdir(go_back_here)
