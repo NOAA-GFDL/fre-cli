@@ -6,7 +6,7 @@ parsing and listing. The resolved yaml is validated as well.
 
 The component is associated with the `postprocess_on` key. If this key is missing
 or set as True, the component will be post-processed and will be listed. If the key
-is set to false, it will not be listed with the subtool.
+is set to False, it will not be listed with the subtool.
 """
 
 from pathlib import Path
