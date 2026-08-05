@@ -23,7 +23,7 @@ Required configuration files:
   - Compile Yaml
   - Platforms yaml
 
-These yamls are combined and further parsed through the ``fre make`` tools.
+These yamls are combined and further parsed with the ``fre make`` tools.
 
 The final combined yaml includes the name of the compile experiment, the platform and target passed in the command line subtool, as well as compile and platform yaml information. The platform that was passed corresponds to the one defined in the platforms YAML file. This file details essential configuration info such as setting up the runtime environment, listing what compiler to use, and providing which container applications to use. These configurations vary based on the specific site where the user is building the model executable or container. Additionally the platform and target passed are used to fill in the build directory in which the compile script is created and run. 
 
@@ -40,3 +40,13 @@ In regards to container platforms in the YAML file, fre make supports a one and 
     - strips out the intel compiler and reduces the size of the container, making it shareable and easier to store.
 
 To perform the two-stage build, choose the right platform to use with the fre make subtools.
+
+1.? link quickstart
+
+To follow quickstart, see here: LINK
+
+1. conceptual overeview
+2. prodution setup?, default behaviors
+3. advanced features
+4. use cases
+5. troublshooting/known issues/known risks

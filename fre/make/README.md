@@ -1,5 +1,5 @@
 # **Fre make**
-Through the fre-cli, `fre make` can be used to create and run a checkout script, makefile, and compile a model.
+Through the fre-cli, `fre make` can be used to create and run a checkout script, Makefile, and compile a model.
 
 * Fre make Supports:
    - multiple targets; use `-t` flag to define each target
@@ -14,7 +14,7 @@ For a more comprehensive guide to fre make functionality, see [here](-----------
 
 ## Quickstart
 
-The quickstart instructions build the null model by loading the FRE module on Gaea C5, and using yaml files located in the fre-cli repository.
+The instructions below uses the FRE module on Gaea C5 to build the GFDL null model from the example yaml files in the fre-cli fre/make/test directory.
 
 To access the null_model configuration, clone the fre-cli repository:
 
@@ -30,11 +30,11 @@ To access the null_model configuration, clone the fre-cli repository:
 
 .. code-block::
 
-    # Bare-metal: create and run checkout script, create makefile, create and RUN compile script to generate a model executable
-    fre make all -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+    # Bare-metal: create and run checkout script, create Makefile, create and RUN compile script to generate a model executable
+    fre make all -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
 
-    # Container: create checkout script, makefile, create dockerfile, and create and RUN the container build script to generate a model container
-    fre make all -y null_model.yaml -p hpcme.intel25 -t prod --execute
+    # Container: create checkout script, Makefile, create dockerfile, and create and RUN the container build script to generate a model container
+    fre make all -y null_model.yaml -p hpcme.intel25 -t prod-openmp --execute
 
 2. Bare-metal Build with individual subtools (Single target)
 
@@ -43,26 +43,26 @@ For the bare-metal build, the parallel checkout feature is the default behavior.
 .. code-block::
 
   # Create and run checkout script
-  fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+  fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
 
   # Create the Makefile
-  fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod
+  fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod-openmp
 
   # Create and run the compile script
-  fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod --execute
+  fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
 
 3. Bare-metal Build with individual subtools (Multiple targets):
 
 .. code-block::
 
     # Create and run checkout script
-    fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
+    fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp -t debug --execute
 
     # Create the Makefile
-    fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod -t debug
+    fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod-openmp -t debug
 
     # Create and run a compile script for each target specified
-    fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod -t debug --execute
+    fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp -t debug --execute
 
 4. Container Build with individual subtools:
 
@@ -71,13 +71,13 @@ In order for the container to build successfully, the parallel checkout feature 
 .. code-block::
 
     # Create checkout script
-    fre make checkout-script -y null_model.yaml -p hpcme.intel25 -t prod
+    fre make checkout-script -y null_model.yaml -p hpcme.intel25 -t prod-openmp
 
     # Create the Makefile
-    fre make makefile -y null_model.yaml -p hpcme.intel25 -t prod
+    fre make makefile -y null_model.yaml -p hpcme.intel25 -t prod-openmp
 
     # Create the Dockerfile and container build script
-    fre make dockerfile -y null_model.yaml -p hpcme.intel25 -t prod --execute
+    fre make dockerfile -y null_model.yaml -p hpcme.intel25 -t prod-openmp --execute
 
 ## Subtools
 - `fre make checkout-script [options]`
