@@ -1,29 +1,35 @@
-Post-Processing Container
+FRE-cli Container
 =========================
 
-Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE workflow at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build and runscript, this post-processing container work allows for more effective sharing of the workflow.
+Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE-cli subtools at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build, this FRE-cli container work allows for more effective sharing of the subtools.
 
 BUILDING
 --------
 
-In order to build the container, the user needs to have podman access on gaea. If needed, put in a helpdesk ticket.
+In order to build the container, the user needs to have podman access on Gaea. If needed, submit a servicedesk ticket.
 
 Files used to build container:
-    - Dockerfile-ppp
-    - cylc-flow-tools environment yaml
+    - Dockerfile-fre-cli
+    - cylc-flow-tools.yaml (environment yaml)
     - runscript.sh
 
-The container will house the fre-cli tools and subtools, and any necessary packages needed for those tools.
+The container will house the fre-cli tools and any necessary packages needed for those tools.
 
 Using podman and apptainer to build, follow these steps:
 
-1. Clone the HPC-ME repository
+1. Navigate to `/tmp/containers/$USER` (create if needed)
 
 .. code-block:: console
 
- git clone git@gitlab.gfdl.noaa.gov:fre/HPC-ME.git
+ cd /tmp/containers/$USER
 
-2. Navigate into the ppp folder
+1. Clone the FRE-cli repository
+
+.. code-block:: console
+
+ git clone https://github.com/NOAA-GFDL/fre-cli.git
+
+2. Navigate into the container-files folder
 
 .. code-block:: console
 
