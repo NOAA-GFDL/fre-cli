@@ -19,11 +19,11 @@ RUN apt-get update && apt-get install -y \
 RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
 
 # Copy runscript in container and make it executable
-COPY /container-files/runscript.sh /app/exec/runscript.sh
+COPY runscript.sh /app/exec/runscript.sh
 RUN chmod +x /app/exec/runscript.sh
 
 ## Set up conda environment directory for cylc workflow
-COPY container-files/cylc-flow-tools.yaml ${micromamba_env_location}/cylc-flow-tools.yaml
+COPY cylc-flow-tools.yaml ${micromamba_env_location}/cylc-flow-tools.yaml
 
 RUN micromamba env create --file ${micromamba_env_location}/cylc-flow-tools.yaml -p ${micromamba_env_location}/env \
   && micromamba clean --all --yes
