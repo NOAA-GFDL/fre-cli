@@ -2,8 +2,9 @@
 FROM ubuntu:26.04 as builder
 
 # Install micromamba: micromamba is a tinier and faster version of mamba
-# Set where the conda installation goes
-ARG micromamba_location=/app/cylc-flow-tools
+# Set where the micromamba env creation goes
+ARG micromamba_env_location=/app/cylc-flow-tools
+
 ## needed for micromamba installation: curl, bzip2, ca-certificate (used to securely connect to pkg repos over HTTPS)
 ## needed for stage-history pp task: uuid-runtime, time
 ## needed for refine-diag pp task: csh
@@ -17,29 +18,20 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
 
-#needed?
-# Change to encrypted HTTP for apt usage
-#RUN sed -i 's/http/https/g' /etc/apt/sources.list
-
-#needed?
-## apt installs to /usr/bin/
-#RUN apt update \
-#  && apt -y install uuid-runtime time csh python bc
-
 # Copy runscript in container and make it executable
-COPY runscript.sh /app/exec/runscript.sh
+COPY /container-files/runscript.sh /app/exec/runscript.sh
 RUN chmod +x /app/exec/runscript.sh
 
 ## Set up conda environment directory for cylc workflow
-COPY cylc-flow-tools.yaml ${micromamba_location}/cylc-flow-tools.yaml
+COPY container-files/cylc-flow-tools.yaml ${micromamba_env_location}/cylc-flow-tools.yaml
 
-RUN micromamba env create --file ${micromamba_location}/cylc-flow-tools.yaml -p ${micromamba_location}/env \
+RUN micromamba env create --file ${micromamba_env_location}/cylc-flow-tools.yaml -p ${micromamba_env_location}/env \
   && micromamba clean --all --yes
 
 # Keeping in comment for now - might be useful for cylc workflow-state or tui things
 #RUN micromamba install urwid==2.*
 
 # Put env in path so it is already activated upon runtime
-ENV PATH=/app/cylc-flow-tools/env/bin:$PATH
+ENV PATH=${micromamba_env_location}/env/bin:$PATH
 
 ENTRYPOINT ["/bin/bash"]
