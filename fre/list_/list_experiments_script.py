@@ -19,8 +19,8 @@ fre_logger = logging.getLogger(__name__)
 
 def list_experiments_subtool(yamlfile: str):
     """
-    List_experiments_subtool loads and parses the model yaml configuration
-    to list the experiments defined.
+    List_experiments_subtool lists the experiment names defined in
+    the `model.yaml`.
 
     :param yamlfile: is the path to model.yaml configuration file
     :type yamlfile: str

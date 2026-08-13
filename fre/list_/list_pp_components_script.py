@@ -18,10 +18,8 @@ fre_logger = logging.getLogger(__name__)
 
 def list_ppcomps_subtool(yamlfile: str, experiment: str):
     """
-    List_ppcomps_subtool uses the "fre yamltools combine-yamls" subtool to
-    combine the model, settings, and post-processing yamls in order to parse
-    a fully resolved YAML configuration to determine the components to be
-    post-processed, defined in the post-processing YAML configurations.
+    List_ppcomps_subtool lists the components to be post-processed
+    defined in the `postprocessing.yaml`s.
 
     :param yamlfile: is the path to the model.yaml configuration file
     :type yamlfile: str

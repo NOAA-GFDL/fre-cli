@@ -14,10 +14,8 @@ fre_logger = logging.getLogger(__name__)
 
 def list_platforms_subtool(yamlfile: str):
     """
-    List_platforms_subtool uses the "fre yamltools combine-yamls"
-    subtool to combine the model, compile, and platform YAML
-    configurations in order to parse a fully resolved YAML configuration
-    to list the platforms available/defined in the `platforms.yaml`.
+    List_platforms_subtool lists the platform names defined in the 
+    `platforms.yaml`.
 
     :param yamlfile: is the path to the model.yaml configuration file
     :type yamlfile: str
