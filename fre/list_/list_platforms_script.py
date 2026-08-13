@@ -1,9 +1,8 @@
 """
-List_platforms_script provides a method to list platforms defined in
-the platforms.yaml. With this subtool, the `model.yaml` is passed and
-combined with the `compile.yaml` and `platforms.yaml`. This merge is
-done in case the `platforms.yaml` uses `fre_properties` references
-defined in the two aformentioned YAML configurations.
+Module `list_platforms_script` contains the function `list_platforms_subtool`
+that provides a method to query the resolved, combined yaml file, including
+the `model.yaml`, `compile.yaml`, and `platforms.yaml` and return platform 
+names defined.
 """
 
 from pathlib import Path

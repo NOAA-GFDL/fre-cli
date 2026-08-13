@@ -1,11 +1,7 @@
 """
-List_experiments_script provides a method to list experiments
-found in the `model.yaml`. The yaml is resolved in case experiment
-names use fre_properties.
-
-
-The experiments should mainly be listed and defined in the
-`model.yaml`, therefore it is the only yaml needed to parse.
+Module `list_experiments_script` contains the function `list_experiments_subtool`
+that provides a method to query the resolved `model.yaml` and return experiment
+configuration names defined. 
 """
 
 import logging
