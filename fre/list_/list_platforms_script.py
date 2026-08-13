@@ -1,8 +1,7 @@
 """
 Module `list_platforms_script` contains the function `list_platforms_subtool`
-which provides a method to query the resolved, combined yaml file, including
-the `model.yaml`, `compile.yaml`, and `platforms.yaml`, and returns platform 
-names defined.
+which provides a method to query the resolved, combined yaml file (`model.yaml`,
+`compile.yaml`, and `platforms.yaml`) and returns platform names.
 """
 
 from pathlib import Path
@@ -14,8 +13,7 @@ fre_logger = logging.getLogger(__name__)
 
 def list_platforms_subtool(yamlfile: str):
     """
-    List_platforms_subtool lists the platform names defined in the 
-    `platforms.yaml`.
+    List_platforms_subtool lists the platform names.
 
     :param yamlfile: is the path to the model.yaml configuration file
     :type yamlfile: str
