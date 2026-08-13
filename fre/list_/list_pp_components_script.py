@@ -1,6 +1,6 @@
 """
 Module `list_ppcomps_subtool` contains the function `list_ppcomps_subtool`
-that provides a method to query the resolved, combined yaml file, including
+which provides a method to query the resolved, combined yaml file, including
 the `model.yaml`, `settings.yaml`, and `post-processing.yamls`, and returns
 the the components to be post-processed.
 

@@ -1,6 +1,6 @@
 """
 Module `list_experiments_script` contains the function `list_experiments_subtool`
-that provides a method to query the resolved `model.yaml` and return experiment
+which provides a method to query the resolved `model.yaml` and return experiment
 configuration names defined. 
 """
 
