@@ -1,7 +1,7 @@
 """
 Module `list_platforms_script` contains the function `list_platforms_subtool`
 that provides a method to query the resolved, combined yaml file, including
-the `model.yaml`, `compile.yaml`, and `platforms.yaml` and return platform 
+the `model.yaml`, `compile.yaml`, and `platforms.yaml`, and returns platform 
 names defined.
 """
 

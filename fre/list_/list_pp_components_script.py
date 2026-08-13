@@ -1,12 +1,12 @@
 """
-List_ppcomps_subtool provides a method to list components to be post-processed,
-defined in the post-processing YAML configurations. The "fre yamltools combine-yamls"
-subtool is used to help resolve any aliases defined in the configurations before
-parsing and listing. The resolved yaml is validated as well.
+Module `list_ppcomps_subtool` contains the function `list_ppcomps_subtool`
+that provides a method to query the resolved, combined yaml file, including
+the `model.yaml`, `settings.yaml`, and `post-processing.yamls`, and returns
+the the components to be post-processed.
 
-The component is associated with the `postprocess_on` key. If this key is missing
-or set as True, the component will be post-processed and will be listed. If the key
-is set to False, it will not be listed with the subtool.
+The component is associated with the `postprocess_on` key in the `postprocessing`
+YAMLs. If this key is missing or set as True, the component will be post-processed
+and will be listed. If the key is set to False, it will not be listed with the subtool.
 """
 
 from pathlib import Path
