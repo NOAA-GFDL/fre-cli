@@ -1,12 +1,20 @@
 """
 Module `list_ppcomps_subtool` contains the function `list_ppcomps_subtool`
-which provides a method to query the resolved, combined yaml file, including
-the `model.yaml`, `settings.yaml`, and `post-processing.yamls`, and returns
-the the components to be post-processed.
+ to query the resolved, combined yaml file (`model.yaml`, `settings.yaml`,
+and `post-processing.yamls`) and returns the the components to be post-processed.
 
-The component is associated with the `postprocess_on` key in the `postprocessing`
-YAMLs. If this key is missing or set as True, the component will be post-processed
-and will be listed. If the key is set to False, it will not be listed with the subtool.
+Given the post-processing yaml below, if `postprocess_on` is missing or set as True,
+the component will be post-processed and will be listed. If the key is set to False,
+it will not be listed with the subtool.
+
+Example:
+```
+postprocess:
+  component:
+    - type: pp1
+      source: ...
+      postprocess_on: True/False
+```
 """
 
 from pathlib import Path
@@ -18,8 +26,7 @@ fre_logger = logging.getLogger(__name__)
 
 def list_ppcomps_subtool(yamlfile: str, experiment: str):
     """
-    List_ppcomps_subtool lists the components to be post-processed
-    defined in the `postprocessing.yaml`s.
+    List_ppcomps_subtool lists the components to be post-processed.
 
     :param yamlfile: is the path to the model.yaml configuration file
     :type yamlfile: str
