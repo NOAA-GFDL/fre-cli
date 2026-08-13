@@ -1,7 +1,9 @@
 """ This module defines the ``fre catalog`` click subcommands.
 
-The frecatalog module generates CSV and JSON files to catalog the database of climate model output files and metadata generated,
-for example, from an experiment run or from post-processing. Both CSV and JSON files can be used with Intake_ESM APIs to discover,
+The frecatalog module generates CSV and JSON files to catalog the
+database of climate model output files and metadata generated,
+for example, from an experiment run or from post-processing.
+Both CSV and JSON files can be used with Intake_ESM APIs to discover,
 query, and load data consistently.
 
 The cataloging ecosystem is composed of three main components:
@@ -38,9 +40,12 @@ def catalog_cli():
 @click.option('--filter_realm',  nargs = 1)
 @click.option('--filter_freq',  nargs = 1)
 @click.option('--filter_chunk',  nargs = 1)
-@click.option('--verbose', is_flag = True, default = False, help = "Prints additional diagnostic information during catalog generation")
-@click.option('--overwrite', is_flag = True, default = False, help = "Overwrite existing catalog output files")
-@click.option('--append', is_flag = True, default = False, help = "Append to existing catalog output CSV file")
+@click.option('--verbose', is_flag = True, default = False,
+    help = "Prints additional diagnostic information during catalog generation")
+@click.option('--overwrite', is_flag = True, default = False,
+    help = "Overwrite existing catalog output files")
+@click.option('--append', is_flag = True, default = False,
+    help = "Append to existing catalog output CSV file")
 @click.option('--slow', is_flag = True, default = False,
     help = "Open NetCDF files to retrieve additional vocabulary (standard_name and intrafile static variables")
 @click.option('--strict', is_flag = True, default = False,
@@ -50,7 +55,8 @@ def build(context, input_path = None, output_path = None, config = None, filter_
           filter_freq = None, filter_chunk = None, verbose = False, overwrite = False,
           append = False, slow = False, strict = False):
     # pylint: disable=unused-argument
-    """Build catalog CVS and JSON files. The input_path contains the files that make up the database and can be accessed by Intake-ESM."""
+    """Build catalog CVS and JSON files. The input_path contains the files that make up the
+    database and can be accessed by Intake-ESM."""
     context.forward(gen_intake_gfdl.create_catalog_cli)
 
 @catalog_cli.command()
@@ -65,7 +71,8 @@ def build(context, input_path = None, output_path = None, config = None, filter_
 @click.pass_context
 def validate(context, json_path, json_template_path, vocab, proper_generation, test_failure):
     # pylint: disable=unused-argument
-    """Validate the JSON file against controlled CMIP/GFDL vocabulary (vocabulary validation) and/or ensure correct file syntax (proper generation checking). """
+    """Validate the JSON file against controlled CMIP/GFDL vocabulary (vocabulary validation)
+    and/or ensure correct file syntax (proper generation checking). """
     context.forward(compval.main)
 
 @catalog_cli.command()
