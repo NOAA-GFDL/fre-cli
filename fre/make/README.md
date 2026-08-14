@@ -36,14 +36,14 @@ To access the null_model configuration, clone the fre-cli repository:
 
 Note: The parallel checkout feature is the default behavior for bare-metal builds.
 
-  # Create and run checkout script
-  fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
+    # Create and run checkout script
+    fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
 
-  # Create the Makefile
-  fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod-openmp
+    # Create the Makefile
+    fre make makefile -y null_model.yaml -p ncrc5.intel23 -t prod-openmp
 
-  # Create and run the compile script
-  fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
+    # Create and run the compile script
+    fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
 
 ### Bare-metal Build with individual subtools (Multiple targets):
 
