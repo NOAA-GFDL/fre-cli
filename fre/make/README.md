@@ -18,8 +18,6 @@ The instructions below uses the FRE module on Gaea C5 to build the GFDL null mod
 
 To access the null_model configuration, clone the fre-cli repository:
 
-.. code-block::
-
     git clone --recursive https://github.com/NOAA-GFDL/fre-cli.git
 
     cd fre/make/tests/null_example
@@ -27,8 +25,6 @@ To access the null_model configuration, clone the fre-cli repository:
 ### All-in-one fre make subtool:
 
 `all` kicks off the compilation automatically
-
-.. code-block::
 
     # Bare-metal: create and run checkout script, create Makefile, create and RUN compile script to generate a model executable
     fre make all -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
@@ -40,8 +36,6 @@ To access the null_model configuration, clone the fre-cli repository:
 
 Note: The parallel checkout feature is the default behavior for bare-metal builds.
 
-.. code-block::
-
   # Create and run checkout script
   fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
 
@@ -52,8 +46,6 @@ Note: The parallel checkout feature is the default behavior for bare-metal build
   fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
 
 ### Bare-metal Build with individual subtools (Multiple targets):
-
-.. code-block::
 
     # Create and run checkout script
     fre make checkout-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp -t debug --execute
@@ -67,8 +59,6 @@ Note: The parallel checkout feature is the default behavior for bare-metal build
 ### Container Build with individual subtools:
 
 Note: The parallel checkout feature is not available for container builds.
-
-.. code-block::
 
     # Create checkout script
     fre make checkout-script -y null_model.yaml -p hpcme.intel25 -t prod-openmp
