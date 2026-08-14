@@ -9,7 +9,7 @@
         - ``-t, --target [target] (required)``
         - ``-gj, --gitjobs [number of submodules to clone in parallel]``
         - ``-npc, --no-parallel-checkout (for container build)``
-        - ``-e, --execute``
+        - ``--execute``
         - ``force-checkout``
 
 ``makefile`` 
@@ -33,7 +33,7 @@
         - ``-t, --target [target] (required)``
         - ``-mj, --makejobs [number of recipes from the Makefile to run in parallel]``
         - ``-n, --parallel [number of concurrent module compiles]``
-        - ``-e, --execute``
+        - ``--execute``
 
 ``dockerfile``
 --------------
@@ -46,7 +46,7 @@
         - ``-p, --platform [platform] (required)``
         - ``-t, --target [target] (required)``
         - ``-nft, --no-format-transfer``
-        - ``-e, --execute``
+        - ``--execute``
 
 ``all``
 -------
@@ -62,4 +62,4 @@
         - ``-gj, --gitjobs [number of submodules to clone in parallel]`` 
         - ``-npc, --no-paralel-checkout``
         - ``-nft, --no-format-transfer``
-        - ``-e, --execute``
+        - ``--execute``
