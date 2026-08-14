@@ -212,7 +212,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                         subprocess.run(args=[checkout_sh_path], check=True)
                     except Exception as exc:
                         raise OSError(f"Error executing checkout script: {checkout_sh_path}.",
-                                       "\n\n!!SRC DIR might exist already!!\n"
+                                       "\n\n!!SRC DIR may already exist!!\n"
                                        "1. If not editing the checked out source code directly, try either:\n"
                                       f"    - removing the output folder ({platform_info['modelRoot']})\n"
                                        "    - specifying --force-checkout\n"

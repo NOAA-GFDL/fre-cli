@@ -66,7 +66,7 @@ For the bare-metal build, the parallel checkout feature is the default behavior.
 
 4. Container Build with individual subtools:
 
-In order for the container to build successfully, the parallel checkout feature is disabled.
+Note: The parallel checkout feature is not available for container builds.
 
 .. code-block::
 
