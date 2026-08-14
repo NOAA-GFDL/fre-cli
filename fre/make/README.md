@@ -24,7 +24,7 @@ To access the null_model configuration, clone the fre-cli repository:
 
     cd fre/make/tests/null_example
 
-1. All-in-one fre make subtool:
+### All-in-one fre make subtool:
 
 `all` kicks off the compilation automatically
 
@@ -36,9 +36,9 @@ To access the null_model configuration, clone the fre-cli repository:
     # Container: create checkout script, Makefile, create dockerfile, and create and RUN the container build script to generate a model container
     fre make all -y null_model.yaml -p hpcme.intel25 -t prod-openmp --execute
 
-2. Bare-metal Build with individual subtools (Single target)
+### Bare-metal Build with individual subtools (Single target)
 
-For the bare-metal build, the parallel checkout feature is the default behavior.
+Note: The parallel checkout feature is the default behavior for bare-metal builds.
 
 .. code-block::
 
@@ -51,7 +51,7 @@ For the bare-metal build, the parallel checkout feature is the default behavior.
   # Create and run the compile script
   fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp --execute
 
-3. Bare-metal Build with individual subtools (Multiple targets):
+### Bare-metal Build with individual subtools (Multiple targets):
 
 .. code-block::
 
@@ -64,7 +64,7 @@ For the bare-metal build, the parallel checkout feature is the default behavior.
     # Create and run a compile script for each target specified
     fre make compile-script -y null_model.yaml -p ncrc5.intel23 -t prod-openmp -t debug --execute
 
-4. Container Build with individual subtools:
+### Container Build with individual subtools:
 
 Note: The parallel checkout feature is not available for container builds.
 
