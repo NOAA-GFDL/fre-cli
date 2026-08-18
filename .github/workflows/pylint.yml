@@ -60,9 +60,9 @@ jobs:
 #          echo "printing conda config just in case"
 #          conda config --show
 #
-      - name: Install fre
-        run: |
-          pip install .
+#      - name: Install fre
+#        run: |
+#          pip install .
 
       - name: Run pylint
         run: |
