@@ -124,104 +124,34 @@ def acquire_lock(lock_target: Path):
         lock_file.unlink(missing_ok=True)
 
 @click.command()
-@click.option(
-    "--exit-status",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Set to indicate a non-zero exit status from the model run.",
-)
-@click.option(
-    "--combine",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Enable the combine step for history output files.",
-)
-@click.option(
-    "--check",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Enable the check step to verify output files.",
-)
-@click.option(
-    "--save-on",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Enable saving of history output files.",
-)
-@click.option(
-    "--fill-grid-on",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Enable the fill-grid step.",
-)
-@click.option(
-    "--combine-ok",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Indicate that the combine step completed successfully.",
-)
-@click.option(
-    "--check-ok",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Indicate that the check step completed successfully.",
-)
-@click.option(
-    "--save-ok",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Indicate that the save step completed successfully.",
-)
-@click.option(
-    "--fill-grid-ok",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Indicate that the fill-grid step completed successfully.",
-)
-@click.option(
-    "--archive-on",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Enable archiving of history output files.",
-)
-@click.option(
-    "--ptmp-on",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Enable staging of output files to the ptmp directory.",
-)
-@click.option(
-    "--check-sum-on",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Enable checksum verification of output files.",
-)
-@click.option(
-    "--compress-on",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Enable compression of output files.",
-)
-@click.option(
-    "--verbose",
-    is_flag=True,
-    default=False,
-    required=False,
-    help="Enable verbose output.",
-)
+@click.option("--exit-status", is_flag=True, default=False, required=False,
+    help="Set to indicate a non-zero exit status from the model run.")
+@click.option("--combine", is_flag=True, default=False, required=False,
+    help="Enable the combine step for history output files.")
+@click.option("--check", is_flag=True, default=False, required=False,
+    help="Enable the check step to verify output files.")
+@click.option("--save-on", is_flag=True, default=False, required=False,
+    help="Enable saving of history output files.")
+@click.option("--fill-grid-on", is_flag=True, default=False, required=False,
+    help="Enable the fill-grid step.")
+@click.option("--combine-ok", is_flag=True, default=False, required=False,
+    help="Indicate that the combine step completed successfully.")
+@click.option("--check-ok", is_flag=True, default=False, required=False,
+    help="Indicate that the check step completed successfully.")
+@click.option("--save-ok", is_flag=True, default=False, required=False,
+    help="Indicate that the save step completed successfully.")
+@click.option("--fill-grid-ok", is_flag=True, default=False, required=False,
+    help="Indicate that the fill-grid step completed successfully.")
+@click.option("--archive-on", is_flag=True, default=False, required=False,
+    help="Enable archiving of history output files.")
+@click.option("--ptmp-on", is_flag=True, default=False, required=False,
+    help="Enable staging of output files to the ptmp directory.")
+@click.option("--check-sum-on", is_flag=True, default=False, required=False,
+    help="Enable checksum verification of output files.")
+@click.option("--compress-on", is_flag=True, default=False, required=False,
+    help="Enable compression of output files.")
+@click.option("--verbose", is_flag=True, default=False, required=False,
+    help="Enable verbose output.")
 @click.argument("exp_name")
 @click.argument("output_type")
 @click.argument("work_dir")
