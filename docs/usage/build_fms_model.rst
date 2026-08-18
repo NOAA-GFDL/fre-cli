@@ -39,14 +39,6 @@ In regards to container platforms in the YAML file, fre make supports a one and 
     - includes platform information with a second container base to build off of
     - strips out the intel compiler and reduces the size of the container, making it shareable and easier to store.
 
-To perform the two-stage build, choose the right platform to use with the fre make subtools.
+To perform the two-stage build, choose the right platform to use with the fre make subtools (with two container bases specified).
 
-1.? link quickstart
-
-To follow quickstart, see here: LINK
-
-1. conceptual overeview
-2. prodution setup?, default behaviors
-3. advanced features
-4. use cases
-5. troublshooting/known issues/known risks
+To follow a quickstart, see the `README <https://github.com/singhd789/fre-cli/blob/update-fremake-readme/fre/make/README.md#quickstart>`_.
