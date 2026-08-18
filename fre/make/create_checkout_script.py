@@ -7,6 +7,7 @@ The method checkout_create is the entry point called by fre make checkout-script
 fre make all.  Checkout_create calls baremetal_checkout_write for a bare-metal build or 
 container_checkout_write for a container build to write checkout.sh.
 """
+import sys
 import shutil
 from pathlib import Path
 from datetime import datetime
