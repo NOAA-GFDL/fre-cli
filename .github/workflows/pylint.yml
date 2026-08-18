@@ -28,28 +28,38 @@ jobs:
       - name: Checkout Files
         uses: actions/checkout@v4
 
-      - name: Setup Conda
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          activate-environment: fre-cli
-          environment-file: environment.yml
-          auto-activate: false
-          miniforge-version: latest
-          conda-remove-defaults: true
+          python-version: "3.11"
 
-      - name: Configure Conda
+      - name: Install pylint
         run: |
-          echo "removing main and r channels from defaults"
-          conda config --remove channels defaults || true
-          conda config --remove channels main || true
-          conda config --remove channels r || true
+          python -m pip install --upgrade pip
+          pip install pylint
 
-          echo "setting strict channel priority"
-          conda config --set channel_priority strict
-
-          echo "printing conda config just in case"
-          conda config --show
-
+#      - name: Setup Conda
+#        uses: conda-incubator/setup-miniconda@v3
+#        with:
+#          activate-environment: fre-cli
+#          environment-file: environment.yml
+#          auto-activate: false
+#          miniforge-version: latest
+#          conda-remove-defaults: true
+#
+#      - name: Configure Conda
+#        run: |
+#          echo "removing main and r channels from defaults"
+#          conda config --remove channels defaults || true
+#          conda config --remove channels main || true
+#          conda config --remove channels r || true
+#
+#          echo "setting strict channel priority"
+#          conda config --set channel_priority strict
+#
+#          echo "printing conda config just in case"
+#          conda config --show
+#
       - name: Install fre
         run: |
           pip install .
