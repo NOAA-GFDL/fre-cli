@@ -73,6 +73,5 @@ jobs:
           source /opt/conda/etc/profile.d/conda.sh
           conda deactivate
           conda activate /app/cylc-flow-tools
-          python -m pip install --upgrade pip
           pip install pylint
           python -m pylint --rcfile pylintrc fre/
