@@ -66,4 +66,4 @@ jobs:
 
       - name: Run pylint
         run: |
-          pylint --rcfile pylintrc fre/
+          python -m pylint --rcfile pylintrc fre/
