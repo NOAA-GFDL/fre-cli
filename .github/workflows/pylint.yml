@@ -22,11 +22,10 @@ jobs:
   pylint:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/noaa-gfdl/fre-cli:production
- 
-#    defaults:
-#      run:
-#        shell: bash -l {0}
+      image: ghcr.io/noaa-gfdl/fre-cli:production 
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
 #      - name: Checkout Files
       - uses: actions/checkout@v4
@@ -68,7 +67,7 @@ jobs:
 #          pip install .
 
       - name: Run pylint
-        shell: bash
+#        shell: bash
         run: |
           #conda init --all
           source /opt/conda/etc/profile.d/conda.sh
