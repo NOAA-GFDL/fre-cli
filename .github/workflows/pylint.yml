@@ -68,8 +68,9 @@ jobs:
 #          pip install .
 
       - name: Run pylint
+        shell: bash
         run: |
-          conda init --all
+          #conda init --all
           source /opt/conda/etc/profile.d/conda.sh
           conda deactivate
           conda activate /app/cylc-flow-tools
