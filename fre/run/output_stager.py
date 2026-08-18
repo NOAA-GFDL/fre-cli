@@ -9,7 +9,6 @@ import logging
 import os
 from pathlib import Path
 import shutil
-import signal
 import socket
 import subprocess
 import sys
@@ -45,13 +44,6 @@ def requeue_slurm_job() -> None:
         )
     except (subprocess.CalledProcessError, FileNotFoundError) as exc:
         fre_logger.error("Failed to requeue Slurm job %s: %s", job_id, exc)
-
-
-def handle_sigint(signum: int, frame) -> None:  # pylint: disable=unused-argument
-    """Handle SIGINT and requeue the current Slurm job if needed."""
-    fre_logger.warning("Interrupt signal (%s) received.", signum)
-    requeue_slurm_job()
-    sys.exit(130)
 
 
 def setup_run_context(verbose: bool = False) -> RunContext:
@@ -240,12 +232,9 @@ def acquire_lock(lock_target: Path):
 def outputStager(exit_status, combine, check, save_on, fill_grid_on,  # pylint: disable=invalid-name
                  combine_ok, check_ok, save_ok, fill_grid_ok, archive_on,
                  ptmp_on, check_sum_on, compress_on, verbose,
-                 exp_name, _type, work_dir, ptmp_dir, arch_dir,
-                 mppnccombine_opt_string, ardiff_tmpdir):    
-
-"""Stage output files for post-processing."""
-    signal.signal(signal.SIGINT, handle_sigint)
-
+                 exp_name, output_type, work_dir, ptmp_dir, arch_dir,
+                 mppnccombine_opt_string, ardiff_tmpdir):
+    """Stage output files for post-processing."""
     setup_run_context(verbose=verbose)
 
     work_dir_path = validate_path(work_dir)
@@ -254,5 +243,12 @@ def outputStager(exit_status, combine, check, save_on, fill_grid_on,  # pylint: 
     ardiff_tmpdir_path = validate_path(ardiff_tmpdir)
 
     lock_target = work_dir_path / f"{exp_name}.{output_type}"
-    with acquire_lock(lock_target):
-    #USE ABOVE FUNCTIONS
+    try:
+        with acquire_lock(lock_target):
+            pass  # USE ABOVE FUNCTIONS
+    except KeyboardInterrupt:
+        # Lock is released by acquire_lock's finally clause ("unlock"),
+        # then requeue if under Slurm (mirrors tcsh CATCH_SIGINT).
+        fre_logger.warning("Interrupt received; requeuing if under Slurm.")
+        requeue_slurm_job()
+        sys.exit(130)
