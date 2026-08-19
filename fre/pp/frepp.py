@@ -2,8 +2,21 @@
 Click Command Line Interface for FRE Post-Processing (`fre pp`).
 
 The frepp module registers all subcommands under the `fre pp` Click group for managing
-post-processing workflow lifecycles (checkout, configure, validate, install, run,
-status, trigger, validation, and NetCDF processing).
+post-processing workflow subtools: 
+- checkout: Clones fre-workflow repository into ~/cylc-src/[WORKFLOW_ID]
+- configure_yaml: Combines the model yaml, settings yaml, and postprocessing yaml files into one resolved yaml file that is then validated against an MSD-owned schema file and parsed to create the rose-suite.conf file
+- validate: Validates the Cylc workflow definition (flow.cylc file)
+- install: Installs the experiment workflow configuration into ~/cylc-run/[WORKFLOW_ID]
+- run: Runs the experiment workflow configuration
+- status: Shows the status of the Cylc workflow definition tasks
+- trigger: Initiate a postprocessing task for a time chunk of history files
+- nccheck: Confirms that a NetCDF file contains the expected number of time steps
+- histval: Validates the time step counts of a NetCDF file compared to the FMS 'diag_manifest' yaml file during the "Stage-History" workflow step
+- split_netcdf_wrapper: Runs the 'split-netcdf' tool on a pattern-matched list of NetCDF files within a directory
+- split_netcdf: Split an individual NetCDF file by variable, as defined by the postprocessing yaml files
+- pp_val: Determines estimated number of timesteps from a postprocessed time-series filename and runs nccheck
+- all: Executes all postprocessing tasks (checkout, configure, install, run, optional triggering, and status reporting) sequentially
+- rename_split: Reorganizes data according to their frequency and time interval
 """
 
 import logging
