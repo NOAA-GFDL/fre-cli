@@ -29,7 +29,7 @@ Using podman and apptainer to build, follow these steps:
 cd /tmp/containers/$USER
 
 ## Clone the fre-cli repository
-git clone --recursive https://github.com/NOAA-GFDL/fre-cli.git
+git clone https://github.com/NOAA-GFDL/fre-cli.git
 
 ## Navigate into fre-cli/container-files
 cd fre-cli/container-files

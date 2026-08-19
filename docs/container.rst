@@ -1,4 +1,4 @@
-FRE-cli Container (For post-procesing use case)
+FRE-cli Container (For post-processing use case)
 =========================
 
 Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE-cli subtools at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build, this FRE-cli container work allows for more effective sharing of the subtools.
@@ -58,8 +58,8 @@ Now that the FRE workflows container is created, certain files and directories m
 
 In order to run the post-processing workflow, certain repositories and files are needed:
 
-- Directory that will include folders and files for container set-up and output (could be named ppp-setup for example)
-    - Create an empty ppp-setup folder in an area with ample space as this is where the post-processing run output will be populated.
+- Directory that will include folders and files for container set-up and output (could be named `workflow-output` for example)
+    - Create an empty `workflow-output` folder in an area with ample space as this is where the post-processing run output will be populated.
     - This setup/output directory consists of a few subdirectories, pp, ptmp, and temp, that will be created through the runscript.sh script found in the container (`/app/exec/runscript.sh`)
 
 - Yaml configuration files
@@ -72,9 +72,9 @@ Additionally, history files and grid spec files are needed.
 *If on Gaea*, history files and grid spec files are usually available in a certain location; retrieve their locations
     - Paths to the history folder and grid spec file will be mounted as read only folders/files when running the container
 
-*If not on Gaea*, history file and grid spec data should be transferred to the "ppp-setup" location:
-    - ppp-setup/history/
-    - ppp-setup/[experiment]_grid/
+*If not on Gaea*, history file and grid spec data should be transferred to the `workflow-output` location:
+    - workflow-output/history/
+    - workflow-output/[experiment]_grid/
 
 FOR CLOUD USERS: Preparing for cloud usage requires history files and container image/runscript to be transferred to the cloud resource. The recommended method of file transfer is with Globus.
 
