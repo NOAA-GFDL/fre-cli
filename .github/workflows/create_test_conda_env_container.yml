@@ -66,7 +66,7 @@ jobs:
           echo "adding spack installed binaries of netcdf/hdf5 to front of path, so conda installed ones don't break compilation tests"
 #          export path_save=$PATH
           export PATH="/opt/views/view/bin:$PATH"
-          echo "PATH: $PATH"
+          echo "PATH is $PATH"
 
           echo "running pytest, will print 20 longest durations"
           pytest --durations=20 --log-level DEBUG --cov-report=xml --cov-config=coveragerc --cov=fre fre/
