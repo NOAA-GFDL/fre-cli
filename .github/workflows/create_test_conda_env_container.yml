@@ -73,7 +73,7 @@ jobs:
           echo "PATH is $PATH"
 
           echo "running pytest, will print 20 longest durations"
-          pytest --durations=20 --log-level DEBUG --cov-report=xml --cov-config=coveragerc --cov=fre fre/
+          python -m pytest --durations=20 --log-level DEBUG --cov-report=xml --cov-config=coveragerc --cov=fre fre/
 
           #commenting out as env variables set inside a run stpe automatically disappear when step finishes
           #echo "restoring original PATH"
