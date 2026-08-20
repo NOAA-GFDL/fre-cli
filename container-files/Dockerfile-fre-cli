@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
   time \
   csh
 
-RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/2.9.0-0 | tar -xvj bin/micromamba
 
 # Copy runscript in container and make it executable
 COPY runscript.sh /app/exec/runscript.sh
