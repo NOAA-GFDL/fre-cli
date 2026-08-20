@@ -46,15 +46,18 @@ jobs:
 
           #install specfic python version
           conda install -y -p /app/cylc-flow-tools "python=${{ matrix.python-version }}"
-          micromamba list -p /app/cylc-flow-tools
-
+          pip install pytest-cov
           #install fre
           python -m pip install .
-          micromamba list -p /app/cylc-flow-tools
 
           # Add environment path to GITHUB_PATH so changes persist across job steps
           # Ensures the environment will already be activated across steps
           echo "/app/cylc-flow-tools/bin" >> $GITHUB_PATH
+
+      - name: Verify Python Installation
+        run: |
+          echo "Python version installed: "
+          micromamba list -p /app/cylc-flow-tools
 
       - name: Run pytest In fre-cli Env
         run: |
