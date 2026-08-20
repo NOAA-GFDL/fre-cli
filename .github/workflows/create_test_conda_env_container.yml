@@ -54,10 +54,10 @@ jobs:
           # Ensures the environment will already be activated across steps
           echo "/app/cylc-flow-tools/bin" >> $GITHUB_PATH
 
-      - name: Verify Python Installation
+      - name: Verify Python/fre-cli/pytest-cov Installation
         run: |
           echo "Python version installed: "
-          micromamba list -p /app/cylc-flow-tools
+          conda list -p /app/cylc-flow-tools
 
       - name: Run pytest In fre-cli Env
         run: |
