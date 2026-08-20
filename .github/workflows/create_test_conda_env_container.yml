@@ -28,6 +28,10 @@ jobs:
         python-version: ['3.12', '3.13', '3.14']
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:production
+    defaults:
+      run:
+        shell: bash -l {0}
+
 #      options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
     steps:
       - uses: actions/checkout@v4
