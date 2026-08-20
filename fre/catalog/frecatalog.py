@@ -23,7 +23,7 @@ def catalog_cli():
 #, help = 'Specify output filename suffix only. e.g. catalog')
 @click.option('--config', required = False, type = click.Path(exists = True), nargs = 1,
               help = 'Path to your yaml config, Use the config_template in intakebuilder repo')
-@click.option('--fill', '-f', default=True, type=bool, help="Fill all empty CSV column values with 'NA'. Defaults to True. Use --fill=False to disable.")
+@click.option('--fill/--no-fill', '-f', default=True, help="Fill all empty CSV column values with 'NA'. Defaults to True. Use --no-fill to disable.")
 @click.option('--filter_realm',  nargs = 1)
 @click.option('--filter_freq',  nargs = 1)
 @click.option('--filter_chunk',  nargs = 1)
