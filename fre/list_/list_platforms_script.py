@@ -1,6 +1,7 @@
 """
-Script combines the model yaml with the compile and platforms yaml.
-Merged yaml dictionary is parsed to list experiment information.
+Module `list_platforms_script` contains the function `list_platforms_subtool`
+which provides a method to query the resolved, combined yaml file (`model.yaml`,
+`compile.yaml`, and `platforms.yaml`) and returns platform names.
 """
 
 from pathlib import Path
@@ -12,9 +13,9 @@ fre_logger = logging.getLogger(__name__)
 
 def list_platforms_subtool(yamlfile: str):
     """
-    List the platforms available
+    List_platforms_subtool lists the platform names.
 
-    :param yamlfile: path to the yaml configuration file
+    :param yamlfile: is the path to the model.yaml configuration file
     :type yamlfile: str
     """
     # set logger level to INFO
