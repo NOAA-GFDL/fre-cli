@@ -106,9 +106,13 @@ def list_yamls_subtool(yamlfile: str, experiment: str, compile_only: bool, runti
     fre_logger.setLevel(former_log_level)
 
     # Check if the paths exist; give warning
+    fail = []
     fre_logger.info("")
     for y in yamls_full_path.split(","):
         if not Path(y).exists():
-            fre_logger.warning("**DNE**: %s", y)
+            fail.append("True")
+            fre_logger.error("**DNE**: %s", y)
+    if "True" in fail:
+        raise ValueError(" *** PROVIDE THE MISSING YAML CONFIGURATIONS ***")
 
     return yamls_full_path
