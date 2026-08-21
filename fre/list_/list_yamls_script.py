@@ -47,8 +47,8 @@ def list_yamls_subtool(yamlfile: str, experiment: str, compile_only: bool, runti
     with open(yamlfile, 'r', encoding="utf-8") as yf:
         yaml_dict = yaml.load(yf, Loader = yaml.Loader)
 
-    compile_data = yaml_dict["build"].get("compileYaml").split("/")[-1]
-    platform_data = yaml_dict["build"].get("platformYaml").split("/")[-1]
+    compile_data = yaml_dict["build"].get("compileYaml")
+    platform_data = yaml_dict["build"].get("platformYaml")
     exp_data = yaml_dict["experiments"].get(exp_name)
 
     yamls = [model_yaml]
