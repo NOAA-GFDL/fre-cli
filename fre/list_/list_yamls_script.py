@@ -54,7 +54,9 @@ def list_yamls_subtool(yamlfile: str, experiment: str, compile_only: bool, runti
     yamls = [model_yaml]
     # list yamls associated with the compile, run, post-processing, and analysis
     if exp_name:
-        settings_data = exp_data["settings"]
+        settings_data = ""
+        if exp_data.get("settings") is not None:
+            settings_data = exp_data.get("settings")
 
         if compile_only:
             yamls.extend([compile_data, platform_data])
