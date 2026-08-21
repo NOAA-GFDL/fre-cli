@@ -46,7 +46,8 @@ jobs:
 
           #install specfic python version
           conda install -y -p /app/cylc-flow-tools "python=${{ matrix.python-version }}"
-          pip install pytest-cov
+          conda install conda-forge::pytest-cov
+
           #install fre
           python -m pip install .
 
@@ -71,17 +72,11 @@ jobs:
           #conda activate fre-cli
 
           echo "adding spack installed binaries of netcdf/hdf5 to front of path, so conda installed ones don't break compilation tests"
-          #export path_save=$PATH
           export PATH="/opt/views/view/bin:$PATH"
           echo "PATH is $PATH"
 
           echo "running pytest, will print 20 longest durations"
           python -m pytest --durations=20 --log-level DEBUG --cov-report=xml --cov-config=coveragerc --cov=fre fre/
-
-          #commenting out as env variables set inside a run stpe automatically disappear when step finishes
-          #echo "restoring original PATH"
-          #export PATH="$path_save"
-          #echo $PATH
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
