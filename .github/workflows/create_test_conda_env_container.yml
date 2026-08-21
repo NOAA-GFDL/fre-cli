@@ -47,8 +47,7 @@ jobs:
           #install specfic python version
           conda install -y -p /app/cylc-flow-tools "python=${{ matrix.python-version }}"
           #conda install conda-forge::pytest-cov
-          conda install -y -p /app/cylc-flow-tools -c conda-forge pytest-cov gcc_linux-64
-
+          conda install -y -p /app/cylc-flow-tools -c conda-forge pytest-cov cxx-compiler
           #install fre
           python -m pip install .
 
