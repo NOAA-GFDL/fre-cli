@@ -46,8 +46,7 @@ jobs:
 
           #install specfic python version
           conda install -y -p /app/cylc-flow-tools "python=${{ matrix.python-version }}"
-          #conda install conda-forge::pytest-cov
-          conda install -y -p /app/cylc-flow-tools -c conda-forge pytest-cov cxx-compiler
+          conda install -y -p /app/cylc-flow-tools -c conda-forge pytest-cov cxx-compiler #c++ compiler needed for cartopy for analysis script installation tests
           #install fre
           python -m pip install .
 
@@ -77,6 +76,11 @@ jobs:
 
           echo "running pytest, will print 20 longest durations"
           python -m pytest --durations=20 --log-level DEBUG --cov-report=xml --cov-config=coveragerc --cov=fre fre/
+
+      - name: Install gpg for Codecov upload
+        run: | 
+          apt-get update
+          apt-get install -y gnupg
 
       - name: Upload results to Codecov
         uses: codecov/codecov-action@v5
