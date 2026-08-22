@@ -9,8 +9,8 @@ import logging
 import os
 import subprocess
 
-from . import make_workflow_name
 from ..fre import version as fre_ver
+from . import make_workflow_name
 
 fre_logger = logging.getLogger(__name__)
 

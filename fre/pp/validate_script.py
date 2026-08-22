@@ -2,7 +2,9 @@
 
 import os
 import subprocess
+
 from . import make_workflow_name
+
 
 def validate_subtool(experiment = None, platform = None, target = None):
     """
