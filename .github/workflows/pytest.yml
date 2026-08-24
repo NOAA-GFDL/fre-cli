@@ -50,14 +50,14 @@ jobs:
           # Ensures the environment will already be activated across steps
           echo "/app/cylc-flow-tools/bin" >> $GITHUB_PATH
 
-      - name: Install packages needed to test: pytest-cov, c++ compiler
+      - name: Install pytest-cov and c++ compiler
         run: |
           #pytest-cov needed for testing
           #c++ compiler needed for cartopy for analysis script installation tests
           #podman and apptainer needed to run fre make compilation tests
           conda install -y -p /app/cylc-flow-tools -c conda-forge pytest-cov cxx-compiler
 
-      - name: Install podman (to-do: and apptainer)
+      - name: Install podman and apptainer
         run: |
           #podman and apptainer needed to run fre make compilation tests
           apt-get update
