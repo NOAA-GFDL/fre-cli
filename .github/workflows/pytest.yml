@@ -37,7 +37,7 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Activate fre-cli Environment and Install fre-cli and required pkgs
+      - name: Activate fre-cli Environment and install different python versions to test
         run: |
           source /opt/conda/etc/profile.d/conda.sh
           conda deactivate
@@ -46,17 +46,21 @@ jobs:
           #install specfic python version
           conda install -y -p /app/cylc-flow-tools "python=${{ matrix.python-version }}"
 
+          # Add environment path to GITHUB_PATH so changes persist across job steps
+          # Ensures the environment will already be activated across steps
+          echo "/app/cylc-flow-tools/bin" >> $GITHUB_PATH
+
+      - name: Install packages needed to test
+        run: |
           #pytest-cov needed for testing
           #c++ compiler needed for cartopy for analysis script installation tests
           #podman and apptainer needed to run fre make compilation tests
           conda install -y -p /app/cylc-flow-tools -c conda-forge pytest-cov cxx-compiler podman apptainer
-
+ 
+      - name: Install the fre-cli
+        run: |
           #install fre
           python -m pip install .
-
-          # Add environment path to GITHUB_PATH so changes persist across job steps
-          # Ensures the environment will already be activated across steps
-          echo "/app/cylc-flow-tools/bin" >> $GITHUB_PATH
 
       - name: Verify Python/fre-cli/pytest-cov Installation
         run: |
