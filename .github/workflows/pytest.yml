@@ -50,12 +50,18 @@ jobs:
           # Ensures the environment will already be activated across steps
           echo "/app/cylc-flow-tools/bin" >> $GITHUB_PATH
 
-      - name: Install packages needed to test
+      - name: Install packages needed to test: pytest-cov, c++ compiler
         run: |
           #pytest-cov needed for testing
           #c++ compiler needed for cartopy for analysis script installation tests
           #podman and apptainer needed to run fre make compilation tests
-          conda install -y -p /app/cylc-flow-tools -c conda-forge pytest-cov cxx-compiler podman apptainer
+          conda install -y -p /app/cylc-flow-tools -c conda-forge pytest-cov cxx-compiler
+
+      - name: Install podman (to-do: and apptainer)
+        run: |
+          #podman and apptainer needed to run fre make compilation tests
+          apt-get update
+          apt-get install -y --no-install-recommends podman 
  
       - name: Install the fre-cli
         run: |
@@ -67,17 +73,8 @@ jobs:
           echo "Python version installed: "
           conda list -p /app/cylc-flow-tools
 
-      - name: Run pytest In fre-cli Env
+      - name: Run pytest In fre-cli env
         run: |
-          #echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
-          #source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
-
-          #echo "to activate env, conda init"
-          #conda init
-
-          #echo "activating the fre-cli environment"
-          #conda activate fre-cli
-
           echo "adding spack installed binaries of netcdf/hdf5 to front of path, so conda installed ones don't break compilation tests"
           export PATH="/opt/views/view/bin:$PATH"
           echo "PATH is $PATH"
