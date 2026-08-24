@@ -1,12 +1,13 @@
 """
-List_yamls_script provides methods to list and return YAML configuration files found in the `[model].yaml`. 
-Different click options are avaiable to return only relevant yamls depending on the process the user wants
-to run (compile, runtime, postprocess, analysis). If `-e [experiment name]` is provided, the default behavior
-is to return all YAML configuration files associated with that experiment. If an experiment name is not given,
-the model, compile, and platform configurations are returned.
+Module `list_yamls_script` contains the function `list_yamls_subtool`
+which provides a method to query the resolved `model.yaml` and return
+YAML configuration files listed.
 
-In development: This subtool will further be used to provide a list of YAML configuration files that will be
-                passed to a "fre yamltools combine" subtool to merge and resolve the given files into one YAML.
+Different click options are avaiable to return only relevant yamls depending
+on the process the user wants to run (compile, runtime, postprocess, analysis).
+If `-e [experiment name]` is provided, the default behavior is to return all
+YAML configuration files associated with that experiment. If an experiment name
+is not given, the model, compile, and platform configurations are returned.
 """
 import logging
 from pathlib import Path
@@ -17,9 +18,7 @@ fre_logger = logging.getLogger(__name__)
 def list_yamls_subtool(yamlfile: str, experiment: str, compile_only: bool, runtime_only: bool,
                        postprocess_only: bool, analysis_only: bool):
     """
-    List_yamls_subtool lists the relevant yamls to combine. The default list returned is ALL yamls
-    associated with an experiment. (model, compile, platforms, settings, runtime, postprocessing,
-    analysis yamls)
+    List_yamls_subtool lists the YAML files defined in the `model.yaml`.
 
     :param yamlfile: is the path to the model yaml configuration file
     :type yamlfile: str
