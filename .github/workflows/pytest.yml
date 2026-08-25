@@ -19,8 +19,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  condaenvcreate:
-    name: Test Python TESTING ${{ matrix.python-version }}
+  setup-env:
+    name: Setup Env Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -29,7 +29,6 @@ jobs:
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:production
       options: "--privileged --device=/dev/fuse --security-opt label=disable"
-      #options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
     defaults:
       run:
         shell: bash -l {0}
@@ -67,6 +66,49 @@ jobs:
           echo "Python version installed: "
           conda list -p /app/cylc-flow-tools
 
+      - name: Archive prepared conda environment
+        run: |
+          tar -czf /tmp/cylc-flow-tools-py${{ matrix.python-version }}.tar.gz -C /app cylc-flow-tools
+
+      - name: Upload prepared environment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cylc-flow-tools-py${{ matrix.python-version }}
+          path: /tmp/cylc-flow-tools-py${{ matrix.python-version }}.tar.gz
+          retention-days: 1
+
+  test-no-podman:
+    name: Test (no podman) Python ${{ matrix.python-version }}
+    needs: setup-env
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13', '3.14']
+    container:
+      image: ghcr.io/noaa-gfdl/fre-cli:production
+      options: "--privileged --device=/dev/fuse --security-opt label=disable"
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Download prepared environment artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cylc-flow-tools-py${{ matrix.python-version }}
+          path: /tmp
+
+      - name: Restore conda environment
+        run: |
+          rm -rf /app/cylc-flow-tools
+          mkdir -p /app
+          tar -xzf /tmp/cylc-flow-tools-py${{ matrix.python-version }}.tar.gz -C /app
+          echo "/app/cylc-flow-tools/bin" >> $GITHUB_PATH
+
       - name: Run pytest in fre-cli env (tests that don't need podman)
         run: |
           echo "adding spack installed binaries of netcdf/hdf5 to front of path, so conda installed ones don't break compilation tests"
@@ -75,6 +117,52 @@ jobs:
 
           echo "running pytest, will print 20 longest durations"
           python -m pytest --durations=20 --log-level DEBUG --cov-report=xml --cov-config=coveragerc --cov=fre fre/ --ignore fre/make/tests/compilation
+
+      - name: Install gpg for Codecov upload
+        run: |
+          apt-get update
+          apt-get install -y gnupg
+
+      - name: Upload results to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          verbose: true
+          files: coverage.xml
+          flags: unittests
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  test-podman:
+    name: Test (podman) Python ${{ matrix.python-version }}
+    needs: setup-env
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13', '3.14']
+    container:
+      image: ghcr.io/noaa-gfdl/fre-cli:production
+      options: "--privileged --device=/dev/fuse --security-opt label=disable"
+      #options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Download prepared environment artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cylc-flow-tools-py${{ matrix.python-version }}
+          path: /tmp
+
+      - name: Restore conda environment
+        run: |
+          rm -rf /app/cylc-flow-tools
+          mkdir -p /app
+          tar -xzf /tmp/cylc-flow-tools-py${{ matrix.python-version }}.tar.gz -C /app
+          echo "/app/cylc-flow-tools/bin" >> $GITHUB_PATH
 
       - name: Install podman and apptainer
         run: |
@@ -107,8 +195,8 @@ jobs:
           export PODMAN_STORAGE_DRIVER=vfs
           export XDG_RUNTIME_DIR=/tmp/run/users/$(id -u)
           mkdir -p $XDG_RUNTIME_DIR
- 
-      - name:  Run pytest in fre-cli env (tests that need podman and apptainer)
+
+      - name: Run pytest in fre-cli env (tests that need podman and apptainer)
         run: |
           echo "adding spack installed binaries of netcdf/hdf5 to front of path, so conda installed ones don't break compilation tests"
           export PATH="/opt/views/view/bin:$PATH"
@@ -118,7 +206,7 @@ jobs:
           python -m pytest --durations=20 --log-level DEBUG --cov-report=xml --cov-config=coveragerc --cov=fre fre/make/tests/compilation
 
       - name: Install gpg for Codecov upload
-        run: | 
+        run: |
           apt-get update
           apt-get install -y gnupg
 

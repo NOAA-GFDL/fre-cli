@@ -76,6 +76,7 @@ def test_run_fremake_multijob_compile():
         f"{MULTIJOB_TEST_PATH}/fremake_canopy/test/{EXPERIMENT}/{PLATFORM[0]}-{TARGET[0]}/exec/{EXPERIMENT}.x").exists()
 
 # containerized build
+@pytest.mark.podman
 @pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
 def test_run_fremake_container_build():
     ''' checks image creation for the container build'''
@@ -84,6 +85,7 @@ def test_run_fremake_container_build():
         no_format_transfer=False, execute=True, verbose=VERBOSE)
     assert Path("null_model_full-debug.sif").exists()
 
+@pytest.mark.podman
 @pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
 def test_run_fremake_container_build_specified_out():
     ''' checks that the image was copied to the correct specified output location'''
@@ -94,6 +96,7 @@ def test_run_fremake_container_build_specified_out():
     assert Path(
         f"{CONTAINER_BUILD_TEST_PATH}/fremake_canopy/test/null_model_full-debug.sif").exists()
 
+@pytest.mark.podman
 @pytest.mark.skipif(not can_container, reason="missing podman/apptainer")
 def test_run_fremake_container_build_notransfer():
     ''' checks image creation with the .sif transfer turned off '''
@@ -115,6 +118,7 @@ def test_run_fremake_cleanup():
     tp_remove = [not Path(el).exists() for el in test_paths]
     assert all(tp_remove)
 
+@pytest.mark.podman
 @pytest.mark.skipif(not has_podman, reason="missing podman")
 def test_run_fremake_container_build_fail():
     ''' check createContainer script would fail and exit if one step failed (incorrect Dockerfile name)'''

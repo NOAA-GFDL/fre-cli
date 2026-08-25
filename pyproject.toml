@@ -65,3 +65,8 @@ test = [
     "pylint",
     "pytest",
 ]
+
+[tool.pytest.ini_options]
+markers = [
+    "podman: marks tests that require podman and apptainer to be installed",
+]
