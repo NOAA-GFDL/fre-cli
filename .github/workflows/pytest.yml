@@ -28,7 +28,7 @@ jobs:
         python-version: ['3.12', '3.13', '3.14']
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:production
-      options: "--privileged --device=/dev/fuse --security-opt label-disable"
+      options: "--privileged --device=/dev/fuse --security-opt label=disable"
       #options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
     defaults:
       run:
