@@ -55,7 +55,6 @@ jobs:
         run: |
           #pytest-cov needed for testing
           #c++ compiler needed for cartopy for analysis script installation tests
-          #podman and apptainer needed to run fre make compilation tests
           conda install -y -p /app/cylc-flow-tools -c conda-forge pytest-cov cxx-compiler
 
       - name: Install the fre-cli
@@ -87,15 +86,15 @@ jobs:
           mkdir -p /etc/containers
           if [ ! -f /etc/containers/policy.json ]; then
               cat > /etc/containers/policy.json <<'EOF'
-              {
-               "default": [{"type": "reject"}],
-               "transports": {
-                   "docker": {
-                       "ghcr.io/noaa-gfdl/fre-cli":[{"type":"insecureAcceptAnything"}]
-                   }
+          {
+           "default": [{"type": "reject"}],
+           "transports": {
+               "docker": {
+                   "ghcr.io/noaa-gfdl/fre-cli":[{"type":"insecureAcceptAnything"}]
                }
-              }
-              EOF
+           }
+          }
+          EOF
           fi
 
           # registries config
@@ -107,9 +106,9 @@ jobs:
           # variables that might be needed
           export PODMAN_STORAGE_DRIVER=vfs
           export XDG_RUNTIME_DIR=/tmp/run/users/$(id -u)
-          mkdir -p XDG_RUNTIME_DIR
+          mkdir -p $XDG_RUNTIME_DIR
  
-      - name: Run pytest for tests that need podman/apptainer
+      - name:  Run pytest in fre-cli env (tests that need podman and apptainer)
         run: |
           echo "adding spack installed binaries of netcdf/hdf5 to front of path, so conda installed ones don't break compilation tests"
           export PATH="/opt/views/view/bin:$PATH"
