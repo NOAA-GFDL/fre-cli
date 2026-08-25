@@ -60,8 +60,22 @@ jobs:
       - name: Install podman and apptainer
         run: |
           #podman and apptainer needed to run fre make compilation tests
-          apt-get update
-          apt-get install -y --no-install-recommends podman 
+          conda install -y -p /app/cylc-flow-tools -c conda-forge podman apptainer
+
+          #create podman runtime files
+          mkdir -p /etc/containers
+          if [ ! -f /etc/containers/policy.json ]; then
+              cat > /etc/containers/policy.json <<'EOF'
+              {
+               "default": [{"type": "reject"}],
+               "transports": {
+                   "docker": {
+                       "ghcr.io/noaa-gfdl/fre-cli":[{"type":"insecureAcceptAnything"}]
+                   }
+               }
+              }
+              EOF
+          fi
  
       - name: Install the fre-cli
         run: |
