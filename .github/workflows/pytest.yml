@@ -28,7 +28,8 @@ jobs:
         python-version: ['3.12', '3.13', '3.14']
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:production
-      options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
+      options: "--privileged --device=/dev/fuse --security-opt"
+      #options: "--privileged --cap-add=sys_admin --cap-add=mknod --device=/dev/fuse --security-opt seccomp=unconfined --security-opt label=disable --security-opt apparmor=unconfined" # needed for podman
     defaults:
       run:
         shell: bash -l {0}
@@ -62,7 +63,8 @@ jobs:
           #podman and apptainer needed to run fre make compilation tests
           conda install -y -p /app/cylc-flow-tools -c conda-forge podman apptainer
 
-          #create podman runtime files
+          ##INSTALL BINARIES NEEDED FOR PODMAN RUNNING
+          #create signature verification policy file/podman runtime files
           mkdir -p /etc/containers
           if [ ! -f /etc/containers/policy.json ]; then
               cat > /etc/containers/policy.json <<'EOF'
@@ -76,6 +78,17 @@ jobs:
               }
               EOF
           fi
+
+          # registries config
+          cat > /etc/containers/registries.conf <<'EOF'
+          [registries.search]
+          registries = ['docker.io']
+          EOF
+
+          # variables that might be needed
+          export PODMAN_STORAGE_DRIVER=vfs
+          export XDG_RUNTIME_DIR=/tmp/run/users/($id -u)
+          mkdir -p XDG_RUNTIME_DIR
  
       - name: Install the fre-cli
         run: |
