@@ -90,7 +90,7 @@ jobs:
            "default": [{"type": "reject"}],
            "transports": {
                "docker": {
-                   "ghcr.io/noaa-gfdl/fre-cli":[{"type":"insecureAcceptAnything"}]
+                   "ghcr.io/rem1776/hpc-mini:alpine3gcc14.2":[{"type":"insecureAcceptAnything"}]
                }
            }
           }
