@@ -83,6 +83,9 @@ jobs:
 
           ##INSTALL BINARIES NEEDED FOR PODMAN RUNNING
           #create signature verification policy file/podman runtime files
+          #this permits podman to use any image from the local storage transport on the runner
+          #limited to runner's local container store; only applies to current pipeline execution
+          #because runners are ephemeral.....
           mkdir -p /etc/containers
           if [ ! -f /etc/containers/policy.json ]; then
               cat > /etc/containers/policy.json <<'EOF'
@@ -93,7 +96,7 @@ jobs:
                    "ghcr.io/rem1776/hpc-mini:alpine3gcc14.2":[{"type":"insecureAcceptAnything"}]
                },
                "containers-storage": {
-                   "localhost/null_model_full:debug": [{"type": "insecureAcceptAnything"}]
+                   "": [{"type": "insecureAcceptAnything"}]
                }
            }
           }
