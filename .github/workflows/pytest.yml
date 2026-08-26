@@ -78,46 +78,48 @@ jobs:
 
       - name: Install podman and apptainer
         run: |
-          #podman and apptainer needed to run fre make compilation tests
-          conda install -y -p /app/cylc-flow-tools -c conda-forge podman apptainer
+          ##podman and apptainer needed to run fre make compilation tests
+          #conda install -y -p /app/cylc-flow-tools -c conda-forge podman apptainer
 
-          ##INSTALL BINARIES NEEDED FOR PODMAN RUNNING
-          #create signature verification policy file/podman runtime files
-          #this permits podman to use any image from the local storage transport on the runner
-          #limited to runner's local container store; only applies to current pipeline execution
-          #because runners are ephemeral.....
-          #TO-DO: CHECK IF THIS IS OK
-          mkdir -p /etc/containers
-          if [ ! -f /etc/containers/policy.json ]; then
-              cat > /etc/containers/policy.json <<'EOF'
-          {
-           "default": [{"type": "reject"}],
-           "transports": {
-               "docker": {
-                   "ghcr.io/rem1776/hpc-mini:alpine3gcc14.2":[{"type":"insecureAcceptAnything"}]
-               },
-               "containers-storage": {
-                   "": [{"type": "insecureAcceptAnything"}]
-               }
-           }
-          }
-          EOF
-          fi
+          ###INSTALL BINARIES NEEDED FOR PODMAN RUNNING
+          ##create signature verification policy file/podman runtime files
+          ##this permits podman to use any image from the local storage transport on the runner
+          ##limited to runner's local container store; only applies to current pipeline execution
+          ##because runners are ephemeral.....
+          ##TO-DO: CHECK IF THIS IS OK
+          #mkdir -p /etc/containers
+          #if [ ! -f /etc/containers/policy.json ]; then
+          #    cat > /etc/containers/policy.json <<'EOF'
+          #{
+          # "default": [{"type": "reject"}],
+          # "transports": {
+          #     "docker": {
+          #         "ghcr.io/rem1776/hpc-mini:alpine3gcc14.2":[{"type":"insecureAcceptAnything"}]
+          #     },
+          #     "containers-storage": {
+          #         "": [{"type": "insecureAcceptAnything"}]
+          #     }
+          # }
+          #}
+          #EOF
+          #fi
 
-          # registries config
-          cat > /etc/containers/registries.conf <<'EOF'
-          [registries.search]
-          registries = ['docker.io']
-          EOF
+          ## registries config
+          #cat > /etc/containers/registries.conf <<'EOF'
+          #[registries.search]
+          #registries = ['docker.io']
+          #EOF
 
-          # variables that might be needed
-          export PODMAN_STORAGE_DRIVER=vfs
-          export XDG_RUNTIME_DIR=/tmp/run/users/$(id -u)
-          mkdir -p $XDG_RUNTIME_DIR
+          ## variables that might be needed
+          #export PODMAN_STORAGE_DRIVER=vfs
+          #export XDG_RUNTIME_DIR=/tmp/run/users/$(id -u)
+          #mkdir -p $XDG_RUNTIME_DIR
 
           #configure networking
           apt-get update
-          apt-get install -y nftables
+          apt-get install -y \
+            podman \
+            nftables
  
       - name:  Run pytest in fre-cli env (tests that need podman and apptainer)
         run: |
