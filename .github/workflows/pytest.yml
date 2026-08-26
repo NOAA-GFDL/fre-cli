@@ -126,7 +126,7 @@ jobs:
           echo "PATH is $PATH"
 
           echo "running pytest, will print 20 longest durations"
-          python -m pytest --durations=20 --log-level DEBUG --cov-report=xml --cov-config=coveragerc --cov=fre fre/make/tests/compilation
+          python -m pytest --durations=20 --log-level DEBUG --cov-report=xml --cov-config=coveragerc --cov-append --cov=fre fre/make/tests/compilation
 
       - name: Install gpg for Codecov upload
         run: | 
