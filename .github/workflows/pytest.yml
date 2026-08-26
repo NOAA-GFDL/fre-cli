@@ -117,9 +117,14 @@ jobs:
 
           #configure networking
           apt-get update
+          apt-get install -y software-properties-common
+          add-apt-repository -y universe
           apt-get install -y \
+            fuse-overlaysfs \
             podman \
-            nftables
+            apptainer \
+            nftables \ 
+            && rm -rf /var/lib/apt/lists/*
  
       - name:  Run pytest in fre-cli env (tests that need podman and apptainer)
         run: |
