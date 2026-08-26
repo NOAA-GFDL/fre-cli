@@ -115,6 +115,7 @@ jobs:
           #export XDG_RUNTIME_DIR=/tmp/run/users/$(id -u)
           #mkdir -p $XDG_RUNTIME_DIR
 
+          export DEBIAN_FRONTEND=noninteractive
           #configure networking
           apt-get update
           apt-get install -y software-properties-common
@@ -123,7 +124,7 @@ jobs:
             fuse-overlaysfs \
             podman \
             apptainer \
-            nftables \ 
+            nftables \
             && rm -rf /var/lib/apt/lists/*
  
       - name:  Run pytest in fre-cli env (tests that need podman and apptainer)
