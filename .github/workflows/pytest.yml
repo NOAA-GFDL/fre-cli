@@ -86,6 +86,7 @@ jobs:
           #this permits podman to use any image from the local storage transport on the runner
           #limited to runner's local container store; only applies to current pipeline execution
           #because runners are ephemeral.....
+          #TO-DO: CHECK IF THIS IS OK
           mkdir -p /etc/containers
           if [ ! -f /etc/containers/policy.json ]; then
               cat > /etc/containers/policy.json <<'EOF'
