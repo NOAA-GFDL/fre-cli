@@ -91,6 +91,9 @@ jobs:
            "transports": {
                "docker": {
                    "ghcr.io/rem1776/hpc-mini:alpine3gcc14.2":[{"type":"insecureAcceptAnything"}]
+               },
+               "containers-storage": {
+                   "localhost/null_model_full:debug": [{"type": "insecureAcceptAnything"}]
                }
            }
           }
