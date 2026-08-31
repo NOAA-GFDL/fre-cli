@@ -15,8 +15,7 @@ import yaml
 
 fre_logger = logging.getLogger(__name__)
 
-def list_yamls_subtool(yamlfile: str, experiment: str, compile_only: bool, runtime_only: bool,
-                       postprocess_only: bool, analysis_only: bool):
+def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     """
     List_yamls_subtool lists the YAML files defined in the `model.yaml`.
 
@@ -24,55 +23,34 @@ def list_yamls_subtool(yamlfile: str, experiment: str, compile_only: bool, runti
     :type yamlfile: str
     :param experiment: is the name of the experiment
     :type experiment: str
-    :param compile_only: is the flag where if True, return yaml configurations
-                         needed for compilation. Defaults to False.
-    :type compile_only: boolean 
-    :param runtime_only: is the flag where if True, return yaml configurations
-                         needed for model runtime. Defaults to False.
-    :type runtime_only: boolean 
-    :param postprocess_only: is the flag where if True, return yaml configurations
-                             needed for postprocessing. Defaults to False.
-    :type postprocess_only: boolean 
-    :param analysis_only: is the flag where if True, return yaml configurations
-                          needed for postprocessing. Defaults to False.
-    :type analysis_only: boolean
-    :return: Comma separated string of absolute paths to yaml configurations
-    :rtype: str
+    :param application: is the applciation name
+    :type application: str
     """
     model_yaml = Path(yamlfile).name
     model_yaml_path = Path(yamlfile).resolve().parent
 
-    exp_name = experiment
     with open(yamlfile, 'r', encoding="utf-8") as yf:
         yaml_dict = yaml.load(yf, Loader = yaml.Loader)
 
     compile_data = yaml_dict["build"].get("compileYaml")
     platform_data = yaml_dict["build"].get("platformYaml")
-    exp_data = yaml_dict["experiments"].get(exp_name)
+    exp_data = yaml_dict["experiments"].get(experiment)
 
     yamls = [model_yaml]
     # list yamls associated with the compile, run, post-processing, and analysis
-    if exp_name:
+    if experiment:
         settings_data = ""
         if exp_data.get("settings") is not None:
             settings_data = exp_data.get("settings")
 
-        if compile_only:
-            yamls.extend([compile_data, platform_data])
-        elif runtime_only:
+        if application:
             yamls.extend([platform_data, settings_data])
-            yamls.extend(exp_data["run"])
-        elif postprocess_only and not analysis_only:
-            yamls.append(settings_data)
-            yamls.extend(exp_data["postprocess"])
-        elif analysis_only and not postprocess_only:
-            yamls.append(settings_data)
-            yamls.extend(exp_data["analysis"])
-        elif postprocess_only and analysis_only:
-            yamls.append(settings_data)
-            yamls.extend(exp_data["postprocess"])
-            yamls.extend(exp_data["analysis"])
-        else: # list all yamls - default behavior
+            for a in application.split(","):
+                if isinstance(exp_data[a], list):
+                    yamls.extend(exp_data[a])
+                else:
+                    yamls.append(exp_data[a])
+        else:
             yamls.extend([compile_data, platform_data])
             for value in exp_data.values():
                 if isinstance(value, list):

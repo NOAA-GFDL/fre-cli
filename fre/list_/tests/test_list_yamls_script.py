@@ -25,10 +25,7 @@ class TestListYamlsScript:
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,
                 experiment="experiment1",
-                compile_only=False,
-                runtime_only=False,
-                postprocess_only=False,
-                analysis_only=False
+                application=None
             )
 
             # Verify we get all YAMLs
@@ -45,30 +42,30 @@ class TestListYamlsScript:
             assert "pp-test.c96_amip.yaml" in yaml_names
             assert "analysis1.yaml" in yaml_names
 
-    def test_list_yamls_compile_only(self, model_yaml_path):
-        """Test compile_only flag returns model YAML plus compile-related YAMLs"""
-        with pytest.raises(ValueError): #, match = "  *** PROVIDE THE MISSING YAML CONFIGURATIONS ***"):
-            result = list_yamls_subtool(
-                yamlfile=model_yaml_path,
-                experiment="experiment1",
-                compile_only=True,
-                runtime_only=False,
-                postprocess_only=False,
-                analysis_only=False
-            )
-
-            yaml_names = [Path(y).name for y in result.split(",")]
-
-            # Model YAML should always be included
-            assert "model.yaml" in yaml_names
-            # Should contain compile and platform YAMLs
-            assert "compile.yaml" in yaml_names
-            assert "platforms.yaml" in yaml_names
-
-            # Should NOT contain runtime, postprocessing, or analysis YAMLs
-            assert "run1.yaml" not in yaml_names
-            assert "pp.c96_amip.yaml" not in yaml_names
-            assert "analysis1.yaml" not in yaml_names
+#    def test_list_yamls_compile_only(self, model_yaml_path):
+#        """Test compile_only flag returns model YAML plus compile-related YAMLs"""
+#        with pytest.raises(ValueError): #, match = "  *** PROVIDE THE MISSING YAML CONFIGURATIONS ***"):
+#            result = list_yamls_subtool(
+#                yamlfile=model_yaml_path,
+#                experiment="experiment1",
+#                compile_only=True,
+#                runtime_only=False,
+#                postprocess_only=False,
+#                analysis_only=False
+#            )
+#
+#            yaml_names = [Path(y).name for y in result.split(",")]
+#
+#            # Model YAML should always be included
+#            assert "model.yaml" in yaml_names
+#            # Should contain compile and platform YAMLs
+#            assert "compile.yaml" in yaml_names
+#            assert "platforms.yaml" in yaml_names
+#
+#            # Should NOT contain runtime, postprocessing, or analysis YAMLs
+#            assert "run1.yaml" not in yaml_names
+#            assert "pp.c96_amip.yaml" not in yaml_names
+#            assert "analysis1.yaml" not in yaml_names
 
     def test_list_yamls_runtime_only(self, model_yaml_path):
         """Test runtime_only flag returns model YAML plus runtime-related YAMLs"""
@@ -76,10 +73,7 @@ class TestListYamlsScript:
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,
                 experiment="experiment1",
-                compile_only=False,
-                runtime_only=True,
-                postprocess_only=False,
-                analysis_only=False
+                application="run"
             )
 
             yaml_names = [Path(y).name for y in result.split(",")]
@@ -102,10 +96,7 @@ class TestListYamlsScript:
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,
                 experiment="experiment1",
-                compile_only=False,
-                runtime_only=False,
-                postprocess_only=True,
-                analysis_only=False
+                application="postprocess"
             )
 
             yaml_names = [Path(y).name for y in result.split(",")]
@@ -129,10 +120,7 @@ class TestListYamlsScript:
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,
                 experiment="experiment1",
-                compile_only=False,
-                runtime_only=False,
-                postprocess_only=False,
-                analysis_only=True
+                application="analysis"
             )
 
             yaml_names = [Path(y).name for y in result.split(",")]
@@ -155,10 +143,7 @@ class TestListYamlsScript:
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,
                 experiment="experiment1",
-                compile_only=False,
-                runtime_only=False,
-                postprocess_only=True,
-                analysis_only=True
+                application="postprocess,analysis"
             )
 
             yaml_names = [Path(y).name for y in result.split(",")]
@@ -182,10 +167,7 @@ class TestListYamlsScript:
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,
                 experiment="",
-                compile_only=False,
-                runtime_only=False,
-                postprocess_only=False,
-                analysis_only=False
+                application=None
             )
 
             yaml_names = [Path(y).name for y in result.split(",")]
@@ -205,10 +187,7 @@ class TestListYamlsScript:
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,
                 experiment="experiment1",
-                compile_only=False,
-                runtime_only=False,
-                postprocess_only=False,
-                analysis_only=False
+                application=None
             )
 
             # All paths should be absolute or contain full directory structure
@@ -220,26 +199,23 @@ class TestListYamlsScript:
         """Test that model YAML is always included regardless of flags"""
         with pytest.raises(ValueError): #, match = "  *** PROVIDE THE MISSING YAML CONFIGURATIONS ***"):
             test_cases = [
-                (True, False, False, False),  # compile_only
-                (False, True, False, False),  # runtime_only
-                (False, False, True, False),  # postprocess_only
-                (False, False, False, True),  # analysis_only
-                (True, True, False, False),   # compile_only and runtime_only
-                (False, False, True, True),   # postprocess_only and analysis_only
-                (False, False, False, False),  # default (all flags false)
+                ("run"),  # runtime_only
+                ("postprocess"),  # postprocess_only
+                ("analysis"),  # analysis_only
+                ("postprocess,analysis"),   # postprocess_only and analysis_only
+                (None),  # default (no application given)
             ]
 
-            for compile_only, runtime_only, postprocess_only, analysis_only in test_cases:
+            for app in test_cases:
                 result = list_yamls_subtool(
                     yamlfile=model_yaml_path,
                     experiment="experiment1",
-                    compile_only=compile_only,
-                    runtime_only=runtime_only,
-                    postprocess_only=postprocess_only,
-                    analysis_only=analysis_only
+                    application=app
                 )
 
                 yaml_names = [Path(y).name for y in result.split(",")]
+                print(yaml_names)
+                ah
                 assert "model.yaml" in yaml_names, \
                     f"Model YAML not found with flags: " \
                     f"compile_only={compile_only}, " \
@@ -253,10 +229,7 @@ class TestListYamlsScript:
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,
                 experiment="experiment1",
-                compile_only=False,
-                runtime_only=False,
-                postprocess_only=False,
-                analysis_only=False
+                application=None
             )
 
             assert isinstance(result, str)
