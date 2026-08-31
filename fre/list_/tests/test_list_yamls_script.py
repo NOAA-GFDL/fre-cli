@@ -4,8 +4,8 @@ Pytest for list_yamls_script.py
 Tests the list_yamls_subtool function with various flag combinations
 using the example model YAML file.
 """
-import pytest
 from pathlib import Path
+import pytest
 from fre.list_.list_yamls_script import list_yamls_subtool
 
 
@@ -41,31 +41,6 @@ class TestListYamlsScript:
             assert "pp.c96_amip.yaml" in yaml_names
             assert "pp-test.c96_amip.yaml" in yaml_names
             assert "analysis1.yaml" in yaml_names
-
-#    def test_list_yamls_compile_only(self, model_yaml_path):
-#        """Test compile_only flag returns model YAML plus compile-related YAMLs"""
-#        with pytest.raises(ValueError): #, match = "  *** PROVIDE THE MISSING YAML CONFIGURATIONS ***"):
-#            result = list_yamls_subtool(
-#                yamlfile=model_yaml_path,
-#                experiment="experiment1",
-#                compile_only=True,
-#                runtime_only=False,
-#                postprocess_only=False,
-#                analysis_only=False
-#            )
-#
-#            yaml_names = [Path(y).name for y in result.split(",")]
-#
-#            # Model YAML should always be included
-#            assert "model.yaml" in yaml_names
-#            # Should contain compile and platform YAMLs
-#            assert "compile.yaml" in yaml_names
-#            assert "platforms.yaml" in yaml_names
-#
-#            # Should NOT contain runtime, postprocessing, or analysis YAMLs
-#            assert "run1.yaml" not in yaml_names
-#            assert "pp.c96_amip.yaml" not in yaml_names
-#            assert "analysis1.yaml" not in yaml_names
 
     def test_list_yamls_runtime_only(self, model_yaml_path):
         """Test runtime_only flag returns model YAML plus runtime-related YAMLs"""
@@ -214,17 +189,10 @@ class TestListYamlsScript:
                 )
 
                 yaml_names = [Path(y).name for y in result.split(",")]
-                print(yaml_names)
-                ah
-                assert "model.yaml" in yaml_names, \
-                    f"Model YAML not found with flags: " \
-                    f"compile_only={compile_only}, " \
-                    f"runtime_only={runtime_only}, " \
-                    f"postprocess_only={postprocess_only}, " \
-                    f"analysis_only={analysis_only}"
+                assert "model.yaml" in yaml_names
 
     def test_list_yamls_result_is_str(self, model_yaml_path):
-        """Test that the result is always a space separated string"""
+        """Test that the result is always a comma separated string"""
         with pytest.raises(ValueError): #, match = "  *** PROVIDE THE MISSING YAML CONFIGURATIONS ***"):
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,

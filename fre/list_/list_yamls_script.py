@@ -71,15 +71,17 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     fre_logger.setLevel(logging.INFO)
 
     yamls_full_path = yamls_full_path.rstrip(",")
+
     fre_logger.info("YAMLS to be combined (Experiment => %s):", experiment)
     for y in yamls_full_path.split(","):
         fre_logger.info("  - %s", y)
 
-### Might add this in when fre yamltools combine-yamls is refactored 
+### Might add this in when fre yamltools combine-yamls is refactored
 #    fre_logger.info("")
 #    fre_logger.info('If combining these yamls, there are 2 options:')
 #    fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
-#    fre_logger.info('   2. Copy and paste this string (including quotes) as the -y option in "fre yamltools combine -y <yamls>:')
+#    fre_logger.info('   2. Copy and paste this string (including quotes)
+#                           as the -y option in "fre yamltools combine -y <yamls>:')
 #    fre_logger.info('       "%s"', yamls_full_path)
 #    fre_logger.info("")
     fre_logger.setLevel(former_log_level)
