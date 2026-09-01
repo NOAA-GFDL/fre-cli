@@ -1,7 +1,6 @@
 """
 Test fre make makefile
 """
-import os
 import shutil
 from pathlib import Path
 from fre.make import create_makefile_script
