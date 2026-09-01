@@ -13,15 +13,15 @@ class MockMakefileObject:
     """
     Mock makefile object for testing link_line_build
     """
-    def __init__(self, filePath, experiment, libs):
-        self.filePath = filePath
+    def __init__(self, file_path, experiment, libs):
+        self.filepath = file_path
         self.e = experiment
         self.l = libs
 
 
 def test_linklinebuild_container_path():
     """
-    Test link_line_build when filePath contains 'tmp' (container path).
+    Test link_line_build when file_path contains 'tmp' (container path).
     
     This tests line 50 which contains the fh.write() call with the sed pattern.
     """
@@ -32,16 +32,16 @@ def test_linklinebuild_container_path():
 
         # Setup mock object with tmp in path (container case)
         mock_obj = MockMakefileObject(
-            filePath=container_path,
+            file_path=container_path,
             experiment="test_exp",
             libs=["lib1", "lib2"]
         )
 
         # Create the directory structure
-        os.makedirs(mock_obj.filePath, exist_ok=True)
+        os.makedirs(mock_obj.filepath, exist_ok=True)
 
         # Create initial linkline.sh file
-        linkline_file = os.path.join(mock_obj.filePath, "linkline.sh")
+        linkline_file = os.path.join(mock_obj.filepath, "linkline.sh")
         with open(linkline_file, "w") as f:
             f.write("# Initial content\n")
 
@@ -60,15 +60,15 @@ def test_linklinebuild_container_path():
 
 def test_linklinebuild_baremetal_path():
     """
-    Test link_line_build when filePath does not contain 'tmp' (bare metal path)
-    This tests line 57: os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {self.filePath}/Makefile")
+    Test link_line_build when file_path does not contain 'tmp' (bare metal path)
+    This tests line 57: os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {self.filepath}/Makefile")
     """
     # Use a path that doesn't contain 'tmp' to trigger bare metal path
     baremetal_path = "/home/user/baremetal/test"
 
     # Setup mock object without tmp in path (bare metal case)
     mock_obj = MockMakefileObject(
-        filePath=baremetal_path,
+        file_path=baremetal_path,
         experiment="test_exp",
         libs=["-lnetcdf", "-lhdf5"]
     )
@@ -99,13 +99,13 @@ def test_linklinebuild_container_path_no_libs():
         container_path = os.path.join(temp_dir, "container_test")
 
         mock_obj = MockMakefileObject(
-            filePath=container_path,
+            file_path=container_path,
             experiment="test_exp",
             libs=[]
         )
 
-        os.makedirs(mock_obj.filePath, exist_ok=True)
-        linkline_file = os.path.join(mock_obj.filePath, "linkline.sh")
+        os.makedirs(mock_obj.filepath, exist_ok=True)
+        linkline_file = os.path.join(mock_obj.filepath, "linkline.sh")
         with open(linkline_file, "w") as f:
             f.write("# Initial content\n")
 
@@ -127,7 +127,7 @@ def test_linklinebuild_baremetal_path_no_libs():
     baremetal_path = "/home/user/baremetal/test"
 
     mock_obj = MockMakefileObject(
-        filePath=baremetal_path,
+        file_path=baremetal_path,
         experiment="test_exp",
         libs=[]
     )
