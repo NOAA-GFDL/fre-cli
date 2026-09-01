@@ -21,39 +21,18 @@ permissions:
 jobs:
   pylint:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/noaa-gfdl/fre-cli:production 
     defaults:
       run:
         shell: bash -l {0}
     steps:
-      - name: Checkout Files
-        uses: actions/checkout@v4
-
-      - name: Setup Conda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          activate-environment: fre-cli
-          environment-file: environment.yml
-          auto-activate: false
-          miniforge-version: latest
-          conda-remove-defaults: true
-
-      - name: Configure Conda
-        run: |
-          echo "removing main and r channels from defaults"
-          conda config --remove channels defaults || true
-          conda config --remove channels main || true
-          conda config --remove channels r || true
-
-          echo "setting strict channel priority"
-          conda config --set channel_priority strict
-
-          echo "printing conda config just in case"
-          conda config --show
-
-      - name: Install fre
-        run: |
-          pip install .
+      - uses: actions/checkout@v4
 
       - name: Run pylint
         run: |
-          pylint --rcfile pylintrc fre/
+          source /opt/conda/etc/profile.d/conda.sh
+          conda deactivate
+          conda activate /app/cylc-flow-tools
+          pip install pylint
+          python -m pylint --rcfile pylintrc fre/
