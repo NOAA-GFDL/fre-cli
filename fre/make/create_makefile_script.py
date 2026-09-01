@@ -107,7 +107,7 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
                                                        model_root = platform["modelRoot"],
                                                        container_flag = platform["container"])
                 ## Create the Makefile
-                fre_makefile = makefilefre.makefile(exp = fremake_yaml["experiment"],
+                fre_makefile = makefilefre.Makefile(exp = fremake_yaml["experiment"],
                                                    libs = fremake_yaml["baremetal_linkerflags"],
                                                    srcDir = src_dir,
                                                    bldDir = bld_dir,
@@ -115,8 +115,8 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
 
                 # Loop through components and send the component name, requires, and overrides for the Makefile
                 for c in fremake_yaml['src']:
-                    fre_makefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
-                fre_makefile.writeMakefile()
+                    fre_makefile.add_component(c['component'], c['requires'], c['makeOverrides'])
+                fre_makefile.write_makefile()
                 former_log_level = fre_logger.level
                 fre_logger.setLevel(logging.INFO)
                 fre_logger.info("Makefile created: %s/Makefile", bld_dir)
@@ -128,7 +128,7 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
                 template_path = get_mktemplate_path(mk_template = platform["mkTemplate"],
                                                        model_root = platform["modelRoot"],
                                                        container_flag = platform["container"])
-                fre_makefile = makefilefre.makefileContainer(exp = fremake_yaml["experiment"],
+                fre_makefile = makefilefre.MakefileContainer(exp = fremake_yaml["experiment"],
                                                       libs = fremake_yaml["container_addlibs"],
                                                       linkerflags = fremake_yaml["container_linkerflags"],
                                                       srcDir = src_dir,
@@ -138,8 +138,8 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
 
                 # Loop through components and send the component name and requires for the Makefile
                 for c in fremake_yaml['src']:
-                    fre_makefile.addComponent(c['component'], c['requires'], c['makeOverrides'])
-                fre_makefile.writeMakefile()
+                    fre_makefile.add_component(c['component'], c['requires'], c['makeOverrides'])
+                fre_makefile.write_makefile()
                 former_log_level = fre_logger.level
                 fre_logger.setLevel(logging.INFO)
                 fre_logger.info("Makefile created: %s/Makefile", tmp_dir)
