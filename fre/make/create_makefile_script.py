@@ -121,9 +121,9 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
                 ## Create the Makefile
                 fre_makefile = makefilefre.Makefile(exp = fremake_yaml["experiment"],
                                                    libs = fremake_yaml["baremetal_linkerflags"],
-                                                   srcDir = src_dir,
-                                                   bldDir = bld_dir,
-                                                   mkTemplatePath = template_path)
+                                                   src_dir = src_dir,
+                                                   bld_dir = bld_dir,
+                                                   mk_template_path = template_path)
 
                 # Loop through components and send the component name, requires, and overrides for the Makefile
                 for c in fremake_yaml['src']:
@@ -143,10 +143,10 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
                 fre_makefile = makefilefre.MakefileContainer(exp = fremake_yaml["experiment"],
                                                       libs = fremake_yaml["container_addlibs"],
                                                       linkerflags = fremake_yaml["container_linkerflags"],
-                                                      srcDir = src_dir,
-                                                      bldDir = bld_dir,
-                                                      mkTemplatePath = template_path,
-                                                      tmpDir = tmp_dir)
+                                                      src_dir = src_dir,
+                                                      bld_dir = bld_dir,
+                                                      mk_template_path = template_path,
+                                                      tmp_dir = tmp_dir)
 
                 # Loop through components and send the component name and requires for the Makefile
                 for c in fremake_yaml['src']:
