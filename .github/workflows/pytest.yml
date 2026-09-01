@@ -115,6 +115,10 @@ jobs:
           export XDG_RUNTIME_DIR=/tmp/run/users/$(id -u)
           mkdir -p $XDG_RUNTIME_DIR
 
+          #configure networking
+          apt-get update
+          apt-get install -y nftables
+
       - name:  Run pytest in fre-cli env (tests that need podman and apptainer)
         run: |
           echo "adding spack installed binaries of netcdf/hdf5 to front of path, so conda installed ones don't break compilation tests"
