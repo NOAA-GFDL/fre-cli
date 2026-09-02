@@ -52,7 +52,7 @@ def split_netcdf(
     :type inputDir: str
     :param outputDir: Target directory where single-variable NetCDF files will be written.
     :type outputDir: str
-    :param component: Model component identifier string matching the YAML configuration (e.g., ``'atmos'``).
+    :param component: Model component name matching the YAML configuration (e.g., ``'atmos'``).
     :type component: str
     :param history_source: History file pattern name listed under the component source in YAML (e.g., ``'atmos_daily'``).
     :type history_source: str

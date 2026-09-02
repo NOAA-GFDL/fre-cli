@@ -18,7 +18,7 @@ def status_subtool(experiment = None, platform = None, target = None):
     :type experiment: str, optional
     :param platform: FRE platform (e.g., ``'gfdl.ncrc5-deploy'``.
     :type platform: str, optional
-    :param target: Compilation options string (e.g., ``'prod-openmp'``).
+    :param target: FRE target (e.g., ``'prod-openmp'``).
     :type target: str, optional
 
     :raises ValueError: If `experiment`, `platform`, or `target` is None.
