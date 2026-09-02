@@ -33,7 +33,6 @@ requirements:
     - conda-forge::jinja2>=3
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
-#    - conda-forge::nccmp
     - conda-forge::numpy>=2
     - conda-forge::python-cdo
     - conda-forge::pyyaml
@@ -43,6 +42,7 @@ requirements:
 test:
   requires:
     - conda-forge::pytest
+    - conda-forge::nccmp
   source_files:
     - fre/
   files:
