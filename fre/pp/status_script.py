@@ -16,7 +16,7 @@ def status_subtool(experiment = None, platform = None, target = None):
 
     :param experiment: Eexperiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str, optional
-    :param platform: FRE platform (e.g., ``'gfdl.ncrc5-deploy'``.
+    :param platform: FRE platform (e.g., ``'gfdl.ncrc5-deploy'``).
     :type platform: str, optional
     :param target: FRE target (e.g., ``'prod-openmp'``).
     :type target: str, optional
