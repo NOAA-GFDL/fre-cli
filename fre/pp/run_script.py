@@ -23,7 +23,7 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     Constructs workflow identifier `$(experiment)__$(platform)__$(target)`, scans for active instances,
     invokes `cylc play` (with optional `--pause`), and polls `cylc scan` to verify scheduler status.
 
-    :param experiment: Post-processing experiment identifier (e.g., ``'c96L65_am5f4b4r0_amip'``).
+    :param experiment: Experiment identifier (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str, optional
     :param platform: Combined platform and compiler location identifier (e.g., ``'gfdl.ncrc5-deploy'``).
     :type platform: str, optional
