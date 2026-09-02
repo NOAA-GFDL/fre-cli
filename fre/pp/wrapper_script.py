@@ -23,13 +23,11 @@ fre_logger = logging.getLogger(__name__)
 
 def run_all_fre_pp_steps(experiment = None, platform = None, target = None, config_file = None, branch = None, time = None):
     """
-    `Run_all_fre_pp_steps` execute all FRE post-processing pipeline steps in the following sequential order:
-    ``checkout_template`` -> ``yaml_info`` -> ``install_subtool`` ->
-    ``pp_run_subtool`` -> ``trigger`` (if ``time`` is specified) -> ``status_subtool``.
+    `Run_all_fre_pp_steps` executes all FRE post-processing pipeline steps in sequential order:
 
     :param experiment: Experiment name as defined in the model YAML (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str, optional
-    :param platform: FRE platform (e.g., ``'gfdl.ncrc5-deploy'``.
+    :param platform: FRE platform (e.g., ``'gfdl.ncrc5-deploy'``).
     :type platform: str, optional
     :param target: FRE target (e.g., ``'prod-openmp'``).
     :type target: str, optional
