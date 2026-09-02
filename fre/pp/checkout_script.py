@@ -34,11 +34,10 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     :param experiment: Experiment name as listed in the model YAML file
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
-    :param platform: Combined platform and compiler location identifier (e.g., ``'gfdl.ncrc5-deploy'``).
-                     Must not be None.
+    :param platform: FRE platform; defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str, optional
-    :param target: Compilation and runtime target options string (e.g., ``'prod-openmp'``).
-                   Must not be None.
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str, optional
     :param branch: Git branch or tag name to checkout. If None, defaults to the installed `fre` package version.
     :type branch: str, optional
