@@ -1,12 +1,25 @@
 #!/bin/python
 """
-NetCDF Single-Variable Splitting Utility for FRE Post-Processing (fre pp).
-
-The split_netcdf_script module provides tools to split multi-variable NetCDF history files into single-variable
-NetCDF files while preserving time coordinates, coordinate encodings, bounds, and metadata.
+The split_netcdf_script module provides tools to split multi-variable NetCDF history files into a
+set of single-variable NetCDF files while preserving time coordinates, coordinate encodings, bounds, and metadata.
 
 It supports processing both flat input directories and nested subdirectory hierarchies (e.g., regridded output),
 and can either parse variable extraction lists from FRE post-processing YAML files or extract all variables.
+
+Variables are specified per history source under ``postprocess: components: <type>: sources:`` in the YAML file,
+via a ``variables`` key listing the variable names to extract for that ``history_file`` entry, e.g.::
+
+    postprocess:
+      components:
+        - type: 'atmos'
+          sources:
+            - history_file: "atmos_daily"
+              variables: ["tasmax", "tasmin", "ps", "tas"]
+            - history_file: "atmos_month"
+
+Here, ``component`` corresponds to a ``type`` value (``'atmos'``) and ``history_source`` corresponds to a
+``history_file`` value (``'atmos_daily'``). If a source has no ``variables`` key (e.g. ``atmos_month`` above),
+all variables in its matching NetCDF files are extracted.
 """
 
 import logging
@@ -37,12 +50,11 @@ def split_netcdf(
     split_all_vars: bool = False,
 ) -> None:
     """
-    Split multi-variable NetCDF files matching a history source pattern into single-variable files.
+    Splits multi-variable NetCDF files matching `history_source` into a set of files per variable.
 
-    Searches `inputDir` (and optionally subdirectories) for NetCDF files matching the target
-    history source pattern. Extracts requested variables defined in `yamlfile` for the given
-    `component`, or extracts all variables if `split_all_vars` is True, and writes individual NetCDF
-    files to `outputDir`.
+    Searches `inputDir` for NetCDF filenames matching the `history_source` pattern. Extracts all variables 
+    if `split_all_vars` is True. Else, extracts the variables listed under the specified `component` `type`
+    in the `yamlfile`.
 
     :param inputDir: Directory containing source multi-variable NetCDF files.
     :type inputDir: str
@@ -52,15 +64,17 @@ def split_netcdf(
     :type component: str
     :param history_source: History file pattern name listed under the component source in YAML (e.g., ``'atmos_daily'``).
     :type history_source: str
-    :param use_subdirs: If True, recursively searches subdirectories under `inputDir` and reproduces hierarchy in `outputDir`.
+    :param use_subdirs: If True, recursively searches subdirectories under `inputDir` 
+                        and reproduces the directory stucture in `outputDir`.
     :type use_subdirs: bool
     :param yamlfile: Path to post-processing YAML configuration file.
     :type yamlfile: str
-    :param split_all_vars: If True, ignores variable lists in `yamlfile` and extracts all data variables. Defaults to False.
+    :param split_all_vars: If True, ignores the associated `variables` list for the `history_file` found in 
+                           `yamlfile` and extracts all data variables. Defaults to False.
     :type split_all_vars: bool
 
-    :raises OSError: If `inputDir` does not exist or if no matching files are found in input locations.
-    :raises ValueError: If specified component or history source cannot be found in `yamlfile`.
+    :raises OSError: If `inputDir` does not exist or if files matching `history_source` are not found in `inputDir`.
+    :raises ValueError: If specified `component` or history source cannot be found in `yamlfile`.
     :return: None
     :rtype: None
     """
@@ -164,10 +178,10 @@ def split_file_xarray(
     infile: str, outfiledir: str, var_list: Union[str, List[str]] = "all"
 ) -> None:
     """
-    Split a single multi-variable NetCDF file into individual per-variable NetCDF files.
-
-    Filters out coordinate variables and metadata bounds variables (`_bnds`, `_bounds`, `average_`, etc.)
-    and outputs single-variable files named using FRE naming conventions (`<date>.<component>.<var>.<tile>.nc`).
+    Internally used method called by `split_netcdf` to split a single multi-variable NetCDF file
+    into individual per-variable NetCDF files using `xarray`.  Filters out coordinate variables 
+    and metadata bounds variables (`_bnds`, `_bounds`, `average_`, etc.) and outputs single-variable files 
+    named using FRE naming conventions (`<date>.<component>.<var>.<tile>.nc`).
 
     :param infile: Path to source input NetCDF file.
     :type infile: str
@@ -224,7 +238,9 @@ def split_file_xarray(
 
     def is_metadata_var(var_to_check: str) -> bool:
         """
-        Check whether a variable matches metadata patterns or lower-dimensional coordinate attributes.
+        Internally used method to check whether a variable matches 
+        metadata patterns or lower-dimensional coordinate attributes.  If `is_metadata_var` is
+        true for `var_to_check`, the variable will not be written out to its own NetCDF file.
 
         :param var_to_check: Variable name to inspect.
         :type var_to_check: str
@@ -284,9 +300,10 @@ def split_file_xarray(
 
 def get_max_ndims(dataset: xr.Dataset) -> int:
     """
-    Calculate the maximum dimension count of any data variable in an xarray Dataset.
+    Internally used method invoked from `split_file_xarray` to calculate the maximum dimension count 
+    of any data variable in an xarray Dataset.
 
-    :param dataset: Input xarray Dataset.
+    :param dataset: Input xarray Dataset
     :type dataset: xr.Dataset
     :return: Maximum number of dimensions present on a data variable.
     :rtype: int
@@ -298,11 +315,11 @@ def get_max_ndims(dataset: xr.Dataset) -> int:
 
 def set_coord_encoding(dset: xr.Dataset, vcoords: List[str]) -> Dict[str, Dict[str, Union[None, str, type]]]:
     """
-    Generate xarray encoding settings for coordinate variables to enforce CF metadata compliance.
+    Internally used method invoked from `split_file_xarray` to generate `xarray` encoding settings for 
+    coordinate variables to enforce CF metadata compliance:  explicitly removes `_FillValue` from 
+    coordinate attributes to prevent corrupting CF coordinates.
 
-    Explicitly removes `_FillValue` from coordinate attributes to prevent corrupting CF coordinates.
-
-    :param dset: Input xarray Dataset.
+    :param dset: Input xarray Dataset
     :type dset: xr.Dataset
     :param vcoords: List of coordinate variable names.
     :type vcoords: list of str
@@ -324,7 +341,8 @@ def set_coord_encoding(dset: xr.Dataset, vcoords: List[str]) -> Dict[str, Dict[s
 
 def set_var_encoding(dset: xr.Dataset, varnames: List[str]) -> Dict[str, Dict[str, Union[None, str, type]]]:
     """
-    Generate encoding settings for data and metadata variables to preserve data types and units.
+    Internally used method called from `split_file_xarray` to generate encoding settings for data and metadata 
+    variables to preserve data types and units.
 
     :param dset: Input xarray Dataset.
     :type dset: xr.Dataset
@@ -349,9 +367,8 @@ def set_var_encoding(dset: xr.Dataset, varnames: List[str]) -> Dict[str, Dict[st
 
 def fre_outfile_name(infile: str, varname: str) -> str:
     """
-    Construct standardized FRE single-variable output filename.
-
-    Converts filename pattern ``date.component(.tileX).nc`` to ``date.component.var(.tileX).nc``.
+    Internally used method to construct standardized FRE single-variable output filename:
+    converts filename pattern ``date.component(.tileX).nc`` to ``date.component.var(.tileX).nc``.
 
     :param infile: Input filename or path string.
     :type infile: str
