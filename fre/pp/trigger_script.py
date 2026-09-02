@@ -1,11 +1,5 @@
 """
-Workflow Segment Trigger Utility for FRE Post-Processing (fre pp).
-
-The trigger_script module triggers the execution of post-processing tasks for a specific time segment
-of history output in an installed Cylc workflow (``$(experiment)__$(platform)__$(target)``).
-
-It invokes the Cylc CLI to trigger the ``pp-starter`` task for a given cycle time point:
-``cylc trigger $(workflow_name)//$(time)/pp-starter``
+The trigger_script module contains methods to trigger Cylc workflow tasks
 """
 
 import logging
@@ -18,17 +12,16 @@ fre_logger = logging.getLogger(__name__)
 
 def trigger(experiment = None, platform = None, target = None, time = None):
     """
-    Trigger post-processing tasks for a specific history time segment in a Cylc workflow.
-
-    Constructs the canonical workflow identifier ``$(experiment)__$(platform)__$(target)``
-    and issues a ``cylc trigger`` command targeted at the ``pp-starter`` task for the
-    specified time cycle.
+    `Trigger` runs ``cylc trigger`` command to run the post-processing tasks for the
+    specified history `time` segment, i.e., triggers the ``pp-starter`` task for a given 
+    cycle time point:``cylc trigger $(workflow_name)//$(time)/pp-starter`` This method 
+    requires `experiment`, `platform`,  and `target` in order to construct the Cylc 
+    workflow name ``$(experiment)__$(platform)__$(target)`` 
 
     :param experiment: Post-processing experiment name as specified in the model YAML
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
-    :param platform: Combined platform and compiler location identifier (e.g., ``'gfdl.ncrc5-deploy'``).
-                     Must not be None.
+    :param platform: FRE platform (e.g., ``'gfdl.ncrc5-deploy'``). Must not be None.
     :type platform: str, optional
     :param target: Compilation options string (e.g., ``'prod-openmp'``). Must not be None.
     :type target: str, optional
