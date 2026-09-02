@@ -1,8 +1,5 @@
 """
-Cylc Workflow Status Query Utility for FRE Post-Processing (fre pp).
-
-The status_script module reports the operational execution state of an installed post-processing
-Cylc workflow (`$(experiment)__$(platform)__$(target)`) using the `cylc workflow-state` CLI.
+Status_script module contains methods to query the Cylc workflow state
 """
 
 import subprocess
@@ -13,10 +10,9 @@ TIMEOUT_SECS = 120
 
 def status_subtool(experiment = None, platform = None, target = None):
     """
-    Query and display current task execution status for a Cylc post-processing workflow.
-
-    Constructs canonical workflow name `$(experiment)__$(platform)__$(target)` and calls
-    `cylc workflow-state` with a 120-second timeout.
+    Called in the `wrapper_script` module to query and display current task execution status 
+    for a Cylc post-processing workflow.  This method constructs canonical FRE workflow name 
+    `$(experiment)__$(platform)__$(target)` and calls `cylc workflow-state` with a 120-second timeout.
 
     :param experiment: Post-processing experiment identifier (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str, optional
