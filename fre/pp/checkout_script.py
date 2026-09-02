@@ -31,7 +31,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     ensures ~/cylc-src exists, and either clones the `fre-workflows`
     repository or verifies that an existing checkout matches the specified Git branch/tag version.
 
-    :param experiment: Post-processing experiment name as listed in the model YAML file
+    :param experiment: Experiment name as listed in the model YAML file
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
     :param platform: Combined platform and compiler location identifier (e.g., ``'gfdl.ncrc5-deploy'``).
