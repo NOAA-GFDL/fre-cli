@@ -252,7 +252,7 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     Outputs generated workflow configurations directly into:
     `~/cylc-src/<experiment>__<platform>__<target>/`
 
-    :param yamlfile: Path to input experiment YAML configuration file.
+    :param yamlfile: Path to model YAML configuration file.
     :type yamlfile: str, optional
     :param experiment: Experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str, optional
