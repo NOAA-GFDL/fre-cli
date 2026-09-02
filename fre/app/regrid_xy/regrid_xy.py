@@ -64,7 +64,7 @@ def get_grid_spec(datadict: dict) -> str:
         settings: &shared_settings
             history_segment: "P1Y"
             site: "ppan"
-            pp_grid_spec: "grid_spec.nc"
+            pp_grid_spec: "tarfile_containing_gridspec.tar"
     ```
     
     or in dictionary format: yaml["postprocess"]["settings"]["pp_grid_spec"].
@@ -110,7 +110,8 @@ def get_grid_spec(datadict: dict) -> str:
 def get_input_mosaic(datadict: dict) -> str:
 
     """
-    Get_input_mosaic gets the input mosaic filename from the grid_spec file.
+    Get_input_mosaic is an internally used method to get the input mosaic 
+    filename from the grid_spec file.
 
     :param datadict: dictionary populated in parent method `regrid_xy` 
                      that contains relevant regrid parameters 
@@ -147,8 +148,8 @@ def get_input_mosaic(datadict: dict) -> str:
 def get_input_file(datadict: dict, source: str) -> str:
 
     """
-    Get_input_file formats the input file name where the input file contains the 
-    variable data that will be regridded.
+    Get_input_file is an internally used method to format the input filename 
+    where the input file contains the variable data that will be regridded.
 
     :param datadict: dictionary populated in parent method `regrid_xy` 
                      that contains relevant regrid parameters.
@@ -180,10 +181,11 @@ def get_input_file(datadict: dict, source: str) -> str:
 def get_remap_file(datadict: dict) -> str:
 
     """
-    Get_remap_file determines the remap filename based on the input mosaic filename, output grid size, and
-    order of the conservative remapping method (either 1 or 2).  For example, this function will return the name
-    C96_mosaicX180x288_conserve_order1.nc where the input mosaic filename is C96_mosaic.nc and
-    the output grid size has 180 longitude cells and 288 latitude cells.
+    Get_remap_file is an internally used method to determine the remap filename based on the 
+    input mosaic filename, output grid size, and order of the conservative remapping method 
+    (either 1 or 2).  For example, this function will return the name C96_mosaicX180x288_conserve_order1.nc 
+    where the input mosaic filename is C96_mosaic.nc and the output grid size has 180 longitude 
+    cells and 288 latitude cells.
 
     The remap_file will be read from, or outputted to the remap_dir.
 
@@ -223,8 +225,9 @@ def get_remap_file(datadict: dict) -> str:
 def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 
     """
-    Get_scalar_fields returns the scalar_fields argument for fregrid.
-    Scalar_fields is a string of comma separated list of variables
+    Get_scalar_fields is an internally called method and will return
+    the scalar_fields argument for fregrid. Scalar_fields is a 
+    string of comma separated list of variables
     that will be regridded.
 
     :param datadict: dictionary populated in parent method `regrid_xy` 
@@ -262,8 +265,9 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 def write_summary(datadict):
 
     """
-    Write_summary logs a summary of the component that will be regridded in a human-readable format
-    This function will log only if the logging level is set to INFO or lower.
+    Write_summary is an internally used method to log a summary of the 
+    component that will be regridded in a human-readable format.  This 
+    function will log only if the logging level is set to INFO or lower.
 
     :param datadict: dictionary populated in parent method `regrid_xy` 
                      that contains relevant regrid parameters.
@@ -294,7 +298,7 @@ def regrid_xy(yamlfile: str,
 ):
 
     """
-    Regrid_xy is the too-level method that calls fregrid in FRE-NCTools to 
+    Regrid_xy is the top-level method that calls fregrid in FRE-NCTools to 
     regrid data in the specified source data file.
 
     :param yamlfile: yaml file containing specifications for yaml["postprocess"]["settings"]["pp_grid_spec"]
