@@ -24,7 +24,7 @@ FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
 
 def checkout_template(experiment = None, platform = None, target = None, branch = None):
     """
-    Check out or validate workflow template files from https://github.com/NOAA-GFDL/fre-workflows.git 
+    Check out workflow template files from https://github.com/NOAA-GFDL/fre-workflows.git 
     into the default ~/cylc-src path.
 
     Constructs a standardized workflow name from the given experiment, platform, and target settings,
