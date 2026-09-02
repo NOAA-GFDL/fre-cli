@@ -56,7 +56,6 @@ non_regriddable_variables = [
 def get_grid_spec(datadict: dict) -> str:
 
     """
-<<<<<<< HEAD
     Get_grid_spec is an internally used method to get the grid_spec.nc file from 
     the tar file specified in the pp yaml as 
     
@@ -69,22 +68,13 @@ def get_grid_spec(datadict: dict) -> str:
     ```
     
     or in dictionary format: yaml["postprocess"]["settings"]["pp_grid_spec"].
-=======
-    Gets the mosaic.nc or grid_spec.nc file from the tar file specified in
-    yaml["postprocess"]["settings"]["pp_grid_spec"]
->>>>>>> frecli/main
 
     :param datadict: dictionary populated in parent method `regrid_xy` 
                      that contains relevant regrid parameters.
     :type datadict: dict
 
-<<<<<<< HEAD
     :raises IOError:  Error if grid_spec.nc file cannot be found in the
                       current directory.
-=======
-    :raises IOError:  Error if neither mosaic.nc nor grid_spec.nc file can be found in the
-                      current directory
->>>>>>> frecli/main
 
     :return: grid_spec filename
     :rtype: str
