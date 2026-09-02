@@ -1,7 +1,7 @@
 """
 Workflow Template Checkout Utility for FRE Post-Processing (fre pp).
 
-The checkout_script module manages the automated cloning and validation of post-processing Cylc
+The checkout_script module manages the automated cloning of post-processing Cylc
 workflow templates from the official NOAA-GFDL workflows Git repository into the
 local user's Cylc source directory (`~/cylc-src`).
 
