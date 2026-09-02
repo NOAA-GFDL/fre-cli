@@ -14,9 +14,9 @@ def status_subtool(experiment = None, platform = None, target = None):
     for a Cylc post-processing workflow.  This method constructs canonical FRE workflow name 
     `$(experiment)__$(platform)__$(target)` and calls `cylc workflow-state` with a 120-second timeout.
 
-    :param experiment: Post-processing experiment identifier (e.g., ``'c96L65_am5f4b4r0_amip'``).
+    :param experiment: Eexperiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str, optional
-    :param platform: Platform identifier string (e.g., ``'gfdl.ncrc5-deploy'``).
+    :param platform: FRE platform (e.g., ``'gfdl.ncrc5-deploy'``.
     :type platform: str, optional
     :param target: Compilation options string (e.g., ``'prod-openmp'``).
     :type target: str, optional
