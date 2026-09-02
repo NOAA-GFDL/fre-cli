@@ -2,24 +2,6 @@
 """
 The split_netcdf_script module provides tools to split multi-variable NetCDF history files into a
 set of single-variable NetCDF files while preserving time coordinates, coordinate encodings, bounds, and metadata.
-
-It supports processing both flat input directories and nested subdirectory hierarchies (e.g., regridded output),
-and can either parse variable extraction lists from FRE post-processing YAML files or extract all variables.
-
-Variables are specified per history source under ``postprocess: components: <type>: sources:`` in the YAML file,
-via a ``variables`` key listing the variable names to extract for that ``history_file`` entry, e.g.::
-
-    postprocess:
-      components:
-        - type: 'atmos'
-          sources:
-            - history_file: "atmos_daily"
-              variables: ["tasmax", "tasmin", "ps", "tas"]
-            - history_file: "atmos_month"
-
-Here, ``component`` corresponds to a ``type`` value (``'atmos'``) and ``history_source`` corresponds to a
-``history_file`` value (``'atmos_daily'``). If a source has no ``variables`` key (e.g. ``atmos_month`` above),
-all variables in its matching NetCDF files are extracted.
 """
 
 import logging
@@ -54,13 +36,23 @@ def split_netcdf(
 
     This method searches `inputDir` for NetCDF filenames matching the `history_source` pattern and 
     extracts all variables if `split_all_vars` is True or extracts the variables listed under the specified 
-    `component` `type` in the `yamlfile` if `split_all_vars` is False
+    `component` `type` in the `yamlfile` if `split_all_vars` is False (See below example yaml for clarity)
+    
+    ```
+    postprocess:
+      components:
+        - type: 'atmos'
+          sources:
+            - history_file: "atmos_daily"
+              variables: ["tasmax", "tasmin", "ps", "tas"]
+            - history_file: "atmos_month"
+    ```
 
     :param inputDir: Directory containing source multi-variable NetCDF files.
     :type inputDir: str
     :param outputDir: Target directory where single-variable NetCDF files will be written.
     :type outputDir: str
-    :param component: Model component identifier string matching the YAML configuration (e.g., ``'atmos'``).
+    :param component: Model component name matching the YAML configuration (e.g., ``'atmos'``).
     :type component: str
     :param history_source: History file pattern name listed under the component source in YAML (e.g., ``'atmos_daily'``).
     :type history_source: str
