@@ -1,26 +1,36 @@
-''' this holds functions used across various parts of fre/make subtools '''
+"""
+`make_helpers` contains helper/utility functions for
+`create_compile_script`, `create_makefile_script`, and `create_docker_script`.
+"""
 
 import logging
 from pathlib import Path
-from typing import Optional
 
-def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: Optional[str]=None) -> str:
+def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: str = None) -> str:
+
     """
-    Save the full path to the mk_template.
+    `get_mktemplate_path` resolves the full path to an mkmf template file (.mk) for either a
+    bare-metal system or a container image filesystem.
 
-    :param mk_template: Full path or just the name of the mk_template
-    :type mk_template: string
-    :param model_root: Path to the root for all model install files
-    :type model_root: str
-    :param container_flag: True/False if it is a container build
-    :type container_flag: boolean
-    :raises ValueError: Error if the mk_template does not exist
-    :return: Full path to the mk_template
-    :rtype: string
+    `mk_template` may be a bare filename (e.g. `intel.mk`) or an absolute path (e.g. `/path/to/intel.mk`). 
 
-    .. note:: When container_flag is False, model_root is not used.
-              When container_flag is True, model_root must be defined.
+    :param mk_template: is the bare filename (e.g. `intel.mk`) or absolute path to the
+                        mkmf template.  Defined as mkTemplate in platforms `yaml`.
+    :type mk_template: str
+    :param container_flag: is a flag that is True for container builds and False for bare-metal builds.  
+    :type container_flag: bool
+    :param model_root: Root directory for model install files inside the container
+                       (defined as modelRoot in platforms.yaml).  Required
+                       when container_flag is True and mk_template is a bare
+                       filename; unused otherwise.
+    :type model_root: str, optional
+
+    :raises ValueError: If the resolved template path does not exist on the host filesystem when container_flag is False.
+
+    :return: a resolved full path to the mkmf template file.
+    :rtype: str
     """
+
     template_path = mk_template
 
     # check if mk_template has a /, indicating it is a path
@@ -30,7 +40,7 @@ def get_mktemplate_path(mk_template: str, container_flag: bool, model_root: Opti
             topdir = Path(__file__).resolve().parents[1]
             template_path = str(topdir)+ "/mkmf/templates/"+mk_template
 
-        # Check in template path exists
+        # Check if template path exists
         if not Path(template_path).exists():
             raise ValueError("Error w/ mkmf template. Created path from given "
                              f"filename: {template_path} does not exist.")

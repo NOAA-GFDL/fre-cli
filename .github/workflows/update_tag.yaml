@@ -1,5 +1,8 @@
 name: Update Tag Version References
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     tags:
@@ -11,11 +14,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Fetch tags
         run: |
-          git fetch --tags origin
-
+          git fetch --tags --force origin
+ 
       - name: Get the new tag
         id: get_tag
         run: |
@@ -24,7 +27,9 @@ jobs:
       - name: Get previous tag
         id: get_prev_tag
         run: |
-          prev_tag=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
+          new_tag="${{ steps.get_tag.outputs.tag }}"
+          prev_tag=$(git tag --sort=-version:refname | grep -v "^${new_tag}$" | head -n 1)
+          #prev_tag=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
           echo "prev_tag=${prev_tag}" >> $GITHUB_OUTPUT
 
       - name: Replace old tag with new tag in all relevant files
@@ -41,6 +46,12 @@ jobs:
             find docs -type f -exec sed -i "s/$old_tag/$new_tag/g" {} +
           fi
 
+      - name: Update fre-cli version for container environment
+        run: |
+          new_tag="${{ steps.get_tag.outputs.tag }}"
+          # Targeted update: only replace version on the fre-cli dependency line
+          sed -i "s/\(noaa-gfdl::fre-cli==\)[0-9A-Za-z.]\+/\1$new_tag/" container-files/cylc-flow-tools.yaml
+
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
         with:
@@ -50,3 +61,4 @@ jobs:
           delete-branch: true          # delete afer merge
           title: Update refs to version number post-release
           body: automated change, replaces references to the old version number with the new version number upon releases. This PR will need to be closed and reopened to run CI testing.
+          exclude: container-files/cylc-flow-tools.yaml

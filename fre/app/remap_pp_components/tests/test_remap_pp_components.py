@@ -88,6 +88,18 @@ def test_yaml_ex_exists():
     """
     assert Path(YAML_EX).exists()
 
+## UNIT TESTS ##
+def test_chunk_to_legacy():
+    """
+    Test conversion of ISO8601 durations to Bronx-style chunk
+    frequencies, including multi-digit values
+    """
+    assert rmp.chunk_to_legacy("P1Y") == "1yr"
+    assert rmp.chunk_to_legacy("P10Y") == "10yr"
+    assert rmp.chunk_to_legacy("P5M") == "5mo"
+    assert rmp.chunk_to_legacy("P12M") == "12mo"
+    assert rmp.chunk_to_legacy("P1D") == "error"
+
 ## CREATE TEST FILES ##
 def test_create_ncfile_with_ncgen_cdl():
     """
@@ -374,8 +386,10 @@ def test_nccmp_ncgen_remap_statics():
     output_nc_file = f"{comp_name}.bk.nc"
 
     nccmp = [ "nccmp", "-d",
-              Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_static_scalar/{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}"),
-              Path(f"{REMAP_OUT}/static/{comp_name}/{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}")]
+              Path(f"{REMAP_IN}/{NATIVE_GRID}/atmos_static_scalar/"
+                   f"{STATIC_FREQ}/{STATIC_CHUNK}/{STATIC_DATA_NC_FILES[0]}"),
+              Path(f"{REMAP_OUT}/static/{comp_name}/"
+                   f"{STATIC_FREQ}/{STATIC_CHUNK}/{output_nc_file}")]
 
     sp = subprocess.run( nccmp, check = False)
     assert sp.returncode == 0
@@ -444,8 +458,12 @@ def test_remap_static_variable_filtering():
     # Check for
     # 1. creation of output directory structure,
     # 2. link to nc file in output location
-    assert all([Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
-                Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/{STATIC_FREQ}/{STATIC_CHUNK}/atmos_scalar_test_vars_CNAME.bk.nc").exists()])
+    assert all([
+        Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/"
+             f"{STATIC_FREQ}/{STATIC_CHUNK}").exists(),
+        Path(f"{remap_static_out}/atmos_scalar_test_vars_CNAME/"
+             f"{STATIC_FREQ}/{STATIC_CHUNK}/atmos_scalar_test_vars_CNAME.bk.nc").exists()
+    ])
 
 @pytest.mark.xfail
 def test_remap_variable_filtering_fail():

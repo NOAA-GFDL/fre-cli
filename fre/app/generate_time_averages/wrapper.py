@@ -164,8 +164,8 @@ def generate_wrapper(cycle_point: str,
             fre_logger.debug(input_files)
 
             # form output filename
-            first = list(recurrence)[0]
-            last = list(recurrence)[-1]
+            first = cycle_point
+            last = cycle_point + output_interval - one_year
             first_yyyy = TimePointDumper().strftime(first, "%Y")
             last_yyyy = TimePointDumper().strftime(last, "%Y")
             subdir = Path(dir_ / 'av' / grid / source / frequency_iso / str(output_interval))
