@@ -69,11 +69,12 @@ def rose_init(experiment: str, platform: str, target: str) -> tuple[metomi.rose.
     """
     Initialize a Rose suite configuration node with default template variables.
 
-    :param experiment: Post-processing experiment identifier (e.g., ``'c96L65_am5f4b4r0_amip'``).
+    :param experiment: Experiment identifier (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str
-    :param platform: Target platform and compiler combination (e.g., ``'gfdl.ncrc5-deploy'``).
+    :param platform: FRE platform defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str
-    :param target: Compilation options string (e.g., ``'prod-openmp'``).
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
 
     :return: An initialized Rose configuration node populated with standard experiment settings.
@@ -252,13 +253,14 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     Outputs generated workflow configurations directly into:
     `~/cylc-src/<experiment>__<platform>__<target>/`
 
-    :param yamlfile: Path to input experiment YAML configuration file.
+    :param yamlfile: Path to model YAML configuration file.
     :type yamlfile: str, optional
     :param experiment: Experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str, optional
-    :param platform: Target platform identifier (e.g., ``'gfdl.ncrc5-deploy'``).
+    :param platform: FRE platform defined in the platforms yaml
+                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str, optional
-    :param target: Target compilation options string (e.g., ``'prod-openmp'``).
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str, optional
 
     :raises ValueError: If any required argument (`yamlfile`, `experiment`, `platform`, `target`) is None.

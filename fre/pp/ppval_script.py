@@ -151,6 +151,9 @@ def validate(filepath: str):
 
 
     import re
+    # Get the date range from the filename
+    # This regular expression accepts at minimum '.YYYY-YYYY.' date strings.
+    # If month, day, hour, and minute strings are present it will identify them
     # Regex matching filename date ranges: .YYYY[MM[DD[HH[:mm]]]]-YYYY[MM[DD[HH[:mm]]]]
     match = re.compile(r"\.((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)-((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)\.")
     filename = os.path.basename(filepath)
@@ -165,6 +168,8 @@ def validate(filepath: str):
     date_length = len(date_start.group())
 
     fre_logger.debug(f"date_start: {date_start}; date_end: {date_end}; date_length: {date_length}")
+
+    # Get calendar type from metadata and make sure it's valid
 
     # Inspect NetCDF metadata for CF calendar
     dataset = netCDF4.Dataset(filepath, 'r')

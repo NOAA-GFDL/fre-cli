@@ -2,7 +2,7 @@
 The wrapper_script module contains methods to orchestrate end-to-end postprocessing, which involves:
 
 1. **Checkout**: Clone or verify workflow templates (``checkout_template``).
-2. **Configure**: Consolidate YAML configs and create Rose settings (``yaml_info``).
+2. **Configure-yaml**: Consolidate YAML configs and create Rose settings (``yaml_info``).
 3. **Install**: Deploy workflow definition from ``~/cylc-src`` to ``~/cylc-run`` (``install_subtool``).
 4. **Run**: Launch or restart the Cylc workflow scheduler (``pp_run_subtool``).
 5. **Trigger** *(Optional)*: Trigger specific history chunk processing if the argument `time` is provided (``trigger``).

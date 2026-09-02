@@ -25,7 +25,7 @@ def trigger(experiment = None, platform = None, target = None, time = None):
     :type platform: str, optional
     :param target: Compilation options string (e.g., ``'prod-openmp'``). Must not be None.
     :type target: str, optional
-    :param time: Start time of the history segment to process, formatted as an ISO or
+    :param time: Start time of the cycle point to process, formatted as an ISO or
                  integer timestamp (e.g., ``'00010101'`` or ``'19790101'``). Must not be None.
     :type time: str, optional
 
@@ -37,7 +37,7 @@ def trigger(experiment = None, platform = None, target = None, time = None):
     :rtype: None
 
     .. note::
-       The history segment cycle is defined by a start time point (``--time``) and a chunk
+       The cycle point is defined by a start time point (``--time``) and a chunk
        duration defined in the experiment post-processing YAML configuration. Cylc uses
        datetime cycling to process time chunks sequentially across the experiment duration.
     """
