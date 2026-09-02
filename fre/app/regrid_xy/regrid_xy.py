@@ -1,3 +1,8 @@
+"""
+Regrid_xy module contains methods to regrid variables typically on the source 
+model grid to a regular lat-lon grid by calling `fregrid` from FRE-NCTools.
+"""
+
 import logging
 import os
 from pathlib import Path
@@ -49,21 +54,32 @@ non_regriddable_variables = [
 def get_grid_spec(datadict: dict) -> str:
 
     """
-    Gets the grid_spec.nc file from the tar file specified in
-    yaml["postprocess"]["settings"]["pp_grid_spec"]
+    Get_grid_spec is an internally used method to get the grid_spec.nc file from 
+    the tar file specified in the pp yaml as 
+    
+    ```
+    postProcess:
+        settings: &shared_settings
+            history_segment: "P1Y"
+            site: "ppan"
+            pp_grid_spec: "grid_spec.nc"
+    ```
+    
+    or in dictionary format: yaml["postprocess"]["settings"]["pp_grid_spec"].
 
-    :param datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary populated in parent method `regrid_xy` 
+                     that contains relevant regrid parameters.
     :type datadict: dict
 
     :raises IOError:  Error if grid_spec.nc file cannot be found in the
-                      current directory
+                      current directory.
 
     :return: grid_spec filename
     :rtype: str
 
     .. note:: All grid_spec files are expected to be named "grid_spec.nc".
               The grid_spec file is required in order to determine the
-              input mosaic filename
+              input mosaic filename.
     """
 
     #grid spec filename
@@ -91,9 +107,10 @@ def get_grid_spec(datadict: dict) -> str:
 def get_input_mosaic(datadict: dict) -> str:
 
     """
-    Gets the input mosaic filename from the grid_spec file.
+    Get_input_mosaic gets the input mosaic filename from the grid_spec file.
 
-    :param datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary populated in parent method `regrid_xy` 
+                     that contains relevant regrid parameters 
     :type datadict: dict
     :raises IOError: Error if the input mosaic file cannot be found in the
                      current work directory
@@ -127,14 +144,16 @@ def get_input_mosaic(datadict: dict) -> str:
 def get_input_file(datadict: dict, source: str) -> str:
 
     """
-    Formats the input file name where the input file contains the variable data that will be regridded.
+    Get_input_file formats the input file name where the input file contains the 
+    variable data that will be regridded.
 
-    :param datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary populated in parent method `regrid_xy` 
+                     that contains relevant regrid parameters.
     :type datadict: dict
-    :param source: history file type
+    :param source: history file type.
     :type source: str
 
-    :return: formatted input file name
+    :return: formatted input file name.
     :rtype: str
 
     .. note:: The input filename is a required argument for fregrid and refer to the history files containing
@@ -142,7 +161,7 @@ def get_input_file(datadict: dict, source: str) -> str:
               20250805.atmos_daily_cmip.tile1.nc, 20250805.atmos_daily_cmip.tile2.nc, ...,
               The yaml configuration does not contain the exact history filenames and the filenames need to be
               constructed by:
-              (1) extracting the history file "type" from the yaml configuration.  This type corresponds
+              (1) extracting the history file `type` from the yaml configuration.  This type corresponds
               to the field value of yaml["postprocess"]["components"]["sources"]["source"] and, for example,
               be "atmos_daily_cmip"
               (2) prepending YYYYMMDD to the filename.  This function will prepend the date if the date
@@ -158,14 +177,15 @@ def get_input_file(datadict: dict, source: str) -> str:
 def get_remap_file(datadict: dict) -> str:
 
     """
-    Determines the remap filename based on the input mosaic filename, output grid size, and
-    conservative order.  For example, this function will return the name
+    Get_remap_file determines the remap filename based on the input mosaic filename, output grid size, and
+    order of the conservative remapping method (either 1 or 2).  For example, this function will return the name
     C96_mosaicX180x288_conserve_order1.nc where the input mosaic filename is C96_mosaic.nc and
     the output grid size has 180 longitude cells and 288 latitude cells.
 
     The remap_file will be read from, or outputted to the remap_dir.
 
-    :param datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary populated in parent method `regrid_xy` 
+                     that contains relevant regrid parameters.
     :type datadict: dict
 
     :return: remap filename
@@ -200,14 +220,15 @@ def get_remap_file(datadict: dict) -> str:
 def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 
     """
-    Returns the scalar_fields argument for fregrid.
+    Get_scalar_fields returns the scalar_fields argument for fregrid.
     Scalar_fields is a string of comma separated list of variables
-    that will be regridded
+    that will be regridded.
 
-    :param datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary populated in parent method `regrid_xy` 
+                     that contains relevant regrid parameters.
     :type datadict: dict
 
-    :return: (string of scalar fields, boolean indicating whether regridding is needed)
+    :return: the following tuple:  (string of scalar fields, boolean indicating whether regridding is needed).
     :rtype: tuple[str, bool]
 
     .. note:: With the exception of the variables in the list
@@ -238,10 +259,11 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
 def write_summary(datadict):
 
     """
-    Logs a summary of the component that will be regridded in a human-readable format
-    This function will log only if the logging level is set to INFO or lower
+    Write_summary logs a summary of the component that will be regridded in a human-readable format
+    This function will log only if the logging level is set to INFO or lower.
 
-    :param datadict: dictionary containing relevant regrid parameters
+    :param datadict: dictionary populated in parent method `regrid_xy` 
+                     that contains relevant regrid parameters.
     :type datadict: dict
     """
 
@@ -269,29 +291,30 @@ def regrid_xy(yamlfile: str,
 ):
 
     """
-    Calls fregrid to regrid data in the specified source data file.
+    Regrid_xy is the too-level method that calls fregrid in FRE-NCTools to 
+    regrid data in the specified source data file.
 
     :param yamlfile: yaml file containing specifications for yaml["postprocess"]["settings"]["pp_grid_spec"]
-                     and yaml["postprocess"]["components"]
+                     and yaml["postprocess"]["components"].
     :type yamlfile: str
     :param input_dir: Name of the input directory containing the input/history files,
                       Fregrid will look for all input history files in input_dir.
     :type input_dir: str
-    :param output_dir: Name of the output directory where fregrid outputs will be saved
+    :param output_dir: Name of the output directory where fregrid outputs will be saved.
     :type output_dir: str
-    :param work_dir: Directory that will contain the extracted files from the grid_spec tar
+    :param work_dir: Directory that will contain the extracted files from the grid_spec tar.
     :type work_dir: str
-    :param remap_dir: Directory that will contain the generated remap file
+    :param remap_dir: Directory that will contain the generated remap file.
     :type remap_dir: str
-    :param source: The stem of the history file to regrid
+    :param source: The stem of the history file to regrid.
     :type source: str
     :param input_date: Datestring where the first 8 characters correspond to YYYYMMDD
                        Input_date[:8] represents the date prefix in the history files,
                        e.g., input_date=20250730T0000Z where the history filename is 
-                       20250730.atmos_month_aer.tile1.nc
+                       20250730.atmos_month_aer.tile1.nc.
     :type input_date: str
 
-    .. note:: All directories should be in absolute paths
+    .. note:: All directories should be in absolute paths.
     """
 
     #check if input_dir exists
