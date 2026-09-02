@@ -23,11 +23,19 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     :type yamlfile: str
     :param experiment: is the name of the experiment
     :type experiment: str
-    :param application: is the applciation name
+    :param application: is the application name
     :type application: str
+
+    :raise ValueError: if the experiment, application passed does not exist and 
+                       if yaml files do not exist
     """
     model_yaml = Path(yamlfile).name
     model_yaml_path = Path(yamlfile).resolve().parent
+
+    if application and not experiment:
+        fre_logger.warning("")
+        fre_logger.warning(" *** Must pass experiment name along with application name ***")
+        fre_logger.warning("")
 
     with open(yamlfile, 'r', encoding="utf-8") as yf:
         yaml_dict = yaml.load(yf, Loader = yaml.Loader)
@@ -39,11 +47,20 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     yamls = [model_yaml]
     # list yamls associated with the compile, run, post-processing, and analysis
     if experiment:
+        if experiment not in yaml_dict["experiments"].keys():
+            fre_logger.error("Experiment passed is not defined in the model YAML.")
+            fre_logger.error("List experiments via `fre list -y [model YAML]`")
+            raise ValueError("Experiment passed DNE")
+
         settings_data = ""
         if exp_data.get("settings") is not None:
             settings_data = exp_data.get("settings")
 
         if application:
+            # check if application is defined in the model YAML
+            if application not in exp_data.keys():
+                raise ValueError(" *** Application passed is not defined in the model YAML. *** ")
+
             yamls.extend([platform_data, settings_data])
             for a in application.split(","):
                 if isinstance(exp_data[a], list):
