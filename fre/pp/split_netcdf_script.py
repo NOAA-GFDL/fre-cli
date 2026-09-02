@@ -52,9 +52,9 @@ def split_netcdf(
     """
     Splits multi-variable NetCDF files matching `history_source` into a set of files per variable.
 
-    Searches `inputDir` for NetCDF filenames matching the `history_source` pattern. Extracts all variables 
-    if `split_all_vars` is True. Else, extracts the variables listed under the specified `component` `type`
-    in the `yamlfile`.
+    This method searches `inputDir` for NetCDF filenames matching the `history_source` pattern and 
+    extracts all variables if `split_all_vars` is True or extracts the variables listed under the specified 
+    `component` `type` in the `yamlfile` if `split_all_vars` is False
 
     :param inputDir: Directory containing source multi-variable NetCDF files.
     :type inputDir: str
@@ -179,7 +179,7 @@ def split_file_xarray(
 ) -> None:
     """
     Internally used method called by `split_netcdf` to split a single multi-variable NetCDF file
-    into individual per-variable NetCDF files using `xarray`.  Filters out coordinate variables 
+    into individual per-variable NetCDF files using `xarray`.  This method filters out coordinate variables 
     and metadata bounds variables (`_bnds`, `_bounds`, `average_`, etc.) and outputs single-variable files 
     named using FRE naming conventions (`<date>.<component>.<var>.<tile>.nc`).
 
@@ -238,9 +238,9 @@ def split_file_xarray(
 
     def is_metadata_var(var_to_check: str) -> bool:
         """
-        Internally used method to check whether a variable matches 
-        metadata patterns or lower-dimensional coordinate attributes.  If `is_metadata_var` is
-        true for `var_to_check`, the variable will not be written out to its own NetCDF file.
+        Internally used method to check whether a variable matches metadata patterns or 
+        lower-dimensional coordinate attributes.  If `is_metadata_var` is true for `var_to_check`, 
+        the variable will not be written out to its own NetCDF file.
 
         :param var_to_check: Variable name to inspect.
         :type var_to_check: str
