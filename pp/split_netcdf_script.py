@@ -1,8 +1,11 @@
-#!/bin/python
-"""
-The split_netcdf_script module provides tools to split multi-variable NetCDF history files into a
-set of single-variable NetCDF files while preserving time coordinates, coordinate encodings, bounds, and metadata.
-"""
+ #!/bin/python
+
+# Split NetCDF files by variable
+#
+# Can be tiled or not. Component is optional, defaults to all.
+#
+# Input format:  date.component(.tileX).nc
+# Output format: date.component.var(.tileX).nc
 
 import logging
 import os
@@ -31,46 +34,35 @@ def split_netcdf(
     yamlfile: str,
     split_all_vars: bool = False,
 ) -> None:
-    """
-    Splits multi-variable NetCDF files matching `history_source` into a set of files per variable.
+    '''
+    Given a directory of netcdf files, splits those netcdf files into separate
+    files for each data variable and copies the data variable files of interest
+    to the output directory
 
-    This method searches `inputDir` for NetCDF filenames matching the `history_source` pattern and 
-    extracts all variables if `split_all_vars` is True or extracts the variables listed under the specified 
-    `component` `type` in the `yamlfile` if `split_all_vars` is False (See below example yaml for clarity)
-    
-    ```
-    postprocess:
-      components:
-        - type: 'atmos'
-          sources:
-            - history_file: "atmos_daily"
-              variables: ["tasmax", "tasmin", "ps", "tas"]
-            - history_file: "atmos_month"
-    ```
+    Intended to work with data structured for fre-workflows and fre-workflows file naming conventions
+    - Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
 
-    :param inputDir: Directory containing source multi-variable NetCDF files.
-    :type inputDir: str
-    :param outputDir: Target directory where single-variable NetCDF files will be written.
-    :type outputDir: str
-    :param component: Model component identifier string matching the YAML configuration (e.g., ``'atmos'``).
-    :type component: str
-    :param history_source: History file pattern name listed under the component source in YAML (e.g., ``'atmos_daily'``).
-    :type history_source: str
-    :param use_subdirs: If True, recursively searches subdirectories under `inputDir` 
-                        and reproduces the directory stucture in `outputDir`.
-    :type use_subdirs: bool
-    :param yamlfile: Path to post-processing YAML configuration file.
-    :type yamlfile: str
-    :param split_all_vars: If True, ignores the associated `variables` list for the `history_file` found in 
-                           `yamlfile` and extracts all data variables. Defaults to False.
-    :type split_all_vars: bool
+    :param inputDir: directory containing netcdf files
+    :type inputDir: string
+    :param outputDir: directory to which to write netcdf files
+    :type outputDir: string
+    :param component: the 'component' element we are currently working with in the yaml
+    :type component: string
+    :param history_source: a history_file under a 'source' under the
+        'component' that we are working with. Is used to identify the
+        files in inputDir.
+    :type history_source: string
+    :param use_subdirs: whether to recursively search through inputDir
+        under the subdirectories. Used when regridding.
+    :type use_subdirs: boolean
+    :param yamlfile: - a .yml config file for fre postprocessing
+    :type yamlfile: string
+    :param split_all_vars: Whether to skip parsing the yamlfile and split
+        all available vars in the file. Defaults to False.
+    :type split_all_vars: boolean
+    '''
 
-    :raises OSError: If `inputDir` does not exist or if files matching `history_source` are not found in `inputDir`.
-    :raises ValueError: If specified `component` or history source cannot be found in `yamlfile`.
-    :return: None
-    :rtype: None
-    """
-    # Verify input/output directories exist and are accessible
+    #Verify input/output dirs exist and are dirs
     if not os.path.isdir(inputDir):
         fre_logger.error(f"error: input dir {inputDir} does not exist or is not a directory")
         raise OSError(f"error: input dir {inputDir} does not exist or is not a directory")
@@ -165,27 +157,23 @@ def split_netcdf(
     fre_logger.info(f"split-netcdf-wrapper call complete, having split {files_split} files")
 #    sys.exit(0) #check this
 
-
 def split_file_xarray(
     infile: str, outfiledir: str, var_list: Union[str, List[str]] = "all"
 ) -> None:
-    """
-    Internally used method called by `split_netcdf` to split a single multi-variable NetCDF file
-    into individual per-variable NetCDF files using `xarray`.  This method filters out coordinate variables 
-    and metadata bounds variables (`_bnds`, `_bounds`, `average_`, etc.) and outputs single-variable files 
-    named using FRE naming conventions (`<date>.<component>.<var>.<tile>.nc`).
+    '''
+    Given a netcdf infile containing one or more data variables,
+    writes out a separate file for each data variable in the file, including the
+    variable name in the filename.
+    if var_list if specified, only the vars in var_list are written to file;
+    if no vars in the file match the vars in var_list, no files are written.
 
-    :param infile: Path to source input NetCDF file.
-    :type infile: str
-    :param outfiledir: Path to directory where output split files will be written.
-    :type outfiledir: str
-    :param var_list: Comma-separated variable names, list of variable names, or ``'all'``. Defaults to ``'all'``.
-    :type var_list: str or list of str
-
-    :raises OSError: If `infile` cannot be found on the file system.
-    :return: None
-    :rtype: None
-    """
+    :param infile: input netcdf file
+    :type infile: string
+    :param outfiledir: writeable directory to which to write netcdf files
+    :type outfiledir: string
+    :param var_list: python list of string variable names or a string "all"
+    :type var_list: list of strings
+    '''
     if not os.path.isdir(outfiledir):
         fre_logger.info("creating output directory")
         os.makedirs(outfiledir)
@@ -227,18 +215,24 @@ def split_file_xarray(
     fre_logger.info(f"To exclude: var patterns matching '{METADATA_VAR_PATTERNS}'")
     fre_logger.info(f"To exclude: 1 or 2-d vars: '{metadata_vars_to_exclude_by_name}'")
     #both combined gets you a decent list of non-diagnostic variables
-
     def is_metadata_var(var_to_check: str) -> bool:
         """
-        Internally used method to check whether a variable matches metadata patterns or 
-        lower-dimensional coordinate attributes.  If `is_metadata_var` is true for `var_to_check`, 
-        the variable will not be written out to its own NetCDF file.
+        Checks a variable name and determines whether it is a metadata variable
+        and therefore should not be one of the split-by-variable output files, by
+        comparing the variable name to exact matches or pattern matches of known metadata variables.
 
-        :param var_to_check: Variable name to inspect.
-        :type var_to_check: str
-        :return: True if variable is considered metadata/coordinate bounds, False otherwise.
-        :rtype: bool
+        This nested method is intended to be used only internally within this method (split_file_xarray),
+        and returns a list of true/false values for the list comprehensions around lines 225/226.
+        Values are TRUE if the criteria for a metadata-like variable are met (the two checked cases)
+        and FALSE if they are not (the fall-through case)
+
+        METADATA_VAR_PATTERNS: list of regex patterns defined that match variables that should be excluded from the split-out files.
+        metadata_vars_to_exclude_by_name: list of variable names that should be excluded from the split-out files.
+
+        :param var_to_check: string to search for matches
+        :type var_to_check: string
         """
+
         # Check substring patterns from METADATA_VAR_PATTERNS
         for pattern in METADATA_VAR_PATTERNS:
             if re.search(pattern, var_to_check):
@@ -289,85 +283,101 @@ def split_file_xarray(
             data2.to_netcdf(var_out, encoding = var_encode)
             fre_logger.debug(f"Wrote '{var_out}'")
 
-
 def get_max_ndims(dataset: xr.Dataset) -> int:
-    """
-    Internally used method invoked from `split_file_xarray` to calculate the maximum dimension count 
-    of any data variable in an xarray Dataset.
+    '''
+    Gets the maximum number of dimensions of a single var in an xarray
+    Dataset object. Excludes coord vars, which should be single-dim anyway.
 
-    :param dataset: Input xarray Dataset
-    :type dataset: xr.Dataset
-    :return: Maximum number of dimensions present on a data variable.
+    :param dataset: xarray Dataset you want to query
+    :type dataset: xarray Dataset
+    :return: The max dimensions that a single var possesses in the Dataset
     :rtype: int
-    """
+    '''
     allvars = dataset.data_vars.keys()
     ndims = [len(dataset[v].shape) for v in allvars]
     return max(ndims)
 
-
 def set_coord_encoding(dset: xr.Dataset, vcoords: List[str]) -> Dict[str, Dict[str, Union[None, str, type]]]:
-    """
-    Internally used method invoked from `split_file_xarray` to generate `xarray` encoding settings for 
-    coordinate variables to enforce CF metadata compliance:  explicitly removes `_FillValue` from 
-    coordinate attributes to prevent corrupting CF coordinates.
+    '''
+    Gets the encoding settings needed for xarray to write out the coordinates
+    as expected
+    we need the list of all vars (varnames) because that's how you get coords
+    for the metadata vars (i.e. nv or bnds for time_bnds)
 
-    :param dset: Input xarray Dataset
-    :type dset: xr.Dataset
-    :param vcoords: List of coordinate variable names.
-    :type vcoords: list of str
-    :return: Mapping of coordinate variable names to encoding parameters (`_FillValue`, `dtype`, `units`).
+    :param dset: xarray Dataset object to query for info
+    :type dset: xarray Dataset object
+    :param vcoords: list of coordinate variables to write to file
+    :type vcoords: list of strings
+    :return: A dictionary where each key is a coordinate in the xarray Dataset and
+             each value is a dictionary where the keys are the encoding information from
+             the coordinate variable in the Dataset plus the units (if present)
     :rtype: dict
-    """
+
+    .. note::
+             This code removes _FillValue from coordinates. CF-compliant files do not
+             have _FillValue on coordinates, and xarray does not have a good way to get
+             _FillValue from coordinates. Letting xarray set _FillValue for coordinates
+             when coordinates *have* a _FillValue gets you wrong metadata, and bad metadata
+             is worse than no metadata. Dropping the attribute if it's present seems to be
+             the lesser of two evils.
+    '''
     fre_logger.debug("getting coord encode settings")
     encode_dict = {}
     for vc in vcoords:
-        vc_encoding = dset[vc].encoding
-        encode_dict[vc] = {
-            '_FillValue': None,
-            'dtype': dset[vc].encoding['dtype']
-        }
+        vc_encoding = dset[vc].encoding #dict
+        encode_dict[vc] = {'_FillValue': None,
+                                  'dtype': dset[vc].encoding['dtype']}
         if "units" in vc_encoding.keys():
             encode_dict[vc]['units'] = dset[vc].encoding['units']
     return encode_dict
 
-
 def set_var_encoding(dset: xr.Dataset, varnames: List[str]) -> Dict[str, Dict[str, Union[None, str, type]]]:
-    """
-    Internally used method called from `split_file_xarray` to generate encoding settings for data and metadata 
-    variables to preserve data types and units.
+    '''
+    Gets the encoding settings needed for xarray to write out the variables
+    as expected
 
-    :param dset: Input xarray Dataset.
-    :type dset: xr.Dataset
-    :param varnames: List of variable names to configure.
-    :type varnames: list of str
-    :return: Encoding configuration dictionary mapping variable names to encoding properties.
+    mostly addressed to time_bnds, because xarray can drop the units attribute
+
+    - https://github.com/pydata/xarray/issues/8368
+
+    :param dset: xarray dataset object to query for info
+    :type dset: xarray dataset object
+    :param varnames: list of variables that will be written to file
+    :type varnames: list of strings
+    :return: dict {var1: {encodekey1 : encodeval1, encodekey2:encodeval2...}}
     :rtype: dict
-    """
+    '''
     fre_logger.debug("getting var encode settings")
     encode_dict = {}
     for v in varnames:
-        v_encoding = dset[v].encoding
-        if '_FillValue' not in v_encoding.keys():
-            encode_dict[v] = {
-                '_FillValue': None,
-                'dtype': dset[v].encoding['dtype']
-            }
+        v_encoding = dset[v].encoding #dict
+        if not '_FillValue' in v_encoding.keys():
+            encode_dict[v] = {'_FillValue': None,
+                                   'dtype': dset[v].encoding['dtype']}
         if "units" in v_encoding.keys():
             encode_dict[v]['units'] = dset[v].encoding['units']
     return encode_dict
 
-
 def fre_outfile_name(infile: str, varname: str) -> str:
-    """
-    Internally used method to construct standardized FRE single-variable output filename:
-    converts filename pattern ``date.component(.tileX).nc`` to ``date.component.var(.tileX).nc``.
+    '''
+    Builds split  var filenames the way that fre expects them
+    (and in a way that should work for any .nc file)
 
-    :param infile: Input filename or path string.
-    :type infile: str
-    :param varname: Name of variable to append to filename.
-    :type varname: str
-    :return: Formatted single-variable filename string.
-    :rtype: str
-    """
+     This is expected to work with files formed the following way
+
+     - Fre Input format:  date.component(.tileX).nc
+     - Fre Output format: date.component.var(.tileX).nc
+
+     but it should also work on any file filename.nc
+
+    :param infile: name of a file with a . somewhere in the filename
+    :type infile: string
+    :param varname: string to add to the infile
+    :type varname: string
+    :return: new filename
+    :rtype: string
+    '''
     var_outfile = re.sub(".nc", f".{varname}.nc", infile)
     return var_outfile
+
+#Main method invocation

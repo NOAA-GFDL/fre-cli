@@ -1,16 +1,6 @@
 """
-Rose Configuration and YAML Processing Utility for FRE Post-Processing (fre pp).
-
-The configure_script_yaml module processes user post-processing YAML files (`pp.yaml`), validates them
-against the canonical FRE JSON schema (`fre_pp.json`), consolidates experiment
-configurations, and generates the `rose-suite.conf` configuration file required
-by Cylc workflows.
-
-Key Workflow Steps:
-1. Load and validate combined YAML structures against GFDL FRE JSON schemas.
-2. Initialize and configure Rose suite settings (`metomi.rose.config.ConfigNode`).
-3. Set workflow template variables (experiments, platforms, targets, diagnostic switches).
-4. Write output configuration files to `~/cylc-src/<experiment>__<platform>__<target>/`.
+Script creates the rose-suite file
+for the workflow from the pp yaml.
 """
 
 import os
@@ -25,27 +15,26 @@ import fre.yamltools.combine_yamls_script as cy
 
 fre_logger = logging.getLogger(__name__)
 
-
+######VALIDATE#####
 def validate_yaml(yamlfile: dict) -> None:
     """
-    Validate the combined experiment YAML structure against the official FRE JSON schema.
+    Validate the format of the yaml file based
+    on the schema.json in gfdl_msd_schemas
 
-    The schema is loaded from `gfdl_msd_schemas/FRE/fre_pp.json` relative to the package root.
-
-    :param yamlfile: Dictionary containing combined model, settings, post-processing,
-                     and analysis specifications.
+    :param yamlfile: Model, settings, pp, and analysis yaml
+                     information combined into a dictionary
     :type yamlfile: dict
-
-    :raises ValueError: If the JSON schema is invalid, the combined YAML fails schema validation,
-                        or an unexpected error occurs during validation.
+    :raises ValueError:
+        - if gfdl_mdf_schema path is not valid
+        - combined yaml is not valid
+        - unclear error in validation
     :return: None
     :rtype: None
     """
     schema_dir = Path(__file__).resolve().parents[1]
     schema_path = os.path.join(schema_dir, 'gfdl_msd_schemas', 'FRE', 'fre_pp.json')
     fre_logger.info("Using yaml schema '%s'", schema_path)
-
-    # Load the JSON schema
+    # Load the json schema: .load() (vs .loads()) reads and parses the json in one)
     try:
         with open(schema_path,'r', encoding='utf-8') as s:
             schema = json.load(s)
@@ -53,9 +42,10 @@ def validate_yaml(yamlfile: dict) -> None:
         fre_logger.error("Schema '%s' is not valid. Contact the FRE team.", schema_path)
         raise
 
-    # Validate YAML dictionary against schema
+    # Validate yaml
+    # If the yaml is not valid, the schema validation will raise errors and exit
     try:
-        validate(instance = yamlfile,schema = schema)
+        validate(instance = yamlfile,schema=schema)
         fre_logger.info("Combined yaml valid")
     except SchemaError as exc:
         raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.") from exc
@@ -64,55 +54,46 @@ def validate_yaml(yamlfile: dict) -> None:
     except Exception as exc:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
-
-def rose_init(experiment: str, platform: str, target: str) -> tuple[metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode]:
+####################
+def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config.ConfigNode:
     """
-    Initialize a Rose suite configuration node with default template variables.
+    Initializes the rose suite configuration.
 
-    :param experiment: Post-processing experiment identifier (e.g., ``'c96L65_am5f4b4r0_amip'``).
+    :param experiment: Name of post-processing experiment, default None
     :type experiment: str
-    :param platform: Target platform and compiler combination (e.g., ``'gfdl.ncrc5-deploy'``).
+    :param platform: Name of platform to use, default None
     :type platform: str
-    :param target: Compilation options string (e.g., ``'prod-openmp'``).
+    :param target: Name of target ([prod/debug/repro]-openmp)
     :type target: str
-
-    :return: An initialized Rose configuration node populated with standard experiment settings.
-    :rtype: metomi.rose.config.ConfigNode
+    :return:
+        - rose_suite: class within Rose python library; represents
+                      elements of the rose-suite configuration
+    :rtype:
+        - rose_suite: metomi.rose.config.ConfigNode class
     """
+    # initialize rose suite config
     rose_suite = metomi.rose.config.ConfigNode()
-
-    # Set default workflow flags
+    # disagreeable; these should be optional
     rose_suite.set(keys=['template variables', 'DO_ANALYSIS_ONLY'],  value='False')
     rose_suite.set(keys=['template variables', 'DO_MDTF'],  value='False')
     rose_suite.set(keys=['template variables', 'PP_DEFAULT_XYINTERP'],  value='0,0')
 
-    # Set core experiment template identifiers
+    # set some rose suite vars
     rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{experiment}"')
     rose_suite.set(keys=['template variables', 'PLATFORM'], value=f'"{platform}"')
     rose_suite.set(keys=['template variables', 'TARGET'], value=f'"{target}"')
 
-    # Initialize rose regrid config
-    rose_regrid = metomi.rose.config.ConfigNode()
-    rose_regrid.set(keys=['command', 'default'], value='regrid-xy')
+    return rose_suite
 
-    # Initialize rose remap config
-    rose_remap = metomi.rose.config.ConfigNode()
-    rose_remap.set(keys=['command', 'default'], value='remap-pp-components')    
-
-    return(rose_suite, rose_regrid, rose_remap)
-
-
+####################
 def quote_rose_values(value: str) -> str:
     """
-    Format and quote string values for `rose-suite.conf` variable definitions.
+    rose-suite.conf template variables must be quoted unless they are
+    boolean or a list, in which case do not quote them.
 
-    Booleans and lists are returned unquoted as strings, while general strings are enclosed
-    in single quotes to conform to Rose syntax requirements.
-
-    :param value: Configuration value to format.
-    :type value: object
-
-    :return: Formatted configuration value ready for writing to `rose-suite.conf`.
+    :param value: rose-suite configuration value 
+    :type value: str
+    :return: quoted rose-suite configuration value
     :rtype: str
     """
     if isinstance(value, bool):
@@ -122,21 +103,20 @@ def quote_rose_values(value: str) -> str:
     else:
         return "'" + str(value) + "'"
 
-
+####################
 def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) -> None:
     """
-    Populate a Rose suite configuration node with settings extracted from a post-processing YAML.
+    Sets items in the rose suite configuration.
 
-    Parses direct settings, directory structures, pre-analysis scripts, refinediag scripts,
-    and analysis execution flags into template variables within `rose_suite`.
-
-    :param yamlfile: Combined dictionary containing model and post-processing configurations.
+    :param yamlfile: Model, settings, pp, and analysis yaml
+                     information combined into a dictionary
     :type yamlfile: dict
-    :param rose_suite: The Rose configuration node to update.
-    :type rose_suite: metomi.rose.config.ConfigNode
-
-    :raises ValueError: If the required `'postprocess'` section is missing from `yamlfile`, or if
-                        more than one pre-analysis script is configured (currently unsupported).
+    :param rose_suite: class within Rose python library; represents 
+                       elements of the rose-suite configuration 
+    :type rose_suite: metomi.rose.config.ConfigNode; class
+    :raises ValueError:
+        - if the postproces section of the yaml is not defined
+        - if more than 1 pre-analysis script is defined
     :return: None
     :rtype: None
     """
@@ -166,8 +146,8 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
                     rose_suite.set( keys = ['template variables', key.upper()],
                                     value = quote_rose_values(value) )
 
-        # Parse pre-analysis configuration. 
-        # Take into account the possibility of multiple scripts being defined (future implementation)
+        # Account for multiple scripts for refinediag
+        # Fail if multiple scripts defined for preanalysis (not implemented yet)
         if pp_key == "preanalysis":
             for k2, v2 in pp_value.items():
                 switch = v2["do_preanalysis"]
@@ -182,8 +162,6 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
 
                     pa_scripts += f"{script} "
 
-        # Parse refinediag scripts
-        # Multiple refineDiag scripts are supported, so take account for those
         if pp_key == "refinediag":
             for k2, v2 in pp_value.items():
                 switch = v2["do_refinediag"]
@@ -244,36 +222,37 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
         rose_suite.set( keys = ['template variables', 'DO_ANALYSIS'],
                         value = 'False' )
 
-
+####################
 def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None, target: str = None) -> None:
     """
-    Consolidate experiment YAML files, validate the result, and create `rose-suite.conf`.
+    Using a valid pp.yaml, the rose-suite configuration file is created
+    in the cylc-src directory. The pp.yaml is also copied to the cylc-src
+    directory.
 
-    Outputs generated workflow configurations directly into:
-    `~/cylc-src/<experiment>__<platform>__<target>/`
-
-    :param yamlfile: Path to input experiment YAML configuration file.
-    :type yamlfile: str, optional
-    :param experiment: Experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
-    :type experiment: str, optional
-    :param platform: Target platform identifier (e.g., ``'gfdl.ncrc5-deploy'``).
-    :type platform: str, optional
-    :param target: Target compilation options string (e.g., ``'prod-openmp'``).
-    :type target: str, optional
-
-    :raises ValueError: If any required argument (`yamlfile`, `experiment`, `platform`, `target`) is None.
+    :param yamlfile: Path to YAML file used for experiment configuration, default None
+    :type yamlfile: str
+    :param experiment: One of the postprocessing experiment names from the yaml displayed
+                       by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
+    :type experiment: str
+    :param platform: The location + compiler that was used to run the model 
+                     (e.g. gfdl.ncrc5-deploy), default None
+    :type platform: str
+    :param target: Options used for the model compiler (e.g. prod-openmp), default None
+    :type target: str
+    :raises ValueError: if experiment, platform, target or yamlfile is None
     :return: None
     :rtype: None
 
-    .. note::
-       This function writes `rose-suite.conf` and a consolidated `<experiment>.yaml` file into
-       `~/cylc-src/<workflow_name>/`.
+    .. note:: In this function, outfile is defined and used with consolidate_yamls.
+              This will create a final, combined yaml file in the ~/cylc-src/[workflow_id]
+              directory. Additionally, rose-suite information is being dumped into its own
+              configuration file in the cylc-src directory.
     """
     fre_logger.info('Starting')
 
     if None in [yamlfile, experiment, platform, target]:
-        raise ValueError( 'yamlfile, experiment, platform, and target must all not be None. '
-                          'curently, their values are...'
+        raise ValueError( 'yamlfile, experiment, platform, and target must all not be None.'
+                          'currently, their values are...'
                           f'{yamlfile} / {experiment} / {platform} / {target}')
     e = experiment
     p = platform
@@ -281,41 +260,30 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     yml = yamlfile
 
     # Initialize the rose configurations
-    rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
+    rose_suite = rose_init(e,p,t)
 
-    # Combine input YAMLs and save consolidated output to cylc-src
+    # Combine model, experiment, and analysis yamls
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
-
     full_yamldict = cy.consolidate_yamls(yamlfile = yml,
                                          experiment = e, platform = p, target = t,
-                                         use="pp",
-                                         output=outfile)
+                                         use = "pp",
+                                         output = outfile)
 
-    # Validate combined YAML dictionary against schema
+    # Validate yaml
     validate_yaml(full_yamldict)
 
-    # Parse combined dictionary into Rose configuration
-    set_rose_suite(full_yamldict,rose_suite)
+    ## PARSE COMBINED YAML TO CREATE CONFIGS
+    # Set rose-suite items
+    set_rose_suite(full_yamldict, rose_suite)
 
-    # Set regrid and remap rose app items
-    set_rose_apps(full_yamldict,rose_regrid,rose_remap)
-
-    # Write output configuration files
+    # Write output files
     fre_logger.info("Writing output files...")
-    fre_logger.info(" %s", outfile)
+    fre_logger.info("  %s", outfile)
 
     dumper = metomi.rose.config.ConfigDumper()
     outfile = os.path.join(cylc_dir, "rose-suite.conf")
     dumper(rose_suite, outfile)
-    fre_logger.info("  %s", outfile)
-
-    outfile = os.path.join(cylc_dir, "app", "regrid-xy", "rose-app.conf")
-    dumper(rose_regrid, outfile)
-    fre_logger.info("  %s", outfile)
-
-    outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
-    dumper(rose_remap, outfile)
     fre_logger.info("  %s", outfile)
 
     fre_logger.info('Finished')

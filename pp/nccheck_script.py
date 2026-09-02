@@ -1,0 +1,49 @@
+''' Checks that a netCDF (.nc) file contains expected number of timesteps. Used by fre pp histval and fre pp ppval. '''
+import logging
+import netCDF4
+
+fre_logger = logging.getLogger(__name__)
+
+
+def check(file_path: str, num_steps: int):
+    """
+
+    Compares the number of timesteps in a given netCDF (.nc) file to the number of expected timesteps 
+
+    :param file_path: path to netcdf file for checking
+    :type file_path: str
+    :param num_steps: number of expected timesteps
+    :type num_steps: int
+    :raises ValueError: Actual number of timesteps differs from expected number of timesteps
+    :return: 0 unless number of timesteps differs from expectation
+    :rtype: int
+    """
+
+    fre_logger.info(f" netCDF file = {file_path}")
+
+    #Let's grab the data we need from the netCDF file + close if after we're done
+    dataset = netCDF4.Dataset(file_path, 'r')
+    fre_logger.info("Grabbed data from file")
+
+    timesteps = dataset.variables['time'][:]
+    num_actual_steps = len(timesteps)
+    dataset.close()
+
+    fre_logger.info("Closed file")
+
+    #Compare
+    if num_actual_steps == int(num_steps):
+        fre_logger.info(f" Expected number of timesteps found in {file_path}")
+        return 0
+
+    else:
+        fre_logger.error(
+            f" Unexpected number of timesteps found in {file_path}. "
+            f"Found: {num_actual_steps} timesteps  "
+            f"Expected: {num_steps} timesteps"
+        )
+        raise ValueError(
+            f" Unexpected number of timesteps found in {file_path}. "
+            f"Found: {num_actual_steps} timesteps  "
+            f"Expected: {num_steps} timesteps"
+        )
