@@ -70,11 +70,11 @@ jobs:
           conda env create -y -f environment.yml --prefix /tmp/fre-cli
           
           # Override Python version based on matrix
-          conda install -y -n fre-cli "python=${{ matrix.python-version }}"
+          conda install -y -p /tmp/fre-cli "python=${{ matrix.python-version }}"
 
           echo "listing packages installed in the fre-cli environment"
           conda env list
-          conda list -n fre-cli
+          conda list -p /tmp/fre-cli
 
       - name: Activate fre-cli Environment and Install fre-cli
         run: |
@@ -94,16 +94,20 @@ jobs:
           echo "listing packages installed again after pip installing fre-cli"
           conda list -n fre-cli
 
+          # Add environment path to GITHUB_PATH so changes persist across job steps
+          # Ensures the environment will already be activated across steps
+          echo "/tmp/fre-cli" >> $GITHUB_PATH
+
       - name: Run pytest In fre-cli Env
         run: |
-          echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
-          source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
+          #echo "to run conda init, sourcing /some/path/to/conda/etc/profile.d/conda.sh"
+          #source /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74/etc/profile.d/conda.sh
 
-          echo "to activate env, conda init"
-          conda init
+          #echo "to activate env, conda init"
+          #conda init
 
-          echo "activating the fre-cli environment"
-          conda activate fre-cli
+          #echo "activating the fre-cli environment"
+          #conda activate fre-cli
 
           echo "adding spack installed binaries of netcdf/hdf5 to front of path, so conda installed ones don't break compilation tests"
           export path_save=$PATH
