@@ -51,7 +51,7 @@ jobs:
           conda build --help 
 
       - name: Build fre-cli Conda Package
-        timeout-minutes: 120
+        timeout-minutes: 121
         run: |
           echo "conda building fre-cli package and outputting as a tarball"
           mkdir -p /app/fre-cli-tarball
