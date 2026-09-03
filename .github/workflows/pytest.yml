@@ -56,8 +56,10 @@ jobs:
         id: cache-conda
         uses: actions/cache@v4.2.0
         with:
-          path: ${{ env.CONDA }}/envs/fre-cli
-          key: fre-cli-cache
+          path: /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74
+          key: fre-cli-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('environment.yml') }}
+          restore-keys: |
+            fre-cli-${{ runner.os }}-py${{ matrix.python-version }}-
 
       - name: Create fre-cli Environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
