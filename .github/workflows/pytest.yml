@@ -85,14 +85,14 @@ jobs:
           conda init
 
           echo "activating the fre-cli environment"
-          conda activate fre-cli
+          conda activate -p /tmp/fre-cli
 
           echo "pip installing fre-cli into the environment"
           python -m pip install .
           which fre
 
           echo "listing packages installed again after pip installing fre-cli"
-          conda list -n fre-cli
+          conda list -p /tmp/fre-cli
 
           # Add environment path to GITHUB_PATH so changes persist across job steps
           # Ensures the environment will already be activated across steps
