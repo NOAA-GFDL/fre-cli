@@ -1,4 +1,4 @@
-name: create_test_conda_env
+name: pytests
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
