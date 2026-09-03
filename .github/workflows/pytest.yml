@@ -56,10 +56,10 @@ jobs:
         id: cache-conda
         uses: actions/cache@v4.2.0
         with:
-          path: /opt/software/linux-rocky9-zen2/gcc-11.4.1/miniconda3-24.7.1-akg5caxhoqv3oasili3pgukbyryceq74
-          key: fre-cli-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('environment.yml') }}
+          path: /tmp/fre-cli
+          key: fre-cli-${{ runner.os }}-py${{ matrix.python-version }} #-${{ hashFiles('environment.yml') }}
           restore-keys: |
-            fre-cli-${{ runner.os }}-py${{ matrix.python-version }}-
+            fre-cli-${{ runner.os }}-py${{ matrix.python-version }}
 
       - name: Create fre-cli Environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
@@ -67,7 +67,7 @@ jobs:
           echo "creating fre-cli env holding all deps"
           echo "Testing with Python ${{ matrix.python-version }}"
           
-          conda env create -y -f environment.yml --name fre-cli
+          conda env create -y -f environment.yml --name fre-cli --prefix /tmp/fre-cli
           
           # Override Python version based on matrix
           conda install -y -n fre-cli "python=${{ matrix.python-version }}"
