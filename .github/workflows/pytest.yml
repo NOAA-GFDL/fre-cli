@@ -85,7 +85,7 @@ jobs:
           conda init
 
           echo "activating the fre-cli environment"
-          conda activate -p /tmp/fre-cli
+          conda activate /tmp/fre-cli
 
           echo "pip installing fre-cli into the environment"
           python -m pip install .
