@@ -67,7 +67,7 @@ jobs:
           echo "creating fre-cli env holding all deps"
           echo "Testing with Python ${{ matrix.python-version }}"
           
-          conda env create -y -f environment.yml --name fre-cli --prefix /tmp/fre-cli
+          conda env create -y -f environment.yml --prefix /tmp/fre-cli
           
           # Override Python version based on matrix
           conda install -y -n fre-cli "python=${{ matrix.python-version }}"
