@@ -30,7 +30,6 @@ Post-processing Yamls
 Build FMS model
 ===============
 .. include:: usage/build_fms_model.rst
-.. include:: usage/guides/fre_make_guide.rst
 
 Run FMS model
 =============
@@ -40,10 +39,6 @@ Postprocess FMS history output
 ==============================
 .. include:: usage/postprocess.rst
 .. include:: usage/guides/fre_pp_guide.rst
-
-CMORize Postprocessed Output
-=============================
-.. include:: usage/cmor.rst
 
 Generate data catalogs
 ======================

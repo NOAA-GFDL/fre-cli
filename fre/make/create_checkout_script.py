@@ -1,18 +1,14 @@
-'''
-FRE Checkout Script Generator
+"""
+Create_checkout_script provides methods to generate a checkout.sh script from a YAML configuration
+file.  Checkout.sh git clones all component source repositories listed under the
+src key of the compile.yaml.
 
-Retrieves information from the resolved YAML configuration to generate a 
-checkout.sh script that git clones the model source code. 
-
-The checkout script will clone component repositories defined in the 
-compile YAML to build the model.
-
-Note, a bare-metal build defaults to a parallel checkout.
-A container build defaults to a non-parallel checkout.
-
-'''
-
-import os
+The method checkout_create is the entry point called by fre make checkout-script and
+fre make all.  Checkout_create calls baremetal_checkout_write for a bare-metal build or 
+container_checkout_write for a container build to write checkout.sh.
+"""
+from pathlib import Path
+from datetime import datetime
 import subprocess
 import logging
 from typing import Optional
@@ -22,26 +18,34 @@ from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 # set up logging
 fre_logger = logging.getLogger(__name__)
 
-def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str, 
+def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: str,
                              parallel_cmd: str, execute: bool):
     """
-    This function baremetal_checkout_write is called by checkout_create in order to
-    
-      - Extract compilation specifications from the parsed YAML configuration
-      - Generate a checkout script to the source directory. The source directory is
-        defined within the 'modelRoot' variable in the "platforms" section of the combined YAML
-      
+    Baremetal_checkout_write generates the checkout.sh script and optionally executes the script to 
+    git clone the component repositories in preparation for model compilation.
 
-    :param model_yaml: "freyaml" class object containing a parsed and validated yaml dictionary 
-                       containing the "compile" specification
+    Called by checkout_create for each bare-metal platform, this method
+    - reads the compile section of the resolved YAML to determine source repositories for each component, 
+    - writes checkout.sh into src_dir, 
+    - optionally executes checkout.sh afterwards
+
+    :param model_yaml: is the parsed and validated YAML object containing the compile 
+                       specifications (source repositories, experiment name, etc.).
     :type model_yaml: yamlfre.freyaml
-    :param src_dir: Absolute directory path to git clone the source code
+    :param src_dir: is the absolute path of the directory where checkout.sh will be
+                    written and where the source repositories will be cloned.  Typically, 
+                    src_dir = [modelRoot]/[experiment]/src where modelRoot is defined in
+                    platforms.yaml.
     :type src_dir: str
-    :param jobs: Number of git submodules to clone simultaneously (TO CLARIFY)
+    :param jobs: is the number of git submodules to fetch simultaneously, passed to git clone
+                 --jobs (relevant only if the component repository contain submodules.) 
     :type jobs: str
-    :param parallel_cmd: Set to " &" for parallel checkouts and "" for non-parallel checkouts
+    :param parallel_cmd: is the shell suffix appended to each git clone command to control
+                         concurrency.  Pass " &" to background each clone (parallel
+                         checkout) or "" to clone sequentially.
     :type parallel_cmd: str
-    :param execute: If True, run the generated checkout.sh
+    :param execute: is a flag where if True, checkout.sh is executed immediately after creation.
+                    Defaults to False.
     :type execute: bool
     """
     fre_checkout = checkout.checkout("checkout.sh", src_dir)
@@ -49,8 +53,8 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
     fre_checkout.finish(model_yaml.compile.getCompileYaml(), parallel_cmd)
 
     # Make checkout script executable (rwxr--r--)
-    checkout_path = os.path.join(src_dir, "checkout.sh")
-    os.chmod(checkout_path, 0o744)
+    checkout_path = Path(f"{src_dir}/checkout.sh")
+    checkout_path.chmod(0o744)
     fre_logger.info("Checkout script created in %s", checkout_path)
 
     if execute:
@@ -59,23 +63,29 @@ def baremetal_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, jobs: st
 def container_checkout_write(model_yaml: yamlfre.freyaml, src_dir: str, tmp_dir: str,
                              jobs: str, parallel_cmd: str):
     """
-    This function container_checkout_write is called by checkout_create in order to
-    
-      - Extract compilation specifications from the parsed YAML configuration
-      - Generate a checkout script in a local ./tmp directory, where it will later be
-        copied to the directory of the container image filesystem for execution
+    Container_checkout_write generates checkout.sh for a container build.
 
-    :param model_yaml: "freyaml" class object containing a parsed and validated yaml dictionary 
-                       containing the "compile" specification
+    Called by checkout_create for each container platform, this method
+    writes checkout.sh into a temporary directory on the host (tmp/[platform-name]/)
+    where the script will eventually be COPY-ed to the container image filesystem.  
+    The script will be executed during the container build to git clone the component 
+    repositories serially.
+
+    :param model_yaml: is the parsed and validated YAML object containing the compile
+                       specifications (source repositories, experiment name, etc.).
     :type model_yaml: yamlfre.freyaml
-    :param src_dir: Internal path for source code in the running container. The source directory is
-                    defined within the 'modelRoot' variable in the "platforms" section of the combined YAML
+    :param src_dir: is the source-code path inside the running container where repositories will
+                    be cloned.   Set to [modelRoot]/[experiment]/src where modelRoot is defined 
+                    in platforms.yaml.
     :type src_dir: str
-    :param tmp_dir: Temporary directory (outside of container) that hosts the created checkout script
+    :param tmp_dir: is the local temporary directory on the host (outside the container) where
+                    checkout.sh is staged before being COPYed into the image.
+                    Typically tmp/[platform-name].
     :type tmp_dir: str
-    :param jobs: Number of git submodules to clone simultaneously (TO CLARIFY)
+    :param jobs: is the number of git submodules to fetch simultaneously, passed to git clone
+                 --jobs.  Unused argument for this method and should be removed.
     :type jobs: str
-    :param parallel_cmd: Since container builds are not parallelized, set to ""
+    :param parallel_cmd: is a flag not used in this method and should be removed.
     :type parallel_cmd: str
     """
     fre_checkout = checkout.checkoutForContainer("checkout.sh", src_dir, tmp_dir)
@@ -87,29 +97,42 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                     no_parallel_checkout: Optional[bool] = None, njobs: int = 4,
                     execute: Optional[bool] = False, force_checkout: Optional[bool] = False):
     """
-    Calls baremetal_checkout_write or container_checkout_write to create checkout.sh
-    for baremetal or container builds, respectively.
+    Checkout_create is the entry point for fre make checkout-script.  The method resolves 
+    the YAML configuration and calls baremetal_checkout_write or container_checkout_write 
+    for each specified platform.
 
-    :param yamlfile: Model YAML file path
+    :param yamlfile: is the path to the model YAML configuration file (e.g. am5.yaml).  
     :type yamlfile: str
-    :param platform: FRE platform(s) that are defined in the platforms.yaml
-    :type platform: tuple
-    :param target: Predefined FRE target(s)
-    :type target: tuple
-    :param no_parallel_checkout: Option to disable parallel checkouts
-    :type no_parallel_checkout: bool
-    :param njobs: Used in the recursive clone; number of submodules to fetch simultaneously (default 4) (TO CLARIFY)
+    :param platform: is one or more FRE platform strings as defined in platforms.yaml.
+    :type platform: tuple[str]
+    :param target: is one or more mkmf target strings (e.g. debug-openmp, repro-openmp, prod-openmp).
+    :type target: tuple[str]
+    :param no_parallel_checkout: is a flag where if True, git clone component repositories sequentially.  
+                                 Defaults to False to enable parallel checkout for bare-metal builds; 
+                                 Option will be removed for container builds in the future.
+    :type no_parallel_checkout: bool, optional
+    :param njobs: is the number of git submodules to fetch simultaneously, passed to
+                  git clone --jobs.  Defaults to 4.
     :type njobs: int
-    :param execute: If True, run checkout.sh
-    :type execute: bool
-    :param force_checkout: If True, overwrite locally existing checkout script and source code
-    :type force_checkout: bool
+    :param execute: If True, execute checkout.sh immediately after writing it
+                    (bare-metal only).  Defaults to False.
+    :type execute: bool, optional
+    :param force_checkout: is a flag to control behavior when checkout.sh already exists.
+                           If True for for bare-metal build, renames the existing src directory with a
+                           YYYYmmdd.HHMMSS timestamp suffix, then writes a fresh
+                           checkout.sh in a new src directory.
+                           For container build, deletes the existing tmp/[platform]/checkout.sh
+                           and writes a new one in its place.
+                           Defaults to False.
+    :type force_checkout: bool, optional
 
     :raises ValueError:
-        - If 'njobs' is not an integer
-        - If 'platform' does not exist in the platforms.yaml configuration
-    :raises OSError: If executing checkout.sh returns an error
-    
+        - If njobs is passed as a boolean while --execute is also set (ambiguous
+          intent — njobs must be an explicit integer).
+        - If a specified platform name does not exist in platforms.yaml.
+    :raises OSError: When checkout.sh returns a non-zero exit code during execution.
+                     (applicable when execute is True for a bare-metal build).
+
     """
     # Standardize inputs
     jobs_str = str(njobs)
@@ -139,7 +162,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
 
     # Validate the targets
     for t in target:
-      valid_t = targetfre.fretarget(t)
+        targetfre.fretarget(t)
 
     fre_logger.setLevel(level=logging.INFO)
 
@@ -159,29 +182,43 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
         if not platform_info["container"]:
             src_dir = f'{platform_info["modelRoot"]}/{fremake_yaml["experiment"]}/src'
 
-            if not os.path.exists(src_dir):
-                os.makedirs(src_dir, exist_ok=True)
+            if not Path(src_dir).exists():
+                Path(src_dir).mkdir(parents=True, exist_ok=True)
 
-            checkout_sh_path = os.path.join(src_dir, "checkout.sh")
+            checkout_sh_path = Path(f"{src_dir}/checkout.sh")
 
-            if not os.path.exists(checkout_sh_path):
+            if not checkout_sh_path.exists():
                 baremetal_checkout_write(model_yaml, src_dir, jobs_str, parallel_cmd, execute)
 
-            elif os.path.exists(checkout_sh_path) and force_checkout:
+            elif checkout_sh_path.exists() and force_checkout:
                 fre_logger.info("Checkout script PREVIOUSLY created in %s", checkout_sh_path)
-                fre_logger.info("*** REMOVING CHECKOUT SCRIPT ***")
 
-                os.remove(checkout_sh_path)
+                # New folder name
+                timestamp = datetime.now().strftime("%Y%m%d.%H%M%S")
+                new_src_dirname = f"{Path(src_dir).name}.{timestamp}"
+                # Create path and rename folder in same directory
+                new_src_dir =  Path(src_dir).with_name(new_src_dirname)
+                Path(src_dir).rename(new_src_dir)
+                fre_logger.info(" *** SRC DIR RENAMED: %s *** ", new_src_dir)
+
+                fre_logger.info(" *** RE-CREATING CHECKOUT *** ")
                 baremetal_checkout_write(model_yaml, src_dir, jobs_str, parallel_cmd, execute)
 
-            elif os.path.exists(checkout_sh_path) and not force_checkout:
-                fre_logger.info("Checkout script PREVIOUSLY created in %s", checkout_sh_path)
+            elif Path(checkout_sh_path).exists() and not force_checkout:
+                fre_logger.info("Checkout script PREVIOUSLY created here: %s", checkout_sh_path)
                 if execute:
                     try:
                         subprocess.run(args=[checkout_sh_path], check=True)
                     except Exception as exc:
-                        raise OSError(f"\nError executing checkout script: {checkout_sh_path}.",
-                                      f"\nTry removing test folder: {platform_info['modelRoot']}\n") from exc
+                        raise OSError(f"Error executing checkout script: {checkout_sh_path}.",
+                                       "\n\n!!SRC DIR may already exist!!\n"
+                                       "1. If not editing the checked out source code directly, try either:\n"
+                                      f"    - removing the output folder ({platform_info['modelRoot']})\n"
+                                       "    - specifying --force-checkout\n"
+                                       "2. If editing checked out source code directly for the bare-metal build:\n"
+                                       "    - users should now follow up with running each fre make subtool individually\n"
+                                       "      ('makefile', 'compile-script' or 'dockerfile') to avoid conflicting 'existing\n"
+                                       "      checkout script/SRC DIR` errors seen with 'fre make all'\n") from exc
                 else:
                     return
 
@@ -192,17 +229,17 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
             tmp_dir = f"tmp/{platform_name}"
             container_pc = ""
 
-            os.makedirs(tmp_dir, exist_ok=True)
-            tmp_checkout_path = os.path.join(tmp_dir, "checkout.sh")
+            Path(tmp_dir).mkdir(parents=True, exist_ok=True)
+            tmp_checkout_path = Path(f"{tmp_dir}/checkout.sh")
 
-            if not os.path.exists(tmp_checkout_path):
+            if not Path(tmp_checkout_path).exists():
                 container_checkout_write(model_yaml, src_dir, tmp_dir, jobs_str, container_pc)
 
-            elif os.path.exists(tmp_checkout_path) and force_checkout:
+            elif tmp_checkout_path.exists() and force_checkout:
                 fre_logger.info("Checkout script PREVIOUSLY created in %s", tmp_checkout_path)
                 fre_logger.info("*** REMOVING CHECKOUT SCRIPT ***")
-                os.remove(tmp_checkout_path)
+                tmp_checkout_path.unlink()
                 container_checkout_write(model_yaml, src_dir, tmp_dir, jobs_str, container_pc)
 
-            elif os.path.exists(tmp_checkout_path) and not force_checkout:
+            elif Path(tmp_checkout_path).exists() and not force_checkout:
                 fre_logger.info("Checkout script PREVIOUSLY created in %s", tmp_checkout_path)

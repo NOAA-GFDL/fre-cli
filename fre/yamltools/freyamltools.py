@@ -65,8 +65,6 @@ def combine(yamls, experiment, platform, target, output):
         yaml_paths = sys.stdin.read().strip()
 
     combine_yamls_script_NEW.yamltools_combine_subtool(yaml_paths, experiment, platform, target, output)
-#                                                       compile_only, runtime_only, postprocess_only,
-#                                                       analysis_only, output)
 
 #@yamltools_cli.command()
 #@click.option("-y", "--yaml",

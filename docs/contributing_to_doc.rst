@@ -53,7 +53,7 @@ lightweight approach (recommended for docs-only)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you only need to build documentation and don't need the full ``fre-cli`` environment,
 you can use a minimal setup. This approach uses ``autodoc_mock_imports`` in ``docs/conf.py``
-to mock heavy dependencies like ``netCDF4``, ``cmor``, ``xarray``, etc.
+to mock heavy dependencies like ``netCDF4``, ``xarray``, etc.
 
 From the root-directory of your local repository copy:
 
