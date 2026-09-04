@@ -95,12 +95,18 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: fre-cli-tarball
-          path: /app/fre-cli-tarball/noarch/fre-cli-*.conda
+          path: /app/fre-cli-tarball/noarch
 
       - name: Test fre-cli conda package
         timeout-minutes: 20
         run: |
           pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head -n 1)
+
+          if [ -z "$pkg" ]; then
+              echo "Could not find uploaded fre-cli conda package"
+              exit 1
+          fi
+
           echo "Testing the package: $pkg"
           conda -v build --test "$pkg"
 
