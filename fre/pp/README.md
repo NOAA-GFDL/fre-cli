@@ -4,7 +4,7 @@
 
 
 <!-- this section seems more general than should be in fre/pp
-# **Frepp Canopy**
+# **Frepp**
 _Brief description of tool group's purpose._
 
 * [Tool Group] Supports:
@@ -47,7 +47,8 @@ etc.
 1. Checkout postprocessing workflow template
 This will clone the postprocessing repository into `/home/$USER/cylc-src/EXPNAME__PLATFORM__TARGET`.
 ```
-module load fre/canopy
+module use -a /ncrc/home2/fms/local/modulefiles
+module load fre/YYYY.NN
 fre pp checkout -e EXPNAME -p PLATFORM -t TARGET
 ```
 
@@ -87,17 +88,16 @@ fre pp install -e EXPNAME -p PLATFORM -t TARGET
 ```
 
 If you are attempting this on gaea, you'll need to make two one-time changes before installing.
-- Currently, `cylc`, `rose`, and `isodatetime` must be in your PATH for new shells. One approach to do this is
-to symlink the fms-user-installed fre-cli cylc/rose/isodatetime scripts into your local `~/bin` directory,
-and then add that `~/bin` directory to your PATH in your `.bashrc` or `.cshrc`. (If you don't do this, Cylc tasks
-will fail complaining those 3 tools are not available.)
+- Currently, `cylc`, `rose`, and `isodatetime` must be in your PATH for new shells. Load a supported fre-cli module
+from your `.bashrc` or `.cshrc` so Cylc tasks can find those tools. Choose the current `YYYY.NN` release listed in the
+repository's [Quickstart](../../README.md#on-noaa-rdhpcs-gaea-and-at-gfdl-on-ppan) rather than referencing a shared
+environment path directly.
 
 ```
-cd ~/bin
-ln -s /ncrc/home2/Flexible.Modeling.System/conda/envs/fre-cli/bin/{cylc,rose,isodatetime} .
-echo 'setenv PATH ${PATH}:~/bin' >> ~/.cshrc
+module use -a /ncrc/home2/fms/local/modulefiles
+module load fre/YYYY.NN
 ```
-- Currently, the cylc available on gaea (through `module load cylc` or the `PATH` trick above) does not
+- Currently, the `cylc` available on gaea through the fre-cli module loaded above does not
 include any global configuration, so you'll need to create a file `~/.cylc/flow/global.cylc` that contains the following.
 If you don't do this, Cylc will use your home directory for the scratch space and rapidly fill your quota.)
 
