@@ -51,7 +51,7 @@ jobs:
           conda build --help 
 
       - name: Build fre-cli Conda Package
-        timeout-minutes: 120
+        timeout-minutes: 15
         run: |
           echo "conda building fre-cli package and outputting as a tarball"
           mkdir -p /app/fre-cli-tarball
@@ -98,9 +98,9 @@ jobs:
           path: /app/fre-cli-tarball/noarch/fre-cli-*.conda
 
       - name: Test fre-cli conda package
-        timeout-minutes: 60
+        timeout-minutes: 20
         run: |
-          pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head n 1)
+          pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head -n 1)
           echo "Testing the package: $pkg"
           conda -v build --test "$pkg"
 
