@@ -1,27 +1,27 @@
 """
-Test fre.make.gfdlfremake.makefilefre linklineBuild function
+Test fre.make.gfdlfremake.makefilefre link_line_build function
 Tests coverage for lines 50 and 57 which contain the fixed regex patterns
 """
 import os
 import tempfile
 import shutil
 from unittest.mock import patch, mock_open, MagicMock
-from fre.make.gfdlfremake.makefilefre import linklineBuild
+from fre.make.gfdlfremake.makefilefre import link_line_build
 
 
 class MockMakefileObject:
     """
-    Mock makefile object for testing linklineBuild
+    Mock makefile object for testing link_line_build
     """
-    def __init__(self, filePath, experiment, libs):
-        self.filePath = filePath
+    def __init__(self, file_path, experiment, libs):
+        self.filepath = file_path
         self.e = experiment
         self.l = libs
 
 
-def test_linklineBuild_container_path():
+def test_linklinebuild_container_path():
     """
-    Test linklineBuild when filePath contains 'tmp' (container path).
+    Test link_line_build when file_path contains 'tmp' (container path).
     
     This tests line 50 which contains the fh.write() call with the sed pattern.
     """
@@ -32,21 +32,21 @@ def test_linklineBuild_container_path():
 
         # Setup mock object with tmp in path (container case)
         mock_obj = MockMakefileObject(
-            filePath=container_path,
+            file_path=container_path,
             experiment="test_exp",
             libs=["lib1", "lib2"]
         )
 
         # Create the directory structure
-        os.makedirs(mock_obj.filePath, exist_ok=True)
+        os.makedirs(mock_obj.filepath, exist_ok=True)
 
         # Create initial linkline.sh file
-        linkline_file = os.path.join(mock_obj.filePath, "linkline.sh")
+        linkline_file = os.path.join(mock_obj.filepath, "linkline.sh")
         with open(linkline_file, "w") as f:
             f.write("# Initial content\n")
 
         # Call the function
-        linklineBuild(mock_obj)
+        link_line_build(mock_obj)
 
         # Verify that the linkline.sh file was updated with the expected content
         with open(linkline_file, "r") as f:
@@ -58,17 +58,17 @@ def test_linklineBuild_container_path():
         assert 'sed -i "/MK_TEMPLATE = /a LL = $line" $MF_PATH' in content
 
 
-def test_linklineBuild_baremetal_path():
+def test_linklinebuild_baremetal_path():
     """
-    Test linklineBuild when filePath does not contain 'tmp' (bare metal path)
-    This tests line 57: os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {self.filePath}/Makefile")
+    Test link_line_build when file_path does not contain 'tmp' (bare metal path)
+    This tests line 57: os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {self.filepath}/Makefile")
     """
     # Use a path that doesn't contain 'tmp' to trigger bare metal path
     baremetal_path = "/home/user/baremetal/test"
 
     # Setup mock object without tmp in path (bare metal case)
     mock_obj = MockMakefileObject(
-        filePath=baremetal_path,
+        file_path=baremetal_path,
         experiment="test_exp",
         libs=["-lnetcdf", "-lhdf5"]
     )
@@ -76,7 +76,7 @@ def test_linklineBuild_baremetal_path():
     # Mock os.system to capture the commands that would be executed
     with patch('fre.make.gfdlfremake.makefilefre.os.system') as mock_system:
         # Call the function
-        linklineBuild(mock_obj)
+        link_line_build(mock_obj)
 
         # Verify that os.system was called with the expected commands
         assert mock_system.call_count == 2
@@ -90,27 +90,27 @@ def test_linklineBuild_baremetal_path():
         assert f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {baremetal_path}/Makefile" == second_call
 
 
-def test_linklineBuild_container_path_no_libs():
+def test_linklinebuild_container_path_no_libs():
     """
-    Test linklineBuild container path with empty libs list
+    Test link_line_build container path with empty libs list
     """
     with tempfile.TemporaryDirectory() as temp_dir:
         # Use the actual temp_dir which contains 'tmp' to trigger container path
         container_path = os.path.join(temp_dir, "container_test")
 
         mock_obj = MockMakefileObject(
-            filePath=container_path,
+            file_path=container_path,
             experiment="test_exp",
             libs=[]
         )
 
-        os.makedirs(mock_obj.filePath, exist_ok=True)
-        linkline_file = os.path.join(mock_obj.filePath, "linkline.sh")
+        os.makedirs(mock_obj.filepath, exist_ok=True)
+        linkline_file = os.path.join(mock_obj.filepath, "linkline.sh")
         with open(linkline_file, "w") as f:
             f.write("# Initial content\n")
 
         # Call the function
-        linklineBuild(mock_obj)
+        link_line_build(mock_obj)
 
         # Verify that the file was still created with the regex patterns
         with open(linkline_file, "r") as f:
@@ -119,22 +119,22 @@ def test_linklineBuild_container_path_no_libs():
         assert "sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(LL) \\2|' $MF_PATH" in content
 
 
-def test_linklineBuild_baremetal_path_no_libs():
+def test_linklinebuild_baremetal_path_no_libs():
     """
-    Test linklineBuild bare metal path with empty libs list
+    Test link_line_build bare metal path with empty libs list
     """
     # Use a path that doesn't contain 'tmp' to trigger bare metal path
     baremetal_path = "/home/user/baremetal/test"
 
     mock_obj = MockMakefileObject(
-        filePath=baremetal_path,
+        file_path=baremetal_path,
         experiment="test_exp",
         libs=[]
     )
 
     # Mock os.system to capture commands
     with patch('fre.make.gfdlfremake.makefilefre.os.system') as mock_system:
-        linklineBuild(mock_obj)
+        link_line_build(mock_obj)
 
         # Should still call the sed commands even with empty libs
         assert mock_system.call_count == 2
