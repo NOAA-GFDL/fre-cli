@@ -49,7 +49,6 @@ dynamic = [
 [tool.setuptools.dynamic]
 version = {attr = "fre.__version__"}
 
-
 [project.scripts]
 fre = 'fre.fre:fre'
 

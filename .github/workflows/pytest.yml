@@ -1,4 +1,4 @@
-name: create_test_conda_env
+name: pytests
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -52,19 +52,29 @@ jobs:
           echo "updating conda"
           conda update -y conda
 
+      - name: Cache fre-cli environment
+        id: cache-conda
+        uses: actions/cache@v4.2.0
+        with:
+          path: /tmp/fre-cli
+          key: fre-cli-${{ runner.os }}-py${{ matrix.python-version }} #-${{ hashFiles('environment.yml') }}
+          restore-keys: |
+            fre-cli-${{ runner.os }}-py${{ matrix.python-version }}
+
       - name: Create fre-cli Environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
         run: |
           echo "creating fre-cli env holding all deps"
           echo "Testing with Python ${{ matrix.python-version }}"
           
-          conda env create -y -f environment.yml --name fre-cli
+          conda env create -y -f environment.yml --prefix /tmp/fre-cli
           
           # Override Python version based on matrix
-          conda install -y -n fre-cli "python=${{ matrix.python-version }}"
+          conda install -y -p /tmp/fre-cli "python=${{ matrix.python-version }}"
 
           echo "listing packages installed in the fre-cli environment"
           conda env list
-          conda list -n fre-cli
+          conda list -p /tmp/fre-cli
 
       - name: Activate fre-cli Environment and Install fre-cli
         run: |
@@ -75,14 +85,14 @@ jobs:
           conda init
 
           echo "activating the fre-cli environment"
-          conda activate fre-cli
+          conda activate /tmp/fre-cli
 
           echo "pip installing fre-cli into the environment"
           python -m pip install .
           which fre
 
           echo "listing packages installed again after pip installing fre-cli"
-          conda list -n fre-cli
+          conda list -p /tmp/fre-cli
 
       - name: Run pytest In fre-cli Env
         run: |
@@ -93,7 +103,7 @@ jobs:
           conda init
 
           echo "activating the fre-cli environment"
-          conda activate fre-cli
+          conda activate /tmp/fre-cli
 
           echo "adding spack installed binaries of netcdf/hdf5 to front of path, so conda installed ones don't break compilation tests"
           export path_save=$PATH
