@@ -73,7 +73,6 @@ def split_netcdf(
         if not os.access(outputDir, os.W_OK):
             fre_logger.error(f"error: cannot write to output dir {outputDir}")
 
-    curr_dir = os.getcwd()
     workdir = os.path.abspath(inputDir)
 
     fre_logger.debug(f"input dir: {inputDir}")
