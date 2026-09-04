@@ -100,5 +100,7 @@ jobs:
       - name: Test fre-cli conda package
         timeout-minutes: 60
         run: |
-          conda -v build --test /app/fre-cli-tarball/noarch/fre-cli-*.conda
+          pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head n 1)
+          echo "Testing the package: $pkg"
+          conda -v build --test "$pkg"
 
