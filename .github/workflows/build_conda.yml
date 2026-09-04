@@ -51,11 +51,11 @@ jobs:
           conda build --help 
 
       - name: Build fre-cli Conda Package
-        timeout-minutes: 121
+        timeout-minutes: 120
         run: |
           echo "conda building fre-cli package and outputting as a tarball"
           mkdir -p /app/fre-cli-tarball
-          conda -v build --package-format .conda --output-folder /app/fre-cli-tarball .
+          conda -v build --no-test --package-format .conda --output-folder /app/fre-cli-tarball .
 
       - name: Upload fre-cli Tarball
         uses: actions/upload-artifact@v4
@@ -63,3 +63,42 @@ jobs:
           name: fre-cli-tarball
           path: /app/fre-cli-tarball/noarch/fre-cli-*.conda
           if-no-files-found: error
+
+  testbuild:
+    needs: condabuild
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/noaa-gfdl/fre-cli:miniconda24_gcc14_v2
+    steps:
+      - name: Configure Conda
+        run: |
+          echo "removing conda default channels, appending open-source ones"
+          conda config --append channels conda-forge
+          conda config --append channels noaa-gfdl
+          conda config --remove channels defaults
+
+          echo "setting strict channel priority"
+          conda config --set channel_priority strict
+
+          echo "setting anaconda_upload to no"
+          conda config --set anaconda_upload no
+
+          echo "printing conda config just in case"
+          conda config --show
+
+      - name: Conda install conda-build
+        run: |
+          echo "conda install conda-build"
+          conda install conda-forge::conda-build
+
+      - name: Download tarball
+        uses: actions/download-artifact@v5
+        with:
+          name: fre-cli-tarball
+          path: /app/fre-cli-tarball/noarch/fre-cli-*.conda
+
+      - name: Test fre-cli conda package
+        timeout-minutes: 60
+        run: |
+          conda -v build --test /app/fre-cli-tarball/noarch/fre-cli-*.conda
+

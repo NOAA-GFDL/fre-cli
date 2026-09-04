@@ -49,10 +49,6 @@ dynamic = [
 [tool.setuptools.dynamic]
 version = {attr = "fre.__version__"}
 
-[tool.setuptools.packages.find]
-where = ["."]
-exclude = ["fre.*.tests"]
-
 [project.scripts]
 fre = 'fre.fre:fre'
 
