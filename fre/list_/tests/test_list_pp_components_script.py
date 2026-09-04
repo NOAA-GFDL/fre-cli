@@ -66,4 +66,3 @@ def test_yamlvalidate(caplog):
 
     for record in caplog.records:
         assert record.levelname in ["WARNING", "INFO"]
-

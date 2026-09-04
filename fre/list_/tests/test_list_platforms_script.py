@@ -2,12 +2,8 @@
 Test fre list platforms
 """
 from pathlib import Path
-
 import pytest
-import yaml
-
 from fre.list_ import list_platforms_script
-from fre.yamltools import combine_yamls_script as cy
 
 
 # SET-UP
@@ -60,7 +56,7 @@ def test_yamlvalidate(caplog):
     yamlfile_path = f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}"
 
     # Combine model / experiment
-    list_platforms_script.list_platforms_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
+    list_platforms_script.list_platforms_subtool(yamlfile_path)
 
     validate = ["Validating YAML information...",
                 "     YAML dictionary VALID."]
