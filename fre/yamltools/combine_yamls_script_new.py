@@ -10,30 +10,42 @@ and internal workflow automation.
 
 - can use fre list output to pipe to this tool
 - can use this tool with just model yaml (will use fre list tool)
-- can use this tool to pass in multiple yamls either comma separated string (-y y1,y2) OR multiple options (-y y1 -y y2 ...)
+- can use this tool to pass in multiple yamls either comma separated string
+  (-y y1,y2) OR multiple options (-y y1 -y y2 ...)
 - checks fre-version
 - uses uw config compose (to combine), resolve (to check unrendered values), and validate (to validate yaml)
-
 """
 
 import os
-import yaml
 import logging
+import contextlib
 from pathlib import Path
-from typing import Optional, Union, Any, Dict
-from fre.yamltools.helpers import output_yaml, check_fre_version, clean_yaml
+from typing import Optional
 
 from uwtools.api import config
 from uwtools.api.logging import use_uwtools_logger
-import yaml
-from fre.list_.list_yamls_script import list_yamls_subtool 
-
-import contextlib
+#from fre.list_.list_yamls_script import list_yamls_subtool
+from fre.yamltools.helpers import output_yaml, clean_yaml#, check_fre_version
 
 fre_logger = logging.getLogger(__name__)
 
 class LetsGo():
+    """
+    :ivar: ??
+    """
     def __init__(self, yamls, experiment, platform, target, output):
+        """
+        :param yamls:
+        :type yamls:
+        :param experiment:
+        :type experiment:
+        :param platform:
+        :type platform:
+        :param target:
+        :type target:
+        :param output:
+        :type output:
+        """
         self.y = yamls.split(",")
         self.e = experiment
         self.p = platform
@@ -42,56 +54,66 @@ class LetsGo():
 
     def list_check_yamls(self, init_file):
         """
+        :param init_file:
+        :type init_file:
         """
-        YAMS=[]
+        yaml_list=[]
         # create intermediate yaml to pass to uw config compose
         #  - needs yamls files; cannot pass dictionaries
-        #  - will be removed later
+        #  - intermediate yaml file will be removed later
         init = {"name": self.e, "platform": self.p, "target": self.t}
         output_yaml(init, init_file)
 
         ## append init file (needed for schema and other variables?)
-        YAMS.append(init_file)
+        yaml_list.append(init_file)
 
-        #### yamls is a comma separated string, we have to make it a list
-        YAMS.extend(self.y)
+        ## self.y should be a list
+        ## case where it might not be?
+        yaml_list.extend(self.y)
 
-        for y in YAMS:
+        for y in yaml_list:
             if not Path(y).exists():
-                fre_logger.error("ITS NOT GONNA WORK WITHOUT THEM DAWG --> DNE: %s", y)
+                fre_logger.error(" *** YAML FILES DNE: %s ***", y)
+                raise ValueError("Yaml files could be not found!")
 
-        return YAMS
+        return yaml_list
 
-    def use_uwtools(self, YAMS):
+    def use_uwtools(self, yaml_list):
         """
+        :param self:
+        :param yaml_list:
+        :type yaml_list:
+
+        :raises:
         """
-    ## COMBINE YAMLS AND RESOLVE WHERE WE CAN ##
+        ## COMBINE YAMLS AND RESOLVE WHERE WE CAN ##
         ## uw config compose: pass yaml list to compose final yaml
 
         # CAN THIS BE DICTIONARIES??
         # config.compose returns a base class specifying methods to read, manipulate,
         # and write several configuration-file formats. (use as_dict to return dictionary)
-         # use realize=True to resolve what we can here; if any unresolved, it does not error out yet (use config.realize)
+        # use realize=True to resolve what we can here; if any unresolved, it does not error out
+        # yet (use config.realize)
 
         # Mainly just want to pass dictionary to config.resolve but output from config.compose is a printed dictionary
         # we don't need all this output but maybe it can be wrapped up in fre_logger.debug if needed?
-        with open(os.devnull, 'w') as f, contextlib.redirect_stdout(f):
+        with open(os.devnull, 'w', encoding="utf-8") as f, contextlib.redirect_stdout(f):
             print("This will not be displayed")
-            combined_yaml_dict = config.compose(configs=YAMS, realize=True).as_dict()
+            combined_yaml_dict = config.compose(configs=yaml_list, realize=True).as_dict()
 
-    # CLEAN SERIALIZED YAML ##
+        # CLEAN SERIALIZED YAML ##
         cleaned_yaml_dict = clean_yaml(combined_yaml_dict)
         if not cleaned_yaml_dict:
             raise ValueError("YAML configuration could not be cleaned (experiments)")
 
-### CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
+        ###  SHOLD BE RESOLVED BUT THIS IS TO CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
         ## uw config realize: resolve final yaml
         # get nice uw tools cli output
         use_uwtools_logger()
 
-        final_dict = config.realize(input_config = cleaned_yaml_dict,
-                                    values_needed = True,
-                                    total = True)
+        config.realize(input_config = cleaned_yaml_dict,
+                       values_needed = True,
+                       total = True)
 
         if self.o:
             out_path = Path.cwd()/self.o
@@ -132,15 +154,25 @@ class LetsGo():
 
 def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:str, output: Optional[str]=None) -> dict:
     """
+    :param yamls:
+    :type yamls: str
+    :param experiment:
+    :type experiment: str
+    :param platform:
+    :type platform: str
+    :param target:
+    :type target: str
+    :param output:
+    :type output: str
     """
+#    fre_logger.info('checking fre_cli_version compatibility...')
+#    check_fre_version(combined)
+    
     init_obj = LetsGo(yamls, experiment, platform, target, output)
 
     init_file = f"{Path.cwd()}/init.yaml"
     ymls = init_obj.list_check_yamls(init_file)
     combined = init_obj.use_uwtools(ymls)
-
-    fre_logger.info('checking fre_cli_version compatibility...')
-    check_fre_version(combined)
 
 #    #validate
 #    init_obj.validate(combined)

@@ -3,7 +3,7 @@ import sys
 import ast
 import click
 from fre.yamltools import combine_yamls_script
-from fre.yamltools import combine_yamls_script_NEW
+from fre.yamltools import combine_yamls_script_new
 
 @click.group(help=click.style(" - yamltools subcommands", fg=(202,177,95)))
 def yamltools_cli():
@@ -64,7 +64,7 @@ def combine(yamls, experiment, platform, target, output):
         # stdout from last tool adds a newline for some reason
         yaml_paths = sys.stdin.read().strip()
 
-    combine_yamls_script_NEW.yamltools_combine_subtool(yaml_paths, experiment, platform, target, output)
+    combine_yamls_script_new.yamltools_combine_subtool(yaml_paths, experiment, platform, target, output)
 
 #@yamltools_cli.command()
 #@click.option("-y", "--yaml",
