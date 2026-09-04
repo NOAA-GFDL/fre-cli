@@ -1,7 +1,6 @@
 #!/bin/bash
 
 ## TO-DO: 
-##    - automate rebuilding container when there is an update in fre-cli
 ##    - checks for the status of the workflow (before installation step)
 
 # Initialize ppp-setup
@@ -10,15 +9,12 @@ export TMPDIR=/mnt/temp
 export HOME=/mnt
 
 ## Set path to defined global.cylc file
-## Currently just using degault global.cylc; jobs run in bcakground
+## Currently just using default global.cylc; jobs run in background
 # export CYLC_CONF_PATH=/mnt
 
-## TO-DO: run on non-cloud environment to assess if conda initializations steps are the same
-# Initializations for conda environment in container
-conda init --all
-source /opt/conda/etc/profile.d/conda.sh
-conda deactivate
-conda activate /app/cylc-flow-tools
+## Since these packages are pp workflow specific, install them here to keep the fre-cli environment in the container non-GFDL specific
+conda install noaa-gfdl::hsm=1.4.0
+conda install noaa-gfdl::fre-nctools=2022.02.01
 
 get_user_input () {
     # User input
