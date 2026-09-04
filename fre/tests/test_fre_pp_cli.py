@@ -55,12 +55,16 @@ def test_cli_fre_pp_checkout_case():
     directory = os.path.expanduser("~/cylc-src")+'/FOO__BAR__BAZ'
     if Path(directory).exists():
         shutil.rmtree(directory)
-    result = runner.invoke(fre.fre, args=["pp", "checkout",
-                                          "-e", "FOO",
-                                          "-p", "BAR",
-                                          "-t", "BAZ"] )
-    assert all( [ result.exit_code == 0,
-                  Path(directory).exists()] )
+    try:
+        result = runner.invoke(fre.fre, args=["pp", "checkout",
+                                              "-e", "FOO",
+                                              "-p", "BAR",
+                                              "-t", "BAZ"] )
+        assert all( [ result.exit_code == 0,
+                      Path(directory).exists()] )
+    finally:
+        if Path(directory).exists():
+            shutil.rmtree(directory)
 
 #-- fre pp configure-yaml
 def test_cli_fre_pp_configure_yaml():
