@@ -1,51 +1,9 @@
 Post-Processing Container
 =========================
 
-Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE workflow at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build and runscript, this post-processing container work allows for more effective sharing of the workflow.
-
-BUILDING
---------
-
-In order to build the container, the user needs to have podman access on gaea. If needed, put in a helpdesk ticket.
-
-Files used to build container:
-    - Dockerfile-ppp
-    - cylc-flow-tools environment yaml
-    - runscript.sh
-
-The container will house the fre-cli tools and subtools, and any necessary packages needed for those tools.
-
-Using podman and apptainer to build, follow these steps:
-
-1. Clone the HPC-ME repository
-
-.. code-block:: console
-
- git clone git@gitlab.gfdl.noaa.gov:fre/HPC-ME.git
-
-2. Navigate into the ppp folder
-
-.. code-block:: console
-
- cd HPC-ME/ppp
-
-3. Build a container image
-
-.. code-block:: console
-
- podman build -f Dockerfile-ppp -t 2025
-
-4. Save the image to a local tar file (It is recommended to name the container after the post-processing experiment name)
-
-.. code-block:: console
-
- podman save -o [name of container].tar localhost/2025
-
-5. Create the singularity image file (sif) from the tar file
-
-.. code-block:: console
-
- apptainer build --disable-cache [name of container].sif docker-archive://[name of container].tar
+The FRE post-processing container packages fre-cli and its dependencies into a portable
+Apptainer/Singularity image, enabling postprocessing on systems where a full conda install is
+not practical. The container is distributed as a pre-built ``.sif`` file.
 
 SETUP
 -----

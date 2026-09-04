@@ -19,13 +19,27 @@ or replace with your fork's link (recommended).
 
 Local/Editable Installation
 ---------------------------
-Developers can test local changes by running a ``pip install [-e] .`` inside of the root directory after activating a
-virtual environment with ``python>=3.11.*`` and all requirements. This installs the ``fre-cli`` package locally with
-any local changes.
+Development work on ``fre-cli`` should occur within a conda environment housing ``fre-cli``'s
+requirements, with the package installed in editable mode so that local changes take effect
+without reinstalling::
 
-Development work on ``fre-cli`` should occur within a conda environment housing ``fre-cli``'s requirements, and
-a local copy of the repository to install with ``pip`` using the ``-e/--editable`` flag on. This specific approach is
-described in :ref:`setup`.
+  # fre-cli needs only these two channels
+  conda config --append channels noaa-gfdl
+  conda config --append channels conda-forge
+
+  # clone the repository (--recursive pulls in submodules such as mkmf)
+  git clone --recursive https://github.com/noaa-gfdl/fre-cli.git
+  cd fre-cli
+
+  # create the conda environment with all dependencies (fre-cli itself is not installed yet)
+  conda env create -f environment.yml
+  conda activate fre-cli
+
+  # add mkmf to PATH
+  export PATH=$PATH:${PWD}/mkmf/bin
+
+  # install fre-cli in editable mode — no reinstall needed after editing source files
+  pip install -e .
 
 
 Testing Your Local Changes and Installation

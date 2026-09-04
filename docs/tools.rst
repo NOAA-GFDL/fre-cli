@@ -1,8 +1,8 @@
 .. last updated May 2025
 
-=====
-Tools
-=====
+=========
+FRE tools
+=========
 
 ``fre``
 =======
