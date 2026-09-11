@@ -40,9 +40,6 @@ requirements:
     - conda-forge::netcdf4>=1.7.*
 
 test:
-#  requires:
-#    - conda-forge::pytest
-#    - conda-forge::nccmp==1.11.0
   source_files:
     - fre/
   files:
@@ -69,7 +66,6 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
-    #- pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/
 
 
 about:
