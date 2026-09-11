@@ -37,7 +37,8 @@ requirements:
     - conda-forge::python-cdo
     - conda-forge::pyyaml
     - conda-forge::xarray>=2024.*
-    - conda-forge::netcdf4>=1.7.*
+#    - conda-forge::netcdf4>=1.7.*
+    - conda-forge::netcdf4==1.7.4
 
 test:
   requires:
