@@ -42,7 +42,7 @@ requirements:
 test:
   requires:
     - conda-forge::pytest
-#    - conda-forge::nccmp
+    - conda-forge::nccmp==1.11.0
   source_files:
     - fre/
   files:
