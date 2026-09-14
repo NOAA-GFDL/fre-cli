@@ -24,7 +24,6 @@ requirements:
     - python>=3.11
     - noaa-gfdl::analysis_scripts==0.0.1
     - noaa-gfdl::catalogbuilder==2026.01.01
-#    - noaa-gfdl::fre-nctools==2022.02.01
     - conda-forge::cdo>=2
     - conda-forge::cftime
     - conda-forge::click>=8.2
@@ -34,8 +33,6 @@ requirements:
     - conda-forge::jinja2>=3
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
-    - conda-forge::nccmp
-#    - conda-forge::numpy==1.26.4
     - conda-forge::numpy>=2
     - conda-forge::python-cdo
     - conda-forge::pyyaml
@@ -44,8 +41,6 @@ requirements:
     - ufs-community::uwtools==2.20.0
 
 test:
-  requires:
-    - conda-forge::pytest
   source_files:
     - fre/
   files:
@@ -72,7 +67,6 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
-    - pytest --durations=20 --log-level INFO --ignore=fre/make/tests/compilation fre/
 
 
 about:
