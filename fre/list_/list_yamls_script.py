@@ -12,6 +12,7 @@ is not given, the model, compile, and platform configurations are returned.
 import logging
 from pathlib import Path
 import yaml
+import click
 
 fre_logger = logging.getLogger(__name__)
 
@@ -25,6 +26,8 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     :type experiment: str
     :param application: is the application name
     :type application: str
+    :return: is a comma separated string of yaml files (absolute paths)
+    :rtype: str
 
     :raise ValueError: if the experiment, application passed does not exist and 
                        if yaml files do not exist
@@ -94,13 +97,13 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
         fre_logger.info("  - %s", y)
 
 ### Might add this in when fre yamltools combine-yamls is refactored
-#    fre_logger.info("")
-#    fre_logger.info('If combining these yamls, there are 2 options:')
-#    fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
-#    fre_logger.info('   2. Copy and paste this string (including quotes)
-#                           as the -y option in "fre yamltools combine -y <yamls>:')
-#    fre_logger.info('       "%s"', yamls_full_path)
-#    fre_logger.info("")
+    fre_logger.info("")
+    fre_logger.info('If combining these yamls, there are 2 options:')
+    fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
+    fre_logger.info('   2. Copy and paste this string (including quotes) '
+                           'as the -y option in "fre yamltools combine -y <yamls>:')
+    fre_logger.info('       "%s"', yamls_full_path)
+    fre_logger.info("")
     fre_logger.setLevel(former_log_level)
 
     # Check if the paths exist; give warning
@@ -113,4 +116,5 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     if "True" in fail:
         raise ValueError(" *** PROVIDE THE MISSING YAML CONFIGURATIONS ***")
 
+    click.echo(yamls_full_path)
     return yamls_full_path
