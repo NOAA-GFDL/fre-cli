@@ -3,9 +3,9 @@ channels:
   - conda-forge
   - NOAA-GFDL
 dependencies:
-  - noaa-gfdl::hsm
   - noaa-gfdl::fre-cli==XXXX.XX #Add version number manually
   - conda-forge::nco
   - conda-forge::rsync
   - conda-forge::make
   - conda-forge::vim
+  - pip
