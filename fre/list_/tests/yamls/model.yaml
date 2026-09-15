@@ -1,0 +1,35 @@
+# reusable variables
+fre_properties:
+  VERSION:           "foo"
+  FRE_STEM:          "test_list/{{ fre_properties.VERSION }}"
+
+  # amip
+  EXP_AMIP_START:     "19790101T0000Z"
+  EXP_AMIP_END:       "20200101T0000Z"
+  ANA_AMIP_START:     "1980"
+  ANA_AMIP_END:       "2020"
+
+  PP_AMIP_CHUNK96:    "P1Y"
+  PP_XYINTERP96:      "180,288"
+  PP_XYINTERP384:     "720,1152"
+
+  # compile information
+  INTEL:               "intel-classic"
+  FMSincludes:         "-IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include"
+  momIncludes:         "-Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include"
+
+# compile information
+build:
+  compileYaml: "compile.yaml"
+  platformYaml: "platforms.yaml"
+
+experiments:
+  experiment1:
+    settings: "yaml_include/settings.yaml"
+    run:
+      - "run1.yaml"
+    postprocess:
+      - "yaml_include/pp.c96_amip.yaml"
+      - "yaml_include/pp-test.c96_amip.yaml"
+    analysis:
+      - "analysis1.yaml"
