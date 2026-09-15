@@ -12,11 +12,14 @@ import shutil
 import socket
 import subprocess
 import sys
+import tarfile
 from typing import Optional
 
 import click
 
 fre_logger = logging.getLogger(__name__)
+
+VALID_MODES = {"history", "ascii", "restart"}
 
 
 @dataclass(frozen=True)
@@ -93,6 +96,42 @@ def validate_path(path_value: str | Path, *, must_be_file: bool = False) -> Path
     return path
 
 
+def validate_mode(mode: str) -> str:
+    """Validate that the mode is one of the allowed values."""
+    if mode not in VALID_MODES:
+        fre_logger.error(
+            "*ERROR*: Invalid mode '%s'. Must be one of: %s",
+            mode,
+            ", ".join(sorted(VALID_MODES)),
+        )
+        raise click.ClickException(
+            f"Invalid mode '{mode}'. Must be one of: {', '.join(sorted(VALID_MODES))}"
+        )
+    return mode
+
+
+def create_tar_archive(arch_dir: Path, work_dir: Path) -> None:
+    """Create a TAR archive of arch_dir and place it in work_dir.
+    
+    Args:
+        arch_dir: Source directory to archive
+        work_dir: Destination directory for the TAR file
+    
+    Raises:
+        click.ClickException: If TAR creation fails
+    """
+    tar_file = work_dir / "archive.tar"
+    
+    try:
+        fre_logger.info("Creating TAR archive from '%s'", arch_dir)
+        with tarfile.open(tar_file, "w") as tar:
+            tar.add(arch_dir, arcname=".")
+        fre_logger.info("TAR archive created successfully at '%s'", tar_file)
+    except (OSError, tarfile.TarError) as exc:
+        fre_logger.error("*ERROR*: Failed to create TAR archive: %s", exc)
+        raise click.ClickException(f"Failed to create TAR archive: {exc}") from exc
+
+
 @contextmanager
 def acquire_lock(lock_target: Path):
     """Acquire and release a file lock using the system lockfile utility if available."""
@@ -150,6 +189,8 @@ def acquire_lock(lock_target: Path):
     help="Enable checksum verification of output files.")
 @click.option("--compress-on", is_flag=True, default=False, required=False,
     help="Enable compression of output files.")
+@click.option("--mode", required=True, type=str,
+    help="Mode for staging (required). Must be one of: history, ascii, restart.")
 @click.option("--verbose", is_flag=True, default=False, required=False,
     help="Enable verbose output.")
 @click.argument("exp_name")
@@ -161,11 +202,14 @@ def acquire_lock(lock_target: Path):
 @click.argument("ardiff_tmpdir")
 def outputStager(exit_status, combine, check, save_on, fill_grid_on,  # pylint: disable=invalid-name
                  combine_ok, check_ok, save_ok, fill_grid_ok, archive_on,
-                 ptmp_on, check_sum_on, compress_on, verbose,
+                 ptmp_on, check_sum_on, compress_on, mode, verbose,
                  exp_name, output_type, work_dir, ptmp_dir, arch_dir,
                  mppnccombine_opt_string, ardiff_tmpdir):
     """Stage output files for post-processing."""
     setup_run_context(verbose=verbose)
+    
+    # Validate mode
+    validate_mode(mode)
 
     work_dir_path = validate_path(work_dir)
     ptmp_dir_path = validate_path(ptmp_dir)
@@ -175,7 +219,7 @@ def outputStager(exit_status, combine, check, save_on, fill_grid_on,  # pylint: 
     lock_target = work_dir_path / f"{exp_name}.{output_type}"
     try:
         with acquire_lock(lock_target):
-            pass  # USE ABOVE FUNCTIONS
+            create_tar_archive(arch_dir_path, work_dir_path)
     except KeyboardInterrupt:
         # Lock is released by acquire_lock's finally clause ("unlock"),
         # then requeue if under Slurm (mirrors tcsh CATCH_SIGINT).
