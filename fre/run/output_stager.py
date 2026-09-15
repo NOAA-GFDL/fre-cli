@@ -110,22 +110,22 @@ def validate_mode(mode: str) -> str:
     return mode
 
 
-def create_tar_archive(arch_dir: Path, work_dir: Path) -> None:
-    """Create a TAR archive of arch_dir and place it in work_dir.
+def create_tar_archive(work_dir: Path, arch_dir: Path) -> None:
+    """Create a TAR archive of work_dir and place it in arch_dir.
     
     Args:
-        arch_dir: Source directory to archive
-        work_dir: Destination directory for the TAR file
+        work_dir: Source directory to archive
+        arch_dir: Destination directory for the TAR file
     
     Raises:
         click.ClickException: If TAR creation fails
     """
-    tar_file = work_dir / "archive.tar"
+    tar_file = arch_dir / "archive.tar"
     
     try:
-        fre_logger.info("Creating TAR archive from '%s'", arch_dir)
+        fre_logger.info("Creating TAR archive from '%s'", work_dir)
         with tarfile.open(tar_file, "w") as tar:
-            tar.add(arch_dir, arcname=".")
+            tar.add(work_dir, arcname=".")
         fre_logger.info("TAR archive created successfully at '%s'", tar_file)
     except (OSError, tarfile.TarError) as exc:
         fre_logger.error("*ERROR*: Failed to create TAR archive: %s", exc)
@@ -219,7 +219,7 @@ def outputStager(exit_status, combine, check, save_on, fill_grid_on,  # pylint: 
     lock_target = work_dir_path / f"{exp_name}.{output_type}"
     try:
         with acquire_lock(lock_target):
-            create_tar_archive(arch_dir_path, work_dir_path)
+            create_tar_archive(work_dir_path, arch_dir_path)
     except KeyboardInterrupt:
         # Lock is released by acquire_lock's finally clause ("unlock"),
         # then requeue if under Slurm (mirrors tcsh CATCH_SIGINT).
