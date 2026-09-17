@@ -60,12 +60,13 @@ def setup_run_context(verbose: bool = False) -> RunContext:
     fre_logger.info("<NOTE> : ====== FRE OUTPUT STAGER ======")
     fre_logger.info("<NOTE> : Starting at %s on %s", host, current_date)
 
+    # We might want to log this info...
     slurm_job_id = os.getenv("SLURM_JOB_ID")
     slurm_job_name = os.getenv("SLURM_JOB_NAME", "")
     slurm_submit_dir = os.getenv("SLURM_SUBMIT_DIR")
-    is_non_interactive = not sys.stdin.isatty()
+    is_interactive = sys.stdin.isatty()
 
-    if slurm_job_id and is_non_interactive:
+    if slurm_job_id and not is_interactive:
         base_name = Path(slurm_job_name).name if slurm_job_name else "fre"
         job_name = f"{base_name}.o{slurm_job_id}"
         return RunContext(
@@ -135,10 +136,12 @@ def create_tar_archive(work_dir: Path, arch_dir: Path) -> None:
 @contextmanager
 def acquire_lock(lock_target: Path):
     """Acquire and release a file lock using the system lockfile utility if available."""
+
     lock_binary = shutil.which("lockfile")
     lock_file = Path(f"{lock_target}.lock")
 
     if not lock_binary:
+        # We should NOT error out just because we cant call the locking utility
         fre_logger.warning(
             "WARNING: File locking utility 'lockfile' is missing on this host"
         )
