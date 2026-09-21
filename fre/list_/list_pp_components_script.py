@@ -1,6 +1,20 @@
 """
-Script combined model yaml with the settings and post-processing yamls.
-Merged yaml dictionary is parsed to list components that will be post-processed
+Module `list_ppcomps_subtool` contains the function `list_ppcomps_subtool`
+ to query the resolved, combined yaml file (`model.yaml`, `settings.yaml`,
+and `post-processing.yamls`) and returns the the components to be post-processed.
+
+Given the post-processing yaml below, if `postprocess_on` is missing or set as True,
+the component will be post-processed and will be listed. If the key is set to False,
+it will not be listed with the subtool.
+
+Example:
+```
+postprocess:
+  component:
+    - type: pp1
+      source: ...
+      postprocess_on: True/False
+```
 """
 
 from pathlib import Path
@@ -12,11 +26,11 @@ fre_logger = logging.getLogger(__name__)
 
 def list_ppcomps_subtool(yamlfile: str, experiment: str):
     """
-    List the components to be post-processed
+    List_ppcomps_subtool lists the components to be post-processed.
 
-    :param yamlfile: path to the yaml configuration file
+    :param yamlfile: is the path to the model.yaml configuration file
     :type yamlfile: str
-    :param experiment: experiment name
+    :param experiment: is the experiment name defined in the model.yaml
     :type experiment: str
     """
     # set logger level to INFO
