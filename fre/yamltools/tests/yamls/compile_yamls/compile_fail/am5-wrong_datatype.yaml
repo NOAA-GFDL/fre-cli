@@ -1,0 +1,20 @@
+# reusable variables
+fre_properties:
+  AM5_VERSION:        "am5f7b12r1"
+  FRE_STEM:           "am5/{{ fre_properties.AM5_VERSION }}"
+
+  # compile information
+  release:             "f1a1r1"
+  INTEL:               "intel-classic"
+  FMSincludes:         "-IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include"
+  momIncludes:         "-Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include"
+
+build:
+  # compile information
+  compileYaml: "wrong_compile.yaml"
+  platformYaml: "wrong_platforms.yaml"
+
+experiments:
+  - name: "c96L65_am5f7b12r1_amip"
+    pp:
+      - 

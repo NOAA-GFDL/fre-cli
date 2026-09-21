@@ -3,7 +3,7 @@ platforms:
      compiler: intel
      envSetup: [" module use -a /ncrc/home2/fms/local/modulefiles",
                 "source $MODULESHOME/init/sh",
-                !join ["module load ", *INTEL, "/2022.2.1"],
+                "module load {{ fre_properties.INTEL }}/2022.2.1",
                 "module load fre/bronx-23",
                 "module load cray-hdf5/1.12.2.3",
                 "module load cray-netcdf/4.9.0.3"]
@@ -13,7 +13,7 @@ platforms:
      compiler: intel
      envSetup: [" module use -a /ncrc/home2/fms/local/modulefiles",
                 "source $MODULESHOME/init/sh",
-                !join ["module load ", *INTEL, "/2023.1.0"],
+                "module load {{ fre_properties.INTEL }}/2023.1.0",
                 "module load fre/bronx-23",
                 "module load cray-hdf5/1.12.2.3",
                 "module load cray-netcdf/4.9.0.3"]
