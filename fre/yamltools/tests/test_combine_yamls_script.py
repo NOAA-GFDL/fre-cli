@@ -34,7 +34,6 @@ for outdir in [COMP_OUT_DIR, PP_OUT_DIR]:
         Path(outdir).mkdir(parents=True,exist_ok=True)
 
 ## Set what would be click options
-#YAMLS = "fre/yamltools/tests/AM5_example/am5.yaml,fre/yamltools/tests/AM5_example/compile_yamls/compile.yaml,fre/yamltools/tests/AM5_example/compile_yamls/platforms.yaml"
 # Compile
 COMP_EXPERIMENT = "model_exp"
 COMP_PLATFORM = "ncrc5.intel23"
@@ -68,12 +67,12 @@ def test_merged_compile_yamls():
     Check for the creation of the combined-[experiment] yaml
     Check that the model yaml was merged into the combined yaml
     """
-    # Model yaml path
-    modelyaml = str(Path(f"{IN_DIR}/model.yaml"))
-    YAMLS = f"{IN_DIR}/model.yaml,{IN_DIR}/compile_yamls/compile.yaml,{IN_DIR}/compile_yamls/platforms.yaml"
+    yamls = (f"{IN_DIR}/model.yaml,"
+             f"{IN_DIR}/compile_yamls/compile.yaml,"
+             f"{IN_DIR}/compile_yamls/platforms.yaml")
     # Merge the yamls
     try:
-        cy.yamltools_combine_subtool(YAMLS, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
+        cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
     except:
         assert False
 
@@ -81,17 +80,17 @@ def test_combined_compileyaml_validation():
     """
     Validate the combined compile yaml
     """
-    # Model yaml path
-    modelyaml = str(Path(f"{IN_DIR}/model.yaml"))
-    YAMLS = f"{IN_DIR}/model.yaml,{IN_DIR}/compile_yamls/compile.yaml,{IN_DIR}/compile_yamls/platforms.yaml"
+    yamls = (f"{IN_DIR}/model.yaml,"
+             f"{IN_DIR}/compile_yamls/compile.yaml,"
+             f"{IN_DIR}/compile_yamls/platforms.yaml")
     # Merge the yamls
     try:
-        out = cy.yamltools_combine_subtool(YAMLS, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
+        out = cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
     except:
         assert False
 
     schema_file = os.path.join(SCHEMA_DIR, "fre_make.json")
-    with open(schema_file,'r') as f:
+    with open(schema_file, 'r', encoding="utf-8") as f:
         s = f.read()
     schema = json.loads(s)
 
@@ -107,12 +106,14 @@ def test_combined_compileyaml_combinefail():
     Check to test if compile yaml is incorrect/does not exist,
     the combine fails. (compile yaml path misspelled)
     """
-    YAMLS = f"{IN_DIR}/compile_yamls/compile_fail/am5-wrong_compilefile.yaml,{IN_DIR}/compile_yamls/compile_fail/compile.yaml,{IN_DIR}/compile_yamls/compile_fail/wrong_platforms.yaml"
+    yamls = (f"{IN_DIR}/compile_yamls/compile_fail/am5-wrong_compilefile.yaml,"
+             f"{IN_DIR}/compile_yamls/compile_fail/compile.yaml,"
+             f"{IN_DIR}/compile_yamls/compile_fail/wrong_platforms.yaml")
 
     # Merge the yamls - should fail since there is no compile yaml specified in the model yaml
     try:
         #out =
-        cy.yamltools_combine_subtool(YAMLS, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
+        cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
     except:
         print("EXPECTED FAILURE")
         assert True
@@ -122,14 +123,13 @@ def test_combined_compileyaml_validatefail():
     Check if the schema is validating correctly
     Branch should be string
     """
-    # Model yaml path
-    modelyaml = str(Path(f"{IN_DIR}/compile_yamls/compile_fail/am5-wrong_datatype.yaml"))
-
-    YAMLS = f"{IN_DIR}/compile_yamls/compile_fail/am5-wrong_datatype.yaml,{IN_DIR}/compile_yamls/compile_fail/wrong_compile.yaml,{IN_DIR}/compile_yamls/compile_fail/wrong_platforms.yaml"
+    yamls = (f"{IN_DIR}/compile_yamls/compile_fail/am5-wrong_datatype.yaml,"
+             f"{IN_DIR}/compile_yamls/compile_fail/wrong_compile.yaml,"
+             f"{IN_DIR}/compile_yamls/compile_fail/wrong_platforms.yaml")
 
     # Merge the yamls
     try:
-        out = cy.yamltools_combine_subtool(YAMLS, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
+        out = cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
     except:
         assert False
 
@@ -149,14 +149,16 @@ def test_combined_compileyaml_validatefail():
 
 def test_check_expected_platformyamlcontent():
     ''' Test that expected yaml information (platform info) is included in dictionary content '''
-    TEST_DIR = Path("fre/make/tests")
-    NM_EXAMPLE = Path("null_example")
-    YAMLFILE = "null_model.yaml"
-    EXP_NAME = YAMLFILE.split(".")[0]
+#    TEST_DIR = Path("fre/make/tests")
+#    NM_EXAMPLE = Path("null_example")
+#    YAMLFILE = "null_model.yaml"
+#    EXP_NAME = YAMLFILE.split(".")[0]
 
     # Combine model / experiment
-    YAMLS = "fre/make/tests/null_example/null_model.yaml,fre/make/tests/null_example/compile.yaml,fre/make/tests/null_example/platforms.yaml"
-    yml_dict = cy.yamltools_combine_subtool(YAMLS, None, None, None, output = None)
+    yamls = ("fre/make/tests/null_example/null_model.yaml,"
+             "fre/make/tests/null_example/compile.yaml,"
+             "fre/make/tests/null_example/platforms.yaml")
+    yml_dict = cy.yamltools_combine_subtool(yamls, None, None, None, output = None)
 
     # compare combined yaml info with some information that's supposed to be parsed
     expected_platform_info_1 = {'name': 'ncrc5.intel23',
@@ -208,22 +210,13 @@ def test_merged_pp_yamls():
     Check for the creation of the combined-[experiment] yaml
     Check that the model yaml was merged into the combined yaml
     """
-    # Model yaml path
-    modelyaml = Path(f"{IN_DIR}/model.yaml")
-    YAMLS = f"{IN_DIR}/model.yaml,{IN_DIR}/pp_yamls/pp.c96_amip.yaml,{IN_DIR}/pp_yamls/pp-TEST.c96_amip.yaml"
-
-#    analysis:
-#      - "analysis_yamls/clouds.yaml"
-#      - "analysis_yamls/land.yaml"
-#    cmor: # cmor-tool development, not part of official am5.yaml (yet)
-#      - "cmor_yamls/cmor.am5.yaml"
-#    grid_yaml:
-#      - "grid_yamls/TEST_grids.yaml"
-
+    yamls = (f"{IN_DIR}/model.yaml,"
+             f"{IN_DIR}/pp_yamls/pp.c96_amip.yaml,"
+             f"{IN_DIR}/pp_yamls/pp-TEST.c96_amip.yaml")
 
     # Merge the yamls
     try:
-        cy.yamltools_combine_subtool(YAMLS, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, output = None)
+        cy.yamltools_combine_subtool(yamls, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, output = None)
     except:
         assert False
 
@@ -231,16 +224,18 @@ def test_combined_ppyaml_validation():
     """
     Validate the combined compile yaml
     """
-    modelyaml = Path(f"{IN_DIR}/model.yaml")
-    YAMLS = f"{IN_DIR}/model.yaml,{IN_DIR}/settings.yaml,{IN_DIR}/pp_yamls/pp.c96_amip.yaml,{IN_DIR}/pp_yamls/pp-TEST.c96_amip.yaml"
+    yamls = (f"{IN_DIR}/model.yaml,"
+             f"{IN_DIR}/settings.yaml,"
+             f"{IN_DIR}/pp_yamls/pp.c96_amip.yaml,"
+             f"{IN_DIR}/pp_yamls/pp-TEST.c96_amip.yaml")
     # Merge the yamls
     try:
-        out = cy.yamltools_combine_subtool(YAMLS, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, output = None)
+        out = cy.yamltools_combine_subtool(yamls, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, output = None)
     except:
         assert False
 
     schema_file = os.path.join(SCHEMA_DIR, "fre_pp.json")
-    with open(schema_file,'r') as f:
+    with open(schema_file, 'r', encoding="utf-8") as f:
         s = f.read()
     schema = json.loads(s)
 
@@ -292,9 +287,9 @@ def test_combine_pp_yamls(tmp_path):
             'components' : {
                 'ocean': {'sources' : "a b c" },
                 'ice': {'sources' : "ice_month"}
-            }    
+            }
         }
-    }   
+    }
 
     combined = {
         'name' : 'expname',
@@ -322,27 +317,28 @@ def test_combine_pp_yamls(tmp_path):
     tmp_path.mkdir(exist_ok=True)
 
     # create model and pp yamls
-    file_model = open(tmp_path / 'model.yaml', 'w')
-    file_settings = open(tmp_path / 'settings.yaml', 'w')
-    file_pp1 = open(tmp_path / 'pp1.yaml', 'w')
-    file_pp2 = open(tmp_path / 'pp2.yaml', 'w')
+    with open(tmp_path / 'model.yaml', 'w', encoding="utf-8") as model_yf:
+        yaml.dump(model, model_yf, default_flow_style=False, sort_keys=False)
 
-    # write to/ dump info into created model and pp yamls
-    yaml.dump(model, file_model, default_flow_style=False, sort_keys=False)
-    yaml.dump(settings, file_settings, default_flow_style=False, sort_keys=False)
-    yaml.dump(pp1, file_pp1, default_flow_style=False, sort_keys=False)
-    yaml.dump(pp2, file_pp2, default_flow_style=False, sort_keys=False)
+    with open(tmp_path / 'settings.yaml', 'w', encoding="utf-8") as settings_yf:
+        yaml.dump(settings, settings_yf, default_flow_style=False, sort_keys=False)
+
+    with open(tmp_path / 'pp1.yaml', 'w', encoding="utf-8") as pp1_yf:
+        yaml.dump(pp1, pp1_yf, default_flow_style=False, sort_keys=False)
+
+    with open(tmp_path / 'pp2.yaml', 'w', encoding="utf-8") as pp2_yf:
+        yaml.dump(pp2, pp2_yf, default_flow_style=False, sort_keys=False)
 
     # combine the yamls
     # output is a combined dictionary of necessary yaml info
-#    output = cy.consolidate_yamls(tmp_path / 'model.yaml', 'expname', 'platform', 'target', 'pp', output=None)
-    YAMLS = f"{tmp_path}/model.yaml,{tmp_path}/settings.yaml,{tmp_path}/pp1.yaml,{tmp_path}/pp2.yaml"
+    yamls = (f"{tmp_path}/model.yaml,"
+             f"{tmp_path}/settings.yaml,"
+             f"{tmp_path}/pp1.yaml,{tmp_path}/pp2.yaml")
 
-    output = cy.yamltools_combine_subtool(YAMLS, 'expname', 'platform', 'target', output = None)
+    output = cy.yamltools_combine_subtool(yamls, 'expname', 'platform', 'target', output = None)
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(output)
     pp.pprint(combined)
 
     # compare dictionaries
     assert output == combined
-

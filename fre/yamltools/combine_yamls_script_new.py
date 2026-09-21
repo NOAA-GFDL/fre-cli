@@ -167,7 +167,6 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
     """
 #    fre_logger.info('checking fre_cli_version compatibility...')
 #    check_fre_version(combined)
-    
     init_obj = LetsGo(yamls, experiment, platform, target, output)
 
     init_file = f"{Path.cwd()}/init.yaml"
