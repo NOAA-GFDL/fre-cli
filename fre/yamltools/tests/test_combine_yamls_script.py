@@ -18,7 +18,7 @@ from fre.yamltools import combine_yamls_script_new as cy #import combine_yamls_s
 # Set example yaml paths, input directory, output directory
 #CWD = Path.cwd()
 TEST_DIR = Path("fre/yamltools/tests")
-IN_DIR = Path(f"{TEST_DIR}/AM5_example")
+IN_DIR = Path(f"{TEST_DIR}/yamls")
 SCHEMA_DIR = Path("fre/gfdl_msd_schemas/FRE")
 
 # Create output directories
@@ -36,7 +36,7 @@ for outdir in [COMP_OUT_DIR, PP_OUT_DIR]:
 ## Set what would be click options
 #YAMLS = "fre/yamltools/tests/AM5_example/am5.yaml,fre/yamltools/tests/AM5_example/compile_yamls/compile.yaml,fre/yamltools/tests/AM5_example/compile_yamls/platforms.yaml"
 # Compile
-COMP_EXPERIMENT = "am5"
+COMP_EXPERIMENT = "model_exp"
 COMP_PLATFORM = "ncrc5.intel23"
 COMP_TARGET = "prod"
 
@@ -49,7 +49,7 @@ def test_modelyaml_exists():
     """
     Make sure main yaml file exists
     """
-    assert Path(f"{IN_DIR}/am5.yaml").exists()
+    assert Path(f"{IN_DIR}/model.yaml").exists()
 
 def test_compileyaml_exists():
     """
@@ -69,8 +69,8 @@ def test_merged_compile_yamls():
     Check that the model yaml was merged into the combined yaml
     """
     # Model yaml path
-    modelyaml = str(Path(f"{IN_DIR}/am5.yaml"))
-    YAMLS = "fre/yamltools/tests/AM5_example/am5.yaml,fre/yamltools/tests/AM5_example/compile_yamls/compile.yaml,fre/yamltools/tests/AM5_example/compile_yamls/platforms.yaml"
+    modelyaml = str(Path(f"{IN_DIR}/model.yaml"))
+    YAMLS = f"{IN_DIR}/model.yaml,{IN_DIR}/compile_yamls/compile.yaml,{IN_DIR}/compile_yamls/platforms.yaml"
     # Merge the yamls
     try:
         cy.yamltools_combine_subtool(YAMLS, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
@@ -82,8 +82,8 @@ def test_combined_compileyaml_validation():
     Validate the combined compile yaml
     """
     # Model yaml path
-    modelyaml = str(Path(f"{IN_DIR}/am5.yaml"))
-    YAMLS = "fre/yamltools/tests/AM5_example/am5.yaml,fre/yamltools/tests/AM5_example/compile_yamls/compile.yaml,fre/yamltools/tests/AM5_example/compile_yamls/platforms.yaml"
+    modelyaml = str(Path(f"{IN_DIR}/model.yaml"))
+    YAMLS = f"{IN_DIR}/model.yaml,{IN_DIR}/compile_yamls/compile.yaml,{IN_DIR}/compile_yamls/platforms.yaml"
     # Merge the yamls
     try:
         out = cy.yamltools_combine_subtool(YAMLS, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
@@ -107,7 +107,7 @@ def test_combined_compileyaml_combinefail():
     Check to test if compile yaml is incorrect/does not exist,
     the combine fails. (compile yaml path misspelled)
     """
-    YAMLS = "fre/yamltools/tests/AM5_example/compile_yamls/compile_fail/am5-wrong_compilefile.yaml,fre/yamltools/tests/AM5_example/compile_yamls/compile_fail/compile.yaml,fre/yamltools/tests/AM5_example/compile_yamls/compile_fail/wrong_platforms.yaml"
+    YAMLS = f"{IN_DIR}/compile_yamls/compile_fail/am5-wrong_compilefile.yaml,{IN_DIR}/compile_yamls/compile_fail/compile.yaml,{IN_DIR}/compile_yamls/compile_fail/wrong_platforms.yaml"
 
     # Merge the yamls - should fail since there is no compile yaml specified in the model yaml
     try:
@@ -125,7 +125,7 @@ def test_combined_compileyaml_validatefail():
     # Model yaml path
     modelyaml = str(Path(f"{IN_DIR}/compile_yamls/compile_fail/am5-wrong_datatype.yaml"))
 
-    YAMLS = "fre/yamltools/tests/AM5_example/compile_yamls/compile_fail/am5-wrong_datatype.yaml,fre/yamltools/tests/AM5_example/compile_yamls/compile_fail/wrong_compile.yaml,fre/yamltools/tests/AM5_example/compile_yamls/compile_fail/wrong_platforms.yaml"
+    YAMLS = f"{IN_DIR}/compile_yamls/compile_fail/am5-wrong_datatype.yaml,{IN_DIR}/compile_yamls/compile_fail/wrong_compile.yaml,{IN_DIR}/compile_yamls/compile_fail/wrong_platforms.yaml"
 
     # Merge the yamls
     try:
@@ -209,8 +209,8 @@ def test_merged_pp_yamls():
     Check that the model yaml was merged into the combined yaml
     """
     # Model yaml path
-    modelyaml = Path(f"{IN_DIR}/am5.yaml")
-    YAMLS = "fre/yamltools/tests/AM5_example/am5.yaml,fre/yamltools/tests/AM5_example/pp_yamls/pp.c96_amip.yaml,fre/yamltools/tests/AM5_example/pp_yamls/pp-TEST.c96_amip.yaml"
+    modelyaml = Path(f"{IN_DIR}/model.yaml")
+    YAMLS = f"{IN_DIR}/model.yaml,{IN_DIR}/pp_yamls/pp.c96_amip.yaml,{IN_DIR}/pp_yamls/pp-TEST.c96_amip.yaml"
 
 #    analysis:
 #      - "analysis_yamls/clouds.yaml"
@@ -231,9 +231,8 @@ def test_combined_ppyaml_validation():
     """
     Validate the combined compile yaml
     """
-    modelyaml = Path(f"{IN_DIR}/am5.yaml")
-    YAMLS = "fre/yamltools/tests/AM5_example/am5.yaml,fre/yamltools/tests/AM5_example/pp_yamls/pp.c96_amip.yaml,fre/yamltools/tests/AM5_example/pp_yamls/pp-TEST.c96_amip.yaml"
-
+    modelyaml = Path(f"{IN_DIR}/model.yaml")
+    YAMLS = f"{IN_DIR}/model.yaml,{IN_DIR}/settings.yaml,{IN_DIR}/pp_yamls/pp.c96_amip.yaml,{IN_DIR}/pp_yamls/pp-TEST.c96_amip.yaml"
     # Merge the yamls
     try:
         out = cy.yamltools_combine_subtool(YAMLS, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, output = None)

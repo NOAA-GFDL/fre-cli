@@ -32,7 +32,7 @@ compile:
             cppdefs: "-DSPMD -DCLIMATE_NUDGE"
             branch: "2022.01"
             paths: ["atmos_drivers/coupled"]
-            OtherFlags: "{{ fre_properties.FMSincludes }}"
+            otherFlags: "{{ fre_properties.FMSincludes }}"
           - component: "ice_sis"
             requires: ["FMS", "ice_param", "mom6"]
             repo: "https://gitlab.gfdl.noaa.gov/FMS/ice_sis.git"
