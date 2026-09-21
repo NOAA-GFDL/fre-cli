@@ -11,7 +11,7 @@ import pytest
 import yaml
 from jsonschema import validate
 
-from fre.yamltools import combine_yamls_script_new as cy #import combine_yamls_script_new as cy
+from fre.yamltools import combine_yamls_script_new as cy
 
 
 ## SET-UP
