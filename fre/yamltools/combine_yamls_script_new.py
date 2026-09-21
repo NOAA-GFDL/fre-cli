@@ -47,10 +47,10 @@ class LetsGo():
         :type output:
         """
         self.y = yamls.split(",")
-        self.e = experiment
-        self.p = platform
-        self.t = target
-        self.o = output
+        self.e = str(experiment)
+        self.p = str(platform)
+        self.t = str(target)
+        self.o = str(output)
 
     def list_check_yamls(self, init_file):
         """
