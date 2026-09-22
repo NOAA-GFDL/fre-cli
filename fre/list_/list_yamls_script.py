@@ -11,6 +11,7 @@ is not given, the model, compile, and platform configurations are returned.
 """
 import logging
 from pathlib import Path
+import sys
 import yaml
 import click
 
@@ -43,8 +44,8 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     with open(yamlfile, 'r', encoding="utf-8") as yf:
         yaml_dict = yaml.load(yf, Loader = yaml.Loader)
 
-    compile_data = yaml_dict["build"].get("compileYaml")
     platform_data = yaml_dict["build"].get("platformYaml")
+    compile_data = yaml_dict["build"].get("compileYaml")
     exp_data = yaml_dict["experiments"].get(experiment)
 
     yamls = [model_yaml]
@@ -71,7 +72,7 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
                 else:
                     yamls.append(exp_data[a])
         else:
-            yamls.extend([compile_data, platform_data])
+            yamls.extend([platform_data, compile_data])
             for value in exp_data.values():
                 if isinstance(value, list):
                     yamls.extend(value)
@@ -79,7 +80,7 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
                     yamls.append(value)
     else:
         fre_logger.info("No experiment name passed. Will only provide YAMLs related to compilation.")
-        yamls.extend([compile_data, platform_data])
+        yamls.extend([platform_data, compile_data])
 
     yamls_full_path = ""
     # Add full path for yaml configurations
@@ -116,5 +117,8 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     if "True" in fail:
         raise ValueError(" *** PROVIDE THE MISSING YAML CONFIGURATIONS ***")
 
-    click.echo(yamls_full_path)
+    # if not piped to fre yamltools combine, no need to show all the yamls
+    if not sys.stdout.isatty():
+        click.echo(yamls_full_path)
+
     return yamls_full_path
