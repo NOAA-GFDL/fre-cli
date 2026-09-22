@@ -1,9 +1,11 @@
 ''' click entry-point to 'fre yamltools' calls'''
 import sys
-import ast
+import logging
+#import ast
 import click
 from fre.yamltools import combine_yamls_script
 from fre.yamltools import combine_yamls_script_new
+fre_logger = logging.getLogger(__name__)
 
 @click.group(help=click.style(" - yamltools subcommands", fg=(202,177,95)))
 def yamltools_cli():
@@ -56,11 +58,11 @@ def combine(yamls, experiment, platform, target, output):
     # if not piped from fre list yamls
     yaml_paths = []
     if yamls:
-        print("not piped")
+        fre_logger.info("NOT PIPED")
         yaml_paths = yamls
 #        print(yamls.split(","))
     else:
-        print("piped")
+        fre_logger.info("PIPED")
         # stdout from last tool adds a newline for some reason
         yaml_paths = sys.stdin.read().strip()
 

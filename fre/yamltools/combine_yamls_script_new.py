@@ -24,28 +24,20 @@ from typing import Optional
 
 from uwtools.api import config
 from uwtools.api.logging import use_uwtools_logger
-#from fre.list_.list_yamls_script import list_yamls_subtool
 from fre.yamltools.helpers import output_yaml, clean_yaml#, check_fre_version
 
 fre_logger = logging.getLogger(__name__)
 
 class LetsGo():
     """
-    :ivar: ??
+    :ivar str yamls: is the list of YAML configuration files to combine
+    :ivar str experiment: is the experiment name (relates to the run and postprocessing)
+    :ivar str platform: is the FRE platform defined
+    :ivar str target: is the predefined FRE targets; options include [prod/debug/repro]-openmp
+    :ivar str output: is the file path to a file that will incude the final combined, resolved YAML
+                      configuration file
     """
     def __init__(self, yamls, experiment, platform, target, output):
-        """
-        :param yamls:
-        :type yamls:
-        :param experiment:
-        :type experiment:
-        :param platform:
-        :type platform:
-        :param target:
-        :type target:
-        :param output:
-        :type output:
-        """
         self.y = yamls.split(",")
         self.e = str(experiment)
         self.p = str(platform)
@@ -109,11 +101,22 @@ class LetsGo():
         ###  SHOLD BE RESOLVED BUT THIS IS TO CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
         ## uw config realize: resolve final yaml
         # get nice uw tools cli output
-        use_uwtools_logger()
+
+        # Save current root logger handlers and level
+        root_logger = logging.getLogger()
+        original_handlers = list(root_logger.handlers)
+        original_level = root_logger.level
+
+
+        uwlogger = use_uwtools_logger()
 
         config.realize(input_config = cleaned_yaml_dict,
                        values_needed = True,
                        total = True)
+
+        # 3. Restore root logger state back to original
+        root_logger.handlers = original_handlers
+        root_logger.setLevel(original_level)
 
         if self.o:
             out_path = Path.cwd()/self.o
@@ -154,15 +157,16 @@ class LetsGo():
 
 def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:str, output: Optional[str]=None) -> dict:
     """
-    :param yamls:
+    :param yamls: is the list of YAML configuration files to combine
     :type yamls: str
-    :param experiment:
+    :param experiment: is the experiment name (relates to the run and postprocessing)
     :type experiment: str
-    :param platform:
+    :param platform: is the FRE platform defined
     :type platform: str
-    :param target:
+    :param target: is the predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
-    :param output:
+    :param output: is the file path to a file that will incude the final combined, resolved YAML
+                   configuration file
     :type output: str
     """
 #    fre_logger.info('checking fre_cli_version compatibility...')
