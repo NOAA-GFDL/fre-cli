@@ -16,9 +16,9 @@ Welcome to ``fre-cli``'s documentation!
 
    what-is-fre
    setup
-   usage
    tools
-   container
+   usage
+   examples
    api
    for-developers
    glossary
