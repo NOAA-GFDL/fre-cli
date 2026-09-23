@@ -11,7 +11,9 @@ is not given, the model, compile, and platform configurations are returned.
 """
 import logging
 from pathlib import Path
+import sys
 import yaml
+import click
 
 fre_logger = logging.getLogger(__name__)
 
@@ -25,6 +27,8 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     :type experiment: str
     :param application: is the application name
     :type application: str
+    :return: is a comma separated string of yaml files (absolute paths)
+    :rtype: str
 
     :raise ValueError: if the experiment, application passed does not exist and 
                        if yaml files do not exist
@@ -40,8 +44,8 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     with open(yamlfile, 'r', encoding="utf-8") as yf:
         yaml_dict = yaml.load(yf, Loader = yaml.Loader)
 
-    compile_data = yaml_dict["build"].get("compileYaml")
     platform_data = yaml_dict["build"].get("platformYaml")
+    compile_data = yaml_dict["build"].get("compileYaml")
     exp_data = yaml_dict["experiments"].get(experiment)
 
     yamls = [model_yaml]
@@ -68,7 +72,7 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
                 else:
                     yamls.append(exp_data[a])
         else:
-            yamls.extend([compile_data, platform_data])
+            yamls.extend([platform_data, compile_data])
             for value in exp_data.values():
                 if isinstance(value, list):
                     yamls.extend(value)
@@ -76,7 +80,7 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
                     yamls.append(value)
     else:
         fre_logger.info("No experiment name passed. Will only provide YAMLs related to compilation.")
-        yamls.extend([compile_data, platform_data])
+        yamls.extend([platform_data, compile_data])
 
     yamls_full_path = ""
     # Add full path for yaml configurations
@@ -94,13 +98,13 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
         fre_logger.info("  - %s", y)
 
 ### Might add this in when fre yamltools combine-yamls is refactored
-#    fre_logger.info("")
-#    fre_logger.info('If combining these yamls, there are 2 options:')
-#    fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
-#    fre_logger.info('   2. Copy and paste this string (including quotes)
-#                           as the -y option in "fre yamltools combine -y <yamls>:')
-#    fre_logger.info('       "%s"', yamls_full_path)
-#    fre_logger.info("")
+    fre_logger.info("")
+    fre_logger.info('If combining these yamls, there are 2 options:')
+    fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
+    fre_logger.info('   2. Copy and paste this string (including quotes) '
+                           'as the -y option in "fre yamltools combine -y <yamls>:')
+    fre_logger.info('       "%s"', yamls_full_path)
+    fre_logger.info("")
     fre_logger.setLevel(former_log_level)
 
     # Check if the paths exist; give warning
@@ -112,5 +116,9 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
             fre_logger.error("**DNE**: %s", y)
     if "True" in fail:
         raise ValueError(" *** PROVIDE THE MISSING YAML CONFIGURATIONS ***")
+
+    # if not piped to fre yamltools combine, no need to show all the yamls
+    if not sys.stdout.isatty():
+        click.echo(yamls_full_path)
 
     return yamls_full_path
