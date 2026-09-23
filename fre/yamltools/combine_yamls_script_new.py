@@ -42,7 +42,7 @@ class LetsGo():
         self.e = str(experiment)
         self.p = str(platform)
         self.t = str(target)
-        self.o = str(output)
+        self.o = output
 
     def list_check_yamls(self, init_file):
         """
