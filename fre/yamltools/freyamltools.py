@@ -38,7 +38,7 @@ def combine_yamls(yamlfile,
 @yamltools_cli.command()
 @click.option("-y", "--yamls",
               type=str,
-              help="YAML file to be used for parsing")
+              help="Comma separated list of YAML files to be combined")
 @click.option("-e", "--experiment",
               type=str,
               help="Experiment name")
