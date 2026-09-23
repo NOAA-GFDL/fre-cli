@@ -92,7 +92,6 @@ Post-processing Yamls
 Build a model
 =============
 .. include:: usage/build_fms_model.rst
-.. include:: usage/guides/fre_make_guide.rst
 
 Running an experiment
 =====================
