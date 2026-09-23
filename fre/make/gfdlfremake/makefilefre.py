@@ -1,7 +1,12 @@
+"""
+Module `makefilefre.py` creates the Makefile for the model container
+or executable build. For the container build, it is created in a
+temporary directory and copied into the container.
+"""
 import os
 import textwrap
 
-def linklineBuild(self):
+def link_line_build(self):
     """
     Brief: Writes the link line for bare metal and container builds
     Param: 
@@ -9,10 +14,26 @@ def linklineBuild(self):
     """
     linkline=""
 
-#if additional libraries are defined, populate the link line with the correct information for libraries
-## CONTAINER; write a script that will execute in the container, to fill in link line with additional libraries in Makefile
-    if "tmp" in self.filePath:
-        with open(self.filePath+"/linkline.sh","a") as fh:
+# if additional libraries are defined, populate the link line with
+# the correct information for libraries
+## CONTAINER; write a script that will execute in the container,
+# to fill in link line with additional libraries in Makefile
+    if "tmp" in self.filepath:
+        # checks
+        if not self.l:
+            return
+        if not self.clf:
+            return
+
+        # if container linkerflags defined
+        for l in self.clf:
+            linkline = linkline + " " + l
+        os.system(f"sed -i '/MK_TEMPLATE = /a CLF = {linkline}' {self.filepath}/Makefile")
+        os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(CLF) \\1|' {self.filepath}/Makefile")
+
+
+        # if container_addlibs is defined
+        with open(self.filepath+"/linkline.sh","w", encoding="utf-8") as fh:
             fh.write("set -- ")
             for l in self.l:
                 fh.write(l+" ")
@@ -43,44 +64,49 @@ def linklineBuild(self):
                                done
                                '''
 
-        with open(self.filePath+"/linkline.sh","a") as fh:
+        with open(self.filepath+"/linkline.sh", "a", encoding="utf-8") as fh:
             fh.writelines(textwrap.dedent(self.linklinecreate))
             fh.write("MF_PATH='/apps/"+self.e+"/exec/Makefile'\n")
-            fh.write('sed -i "/MK_TEMPLATE = /a LL = $line" $MF_PATH\n')
-            fh.write("sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(LL) \\2|' $MF_PATH\n")
+            fh.write('sed -i "/MK_TEMPLATE = /a CL = $line" $MF_PATH\n')
+            fh.write("sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(CL) \\2|' $MF_PATH\n")
 
 ## BARE METAL; if addlibs defined on bare metal, include those additional libraries in link line
-    elif "tmp" not in self.filePath:
+    elif "tmp" not in self.filepath:
         for l in self.l: # baremetal_linkerflags
             linkline = linkline + " " + l
-        os.system(f"sed -i '/MK_TEMPLATE = /a LL = {linkline}' {self.filePath}/Makefile")
-        os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {self.filePath}/Makefile")
+        os.system(f"sed -i '/MK_TEMPLATE = /a LL = {linkline}' {self.filepath}/Makefile")
+        os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {self.filepath}/Makefile")
 
-class makefile():
-    def __init__(self,exp,libs,srcDir,bldDir,mkTemplatePath):
+
+class Makefile():
+    """
+    The makefile class for a bare-metal executable build.
+    """
+    def __init__(self,exp,libs,src_dir,bld_dir,mk_template_path):
         """
         Brief: Opens Makefile and sets the experiment and other common variables
         Param:
             - self The Makefile object
             - exp Experiment name
             - libs Additional libraries/linker flags defined by user
-            - srcDir The path to the source directory
-            - bldDir The path to the build directory
-            - mkTemplatePath The path of the template .mk file for compiling
+            - src_dir The path to the source directory
+            - bld_dir The path to the build directory
+            - mk_template_path The path of the template .mk file for compiling
         """
         self.e = exp
         self.l = libs
-        self.src = srcDir
-        self.bld =  bldDir
-        self.template = mkTemplatePath
+        self.clf = ""
+        self.src = src_dir
+        self.bld =  bld_dir
+        self.template = mk_template_path
         self.c =[] #components
         self.r=[] #requires
         self.o=[] #overrides
         os.system("mkdir -p "+self.bld)
-        self.filePath = self.bld # Needed so that the container and bare metal builds can
+        self.filepath = self.bld # Needed so that the container and bare metal builds can
                                  # use the same function to create the Makefile
 
-    def addComponent (self,c,r,o):
+    def add_component (self,c,r,o):
         """
         Brief: Adds a component and corresponding requires to the list
         Param: 
@@ -93,7 +119,7 @@ class makefile():
         self.r.append(r)
         self.o.append(o)
 
-    def createLibstring (self,c,r,o):
+    def create_libstring (self,c,r,o):
         """
         Brief: Sorts the component by how many requires there are for that component
         Param:
@@ -104,26 +130,27 @@ class makefile():
         """
         # org_comp : returns a zip object
         org_comp = zip(self.c,self.r,self.o)
-        # Sort zip object so that the component with the most requires (self.r) is listed first, and so on 
+        # Sort zip object so that the component with the most requires (self.r)
+        # is listed first, and so on
         sort = sorted(org_comp,key=lambda values:len(values[1]),reverse=True)
 
         return sort
 
-    def writeMakefile (self):
+    def write_makefile (self):
         """
         Brief: Writes the Makefile.  Should be called after all components are added
         Param:
             - self The Makefile object
         """
         # Get the list of all of the libraries
-        sd=self.createLibstring(self.c,self.r,self.o)
+        sd=self.create_libstring(self.c,self.r,self.o)
         libstring=" "
         for i in sd:
             lib=i[0]
             libstring = libstring+lib+"/lib"+lib+".a "
 
         # Open the Makefile for Writing
-        with open(self.filePath+"/Makefile","w") as fh:
+        with open(self.filepath+"/Makefile","w",encoding="utf-8") as fh:
             # Write the header information for the Makefile
             fh.write("# Makefile for "+self.e+"\n")
             fh.write("SRCROOT = "+self.src+"/\n")
@@ -135,12 +162,12 @@ class makefile():
             fh.write(self.e+".x: "+libstring+"\n")
             fh.write("\t$(LD) $^ $(LDFLAGS) -o $@ $(STATIC_LIBS)"+"\n")
 
-        # Write the link line script with user-provided libraries
-        if self.l:
-            linklineBuild(self)
+        # Write the link line script with user-provided libraries if defined
+        if self.l or self.clf:
+            link_line_build(self)
 
         # Write the individual component library compiles
-        with open(self.filePath+"/Makefile","a") as fh:
+        with open(self.filepath+"/Makefile","a",encoding="utf-8") as fh:
             for (c,r,o) in sd:
                 libstring = " "
                 for lib in r:
@@ -148,9 +175,11 @@ class makefile():
                 cstring = c+"/lib"+c+".a: "
                 fh.write(cstring+libstring+" FORCE"+"\n")
                 if o == "":
-                    fh.write("\t$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) --directory="+c+" $(@F)\n")
+                    fh.write("\t$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) "
+                             "MK_TEMPLATE=$(MK_TEMPLATE) --directory="+c+" $(@F)\n")
                 else:
-                    fh.write("\t$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) MK_TEMPLATE=$(MK_TEMPLATE) "+o+" --directory="+c+" $(@F)\n")
+                    fh.write("\t$(MAKE) SRCROOT=$(SRCROOT) BUILDROOT=$(BUILDROOT) "
+                             "MK_TEMPLATE=$(MK_TEMPLATE) "+o+" --directory="+c+" $(@F)\n")
             fh.write("FORCE:\n")
             fh.write("\n")
 
@@ -172,33 +201,37 @@ class makefile():
             fh.write("\t$(RM) -r Makefile \n")
 
 ### This seems incomplete? ~ ejs
-## The makefile class for a container.  It gets built into a temporary directory so it can be copied
-## into the container.
 ## \param exp Experiment name
 ## \param libs Additional libraries/linker flags defined by user
-## \param srcDir The path to the source directory
-## \param bldDir The path to the build directory
-## \param mkTemplatePath The path of the template .mk file for compiling
-## \param tmpDir A local path to temporarily store files build to be copied to the container
-class makefileContainer(makefile):
-    def __init__(self,exp,libs,srcDir,bldDir,mkTemplatePath,tmpDir):
+## \param src_dir The path to the source directory
+## \param bld_dir The path to the build directory
+## \param mk_template_path The path of the template .mk file for compiling
+## \param tmp_dir A local path to temporarily store files build to be copied to the container
+class MakefileContainer(Makefile):
+    """
+    The makefile class for a container build. The Makefile gets built into a temporary
+    directory so it can be copied into the container. 
+    """
+    def __init__(self,exp,libs,linkerflags,src_dir,bld_dir,mk_template_path,tmp_dir):
         self.e = exp
         self.l = libs
-        self.src = srcDir
-        self.bld =  bldDir
-        self.template = mkTemplatePath
-        self.tmpDir = tmpDir
+        self.clf = linkerflags
+        self.src = src_dir
+        self.bld =  bld_dir
+        self.template = mk_template_path
+        self.tmpdir = tmp_dir
         self.c =[] #components
         self.r=[] #requires
         self.o=[] #overrides
-        os.system("mkdir -p "+self.tmpDir)
-        self.filePath = self.tmpDir # Needed so that the container and bare metal builds can
+        os.system("mkdir -p "+self.tmpdir)
+        self.filepath = self.tmpdir # Needed so that the container and bare metal builds can
                                 # use the same function to create the Makefile
 
-    def getTmpDir(self):
+##dont think this is even used
+    def get_tmpdir(self):
         """
-        Brief: Return the tmpDir
+        Brief: Return the tmpdir
         Param:
             - self The makefile object
         """
-        return self.tmpDir
+        return self.tmpdir
