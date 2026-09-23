@@ -39,7 +39,8 @@ def split_netcdf(
     files for each data variable and copies the data variable files of interest
     to the output directory
 
-    Intended to work with data structured for fre-workflows and fre-workflows file naming conventions
+    Intended to work with data structured for the fre-postprocess-workflow repository and
+    associated file naming conventions
     - Sample infile name convention: "19790101.atmos_tracer.tile6.nc"
 
     :param inputDir: directory containing netcdf files
