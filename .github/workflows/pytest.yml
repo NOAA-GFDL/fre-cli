@@ -57,9 +57,9 @@ jobs:
         uses: actions/cache@v4.2.0
         with:
           path: /tmp/fre-cli
-          key: fre-cli-${{ runner.os }}-py${{ matrix.python-version }}
+          key: fre-cli-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('environment.yml') }}
           restore-keys: |
-            fre-cli-${{ runner.os }}-py${{ matrix.python-version }}
+            fre-cli-${{ runner.os }}-py${{ matrix.python-version }}-
 
       - name: Create fre-cli Environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
