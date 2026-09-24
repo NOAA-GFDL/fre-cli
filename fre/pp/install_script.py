@@ -39,9 +39,11 @@ def install_subtool(experiment, platform, target):
     if os.path.isdir(install_dir):
         # must convert from bytes to string for proper comparison
         installed_def = subprocess.run(["cylc", "config", workflow_name],capture_output=True).stdout.decode('utf-8')
-        go_back_here = os.getcwd()
-        os.chdir(source_dir)
-        source_def = subprocess.run(['cylc', 'config', '.'], capture_output=True).stdout.decode('utf-8')
+        source_def = subprocess.run(
+            ['cylc', 'config', '.'],
+            cwd=source_dir,
+            capture_output=True
+        ).stdout.decode('utf-8')
         if installed_def == source_def:
             fre_logger.warning(f"NOTE: Workflow '{install_dir}' already installed, and the definition is unchanged")
         else:
