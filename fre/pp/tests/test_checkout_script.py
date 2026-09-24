@@ -1,6 +1,8 @@
 from pathlib import Path
 from unittest.mock import Mock, call, patch
 
+import pytest
+
 from fre.pp.checkout_script import (
     FRE_WORKFLOWS_URL,
     checkout_template,
@@ -111,3 +113,45 @@ def test_checkout_missing_workflow_clones_into_workflow_directory(
         text=True,
         check=True,
     )
+
+
+def test_checkout_branch_mismatch_does_not_change_cwd(
+    tmp_path,
+    monkeypatch,
+):
+    """Caller cwd is unchanged when the checkout branch/tag does not match the requested branch/tag."""
+    monkeypatch.chdir(tmp_path)
+
+    workflow_name = "experiment__platform__target"
+    branch = "test-branch"
+
+    with (
+        patch(
+            "fre.pp.checkout_script.make_workflow_name",
+            return_value=workflow_name,
+        ),
+        patch("fre.pp.checkout_script.os.makedirs"),
+        patch(
+            "fre.pp.checkout_script.os.path.isdir",
+            return_value=True,
+        ),
+        patch(
+            "fre.pp.checkout_script.subprocess.run",
+            side_effect=[
+                Mock(stdout="different-tag\n"),
+                Mock(stdout="different-branch\n"),
+            ],
+        ),
+        pytest.raises(
+            ValueError,
+            match="neither tag nor branch matches",
+        ),
+    ):
+        checkout_template(
+            "experiment",
+            "platform",
+            "target",
+            branch=branch,
+        )
+
+    assert Path.cwd() == tmp_path
