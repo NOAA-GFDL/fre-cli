@@ -27,7 +27,7 @@ requirements:
     - conda-forge::cdo>=2
     - conda-forge::cftime
     - conda-forge::click>=8.2
-    - conda-forge::cylc-flow>=8.3
+    - conda-forge::cylc-flow>=8.2
     - conda-forge::cylc-rose
     - conda-forge::git
     - conda-forge::jinja2>=3
@@ -39,7 +39,7 @@ requirements:
     - conda-forge::pyyaml
     - conda-forge::xarray>=2024.*
     - conda-forge::netcdf4>=1.7.*
-    - ufs-community::uwtools==2.20.0
+    - ufs-community::uwtools
 
 test:
   source_files:
