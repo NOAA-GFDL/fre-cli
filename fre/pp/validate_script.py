@@ -35,7 +35,7 @@ def validate_subtool(experiment = None, platform = None, target = None):
         os.chdir(directory)
 
         # Validate the Cylc configuration
-        cmd = "cylc validate ."
+        cmd = "cylc validate --check-circular ."
         subprocess.run(cmd, shell=True, check=True)
     except:
         raise Exception('cylc validate . exited non-zero')
