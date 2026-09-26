@@ -44,17 +44,18 @@ def test_configure_script():
     old_home = os.environ["HOME"]
     os.environ["HOME"] = str(Path(f"{TEST_DIR}/configure_yaml_out"))
 
-    # Set output directory
-    OUT_DIR = Path(f"{os.getenv('HOME')}/cylc-src/{EXPERIMENT}__{PLATFORM}__{TARGET}")
-    Path(OUT_DIR).mkdir(parents = True, exist_ok = True)
+    try:
+        # Set output directory
+        OUT_DIR = Path(f"{os.getenv('HOME')}/cylc-src/{EXPERIMENT}__{PLATFORM}__{TARGET}")
+        Path(OUT_DIR).mkdir(parents = True, exist_ok = True)
 
-    # Define combined yaml
-    model_yaml = f"{TEST_DIR}/{TEST_YAML}"
+        # Define combined yaml
+        model_yaml = f"{TEST_DIR}/{TEST_YAML}"
 
-    # Invoke configure_yaml_script.py
-    csy.yaml_info(model_yaml, EXPERIMENT, PLATFORM, TARGET)
-
-    os.environ["HOME"] = old_home
+        # Invoke configure_yaml_script.py
+        csy.yaml_info(model_yaml, EXPERIMENT, PLATFORM, TARGET)
+    finally:
+        os.environ["HOME"] = old_home
 
     # Check for configuration creation and final combined yaml
     assert all([ Path(f"{OUT_DIR}/{EXPERIMENT}.yaml").exists(),

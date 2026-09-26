@@ -65,3 +65,6 @@ test = [
     "pylint",
     "pytest",
 ]
+
+[tool.pytest.ini_options]
+norecursedirs = ["configure_yaml_out", "cylc-src", ".git", "__pycache__"]
