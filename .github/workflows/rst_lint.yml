@@ -1,0 +1,22 @@
+name: reStructuredText Lint
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
+jobs:
+  run_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+      - name: Prepare Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Install Python Requirements
+        run: pip install doc8
+      - name: Lint RST files
+        run: doc8 *
