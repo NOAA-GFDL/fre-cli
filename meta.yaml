@@ -30,7 +30,7 @@ requirements:
     - conda-forge::cylc-flow>=8.4
     - conda-forge::cylc-rose
     - conda-forge::git
-    - conda-forge::jinja2>=3
+    - conda-forge::jinja2>=3.1,<3.2.*
     - conda-forge::jsonschema
     - conda-forge::metomi-rose
     - conda-forge::numpy==1.26.4
@@ -39,7 +39,7 @@ requirements:
     - conda-forge::pyyaml
     - conda-forge::xarray>=2024.*
     - conda-forge::netcdf4>=1.7.*
-    - ufs-community::uwtools
+    - ufs-community::uwtools==2.19.0
 
 test:
   source_files:
