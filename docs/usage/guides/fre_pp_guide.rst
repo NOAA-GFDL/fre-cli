@@ -1,6 +1,6 @@
 Guide
 ----------
-1. Using the main branch of the fre-workflows repository: 
+1. Using the main branch of the fre-postprocess-workflow repository: 
 
 .. code-block::
 
@@ -8,7 +8,7 @@ Guide
   module load cylc
   module load fre/2026.01
 
-  # Clone fre-workflows repository into ~/cylc-src/[experiment name]__[platform name]__[target name]
+  # Clone postprocessing workflow repository into ~/cylc-src/[experiment name]__[platform name]__[target name]
   fre pp checkout -e [experiment name] -p [platform] -t [target]
 
   # Create/configure the combined yaml file, rose-suite.conf, and any necessary rose-app.conf files
@@ -34,7 +34,7 @@ Users can also run all fre pp subtools in one command:
   # Run all of fre pp
   fre pp all -e [experiment name] -p [platform] -t [target] -y [model yaml file]
 
-2. Specifying a certain branch of the fre-workflows repository
+2. Specifying a certain branch of the fre-postprocess-workflow repository
 
 .. code-block::
 
@@ -42,7 +42,7 @@ Users can also run all fre pp subtools in one command:
   module load cylc
   module load fre/2026.01
 
-  # Clone fre-workflows repository into ~/cylc-src/[experiment name]__[platform name]__[target name]
+  # Clone postprocessing workflow repository into ~/cylc-src/[experiment name]__[platform name]__[target name]
   fre pp checkout -e [experiment name] -p [platform] -t [target] -b [branch or tag name]
 
   # Create/configure the combined yaml file, rose-suite.conf, and any necessary rose-app.conf files

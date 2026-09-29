@@ -14,7 +14,7 @@ from ..fre import version as fre_ver
 
 fre_logger = logging.getLogger(__name__)
 
-FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
+FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-postprocess-workflow.git'
 
 def checkout_template(experiment = None, platform = None, target = None, branch = None):
     """
