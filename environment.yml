@@ -2,7 +2,6 @@ name: fre-cli
 channels:
   - conda-forge
   - noaa-gfdl
-  - ufs-community
 dependencies:
   - python>=3.11
   - pip
@@ -28,4 +27,3 @@ dependencies:
   - conda-forge::pyyaml
   - conda-forge::xarray>=2024.*
   - conda-forge::netcdf4>=1.7.*
-  - ufs-community::uwtools==2.20.0

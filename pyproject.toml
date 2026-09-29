@@ -33,7 +33,6 @@ dependencies = [
         'numpy',
         'pyyaml',
         'xarray',
-        'uwtools',
 ]
 
 classifiers = [
