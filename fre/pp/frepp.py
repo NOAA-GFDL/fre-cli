@@ -134,7 +134,7 @@ def configure_yaml(yamlfile,experiment,platform,target):
               required=True)
 @click.option("-b", "--branch", type =str,
               required=False, default = None,
-              help="fre-workflows branch/tag to clone; default is $(fre --version)")
+              help="fre-postprocess-workflow branch/tag to clone; default is $(fre --version)")
 def checkout(experiment, platform, target, branch=None):
     """
     Execute fre pp checkout
@@ -206,7 +206,7 @@ def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_sub
         vars in the netcdf files, no files will be written to $outdir. If --use-subdirs
         is set, netcdf files will be searched for in subdirs under $outdir.
 
-        This tool is intended for use in fre-workflows and assumes files to split have
+        This tool is intended for use in fre-postprocess-workflow and assumes files to split have
         fre-specific naming conventions. For a more general tool, look at split-netcdf.'''
     if split_all_vars:
         none_args = [component, yamlfile]
@@ -266,7 +266,7 @@ def ppval(path):
               required=True)
 @click.option("-b", "--branch",
               required=False, default=None,
-              help="fre-workflows branch/tag to clone; default is $(fre --version)")
+              help="fre-postprocess-workflow branch/tag to clone; default is $(fre --version)")
 @click.option("-t", "--time",
               required=False, default=None,
               help="Time whose history files are ready")
