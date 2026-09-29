@@ -142,5 +142,5 @@ def test_run_fremake_container_build_fail():
     stderr = run.stderr
 
     #Check that the incorrect line specifically prints in the stderr
-    fail_step = "podman build -f Dockerfile-wrong"
+    fail_step = "podman build --net=host -f Dockerfile-wrong"
     assert fail_step in str(stderr)
