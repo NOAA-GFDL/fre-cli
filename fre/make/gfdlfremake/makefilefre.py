@@ -20,7 +20,7 @@ def link_line_build(self):
 # to fill in link line with additional libraries in Makefile
     if "tmp" in self.filepath:
         # checks
-        if not self.l:
+        if not self.libs:
             return
         if not self.clf:
             return
@@ -28,14 +28,14 @@ def link_line_build(self):
         # if container linkerflags defined
         for l in self.clf:
             linkline = linkline + " " + l
-        os.system(f"sed -i '/MK_TEMPLATE = /a CLF = {linkline}' {self.filepath}/Makefile")
+        os.system(f"sed -i '/MK_TEMPLATE = /a CLF ={linkline}' {self.filepath}/Makefile")
         os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(CLF) \\1|' {self.filepath}/Makefile")
 
 
         # if container_addlibs is defined
         with open(self.filepath+"/linkline.sh","w", encoding="utf-8") as fh:
             fh.write("set -- ")
-            for l in self.l:
+            for l in self.libs:
                 fh.write(l+" ")
             fh.write("\n")
 
@@ -72,7 +72,7 @@ def link_line_build(self):
 
 ## BARE METAL; if addlibs defined on bare metal, include those additional libraries in link line
     elif "tmp" not in self.filepath:
-        for l in self.l: # baremetal_linkerflags
+        for l in self.libs: # baremetal_linkerflags
             linkline = linkline + " " + l
         os.system(f"sed -i '/MK_TEMPLATE = /a LL = {linkline}' {self.filepath}/Makefile")
         os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {self.filepath}/Makefile")
@@ -94,7 +94,7 @@ class Makefile():
             - mk_template_path The path of the template .mk file for compiling
         """
         self.e = exp
-        self.l = libs
+        self.libs = libs
         self.clf = ""
         self.src = src_dir
         self.bld =  bld_dir
@@ -163,7 +163,7 @@ class Makefile():
             fh.write("\t$(LD) $^ $(LDFLAGS) -o $@ $(STATIC_LIBS)"+"\n")
 
         # Write the link line script with user-provided libraries if defined
-        if self.l or self.clf:
+        if self.libs or self.clf:
             link_line_build(self)
 
         # Write the individual component library compiles
@@ -214,7 +214,7 @@ class MakefileContainer(Makefile):
     """
     def __init__(self,exp,libs,linkerflags,src_dir,bld_dir,mk_template_path,tmp_dir):
         self.e = exp
-        self.l = libs
+        self.libs = libs
         self.clf = linkerflags
         self.src = src_dir
         self.bld =  bld_dir

@@ -4,25 +4,22 @@ Tests coverage for lines 50 and 57 which contain the fixed regex patterns
 """
 import os
 import tempfile
-import shutil
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import patch
 from fre.make.gfdlfremake.makefilefre import link_line_build
-
 
 class MockMakefileObject:
     """
     Mock makefile object for testing link_line_build
     """
-    def __init__(self, file_path, experiment, libs):
+    def __init__(self, file_path, experiment, libs, container_linkerflags):
         self.filepath = file_path
         self.e = experiment
-        self.l = libs
-
+        self.libs = libs
+        self.clf = container_linkerflags
 
 def test_linklinebuild_container_path():
     """
     Test link_line_build when file_path contains 'tmp' (container path).
-    
     This tests line 50 which contains the fh.write() call with the sed pattern.
     """
     # Create a temporary directory for testing
@@ -34,7 +31,8 @@ def test_linklinebuild_container_path():
         mock_obj = MockMakefileObject(
             file_path=container_path,
             experiment="test_exp",
-            libs=["lib1", "lib2"]
+            libs=["lib1", "lib2"],
+            container_linkerflags=["-q=testing"]
         )
 
         # Create the directory structure
@@ -70,7 +68,8 @@ def test_linklinebuild_baremetal_path():
     mock_obj = MockMakefileObject(
         file_path=baremetal_path,
         experiment="test_exp",
-        libs=["-lnetcdf", "-lhdf5"]
+        libs=["-lnetcdf", "-lhdf5"],
+        container_linkerflags=[]
     )
 
     # Mock os.system to capture the commands that would be executed
@@ -101,7 +100,8 @@ def test_linklinebuild_container_path_no_libs():
         mock_obj = MockMakefileObject(
             file_path=container_path,
             experiment="test_exp",
-            libs=[]
+            libs=[],
+            container_linkerflags=[]
         )
 
         os.makedirs(mock_obj.filepath, exist_ok=True)
@@ -115,7 +115,8 @@ def test_linklinebuild_container_path_no_libs():
         # Verify that the file was still created with the regex patterns
         with open(linkline_file, "r") as f:
             content = f.read()
-
+#        print(content)
+#        ah
         assert "sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(LL) \\2|' $MF_PATH" in content
 
 
@@ -129,7 +130,8 @@ def test_linklinebuild_baremetal_path_no_libs():
     mock_obj = MockMakefileObject(
         file_path=baremetal_path,
         experiment="test_exp",
-        libs=[]
+        libs=[],
+        container_linkerflags=[]
     )
 
     # Mock os.system to capture commands
