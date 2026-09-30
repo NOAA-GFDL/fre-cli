@@ -19,9 +19,9 @@ def check(file_path: str, num_steps: int):
     Opens the specified file, reads the length of the `'time'` coordinate array,
     and asserts equality against `num_steps`.
 
-    :param file_path: Path to NetCDF target file.
+    :param file_path: is a path to the NetCDF target file.
     :type file_path: str
-    :param num_steps: Expected number of time records.
+    :param num_steps: is the expected number of time records.
     :type num_steps: int
 
     :raises ValueError: If actual time record count in the NetCDF file differs from `num_steps`.
