@@ -159,7 +159,7 @@ def nccheck(file_path, num_steps):
 @click.option('--history','-hist', required=True, help="Path to directory containing history files")
 @click.option('--date_string','-d', required=True, help="Date string as written in netCDF (.nc) filename")
 @click.option('--warn', '-w', is_flag=True, default=False, 
-              help="Issue warning log instead of raising exception if diag_manifest files are missing")
+              help="Warning is logged instead of raising an exception if diag_manifest files are missing")
 def histval(history,date_string,warn):
     """Validate timestep counts across history NetCDF files using diag_manifest metadata."""
     histval_script.validate(history,date_string,warn)
