@@ -31,7 +31,6 @@ def install_subtool(experiment: str, platform: str, target: str) -> None:
     :param experiment: Experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str
     :param platform: FRE platform defined in the platforms yaml
-                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str
     :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str
