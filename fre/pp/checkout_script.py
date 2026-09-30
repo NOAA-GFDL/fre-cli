@@ -35,7 +35,6 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
     :param platform: FRE platform defined in the platforms yaml
-                     If on gaea c5, a FRE platform may look like ncrc5.intel23-classic
     :type platform: str, optional
     :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str, optional
