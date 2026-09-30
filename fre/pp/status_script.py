@@ -14,12 +14,12 @@ def status_subtool(experiment = None, platform = None, target = None):
     for a Cylc post-processing workflow.  This method constructs canonical FRE workflow name 
     `$(experiment)__$(platform)__$(target)` and calls `cylc workflow-state` with a 120-second timeout.
 
-    :param experiment: Experiment name as listed in the model YAML file
+    :param experiment: is the experiment name as listed in the model YAML file
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
-    :param platform: FRE platform defined in the platforms yaml
+    :param platform: is the FRE platform as defined in the platforms yaml
     :type platform: str, optional
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str, optional
 
     :raises ValueError: If `experiment`, `platform`, or `target` is None.
