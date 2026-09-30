@@ -16,12 +16,12 @@ def validate_subtool(experiment = None, platform = None, target = None):
     The method runs both ``rose macro --validate`` and ``cylc validate .`` in the 
     source workflow directory in ``~/cylc-src/$(experiment)__$(platform)__$(target)``
 
-    :param experiment: Experiment name as listed in the model YAML file
+    :param experiment: is the experiment name as listed in the model YAML file
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
-    :param platform: FRE platform defined in the platforms yaml
+    :param platform: is the FRE platform as defined in the platforms yaml
     :type platform: str, optional
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str, optional
 
     :raises ValueError: If any required argument (``experiment``, ``platform``, or ``target``) is None.
