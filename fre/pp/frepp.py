@@ -92,7 +92,11 @@ def run(experiment, platform, target, pause, no_wait):
               help="Target name",
               required=True)
 def validate(experiment, platform, target):
-    """Validate post-processing workflow directory configurations and suite definitions."""
+    """
+    Validate post-processing workflow directory configurations and suite definitions.
+    Can be used to check the cylc workflow definition syntax and can also be used for 
+    integrity checks to ensure there are no other configuration or scheduling conflicts.
+    """
     validate_script.validate_subtool(experiment, platform, target)
 
 
