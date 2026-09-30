@@ -28,11 +28,11 @@ def install_subtool(experiment: str, platform: str, target: str) -> None:
     to `~/cylc-run/$(experiment)__$(platform)__$(target)`. If the target directory already
     exists, it compares the current definition with the installed definition using `cylc config`.
 
-    :param experiment: Experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
+    :param experiment: is the experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str
-    :param platform: FRE platform defined in the platforms yaml
+    :param platform: is the FRE platform as defined in the platforms yaml
     :type platform: str
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str
 
     :raises Exception: If a workflow with the same name is already installed in `~/cylc-run`
