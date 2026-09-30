@@ -22,9 +22,9 @@ def validate(history: str, date_string: str, warn: bool) -> int:
     Searches `history` directory for `diag_manifest` files, compiles expected file names, tile numbers,
     and time levels into a consolidated manifest map, then invokes `nccheck_script.check` for each file.
 
-    :param history: Path to directory containing history output NetCDF files and `diag_manifest` YAML files.
+    :param history: is the path to a directory containing history output NetCDF files and `diag_manifest` YAML files.
     :type history: str
-    :param date_string: Date prefix string formatted as `YYYYMMDD` (e.g., ``'00010101'``).
+    :param date_string: is the date prefix string formatted as `YYYYMMDD` (e.g., ``'00010101'``).
     :type date_string: str
     :param warn: If True, missing `diag_manifest` files trigger a warning instead of raising `FileNotFoundError`.
     :type warn: bool
