@@ -23,11 +23,12 @@ def pp_run_subtool(experiment = None, platform = None, target = None,
     Constructs workflow name `$(experiment)__$(platform)__$(target)`, scans for active instances,
     invokes `cylc play` (with optional `--pause`), and polls `cylc scan` to verify scheduler status.
 
-    :param experiment: Experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
+    :param experiment: Experiment name as listed in the model YAML file
+                       (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
-    :param platform: Combined platform name (e.g., ``'gfdl.ncrc5-deploy'``).
+    :param platform: FRE platform defined in the platforms yaml
     :type platform: str, optional
-    :param target: Compilation options string (e.g., ``'prod-openmp'``).
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str, optional
     :param pause: If True, starts the workflow in a paused state. Defaults to False.
     :type pause: bool, optional
