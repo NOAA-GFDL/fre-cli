@@ -48,18 +48,18 @@ def split_netcdf(
             - history_file: "atmos_month"
     ```
 
-    :param inputDir: Directory containing source multi-variable NetCDF files.
+    :param inputDir: is the directory containing source multi-variable NetCDF files.
     :type inputDir: str
-    :param outputDir: Target directory where single-variable NetCDF files will be written.
+    :param outputDir: is the target directory where single-variable NetCDF files will be written.
     :type outputDir: str
-    :param component: Model component name matching the YAML configuration (e.g., ``'atmos'``).
+    :param component: is the model component name matching the YAML configuration (e.g., ``'atmos'``).
     :type component: str
-    :param history_source: History file pattern name listed under the component source in YAML (e.g., ``'atmos_daily'``).
+    :param history_source: is the history file pattern name listed under the component source in YAML (e.g., ``'atmos_daily'``).
     :type history_source: str
     :param use_subdirs: If True, recursively searches subdirectories under `inputDir` 
                         and reproduces the directory stucture in `outputDir`.
     :type use_subdirs: bool
-    :param yamlfile: Path to model YAML configuration file.
+    :param yamlfile: is the path to a model YAML configuration file.
     :type yamlfile: str
     :param split_all_vars: If True, ignores the associated `variables` list for the `history_file` found in 
                            `yamlfile` and extracts all data variables. Defaults to False.
@@ -175,11 +175,11 @@ def split_file_xarray(
     and metadata bounds variables (`_bnds`, `_bounds`, `average_`, etc.) and outputs single-variable files 
     named using FRE naming conventions (`<date>.<component>.<var>.<tile>.nc`).
 
-    :param infile: Path to source input NetCDF file.
+    :param infile: is the path to a source input NetCDF file.
     :type infile: str
-    :param outfiledir: Path to directory where output split files will be written.
+    :param outfiledir: is the path to a directory where output split files will be written.
     :type outfiledir: str
-    :param var_list: Comma-separated variable names, list of variable names, or ``'all'``. Defaults to ``'all'``.
+    :param var_list: A set of comma-separated variable names, list of variable names, or ``'all'``. Defaults to ``'all'``.
     :type var_list: str or list of str
 
     :raises OSError: If `infile` cannot be found on the file system.
@@ -234,7 +234,7 @@ def split_file_xarray(
         lower-dimensional coordinate attributes.  If `is_metadata_var` is true for `var_to_check`, 
         the variable will not be written out to its own NetCDF file.
 
-        :param var_to_check: Variable name to inspect.
+        :param var_to_check: is the variable name to inspect.
         :type var_to_check: str
         :return: True if variable is considered metadata/coordinate bounds, False otherwise.
         :rtype: bool
@@ -295,7 +295,7 @@ def get_max_ndims(dataset: xr.Dataset) -> int:
     Internally used method invoked from `split_file_xarray` to calculate the maximum dimension count 
     of any data variable in an xarray Dataset.
 
-    :param dataset: Input xarray Dataset
+    :param dataset: is the input xarray Dataset
     :type dataset: xr.Dataset
     :return: Maximum number of dimensions present on a data variable.
     :rtype: int
@@ -311,9 +311,9 @@ def set_coord_encoding(dset: xr.Dataset, vcoords: List[str]) -> Dict[str, Dict[s
     coordinate variables to enforce CF metadata compliance:  explicitly removes `_FillValue` from 
     coordinate attributes to prevent corrupting CF coordinates.
 
-    :param dset: Input xarray Dataset
+    :param dset: is the input xarray Dataset
     :type dset: xr.Dataset
-    :param vcoords: List of coordinate variable names.
+    :param vcoords: is a list of coordinate variable names.
     :type vcoords: list of str
     :return: Mapping of coordinate variable names to encoding parameters (`_FillValue`, `dtype`, `units`).
     :rtype: dict
@@ -336,9 +336,9 @@ def set_var_encoding(dset: xr.Dataset, varnames: List[str]) -> Dict[str, Dict[st
     Internally used method called from `split_file_xarray` to generate encoding settings for data and metadata 
     variables to preserve data types and units.
 
-    :param dset: Input xarray Dataset.
+    :param dset: is the input xarray Dataset.
     :type dset: xr.Dataset
-    :param varnames: List of variable names to configure.
+    :param varnames: is a list of variable names to configure.
     :type varnames: list of str
     :return: Encoding configuration dictionary mapping variable names to encoding properties.
     :rtype: dict
@@ -362,9 +362,9 @@ def fre_outfile_name(infile: str, varname: str) -> str:
     Internally used method to construct standardized FRE single-variable output filename:
     converts filename pattern ``date.component(.tileX).nc`` to ``date.component.var(.tileX).nc``.
 
-    :param infile: Input filename or path string.
+    :param infile: is the input filename or path string.
     :type infile: str
-    :param varname: Name of variable to append to filename.
+    :param varname: is the name of a variable to append to the filename.
     :type varname: str
     :return: Formatted single-variable filename string.
     :rtype: str
