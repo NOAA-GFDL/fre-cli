@@ -113,7 +113,7 @@ def install(experiment, platform, target):
 
 @pp_cli.command()
 @click.option("-y", "--yamlfile", type=str,
-              help="YAML file to be used for parsing",
+              help="Model YAML file to be used for parsing",
               required=True)
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
