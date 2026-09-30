@@ -34,9 +34,9 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     :param experiment: is the experiment name as listed in the model YAML file
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
-    :param platform: is the FRE platform as defined in the platforms yaml
+    :param platform: is the FRE platform as defined in a platforms yaml
     :type platform: str, optional
-    :param target: is a predefined FRE target; options include [prod/debug/repro]-openmp
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str, optional
     :param branch: is a Git branch or tag name to checkout. If None, it defaults to the installed `fre` package version.
     :type branch: str, optional
