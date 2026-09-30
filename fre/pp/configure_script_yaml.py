@@ -32,7 +32,7 @@ def validate_yaml(yamlfile: dict) -> None:
 
     The schema is loaded from `gfdl_msd_schemas/FRE/fre_pp.json` relative to the package root.
 
-    :param yamlfile: Dictionary containing combined model, settings, post-processing,
+    :param yamlfile: is a dictionary containing combined model, settings, post-processing,
                      and analysis specifications.
     :type yamlfile: dict
 
@@ -69,11 +69,11 @@ def rose_init(experiment: str, platform: str, target: str) -> tuple[metomi.rose.
     """
     Initialize a Rose suite configuration node with default template variables.
 
-    :param experiment: Experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
+    :param experiment: is the experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str
-    :param platform: FRE platform defined in the platforms yaml
+    :param platform: is the FRE platform defined in a platforms yaml
     :type platform: str
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str
 
     :return: An initialized Rose configuration node populated with standard experiment settings.
@@ -109,7 +109,7 @@ def quote_rose_values(value: str) -> str:
     Booleans and lists are returned unquoted as strings, while general strings are enclosed
     in single quotes to conform to Rose syntax requirements.
 
-    :param value: Configuration value to format.
+    :param value: is a configuration value to format.
     :type value: object
 
     :return: Formatted configuration value ready for writing to `rose-suite.conf`.
@@ -130,9 +130,9 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
     Parses direct settings, directory structures, pre-analysis scripts, refinediag scripts,
     and analysis execution flags into template variables within `rose_suite`.
 
-    :param yamlfile: Combined dictionary containing model and post-processing configurations.
+    :param yamlfile: is a combined dictionary containing model and post-processing configurations.
     :type yamlfile: dict
-    :param rose_suite: The Rose configuration node to update.
+    :param rose_suite: is the Rose configuration node to update.
     :type rose_suite: metomi.rose.config.ConfigNode
 
     :raises ValueError: If the required `'postprocess'` section is missing from `yamlfile`, or if
@@ -252,13 +252,13 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     Outputs generated workflow configurations directly into:
     `~/cylc-src/<experiment>__<platform>__<target>/`
 
-    :param yamlfile: Path to model YAML configuration file.
+    :param yamlfile: is the path to a model YAML configuration file.
     :type yamlfile: str, optional
-    :param experiment: Experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
+    :param experiment: is the experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str, optional
-    :param platform: FRE platform defined in the platforms yaml
+    :param platform: is the FRE platform as defined in a platforms yaml
     :type platform: str, optional
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str, optional
 
     :raises ValueError: If any required argument (`yamlfile`, `experiment`, `platform`, `target`) is None.
