@@ -125,7 +125,7 @@ def install(experiment, platform, target):
               help="Target name",
               required=True)
 def configure_yaml(yamlfile, experiment, platform, target):
-    """Generate rose-suite.conf and consolidated YAML in ~/cylc-src from input YAML."""
+    """Generate rose-suite.conf and consolidated YAML in ~/cylc-src/[workflow_id] from model YAML."""
     configure_script_yaml.yaml_info(yamlfile, experiment, platform, target)
 
 
