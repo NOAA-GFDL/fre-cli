@@ -36,13 +36,13 @@ def getenot(date_start: str,
     - `'hourly'`: 24 samples per day.
     - `'30minute'`: 48 samples per day.
 
-    :param date_start: Regexp match object capturing start date groups (year, month, day, hour, minute).
+    :param date_start: is a regexp match object capturing start date groups (year, month, day, hour, minute).
     :type date_start: re.Match
-    :param date_end: Regexp match object capturing end date groups (year, month, day, hour, minute).
+    :param date_end: is a regexp match object capturing end date groups (year, month, day, hour, minute).
     :type date_end: re.Match
-    :param chunk_type: Frequency identifier string (`'yearly'`, `'monthly'`, `'daily'`, etc.).
+    :param chunk_type: is a frequency identifier string (`'yearly'`, `'monthly'`, `'daily'`, etc.).
     :type chunk_type: str
-    :param cal: Calendar name supported by `cftime` (e.g., `'gregorian'`, `'noleap'`, `'360_day'`).
+    :param cal: is a calendar name supported by `cftime` (e.g., `'gregorian'`, `'noleap'`, `'360_day'`).
     :type cal: str
 
     :raises ValueError: If `chunk_type` is unrecognized.
@@ -140,7 +140,7 @@ def validate(filepath: str):
     reads calendar metadata from NetCDF time coordinates, calculates expected timesteps,
     and runs `nccheck_script.check`.
 
-    :param filepath: Path to post-processed NetCDF time-series file.
+    :param filepath: is the path to a post-processed NetCDF time-series file.
     :type filepath: str
 
     :raises ValueError: If calendar name is invalid, file date format is unparseable,
