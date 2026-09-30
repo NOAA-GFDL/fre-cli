@@ -28,6 +28,7 @@ jobs:
           echo "removing conda default channels, appending open-source ones"
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
+          conda config --append channels ufs-community
           conda config --remove channels defaults
 
           echo "setting strict channel priority"
@@ -51,7 +52,7 @@ jobs:
           conda build --help 
 
       - name: Build fre-cli Conda Package
-        timeout-minutes: 15
+        timeout-minutes: 20
         run: |
           echo "conda building fre-cli package and outputting as a tarball"
           mkdir -p /app/fre-cli-tarball
@@ -75,6 +76,7 @@ jobs:
           echo "removing conda default channels, appending open-source ones"
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
+          conda config --append channels ufs-community
           conda config --remove channels defaults
 
           echo "setting strict channel priority"
