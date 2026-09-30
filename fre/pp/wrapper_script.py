@@ -25,19 +25,19 @@ def run_all_fre_pp_steps(experiment = None, platform = None, target = None, conf
     """
     `Run_all_fre_pp_steps` executes all FRE post-processing pipeline steps in sequential order
 
-    :param experiment: Experiment name as listed in the model YAML file
+    :param experiment: is the experiment name as listed in the model YAML file
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
-    :param platform: FRE platform defined in the platforms yaml
+    :param platform: is the FRE platform as defined in the platforms yaml
     :type platform: str, optional
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str, optional
-    :param config_file: Path to model yaml file.
+    :param config_file: is the path to a model yaml file.
     :type config_file: str, optional
-    :param branch: Git branch or tag to checkout ``fre-workflows``. Defaults to installed `fre` package version.
+    :param branch: is the git branch or tag to checkout ``fre-workflows``. Defaults to installed `fre` package version.
     :type branch: str, optional
-    :param time: Start timestamp for the target history chunk to process (e.g., ``'00010101'``).
-                 If provided, triggers the workflow segment via ``trigger()``.
+    :param time: is the start timestamp for the target history chunk to process (e.g., ``'00010101'``).
+                 If provided, it triggers the workflow segment via ``trigger()``.
     :type time: str, optional
 
     :raises ValueError: If mandatory parameters are missing or if invalid configurations are encountered.
