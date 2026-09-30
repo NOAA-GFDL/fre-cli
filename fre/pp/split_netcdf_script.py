@@ -59,7 +59,7 @@ def split_netcdf(
     :param use_subdirs: If True, recursively searches subdirectories under `inputDir` 
                         and reproduces the directory stucture in `outputDir`.
     :type use_subdirs: bool
-    :param yamlfile: Path to post-processing YAML configuration file.
+    :param yamlfile: Path to model YAML configuration file.
     :type yamlfile: str
     :param split_all_vars: If True, ignores the associated `variables` list for the `history_file` found in 
                            `yamlfile` and extracts all data variables. Defaults to False.
