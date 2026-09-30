@@ -18,12 +18,12 @@ def trigger(experiment = None, platform = None, target = None, time = None):
     requires `experiment`, `platform`,  and `target` in order to construct the Cylc 
     workflow name ``$(experiment)__$(platform)__$(target)`` 
 
-    :param experiment: Experiment name as specified in the model YAML
+    :param experiment: Experiment name as listed in the model YAML file
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
-    :param platform: FRE platform (e.g., ``'gfdl.ncrc5-deploy'``). Must not be None.
+    :param platform: FRE platform defined in the platforms yaml
     :type platform: str, optional
-    :param target: Compilation options string (e.g., ``'prod-openmp'``). Must not be None.
+    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
     :type target: str, optional
     :param time: Start time of the cycle point to process, formatted as an ISO or
                  integer timestamp (e.g., ``'00010101'`` or ``'19790101'``). Must not be None.
