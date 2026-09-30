@@ -171,11 +171,11 @@ def histval(history,date_string,warn):
 @click.option('-o', '--outputdir', required=True,
              help='Path to a directory to which to write split netcdf files.')
 @click.option('-c', '--component', required=False, default=None,
-              help='component specified in yamlfile under postprocess:components. Needs to be the same component that contains the sources:history-file. Conflicts with --split-all-vars.')
+              help='Component specified in the postprocessing YAML. Conflicts with --split-all-vars.')
 @click.option('-s', '--history-source', required=True, default=None,
-              help='history-file specification under postprocess:components:type=component:sources in the fre postprocess config yamlfile. Used to match files in inputdir.')
+              help='History file associated with the postprocessing component passed in the --component option. Used to match files in inputdir.')
 @click.option('-y', '--yamlfile', required=False, default=None,
-              help='fre postprocessing .yml file from which to get the variable filtering list under postprocess:components:type=component:variables. Conflicts with --split-all-vars.')
+              help='Consolidated postprocessing YAML (model, settings, and associated PP YAMLs) from which to get the variable filtering list. Conflicts with --split-all-vars.')
 @click.option('--use-subdirs', '-u', is_flag=True, default=False,
               help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
 @click.option('--split-all-vars', '-a', is_flag=True, default=False,
