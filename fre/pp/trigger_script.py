@@ -18,7 +18,7 @@ def trigger(experiment = None, platform = None, target = None, time = None):
     requires `experiment`, `platform`,  and `target` in order to construct the Cylc 
     workflow name ``$(experiment)__$(platform)__$(target)`` 
 
-    :param experiment: Post-processing experiment name as specified in the model YAML
+    :param experiment: Experiment name as specified in the model YAML
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
     :param platform: FRE platform (e.g., ``'gfdl.ncrc5-deploy'``). Must not be None.
