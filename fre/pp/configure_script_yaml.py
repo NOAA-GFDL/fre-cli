@@ -69,7 +69,7 @@ def rose_init(experiment: str, platform: str, target: str) -> tuple[metomi.rose.
     """
     Initialize a Rose suite configuration node with default template variables.
 
-    :param experiment: Experiment identifier (e.g., ``'c96L65_am5f4b4r0_amip'``).
+    :param experiment: Experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str
     :param platform: FRE platform defined in the platforms yaml
     :type platform: str
