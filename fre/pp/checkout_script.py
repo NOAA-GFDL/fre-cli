@@ -31,14 +31,14 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     ensures ~/cylc-src exists, and either clones the `fre-workflows`
     repository or verifies that an existing checkout matches the specified Git branch/tag version.
 
-    :param experiment: Experiment name as listed in the model YAML file
+    :param experiment: is the experiment name as listed in the model YAML file
                        (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
     :type experiment: str, optional
-    :param platform: FRE platform defined in the platforms yaml
+    :param platform: is the FRE platform as defined in the platforms yaml
     :type platform: str, optional
-    :param target: Predefined FRE targets; options include [prod/debug/repro]-openmp
+    :param target: is a predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str, optional
-    :param branch: Git branch or tag name to checkout. If None, defaults to the installed `fre` package version.
+    :param branch: is a Git branch or tag name to checkout. If None, it defaults to the installed `fre` package version.
     :type branch: str, optional
 
     :return: None
