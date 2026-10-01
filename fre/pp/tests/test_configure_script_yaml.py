@@ -16,7 +16,6 @@ from jsonschema import (
 import metomi.rose.config
 
 from fre.pp import configure_script_yaml as csy
-#from fre.yamltools import combine_yamls_script as cy
 from fre.yamltools import combine_yamls_script_new as cy
 import fre.list_.list_yamls_script as ly
 
@@ -44,9 +43,6 @@ def test_configure_script(monkeypatch):
     # Set home for ~/cylc-src location in script
     monkeypatch.setenv("HOME", str(Path(f"{TEST_DIR}/configure_yaml_out")))
 
-#    old_home = os.environ["HOME"]
-#    os.environ["HOME"] = str(Path(f"{TEST_DIR}/configure_yaml_out"))
-
     # Set output directory
     OUT_DIR = Path(f"{os.getenv('HOME')}/cylc-src/{EXPERIMENT}__{PLATFORM}__{TARGET}")
     Path(OUT_DIR).mkdir(parents = True, exist_ok = True)
@@ -57,8 +53,6 @@ def test_configure_script(monkeypatch):
     # Invoke configure_yaml_script.py
     csy.yaml_info(model_yaml, EXPERIMENT, PLATFORM, TARGET)
 
-#    os.environ["HOME"] = old_home
-
     # Check for configuration creation and final combined yaml
     assert all([ Path(f"{OUT_DIR}/{EXPERIMENT}.yaml").exists(),
                  Path(f"{OUT_DIR}/rose-suite.conf").exists()])
@@ -67,12 +61,6 @@ def test_validate():
     """
     Test the success of validation.
     """
-#    yml_dict = cy.consolidate_yamls(yamlfile = f"{TEST_DIR}/{TEST_YAML}",
-#                                 experiment = EXPERIMENT,
-#                                 platform = PLATFORM,
-#                                 target = TARGET,
-#                                 use = "pp",
-#                                 output = None)
     yamls = ly.list_yamls_subtool(yamlfile = f"{TEST_DIR}/{TEST_YAML}",
                                   experiment = EXPERIMENT,
                                   application= "postprocess")
@@ -91,12 +79,6 @@ def test_validate_fail():
     """
     Test that validation fails when given the wrong yaml dictionary.
     """
-#    yml_dict = cy.consolidate_yamls(yamlfile = f"{TEST_DIR}/{TEST_YAML}",
-#                                 experiment = EXPERIMENT,
-#                                 platform = PLATFORM,
-#                                 target = TARGET,
-#                                 use = "pp",
-#                                 output = f"{Path(__file__).parent}/csy_out.yaml")
     yamls = ly.list_yamls_subtool(yamlfile = f"{TEST_DIR}/{TEST_YAML}",
                                   experiment = EXPERIMENT,
                                   application= "postprocess")

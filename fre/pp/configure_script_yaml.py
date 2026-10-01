@@ -11,7 +11,6 @@ from pathlib import Path
 from jsonschema import validate, SchemaError, ValidationError
 import metomi.rose.config
 
-#import fre.yamltools.combine_yamls_script as cy
 import fre.yamltools.combine_yamls_script_new as cy
 import fre.list_.list_yamls_script as ly
 
@@ -268,10 +267,6 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
 
-#    full_yamldict = cy.consolidate_yamls(yamlfile = yml,
-#                                         experiment = e, platform = p, target = t,
-#                                         use = "pp",
-#                                         output = outfile)
     yamls = ly.list_yamls_subtool(yamlfile = yml,
                                   experiment = e,
                                   application= "postprocess")
