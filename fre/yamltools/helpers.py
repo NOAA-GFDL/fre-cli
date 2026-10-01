@@ -2,6 +2,7 @@
 
 # this boots yaml with !join- see __init__
 import json
+import yaml
 import logging
 import os
 from pathlib import Path
