@@ -50,7 +50,9 @@ def combine_yamls(yamlfile,
               help="Target name")
 @click.option("-o", "--output", type=str,
               help="Output")
-def combine(yamls, experiment, platform, target, output): 
+@click.option("--no-clean", type=bool,
+              help="Do not remove anything from the combinedm resolved YAML file.")
+def combine(yamls, experiment, platform, target, output, no_clean): 
     """
     - Combine the model yaml with the compile, platform,
     experiment, and analysis yamls
@@ -66,7 +68,7 @@ def combine(yamls, experiment, platform, target, output):
         # stdout from last tool adds a newline for some reason
         yaml_paths = sys.stdin.read().strip()
 
-    combine_yamls_script_new.yamltools_combine_subtool(yaml_paths, experiment, platform, target, output)
+    combine_yamls_script_new.yamltools_combine_subtool(yaml_paths, experiment, platform, target, output, no_clean)
 
 #@yamltools_cli.command()
 #@click.option("-y", "--yaml",
