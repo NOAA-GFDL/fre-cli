@@ -28,7 +28,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     into the default ~/cylc-src path.
 
     Constructs a standardized workflow name from the given experiment, platform, and target settings,
-    ensures ~/cylc-src exists, and either clones the `fre-workflows`
+    ensures ~/cylc-src exists, and either clones the `fre-postprocess-workflow`
     repository or verifies that an existing checkout matches the specified Git branch/tag version.
 
     :param experiment: is the experiment name as listed in the model YAML file
