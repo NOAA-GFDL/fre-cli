@@ -3,7 +3,7 @@ Click Command Line Interface for FRE Post-Processing (`fre pp`).
 
 The frepp module registers all subcommands under the `fre pp` Click group for managing
 post-processing workflow subtools: 
-- checkout: Clones fre-workflow repository into ~/cylc-src/[WORKFLOW_ID]
+- checkout: Clones fre-postprocess-workflow repository into ~/cylc-src/[WORKFLOW_ID]
 - configure_yaml: Combines the model yaml, settings yaml, and postprocessing yaml files into one resolved yaml file that is then validated against an MSD-owned schema file and parsed to create the rose-suite.conf file
 - validate: Validates the Cylc workflow definition (flow.cylc file)
 - install: Installs the experiment workflow configuration into ~/cylc-run/[WORKFLOW_ID]
