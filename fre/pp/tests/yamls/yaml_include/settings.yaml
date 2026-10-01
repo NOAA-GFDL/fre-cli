@@ -1,22 +1,20 @@
-#c96_amip_directories:
 directories:
-  history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
-  refined_history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history_dir_refined]
-  pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
-  analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
+  history_dir:  "/archive/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}/{{ platform }}-{{ target }}/history"
+  refined_history_dir:  "/archive/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}/{{ platform }}-{{ target }}/history_dir_refined"
+  pp_dir:       "/archive/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}/{{ platform }}-{{ target }}/pp"
+  analysis_dir: "/nbhome/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}"
   ptmp_dir:     "/xtmp/$USER/ptmp"
 
-#c96_amip_postprocess:
 postprocess:
   settings:
     history_segment:    "P1Y"
     site:               "ppan"
-    pp_start:   *ANA_AMIP_START
-    pp_stop:    *ANA_AMIP_END
+    pp_start:   "{{ fre_properties.ANA_AMIP_START }}"
+    pp_stop:    "{{ fre_properties.ANA_AMIP_END }}"
     pp_chunks:
-      - *PP_AMIP_CHUNK96
-    pp_grid_spec: *GRID_SPEC96
-  switches: &shared_switches
+      - "{{ fre_properties.PP_AMIP_CHUNK96 }}"
+    pp_grid_spec: "{{ fre_properties.GRID_SPEC96 }}"
+  switches:
     clean_work:              True
     do_atmos_plevel_masking: True
   preanalysis:
