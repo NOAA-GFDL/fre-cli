@@ -237,9 +237,9 @@ class container():
 
         self.userScript = ["#!/bin/bash\n", "set -ex\n"]
         if container_volume:
-            self.userScript.append(f"{containerBuild} build --volume {container_volume}:{container_volume} -f Dockerfile -t {registry_tag}:{platform_tag}\n")
+            self.userScript.append(f"{containerBuild} build --network host --volume {container_volume}:{container_volume} -f Dockerfile -t {registry_tag}:{platform_tag}\n")
         else:
-            self.userScript.append(f"{containerBuild} build -f Dockerfile -t {registry_tag}:{platform_tag}\n")
+            self.userScript.append(f"{containerBuild} build --network host -f Dockerfile -t {registry_tag}:{platform_tag}\n")
 
         if not skip_format_transfer:
             # Remove any previously generated images, if they exist
