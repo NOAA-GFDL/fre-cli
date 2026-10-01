@@ -27,7 +27,7 @@ requirements:
     - conda-forge::cdo>=2
     - conda-forge::cftime
     - conda-forge::click>=8.2
-    - conda-forge::cylc-flow>=8.2
+    - conda-forge::cylc-flow>=8.4
     - conda-forge::cylc-rose
     - conda-forge::git
     - conda-forge::jinja2>=3
@@ -38,6 +38,7 @@ requirements:
     - conda-forge::pyyaml
     - conda-forge::xarray>=2024.*
     - conda-forge::netcdf4>=1.7.*
+    - ufs-community::uwtools==2.20.0
 
 test:
   source_files:
@@ -66,7 +67,6 @@ test:
     - fre pp --help
     - fre run --help
     - fre yamltools --help
-
 
 about:
   home: https://github.com/NOAA-GFDL/fre-cli
