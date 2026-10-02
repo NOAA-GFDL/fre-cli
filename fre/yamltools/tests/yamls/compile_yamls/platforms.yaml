@@ -1,23 +1,13 @@
 platforms:
-   - name: ncrc5.intel
-     compiler: intel
-     envSetup: [" module use -a /ncrc/home2/fms/local/modulefiles",
-                "source $MODULESHOME/init/sh",
-                "module load {{ fre_properties.INTEL }}/2022.2.1",
-                "module load fre/bronx-23",
-                "module load cray-hdf5/1.12.2.3",
-                "module load cray-netcdf/4.9.0.3"]
-     mkTemplate: "/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/$(INTEL).mk"
-     modelRoot: ${HOME}/fremake_canopy/test
    - name: ncrc5.intel23
      compiler: intel
-     envSetup: [" module use -a /ncrc/home2/fms/local/modulefiles",
+     envSetup: ["module use -a /ncrc/home2/fms/local/modulefiles",
                 "source $MODULESHOME/init/sh",
-                "module load {{ fre_properties.INTEL }}/2023.1.0",
+                "module load {{ fre_properties.INTEL }}/2023.2.0",
                 "module load fre/bronx-23",
-                "module load cray-hdf5/1.12.2.3",
-                "module load cray-netcdf/4.9.0.3"]
-     mkTemplate: "/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/$(INTEL).mk"
+                "module load cray-hdf5/1.12.2.11",
+                "module load cray-netcdf/4.9.0.11"]
+     mkTemplate: "/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/{{ fre_properties.INTEL }}.mk"
      modelRoot: ${HOME}/fremake_canopy/test
    - name: hpcme.2023
      compiler: intel
@@ -26,3 +16,6 @@ platforms:
      container: True
      containerBuild: "podman"
      containerRun: "apptainer" 
+     containerBase: 'docker.io/ecpe4s/noaa-intel-prototype:2023.09.25'
+     mkTemplate: '/apps/mkmf/templates/hpcme-intel21.mk'
+     volume: '/gpfs/f5'
