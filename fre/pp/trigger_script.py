@@ -1,4 +1,6 @@
-''' fre pp trigger '''
+"""
+The trigger_script module contains methods to trigger Cylc workflow tasks
+"""
 
 import logging
 import subprocess
@@ -10,32 +12,40 @@ fre_logger = logging.getLogger(__name__)
 
 def trigger(experiment = None, platform = None, target = None, time = None):
     """
-    Trigger the postprocessing tasks for one segment of the history.
-    
-    :param experiment: One of the postprocessing experiment names from the
-        yaml displayed by fre list exps -y $yamlfile
-        (e.g. c96L65_am5f4b4r0_amip), default None
-    :type experiment: str
-    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
-    :type platform: str
-    :param target: Options used for the model compiler (e.g. prod-openmp), default None
-    :type target: str
-    :param time: The start time of the segment. Formatted as a series of integers.
-    :type time: Cylc representation of a time point
+    `Trigger` runs ``cylc trigger`` command to run the post-processing tasks for the
+    specified history `time` segment, i.e., triggers the ``pp-starter`` task for a given 
+    cycle time point:``cylc trigger $(workflow_name)//$(time)/pp-starter`` This method 
+    requires `experiment`, `platform`,  and `target` in order to construct the Cylc 
+    workflow name ``$(experiment)__$(platform)__$(target)`` 
 
-    .. note:: 
-        The segment is defined as a start point (--time) and a duration (defined in
-        the experiment yaml). Cylc combines the two for a cycle duration; we are using
-        datetime cycling (https://cylc.github.io/cylc-doc/stable/html/glossary.html#term-datetime-cycling)
-        for FRE. Historically, the start point has often been formatted YYYYMMDD and is 
-        the first chunk of a filename (19790101.atmos_tracer.tile6.nc).
+    :param experiment: is the experiment name as listed in the model YAML file
+                       (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
+    :type experiment: str, optional
+    :param platform: is the FRE platform as defined in the platforms yaml
+    :type platform: str, optional
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
+    :type target: str, optional
+    :param time: is the start time of the cycle point to process, formatted as an ISO or
+                 integer timestamp (e.g., ``'00010101'`` or ``'19790101'``). Must not be None.
+    :type time: str, optional
+
+    :raises ValueError: If any of ``experiment``, ``platform``, ``target``, or ``time`` is None.
+    :raises subprocess.CalledProcessError: If the underlying ``cylc trigger`` process returns a non-zero exit code.
+    :raises subprocess.TimeoutExpired: If the trigger command fails to complete within 30 seconds.
+
+    :return: None
+    :rtype: None
+
+    .. note::
+       The cycle point is defined by a start time point (``--time``) and a chunk
+       duration defined in the experiment post-processing YAML configuration. Cylc uses
+       datetime cycling to process time chunks sequentially across the experiment duration.
     """
     if None in [experiment, platform, target, time]:
         raise ValueError( 'experiment, platform, target and time must all not be None.'
                           'currently, their values are...'
                           f'{experiment} / {platform} / {target} / {time}')
 
-    #name = experiment + '__' + platform + '__' + target
     workflow_name = make_workflow_name(experiment, platform, target)
     cmd = f"cylc trigger {workflow_name}//{time}/pp-starter"
     fre_logger.debug('running the following command: ')

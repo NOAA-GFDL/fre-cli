@@ -1,27 +1,34 @@
-''' fre pp status '''
+"""
+Status_script module contains methods to query the Cylc workflow state
+"""
 
 import subprocess
 import logging
 from . import make_workflow_name
 fre_logger = logging.getLogger(__name__)
-TIMEOUT_SECS=120#30
+TIMEOUT_SECS = 120
 
 def status_subtool(experiment = None, platform = None, target = None):
     """
-    Report workflow state for the Cylc workflow $(experiment)__$(platform)__$(target)
+    Called in the `wrapper_script` module to query and display current task execution status 
+    for a Cylc post-processing workflow.  This method constructs canonical FRE workflow name 
+    `$(experiment)__$(platform)__$(target)` and calls `cylc workflow-state` with a 120-second timeout.
 
-    :param experiment: One of the postprocessing experiment names from the
-        yaml displayed by fre list exps -y $yamlfile
-        (e.g. c96L65_am5f4b4r0_amip), default None
-    :type experiment: str
-    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
-    :type platform: str
-    :param target: Options used for the model compiler (e.g. prod-openmp), default None
-    :type target: str
+    :param experiment: is the experiment name as listed in the model YAML file
+                       (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
+    :type experiment: str, optional
+    :param platform: is the FRE platform as defined in the platforms yaml
+    :type platform: str, optional
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
+    :type target: str, optional
+
+    :raises ValueError: If `experiment`, `platform`, or `target` is None.
+    :raises Exception: If the `cylc workflow-state` process fails or times out.
+    :return: None
+    :rtype: None
     """
-
     if None in [experiment, platform, target]:
-        raise ValueError( 'experiment, platform, and target must all not be None.'
+        raise ValueError( 'experiment, platform, and target must all not be None. '
                           'currently, their values are...'
                           f'{experiment} / {platform} / {target}')
 
@@ -33,4 +40,4 @@ def status_subtool(experiment = None, platform = None, target = None):
     try:
         subprocess.run(cmd, shell=True, check=True, timeout=TIMEOUT_SECS)
     except:
-        raise Exception('FAILED: subprocess call to- cylc workflow-state {name}')
+        raise Exception(f"FAILED: subprocess call to- cylc workflow-state {name}")

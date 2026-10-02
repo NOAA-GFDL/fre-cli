@@ -1,10 +1,32 @@
-''' fre pp '''
+"""
+Click Command Line Interface for FRE Post-Processing (`fre pp`).
+
+The frepp module registers all subcommands under the `fre pp` Click group for managing
+post-processing workflow subtools: 
+- checkout: Clones fre-postprocess-workflow repository into ~/cylc-src/[WORKFLOW_ID]
+- configure_yaml: Combines the model yaml, settings yaml, and postprocessing yaml files 
+                  into one resolved yaml file that is then validated against an MSD-owned 
+                  schema file and parsed to create the rose-suite.conf file
+- validate: Validates the Cylc workflow definition (flow.cylc file)
+- install: Installs the experiment workflow configuration into ~/cylc-run/[WORKFLOW_ID]
+- run: Runs the experiment workflow configuration
+- status: Shows the status of the Cylc workflow definition tasks
+- trigger: Initiate a postprocessing task for a time chunk of history files
+- nccheck: Confirms that a NetCDF file contains the expected number of time steps
+- histval: Validates the time step counts of a NetCDF file compared to the FMS 'diag_manifest' yaml file 
+           during the "Stage-History" workflow step
+- split_netcdf_wrapper: Runs the 'split-netcdf' tool on a pattern-matched list of NetCDF files within a directory
+- split_netcdf: Split an individual NetCDF file by variable, as defined by the postprocessing yaml files
+- pp_val: Determines estimated number of timesteps from a postprocessed time-series filename and runs nccheck
+- all: Executes all postprocessing tasks 
+       (checkout, configure, install, run, optional triggering, and status reporting) sequentially
+- rename_split: Reorganizes data according to their frequency and time interval
+"""
 
 import logging
-
 import click
 
-#fre tools
+# The following imports are fre tools
 from . import checkout_script
 from . import configure_script_yaml
 from . import validate_script
@@ -21,13 +43,11 @@ from . import rename_split_script
 
 fre_logger = logging.getLogger(__name__)
 
-# fre pp
 @click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
 def pp_cli():
-    ''' entry point to fre pp click commands '''
+    """Entry point for all `fre pp` subcommands."""
 
 
-# fre pp status
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -39,12 +59,10 @@ def pp_cli():
               help="Target name",
               required=True)
 def status(experiment, platform, target):
-    """
-    Report status of PP configuration
-    """
+    """Report the execution status of a post-processing Cylc workflow."""
     status_script.status_subtool(experiment, platform, target)
 
-# fre pp run
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -56,18 +74,16 @@ def status(experiment, platform, target):
               help="Target name",
               required=True)
 @click.option("--pause", is_flag=True, default=False,
-              help="Pause the workflow immediately on start up",
+              help="Pause the workflow immediately after start up",
               required=False)
 @click.option("--no_wait", is_flag=True, default=False,
-              help="after submission, do not wait to ping the scheduler and confirm success",
+              help="Do not wait to confirm workflow submission success with Cylc scheduler",
               required=False)
 def run(experiment, platform, target, pause, no_wait):
-    """
-    Run PP configuration
-    """
+    """Start or trigger execution of a Cylc-installed post-processing workflow."""
     run_script.pp_run_subtool(experiment, platform, target, pause, no_wait)
 
-# fre pp validate
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -80,11 +96,13 @@ def run(experiment, platform, target, pause, no_wait):
               required=True)
 def validate(experiment, platform, target):
     """
-    Validate PP configuration
+    Validate post-processing workflow directory configurations and suite definitions.
+    Can be used to check the cylc workflow definition syntax and can also be used for 
+    integrity checks to ensure there are no other configuration or scheduling conflicts.
     """
     validate_script.validate_subtool(experiment, platform, target)
 
-# fre pp install
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -96,15 +114,13 @@ def validate(experiment, platform, target):
               help="Target name",
               required=True)
 def install(experiment, platform, target):
-    """
-    Install PP configuration
-    """
+    """Install a workflow configuration from ~/cylc-src to ~/cylc-run."""
     install_script.install_subtool(experiment, platform, target)
 
-#fre pp configure
+
 @pp_cli.command()
 @click.option("-y", "--yamlfile", type=str,
-              help="YAML file to be used for parsing",
+              help="Model YAML file to be used for parsing",
               required=True)
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -115,13 +131,11 @@ def install(experiment, platform, target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-def configure_yaml(yamlfile,experiment,platform,target):
-    """
-    Execute fre pp configure
-    """
-    configure_script_yaml.yaml_info(yamlfile,experiment,platform,target)
+def configure_yaml(yamlfile, experiment, platform, target):
+    """Generate rose-suite.conf and consolidated YAML in ~/cylc-src/[workflow_id] from model YAML."""
+    configure_script_yaml.yaml_info(yamlfile, experiment, platform, target)
 
-#fre pp checkout
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -132,40 +146,32 @@ def configure_yaml(yamlfile,experiment,platform,target):
 @click.option("-t", "--target", type=str,
               help="Target name",
               required=True)
-@click.option("-b", "--branch", type =str,
+@click.option("-b", "--branch", type=str,
               required=False, default = None,
               help="fre-postprocess-workflow branch/tag to clone; default is $(fre --version)")
 def checkout(experiment, platform, target, branch=None):
-    """
-    Execute fre pp checkout
-    """
+    """Clone or verify fre-workflows repository template in ~/cylc-src."""
     checkout_script.checkout_template(experiment, platform, target, branch)
 
-#fre pp nccheck
+
 @pp_cli.command()
 @click.option("--file_path", "-f", type=str, required=True, help="Path to netCDF (.nc) file")
 @click.option("--num_steps", "-n", type=str, required=True, help="Number of expected timesteps")
 def nccheck(file_path, num_steps):
-    """
-    Check that a netCDF (.nc) file contains expected number of timesteps
-    """
+    """Verify that a netCDF (.nc) file contains the expected number of timesteps."""
     nccheck_script.check(file_path,num_steps)
 
-#fre pp histval
+
 @pp_cli.command()
 @click.option('--history','-hist', required=True, help="Path to directory containing history files")
 @click.option('--date_string','-d', required=True, help="Date string as written in netCDF (.nc) filename")
 @click.option('--warn', '-w', is_flag=True, default=False,
-              help = "Warn mode. Instead of raising an error, a warning will be printed in the fre log if no " \
-                     "diag manifest files are present")
+              help="Warning is logged instead of raising an exception if diag_manifest files are missing")
 def histval(history,date_string,warn):
-    """
-    Finds diag manifest files in directory containing history files then runs nccheck to validate timesteps
-    for all files in that directory
-    """
+    """Validate timestep counts across history NetCDF files using diag_manifest metadata."""
     histval_script.validate(history,date_string,warn)
 
-#fre pp split-netcdf-wrapper
+
 @pp_cli.command()
 @click.option('-i', '--inputdir', required=True,
               help='Path to a directory in which to search for netcdf '
@@ -175,21 +181,13 @@ def histval(history,date_string,warn):
              help='Path to a directory to which to write split '
                   'netcdf files.')
 @click.option('-c', '--component', required=False, default=None,
-              help='component specified in yamlfile under '
-                   'postprocess:components. Needs to be the same '
-                   'component that contains the '
-                   'sources:history-file. '
-                   'Conflicts with --split-all-vars.')
+              help='Component specified in the postprocessing YAML. Conflicts with --split-all-vars.')
 @click.option('-s', '--history-source', required=True, default=None,
-              help='history-file specification under '
-                   'postprocess:components:type=component:sources '
-                   'in the fre postprocess config yamlfile. '
+              help='History file associated with the postprocessing component passed in the --component option. '
                    'Used to match files in inputdir.')
 @click.option('-y', '--yamlfile', required=False, default=None,
-              help='fre postprocessing .yml file from which to get '
-                   'the variable filtering list under '
-                   'postprocess:components:type=component:variables. '
-                   'Conflicts with --split-all-vars.')
+              help='Consolidated postprocessing YAML (model, settings, and associated PP YAMLs) from which to get '
+                   'the variable filtering list. Conflicts with --split-all-vars.')
 @click.option('--use-subdirs', '-u', is_flag=True, default=False,
               help="Whether to search subdirs underneath $inputdir "
                    "for netcdf files. Defaults to false. This option "
@@ -219,7 +217,6 @@ Either unset --split-all-vars or parse the varlist from the yaml - do not try do
         use_subdirs, yamlfile, split_all_vars
     )
 
-#fre pp split-netcdf
 @pp_cli.command()
 @click.option('-f', '--file', type = str, required=True,
               help='path to a netcdf file')
@@ -230,27 +227,18 @@ Either unset --split-all-vars or parse the varlist from the yaml - do not try do
               help='''Specifies which variables in $file are split and written to $outputdir.
                      Either a string "all" or a comma-separated string of variable names ("tasmax,tasmin,pr")''')
 def split_netcdf(file, outputdir, variables):
-    ''' Splits a single netcdf file into one netcdf file per data variable and writes
-        files to $outputdir.
-        $variables is an option to filter the variables split out of $file and
-        written to $outputdir. If set to "all" (the default), all data variables
-        in $file are split and written to $outputdir; if set to a comma-separated
-        string of variable names, only the variable names in the string will be
-        split and written to $outputdir. If no variable names in $variables match
-        variables in $file, no files will be written to $outputdir.'''
+    """Split a single NetCDF file into individual per-variable NetCDF files."""
     var_list = variables.split(",")
     split_netcdf_script.split_file_xarray(file, outputdir, variables)
 
 
-#fre pp ppval
 @pp_cli.command()
-@click.option('--path','-p', required=True, help="Path to postprocessed time-series file")
+@click.option('--path', '-p', required=True, help="Path to postprocessed time-series file")
 def ppval(path):
-    """ Determines an estimated number of timesteps from a postprocessed
-    time-series file's name and run nccheck on it """
+    """Estimate expected timesteps from filename date range/frequency and run nccheck validation."""
     ppval_script.validate(path)
 
-#fre pp all
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -271,14 +259,12 @@ def ppval(path):
               required=False, default=None,
               help="Time whose history files are ready")
 def all(experiment, platform, target, config_file, branch, time):
-    """
-    Execute fre pp steps in order
-    """
-    fre_logger.info('(frepp.wrapper) about to forward context to wrapper.run_all_fre_pp_steps via click...')
+    """Execute all FRE post-processing pipeline steps in sequential order."""
+    fre_logger.info('(frepp.wrapper) forwarding context to wrapper.run_all_fre_pp_steps via click...')
     wrapper_script.run_all_fre_pp_steps(experiment, platform, target, config_file, branch, time)
     fre_logger.info('(frepp.wrapper) done forwarding context to wrapper.run_all_fre_pp_steps via click.')
 
-#fre pp trigger
+
 @pp_cli.command()
 @click.option("-e", "--experiment", type=str,
               help="Experiment name",
@@ -293,12 +279,10 @@ def all(experiment, platform, target, config_file, branch, time):
               required=True,
               help="Time whose history files are ready")
 def trigger(experiment, platform, target, time):
-    """
-    Start postprocessing history files that represent a specific chunk of time
-    """
+    """Trigger post-processing workflow execution for a specific time chunk of history files."""
     trigger_script.trigger(experiment, platform, target, time)
 
-# fre pp rename-split
+
 @pp_cli.command()
 @click.option("-i", "--input-dir", type=str,
               help="Input directory", required=True)
@@ -307,11 +291,12 @@ def trigger(experiment, platform, target, time):
 @click.option("-c", "--component", type=str,
               help="Component name to process", required=True)
 @click.option("-u", '--use-subdirs', is_flag=True, default=False,
-              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
+              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. "
+                   "This option is used in flow.cylc when regridding.")
 @click.option("-d", "--diag-manifest", multiple=True, type=click.Path(exists=True),
-              help="Path to FMS diag manifest associated with the component (history file). Optional, but required when the history file has one timestep and no time bounds. If there are multiple manifests, specify multiple --diag-manifest options.")
+              help="Path to FMS diag manifest associated with the component (history file). "
+                   "Optional, but required when the history file has one timestep and no time bounds. "
+                   "If there are multiple manifests, specify multiple --diag-manifest options.")
 def rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest):
-    """
-    Create per-variable timeseries from shards
-    """
+    """Create per-variable time-series files from split intermediate shards."""
     rename_split_script.rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest)
