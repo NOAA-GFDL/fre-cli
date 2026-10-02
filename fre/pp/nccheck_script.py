@@ -28,7 +28,7 @@ def check(file_path: str, num_steps: int):
     :return: Returns 0 upon successful validation.
     :rtype: int
     """
-    fre_logger.info(f" netCDF file = {file_path}")
+    fre_logger.info(" netCDF file = %s", file_path)
 
     # Inspect NetCDF time dimension
     dataset = netCDF4.Dataset(file_path, 'r')
@@ -42,14 +42,17 @@ def check(file_path: str, num_steps: int):
 
     # Verify timestep count match
     if num_actual_steps == int(num_steps):
-        fre_logger.info(f" Expected number of timesteps found in {file_path}")
+        fre_logger.info(" Expected number of timesteps found in %s", file_path)
 
         return 0
     else:
         fre_logger.error(
-            f" Unexpected number of timesteps found in {file_path}. "
-            f"Found: {num_actual_steps} timesteps  "
-            f"Expected: {num_steps} timesteps"
+            " Unexpected number of timesteps found in %s. "
+            "Found: %d timesteps  "
+            "Expected: %d timesteps",
+            file_path,
+            num_actual_steps,
+            num_steps,
         )
         raise ValueError(
             f" Unexpected number of timesteps found in {file_path}. "
