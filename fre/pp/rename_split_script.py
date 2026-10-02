@@ -237,7 +237,8 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                         duration = f"P{freq_value}M"
                         format_ = "%Y%m"
                 else:
-                    raise Exception(f"Diag manifest found but frequency units '{freq_units}' are unexpected; expected 'years' or 'months'.")
+                    raise Exception(f"Diag manifest found but frequency units '{freq_units}' are unexpected; "
+                                     "expected 'years' or 'months'.")
 
                 duration_object = duration_parser.parse(duration)
                 # since only one timestep, frequency equals duration
@@ -248,7 +249,8 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                 # subtracting one month works for annual
                 one_month = duration_parser.parse('P1M')
                 date2 = date1 + duration_object - one_month
-                fre_logger.info(f"'{input_file}' has 1 timesteps with diag manifest; date1='{date1}'; date2='{date2}'; duration='{duration}'")
+                fre_logger.info(f"'{input_file}' has 1 timesteps with diag manifest; "
+                                f"date1='{date1}'; date2='{date2}'; duration='{duration}'")
             # remove next stanza once diag manifests are common
             elif 'annual' in label:
                 date_str = str(input_file.name).split('.')[0]
@@ -259,9 +261,11 @@ def rename_file(input_file: str, diag_manifest: tuple[str, ...] | str | None = (
                 date2 = date1 + duration_object - one_month
                 format_ = "%Y"
                 freq_label = duration
-                fre_logger.info(f"'{input_file}' has 1 timesteps without diag manifest (legacy case to be removed); date1='{date1}'; date2='{date2}'; duration='{duration}'")
+                fre_logger.info(f"'{input_file}' has 1 timesteps without diag manifest (legacy case to be removed); "
+                                f"date1='{date1}'; date2='{date2}'; duration='{duration}'")
             else:
-                raise ValueError(f"Diag manifest required to process input file '{input_file}' with one timestep and no time bounds")
+                raise ValueError(f"Diag manifest required to process input file '{input_file}' "
+                                  "with one timestep and no time bounds")
 
     date1_str = date1.strftime(format_)
     date2_str = date2.strftime(format_)
