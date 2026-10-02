@@ -155,6 +155,29 @@ def test_mask_atmos_plevel_case2(tmp_case2input, tmp_ps, tmp_case2ref, tmp_path)
     assert ds['ua'].values.all() == ds_ref['ua'].values.all()
 
 
+def test_mask_atmos_plevel_underscore_in_var_name(tmp_case2input, tmp_ps, tmp_path): # pylint: disable=redefined-outer-name
+    """
+    a variable whose own name contains an underscore, e.g. t_ref_unmsk, should be written
+    out as t_ref and not as t
+    """
+    tmp_output = Path(tmp_path / "output.nc")
+
+    in_ds = xr.open_dataset(tmp_case2input)
+    in_ds = in_ds.rename({'ua_unmsk': 't_ref_unmsk'})
+    tmp_input2 = Path(tmp_path / 'tmp_input2.nc')
+    in_ds.to_netcdf(path=tmp_input2)
+
+    mask_atmos_plevel.mask_atmos_plevel_subtool( tmp_input2,
+                                                 tmp_ps,
+                                                 tmp_output,
+                                                 warn_no_ps = False )
+    assert tmp_output.exists()
+
+    ds = xr.open_dataset(tmp_output)
+    assert 't_ref' in ds.variables
+    assert 't' not in ds.variables
+
+
 def test_mask_atmos_plevel_recreate_output(tmp_input, tmp_ps, tmp_ref, tmp_path): # pylint: disable=redefined-outer-name
     """
     Do the pressure masking on the test input file, remaking an existing output file
