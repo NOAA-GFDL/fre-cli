@@ -54,7 +54,7 @@ def split_netcdf(
     :type outputDir: str
     :param component: is the model component name matching the YAML configuration (e.g., ``'atmos'``).
     :type component: str
-    :param history_source: is the history file pattern name listed under the component source in YAML (e.g., ``'atmos_daily'``).
+    :param history_source: is the history file pattern name listed under component source (e.g., ``'atmos_daily'``).
     :type history_source: str
     :param use_subdirs: If True, recursively searches subdirectories under `inputDir` 
                         and reproduces the directory stucture in `outputDir`.
@@ -179,7 +179,7 @@ def split_file_xarray(
     :type infile: str
     :param outfiledir: is the path to a directory where output split files will be written.
     :type outfiledir: str
-    :param var_list: A set of comma-separated variable names, list of variable names, or ``'all'``. Defaults to ``'all'``.
+    :param var_list: is a set of comma-separated var names, list of var names, or ``'all'``. Defaults to ``'all'``.
     :type var_list: str or list of str
 
     :raises OSError: If `infile` cannot be found on the file system.
