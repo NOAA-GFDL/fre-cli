@@ -91,15 +91,7 @@ def rose_init(experiment: str, platform: str, target: str) -> tuple[metomi.rose.
     rose_suite.set(keys=['template variables', 'PLATFORM'], value=f'"{platform}"')
     rose_suite.set(keys=['template variables', 'TARGET'], value=f'"{target}"')
 
-    # Initialize rose regrid config
-    rose_regrid = metomi.rose.config.ConfigNode()
-    rose_regrid.set(keys=['command', 'default'], value='regrid-xy')
-
-    # Initialize rose remap config
-    rose_remap = metomi.rose.config.ConfigNode()
-    rose_remap.set(keys=['command', 'default'], value='remap-pp-components')    
-
-    return(rose_suite, rose_regrid, rose_remap)
+    return rose_suite
 
 
 def quote_rose_values(value: str) -> str:
@@ -166,8 +158,8 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
                     rose_suite.set( keys = ['template variables', key.upper()],
                                     value = quote_rose_values(value) )
 
-        # Parse pre-analysis configuration. 
-        # Take into account the possibility of multiple scripts being defined (future implementation)
+        # Account for multiple scripts for refinediag
+        # Fail if multiple scripts defined for preanalysis (not implemented yet)
         if pp_key == "preanalysis":
             for k2, v2 in pp_value.items():
                 switch = v2["do_preanalysis"]
@@ -182,8 +174,6 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
 
                     pa_scripts += f"{script} "
 
-        # Parse refinediag scripts
-        # Multiple refineDiag scripts are supported, so take account for those
         if pp_key == "refinediag":
             for k2, v2 in pp_value.items():
                 switch = v2["do_refinediag"]
@@ -281,12 +271,11 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     yml = yamlfile
 
     # Initialize the rose configurations
-    rose_suite,rose_regrid,rose_remap = rose_init(e,p,t)
+    rose_suite = rose_init(e,p,t)
 
     # Combine input YAMLs and save consolidated output to cylc-src
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
-
     full_yamldict = cy.consolidate_yamls(yamlfile = yml,
                                          experiment = e, platform = p, target = t,
                                          use="pp",
@@ -295,11 +284,9 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     # Validate combined YAML dictionary against schema
     validate_yaml(full_yamldict)
 
-    # Parse combined dictionary into Rose configuration
-    set_rose_suite(full_yamldict,rose_suite)
-
-    # Set regrid and remap rose app items
-    set_rose_apps(full_yamldict,rose_regrid,rose_remap)
+    ## PARSE COMBINED YAML TO CREATE CONFIGS
+    # Set rose-suite items
+    set_rose_suite(full_yamldict, rose_suite)
 
     # Write output configuration files
     fre_logger.info("Writing output files...")
@@ -308,14 +295,6 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     dumper = metomi.rose.config.ConfigDumper()
     outfile = os.path.join(cylc_dir, "rose-suite.conf")
     dumper(rose_suite, outfile)
-    fre_logger.info("  %s", outfile)
-
-    outfile = os.path.join(cylc_dir, "app", "regrid-xy", "rose-app.conf")
-    dumper(rose_regrid, outfile)
-    fre_logger.info("  %s", outfile)
-
-    outfile = os.path.join(cylc_dir, "app", "remap-pp-components", "rose-app.conf")
-    dumper(rose_remap, outfile)
     fre_logger.info("  %s", outfile)
 
     fre_logger.info('Finished')

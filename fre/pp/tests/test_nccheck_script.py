@@ -1,9 +1,11 @@
 """
 Test nccheck_script
 """
-from pathlib import Path
-from fre.pp import nccheck_script as ncc
 import subprocess
+from pathlib import Path
+
+from fre.pp import nccheck_script as ncc
+
 
 # Set example input path
 ncgen_input = Path("fre/tests/test_files/reduced_ascii_files/reduced_ocean_monthly_1x1deg.199301-199302.sos.cdl")

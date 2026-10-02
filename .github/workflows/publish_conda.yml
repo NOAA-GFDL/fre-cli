@@ -1,14 +1,32 @@
 name: publish_conda
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+# Run this action on pushes to main or after the update-tag action has run.
+# We detect the latter case by a closed pull request on a main push
+#   AND the if-condition that checks that the source branch is the
+#   one triggered by the update-tag reference changes.
+# The "Set version for tagged release" is needed to inform conda-build
+#   of the tag. Because there are intermediate commits (the updated version refs)
+#   the commit no longer is tagged. So we can retrieve the package version
+#   from __init__.py.
 on:
   push:
     branches:
       - main
-
-
-
+  pull_request:
+    types: [closed]
+    branches:
+      - main
 
 jobs:
   condapublish:
+    if: |
+      github.event_name == 'push' ||
+        (github.event_name == 'pull_request' &&
+         github.event.pull_request.merged == true &&
+         startsWith(github.event.pull_request.head.ref, 'update-version-post-release'))
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/noaa-gfdl/fre-cli:miniconda24_gcc14_v2
@@ -18,11 +36,29 @@ jobs:
         with:
           submodules: 'recursive'
 
+      # For tagged releases, determine the tag from the __init__.py.
+      # Then make it available for the conda-build steps by setting the env var
+      # $GIT_DESCRIBE_TAG to the determined tag.
+      # $GITHUB_ENV is a special file path provided by the Actions runner.
+      # When you write KEY=VALUE lines into it, those variables become available
+      # as environment variables for all subsequent steps in the same job.
+      - name: Set version for tagged release
+        if: github.event_name == 'pull_request'
+        run: |
+          VERSION=$(python3 -c "
+          import re
+          content = open('fre/__init__.py').read()
+          m = re.search(r'GIT_DESCRIBE_TAG\",\s*\"([^\"]+)\"', content)
+          print(m.group(1))
+          ")
+          echo "GIT_DESCRIBE_TAG=$VERSION" >> $GITHUB_ENV
+
       - name: Configure Conda
         run: |
           echo "removing conda default channels, appending open-source ones"
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
+          conda config --append channels ufs-community
           conda config --remove channels defaults
 
           echo "setting strict channel priority"
@@ -34,12 +70,16 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
-      - name: Update Conda and Conda Package Indices
-        run: |
-          echo "updating conda and package channel indices for conda-forge, noaa-gfdl"
-          conda update -y conda
-          conda update -y --all --override-channels -c conda-forge
-          conda update -y --all --override-channels -c noaa-gfdl
+      ## commenting this out for now - with this update, conda wants to use the libmamba
+      #  solver for the envrionment BUT the container we're pulling needs to be updated to
+      #  support this conda update
+      #  Want to keep this in for now as a reminder that we can update the container...
+      #- name: Update Conda and Conda Package Indices
+      #  run: |
+      #    echo "updating conda and package channel indices for conda-forge, noaa-gfdl"
+      #    conda update -y conda
+      #    conda update -y --all --override-channels -c conda-forge
+      #    conda update -y --all --override-channels -c noaa-gfdl
 
       - name: Conda install conda-build
         run: |
@@ -51,3 +91,16 @@ jobs:
           echo "conda building fre-cli package and outputting as a tarball"
           export ANACONDA_API_TOKEN=${{ secrets.ANACONDA_TOKEN }}
           conda build .
+
+      - name: Trigger container image build workflow
+        if: ${{ success() }}
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: publish-conda-succeeded
+          client-payload: |
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}",
+              "tag": "${{ github.ref_name }}"
+            }

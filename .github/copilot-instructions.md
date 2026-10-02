@@ -11,6 +11,7 @@ information in these instructions is incomplete or found to be in error.
    ```bash
    conda config --append channels noaa-gfdl
    conda config --append channels conda-forge
+   conda config --append channels ufs-community
    ```
 
 2. **Initialize git submodules** (essential - contains mkmf tools):
@@ -52,7 +53,7 @@ pytest -v fre/[tool]/tests/test_functionality.py::test_a_single_test
 pytest -v fre/app/[app]/tests/test_functionality.py::test_a_single_test
 
 # Code quality
-pylint --fail-under 7.00 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4,cmor fre/
+pylint --fail-under 7.00 --max-line-length 120 --max-args 6 -ry --ignored-modules netCDF4 fre/
 ```
 
 **Critical notes**:
@@ -65,7 +66,7 @@ pylint --fail-under 7.00 --max-line-length 120 --max-args 6 -ry --ignored-module
 
 **Command pattern**: `fre [tool] [sub-command] [options]`
 
-**Available tools**: `analysis`, `app`, `catalog`, `check`, `cmor`, `list`, `make`, `pp`, `run`, `yamltools`
+**Available tools**: `analysis`, `app`, `catalog`, `check`, `list`, `make`, `pp`, `run`, `yamltools`
 
 ## Critical Notes
 

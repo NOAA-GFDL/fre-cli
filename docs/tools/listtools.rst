@@ -2,7 +2,7 @@
 -----------------
 
 ``fre list exps [options]``
-   - Purpose: Lists available post-processing experiments included in the yaml configurations
+   - Purpose: List available post-processing experiments included in the yaml configurations
    - Options:
         - ``-y, --yamlfile [experiment yaml]``
 
@@ -10,7 +10,7 @@
 -----------------
 
 ``fre list platforms [options]``
-   - Purpose: Lists available platforms included in the yaml configurations
+   - Purpose: List available platforms included in the yaml configurations
    - Options:
         - ``-y, --yamlfile [experiment yaml]``
 
@@ -18,7 +18,7 @@
 -----------------
 
 ``fre list pp-components [options]``
-   - Purpose: Lists components that have the `postprocess_on` key set to `True` in the postprocessing yaml configurations
+   - Purpose: List components in the postprocessing yaml that will be post-processed. All components will be post-processed unless ``postprocess_on: False`` is specified
    - Options:
         - ``-y, --yamlfile [experiment yaml]``
         - ``-e, --experiment [experiment to be post-processed]``

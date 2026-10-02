@@ -145,7 +145,7 @@ def configure_yaml(yamlfile, experiment, platform, target):
               required=True)
 @click.option("-b", "--branch", type=str,
               required=False, default = None,
-              help="fre-workflows branch/tag to clone; default is $(fre --version)")
+              help="fre-postprocess-workflow branch/tag to clone; default is $(fre --version)")
 def checkout(experiment, platform, target, branch=None):
     """Clone or verify fre-workflows repository template in ~/cylc-src."""
     checkout_script.checkout_template(experiment, platform, target, branch)
@@ -171,9 +171,12 @@ def histval(history,date_string,warn):
 
 @pp_cli.command()
 @click.option('-i', '--inputdir', required=True,
-              help='Path to a directory in which to search for netcdf files to split. Files matching the pattern in $history-source will be split.')
+              help='Path to a directory in which to search for netcdf '
+                   'files to split. Files matching the pattern in '
+                   '$history-source will be split.')
 @click.option('-o', '--outputdir', required=True,
-             help='Path to a directory to which to write split netcdf files.')
+             help='Path to a directory to which to write split '
+                  'netcdf files.')
 @click.option('-c', '--component', required=False, default=None,
               help='Component specified in the postprocessing YAML. Conflicts with --split-all-vars.')
 @click.option('-s', '--history-source', required=True, default=None,
@@ -181,22 +184,40 @@ def histval(history,date_string,warn):
 @click.option('-y', '--yamlfile', required=False, default=None,
               help='Consolidated postprocessing YAML (model, settings, and associated PP YAMLs) from which to get the variable filtering list. Conflicts with --split-all-vars.')
 @click.option('--use-subdirs', '-u', is_flag=True, default=False,
-              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
+              help="Whether to search subdirs underneath $inputdir "
+                   "for netcdf files. Defaults to false. This option "
+                   "is used in flow.cylc when regridding.")
 @click.option('--split-all-vars', '-a', is_flag=True, default=False,
-              help="Whether to ignore other config options and split all vars in the file. Defaults to false. Conflicts with -c, -s and -y options.")
+              help="Whether to ignore other config options and split "
+                   "all vars in the file. Defaults to false. "
+                   "Conflicts with -c, -s and -y options.")
 def split_netcdf_wrapper(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars):
-    """Split multi-variable NetCDF history files into single-variable files matching workflow specs."""
+    ''' Splits all netcdf files matching the pattern specified by $history_source in $inputdir
+        into files with a single data variable written to $outputdir. If $yamlfile contains
+        variable filtering settings under $component, only those variables specified will
+        be split into files for $outdir. If no variables in the variable filtering match
+        vars in the netcdf files, no files will be written to $outdir. If --use-subdirs
+        is set, netcdf files will be searched for in subdirs under $outdir.
+
+        This tool is intended for use in fre-postprocess-workflow and assumes files to split have
+        fre-specific naming conventions. For a more general tool, look at split-netcdf.'''
     if split_all_vars:
         none_args = [component, yamlfile]
         if any([el is not None for el in none_args]):
             fre_logger.error('''Error in split_netcdf_wrapper arg parsing: --split-all-vars was set and one or more of
 mutually exclusive options --component and --yamlfile was also set!
 Either unset --split-all-vars or parse the varlist from the yaml - do not try do do both!''')
-    split_netcdf_script.split_netcdf(inputdir, outputdir, component, history_source, use_subdirs, yamlfile, split_all_vars)
+    split_netcdf_script.split_netcdf(
+        inputdir, outputdir, component, history_source,
+        use_subdirs, yamlfile, split_all_vars
+    )
 
 @pp_cli.command()
-@click.option('-f', '--file', type = str, required=True, help='path to a netcdf file')
-@click.option('-o', '--outputdir', type = str, required=True, help='path to a directory to which to write single-data-variable output files')
+@click.option('-f', '--file', type = str, required=True,
+              help='path to a netcdf file')
+@click.option('-o', '--outputdir', type = str, required=True,
+              help='path to a directory to which to write '
+                   'single-data-variable output files')
 @click.option('-v', '--variables', type = str, required=True,
               help='''Specifies which variables in $file are split and written to $outputdir.
                      Either a string "all" or a comma-separated string of variable names ("tasmax,tasmin,pr")''')
@@ -228,7 +249,7 @@ def ppval(path):
               required=True)
 @click.option("-b", "--branch",
               required=False, default=None,
-              help="fre-workflows branch/tag to clone; default is $(fre --version)")
+              help="fre-postprocess-workflow branch/tag to clone; default is $(fre --version)")
 @click.option("-t", "--time",
               required=False, default=None,
               help="Time whose history files are ready")

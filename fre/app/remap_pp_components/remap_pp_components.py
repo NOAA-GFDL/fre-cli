@@ -131,9 +131,9 @@ def chunk_to_legacy(iso_dura: str) -> str:
 
     if iso_dura[0]=='P':
         if iso_dura[-1:]=='M':
-            brx_freq=iso_dura[1]+'mo'
+            brx_freq=iso_dura[1:-1]+'mo'
         elif iso_dura[-1:]=='Y':
-            brx_freq=iso_dura[1]+'yr'
+            brx_freq=iso_dura[1:-1]+'yr'
         else:
             brx_freq = 'error'
     else:
@@ -276,7 +276,10 @@ def get_varlist(comp_info: dict, product: str, req_source: str, src_vars: dict) 
     """
     if product == "static":
         if comp_info.get("static") is None:
-            raise ValueError(f"Product is set to static but no static sources/variables defined for {comp_info.get('type')}")
+            raise ValueError(
+                f"Product is set to static but no static sources/variables defined for "
+                f"{comp_info.get('type')}"
+            )
 
     ## Dictionary of variables associated with pp component source name
     ## are retrieved through Jinjafilter get_variables.py
@@ -483,7 +486,9 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
                         chunk = get_chunk(comp_info)  ## might have to be a list ...
                         for c in chunk:
                             if c != current_chunk:
-                                fre_logger.warning("Chunk in directory structure is not equal to the current chunk set! Skipping component remapping for %s...", comp)
+                                fre_logger.warning(
+                                    "Chunk in directory structure is not equal to the current "
+                                    "chunk set! Skipping component remapping for %s...", comp)
                                 continue
                             if ens_mem is not None:
                                 os.chdir(f"{input_dir}/{g}/{ens_mem}/{s}/{f}/{c}")

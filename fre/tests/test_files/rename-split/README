@@ -1,0 +1,56 @@
+1. Notes on test data
+2. Instructions for generating test data
+
+-------------------
+1. Notes on test data
+
+rename-split-to-pp is called directly after split-netcdf in the fre workflow;
+you shoudl be using split-netcdf output as input for rename-split-to-pp 
+
+netcdf files -> split-netcdf -> rename-split-to-pp
+
+We want to try to get netcdf files we use for testing down to under 12.5 Mb
+
+
+
+2. Instructions for generating test data
+
+#Cut down to a 14x9x6-month grid
+infile=/home/cew/Code/cmip7-sprint/testfiles/input/00010101.atmos_daily.tile3.nc
+ncks_outdir=/home/cew/Code/cmip7-sprint/atmos_subset/
+ncks_outfile=$ncks_outdir/00010101.atmos_daily.tile3.nc
+ncks -d grid_xt,0,14 -d grid_yt,0,9 -d time,0,181 $infile -O $outfile
+
+#save as cdl file for split-netcdf regression test output
+ncdump $outfile > $ncks_outdir/00010101.atmos_daily.tile3.cdl
+
+split_nc_outdir=/home/cew/Code/cmip7-sprint/testfiles/atmos_ts/
+
+fre pp split-netcdf-wrapper -i /home/cew/Code/cmip7-sprint/testfiles/ -o $ncks_outdir --split-all-vars
+
+#select a few files from split-netcdf-wrapper to go to tests/test-data/atmos-ts
+#focus on weird edge cases (small vars, large vars), common use cases (3-d vars)
+
+#run that directory through rename-split-to-pp - which currently takes a godawful melange of environment vars
+
+rename-split-to-pp-wrapper inputDir outputDir history_source do_regrid=FALSE
+
+#dump the contents of your output directory to cdl; delete netcdf files
+
+#and dump your input files to cdl; delete netcdf files
+
+
+
+
+#Ocean files need a slightly different set of coords so as not to select Antarctica
+infile=/home/cew/Code/cmip7-sprint/testfiles/input/00010101.ocean_static.nc
+outfile=/home/cew/Code/cmip7-sprint/testfiles/00010101.ocean_static.nc
+ncks -d xh,532,546 -d yh,526,535 -d xq,532,546 -d yq,526,535 $infile -O $outfile
+
+#cdl file for regression test output
+ncdump $outfile > /home/cew/Code/cmip7-sprint/testfiles/00010101.ocean_static.cdl
+
+split_nc_outdir=/home/cew/Code/cmip7-sprint/testfiles/ocean_static/
+
+
+#Now deal with the subdirs case. In practice, your input files aren't going to be different when regridding - but your subdirectories are. That means you can get away with symlinking your 

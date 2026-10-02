@@ -33,7 +33,7 @@ def status_subtool(experiment = None, platform = None, target = None):
                           f'{experiment} / {platform} / {target}')
 
     workflow_name = make_workflow_name(experiment, platform, target)
-    cmd = f"cylc workflow-state {workflow_name}" 
+    cmd = f"cylc workflow-state {workflow_name}"
     fre_logger.debug('running the following command: ')
     fre_logger.debug(cmd)
 

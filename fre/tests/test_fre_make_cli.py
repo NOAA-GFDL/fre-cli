@@ -13,10 +13,12 @@ We also have a set of more complicated tests for fre make testing the checkout
 and container creation (and cleaning up after those operations)
 """
 
-from click.testing import CliRunner
-from pathlib import Path
 import os
 import shutil
+from pathlib import Path
+
+from click.testing import CliRunner
+
 from fre import fre
 
 

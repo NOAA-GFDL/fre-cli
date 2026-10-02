@@ -3,6 +3,8 @@ Test fre make checkout-script
 """
 from pathlib import Path
 import shutil
+import pytest
+import re
 from fre.make import create_checkout_script
 
 # Set example yaml paths, input directory
@@ -81,6 +83,30 @@ def test_checkout_execute(monkeypatch):
                 Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").is_dir(),
                 any(Path(f"{OUT}/fremake_canopy/test/null_model_full/src/coupler").iterdir())])
 
+def test_bm_checkout_failure(caplog, monkeypatch):
+    """
+    check for the raised OSError when the checkout script is executed twice without
+    the --force-checkout option specified in the second execution
+    """
+    monkeypatch.setenv("TEST_BUILD_DIR", OUT)
+
+    # Check for checkout script and for some resulting folders from previous test 
+    assert all([Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists(),
+                Path(f"{OUT}/fremake_canopy/test/null_model_full/src/FMS").exists()])
+
+    # Run checkout again and check for error output
+    with pytest.raises(OSError) as excinfo: #, match = re.escape(expected_failure)):
+        create_checkout_script.checkout_create(YAMLFILE,
+                                               PLATFORM,
+                                               TARGET,
+                                               no_parallel_checkout = False,
+                                               njobs = 2,
+                                               execute = True,
+                                               force_checkout = False)
+
+    assert ([f"\nError executing checkout script: {OUT}/fremake_canopy/test/null_model_full/src/checkout.sh." in str(excinfo.value),
+             f"\nTry removing test folder: {OUT}/fremake_canopy/test or  specifying --force-checkout" in str(excinfo.value)])
+    
 def test_checkout_no_parallel_checkout(monkeypatch):
     """
     check if --no_parallel_checkout option works
@@ -117,7 +143,7 @@ def test_bm_checkout_force_checkout(caplog, monkeypatch):
     shutil.rmtree(f"{OUT}/fremake_canopy/test", ignore_errors=True)
 
     ## Mock checkout script with some content we can check
-    # Create come checkout script
+    # Create some checkout script
     mock_checkout = Path(f"{OUT}/fremake_canopy/test/null_model_full/src")
     mock_checkout.mkdir(parents = True)
 
@@ -140,15 +166,18 @@ def test_bm_checkout_force_checkout(caplog, monkeypatch):
                                            execute = False,
                                            force_checkout = True)
 
-    # Check it exists, check output, check content
+    renamed_src_dir = list(Path(f"{OUT}/fremake_canopy/test/null_model_full/").glob("src.*"))
+    # Check it exists, check previous src_dir was renamed check output, check content
     assert all([Path(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh").exists(),
+                renamed_src_dir[0].exists(),
+                Path(f"{renamed_src_dir[0]}/checkout.sh").exists(),
                 "Checkout script PREVIOUSLY created" in caplog.text,
-                "*** REMOVING CHECKOUT SCRIPT ***" in caplog.text,
+                "*** SRC DIR RENAMED:" in caplog.text,
+                "*** RE-CREATING CHECKOUT ***" in caplog.text,
                 "Checkout script created" in caplog.text])
 
     # Check one expected line is now populating the re-created checkout script
     expected_line = f"({EXPECTED_LINE}) &"
-
     with open(f"{OUT}/fremake_canopy/test/null_model_full/src/checkout.sh", 'r') as f2:
         content = f2.read()
 
@@ -207,5 +236,3 @@ def test_container_checkout_force_checkout(caplog):
     assert all([expected_line in content,
                "pids" not in content,
                "mock container checkout content" not in content])
-
-##test checkout w/o force but if it already exists

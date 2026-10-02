@@ -1,14 +1,16 @@
 """
 tests routines in fre.yamltools.combine_yamls
 """
-import os
-from pathlib import Path
-import pytest
-import shutil
 import json
-import yaml
+import os
 import pprint
+import shutil
+from pathlib import Path
+
+import pytest
+import yaml
 from jsonschema import validate
+
 from fre.yamltools import combine_yamls_script as cy
 
 
@@ -173,11 +175,15 @@ def test_check_expected_platformyamlcontent():
                                              'module load fre/bronx-23',
                                              'module load cray-hdf5/1.12.2.11',
                                              'module load cray-netcdf/4.9.0.11'],
-                                'mkTemplate': '/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/intel-classic.mk',
+                                'mkTemplate': '/ncrc/home2/fms/local/opt/'
+                                             'fre-commands/bronx-20/site/ncrc5/intel-classic.mk',
                                 'modelRoot': '${HOME}/fremake_canopy/test'}
     expected_platform_info_2 = {'name': 'hpcme.2023',
                                 'compiler': 'intel',
-                                'RUNenv': ['. /spack/share/spack/setup-env.sh', 'spack load libyaml', 'spack load netcdf-fortran@4.5.4', 'spack load hdf5@1.14.0'],
+                                'RUNenv': ['. /spack/share/spack/setup-env.sh',
+                                           'spack load libyaml',
+                                           'spack load netcdf-fortran@4.5.4',
+                                           'spack load hdf5@1.14.0'],
                                 'modelRoot': '/apps',
                                 'container': True,
                                 'containerBuild': 'podman',
@@ -353,29 +359,3 @@ def test_combine_pp_yamls(tmp_path):
     # compare dictionaries
     assert output == combined
 
-def test_combine_cmor_yaml():
-    """
-    Verify yaml combiner functionality by combining
-    a model yaml with a cmor yaml
-    """
-    output_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/FOO_cmor.yaml"
-    if Path(output_combined_cmor_yaml).exists():
-        Path(output_combined_cmor_yaml).unlink()
-    cy.consolidate_yamls( yamlfile = 'fre/yamltools/tests/AM5_example/am5.yaml',
-                          experiment = 'c96L65_am5f7b12r1_amip',
-                          platform = 'ncrc5.intel',
-                          target = 'prod-openmp',
-                          use = 'cmor',
-                          output = output_combined_cmor_yaml )
-    assert Path(output_combined_cmor_yaml).exists()
-
-    compare_combined_cmor_yaml = "fre/yamltools/tests/AM5_example/COMPARE_TEST_OUTPUT_cmor.yaml"
-    assert Path(compare_combined_cmor_yaml).exists()
-    comp_file_output = open(compare_combined_cmor_yaml, 'r')
-    comp_file_output_data = yaml.load(comp_file_output, Loader=yaml.SafeLoader)
-
-
-    file_output = open(output_combined_cmor_yaml, 'r')
-    file_output_data = yaml.load(file_output, Loader=yaml.SafeLoader)
-
-    assert file_output_data == comp_file_output_data

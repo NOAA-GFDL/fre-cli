@@ -23,6 +23,5 @@
         "fre_cli.egg-info",
         "fre/mkmf",
         "fre/gfdl_msd_schemas",
-        "fre/tests/test_files/cmip6-cmor-tables"
     ]
 }

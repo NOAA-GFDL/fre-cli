@@ -36,10 +36,10 @@ def getenot(date_start: str,
     - `'hourly'`: 24 samples per day.
     - `'30minute'`: 48 samples per day.
 
-    :param date_start: is a regexp match object capturing start date groups (year, month, day, hour, minute).
-    :type date_start: re.Match
-    :param date_end: is a regexp match object capturing end date groups (year, month, day, hour, minute).
-    :type date_end: re.Match
+    :param date_start: is a string capturing the start date (year, month, day, hour, minute).
+    :type date_start: str
+    :param date_end: is a string capturing the end date (year, month, day, hour, minute).
+    :type date_end: str
     :param chunk_type: is a frequency identifier string (`'yearly'`, `'monthly'`, `'daily'`, etc.).
     :type chunk_type: str
     :param cal: is a calendar name supported by `cftime` (e.g., `'gregorian'`, `'noleap'`, `'360_day'`).
@@ -127,7 +127,10 @@ def getenot(date_start: str,
     else:
         raise ValueError(f"Unknown chunk_type '{chunk_type}'")
 
-    fre_logger.debug(f"date start: {date_start.group()}; date end: {date_end.group()}; chunk_type: {chunk_type}; calendar: {cal}; timesteps: {enot}")
+    fre_logger.debug(
+        f"date start: {date_start}; date end: {date_end}; "
+        f"chunk_type: {chunk_type}; calendar: {cal}; timesteps: {enot}"
+    )
 
     return enot
 
@@ -154,14 +157,22 @@ def validate(filepath: str):
     # Get the date range from the filename
     # This regular expression accepts at minimum '.YYYY-YYYY.' date strings.
     # If month, day, hour, and minute strings are present it will identify them
-    # Regex matching filename date ranges: .YYYY[MM[DD[HH[:mm]]]]-YYYY[MM[DD[HH[:mm]]]]
-    match = re.compile(r"\.((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)-((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)\.")
+    # by looking for groups of two digits after the year string
+    match = re.compile(
+        r"\.((?:\d{4})(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)-((?:\d{4})"
+        r"(?:\d{2}(?:\d{2}(?:\d{2}(?::\d{2})?)?)?)?)\."
+    )
     filename = os.path.basename(filepath)
     date_range = match.search(filename)
 
-    if not date_range:
-        raise ValueError(f"Filename '{filename}' does not contain valid date range pattern")
-
+    # Get the year, month, day, hour from the datestring(s)
+    # date_range[0] is the full match (e.g., ".202201-202501."
+    # date_range[1] is the start date (e.g., "202201")
+    # date_range[2] is the end date (e.g., "202501")
+    # This regular expression captures date start/end individually by first
+    # capturing the year as a 4 digit number then capturing each following
+    # group of two digits
+    # Minute string is identified by ':' followed with two digits
     d_regex = re.compile(r"(\d{4})(\d{2})?(\d{2})?(\d{2})?(?::(\d{2}))?")
     date_end = d_regex.search(date_range[2])
     date_start = d_regex.search(date_range[1])
@@ -189,6 +200,9 @@ def validate(filepath: str):
     elif date_length == 8:
         enot = getenot(date_start, date_end, 'daily', cal)
     elif date_length == 10:
+        # We would rather not check filepaths but it's necessary for sub-daily files
+        # Path elements contains the directories from the filepath..
+        # we use this to determine frequency/chunk_size in sub-daily files
         path_elements = os.path.abspath(filepath).split('/')
         expected_frequencies  = ['6hr', 'PT6H', '3hr', 'PT3H', '1hr', 'PT1H', '30min', 'PT30M', 'PT0.5H']
 

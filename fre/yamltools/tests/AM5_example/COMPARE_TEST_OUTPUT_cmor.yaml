@@ -1,3 +1,30 @@
+fre_properties:
+- am5f7b12r1
+- am5/am5f7b12r1
+- '1979'
+- '2020'
+- '1980'
+- '2020'
+- P1Y
+- 180,288
+- 720,1152
+- '0001'
+- '0011'
+- '0002'
+- '0011'
+- '0001'
+- '0006'
+- '0002'
+- '0006'
+- P5Y
+- P20Y
+- null
+- '2000'
+- /archive/oar.gfdl.am5/model_gen5/inputs/c96_grid/c96_OM4_025_grid_No_mg_drag_v20160808.tar
+- f1a1r1
+- intel-classic
+- -IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include
+- -Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include
 grids:
 - gm:
     grid_label: gm

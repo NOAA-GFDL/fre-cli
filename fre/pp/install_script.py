@@ -46,8 +46,12 @@ def install_subtool(experiment: str, platform: str, target: str) -> None:
        If the target run directory already exists and its expanded definition matches the source,
        a warning is logged and execution completes gracefully.
     """
-    workflow_name = make_workflow_name(experiment, platform, target)
 
+    #name = experiment + '__' + platform + '__' + target
+    workflow_name = make_workflow_name(experiment, platform, target)
+    # if the cylc-run directory already exists,
+    # then check whether the cylc expanded definition (cylc config)
+    # is identical. If the same, good. If not, bad.
     source_dir = Path(os.path.expanduser("~/cylc-src"), workflow_name)
     install_dir = Path(os.path.expanduser("~/cylc-run"), workflow_name)
 

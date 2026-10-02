@@ -13,7 +13,7 @@ DIR_CHANGE = Path("fre/app/remap_pp_components")
 def test_get_variables():
     """
     Test dictionary output with {source name: [variables]}
-    from given pp component. 
+    from given pp component.
     """
     # Load the yaml config
     with open(YAML_EX,'r') as f:
@@ -27,7 +27,11 @@ def test_get_variables():
                       {'atmos_scalar_static_test_vars_fail2': 'all',
                       'atmos_static_scalar_test_vars_fail': ['bk', 'no_var']}]
 
-    components = ["atmos_scalar_test_vars_CNAME", "atmos_scalar_test_vars_fail_CNAME", "atmos_scalar_static_test_vars_fail_CNAME"]
+    components = [
+        "atmos_scalar_test_vars_CNAME",
+        "atmos_scalar_test_vars_fail_CNAME",
+        "atmos_scalar_static_test_vars_fail_CNAME"
+    ]
 
     out1 = helpers.get_variables(yml = yml, pp_comp = components[0])
     out2 = helpers.get_variables(yml = yml, pp_comp = components[1])
@@ -39,7 +43,7 @@ def test_get_variables():
                 out1 == expected_dicts[0],
                 out2 == expected_dicts[1],
                 out3 == expected_dicts[2]])
-             
+
 def test_get_variables_err():
     """
     Test get_variables() returns an error when given inappropriate input
@@ -52,8 +56,8 @@ def test_change_directory():
     """
     Test change_directory context manager.
     This allows for the changing of directories within
-    a function's execution. 
-    After execution of the function, user should be in 
+    a function's execution.
+    After execution of the function, user should be in
     the same directory the script started in.
     """
     original_dir = Path.cwd()

@@ -1,0 +1,97 @@
+netcdf \00010101.ocean_annual.so {
+dimensions:
+	time = UNLIMITED ; // (1 currently)
+	zl = 2 ;
+	yh = 2 ;
+	xh = 2 ;
+	nv = 2 ;
+	zi = 3 ;
+variables:
+	double average_DT(time) ;
+		average_DT:_FillValue = 1.e+20 ;
+		average_DT:missing_value = 1.e+20 ;
+		average_DT:units = "days" ;
+		average_DT:long_name = "Length of average period" ;
+	double average_T1(time) ;
+		average_T1:_FillValue = 1.e+20 ;
+		average_T1:missing_value = 1.e+20 ;
+		average_T1:units = "days since 0001-01-01 00:00:00" ;
+		average_T1:long_name = "Start time for average period" ;
+	double average_T2(time) ;
+		average_T2:_FillValue = 1.e+20 ;
+		average_T2:missing_value = 1.e+20 ;
+		average_T2:units = "days since 0001-01-01 00:00:00" ;
+		average_T2:long_name = "End time for average period" ;
+	float so(time, zl, yh, xh) ;
+		so:_FillValue = 1.e+20f ;
+		so:missing_value = 1.e+20f ;
+		so:units = "psu" ;
+		so:long_name = "Sea Water Salinity" ;
+		so:cell_methods = "area:mean zl:mean yh:mean xh:mean time: mean" ;
+		so:cell_measures = "volume: volcello area: areacello" ;
+		so:time_avg_info = "average_T1,average_T2,average_DT" ;
+		so:standard_name = "sea_water_salinity" ;
+	double time_bnds(time, nv) ;
+		time_bnds:long_name = "time axis boundaries" ;
+	double nv(nv) ;
+		nv:long_name = "vertex number" ;
+	double time(time) ;
+		time:units = "days since 0001-01-01 00:00:00" ;
+		time:long_name = "time" ;
+		time:axis = "T" ;
+		time:calendar_type = "NOLEAP" ;
+		time:calendar = "noleap" ;
+		time:bounds = "time_bnds" ;
+	double xh(xh) ;
+		xh:units = "degrees_east" ;
+		xh:long_name = "h point nominal longitude" ;
+		xh:axis = "X" ;
+	double yh(yh) ;
+		yh:units = "degrees_north" ;
+		yh:long_name = "h point nominal latitude" ;
+		yh:axis = "Y" ;
+	double zi(zi) ;
+		zi:units = "meter" ;
+		zi:long_name = "Interface z-rho" ;
+		zi:axis = "Z" ;
+		zi:positive = "down" ;
+	double zl(zl) ;
+		zl:units = "meter" ;
+		zl:long_name = "Layer z-rho" ;
+		zl:axis = "Z" ;
+		zl:positive = "down" ;
+
+// global attributes:
+		:title = "cm5_c96_am5f7c1r0_b06_piC_galb_noiceinit_alb" ;
+		:associated_files = "areacello: 00010101.ocean_static.nc" ;
+		:grid_type = "regular" ;
+		:grid_tile = "N/A" ;
+data:
+
+ average_DT = 365 ;
+
+ average_T1 = 0 ;
+
+ average_T2 = 365 ;
+
+ so =
+  35.38194, 35.38821,
+  35.38625, 35.40103,
+  35.3838, 35.40005,
+  35.37607, 35.39221 ;
+
+ time_bnds =
+  0, 365 ;
+
+ nv = 1, 2 ;
+
+ time = 182.5 ;
+
+ xh = 1, 2 ;
+
+ yh = 1, 2 ;
+
+ zi = 0, 2, 4 ;
+
+ zl = 1, 3 ;
+}

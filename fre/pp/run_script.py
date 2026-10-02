@@ -5,15 +5,13 @@ The run_script module manages the execution lifecycle of post-processing Cylc wo
 It checks for active running workflows, starts or restarts workflows using `cylc play`,
 and verifies successful scheduler initialization.
 """
-
+import logging
 import subprocess
 import time
-import logging
-fre_logger = logging.getLogger(__name__)
 
 from . import make_workflow_name
 
-
+fre_logger = logging.getLogger(__name__)
 
 def pp_run_subtool(experiment = None, platform = None, target = None,
                    pause = False, no_wait = False):
