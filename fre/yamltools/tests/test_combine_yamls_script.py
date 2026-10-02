@@ -161,7 +161,7 @@ def test_check_expected_platformyamlcontent():
     yamls = ("fre/yamltools/tests/yamls/model.yaml,"
              "fre/yamltools/tests/yamls/compile_yamls/compile.yaml,"
              "fre/yamltools/tests/yamls/compile_yamls/platforms.yaml")
-    yml_dict = cy.yamltools_combine_subtool(yamls, None, None, None, output = "/home/Dana.Singh/fre/singh/cli-dev/generalize-yaml-serialization/HERE.yml")
+    yml_dict = cy.yamltools_combine_subtool(yamls, None, None, None, output = None)
 
     # compare combined yaml info with some information that's supposed to be parsed
     expected_platform_info_1 = {'name': 'ncrc5.intel23',
