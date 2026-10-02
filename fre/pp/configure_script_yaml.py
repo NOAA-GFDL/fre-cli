@@ -55,7 +55,7 @@ def validate_yaml(yamlfile: dict) -> None:
 
     # Validate YAML dictionary against schema
     try:
-        validate(instance = yamlfile,schema = schema)
+        validate(instance = yamlfile, schema = schema)
         fre_logger.info("Combined yaml valid")
     except SchemaError as exc:
         raise ValueError(f"Schema '{schema_path}' is not valid. Contact the FRE team.") from exc
@@ -65,7 +65,7 @@ def validate_yaml(yamlfile: dict) -> None:
         raise ValueError("Unclear error from validation. Please try to find the error and try again.") from exc
 
 
-def rose_init(experiment: str, platform: str, target: str) -> tuple[metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode, metomi.rose.config.ConfigNode]:
+def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config.ConfigNode:
     """
     Initialize a Rose suite configuration node with default template variables.
 
@@ -263,7 +263,7 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
 
     if None in [yamlfile, experiment, platform, target]:
         raise ValueError( 'yamlfile, experiment, platform, and target must all not be None. '
-                          'curently, their values are...'
+                          'currently, their values are...'
                           f'{yamlfile} / {experiment} / {platform} / {target}')
     e = experiment
     p = platform
@@ -278,8 +278,8 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
     full_yamldict = cy.consolidate_yamls(yamlfile = yml,
                                          experiment = e, platform = p, target = t,
-                                         use="pp",
-                                         output=outfile)
+                                         use = "pp",
+                                         output = outfile)
 
     # Validate combined YAML dictionary against schema
     validate_yaml(full_yamldict)
