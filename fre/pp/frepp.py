@@ -4,24 +4,27 @@ Click Command Line Interface for FRE Post-Processing (`fre pp`).
 The frepp module registers all subcommands under the `fre pp` Click group for managing
 post-processing workflow subtools: 
 - checkout: Clones fre-postprocess-workflow repository into ~/cylc-src/[WORKFLOW_ID]
-- configure_yaml: Combines the model yaml, settings yaml, and postprocessing yaml files into one resolved yaml file that is then validated against an MSD-owned schema file and parsed to create the rose-suite.conf file
+- configure_yaml: Combines the model yaml, settings yaml, and postprocessing yaml files 
+                  into one resolved yaml file that is then validated against an MSD-owned 
+                  schema file and parsed to create the rose-suite.conf file
 - validate: Validates the Cylc workflow definition (flow.cylc file)
 - install: Installs the experiment workflow configuration into ~/cylc-run/[WORKFLOW_ID]
 - run: Runs the experiment workflow configuration
 - status: Shows the status of the Cylc workflow definition tasks
 - trigger: Initiate a postprocessing task for a time chunk of history files
 - nccheck: Confirms that a NetCDF file contains the expected number of time steps
-- histval: Validates the time step counts of a NetCDF file compared to the FMS 'diag_manifest' yaml file during the "Stage-History" workflow step
+- histval: Validates the time step counts of a NetCDF file compared to the FMS 'diag_manifest' yaml file 
+           during the "Stage-History" workflow step
 - split_netcdf_wrapper: Runs the 'split-netcdf' tool on a pattern-matched list of NetCDF files within a directory
 - split_netcdf: Split an individual NetCDF file by variable, as defined by the postprocessing yaml files
 - pp_val: Determines estimated number of timesteps from a postprocessed time-series filename and runs nccheck
-- all: Executes all postprocessing tasks (checkout, configure, install, run, optional triggering, and status reporting) sequentially
+- all: Executes all postprocessing tasks 
+       (checkout, configure, install, run, optional triggering, and status reporting) sequentially
 - rename_split: Reorganizes data according to their frequency and time interval
 """
 
 import logging
 import click
-fre_logger = logging.getLogger(__name__)
 
 # The following imports are fre tools
 from . import checkout_script
@@ -38,7 +41,7 @@ from . import wrapper_script
 from . import split_netcdf_script
 from . import rename_split_script
 
-
+fre_logger = logging.getLogger(__name__)
 
 @click.group(help=click.style(" - pp subcommands", fg=(57,139,210)))
 def pp_cli():
@@ -46,10 +49,10 @@ def pp_cli():
 
 
 @pp_cli.command()
-@click.option("-e", "--experiment", type=str, 
+@click.option("-e", "--experiment", type=str,
               help="Experiment name",
               required=True)
-@click.option("-p", "--platform", type=str, 
+@click.option("-p", "--platform", type=str,
               help="Platform name",
               required=True)
 @click.option("-t", "--target", type=str,
@@ -162,7 +165,7 @@ def nccheck(file_path, num_steps):
 @pp_cli.command()
 @click.option('--history','-hist', required=True, help="Path to directory containing history files")
 @click.option('--date_string','-d', required=True, help="Date string as written in netCDF (.nc) filename")
-@click.option('--warn', '-w', is_flag=True, default=False, 
+@click.option('--warn', '-w', is_flag=True, default=False,
               help="Warning is logged instead of raising an exception if diag_manifest files are missing")
 def histval(history,date_string,warn):
     """Validate timestep counts across history NetCDF files using diag_manifest metadata."""
@@ -180,9 +183,11 @@ def histval(history,date_string,warn):
 @click.option('-c', '--component', required=False, default=None,
               help='Component specified in the postprocessing YAML. Conflicts with --split-all-vars.')
 @click.option('-s', '--history-source', required=True, default=None,
-              help='History file associated with the postprocessing component passed in the --component option. Used to match files in inputdir.')
+              help='History file associated with the postprocessing component passed in the --component option. '
+                   'Used to match files in inputdir.')
 @click.option('-y', '--yamlfile', required=False, default=None,
-              help='Consolidated postprocessing YAML (model, settings, and associated PP YAMLs) from which to get the variable filtering list. Conflicts with --split-all-vars.')
+              help='Consolidated postprocessing YAML (model, settings, and associated PP YAMLs) from which to get '
+                   'the variable filtering list. Conflicts with --split-all-vars.')
 @click.option('--use-subdirs', '-u', is_flag=True, default=False,
               help="Whether to search subdirs underneath $inputdir "
                    "for netcdf files. Defaults to false. This option "
@@ -286,9 +291,12 @@ def trigger(experiment, platform, target, time):
 @click.option("-c", "--component", type=str,
               help="Component name to process", required=True)
 @click.option("-u", '--use-subdirs', is_flag=True, default=False,
-              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. This option is used in flow.cylc when regridding.")
+              help="Whether to search subdirs underneath $inputdir for netcdf files. Defaults to false. "
+                   "This option is used in flow.cylc when regridding.")
 @click.option("-d", "--diag-manifest", multiple=True, type=click.Path(exists=True),
-              help="Path to FMS diag manifest associated with the component (history file). Optional, but required when the history file has one timestep and no time bounds. If there are multiple manifests, specify multiple --diag-manifest options.")
+              help="Path to FMS diag manifest associated with the component (history file). "
+                   "Optional, but required when the history file has one timestep and no time bounds. "
+                   "If there are multiple manifests, specify multiple --diag-manifest options.")
 def rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest):
     """Create per-variable time-series files from split intermediate shards."""
     rename_split_script.rename_split(input_dir, output_dir, component, use_subdirs, diag_manifest)
