@@ -6,10 +6,10 @@ workflow templates from the official NOAA-GFDL workflows Git repository into the
 local user's Cylc source directory (`~/cylc-src`).
 
 It supports four operational scenarios:
-1. **Branch omitted, directory does not exist**: Clones the workflow template using the current `fre` package version tag.
-2. **Branch provided, directory does not exist**: Clones the workflow template using the specified branch or tag.
-3. **Branch omitted, directory exists**: Validates that the existing directory matches the default `fre` package version tag.
-4. **Branch provided, directory exists**: Validates that the existing directory matches the user-specified branch or tag.
+1. Branch omitted, directory does not exist: Clones the workflow template using the current `fre` package version tag
+2. Branch provided, directory does not exist: Clones the workflow template using the specified branch or tag
+3. Branch omitted, directory exists: Validates that the existing directory matches the default `fre` package version tag
+4. Branch provided, directory exists: Validates that the existing directory matches the user-specified branch or tag
 """
 import logging
 import os
@@ -97,11 +97,11 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         os.chdir(f'{directory}/{workflow_name}')
 
         current_tag = subprocess.run(["git", "describe", "--tags"],
-                                     capture_output = True, 
+                                     capture_output = True,
                                      text = True, check = True).stdout.strip()
 
         current_branch = subprocess.run(["git", "branch", "--show-current"],
-                                         capture_output = True, 
+                                         capture_output = True,
                                          text = True, check = True).stdout.strip()
 
         if current_tag == git_clone_branch_arg or current_branch == git_clone_branch_arg:
