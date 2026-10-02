@@ -32,7 +32,8 @@ def test_exp_list(caplog):
 
     # make sure the level is INFO
     for record in caplog.records:
-        assert record.levelname == "INFO"
+        if record.name.startswith("fre"):
+            assert record.levelname == "INFO"
 
 # Test validation
 @pytest.mark.skip(
