@@ -215,7 +215,7 @@ def set_rose_suite(yamlfile: dict, rose_suite: metomi.rose.config.ConfigNode) ->
                         value = 'False' )
         return
 
-    do_analysis_switch = []    
+    do_analysis_switch = []
     for an_key, an_value in analysis.items():
         an_workflow_info = an_value["workflow"]
         # if analysis_on key is actually set, evaluate and save its value in a list
