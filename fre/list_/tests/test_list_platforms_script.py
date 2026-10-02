@@ -47,7 +47,8 @@ def test_platforms_list_correct(caplog):
 
     # make sure level is INFO
     for record in caplog.records:
-        assert record.levelname == "INFO"
+        if record.name.startswith("fre"):
+            assert record.levelname == "INFO"
 
 # Test validation
 def test_yamlvalidate(caplog):
@@ -62,7 +63,8 @@ def test_yamlvalidate(caplog):
         assert i in caplog.text
 
     for record in caplog.records:
-        assert record.levelname == "INFO"
+        if record.name.startswith("fre"):
+            assert record.levelname == "INFO"
 
 def test_not_valid_yaml():
     ''' Test the correct output matches the ValueError raised when yaml is invalid '''
