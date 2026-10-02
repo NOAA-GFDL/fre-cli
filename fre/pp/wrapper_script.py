@@ -21,7 +21,8 @@ from .status_script import status_subtool
 
 fre_logger = logging.getLogger(__name__)
 
-def run_all_fre_pp_steps(experiment = None, platform = None, target = None, config_file = None, branch = None, time = None):
+def run_all_fre_pp_steps(experiment = None, platform = None, target = None, 
+                         config_file = None, branch = None, time = None):
     """
     `Run_all_fre_pp_steps` executes all FRE post-processing pipeline steps in sequential order
 
