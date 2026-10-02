@@ -67,27 +67,24 @@ class TestListYamlsScript:
 
     def test_list_yamls_postprocess_only(self, model_yaml_path):
         """Test postprocess_only flag (without analysis) returns model YAML plus postprocessing YAMLs"""
-        with pytest.raises(ValueError): #, match = "  *** PROVIDE THE MISSING YAML CONFIGURATIONS ***"):
-            result = list_yamls_subtool(
-                yamlfile=model_yaml_path,
-                experiment="experiment1",
-                application="postprocess"
-            )
+        result = list_yamls_subtool(
+            yamlfile=model_yaml_path,
+            experiment="experiment1",
+            application="postprocess"
+        )
 
-            yaml_names = [Path(y).name for y in result.split(",")]
+        yaml_names = [Path(y).name for y in result.split(",")]
 
-            # Model YAML should always be included
-            assert "model.yaml" in yaml_names
-            # Should contain settings and postprocessing YAMLs
-            assert "settings.yaml" in yaml_names
-            assert "pp.c96_amip.yaml" in yaml_names
-            assert "pp-test.c96_amip.yaml" in yaml_names
-
-            # Should NOT contain compile, platform, run, or analysis YAMLs
-            assert "compile.yaml" not in yaml_names
-#            assert "platforms.yaml" not in yaml_names
-            assert "run1.yaml" not in yaml_names
-            assert "analysis1.yaml" not in yaml_names
+        # Model YAML should always be included
+        assert "model.yaml" in yaml_names
+        # Should contain settings and postprocessing YAMLs
+        assert "settings.yaml" in yaml_names
+        assert "pp.c96_amip.yaml" in yaml_names
+        assert "pp-test.c96_amip.yaml" in yaml_names
+        # Should NOT contain compile, platform, run, or analysis YAMLs
+        assert "compile.yaml" not in yaml_names
+        assert "run1.yaml" not in yaml_names
+        assert "analysis1.yaml" not in yaml_names
 
     def test_list_yamls_analysis_only(self, model_yaml_path):
         """Test analysis_only flag (without postprocess) returns model YAML plus analysis YAMLs"""
