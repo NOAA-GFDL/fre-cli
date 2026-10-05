@@ -7,8 +7,8 @@ name: build_conda
 #    being used does not support that conda solver backend
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  CONDA_NO_PLUGINS: true
-  CONDA_SOLVER: libmamba #classic
+#  CONDA_NO_PLUGINS: true
+  CONDA_SOLVER: libmamba
 
 on:
   pull_request:
@@ -46,6 +46,11 @@ jobs:
 
           echo "printing conda config just in case"
           conda config --show
+
+      - name: Conda install libmamba conda solver
+        run: |
+          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda config --set solver libmamba
 
       - name: Conda install conda-build
         timeout-minutes: 10
