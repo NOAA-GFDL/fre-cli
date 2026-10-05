@@ -123,5 +123,7 @@ jobs:
           fi
 
           echo "Testing the package: $pkg"
+          # plugins conflict with conda build test 
+          export CONDA_NO_PLUGINS=true
           conda -v build --test "$pkg"
 
