@@ -101,6 +101,11 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
+      - name: Conda install libmamba conda solver
+        run: |
+          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda config --set solver libmamba
+
       - name: Conda install conda-build
         run: |
           echo "conda install conda-build"
