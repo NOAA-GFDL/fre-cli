@@ -1,7 +1,11 @@
 name: build_conda
 
+# conda-build v26.9.1 caused an error in the build related to "AttributeError" 
+# when looking for certain conda plugins
+# Don't think plugins are needed here
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  CONDA_NO_PLUGINS: true
 
 on:
   pull_request:
@@ -43,7 +47,7 @@ jobs:
       - name: Conda install conda-build
         run: |
           echo "conda install conda-build"
-          conda install conda-forge::conda-build
+          conda install -y conda-forge::conda-build
 
       - name: Check conda-build version and supported package formats
         run: |
