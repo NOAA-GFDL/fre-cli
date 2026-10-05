@@ -44,6 +44,13 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
+      # Container being used may rely on "classic" solver but conda 
+      # versions >=23.10.0 use a "libmamba solver as default
+      - name: Set conda solver
+        run: |
+          conda install --solver=classic conda-forge::conda-libmamba-solver
+          conda config --set solver libmamba
+
       - name: Conda install conda-build
         run: |
           echo "conda install conda-build"
