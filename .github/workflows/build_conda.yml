@@ -1,11 +1,14 @@
 name: build_conda
 
-# conda-build v26.9.1 caused an error in the build related to "AttributeError" 
-# when looking for certain conda plugins
-# Don't think plugins are needed here
+# 1. conda-build v26.9.1 caused an error in the build related to
+#    "AttributeError" when looking for certain conda plugins
+#    Don't think plugins are needed here
+# 2. Container being used may rely on "classic" solver but conda 
+#    versions >=23.10.0 use a "libmamba solver as default
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   CONDA_NO_PLUGINS: true
+  CONDA_SOLVER: classic
 
 on:
   pull_request:
@@ -43,13 +46,6 @@ jobs:
 
           echo "printing conda config just in case"
           conda config --show
-
-      # Container being used may rely on "classic" solver but conda 
-      # versions >=23.10.0 use a "libmamba solver as default
-      - name: Set conda solver
-        run: |
-          conda install --solver=classic conda-forge::conda-libmamba-solver
-          conda config --set solver libmamba
 
       - name: Conda install conda-build
         run: |
