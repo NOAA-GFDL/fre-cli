@@ -48,6 +48,7 @@ jobs:
           conda config --show
 
       - name: Conda install conda-build
+        timeout-minutes: 10
         run: |
           echo "conda install conda-build"
           conda install conda-forge::conda-build
