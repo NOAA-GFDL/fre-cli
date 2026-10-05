@@ -7,7 +7,7 @@ name: build_conda
 #    being used does not support that conda solver backend
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  CONDA_NO_PLUGINS: true
+#  CONDA_NO_PLUGINS: true
 #  CONDA_SOLVER: libmamba
 
 on:
