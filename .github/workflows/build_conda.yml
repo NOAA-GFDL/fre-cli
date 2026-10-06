@@ -111,6 +111,12 @@ jobs:
           echo "conda install conda-build"
           conda install conda-forge::conda-build
 
+      - name: Check conda-build version and supported package formats
+        run: |
+          conda --version
+          conda build --version
+          conda build --help
+
       - name: Download tarball
         uses: actions/download-artifact@v5
         with:
