@@ -1,14 +1,7 @@
 name: build_conda
 
-# 1. conda-build v26.9.1 caused an error in the build related to
-#    "AttributeError" when looking for certain conda plugins.
-#    Don't think plugins are needed here
-# 2. Conda-build version uses a default solver "libmamba" but container
-#    being used does not support that conda solver backend
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-#  CONDA_NO_PLUGINS: true
-#  CONDA_SOLVER: libmamba
 
 on:
   pull_request:
@@ -47,7 +40,7 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
-      - name: Conda install libmamba conda solver
+      - name: Conda install and set libmamba conda solver
         run: |
           conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
           conda config --set solver libmamba
@@ -101,7 +94,7 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
-      - name: Conda install libmamba conda solver
+      - name: Conda install and set libmamba conda solver
         run: |
           conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
           conda config --set solver libmamba
@@ -133,16 +126,5 @@ jobs:
               exit 1
           fi
 
-          #echo "Before disabling plugins:"
-          #conda build --help || true
-
-          #export CONDA_NO_PLUGINS=true
-
-          #echo "After disabling plugins:"
-          #conda build --help || true
-
           echo "Testing the package: $pkg"
-          # plugins conflict with conda build test 
-          #export CONDA_NO_PLUGINS=true
           conda -v build --test "$pkg"
-
