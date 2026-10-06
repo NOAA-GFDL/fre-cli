@@ -133,17 +133,16 @@ jobs:
               exit 1
           fi
 
-          echo "Before disabling plugins:"
-          conda build --help || true
+          #echo "Before disabling plugins:"
+          #conda build --help || true
 
-          export CONDA_NO_PLUGINS=true
-
-          echo "After disabling plugins:"
-          conda build --help || true
-
-          #conda build --test "$pkg"
-          #echo "Testing the package: $pkg"
-          ## plugins conflict with conda build test 
           #export CONDA_NO_PLUGINS=true
-          #conda -v build --test "$pkg"
+
+          #echo "After disabling plugins:"
+          #conda build --help || true
+
+          echo "Testing the package: $pkg"
+          # plugins conflict with conda build test 
+          #export CONDA_NO_PLUGINS=true
+          conda -v build --test "$pkg"
 
