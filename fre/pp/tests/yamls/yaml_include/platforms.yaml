@@ -1,0 +1,12 @@
+platforms:
+   - name: hpcme.intel25
+     compiler: intel
+     RUNenv: ""
+     modelRoot: /apps
+     container: True
+     containerBuild: "podman"
+     containerRun: "apptainer"
+     containerBase: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3"
+     mkTemplate: "/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk"
+     container2step: True
+     container2base: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3rte"

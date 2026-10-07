@@ -40,7 +40,13 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
+      - name: Conda install and set libmamba conda solver
+        run: |
+          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda config --set solver libmamba
+
       - name: Conda install conda-build
+        timeout-minutes: 10
         run: |
           echo "conda install conda-build"
           conda install conda-forge::conda-build
@@ -88,10 +94,21 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
+      - name: Conda install and set libmamba conda solver
+        run: |
+          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda config --set solver libmamba
+
       - name: Conda install conda-build
         run: |
           echo "conda install conda-build"
           conda install conda-forge::conda-build
+
+      - name: Check conda-build version and supported package formats
+        run: |
+          conda --version
+          conda build --version
+          conda build --help
 
       - name: Download tarball
         uses: actions/download-artifact@v5
