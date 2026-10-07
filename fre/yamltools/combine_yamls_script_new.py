@@ -98,8 +98,8 @@ class MergeYamls():
         else:
             # CLEAN SERIALIZED YAML ##
             final_yaml_dict = clean_yaml(combined_yaml_dict)
-            if not final_yaml_dict:
-                raise ValueError("YAML configuration could not be cleaned (experiments)")
+#            if not final_yaml_dict:
+#                raise ValueError("YAML configuration could not be cleaned (experiments)")
 
         ###  SHOLD BE RESOLVED BUT THIS IS TO CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
         ## uw config realize: resolve final yaml

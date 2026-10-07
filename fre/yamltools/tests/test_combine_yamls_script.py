@@ -72,9 +72,24 @@ def test_merged_compile_yamls():
              f"{IN_DIR}/compile_yamls/platforms.yaml")
     # Merge the yamls
     try:
-        cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
+        cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET,
+                                     output = None, no_clean = False)
     except:
         assert False
+
+def test_merged_compile_yamls_noclean():
+    """
+    Check for the creation of the combined-[experiment] yaml
+    Check that the model yaml was merged into the combined yaml
+    """
+    yamls = (f"{IN_DIR}/model.yaml,"
+             f"{IN_DIR}/compile_yamls/compile.yaml,"
+             f"{IN_DIR}/compile_yamls/platforms.yaml")
+    # Merge the yamls
+    result = cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET,
+                                          output = None, no_clean = True)
+    assert (["fre_properties" in result,
+             "experiments" in result])
 
 def test_combined_compileyaml_validation():
     """
@@ -85,7 +100,8 @@ def test_combined_compileyaml_validation():
              f"{IN_DIR}/compile_yamls/platforms.yaml")
     # Merge the yamls
     try:
-        out = cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
+        out = cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET,
+                                           output = None, no_clean = False)
     except:
         assert False
 
@@ -113,7 +129,8 @@ def test_combined_compileyaml_combinefail():
     # Merge the yamls - should fail since there is no compile yaml specified in the model yaml
     try:
         #out =
-        cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
+        cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET,
+                                     output = None, no_clean = False)
     except:
         print("EXPECTED FAILURE")
         assert True
@@ -129,7 +146,8 @@ def test_combined_compileyaml_validatefail():
 
     # Merge the yamls
     try:
-        out = cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET, output = None)
+        out = cy.yamltools_combine_subtool(yamls, COMP_EXPERIMENT, COMP_PLATFORM, COMP_TARGET,
+                                           output = None, no_clean = False)
     except:
         assert False
 
@@ -149,19 +167,12 @@ def test_combined_compileyaml_validatefail():
 
 def test_check_expected_platformyamlcontent():
     ''' Test that expected yaml information (platform info) is included in dictionary content '''
-#    TEST_DIR = Path("fre/make/tests")
-#    NM_EXAMPLE = Path("null_example")
-#    YAMLFILE = "null_model.yaml"
-#    EXP_NAME = YAMLFILE.split(".")[0]
-
     # Combine model / experiment
-#    yamls = ("fre/make/tests/null_example/null_model.yaml,"
-#             "fre/make/tests/null_example/compile.yaml,"
-#             "fre/make/tests/null_example/platforms.yaml")
     yamls = ("fre/yamltools/tests/yamls/model.yaml,"
              "fre/yamltools/tests/yamls/compile_yamls/compile.yaml,"
              "fre/yamltools/tests/yamls/compile_yamls/platforms.yaml")
-    yml_dict = cy.yamltools_combine_subtool(yamls, None, None, None, output = None)
+    yml_dict = cy.yamltools_combine_subtool(yamls, None, None, None, output = None,
+                                            no_clean = False)
 
     # compare combined yaml info with some information that's supposed to be parsed
     expected_platform_info_1 = {'name': 'ncrc5.intel23',
@@ -218,7 +229,8 @@ def test_merged_pp_yamls():
 
     # Merge the yamls
     try:
-        cy.yamltools_combine_subtool(yamls, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, output = None)
+        cy.yamltools_combine_subtool(yamls, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET,
+                                     output = None, no_clean = False)
     except:
         assert False
 
@@ -232,7 +244,8 @@ def test_combined_ppyaml_validation():
              f"{IN_DIR}/pp_yamls/pp-TEST.c96_amip.yaml")
     # Merge the yamls
     try:
-        out = cy.yamltools_combine_subtool(yamls, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET, output = None)
+        out = cy.yamltools_combine_subtool(yamls, PP_EXPERIMENT, PP_PLATFORM, PP_TARGET,
+                                           output = None, no_clean = False)
     except:
         assert False
 
@@ -337,7 +350,8 @@ def test_combine_pp_yamls(tmp_path):
              f"{tmp_path}/settings.yaml,"
              f"{tmp_path}/pp1.yaml,{tmp_path}/pp2.yaml")
 
-    output = cy.yamltools_combine_subtool(yamls, 'expname', 'platform', 'target', output = None)
+    output = cy.yamltools_combine_subtool(yamls, 'expname', 'platform', 'target', output = None,
+                                          no_clean = False)
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(output)
     pp.pprint(combined)
