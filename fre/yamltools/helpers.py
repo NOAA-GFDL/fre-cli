@@ -173,12 +173,12 @@ def clean_yaml(yml_dict):
     # Clean the yaml
     # If keys exists, delete:
     keys_clean=["experiments", "fre_cli_version"]
-    for kc in keys_clean:
-        if kc in yml_dict.keys():
-            try:
+    try:
+        for kc in keys_clean:
+            if kc in yml_dict.keys():
                 del yml_dict[kc]
-            except:
-                raise ValueError("YAML configuration could not be cleaned (experiments, fre_cli_version)")
+    except:
+        raise ValueError("YAML configuration could not be cleaned (experiments, fre_cli_version)")
 
     # Dump cleaned dictionary back into combined yaml file
     #cleaned_yaml = yaml.safe_dump(yml_dict,default_flow_style=False,sort_keys=False)
