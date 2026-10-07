@@ -13,7 +13,7 @@ and internal workflow automation.
 - can use this tool to pass in multiple yamls either comma separated string
   (-y y1,y2) OR multiple options (-y y1 -y y2 ...)
 - checks fre-version
-- uses uw config compose (to combine), resolve (to check unrendered values), and validate (to validate yaml)
+- uses uw config compose (to combine), resolve (to check unrendered values)
 """
 
 import os
@@ -28,7 +28,7 @@ from fre.yamltools.helpers import output_yaml, clean_yaml#, check_fre_version
 
 fre_logger = logging.getLogger(__name__)
 
-class LetsGo():
+class MergeYamls():
     """
     :ivar str yamls: is the list of YAML configuration files to combine
     :ivar str experiment: is the experiment name (relates to the run and postprocessing)
@@ -82,7 +82,6 @@ class LetsGo():
         ## COMBINE YAMLS AND RESOLVE WHERE WE CAN ##
         ## uw config compose: pass yaml list to compose final yaml
 
-        # CAN THIS BE DICTIONARIES??
         # config.compose returns a base class specifying methods to read, manipulate,
         # and write several configuration-file formats. (use as_dict to return dictionary)
         # use realize=True to resolve what we can here; if any unresolved, it does not error out
@@ -136,29 +135,6 @@ class LetsGo():
 
         return final_yaml_dict
 
-#    def validate(self, final_dict)
-#        """
-#        """
-
-# VALIDATE SERIALIZED YAML ##
-#    ## uw config validate
-#    # output from validate is True or False
-#    validate_out = config.validate(schema_file="/home/Dana.Singh/fre/singh/generalize-yaml-serialization/fre/gfdl_msd_schemas/FRE/fre_make.json",
-#                                   config_data=cleaned_yaml_dict)
-#
-#    # If the YAML is not valid, exit with error instead of continuing
-#    if validate_out:
-#        fre_logger.info("VALID")
-#    else:
-#        fre_logger.error("INVALID")
-#        raise ValueError("INVALID. CHECK YA YAMLS")
-#
-## Combine schemas?
-#from json import load, dump
-#
-#with open("/home/Dana.Singh/fre/singh/generalize-yaml-serialization/fre/gfdl_msd_schemas/FRE/fre_make.json") as j1, open("/home/Dana.Singh/fre/singh/generalize-yaml-serialization/fre/gfdl_msd_schemas/FRE/fre_pp.json") as j2, open("j3.json", 'w') as j3:
-#    dump([load(j1), load(j2)], j3)
-
 def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:str, output: Optional[str]=None, no_clean: Optional[bool]=False) -> dict:
     """
     :param yamls: is the list of YAML configuration files to combine
@@ -177,14 +153,11 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
     """
 #    fre_logger.info('checking fre_cli_version compatibility...')
 #    check_fre_version(combined)
-    init_obj = LetsGo(yamls, experiment, platform, target, output, no_clean)
+    init_obj = MergeYamls(yamls, experiment, platform, target, output, no_clean)
 
     init_file = f"{Path.cwd()}/init.yaml"
     ymls = init_obj.list_check_yamls(init_file)
     combined = init_obj.use_uwtools(ymls)
-
-#    #validate
-#    init_obj.validate(combined)
 
     # clean init_file (not needed anymore)
     Path(init_file).unlink()
