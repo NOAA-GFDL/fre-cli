@@ -37,12 +37,13 @@ class LetsGo():
     :ivar str output: is the file path to a file that will incude the final combined, resolved YAML
                       configuration file
     """
-    def __init__(self, yamls, experiment, platform, target, output):
+    def __init__(self, yamls, experiment, platform, target, output, no_clean):
         self.y = yamls.split(",")
         self.e = str(experiment)
         self.p = str(platform)
         self.t = str(target)
         self.o = output
+        self.no_clean = no_clean
 
     def list_check_yamls(self, init_file):
         """
@@ -93,10 +94,13 @@ class LetsGo():
             print("This will not be displayed")
             combined_yaml_dict = config.compose(configs=yaml_list, realize=True).as_dict()
 
-        # CLEAN SERIALIZED YAML ##
-        cleaned_yaml_dict = clean_yaml(combined_yaml_dict)
-        if not cleaned_yaml_dict:
-            raise ValueError("YAML configuration could not be cleaned (experiments)")
+        if self.no_clean:
+            final_yaml_dict = combined_yaml_dict
+        else:
+            # CLEAN SERIALIZED YAML ##
+            final_yaml_dict = clean_yaml(combined_yaml_dict)
+            if not final_yaml_dict:
+                raise ValueError("YAML configuration could not be cleaned (experiments)")
 
         ###  SHOLD BE RESOLVED BUT THIS IS TO CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
         ## uw config realize: resolve final yaml
@@ -110,7 +114,7 @@ class LetsGo():
 
         uwlogger = use_uwtools_logger()
 
-        config.realize(input_config = cleaned_yaml_dict,
+        config.realize(input_config = final_yaml_dict,
                        values_needed = True,
                        total = True)
 
@@ -121,16 +125,16 @@ class LetsGo():
         if self.o:
             out_path = Path.cwd()/self.o
             fre_logger.info("Writing resolved YAML file: %s", out_path)
-            output_yaml(cleaned_yaml_dict, out_path)
+            output_yaml(final_yaml_dict, out_path)
         # Is this helpful? (if config.realize fails, it will not be written to output file,
         # but error will hopefully come up; this is just more output if the user wants to
         # see what the combined yaml dictonary would look like
-        #fre_logger.debug(pformat(cleaned_yaml_dict))
+        #fre_logger.debug(pformat(final_yaml_dict))
         else:
             fre_logger.info("Resolved YAML saved as dictionary. To display dictionary, pass fre -v ...")
-            fre_logger.info(cleaned_yaml_dict)
+            fre_logger.info(final_yaml_dict)
 
-        return cleaned_yaml_dict
+        return final_yaml_dict
 
 #    def validate(self, final_dict)
 #        """
@@ -155,7 +159,7 @@ class LetsGo():
 #with open("/home/Dana.Singh/fre/singh/generalize-yaml-serialization/fre/gfdl_msd_schemas/FRE/fre_make.json") as j1, open("/home/Dana.Singh/fre/singh/generalize-yaml-serialization/fre/gfdl_msd_schemas/FRE/fre_pp.json") as j2, open("j3.json", 'w') as j3:
 #    dump([load(j1), load(j2)], j3)
 
-def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:str, output: Optional[str]=None) -> dict:
+def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:str, output: Optional[str]=None, no_clean: Optional[bool]=False) -> dict:
     """
     :param yamls: is the list of YAML configuration files to combine
     :type yamls: str
@@ -168,10 +172,12 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
     :param output: is the file path to a file that will incude the final combined, resolved YAML
                    configuration file
     :type output: str
+    :param no_clean: is a True/False value to determine whether or not to remove any keys/sections from the YAML. Default is False.
+    :type no_clean: boolean
     """
 #    fre_logger.info('checking fre_cli_version compatibility...')
 #    check_fre_version(combined)
-    init_obj = LetsGo(yamls, experiment, platform, target, output)
+    init_obj = LetsGo(yamls, experiment, platform, target, output, no_clean)
 
     init_file = f"{Path.cwd()}/init.yaml"
     ymls = init_obj.list_check_yamls(init_file)

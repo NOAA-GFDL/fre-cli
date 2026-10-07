@@ -155,9 +155,12 @@ def test_check_expected_platformyamlcontent():
 #    EXP_NAME = YAMLFILE.split(".")[0]
 
     # Combine model / experiment
-    yamls = ("fre/make/tests/null_example/null_model.yaml,"
-             "fre/make/tests/null_example/compile.yaml,"
-             "fre/make/tests/null_example/platforms.yaml")
+#    yamls = ("fre/make/tests/null_example/null_model.yaml,"
+#             "fre/make/tests/null_example/compile.yaml,"
+#             "fre/make/tests/null_example/platforms.yaml")
+    yamls = ("fre/yamltools/tests/yamls/model.yaml,"
+             "fre/yamltools/tests/yamls/compile_yamls/compile.yaml,"
+             "fre/yamltools/tests/yamls/compile_yamls/platforms.yaml")
     yml_dict = cy.yamltools_combine_subtool(yamls, None, None, None, output = None)
 
     # compare combined yaml info with some information that's supposed to be parsed
@@ -185,7 +188,6 @@ def test_check_expected_platformyamlcontent():
                                 'containerBase': 'docker.io/ecpe4s/noaa-intel-prototype:2023.09.25',
                                 'mkTemplate': '/apps/mkmf/templates/hpcme-intel21.mk',
                                 'volume': '/gpfs/f5'}
-
     for key,value in yml_dict.items():
         if key == "platforms":
             assert expected_platform_info_1 in value
