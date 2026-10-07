@@ -61,3 +61,9 @@ def test_cli_fre_yamltools_piped_from_list(caplog):
     freyamltools_pipe = runner.invoke(fre.fre, args=["-v", "yamltools", "combine"], input=frelist_out.output)
     assert freyamltools_pipe.exit_code == 0
     assert "PIPED" in caplog.text
+
+def test_cli_fre_yamltools_NOT_piped_from_list(caplog):
+    ''' fre yamtools combine usage without fre list '''
+    result = runner.invoke(fre.fre, args=["-v", "yamltools", "combine", "-y", "fre/yamltools/tests/yamls/model.yaml,fre/yamltools/tests/yamls/settings.yaml"])
+    assert result.exit_code == 0
+    assert "NOT PIPED" in caplog.text
