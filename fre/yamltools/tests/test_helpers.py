@@ -156,7 +156,10 @@ def test_experiment_check_rejects_nonexistent_analysis_yaml(tmp_path):
         ]
     }
 
-    with pytest.raises(ValueError, match="Incorrect analysis yaml path given"):
+    with pytest.raises(
+        ValueError,
+        match="Incorrect analysis yaml path given; does not exist\\.",
+    ):
         experiment_check(
             mainyaml_dir=tmp_path,
             experiment="target",
