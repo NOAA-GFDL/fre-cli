@@ -236,10 +236,16 @@ class container():
         platform_tag = self.target.gettargetName().lower()
 
         self.userScript = ["#!/bin/bash\n", "set -ex\n"]
+
+        # Construct container build command
+        self.userScript.append(f"{containerBuild} build ")
+        if containerBuild == "podman":
+            self.userScript.append("--network host ")
         if container_volume:
-            self.userScript.append(f"{containerBuild} build --network host --volume {container_volume}:{container_volume} -f Dockerfile -t {registry_tag}:{platform_tag}\n")
-        else:
-            self.userScript.append(f"{containerBuild} build --network host -f Dockerfile -t {registry_tag}:{platform_tag}\n")
+            self.userScript.append(f"--volume {container_volume}:{container_volume} " )
+
+        self.userScript.append(f"-f Dockerfile -t {registry_tag}:{platform_tag}\n")
+        
 
         if not skip_format_transfer:
             # Remove any previously generated images, if they exist
