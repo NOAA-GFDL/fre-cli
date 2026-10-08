@@ -1,4 +1,5 @@
 import os
+import re
 import tempfile
 
 import pytest
@@ -142,7 +143,7 @@ def test_experiment_check_rejects_nonexistent_experiment_yaml(tmp_path):
 
     with pytest.raises(
         ValueError,
-        match="Experiment yaml path given (target) does not exist.",
+        match=re.escape("Experiment yaml path given (target) does not exist."),
     ):
         experiment_check(
             mainyaml_dir=tmp_path,
