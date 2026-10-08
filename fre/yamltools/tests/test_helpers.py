@@ -129,7 +129,7 @@ def test_experiment_check_rejects_unknown_experiment(tmp_path):
 def test_experiment_check_requires_experiment_yaml_path(tmp_path):
     loaded_yaml = {"experiments": [{"name": "target", "pp": None}]}
 
-    with pytest.raises(ValueError, match="No experiment yaml path given"):
+    with pytest.raises(ValueError, match="No experiment yaml path given!"):
         experiment_check(
             mainyaml_dir=tmp_path,
             experiment="target",
@@ -142,7 +142,7 @@ def test_experiment_check_rejects_nonexistent_experiment_yaml(tmp_path):
 
     with pytest.raises(
         ValueError,
-        match=r"^Experiment yaml path given \(target\) does not exist\.$",
+        match="Experiment yaml path given (target) does not exist.",
     ):
         experiment_check(
             mainyaml_dir=tmp_path,
@@ -161,7 +161,7 @@ def test_experiment_check_rejects_nonexistent_analysis_yaml(tmp_path):
 
     with pytest.raises(
         ValueError,
-        match="Incorrect analysis yaml path given; does not exist\\.",
+        match="Incorrect analysis yaml path given; does not exist.",
     ):
         experiment_check(
             mainyaml_dir=tmp_path,
