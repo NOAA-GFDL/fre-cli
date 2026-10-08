@@ -87,7 +87,11 @@ def test_experiment_check_returns_experiment_and_analysis_paths(tmp_path):
         ]
     }
 
-    pp_paths, analysis_paths = experiment_check(tmp_path, "target", loaded_yaml)
+    pp_paths, analysis_paths = experiment_check(
+        mainyaml_dir=tmp_path,
+        experiment="target",
+        loaded_yaml=loaded_yaml,
+    )
 
     assert pp_paths == [tmp_path / "first_pp.yaml", tmp_path / "second_pp.yaml"]
     assert analysis_paths == [tmp_path / "analysis.yaml"]
@@ -101,7 +105,11 @@ def test_experiment_check_without_analysis_returns_none(tmp_path, analysis):
         "experiments": [{"name": "target", "pp": ["experiment.yaml"], **analysis}]
     }
 
-    pp_paths, analysis_paths = experiment_check(tmp_path, "target", loaded_yaml)
+    pp_paths, analysis_paths = experiment_check(
+        mainyaml_dir=tmp_path,
+        experiment="target",
+        loaded_yaml=loaded_yaml,
+    )
 
     assert pp_paths == [tmp_path / "experiment.yaml"]
     assert analysis_paths is None
@@ -111,21 +119,36 @@ def test_experiment_check_rejects_unknown_experiment(tmp_path):
     loaded_yaml = {"experiments": [{"name": "known", "pp": ["experiment.yaml"]}]}
 
     with pytest.raises(NameError, match="missing is not in the list of experiments"):
-        experiment_check(tmp_path, "missing", loaded_yaml)
+        experiment_check(
+            mainyaml_dir=tmp_path,
+            experiment="missing",
+            loaded_yaml=loaded_yaml,
+        )
 
 
 def test_experiment_check_requires_experiment_yaml_path(tmp_path):
     loaded_yaml = {"experiments": [{"name": "target", "pp": None}]}
 
     with pytest.raises(ValueError, match="No experiment yaml path given"):
-        experiment_check(tmp_path, "target", loaded_yaml)
+        experiment_check(
+            mainyaml_dir=tmp_path,
+            experiment="target",
+            loaded_yaml=loaded_yaml,
+        )
 
 
 def test_experiment_check_rejects_nonexistent_experiment_yaml(tmp_path):
-    loaded_yaml = {"experiments": [{"name": "target", "pp": ["missing.yaml"]}]}
+    loaded_yaml = {"experiments": [{"name": "target", "pp": ["target"]}]}
 
-    with pytest.raises(ValueError, match="Experiment yaml path given"):
-        experiment_check(tmp_path, "target", loaded_yaml)
+    with pytest.raises(
+        ValueError,
+        match=r"^Experiment yaml path given \(target\) does not exist\.$",
+    ):
+        experiment_check(
+            mainyaml_dir=tmp_path,
+            experiment="target",
+            loaded_yaml=loaded_yaml,
+        )
 
 
 def test_experiment_check_rejects_nonexistent_analysis_yaml(tmp_path):
@@ -136,5 +159,12 @@ def test_experiment_check_rejects_nonexistent_analysis_yaml(tmp_path):
         ]
     }
 
-    with pytest.raises(ValueError, match="Incorrect analysis yaml path given"):
-        experiment_check(tmp_path, "target", loaded_yaml)
+    with pytest.raises(
+        ValueError,
+        match=r"^Incorrect analysis yaml path given; does not exist\.$",
+    ):
+        experiment_check(
+            mainyaml_dir=tmp_path,
+            experiment="target",
+            loaded_yaml=loaded_yaml,
+        )
