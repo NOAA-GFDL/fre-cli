@@ -128,4 +128,3 @@ jobs:
 
           echo "Testing the package: $pkg"
           conda -v build --test "$pkg"
-
