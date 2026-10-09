@@ -42,14 +42,14 @@ jobs:
 
       - name: Conda install and set libmamba conda solver
         run: |
-          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda install -n base -c conda-forge conda-libmamba-solver=25.* libmambapy libmamba
           conda config --set solver libmamba
 
       - name: Conda install conda-build
         timeout-minutes: 10
         run: |
           echo "conda install conda-build"
-          conda install conda-forge::conda-build
+          conda install conda-forge::conda-build=25.*
 
       - name: Check conda-build version and supported package formats
         run: |
@@ -96,13 +96,13 @@ jobs:
 
       - name: Conda install and set libmamba conda solver
         run: |
-          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda install -n base -c conda-forge conda-libmamba-solver=25.* libmambapy libmamba
           conda config --set solver libmamba
 
       - name: Conda install conda-build
         run: |
           echo "conda install conda-build"
-          conda install conda-forge::conda-build
+          conda install conda-forge::conda-build=25.*
 
       - name: Check conda-build version and supported package formats
         run: |
