@@ -1,7 +1,8 @@
 compile:
      experiment: "null_model_full"
-     container_addlibs: 
-     baremetal_linkerflags:  
+     container_addlibs: ["bacio"]
+     container_linkerflags: ["-q=sqlwhatever"]
+     baremetal_linkerflags:
      src:
           - component: "FMS"
             repo: "https://github.com/NOAA-GFDL/FMS.git"
