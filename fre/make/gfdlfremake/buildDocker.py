@@ -255,8 +255,8 @@ class container():
                 # Remove it from the original location
                 self.userScript.append(f"rm -f {containerName}.tar {containerName}.sif\n")
 
-        self.userScriptFile = open("createContainer.sh","w")
+        self.userScriptPath = os.path.abspath("createContainer.sh")
+        self.userScriptFile = open(self.userScriptPath,"w")
         self.userScriptFile.writelines(self.userScript)
         self.userScriptFile.close()
-        os.chmod("createContainer.sh", 0o744)
-        self.userScriptPath = os.getcwd()+"/createContainer.sh"
+        os.chmod(self.userScriptPath, 0o744)
