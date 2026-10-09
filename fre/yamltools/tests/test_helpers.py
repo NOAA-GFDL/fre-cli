@@ -1,11 +1,12 @@
 import os
+import re
 import tempfile
 
 import pytest
 import yaml
 
 import fre
-from fre.yamltools.helpers import yaml_load, check_fre_version
+from fre.yamltools.helpers import yaml_load, check_fre_version, clean_yaml
 
 
 @pytest.fixture
@@ -69,3 +70,8 @@ def test_check_fre_version_missing(yaml_without_version, caplog):
     with caplog.at_level(logging.WARNING):
         check_fre_version(yaml_without_version)
     assert "fre_cli_version not specified" in caplog.text, f"i'd suspect the 'import fre' in fre/yamltools/helpers"
+
+def test_clean_fail():
+    """clean_yaml should fail if nto given a dictionary"""
+    with pytest.raises(ValueError, match=re.escape("YAML configuration could not be cleaned (experiments, fre_cli_version)")):
+        clean_yaml("fre/yamltools/tests/yamls/model.yaml")

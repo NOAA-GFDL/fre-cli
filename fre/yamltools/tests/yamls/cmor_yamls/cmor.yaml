@@ -4,8 +4,7 @@ cmor:
   # -------------------------------------------------------------------------------------
   start:
 #    *CMOR_START
-  stop:
-    *CMOR_STOP
+  stop: "{{ fre_properties.CMOR_STOP }}"
     
   mip_era: 
     'CMIP6'
@@ -16,7 +15,7 @@ cmor:
   # note: cmor yamls are self-contained and do NOT import settings.yaml
   # -------------------------------------------------------------------------------------  
   directories:
-    pp_dir: !join [fre/tests/test_files/ascii_files/mock_archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
+    pp_dir: "fre/tests/test_files/ascii_files/mock_archive/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}/{{ platform }}-{{ target }}/pp"
     table_dir: &table_dir
       "fre/tests/test_files/cmip6-cmor-tables/Tables"
     outdir:
