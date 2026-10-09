@@ -102,7 +102,7 @@ jobs:
       - name: Conda install conda-build
         run: |
           echo "conda install conda-build"
-          conda install conda-forge::conda-buildi=25.*
+          conda install conda-forge::conda-build=25.*
 
       - name: Check conda-build version and supported package formats
         run: |
