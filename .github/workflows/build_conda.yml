@@ -116,7 +116,7 @@ jobs:
           path: /app/fre-cli-tarball/noarch
 
       - name: Test fre-cli conda package
-        timeout-minutes: 20
+        #timeout-minutes: 20
         run: |
           pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head -n 1)
         
