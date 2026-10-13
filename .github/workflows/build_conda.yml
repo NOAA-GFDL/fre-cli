@@ -127,8 +127,9 @@ jobs:
         
           echo "Testing the package: $pkg"
           # install package in conda environment 
-          conda create -y -n fre-cli "$pkg"
+          conda create -y -n fre-cli python
           conda activate fre-cli
+          conda install -y "$pkg"
           fre --help
           fre app --help
           fre catalog --help
