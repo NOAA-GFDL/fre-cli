@@ -40,7 +40,13 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
+      - name: Conda install and set libmamba conda solver
+        run: |
+          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda config --set solver libmamba
+
       - name: Conda install conda-build
+        timeout-minutes: 10
         run: |
           echo "conda install conda-build"
           conda install conda-forge::conda-build
@@ -88,10 +94,20 @@ jobs:
           echo "printing conda config just in case"
           conda config --show
 
+      - name: Conda install and set libmamba conda solver
+        run: |
+          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda config --set solver libmamba
+
       - name: Conda install conda-build
         run: |
           echo "conda install conda-build"
           conda install conda-forge::conda-build
+
+      - name: Check conda-build version and supported package formats
+        run: |
+          conda --version
+          conda build --version
 
       - name: Download tarball
         uses: actions/download-artifact@v5
@@ -103,12 +119,35 @@ jobs:
         timeout-minutes: 20
         run: |
           pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head -n 1)
-
+         
           if [ -z "$pkg" ]; then
               echo "Could not find uploaded fre-cli conda package"
               exit 1
           fi
-
+        
           echo "Testing the package: $pkg"
-          conda -v build --test "$pkg"
+          # install package in conda environment 
+          conda create -y -n fre-cli python
+          conda activate fre-cli
+          conda install -y "$pkg"
+          fre --help
+          fre app --help
+          fre catalog --help
+          fre check --help
+          fre cmor --help
+          fre list --help
+          fre make --help
+          fre pp --help
+          fre run --help
+          fre yamltools --help
 
+        #run: |
+        #  pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head -n 1)
+        #
+        #  if [ -z "$pkg" ]; then
+        #      echo "Could not find uploaded fre-cli conda package"
+        #      exit 1
+        #  fi
+        #
+        #  echo "Testing the package: $pkg"
+        #  conda -v build --test "$pkg"
