@@ -108,7 +108,6 @@ jobs:
         run: |
           conda --version
           conda build --version
-          conda build --help
 
       - name: Download tarball
         uses: actions/download-artifact@v5
@@ -120,12 +119,34 @@ jobs:
         timeout-minutes: 20
         run: |
           pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head -n 1)
-
+         
           if [ -z "$pkg" ]; then
               echo "Could not find uploaded fre-cli conda package"
               exit 1
           fi
-
+        
           echo "Testing the package: $pkg"
-          conda -v build --test "$pkg"
+          # install package in conda environment 
+          conda create -y -n fre-cli "$pkg"
+          conda activate fre-cli
+          fre --help
+          fre app --help
+          fre catalog --help
+          fre check --help
+          fre cmor --help
+          fre list --help
+          fre make --help
+          fre pp --help
+          fre run --help
+          fre yamltools --help
 
+        #run: |
+        #  pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head -n 1)
+        #
+        #  if [ -z "$pkg" ]; then
+        #      echo "Could not find uploaded fre-cli conda package"
+        #      exit 1
+        #  fi
+        #
+        #  echo "Testing the package: $pkg"
+        #  conda -v build --test "$pkg"
