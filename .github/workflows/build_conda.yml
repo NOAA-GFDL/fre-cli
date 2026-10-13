@@ -131,6 +131,9 @@ jobs:
           source "$(conda info --base)/etc/profile.d/conda.sh"
           conda activate fre-cli
           conda install -y "$pkg"
+
+          conda list 
+
           fre --help
           fre app --help
           fre catalog --help
