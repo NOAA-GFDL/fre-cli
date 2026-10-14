@@ -25,14 +25,13 @@ def link_line_build(self):
         if not self.clf:
             return
 
-        # if container linkerflags defined
+        # If container_linkerflags defined, edit Makefile that is outside of the container (./tmp/[platform]/Makefile)
         for l in self.clf:
             linkline = linkline + " " + l
         os.system(f"sed -i '/MK_TEMPLATE = /a CLF ={linkline}' {self.filepath}/Makefile")
         os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(CLF) \\1|' {self.filepath}/Makefile")
 
-
-        # if container_addlibs is defined
+        # If container_addlibs is defined, edit the Makefile that is copied INSIDE the container
         with open(self.filepath+"/linkline.sh","w", encoding="utf-8") as fh:
             fh.write("set -- ")
             for l in self.libs:
@@ -67,8 +66,21 @@ def link_line_build(self):
         with open(self.filepath+"/linkline.sh", "a", encoding="utf-8") as fh:
             fh.writelines(textwrap.dedent(self.linklinecreate))
             fh.write("MF_PATH='/apps/"+self.e+"/exec/Makefile'\n")
-            fh.write('sed -i "/MK_TEMPLATE = /a CL = $line" $MF_PATH\n')
-            fh.write("sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(CL) \\2|' $MF_PATH\n")
+            fh.write('sed -i "/MK_TEMPLATE = /a CLIBS = $line" $MF_PATH\n')
+            if self.clf:
+                fh.write("sed -i 's|\\$^ \\$(CLF) \\$(LDFLAGS)|\\1 $(CLIBS) \\2|' $MF_PATH\n")
+            else:
+                fh.write("sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(CLIBS) \\2|' $MF_PATH\n")
+
+
+#            if self.clf:
+#                fh.write("sed -i 's|\\($^\\) \\($(CLF)\\) \\($(LDFLAGS)\\)|\\1 $(CLIBS) \\2|' $MF_PATH\n")
+#            else:
+#                fh.write("sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(CLIBS) \\2|' $MF_PATH\n")
+
+##        $(LD) $^ $(CLF) $(LDFLAGS) -o $@ $(STATIC_LIBS)
+
+
 
 ## BARE METAL; if addlibs defined on bare metal, include those additional libraries in link line
     elif "tmp" not in self.filepath:
