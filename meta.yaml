@@ -43,8 +43,6 @@ requirements:
 test:
   source_files:
     - fre/
-  files:
-    - fre/mkmf/templates/*
   imports:
     - fre
     - fre.app
