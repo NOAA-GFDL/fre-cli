@@ -39,6 +39,7 @@ jobs:
           echo "removing conda default channels, appending open-source ones"
           conda config --append channels conda-forge
           conda config --append channels noaa-gfdl
+          conda config --append channels ufs-community
           conda config --remove channels defaults
 
           echo "setting strict channel priority"
@@ -57,16 +58,15 @@ jobs:
         uses: actions/cache@v4.2.0
         with:
           path: /tmp/fre-cli
-          key: fre-cli-${{ runner.os }}-py${{ matrix.python-version }}
-          restore-keys: |
-            fre-cli-${{ runner.os }}-py${{ matrix.python-version }}
+          key: fre-cli-${{ runner.os }}-py${{ matrix.python-version }}-${{ hashFiles('environment.yml') }}
 
       - name: Create fre-cli Environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
         run: |
           echo "creating fre-cli env holding all deps"
           echo "Testing with Python ${{ matrix.python-version }}"
-          
+
+          rm -rf /tmp/fre-cli 
           conda env create -y -f environment.yml --prefix /tmp/fre-cli
           
           # Override Python version based on matrix
