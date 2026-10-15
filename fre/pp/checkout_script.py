@@ -51,7 +51,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     """
 
     # Determine fallback git tag based on fre package version
-    default_tag = fre_ver #fre.version
+    default_tag = fre_ver
     git_clone_branch_arg = branch if branch is not None else default_tag
     if branch is None:
         fre_logger.info(f"default tag is '{default_tag}'")
@@ -87,11 +87,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         fre_logger.info(f'{clone_output}')
 
     else:
-        # the repo checkout does exist, scenarios 3 and 4.
-
-        # capture the branch and tag
-        # if either match git_clone_branch_arg, then success. otherwise, fail.
-
+        # Scenarios 3 & 4: Workflow directory exists; verify branch/tag alignment
         current_tag = subprocess.run(
             ["git","describe","--tags"],
             cwd=workflow_directory,
@@ -116,5 +112,3 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
             fre_logger.info(
                 f"ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
             raise ValueError('neither tag nor branch matches the git clone branch arg')
-
-#############################################
