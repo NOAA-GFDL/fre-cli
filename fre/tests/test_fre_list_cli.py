@@ -62,3 +62,43 @@ def test_cli_fre_list_exps_opt_dne():
     ''' fre list platforms optionDNE '''
     result = runner.invoke(fre.fre, args=["list", "platforms", "optionDNE"])
     assert result.exit_code == 2
+
+## fre list pp-components
+def test_cli_fre_list_ppcomponents():
+    ''' fre list pp-components '''
+    result = runner.invoke(fre.fre, args=["list", "pp-components"])
+    assert result.exit_code == 2
+
+def test_cli_fre_list_ppcomponents_help():
+    ''' fre list pp-components --help '''
+    result = runner.invoke(fre.fre, args=["list", "pp-components", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_list_ppcomponents_opt_dne():
+    ''' fre list pp-components optionDNE '''
+    result = runner.invoke(fre.fre, args=["list", "pp-components", "optionDNE"])
+    assert result.exit_code == 2
+
+def test_cli_fre_list_ppcomponents_app_opt(caplog):
+    ''' fre list pp-components -a postprocess optionDNE '''
+    result = runner.invoke(fre.fre, args=["list", "pp-components", "-y", "fre/list_/tests/yamls/model.yaml",
+                                          "-e", "experiment1", "-a", "postprocess"])
+    assert result.exit_code == 0
+    for c in ["atmos_cmip", "atmos", "atmos_diurnal", "atmos_scalar", "atmos_cmip-TEST"]:
+        assert c in caplog.text 
+
+## fre list yamls
+def test_cli_fre_list_yamls():
+    ''' fre list yamls '''
+    result = runner.invoke(fre.fre, args=["list", "yamls"])
+    assert result.exit_code == 2
+
+def test_cli_fre_list_yamls_help():
+    ''' fre list yamls --help '''
+    result = runner.invoke(fre.fre, args=["list", "yamls", "--help"])
+    assert result.exit_code == 0
+
+def test_cli_fre_list_yamls_opt_dne():
+    ''' fre list yamls optionDNE '''
+    result = runner.invoke(fre.fre, args=["list", "yamls", "optionDNE"])
+    assert result.exit_code == 2
