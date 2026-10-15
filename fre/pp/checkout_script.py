@@ -15,8 +15,8 @@ import logging
 import os
 import subprocess
 
-from . import make_workflow_name
 from ..fre import version as fre_ver
+from . import make_workflow_name
 
 fre_logger = logging.getLogger(__name__)
 
@@ -50,9 +50,6 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     :raises subprocess.CalledProcessError: If underlying Git operations (clone, tag describe, branch query) fail.
     """
 
-    # Record original working directory to restore state upon completion or failure
-    go_back_here = os.getcwd()
-
     # Determine fallback git tag based on fre package version
     default_tag = fre_ver
     git_clone_branch_arg = branch if branch is not None else default_tag
@@ -63,7 +60,6 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
 
     # Validate mandatory parameters
     if None in [experiment, platform, target]:
-        os.chdir(go_back_here)
         raise ValueError( 'one of these are None: experiment / platform / target = \n'
                          f'{experiment} / {platform} / {target}' )
 
@@ -76,33 +72,37 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
         os.makedirs(directory, exist_ok = True)
     except Exception as exc:
         raise OSError(
-            f"(checkoutScript) directory {directory} wasn't able to be created. exit!"
-        ) from exc
-    finally:
-        os.chdir(go_back_here)
+            f"(checkoutScript) directory {directory} wasn't able to be created. exit!") from exc
 
-    checkout_exists = os.path.isdir(f'{directory}/{workflow_name}')
+    workflow_directory = f'{directory}/{workflow_name}'
+    checkout_exists = os.path.isdir(workflow_directory)
 
     if not checkout_exists:
         # Scenarios 1 & 2: Workflow directory does not exist yet; clone repository
         fre_logger.info('checkout does not yet exist; will create now')
         clone_output = subprocess.run( ['git', 'clone', '--recursive',
                                         f'--branch={git_clone_branch_arg}',
-                                        FRE_WORKFLOWS_URL, f'{directory}/{workflow_name}'],
+                                        FRE_WORKFLOWS_URL, workflow_directory],
                                        capture_output = True, text = True, check = True)
         fre_logger.info(f'{clone_output}')
 
     else:
         # Scenarios 3 & 4: Workflow directory exists; verify branch/tag alignment
-        os.chdir(f'{directory}/{workflow_name}')
+        current_tag = subprocess.run(
+            ["git","describe","--tags"],
+            cwd=workflow_directory,
+            capture_output = True,
+            text = True,
+            check = True
+        ).stdout.strip()
 
-        current_tag = subprocess.run(["git", "describe", "--tags"],
-                                     capture_output = True,
-                                     text = True, check = True).stdout.strip()
-
-        current_branch = subprocess.run(["git", "branch", "--show-current"],
-                                         capture_output = True,
-                                         text = True, check = True).stdout.strip()
+        current_branch = subprocess.run(
+            ["git", "branch", "--show-current"],
+            cwd=workflow_directory,
+            capture_output = True,
+            text = True,
+            check = True
+        ).stdout.strip()
 
         if current_tag == git_clone_branch_arg or current_branch == git_clone_branch_arg:
             fre_logger.info(f"checkout exists ('{directory}/{workflow_name}'), and matches '{git_clone_branch_arg}'")
@@ -111,9 +111,4 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
                 f"ERROR: checkout exists ('{directory}/{workflow_name}') and does not match '{git_clone_branch_arg}'")
             fre_logger.info(
                 f"ERROR: current branch is '{current_branch}', current tag-describe is '{current_tag}'")
-            os.chdir(go_back_here)
             raise ValueError('neither tag nor branch matches the git clone branch arg')
-
-    # Ensure working directory is restored to initial state
-    if os.getcwd() != go_back_here:
-        os.chdir(go_back_here)
