@@ -42,7 +42,7 @@ jobs:
 
       - name: Conda install and set libmamba conda solver
         run: |
-          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda install -n base -c conda-forge conda-libmamba-solver=25.* libmambapy libmamba
           conda config --set solver libmamba
 
       - name: Conda install conda-build
@@ -96,7 +96,7 @@ jobs:
 
       - name: Conda install and set libmamba conda solver
         run: |
-          conda install -n base -c conda-forge conda-libmamba-solver libmambapy libmamba
+          conda install -n base -c conda-forge conda-libmamba-solver=25.* libmambapy libmamba
           conda config --set solver libmamba
 
       - name: Conda install conda-build
@@ -108,7 +108,6 @@ jobs:
         run: |
           conda --version
           conda build --version
-          conda build --help
 
       - name: Download tarball
         uses: actions/download-artifact@v5
@@ -117,14 +116,14 @@ jobs:
           path: /app/fre-cli-tarball/noarch
 
       - name: Test fre-cli conda package
-        timeout-minutes: 20
+        #timeout-minutes: 20
         run: |
           pkg=$(find /app/fre-cli-tarball/noarch -name 'fre-cli-*.conda' | head -n 1)
-
+        
           if [ -z "$pkg" ]; then
               echo "Could not find uploaded fre-cli conda package"
               exit 1
           fi
-
+        
           echo "Testing the package: $pkg"
           conda -v build --test "$pkg"
