@@ -1,10 +1,16 @@
-'''
-Description: Checkout script which accounts for 4 different scenarios:
-1. branch not given, folder does not exist,
-2. branch given, folder does not exist,
-3. branch not given, folder exists,
-4. branch given and folder exists
-'''
+"""
+Workflow Template Checkout Utility for FRE Post-Processing (fre pp).
+
+The checkout_script module manages the automated cloning of post-processing Cylc
+workflow templates from the official NOAA-GFDL workflows Git repository into the
+local user's Cylc source directory (`~/cylc-src`).
+
+It supports four operational scenarios:
+1. Branch omitted, directory does not exist: Clones the workflow template using the current `fre` package version tag
+2. Branch provided, directory does not exist: Clones the workflow template using the specified branch or tag
+3. Branch omitted, directory exists: Validates that the existing directory matches the default `fre` package version tag
+4. Branch provided, directory exists: Validates that the existing directory matches the user-specified branch or tag
+"""
 import logging
 import os
 import subprocess
@@ -14,29 +20,37 @@ from . import make_workflow_name
 
 fre_logger = logging.getLogger(__name__)
 
-FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-workflows.git'
+FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-postprocess-workflow.git'
 
 def checkout_template(experiment = None, platform = None, target = None, branch = None):
     """
-    Create a directory and checkout the workflow template files from the repo
+    Check out workflow template files from https://github.com/NOAA-GFDL/fre-workflows.git 
+    into the default ~/cylc-src path.
 
-    :param experiment: One of the postprocessing experiment names from the
-        yaml displayed by fre list exps -y $yamlfile
-        (e.g. c96L65_am5f4b4r0_amip), default None
-    :type experiment: str
-    :param platform: The location + compiler that was used to run the model (e.g. gfdl.ncrc5-deploy), default None
-    :type platform: str
-    :param target: Options used for the model compiler (e.g. prod-openmp), default None
-    :type target: str
-    :param branch: which git branch to pull from, default None
-    :type branch: str
-    :raises OSError: why checkout script was not able to be created
-    :raises ValueError: 
-        -if experiment or platform or target is None
-        -if branch argument cannot be found as a branch or tag
+    Constructs a standardized workflow name from the given experiment, platform, and target settings,
+    ensures ~/cylc-src exists, and either clones the `fre-postprocess-workflow`
+    repository or verifies that an existing checkout matches the specified Git branch/tag version.
+
+    :param experiment: is the experiment name as listed in the model YAML file
+                       (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
+    :type experiment: str, optional
+    :param platform: is the FRE platform as defined in a platforms yaml
+    :type platform: str, optional
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
+    :type target: str, optional
+    :param branch: is a Git branch or tag name to checkout. If None, it defaults to the installed `fre` package version.
+    :type branch: str, optional
+
+    :return: None
+    :rtype: None
+
+    :raises ValueError: If any required arguments (``experiment``, ``platform``, or ``target``) are None,
+                        or if an existing workflow directory does not match the expected branch/tag.
+    :raises OSError: If the target output directory ``~/cylc-src`` cannot be created.
+    :raises subprocess.CalledProcessError: If underlying Git operations (clone, tag describe, branch query) fail.
     """
 
-    # branch and version parameters
+    # Determine fallback git tag based on fre package version
     default_tag = fre_ver #fre.version
     git_clone_branch_arg = branch if branch is not None else default_tag
     if branch is None:
@@ -44,14 +58,15 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     else:
         fre_logger.info(f"requested branch/tag is '{branch}'")
 
-    # check args + set the name of the directory
+    # Validate mandatory parameters
     if None in [experiment, platform, target]:
         raise ValueError( 'one of these are None: experiment / platform / target = \n'
                          f'{experiment} / {platform} / {target}' )
-    #name = f"{experiment}__{platform}__{target}"
+
+    # Generate canonical workflow directory name
     workflow_name = make_workflow_name(experiment, platform, target)
 
-    # Create the directory if it doesn't exist
+    # Ensure Cylc source root directory (~/cylc-src) exists
     directory = os.path.expanduser("~/cylc-src")
     try:
         os.makedirs(directory, exist_ok = True)
@@ -62,9 +77,10 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     workflow_directory = f'{directory}/{workflow_name}'
     checkout_exists = os.path.isdir(workflow_directory)
 
-    if not checkout_exists: # scenarios 1+2, checkout doesn't exist, branch specified (or not)
+    if not checkout_exists:
+        # Scenarios 1 & 2: Workflow directory does not exist yet; clone repository
         fre_logger.info('checkout does not yet exist; will create now')
-        clone_output = subprocess.run( ['git', 'clone','--recursive',
+        clone_output = subprocess.run( ['git', 'clone', '--recursive',
                                         f'--branch={git_clone_branch_arg}',
                                         FRE_WORKFLOWS_URL, workflow_directory],
                                        capture_output = True, text = True, check = True)

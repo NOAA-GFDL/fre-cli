@@ -100,8 +100,7 @@ def make_cli():
               is_flag = True,
               default = False,
               help = "Skip the container format conversion to a Singularity Image File.")
-@click.option("-e",
-              "--execute",
+@click.option("--execute",
               is_flag = True,
               default = False,
               help = """Execute the checkout and compile scripts immediately following their generation.

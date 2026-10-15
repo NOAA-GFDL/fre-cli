@@ -3,9 +3,8 @@ authored by Bennett.Chang@noaa.gov | bcc2761
 principal click group for main/fre allows for subgroup functions to be called via this
 script, with 'fre' as the entry point
 """
-
+import sys
 import logging
-
 import click
 
 from . import version, FORMAT
@@ -37,13 +36,14 @@ fre_logger = logging.getLogger(__name__)
         fg = 'cyan')
 )
 @click.option( '-v', '--verbose', default = 0, required = False, count = True, type = int,
-               help = "Increment logging verbosity from default (logging.WARNING) to logging.INFO. " + \
-                      "use -vv for logging.DEBUG. will be overridden by -q/--quiet" )
+               help = "\b\nIncrement logging verbosity from default (logging.WARNING) to logging.INFO. \n"
+                      "Use -v and -vv for more and full traceback on errors respectively. \n"  
+                      "Use -vv for logging.DEBUG. will be overridden by -q/--quiet" )
 @click.option( '-q', '--quiet', default = False, required = False, is_flag = True, type = bool,
-               help = "Set logging verbosity from default (logging.WARNING) to logging.ERROR, printing " + \
+               help = "Set logging verbosity from default (logging.WARNING) to logging.ERROR, printing "
                       "less output to screen. overrides -v[v]/--verbose" )
 @click.option( '-l', '--log_file', default = None, required = False, type = str,
-               help = 'Path to log file for all fre calls, the output to screen will still print with the ' + \
+               help = 'Path to log file for all fre calls, the output to screen will still print with the '
                       'path specified. If the log file already exists, it is appended to.' )
 def fre(verbose = 0, quiet = False, log_file = None):
     '''
@@ -51,10 +51,14 @@ def fre(verbose = 0, quiet = False, log_file = None):
     other routines will utilize
     '''
     log_level = logging.WARNING # default
+    sys.tracebacklimit = 0
     if verbose == 1:
         log_level = logging.INFO # -v, more verbose than default
+        sys.tracebacklimit = 1
+
     elif verbose == 2:
         log_level = logging.DEBUG # -vv most verbose
+        sys.tracebacklimit = 1000
 
     if quiet:
         log_level = logging.ERROR # least verbose

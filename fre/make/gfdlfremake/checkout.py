@@ -34,16 +34,17 @@ def writeRepo(file,repo,component,srcDir,branch,add,multi,jobs,pc):
             file.write("(git clone --recursive --jobs="+jobs+" "+repo+" "+comp+")"+pc+"\n")
             if multi:
                 r=repo.split("/")[4].strip(".git")
-                file.write("pids+=("+r+"pid:$!)\n")
+                file.write(f'pids="$pids {r}pid:$!"\n')
             else:
-                file.write("pids+=("+comp+"pid:$!)\n")
+                file.write(f'pids="$pids {comp}pid:$!"\n')
         else:
             file.write("(git clone --recursive --jobs="+jobs+" "+repo+" -b "+branch+" "+comp+")"+pc+"\n")
             if multi:
                 r=repo.split("/")[4].strip(".git")
-                file.write("pids+=("+r+"pid:$!)\n")
+                file.write(f'pids="$pids {r}pid:$!"\n')
             else:
-                file.write("pids+=("+comp+"pid:$!)\n")
+                file.write(f'pids="$pids {comp}pid:$!"\n')
+
     else:
         if branch=="":
             file.write("git clone --recursive --jobs="+jobs+" "+repo+" "+comp+"\n")
@@ -69,7 +70,6 @@ class checkout():
         self.fname = fname
         self.src = srcDir
         os.system("mkdir -p "+self.src)
-        ##TODO: Force checkout
         os.system("rm -rf "+self.src+"/*")
         self.checkoutScript = open(self.src+"/"+fname, 'w')
         self.checkoutScript.write("#!/bin/sh -f \n")
@@ -82,6 +82,10 @@ class checkout():
             - y The fremake compile yaml
         """
         self.checkoutScript.write("cd  "+self.src +"\n")
+        if pc:
+            ##initialze pids in parallel checkout
+            self.checkoutScript.write('pids=""\n')
+
         for c in y['src']:
             if type(c['repo']) is list and type(c['branch']) is list:
                 for (repo,branch) in zip(c['repo'],c['branch']):
@@ -102,8 +106,18 @@ class checkout():
             - pc Parallel checkout option
         """
         if pc:
-            self.checkoutScript.write('for id in ${pids[@]}; do\n  wait ${id##*:}\n  check+=("clone of ${id%%:*} exited with status $?")\ndone\n')
-            self.checkoutScript.write('for stat in "${check[@]}"; do\n  echo $stat \n  if [ ${stat##* } -ne 0 ]; then\n    exit ${stat##* }\n  fi\ndone\n')
+            self.checkoutScript.write('status_array=""\n'
+                                      'for id in $pids;do\n'
+                                      '    wait "${id##*:}"\n'
+                                      '    status=$?\n'
+                                      '    echo "clone of ${id%:*} exited with status $status"\n'
+                                      '    status_array="$status_array $status "\n'
+                                      'done\n')
+            self.checkoutScript.write('for stat in $status_array; do\n'
+                                      '    if [ "$stat" -ne 0 ]; then\n'
+                                      '        exit "$stat"\n'
+                                      '    fi\n'
+                                      'done\n')
 
             for c in y['src']:
                 if c['additionalInstructions']!="":

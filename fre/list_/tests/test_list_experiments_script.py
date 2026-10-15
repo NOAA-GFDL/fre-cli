@@ -27,7 +27,7 @@ def test_exp_list(caplog):
     list_experiments_script.list_experiments_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
 
     # check the logging output
-    check_out = [ 'Post-processing experiments available:',
+    check_out = [ 'Experiments found:',
                   '   - null_model_full',
                   '   - null_model_0',
                   '   - null_model_1',
