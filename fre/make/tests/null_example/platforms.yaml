@@ -26,7 +26,8 @@ platforms:
      mkTemplate: "linux-ubuntu-xenial-gnu.mk"
      modelRoot: ${TEST_BUILD_DIR}/fremake_canopy/test
    - name: hpcmini.2025
-     compiler: gnu 
+     compiler: gnu
+     RunENV: [". /opt/spack/share/spack/setup-env.sh"]
      modelRoot: /apps
      container: True
      containerBuild: "podman"
