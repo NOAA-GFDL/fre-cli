@@ -20,64 +20,66 @@ def link_line_build(self):
 # to fill in link line with additional libraries in Makefile
     if "tmp" in self.filepath:
         # checks
-        if not self.libs and not self.clf:
+        if not self.clibs and not self.clf:
             return
 
         # If container_linkerflags defined, edit Makefile that is outside of the container (./tmp/[platform]/Makefile)
-        for l in self.clf:
-            linkline = linkline + " " + l
-        os.system(f"sed -i '/MK_TEMPLATE = /a CLF ={linkline}' {self.filepath}/Makefile")
-        os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(CLF) \\1|' {self.filepath}/Makefile")
+        # SED command: \1 organizes groups; in the search part of the sed command these groups are organized by
+        #              parenthesis, ending with a \
+        if self.clf:
+            for l in self.clf:
+               linkline = linkline + " " + l
+            os.system(f"sed -i '/MK_TEMPLATE = /a CLF ={linkline}' {self.filepath}/Makefile")
+            os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(CLF) \\1|' {self.filepath}/Makefile")
 
-        
-        # If container_addlibs is defined, edit the Makefile that is copied INSIDE the container
-        with open(self.filepath+"/linkline.sh","w", encoding="utf-8") as fh:
-            fh.write("set -- ")
-            for l in self.libs:
-                fh.write(l+" ")
-            fh.write("\n")
+        if self.clibs: 
+            # If container_addlibs is defined, edit the Makefile that is copied INSIDE the container
+            with open(self.filepath+"/linkline.sh","w", encoding="utf-8") as fh:
+                fh.write("set -- ")
+                for l in self.clibs:
+                    fh.write(l+" ")
+                fh.write("\n")
 
-        self.linklinecreate = '''
-                               line=''
-                               for l in $@; do
-                                   loc=$(spack location -i $l)
-                                   libraries=$(ls $loc/lib)
-                                   if echo "$libraries" | grep -q "_d"; then
-                                       for i in $libraries; do
-                                           if [ "$i" != "cmake" ] && echo "$i" | grep -q "_d"; then
-                                               ln1=${i%.*}
-                                               ln2=${ln1#???}
-                                               line=$line" -L$loc/lib -l$ln2"
-                                           fi
-                                       done
-                                   else
-                                       for i in $libraries; do
-                                           if [ "$i" != "cmake" ]; then
-                                               ln1=${i%.*}
-                                               ln2=${ln1#???}
-                                               line=$line" -L$loc/lib -l$ln2"
-                                           fi
-                                       done
-                                   fi
-                               done
-                               '''
+            self.linklinecreate = '''
+                                   line=''
+                                   for l in $@; do
+                                       loc=$(spack location -i $l)
+                                       libraries=$(ls $loc/lib)
+                                       if echo "$libraries" | grep -q "_d"; then
+                                           for i in $libraries; do
+                                               if [ "$i" != "cmake" ] && echo "$i" | grep -q "_d"; then
+                                                   ln1=${i%.*}
+                                                   ln2=${ln1#???}
+                                                   line=$line" -L$loc/lib -l$ln2"
+                                               fi
+                                           done
+                                       else
+                                           for i in $libraries; do
+                                               if [ "$i" != "cmake" ]; then
+                                                   ln1=${i%.*}
+                                                   ln2=${ln1#???}
+                                                   line=$line" -L$loc/lib -l$ln2"
+                                               fi
+                                           done
+                                       fi
+                                   done
+                                   '''
 
-        with open(self.filepath+"/linkline.sh", "a", encoding="utf-8") as fh:
-            fh.writelines(textwrap.dedent(self.linklinecreate))
-            fh.write("MF_PATH='/apps/"+self.e+"/exec/Makefile'\n")
-            fh.write('sed -i "/MK_TEMPLATE = /a CLIBS = $line" $MF_PATH\n')
-            if self.clf:
-                fh.write("sed -i 's|\\($(CLF)\\) \\($(LDFLAGS)\\)|\\1 $(CLIBS) \\2|' $MF_PATH\n")
-            else:
-                fh.write("sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(CLIBS) \\2|' $MF_PATH\n")
+            with open(self.filepath+"/linkline.sh", "a", encoding="utf-8") as fh:
+                fh.writelines(textwrap.dedent(self.linklinecreate))
+                fh.write("MF_PATH='/apps/"+self.e+"/exec/Makefile'\n")
+                fh.write('sed -i "/MK_TEMPLATE = /a CLIBS = $line" $MF_PATH\n')
+                if self.clf:
+                    fh.write("sed -i 's|\\($(CLF)\\) \\($(LDFLAGS)\\)|\\1 $(CLIBS) \\2|' $MF_PATH\n")
+                else:
+                    fh.write("sed -i 's|\\($^\\) \\($(LDFLAGS)\\)|\\1 $(CLIBS) \\2|' $MF_PATH\n")
 
 ## BARE METAL; if addlibs defined on bare metal, include those additional libraries in link line
     elif "tmp" not in self.filepath:
-        for l in self.libs: # baremetal_linkerflags
+        for l in self.bmlf: # baremetal_linkerflags
             linkline = linkline + " " + l
         os.system(f"sed -i '/MK_TEMPLATE = /a LL = {linkline}' {self.filepath}/Makefile")
         os.system(f"sed -i 's|\\($(LDFLAGS)\\)|$(LL) \\1|' {self.filepath}/Makefile")
-
 
 class Makefile():
     """
@@ -95,7 +97,7 @@ class Makefile():
             - mk_template_path The path of the template .mk file for compiling
         """
         self.e = exp
-        self.libs = libs
+        self.bmlf = libs
         self.clf = ""
         self.src = src_dir
         self.bld =  bld_dir
@@ -164,7 +166,7 @@ class Makefile():
             fh.write("\t$(LD) $^ $(LDFLAGS) -o $@ $(STATIC_LIBS)"+"\n")
 
         # Write the link line script with user-provided libraries if defined
-        if self.libs or self.clf:
+        if self.clibs or self.clf or self.bmlf:
             link_line_build(self)
 
         # Write the individual component library compiles
@@ -215,7 +217,7 @@ class MakefileContainer(Makefile):
     """
     def __init__(self,exp,libs,linkerflags,src_dir,bld_dir,mk_template_path,tmp_dir):
         self.e = exp
-        self.libs = libs
+        self.clibs = libs
         self.clf = linkerflags
         self.src = src_dir
         self.bld =  bld_dir
