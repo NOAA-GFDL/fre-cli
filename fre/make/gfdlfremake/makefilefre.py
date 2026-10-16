@@ -99,6 +99,7 @@ class Makefile():
         self.e = exp
         self.bmlf = libs
         self.clf = ""
+        self.clibs= ""
         self.src = src_dir
         self.bld =  bld_dir
         self.template = mk_template_path
@@ -166,7 +167,7 @@ class Makefile():
             fh.write("\t$(LD) $^ $(LDFLAGS) -o $@ $(STATIC_LIBS)"+"\n")
 
         # Write the link line script with user-provided libraries if defined
-        if self.clibs or self.clf or self.bmlf:
+        if any([self.clibs, self.clf, self.bmlf]):
             link_line_build(self)
 
         # Write the individual component library compiles
@@ -217,6 +218,7 @@ class MakefileContainer(Makefile):
     """
     def __init__(self,exp,libs,linkerflags,src_dir,bld_dir,mk_template_path,tmp_dir):
         self.e = exp
+        self.bmlf = ""
         self.clibs = libs
         self.clf = linkerflags
         self.src = src_dir
