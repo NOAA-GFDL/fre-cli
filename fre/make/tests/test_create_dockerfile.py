@@ -132,6 +132,9 @@ def test_dockerfile_contents():
     assert line == ["COPY", f"tmp/{PLATFORM[0]}/Makefile", f"{MODEL_ROOT}/{EXPERIMENT}/exec/Makefile"]
 
     line = copy_lines[2].strip().split()
+    assert line == ["COPY", f"tmp/{PLATFORM[0]}/linkline.sh", f"{MODEL_ROOT}/{EXPERIMENT}/exec/linkline.sh"]
+
+    line = copy_lines[3].strip().split()
     assert line == ["COPY", f"tmp/{PLATFORM[0]}/execrunscript.sh", f"{MODEL_ROOT}/{EXPERIMENT}/exec/execrunscript.sh"]
 
 def test_build_script_contents():
