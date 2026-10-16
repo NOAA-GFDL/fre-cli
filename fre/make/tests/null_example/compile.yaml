@@ -1,6 +1,6 @@
 compile:
      experiment: "null_model_full"
-     container_addlibs: []
+     container_addlibs:
      container_linkerflags: ["-q=sqlwhatever"]
      baremetal_linkerflags: ["this is", "a linker flag"]
      src:
