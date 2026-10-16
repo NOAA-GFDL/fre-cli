@@ -26,7 +26,8 @@ platforms:
      mkTemplate: "linux-ubuntu-xenial-gnu.mk"
      modelRoot: ${TEST_BUILD_DIR}/fremake_canopy/test
    - name: hpcmini.2025
-     compiler: gnu 
+     compiler: gnu
+     RUNenv: ""
      modelRoot: /apps
      container: True
      containerBuild: "podman"
@@ -44,7 +45,7 @@ platforms:
      containerOutputLocation: ${TEST_BUILD_DIR}/fremake_canopy/test
    - name: con.twostep
      compiler: intel
-     RUNenv: [". /spack/share/spack/setup-env.sh", "spack load libyaml", "spack load netcdf-fortran@4.5.4", "spack load hdf5@1.14.0"]
+     RUNenv: ""
      modelRoot: /apps
      container: True
      containerBuild: "podman"
@@ -69,15 +70,3 @@ platforms:
      container2step: True
      container2base: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3rte"
      volume: *VOLUME
-# hpcme.intel25 info to replace con.twostep
-#   - name: con.twostep
-#     compiler: intel
-#     RUNenv: ""
-#     modelRoot: /apps
-#     container: True
-#     containerBuild: "podman"
-#     containerRun: "apptainer"
-#     containerBase: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3"
-#     mkTemplate: "/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk"
-#     container2step: True
-#     container2base: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3rte"
