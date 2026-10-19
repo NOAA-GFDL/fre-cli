@@ -1,13 +1,13 @@
 ## Release Versioning Procedure
-Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-workflows](https://github.com/NOAA-GFDL/fre-workflows) are versioned together. When fre-cli deploys a new release, a corresponding release is deployed in fre-workflows.
+Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-postprocess-workflow](https://github.com/NOAA-GFDL/fre-postprocess-workflow) are versioned together. When fre-cli deploys a new release, a corresponding release is deployed in fre-postprocess-workflow.
 
 ## Checklist
-### fre-workflows changes
-* [ ] 1. Update the package release number in the `fre-workflows` repository:
+### fre-postprocess-workflow changes
+* [ ] 1. Update the package release number in the `fre-postprocess-workflow` repository:
 
     - Edit `FRE_VERSION` in `flow.cylc`
 
-* [ ] 2. Create corresponding tag in [fre-workflows](https://github.com/NOAA-GFDL/fre-workflows/tags) (See fre-cli changes (4) for how to tag)
+* [ ] 2. Create corresponding tag in [fre-postprocess-workflow](https://github.com/NOAA-GFDL/fre-postprocess-workflow/tags) (See fre-cli changes (4) for how to tag)
 
 ### fre-cli changes
 * [ ] 3. Verify that git submodules in the fre-cli reflect the latest state (or certain commit/tag) of the upstream repositories. 
