@@ -157,13 +157,14 @@ def make_data():
 
     dataset = xr.Dataset(data_vars=data, coords=coords)
 
-    for component in components:
-        for source in component["sources"]:
+    for component in components.keys():
+        comp_info = components[component]
+        for source in comp_info["sources"]:
             history_file = source["history_file"]
             for i in range(1, ntiles+1):
                 dataset.to_netcdf(f"{input_dir}/{date}.{history_file}.tile{i}.nc")
-        if "static" in component:
-            for static_source in component["static"]:
+        if "static" in comp_info.keys():
+            for static_source in comp_info["static"]:
                 history_file = static_source["source"]
                 for i in range(1, ntiles+1):
                     dataset.to_netcdf(f"{input_dir}/{date}.{history_file}.tile{i}.nc")

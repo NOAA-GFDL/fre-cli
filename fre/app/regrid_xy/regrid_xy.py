@@ -331,34 +331,35 @@ def regrid_xy(yamlfile: str,
 
         # add temporal and static history files
         components = []
-        for component in yamldict["postprocess"]["components"]:
-            for temporal_history in component["sources"]:
+        comp_info = yamldict["postprocess"]["components"]
+        for component in comp_info.keys():
+            for temporal_history in comp_info[component]["sources"]:
                 if temporal_history["history_file"] == source:
-                    components.append(component)
+                    components.append(comp_info[component])
             if "static" in component:
                 for static_history in component["static"]:
                     if static_history["source"] == source:
-                        components.append(component)
+                        components.append(comp_info[component])
 
         # submit fregrid job for each component
-        for component in components:
+        for component in comp_info.keys():
             # If postprocess_on is not defined, it should have the default value of True
             # If postprocess_on is defined, check for a True or False value
-            if "postprocess_on" in component:
+            if "postprocess_on" in comp_info[component]:
                 # skip component if postprocess_on = False
-                if not component["postprocess_on"]:
-                    fre_logger.warning(f"postprocess_on=False for {source} in component {component['type']}." \
+                if not comp_info[component]["postprocess_on"]:
+                    fre_logger.warning(f"postprocess_on=False for {source} in component {component}." \
                                         "Skipping {source}")
                     continue
 
             # skip component if xyInterp is not set
-            if 'xyInterp' not in component:
+            if 'xyInterp' not in comp_info[component]:
                 fre_logger.info(f"Skipping native component '{component}'")
                 continue
-            datadict["inputRealm"] = component["inputRealm"]
+            datadict["inputRealm"] = comp_info[component]["inputRealm"]
             datadict["input_mosaic"] = get_input_mosaic(datadict)
-            datadict["output_nlat"], datadict["output_nlon"] = component["xyInterp"].split(",")
-            datadict["interp_method"] = component["interpMethod"]
+            datadict["output_nlat"], datadict["output_nlon"] = comp_info[component]["xyInterp"].split(",")
+            datadict["interp_method"] = comp_info[component]["interpMethod"]
             datadict["remap_file"] = get_remap_file(datadict)
             datadict["input_file"] = get_input_file(datadict, source)
             datadict["scalar_field"], regrid = get_scalar_fields(datadict)
