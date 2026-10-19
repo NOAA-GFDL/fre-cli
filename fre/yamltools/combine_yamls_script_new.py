@@ -11,7 +11,7 @@ and internal workflow automation.
 - can use fre list output to pipe to this tool
 - can use this tool with just model yaml (will use fre list tool)
 - can use this tool to pass in multiple yamls either comma separated string
-  (-y y1,y2) OR multiple options (-y y1 -y y2 ...)
+  (-y "y1,y2") OR multiple options (-y y1 -y y2 ...)
 - checks fre-version
 - uses uw config compose (to combine), resolve (to check unrendered values)
 """
@@ -21,10 +21,11 @@ import logging
 import contextlib
 from pathlib import Path
 from typing import Optional
+import yaml
 
 from uwtools.api import config
 from uwtools.api.logging import use_uwtools_logger
-from fre.yamltools.helpers import output_yaml, clean_yaml#, check_fre_version
+from fre.yamltools.helpers import yaml_load, output_yaml, clean_yaml#, check_fre_version
 
 fre_logger = logging.getLogger(__name__)
 
@@ -44,6 +45,21 @@ class MergeYamls():
         self.t = str(target)
         self.o = output
         self.no_clean = no_clean
+
+#    def add_init_params(self):
+#        """
+#        """
+##        print(self.y)
+##        ah
+#        init = {"name": self.e, "platform": self.p, "target": self.t}
+#        one = yaml_load(self.y[0])
+#        merged = init | one
+#
+#        output_yaml(merged, output)
+#        
+#        return merged
+#        print(merged)
+#        ah
 
     def list_check_yamls(self, init_file):
         """
@@ -68,7 +84,6 @@ class MergeYamls():
             if not Path(y).exists():
                 fre_logger.error(" *** YAML FILES DNE: %s ***", y)
                 raise ValueError("Yaml files could be not found!")
-
         return yaml_list
 
     def use_uwtools(self, yaml_list):
@@ -155,6 +170,8 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
 #    check_fre_version(combined)
     init_obj = MergeYamls(yamls, experiment, platform, target, output, no_clean)
 
+#    hello2 = init_obj.add_init_params()
+#    print(hello2)
     init_file = f"{Path.cwd()}/init.yaml"
     ymls = init_obj.list_check_yamls(init_file)
     combined = init_obj.use_uwtools(ymls)
