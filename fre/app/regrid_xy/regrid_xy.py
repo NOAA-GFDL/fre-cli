@@ -1,5 +1,8 @@
+"""
+Calls fregrid to regrid data in the specified source data
+file.
+"""
 import logging
-import os
 from pathlib import Path
 import subprocess
 import tarfile
@@ -70,7 +73,7 @@ def get_grid_spec(datadict: dict) -> str:
 
     #get tar file containing the grid_spec file
     pp_grid_spec_tar = datadict["yaml"]["postprocess"]["settings"]["pp_grid_spec"]
-    fre_logger.debug(f"Going to untar this grid spec tarfile: {pp_grid_spec_tar}")
+    fre_logger.debug("Going to untar this grid spec tarfile: %s", pp_grid_spec_tar)
 
     #untar grid_spec tar file into the current work directory
     if tarfile.is_tarfile(pp_grid_spec_tar):
@@ -85,9 +88,9 @@ def get_grid_spec(datadict: dict) -> str:
     else:
         raise IOError(f"Cannot find mosaic.nc or grid_spec.nc in tar file {pp_grid_spec_tar}")
 
-    fre_logger.debug(f"Current directory: {Path.cwd()}")
+    fre_logger.debug("Current directory: %s", Path.cwd())
 
-    fre_logger.debug(f"Found grid spec file: {grid_spec}")
+    fre_logger.debug("Found grid spec file: %s", grid_spec)
     return grid_spec
 
 
@@ -193,8 +196,9 @@ def get_remap_file(datadict: dict) -> str:
     #check if remap file exists in remap_dir
     if not remap_file.exists():
         fre_logger.warning(
-            f"Cannot find remap_file {remap_file}\n" \
-            f"Remap file {remap_file} will be generated and saved to directory {remap_dir}"
+            "Cannot find remap_file %s\n" \
+            "Remap file %s will be generated and saved to directory %s",
+            remap_file, remap_file, remap_dir
         )
 
     return str(remap_file)
@@ -232,7 +236,7 @@ def get_scalar_fields(datadict: dict) -> tuple[str, bool]:
         regrid_dataset = dataset.drop_vars(non_regriddable_variables, errors="ignore")
 
     if len(regrid_dataset) == 0:
-        fre_logger.warning(f"No variables found in {input_file} to regrid")
+        fre_logger.warning("No variables found in %s to regrid", input_file)
         return "None", False
 
     return ",".join([variable for variable in regrid_dataset]), True
@@ -249,17 +253,17 @@ def write_summary(datadict):
     """
 
     fre_logger.info("COMPONENT SUMMARY")
-    fre_logger.info(f"FREGRID work_directory: {datadict['work_dir']}")
-    fre_logger.info(f"FREGRID input directory: {datadict['input_dir']}")
-    fre_logger.info(f"FREGRID output_directory: {datadict['output_dir']}")
-    fre_logger.info(f"FREGRID input mosaic file: {datadict['input_mosaic']}")
-    fre_logger.info(f"FREGRID input_file: {datadict['input_file']}")
-    fre_logger.info(f"FREGRID remap_file: {datadict['remap_file']}")
+    fre_logger.info("FREGRID work_directory: %s", datadict['work_dir'])
+    fre_logger.info("FREGRID input directory: %s", datadict['input_dir'])
+    fre_logger.info("FREGRID output_directory: %s", datadict['output_dir'])
+    fre_logger.info("FREGRID input mosaic file: %s", datadict['input_mosaic'])
+    fre_logger.info("FREGRID input_file: %s", datadict['input_file'])
+    fre_logger.info("FREGRID remap_file: %s", datadict['remap_file'])
     fre_logger.info(
-        f"FREGRID output lonxlat grid: {datadict['output_nlon']} X {datadict['output_nlat']}"
+        "FREGRID output lonxlat grid: %s X %s", datadict['output_nlon'], datadict['output_nlat']
     )
-    fre_logger.info(f"FREGRID interp method: {datadict['interp_method']}")
-    fre_logger.info(f"FREGRID scalar_fields: {datadict['scalar_field']}")
+    fre_logger.info("FREGRID interp method: %s", datadict['interp_method'])
+    fre_logger.info("FREGRID scalar_fields: %s", datadict['scalar_field'])
 
 
 def regrid_xy(yamlfile: str,
@@ -348,13 +352,13 @@ def regrid_xy(yamlfile: str,
             if "postprocess_on" in comp_info[component]:
                 # skip component if postprocess_on = False
                 if not comp_info[component]["postprocess_on"]:
-                    fre_logger.warning(f"postprocess_on=False for {source} in component {component}." \
-                                        "Skipping {source}")
+                    fre_logger.warning("postprocess_on=False for %s in component %s." \
+                                       "Skipping %s", source, component, source)
                     continue
 
             # skip component if xyInterp is not set
             if 'xyInterp' not in comp_info[component]:
-                fre_logger.info(f"Skipping native component '{component}'")
+                fre_logger.info("Skipping native component '%s'", component)
                 continue
             datadict["inputRealm"] = comp_info[component]["inputRealm"]
             datadict["input_mosaic"] = get_input_mosaic(datadict)
@@ -393,7 +397,7 @@ def regrid_xy(yamlfile: str,
                 "--output_dir", output_subdir,
                 "--associated_file_dir", input_dir
             ]
-            fre_logger.debug(f"fregrid command: {fregrid_command}")
+            fre_logger.debug("fregrid command: %s", fregrid_command)
 
             #execute fregrid command
             fregrid_job = subprocess.run(fregrid_command, capture_output=True, text=True)
