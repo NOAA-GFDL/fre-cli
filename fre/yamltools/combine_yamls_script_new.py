@@ -25,7 +25,7 @@ import yaml
 
 from uwtools.api import config
 from uwtools.api.logging import use_uwtools_logger
-from fre.yamltools.helpers import yaml_load, output_yaml, clean_yaml#, check_fre_version
+from fre.yamltools.helpers import output_yaml, clean_yaml#, check_fre_version
 
 fre_logger = logging.getLogger(__name__)
 
@@ -45,21 +45,6 @@ class MergeYamls():
         self.t = str(target)
         self.o = output
         self.no_clean = no_clean
-
-#    def add_init_params(self):
-#        """
-#        """
-##        print(self.y)
-##        ah
-#        init = {"name": self.e, "platform": self.p, "target": self.t}
-#        one = yaml_load(self.y[0])
-#        merged = init | one
-#
-#        output_yaml(merged, output)
-#        
-#        return merged
-#        print(merged)
-#        ah
 
     def list_check_yamls(self, init_file):
         """
@@ -170,8 +155,6 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
 #    check_fre_version(combined)
     init_obj = MergeYamls(yamls, experiment, platform, target, output, no_clean)
 
-#    hello2 = init_obj.add_init_params()
-#    print(hello2)
     init_file = f"{Path.cwd()}/init.yaml"
     ymls = init_obj.list_check_yamls(init_file)
     combined = init_obj.use_uwtools(ymls)
