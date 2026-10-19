@@ -2,24 +2,19 @@ cmor:
 
   # these fields are for global configuration that isn't a directory
   # -------------------------------------------------------------------------------------
-  start:
-#    *CMOR_START
+  start: "{{ fre_properties.CMOR_START }}"
   stop: "{{ fre_properties.CMOR_STOP }}"
     
-  mip_era: 
-    'CMIP6'
-  exp_json:
-    'fre/tests/test_files/CMOR_input_example.json'
+  mip_era:  'CMIP6'
+  exp_json: 'fre/tests/test_files/CMOR_input_example.json'
 
   # these fields are for global directory configuration
   # note: cmor yamls are self-contained and do NOT import settings.yaml
   # -------------------------------------------------------------------------------------  
   directories:
-    pp_dir: "fre/tests/test_files/ascii_files/mock_archive/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}/{{ platform }}-{{ target }}/pp"
-    table_dir: &table_dir
-      "fre/tests/test_files/cmip6-cmor-tables/Tables"
-    outdir:
-      'fre/tests/test_files/iamnotreallyused/outdir/'
+    pp_dir:    "fre/tests/test_files/ascii_files/mock_archive/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}/{{ platform }}-{{ target }}/pp"
+    table_dir: "fre/tests/test_files/cmip6-cmor-tables/Tables"
+    outdir:    "fre/tests/test_files/iamnotreallyused/outdir/"
 
   # these fields are for configuration that changes by cmor-table-target, or by-component
   # -------------------------------------------------------------------------------------
@@ -29,20 +24,20 @@ cmor:
     - table_name: 'Amon' 
       freq: #optional, if not specified we try to figure it out from the MIP table entries
 #      gridding: #optional, if empty or not present, use grid info in exp_json as-is
-      gridding: #optional, a grids.yaml is necessary to specify grid info this way
-        <<: *gn
-#      gridding: #optional, no yaml necessary, all three must be non-empty, checked against CV by CMOR
-#          grid_label: "gn"
-#          grid_desc: "native gridding ex description"
-#          nom_res: "1000 km"
+#      gridding: #optional, a grids.yaml is necessary to specify grid info this way
+#        <<: *gn
+      gridding: #optional, no yaml necessary, all three must be non-empty, checked against CV by CMOR
+          grid_label: "gn"
+          grid_desc: "native gridding ex description"
+          nom_res: "1000 km"
         
       target_components:
         - component_name: 'atmos_cmip'
           variable_list: 'fre/tests/test_files/varlist'
           data_series_type: 'ts'
-          chunk: *PP_CPLD_CHUNK_A
+          chunk: "{{ fre_properties.PP_CPLD_CHUNK_A }}"
           
         - component_name: 'atmos_level_cmip'
           variable_list: 'fre/tests/test_files/varlist'
           data_series_type: 'ts'
-          chunk: *PP_CPLD_CHUNK_A
+          chunk: "{{fre_properties.PP_CPLD_CHUNK_A }}"

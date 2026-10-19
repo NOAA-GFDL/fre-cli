@@ -26,6 +26,7 @@ fre_properties:
   FMSincludes:         "-IFMS/fms2_io/include -IFMS/include -IFMS/mpp/include"
   momIncludes:         "-Imom6/MOM6-examples/src/MOM6/pkg/CVMix-src/include"
 
+  PP_CPLD_CHUNK_A: ""
 fre_cli_version: "2026.01.alpha2"
 
 build:
@@ -42,7 +43,6 @@ experiments:
     analysis:
       - "analysis_yamls/clouds.yaml"
       - "analysis_yamls/land.yaml"
+  experiment2:
     cmor: # cmor-tool development, not part of official am5.yaml (yet)
       - "cmor_yamls/cmor.yaml"
-    grid_yaml:
-      - "grid_yamls/TEST_grids.yaml"
