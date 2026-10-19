@@ -56,30 +56,38 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
             fre_logger.error("List experiments via `fre list -y [model YAML]`")
             raise ValueError("Experiment passed DNE")
 
-        settings_data = ""
-        if exp_data.get("settings") is not None:
-            settings_data = exp_data.get("settings")
-
         if application:
             # check if application is defined in the model YAML
             if application not in exp_data.keys():
                 raise ValueError(" *** Application passed is not defined in the model YAML. *** ")
 
-            yamls.extend([platform_data, settings_data])
+            fre_logger.info("Gathering YAMLs associated with experiment %s and application %s", experiment, application)
+            yamls.extend([platform_data])
+            settings_data = None
+            if exp_data.get("settings") is not None:
+                settings_data = exp_data.get("settings")
+                yamls.extend([settings_data])
+
             for a in application.split(","):
                 if isinstance(exp_data[a], list):
                     yamls.extend(exp_data[a])
                 else:
                     yamls.append(exp_data[a])
         else:
+            fre_logger.info("No application name passed. Gathering ALL YAMLs associated with %s", experiment)
+            # Add yamls used for compilation
             yamls.extend([platform_data, compile_data])
+
+            # Add yamls listed under application name in model yaml
             for value in exp_data.values():
+                if value is None:
+                    continue
                 if isinstance(value, list):
                     yamls.extend(value)
                 else:
                     yamls.append(value)
     else:
-        fre_logger.info("No experiment name passed. Will only provide YAMLs related to compilation.")
+        fre_logger.info("No experiment name passed. Gathering only provide YAMLs related to compilation.")
         yamls.extend([platform_data, compile_data])
 
     yamls_full_path = ""
@@ -97,7 +105,6 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     for y in yamls_full_path.split(","):
         fre_logger.info("  - %s", y)
 
-### Might add this in when fre yamltools combine-yamls is refactored
     fre_logger.info("")
     fre_logger.info('If combining these yamls, there are 2 options:')
     fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
