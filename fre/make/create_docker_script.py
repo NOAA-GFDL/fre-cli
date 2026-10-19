@@ -134,15 +134,15 @@ def dockerfile_create(yamlfile: str, platform: tuple[str], target: tuple[str],
                 dockerBuild.writeDockerfileMkmf(c)
 
             dockerBuild.writeRunscript(platform["RUNenv"], platform["containerRun"], tmpDir+"/execrunscript.sh")
-            currDir = os.getcwd()
 
             # create build script for container
             dockerBuild.createBuildScript(platform, skip_format_transfer = no_format_transfer)
+            buildDir = os.path.dirname(dockerBuild.userScriptPath)
 
             former_log_level = fre_logger.level
             fre_logger.setLevel(logging.INFO)
-            fre_logger.info("tmpDir created in " + currDir + "/tmp")
-            fre_logger.info("Dockerfile created in " + currDir)
+            fre_logger.info("tmpDir created in " + os.path.join(buildDir, "tmp"))
+            fre_logger.info("Dockerfile created in " + buildDir)
             fre_logger.info("Container build script created in "+dockerBuild.userScriptPath)
             fre_logger.setLevel(former_log_level)
 
