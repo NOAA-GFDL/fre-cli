@@ -12,7 +12,8 @@ from datetime import datetime
 import subprocess
 import logging
 from typing import Optional
-import fre.yamltools.combine_yamls_script as cy
+import fre.list_.list_yamls_script as ly
+import fre.yamltools.combine_yamls_script_new as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
 # set up logging
@@ -147,13 +148,21 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     ## Split and store the platforms and targets in a list
     experiment_name = yamlfile.split(".")[0]
 
-    # Combine model, compile, and platform yamls into a unified structure
-    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
-                                         experiment=experiment_name,
-                                         platform=platform,
-                                         target=target,
-                                         use="compile",
-                                         output=None)
+    yamls = ly.list_yamls_subtool(yamlfile = yamlfile,
+                                  experiment = None,
+                                  application = None)
+    full_combined = cy.yamltools_combine_subtool(yamls = yamls,
+                                                 experiment = None,
+                                                 platform = platform,
+                                                 target = target,
+                                                 output = None)
+#    # Combine model, compile, and platform yamls into a unified structure
+#    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
+#                                         experiment=experiment_name,
+#                                         platform=platform,
+#                                         target=target,
+#                                         use="compile",
+#                                         output=None)
 
     # Initialize FRE variables and YAML handlers
     fre_vars = varsfre.frevars(full_combined)
