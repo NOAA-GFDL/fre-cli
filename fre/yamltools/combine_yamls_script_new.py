@@ -2,17 +2,12 @@
 YAML Combination Utilities for FRE
 ----------------------------------
 
-This module provides utility functions for combining model, experiment, compile, platform, and analysis
-YAML files into unified configurations for the Flexible Runtime Environment (FRE) workflow. It offers routines
-to consolidate YAMLs for CMORization, compilation, and post-processing, supporting both command-line tools
-and internal workflow automation.
+This module provides utility functions for combining model, settings, experiment, compile, platform, and analysis
+YAML files into unified configurations for the Flexible Runtime Environment (FRE) workflow.
 
-
-- can use fre list output to pipe to this tool
-- can use this tool with just model yaml (will use fre list tool)
-- can use this tool to pass in multiple yamls either comma separated string
-  (-y "y1,y2") OR multiple options (-y y1 -y y2 ...)
-- checks fre-version
+- can use fre list output to pipe to this tool (fre list yamls -y [model.yaml] | fre yamltools combine -e [experiment] -a [application])
+- can use this tool to pass in multiple yamls in a comma separated string (-y y1,y2)
+- checks fre-cli-version
 - uses uw config compose (to combine), resolve (to check unrendered values)
 """
 
@@ -52,21 +47,23 @@ class MergeYamls():
         This will be combined with the other yaml files passed to uwtools (uwtools only accepts files,
         not dictionaries)
 
-        :param init_file: is the 
+        :param init_file: is the YAML file holding the click options passed to the fre-cli command (experiment,
+                          platform, and target)
         :type init_file: str
+
+        :raise ValueError: if YAML files could not be found
+        :return: List of YAML file paths for YAMLs to be combine via uwtools
+        :rtype: list
         """
         yaml_list=[]
-        # create intermediate yaml to pass to uw config compose
-        #  - needs yamls files; cannot pass dictionaries
-        #  - intermediate yaml file will be removed later
+        # create intermediate yaml to pass to uw config compose because it needs files; cannot pass dictionaries
         init = {"name": self.e, "platform": self.p, "target": self.t}
         output_yaml(init, init_file)
 
-        ## append init file (needed for schema and other variables?)
+        ## append init file to YAML list to be combined
         yaml_list.append(init_file)
 
         ## self.y should be a list
-        ## case where it might not be?
         yaml_list.extend(self.y)
 
         for y in yaml_list:
@@ -77,19 +74,21 @@ class MergeYamls():
 
     def use_uwtools(self, yaml_list):
         """
-        :param self:
-        :param yaml_list:
-        :type yaml_list:
+        Utilize uwtools to combine YAMLs passed (uw config compose) and fully
+        resolve keys referencing Jinja2 variables (uw config realize)
 
-        :raises:
+        :param self: is an instance of the class MergeYamls
+        :param yaml_list: is the comma separated list of YAML files (full paths) to be combined
+        :type yaml_list: list
+
+        :return: Combined, resolved dictionary of YAMLs passed
+        :rtype: dict
         """
-        ## COMBINE YAMLS AND RESOLVE WHERE WE CAN ##
         ## uw config compose: pass yaml list to compose final yaml
-
         # config.compose returns a base class specifying methods to read, manipulate,
         # and write several configuration-file formats. (use as_dict to return dictionary)
         # use realize=True to resolve what we can here; if any unresolved, it does not error out
-        # yet (use config.realize)
+        # yet (that will happen when config.realize is called)
 
         # Mainly just want to pass dictionary to config.resolve but output from config.compose is a printed dictionary
         # we don't need all this output but maybe it can be wrapped up in fre_logger.debug if needed?
@@ -100,21 +99,18 @@ class MergeYamls():
         if self.no_clean:
             final_yaml_dict = combined_yaml_dict
         else:
-            # CLEAN SERIALIZED YAML ##
             final_yaml_dict = clean_yaml(combined_yaml_dict)
-#            if not final_yaml_dict:
-#                raise ValueError("YAML configuration could not be cleaned (experiments)")
+            #if not final_yaml_dict:
+            #    raise ValueError("YAML configuration could not be cleaned (experiments)")
 
-        ###  SHOLD BE RESOLVED BUT THIS IS TO CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
+        ###  SHOULD BE RESOLVED BUT THIS IS TO CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
         ## uw config realize: resolve final yaml
-        # get nice uw tools cli output
-
         # Save current root logger handlers and level
         root_logger = logging.getLogger()
         original_handlers = list(root_logger.handlers)
         original_level = root_logger.level
 
-
+        # Get nice uw tools cli output
         uwlogger = use_uwtools_logger()
 
         config.realize(input_config = final_yaml_dict,
@@ -154,6 +150,9 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
     :type output: str
     :param no_clean: is a True/False value to determine whether or not to remove any keys/sections from the YAML. Default is False.
     :type no_clean: boolean
+
+    :return: Combined, resolved dictionary of YAMLs passed 
+    :rtype: dict
     """
     # If piping from fre list, the model yaml is usually listed first
     # This logic might not work if the user doesn't pass the model yaml
