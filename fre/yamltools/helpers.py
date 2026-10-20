@@ -40,6 +40,8 @@ def check_fre_version(yamlfile: str) -> None:
     Check that the fre_cli_version specified in the model yaml matches the
     installed version of fre-cli. If fre_cli_version is not specified, a
     warning is logged. If fre_cli_version does not match, a ValueError is raised.
+    If the installed version is a development version (e.g. '2026.01-dev') and
+    fre_cli_version matches the tag it is based on (e.g. '2026.01'), a warning is logged.
 
     :param yamlfile: Path to model YAML configuration file
     :type yamlfile: str
@@ -65,6 +67,19 @@ def check_fre_version(yamlfile: str) -> None:
         return
 
     installed_version = fre.version
+    if str(yaml_fre_version) == str(installed_version):
+        return
+
+    # development versions (e.g. '2026.01-dev') are compatible with the tag they're based on
+    if fre.is_dev_version(installed_version) and \
+       str(yaml_fre_version) == fre.base_version(installed_version):
+        fre_logger.warning(
+            "The fre_cli_version specified in the model yaml (%s) does not exactly match "
+            "the installed development version of fre-cli (%s). Proceeding anyway.",
+            yaml_fre_version, installed_version
+        )
+        return
+
     if str(yaml_fre_version) != str(installed_version):
         raise ValueError(
             f"The fre_cli_version specified in the model yaml ({yaml_fre_version}) "
