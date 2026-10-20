@@ -108,6 +108,7 @@ You can always check the specific version, down to the patch-release space, with
 $ ] fre --version
 fre, version YYYY.NN.PP
 ```
+`fre/test` and other untagged states of `main` report the last tag with a `-dev` suffix, e.g. `fre, version YYYY.NN-dev`.
 
 # Disclaimer
 The United States Department of Commerce (DOC) GitHub project code is provided on an 'as is' basis and the
