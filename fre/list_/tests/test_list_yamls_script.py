@@ -198,3 +198,28 @@ class TestListYamlsScript:
             )
 
             assert isinstance(result, str)
+
+    def test_list_yamls_error_raised_exp_X_application_passed(self, model_yaml_path, caplog):
+        """ Test that an error is raised when application is specified without specifying an experiment name """
+        with pytest.raises(ValueError):
+            result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment=None,
+                application="run"
+            )
+
+            assert isinstance(result, str)
+        assert "*** Must pass experiment name along with application name ***" in caplog.text
+
+    def test_list_yamls_error_raised_exp_dne(self, model_yaml_path, caplog):
+        """ Test that an error is raised if the experiment does not exist in the model YAML """
+        with pytest.raises(ValueError):
+            result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment="experiment_wrong",
+                application="run"
+            )
+
+            assert isinstance(result, str)
+        assert "Experiment passed is not defined in the model YAML." in caplog.text
+        assert "Users can list experiments via `fre list exps -y [model YAML]`" in caplog.text
