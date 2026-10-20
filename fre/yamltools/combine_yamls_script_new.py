@@ -103,16 +103,18 @@ class MergeYamls():
             #if not final_yaml_dict:
             #    raise ValueError("YAML configuration could not be cleaned (experiments)")
 
-        ###  SHOULD BE RESOLVED BUT THIS IS TO CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
-        ## uw config realize: resolve final yaml
         # Save current root logger handlers and level
+        # uwtools logger changes level
         root_logger = logging.getLogger()
         original_handlers = list(root_logger.handlers)
         original_level = root_logger.level
 
         # Get nice uw tools cli output
+        # This does however, change the logging level 
         uwlogger = use_uwtools_logger()
 
+        ###  SHOULD BE RESOLVED BUT THIS IS TO CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
+        ## uw config realize: resolve final yaml
         config.realize(input_config = final_yaml_dict,
                        values_needed = True,
                        total = True)
