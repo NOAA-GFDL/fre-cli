@@ -25,7 +25,7 @@ import yaml
 
 from uwtools.api import config
 from uwtools.api.logging import use_uwtools_logger
-from fre.yamltools.helpers import output_yaml, clean_yaml#, check_fre_version
+from fre.yamltools.helpers import output_yaml, clean_yaml, check_fre_version
 
 fre_logger = logging.getLogger(__name__)
 
@@ -151,8 +151,13 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
     :param no_clean: is a True/False value to determine whether or not to remove any keys/sections from the YAML. Default is False.
     :type no_clean: boolean
     """
-#    fre_logger.info('checking fre_cli_version compatibility...')
-#    check_fre_version(combined)
+    # If piping from fre list, the model yaml is usually listed first
+    # This logic might not work if the user doesn't pass the model yaml
+    # (or whatever yaml has fre_cli_version) defined first
+    model_yaml = yamls.split(",")[0]
+    fre_logger.info('checking fre_cli_version compatibility...')
+    check_fre_version(model_yaml)
+
     init_obj = MergeYamls(yamls, experiment, platform, target, output, no_clean)
 
     init_file = f"{Path.cwd()}/init.yaml"
@@ -166,5 +171,5 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
 
 ##### NOTES:
 ##### - report of unrendered keys only shown when total not used with values_needed
-##### - report shows keys and vals; values is a list in a list and shows fre_properties AND  FRE_STEM
+##### - report shows keys and vals; values is a list in a list and shows fre_properties AND FRE_STEM
 ##### - uw config compose WILL output yaml dictionary unless --output [file] is specified
