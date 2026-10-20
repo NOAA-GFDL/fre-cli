@@ -22,7 +22,8 @@ For container platforms, `fremake_run` calls:
 import logging
 from typing import Optional
 from pathlib import Path
-import fre.yamltools.combine_yamls_script as cy
+import fre.list_.list_yamls_script as ly
+import fre.yamltools.combine_yamls_script_new as cy
 from fre.make.create_checkout_script import checkout_create
 from fre.make.create_makefile_script import makefile_create
 from fre.make.create_compile_script import compile_create
@@ -90,13 +91,21 @@ def fremake_run(yamlfile:str, platform:str, target:str,
     plist = platform
     tlist = target
 
-    # Combine model, compile, and platform yamls
-    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
-                                         experiment=name,
-                                         platform=platform,
-                                         target=target,
-                                         use="compile",
-                                         output=None)
+    yamls = ly.list_yamls_subtool(yamlfile = yamlfile,
+                                  experiment = None,
+                                  application = None)
+    full_combined = cy.yamltools_combine_subtool(yamls = yamls,
+                                                 experiment = None,
+                                                 platform = platform,
+                                                 target = target,
+                                                 output = None)
+#    # Combine model, compile, and platform yamls
+#    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
+#                                         experiment=name,
+#                                         platform=platform,
+#                                         target=target,
+#                                         use="compile",
+#                                         output=None)
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)

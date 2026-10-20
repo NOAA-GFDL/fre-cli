@@ -11,11 +11,13 @@ is not given, the model, compile, and platform configurations are returned.
 """
 import logging
 from pathlib import Path
+import sys
 import yaml
+import click
 
 fre_logger = logging.getLogger(__name__)
 
-def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
+def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
     """
     List_yamls_subtool lists the YAML files defined in the `model.yaml`.
 
@@ -24,7 +26,9 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     :param experiment: is the name of the experiment
     :type experiment: str
     :param application: is the application name
-    :type application: str
+    :type application: comma separated string
+    :return: is a comma separated string of yaml files (absolute paths)
+    :rtype: str
 
     :raise ValueError: if the experiment, application passed does not exist and 
                        if yaml files do not exist
@@ -33,15 +37,16 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     model_yaml_path = Path(yamlfile).resolve().parent
 
     if application and not experiment:
-        fre_logger.warning("")
-        fre_logger.warning(" *** Must pass experiment name along with application name ***")
-        fre_logger.warning("")
+        fre_logger.error("")
+        fre_logger.error(" *** Must pass experiment name along with application name ***")
+        fre_logger.error("")
+        raise ValueError("Must pass experiment name along with application name")
 
     with open(yamlfile, 'r', encoding="utf-8") as yf:
         yaml_dict = yaml.load(yf, Loader = yaml.Loader)
 
-    compile_data = yaml_dict["build"].get("compileYaml")
     platform_data = yaml_dict["build"].get("platformYaml")
+    compile_data = yaml_dict["build"].get("compileYaml")
     exp_data = yaml_dict["experiments"].get(experiment)
 
     yamls = [model_yaml]
@@ -49,34 +54,41 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     if experiment:
         if experiment not in yaml_dict["experiments"].keys():
             fre_logger.error("Experiment passed is not defined in the model YAML.")
-            fre_logger.error("List experiments via `fre list -y [model YAML]`")
-            raise ValueError("Experiment passed DNE")
-
-        settings_data = ""
-        if exp_data.get("settings") is not None:
-            settings_data = exp_data.get("settings")
+            fre_logger.error("Users can list experiments via `fre list exps -y [model YAML]`")
+            raise ValueError(f"Experiment passed DNE. Available experiments include {yaml_dict['experiments'].keys()}")
 
         if application:
-            # check if application is defined in the model YAML
-            if application not in exp_data.keys():
-                raise ValueError(" *** Application passed is not defined in the model YAML. *** ")
+            fre_logger.info("Gathering YAMLs associated with experiment %s and application %s", experiment, application)
+            yamls.extend([platform_data])
+            settings_data = None
+            if exp_data.get("settings") is not None:
+                settings_data = exp_data.get("settings")
+                yamls.extend([settings_data])
 
-            yamls.extend([platform_data, settings_data])
-            for a in application.split(","):
-                if isinstance(exp_data[a], list):
-                    yamls.extend(exp_data[a])
+            for app in application.split(","):
+                if app not in exp_data.keys():
+                    raise ValueError(f" *** Application passed ({app}) is not defined in the model YAML.",
+                                     f"Available application keys include {exp_data.keys()} *** ")
+                if isinstance(exp_data[app], list):
+                    yamls.extend(exp_data[app])
                 else:
-                    yamls.append(exp_data[a])
+                    yamls.append(exp_data[app])
         else:
-            yamls.extend([compile_data, platform_data])
+            fre_logger.info("No application name passed. Gathering ALL YAMLs associated with %s", experiment)
+            # Add yamls used for compilation
+            yamls.extend([platform_data, compile_data])
+
+            # Add yamls listed under application name in model yaml
             for value in exp_data.values():
+                if value is None:
+                    continue
                 if isinstance(value, list):
                     yamls.extend(value)
                 else:
                     yamls.append(value)
     else:
-        fre_logger.info("No experiment name passed. Will only provide YAMLs related to compilation.")
-        yamls.extend([compile_data, platform_data])
+        fre_logger.info("No experiment name passed. Gathering only provide YAMLs related to compilation.")
+        yamls.extend([platform_data, compile_data])
 
     yamls_full_path = ""
     # Add full path for yaml configurations
@@ -93,14 +105,13 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
     for y in yamls_full_path.split(","):
         fre_logger.info("  - %s", y)
 
-### Might add this in when fre yamltools combine-yamls is refactored
-#    fre_logger.info("")
-#    fre_logger.info('If combining these yamls, there are 2 options:')
-#    fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
-#    fre_logger.info('   2. Copy and paste this string (including quotes)
-#                           as the -y option in "fre yamltools combine -y <yamls>:')
-#    fre_logger.info('       "%s"', yamls_full_path)
-#    fre_logger.info("")
+    fre_logger.info("")
+    fre_logger.info('If combining these yamls, there are 2 options:')
+    fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
+    fre_logger.info('   2. Copy and paste this string (including quotes) '
+                           'as the -y option in "fre yamltools combine -y <yamls>:')
+    fre_logger.info('       "%s"', yamls_full_path)
+    fre_logger.info("")
     fre_logger.setLevel(former_log_level)
 
     # Check if the paths exist; give warning
@@ -112,5 +123,9 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application:str):
             fre_logger.error("**DNE**: %s", y)
     if "True" in fail:
         raise ValueError(" *** PROVIDE THE MISSING YAML CONFIGURATIONS ***")
+
+    # if not piped to fre yamltools combine, no need to show all the yamls
+    if not sys.stdout.isatty():
+        click.echo(yamls_full_path)
 
     return yamls_full_path
