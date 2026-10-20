@@ -280,7 +280,7 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
 
     yamls = ly.list_yamls_subtool(yamlfile = yml,
                                   experiment = e,
-                                  application= "postprocess")
+                                  application= "postprocess,analysis")
     full_yamldict = cy.yamltools_combine_subtool(yamls = yamls,
                                                  experiment = e,
                                                  platform = p,

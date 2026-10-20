@@ -50,6 +50,8 @@ experiments:
     postprocess:
       - "yaml_include/pp.c96_amip.yaml"
       - "yaml_include/pp-test.c96_amip.yaml"
+    analysis:
+      - "yaml_include/analysis.yaml"
 #  c96L65_am5f7b12r1_pdclim1850F:
   experiment_2:
     postprocess:
