@@ -36,22 +36,30 @@ jobs:
         with:
           submodules: 'recursive'
 
-      # For tagged releases, determine the tag from the __init__.py,
-      # removing the '-dev' suffix that the update-tag action appends.
-      # Then make it available for the conda-build steps by setting the env var
-      # $GIT_DESCRIBE_TAG to the determined tag.
+      # For tagged releases, remove the '-dev' suffix that the update-tag action appends
+      # from the version in __init__.py (in this checkout only), so that the packaged
+      # fre-cli reports the tag with `fre --version`.
+      # Then make the tag available for the conda-build steps by setting the env var
+      # $GIT_DESCRIBE_TAG, which meta.yaml uses as the conda package version.
       # $GITHUB_ENV is a special file path provided by the Actions runner.
       # When you write KEY=VALUE lines into it, those variables become available
       # as environment variables for all subsequent steps in the same job.
       - name: Set version for tagged release
         if: github.event_name == 'pull_request'
         run: |
+          sed -i "s/^\(version = \"[^\"]*\)-dev\"/\1\"/" fre/__init__.py
+          grep '^version = ' fre/__init__.py
           VERSION=$(python3 -c "
           import re
           content = open('fre/__init__.py').read()
-          m = re.search(r'GIT_DESCRIBE_TAG\",\s*\"([^\"]+)\"', content)
-          print(re.sub(r'-dev$', '', m.group(1)))
+          m = re.search(r'^version = \"([^\"]+)\"', content, re.M)
+          print(m.group(1))
           ")
+          case "$VERSION" in
+            ""|*-dev)
+              echo "ERROR: release version '$VERSION' is empty or still ends in '-dev'"
+              exit 1 ;;
+          esac
           echo "GIT_DESCRIBE_TAG=$VERSION" >> $GITHUB_ENV
 
       - name: Configure Conda

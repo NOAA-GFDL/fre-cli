@@ -33,7 +33,7 @@ jobs:
           prev_tag=$(python3 -c "
           import re
           content = open('fre/__init__.py').read()
-          m = re.search(r'GIT_DESCRIBE_TAG\",\s*\"([^\"]+)\"', content)
+          m = re.search(r'^version = \"([^\"]+)\"', content, re.M)
           print(re.sub(r'-dev$', '', m.group(1)))
           ")
           echo "prev_tag=${prev_tag}" >> $GITHUB_OUTPUT
@@ -56,8 +56,8 @@ jobs:
       - name: Set fre-cli development version
         run: |
           new_tag="${{ steps.get_tag.outputs.tag }}"
-          sed -i "s/\(GIT_DESCRIBE_TAG\", \"\)[^\"]*\"/\1${new_tag}-dev\"/" fre/__init__.py
-          grep GIT_DESCRIBE_TAG fre/__init__.py
+          sed -i "s/^\(version = \"\)[^\"]*\"/\1${new_tag}-dev\"/" fre/__init__.py
+          grep '^version = ' fre/__init__.py
 
       - name: Update fre-cli version for container environment
         run: |
