@@ -5,6 +5,7 @@ Tests the list_yamls_subtool function with various flag combinations
 using the example model YAML file.
 """
 from pathlib import Path
+import re
 import pytest
 from fre.list_.list_yamls_script import list_yamls_subtool
 
@@ -212,7 +213,7 @@ class TestListYamlsScript:
         assert "*** Must pass experiment name along with application name ***" in caplog.text
 
     def test_list_yamls_error_raised_exp_dne(self, model_yaml_path, caplog):
-        """ Test that an error is raised if the experiment does not exist in the model YAML """
+        """ Test that an error is raised if the experiment is not defined in the model YAML """
         with pytest.raises(ValueError):
             result = list_yamls_subtool(
                 yamlfile=model_yaml_path,
@@ -223,3 +224,14 @@ class TestListYamlsScript:
             assert isinstance(result, str)
         assert "Experiment passed is not defined in the model YAML." in caplog.text
         assert "Users can list experiments via `fre list exps -y [model YAML]`" in caplog.text
+
+    def test_list_yamls_error_raised_application_dne(self, model_yaml_path, caplog):
+        """ Test that an error is raised if the application is not defined in the model YAML """
+        with pytest.raises(ValueError, match = "Application passed \\(runrunrun\\) is not defined in the model YAML."):
+            result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment="experiment1",
+                application="runrunrun"
+            )
+
+            assert isinstance(result, str)
