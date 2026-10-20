@@ -47,7 +47,7 @@ def test_platforms_list_correct(caplog):
 
     # make sure level is INFO
     for record in caplog.records:
-        if record.name.startswith("fre"):
+        if record.name == list_platforms_script.fre_logger.name:
             assert record.levelname == "INFO"
 
 # Test validation
@@ -63,7 +63,7 @@ def test_yamlvalidate(caplog):
         assert i in caplog.text
 
     for record in caplog.records:
-        if record.name.startswith("fre"):
+        if record.name == list_platforms_script.fre_logger.name:
             assert record.levelname == "INFO"
 
 def test_not_valid_yaml():

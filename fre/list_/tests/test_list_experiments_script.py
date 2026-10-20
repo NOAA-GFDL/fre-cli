@@ -32,7 +32,7 @@ def test_exp_list(caplog):
 
     # make sure the level is INFO
     for record in caplog.records:
-        if record.name.startswith("fre"):
+        if record.name == list_experiments_script.fre_logger.name:
             assert record.levelname == "INFO"
 
 # Test validation

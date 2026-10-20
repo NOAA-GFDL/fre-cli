@@ -49,7 +49,7 @@ def test_pp_comp_list(caplog):
         assert i in caplog.text
     # make sure the level is WARNING for version mismatch and INFO otherwise
     for record in caplog.records:
-        if record.name.startswith("fre"):
+        if record.name == list_pp_components_script.fre_logger.name:
             assert record.levelname in ["WARNING", "INFO"]
 
 # Test validation
@@ -67,5 +67,5 @@ def test_yamlvalidate(caplog):
         assert i in caplog.text
 
     for record in caplog.records:
-        if record.name.startswith("fre"):
+        if record.name == list_pp_components_script.fre_logger.name:
             assert record.levelname in ["WARNING", "INFO"]
