@@ -22,7 +22,7 @@ import contextlib
 from pathlib import Path
 from typing import Optional
 import yaml
-
+from tempfile import TemporaryDirectory
 from uwtools.api import config
 from uwtools.api.logging import use_uwtools_logger
 from fre.yamltools.helpers import output_yaml, clean_yaml, check_fre_version
@@ -46,10 +46,14 @@ class MergeYamls():
         self.o = output
         self.no_clean = no_clean
 
-    def list_check_yamls(self, init_file):
+    def create_tmp_file(self, init_file):
         """
-        :param init_file:
-        :type init_file:
+        Create a temporary yaml file containing the click options passed (name, platform, and target).
+        This will be combined with the other yaml files passed to uwtools (uwtools only accepts files,
+        not dictionaries)
+
+        :param init_file: is the 
+        :type init_file: str
         """
         yaml_list=[]
         # create intermediate yaml to pass to uw config compose
@@ -160,14 +164,12 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
 
     init_obj = MergeYamls(yamls, experiment, platform, target, output, no_clean)
 
-    init_file = f"{Path.cwd()}/init.yaml"
-    ymls = init_obj.list_check_yamls(init_file)
-    combined = init_obj.use_uwtools(ymls)
-
-    # clean init_file (not needed anymore)
-    Path(init_file).unlink()
-
-    return combined
+    # Creating temporary file that will be removed after with block
+    with TemporaryDirectory(prefix = "fre-yamltools-") as tmp_dir:
+        init_file = f"{Path(tmp_dir)}/init.yaml"
+        ymls = init_obj.create_tmp_file(init_file)
+        combined = init_obj.use_uwtools(ymls)
+        return combined
 
 ##### NOTES:
 ##### - report of unrendered keys only shown when total not used with values_needed
