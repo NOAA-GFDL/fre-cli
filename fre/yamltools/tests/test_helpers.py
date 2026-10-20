@@ -1,11 +1,12 @@
 import os
+import re
 import tempfile
 
 import pytest
 import yaml
 
 import fre
-from fre.yamltools.helpers import yaml_load, check_fre_version
+from fre.yamltools.helpers import yaml_load, check_fre_version, experiment_check
 
 
 @pytest.fixture
@@ -69,3 +70,102 @@ def test_check_fre_version_missing(yaml_without_version, caplog):
     with caplog.at_level(logging.WARNING):
         check_fre_version(yaml_without_version)
     assert "fre_cli_version not specified" in caplog.text, f"i'd suspect the 'import fre' in fre/yamltools/helpers"
+
+
+def test_experiment_check_returns_experiment_and_analysis_paths(tmp_path):
+    """experiment_check should resolve all YAML paths for the requested experiment."""
+    for filename in ("first_pp.yaml", "second_pp.yaml", "analysis.yaml"):
+        (tmp_path / filename).touch()
+
+    loaded_yaml = {
+        "experiments": [
+            {"name": "other", "pp": ["other.yaml"]},
+            {
+                "name": "target",
+                "pp": ["first_pp.yaml", "second_pp.yaml"],
+                "analysis": ["analysis.yaml"],
+            },
+        ]
+    }
+
+    pp_paths, analysis_paths = experiment_check(
+        mainyaml_dir=tmp_path,
+        experiment="target",
+        loaded_yaml=loaded_yaml,
+    )
+
+    assert pp_paths == [tmp_path / "first_pp.yaml", tmp_path / "second_pp.yaml"]
+    assert analysis_paths == [tmp_path / "analysis.yaml"]
+
+
+@pytest.mark.parametrize("analysis", [{}, {"analysis": None}])
+def test_experiment_check_without_analysis_returns_none(tmp_path, analysis):
+    """experiment_check should return None when analysis YAML paths are not defined."""
+    (tmp_path / "experiment.yaml").touch()
+    loaded_yaml = {
+        "experiments": [{"name": "target", "pp": ["experiment.yaml"], **analysis}]
+    }
+
+    pp_paths, analysis_paths = experiment_check(
+        mainyaml_dir=tmp_path,
+        experiment="target",
+        loaded_yaml=loaded_yaml,
+    )
+
+    assert pp_paths == [tmp_path / "experiment.yaml"]
+    assert analysis_paths is None
+
+
+def test_experiment_check_rejects_unknown_experiment(tmp_path):
+    loaded_yaml = {"experiments": [{"name": "known", "pp": ["experiment.yaml"]}]}
+
+    with pytest.raises(NameError, match="missing is not in the list of experiments"):
+        experiment_check(
+            mainyaml_dir=tmp_path,
+            experiment="missing",
+            loaded_yaml=loaded_yaml,
+        )
+
+
+def test_experiment_check_requires_experiment_yaml_path(tmp_path):
+    loaded_yaml = {"experiments": [{"name": "target", "pp": None}]}
+
+    with pytest.raises(ValueError, match="No experiment yaml path given!"):
+        experiment_check(
+            mainyaml_dir=tmp_path,
+            experiment="target",
+            loaded_yaml=loaded_yaml,
+        )
+
+
+def test_experiment_check_rejects_nonexistent_experiment_yaml(tmp_path):
+    loaded_yaml = {"experiments": [{"name": "target", "pp": ["target"]}]}
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape("Experiment yaml path given (target) does not exist."),
+    ):
+        experiment_check(
+            mainyaml_dir=tmp_path,
+            experiment="target",
+            loaded_yaml=loaded_yaml,
+        )
+
+
+def test_experiment_check_rejects_nonexistent_analysis_yaml(tmp_path):
+    (tmp_path / "experiment.yaml").touch()
+    loaded_yaml = {
+        "experiments": [
+            {"name": "target", "pp": ["experiment.yaml"], "analysis": ["missing.yaml"]}
+        ]
+    }
+
+    with pytest.raises(
+        ValueError,
+        match="Incorrect analysis yaml path given; does not exist.",
+    ):
+        experiment_check(
+            mainyaml_dir=tmp_path,
+            experiment="target",
+            loaded_yaml=loaded_yaml,
+        )
