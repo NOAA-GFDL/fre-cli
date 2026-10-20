@@ -21,6 +21,7 @@ from pathlib import Path
 from jsonschema import validate, SchemaError, ValidationError
 import metomi.rose.config
 
+import fre
 import fre.yamltools.combine_yamls_script as cy
 
 fre_logger = logging.getLogger(__name__)
@@ -90,6 +91,9 @@ def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config
     rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{experiment}"')
     rose_suite.set(keys=['template variables', 'PLATFORM'], value=f'"{platform}"')
     rose_suite.set(keys=['template variables', 'TARGET'], value=f'"{target}"')
+
+    # Set the fre-cli version, for the workflow to select the fre-cli version used by tasks
+    rose_suite.set(keys=['template variables', 'FRE_VERSION'], value=f'"{fre.version}"')
 
     return rose_suite
 

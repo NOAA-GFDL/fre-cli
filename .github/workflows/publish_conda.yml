@@ -36,7 +36,8 @@ jobs:
         with:
           submodules: 'recursive'
 
-      # For tagged releases, determine the tag from the __init__.py.
+      # For tagged releases, determine the tag from the __init__.py,
+      # removing the '-dev' suffix that the update-tag action appends.
       # Then make it available for the conda-build steps by setting the env var
       # $GIT_DESCRIBE_TAG to the determined tag.
       # $GITHUB_ENV is a special file path provided by the Actions runner.
@@ -49,7 +50,7 @@ jobs:
           import re
           content = open('fre/__init__.py').read()
           m = re.search(r'GIT_DESCRIBE_TAG\",\s*\"([^\"]+)\"', content)
-          print(m.group(1))
+          print(re.sub(r'-dev$', '', m.group(1)))
           ")
           echo "GIT_DESCRIBE_TAG=$VERSION" >> $GITHUB_ENV
 

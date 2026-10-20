@@ -97,6 +97,21 @@ pushes to the ``main`` branch, the package located at https://anaconda.org/NOAA-
 the workflow defined in ``.github/workflows/publish_conda.yml``, which is equivalent to ``.github/workflows/build_conda.yml``
 with an extra ``conda publish`` step.
 
+``fre-cli`` versions
+~~~~~~~~~~~~~~~~~~~~
+Releases and pre-releases are tagged (e.g. ``YYYY.MM``, or ``YYYY.MM.alpha1``, ``YYYY.MM.beta1``), and ``fre --version``
+reports the tag. Untagged states of ``main`` between tags (e.g. ``fre/test``) report ``<last tag>-dev``, e.g. ``YYYY.MM-dev``
+or ``YYYY.MM.alpha1-dev``. When a tag is pushed, ``.github/workflows/update_tag.yaml`` opens a pull request that updates
+references to the previous version, and sets the version in ``fre/__init__.py`` to ``<new tag>-dev``.
+
+The ``-dev`` suffix changes some behavior:
+
+* ``fre pp checkout`` defaults to the ``main`` branch of ``fre-postprocess-workflow``, rather than the matching tag
+* ``fre_cli_version`` in a model yaml may be the tag the development version is based on, with a warning
+
+``fre pp configure-yaml`` sets the ``FRE_VERSION`` template variable in ``rose-suite.conf`` to the installed version
+(including any ``-dev`` suffix), so the workflow can select the ``fre-cli`` version its tasks use.
+
 
 Get desired ``logging`` verbosity
 ---------------------------------

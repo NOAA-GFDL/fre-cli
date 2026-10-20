@@ -11,9 +11,11 @@ We've got 4-ish tests:
 - fre --version, checking for version GTE current version (fails if version isn't defined)
 """
 import subprocess
+import pytest
 from click.testing import CliRunner
 
 from fre import fre
+from fre import is_dev_version, base_version
 
 runner = CliRunner()
 
@@ -35,11 +37,21 @@ def test_cli_fre_option_dne():
 
 def test_fre_version():
     ''' module import flavor of below cli test '''
-    assert '2026.01' == fre.version
+    assert '2026.01-dev' == fre.version
 
 def test_cli_fre_version():
     ''' fre --version '''
     result = runner.invoke(fre.fre, args='--version')
-    expected_out = 'fre, version 2026.01'
+    expected_out = 'fre, version 2026.01-dev'
     assert all( [ result.exit_code == 0,
                   expected_out in result.output ] )
+
+@pytest.mark.parametrize("ver, is_dev, base",
+                         [ ("2026.01", False, "2026.01"),
+                           ("2026.01-dev", True, "2026.01"),
+                           ("2026.02.alpha2", False, "2026.02.alpha2"),
+                           ("2026.02.alpha2-dev", True, "2026.02.alpha2") ])
+def test_fre_dev_version_helpers(ver, is_dev, base):
+    ''' is_dev_version and base_version handle release, pre-release, and dev versions '''
+    assert is_dev_version(ver) == is_dev
+    assert base_version(ver) == base
