@@ -14,18 +14,19 @@ def link_line_build(self):
     """
     linkline=""
 
-# if additional libraries are defined, populate the link line with
-# the correct information for libraries
-## CONTAINER; write a script that will execute in the container,
-# to fill in link line with additional libraries in Makefile
+    # If container_addlibs is defined: Create the linkline.sh script to update
+    #     the link line in the Makefile inside the container
+    # If container_linkerflags is defined: Add the linker flags to the link line
+    #    in the Makefile outside of the container (./tmp/[platform]/Makefile)
+    # If baremetal_linkerflags is defined: Add the linker flags to the link line in
+    #    the Makefile ([modelRoot]/[exp_name]/[platform]-[target]/exec/Makefile)
     if "tmp" in self.filepath:
-        # checks
+        # checks 
         if not self.clibs and not self.clf:
             return
 
-        # If container_linkerflags defined, edit Makefile that is outside of the container (./tmp/[platform]/Makefile)
-        # SED command: \1 organizes groups; in the search part of the sed command these groups are organized by
-        #              parenthesis, ending with a \
+        # SED command: \1 organizes groups; in the search part of the sed command
+        #              these groups are organized by parenthesis, ending with a \
         if self.clf:
             for l in self.clf:
                linkline = linkline + " " + l
@@ -233,10 +234,10 @@ class MakefileContainer(Makefile):
                                 # use the same function to create the Makefile
 
 ##dont think this is even used
-    def get_tmpdir(self):
-        """
-        Brief: Return the tmpdir
-        Param:
-            - self The makefile object
-        """
-        return self.tmpdir
+#    def get_tmpdir(self):
+#        """
+#        Brief: Return the tmpdir
+#        Param:
+#            - self The makefile object
+#        """
+#        return self.tmpdir
