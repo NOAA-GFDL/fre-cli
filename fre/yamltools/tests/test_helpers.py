@@ -82,14 +82,15 @@ def test_experiment_check_returns_experiment_and_analysis_paths(tmp_path):
         (tmp_path / filename).touch()
 
     loaded_yaml = {
-        "experiments": [
-            {"name": "other", "pp": ["other.yaml"]},
-            {
-                "name": "target",
-                "pp": ["first_pp.yaml", "second_pp.yaml"],
-                "analysis": ["analysis.yaml"],
-            },
-        ]
+        "experiments": {
+             "other": {
+                "pp": ["other.yaml"],
+             },
+             "target": {
+               "pp": ["first_pp.yaml", "second_pp.yaml"],
+               "analysis": ["analysis.yaml"],
+             }, 
+        }
     }
 
     pp_paths, analysis_paths = experiment_check(
@@ -107,7 +108,12 @@ def test_experiment_check_without_analysis_returns_none(tmp_path, analysis):
     """experiment_check should return None when analysis YAML paths are not defined."""
     (tmp_path / "experiment.yaml").touch()
     loaded_yaml = {
-        "experiments": [{"name": "target", "pp": ["experiment.yaml"], **analysis}]
+        "experiments": {
+            "target": {
+                "pp": ["experiment.yaml"],
+                **analysis
+                }
+        }
     }
 
     pp_paths, analysis_paths = experiment_check(
@@ -121,7 +127,12 @@ def test_experiment_check_without_analysis_returns_none(tmp_path, analysis):
 
 
 def test_experiment_check_rejects_unknown_experiment(tmp_path):
-    loaded_yaml = {"experiments": [{"name": "known", "pp": ["experiment.yaml"]}]}
+    loaded_yaml = {"experiments": {
+                       "known": {
+                           "pp": ["experiment.yaml"]
+                           }
+                       }
+                  }
 
     with pytest.raises(NameError, match="missing is not in the list of experiments"):
         experiment_check(
@@ -132,7 +143,12 @@ def test_experiment_check_rejects_unknown_experiment(tmp_path):
 
 
 def test_experiment_check_requires_experiment_yaml_path(tmp_path):
-    loaded_yaml = {"experiments": [{"name": "target", "pp": None}]}
+    loaded_yaml = {"experiments": {
+                       "target": {
+                           "pp": None
+                           }
+                       }
+                  }
 
     with pytest.raises(ValueError, match="No experiment yaml path given!"):
         experiment_check(
@@ -143,7 +159,12 @@ def test_experiment_check_requires_experiment_yaml_path(tmp_path):
 
 
 def test_experiment_check_rejects_nonexistent_experiment_yaml(tmp_path):
-    loaded_yaml = {"experiments": [{"name": "target", "pp": ["target"]}]}
+    loaded_yaml = {"experiments": {
+                       "target": {
+                           "pp": ["target"]
+                           }
+                       }
+                  }
 
     with pytest.raises(
         ValueError,
@@ -158,11 +179,13 @@ def test_experiment_check_rejects_nonexistent_experiment_yaml(tmp_path):
 
 def test_experiment_check_rejects_nonexistent_analysis_yaml(tmp_path):
     (tmp_path / "experiment.yaml").touch()
-    loaded_yaml = {
-        "experiments": [
-            {"name": "target", "pp": ["experiment.yaml"], "analysis": ["missing.yaml"]}
-        ]
-    }
+    loaded_yaml = {"experiments": {
+                       "target": {
+                           "pp": ["experiment.yaml"],
+                           "analysis": ["missing.yaml"]
+                           }
+                       }
+                  }
 
     with pytest.raises(
         ValueError,
