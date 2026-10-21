@@ -1,0 +1,15 @@
+# reusable variables
+fre_properties:
+  VERSION:        "full"
+  FRE_STEM:       "null_model/{{ fre_properties.VERSION }}"
+  # compile information
+  branch:              "main"
+  INTEL:               "intel-classic"
+  FMSincludes:         "-IFMS/include"
+
+build:
+  compileYaml:  "compile.yaml"
+  platformYaml: "empty_platforms.yaml"
+
+experiments:
+  experiment1:
