@@ -32,8 +32,20 @@ jobs:
         run: |
           echo "docker_tag=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
 
+      - name: Classify release tag
+        id: tag_classification
+        run: |
+          incoming_tag="${{ steps.set_tag.outputs.docker_tag }}"
+
+          case "$incoming_tag" in
+            *.alpha*|*.beta*) echo "image_tag=development" >> "$GITHUB_OUTPUT" ;;
+            *) echo "image_tag=production" >> "$GITHUB_OUTPUT" ;;
+          esac
+
       - name: Show image tag
-        run: echo "Docker tag is ${{ steps.set_tag.outputs.docker_tag }}"
+        run: |
+          echo "Docker tag is ${{ steps.set_tag.outputs.docker_tag }}"
+          echo "Channel tag is ${{ steps.tag_classification.outputs.image_tag }}"
 
       - name: Update fre-cli version in cylc-flow-tools.yaml
         run: |
@@ -51,8 +63,11 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: |
+            .
           file: ./container-files/Dockerfile-fre-cli
           push: ${{ github.event_name == 'workflow_run' }}
+          load: ${{ github.event_name == 'workflow_dispatch' }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.set_tag.outputs.docker_tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag_classification.outputs.image_tag }}

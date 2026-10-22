@@ -21,7 +21,7 @@
 ``checkout``
 ------------
 
-* Checkout template file and clone https://github.com/NOAA-GFDL/fre-workflows.git git repository to ~/cylc_src
+* Checkout template file and clone https://github.com/NOAA-GFDL/fre-postprocess-workflow.git git repository to ~/cylc_src
 * Minimal Syntax: ``fre pp checkout -e experiment_name -p platform_name -t target_name [ -b [branch] ]``
 * Module(s) needed: n/a
 * Example: ``fre pp checkout -e c96L65_am5f4b4r0_amip -p gfdl.ncrc5-deploy -t prod-openmp``

@@ -30,7 +30,6 @@ Post-processing Yamls
 Build FMS model
 ===============
 .. include:: usage/build_fms_model.rst
-.. include:: usage/guides/fre_make_guide.rst
 
 Run FMS model
 =============
