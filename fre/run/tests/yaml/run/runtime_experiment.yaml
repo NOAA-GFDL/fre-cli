@@ -1,0 +1,23 @@
+## could include namelist info, dataset info, mode info
+
+run:
+  inputs:
+    namelist:
+      # can be put into tmp_nml/atmos.nml
+      atmos_nml: "have to figure this one out"
+      # common nml_files can be put into a shared_nml reusable yaml
+      # variable and referenced here 
+      files:
+        - "$(includeDir)/nml/am5_common.nml"
+        - "$(includeDir)/nml/am5_amip.nml"
+    datasets: ## reference specific sections of input.yaml[datasets]
+      common_LM4p2: '{{ input.datasets.common_LM4_ex1 }}'
+  runtime_mode:
+    production:
+      simtime: $(EXP_AMIP_LEN)
+      simtime_units: years
+      segment_simtime: '12' #could just be P12M
+      segment_simtime_units: months
+      layouts:
+        c96L65_ex_production: '{{ layouts.c96L65_ex_production}}'
+#to-do: add regression example?
