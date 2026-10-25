@@ -237,6 +237,7 @@ interp
 Interp
 INTERP
 intrafile
+Iocean
 ISMIP
 isodatetime
 isort
@@ -258,10 +259,13 @@ lastindex
 latlon
 latxlon
 lazygroup
+ldarcy
 LDFLAGS
 levelname
 levhalf
 lhdf
+libdarcy
+libsci
 libstring
 Libstring
 libyaml
@@ -368,6 +372,7 @@ Oday
 Odec
 omip
 Omon
+oneapi
 openmp
 OPENMP
 optparse
@@ -552,6 +557,7 @@ validatefail
 variablescan
 vardict
 varlist
+VARNAME
 varnames
 varsfre
 varsize
