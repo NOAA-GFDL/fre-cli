@@ -4,7 +4,6 @@ Test fre list exps
 from pathlib import Path
 
 import pytest
-import yaml
 
 from fre.list_ import list_experiments_script
 from fre.yamltools import helpers
@@ -49,9 +48,10 @@ def test_exp_list(caplog):
 def test_yamlvalidate():
     ''' Test yaml is being validated '''
     yamlfilepath = Path(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
+    val_schema= "undefined_atm"
 
     # Combine model / experiment
-    yml_dict = list_experiments_script.list_experiments_subtool(f"{TEST_DIR}/{NM_EXAMPLE}/{YAMLFILE}")
+    yml_dict = list_experiments_script.list_experiments_subtool(yamlfilepath)
 
     # Validate and capture output
-    assert helpers.validate_yaml(yml_dict, VAL_SCHEMA)
+    assert helpers.validate_yaml(yml_dict, val_schema)
