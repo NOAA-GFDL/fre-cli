@@ -1,23 +1,23 @@
 # reusable variables
 fre_properties:
-  - &VERSION        "full"
-  - &FRE_STEM       !join [null_model/, *VERSION]
+  VERSION: &VERSION         "full"
+  FRE_STEM: &FRE_STEM       !join [null_model/, *VERSION]
   # compile information
-  - &branch              "main"
-  - &INTEL               "intel-classic"
-  - &FMSincludes         "-IFMS/include"
-  - &VOLUME              "/gpfs/f5"
+  BRANCH: &branch            "main"
+  INTEL: &INTEL              "intel-classic"
+  FMSincludes: &FMSincludes  "-IFMS/include"
+  VOLUME: &VOLUME            "/gpfs/f5"
 
 build:
   compileYaml:  "compile.yaml"
   platformYaml: "platforms.yaml"
 
 experiments:
-  - name: "null_model_full"
+  null_model_full:
     pp:
-  - name: "null_model_0"
+  null_model_0:
     pp:
-  - name: "null_model_1"
+  null_model_1:
     pp:
-  - name: "null_model_2"
+  null_model_2:
     pp:
