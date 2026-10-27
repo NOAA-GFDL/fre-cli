@@ -10,8 +10,8 @@ TEST_DIR = Path("fre/make/tests")
 NM_EXAMPLE = Path("null_example")
 YAMLFILE = "null_model.yaml"
 BM_PLATFORM = ["ci.gnu"]
-CONTAINER_PLATFORM = ["hpcmini.2025"] #["hpcme.2023"]
-CONTAINER_PLAT2 = ["con.twostep"]
+CONTAINER_PLATFORM = ["hpcmini.2025"]
+CONTAINER_PLAT2 = ["hpcme.intel25"]
 TARGET = ["debug"]
 EXPERIMENT = "null_model_full"
 
