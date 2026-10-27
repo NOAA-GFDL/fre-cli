@@ -14,7 +14,7 @@ from fre.pp import checkout_script
                            ("2026.02.alpha2-dev", "main") ])
 def test_checkout_default_branch(tmp_path, monkeypatch, fre_ver, expected_branch):
     """
-    Release and pre-release versions of fre check out the matching tag,
+    Release and pre-release versions of fre check out the matching tag (i.e. fre --version),
     development versions check out the main branch
     """
     monkeypatch.setenv("HOME", str(tmp_path))

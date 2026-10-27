@@ -36,11 +36,11 @@ def test_cli_fre_option_dne():
 
 
 def test_fre_version():
-    ''' module import flavor of below cli test '''
+    ''' Confirm the fre version import flavor is correct '''
     assert '2026.01-dev' == fre.version
 
 def test_cli_fre_version():
-    ''' fre --version '''
+    ''' Confirm fre --version output is correct '''
     result = runner.invoke(fre.fre, args='--version')
     expected_out = 'fre, version 2026.01-dev'
     assert all( [ result.exit_code == 0,
@@ -52,6 +52,9 @@ def test_cli_fre_version():
                            ("2026.02.alpha2", False, "2026.02.alpha2"),
                            ("2026.02.alpha2-dev", True, "2026.02.alpha2") ])
 def test_fre_dev_version_helpers(ver, is_dev, base):
-    ''' is_dev_version and base_version handle release, pre-release, and dev versions '''
+    '''
+    Confirm that is_dev_version returns True/False depending on whether the fre-version ends with -dev,
+    and confirm that base_version correctly strips off the -dev suffix.
+    '''
     assert is_dev_version(ver) == is_dev
     assert base_version(ver) == base
