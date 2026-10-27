@@ -2,7 +2,7 @@ compile:
      experiment: "null_model_full"
      container_addlibs:
      container_linkerflags: ["-Wl,--as-needed"]
-     baremetal_linkerflags: ["this is", "a linker flag"]
+     baremetal_linkerflags: ["-Wl,--as-needed"]
      src:
           - component: "FMS"
             repo: "https://github.com/NOAA-GFDL/FMS.git"
