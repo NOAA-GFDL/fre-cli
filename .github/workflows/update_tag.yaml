@@ -50,6 +50,8 @@ jobs:
             find . -type f -name "*.py" -exec sed -i "s/$old_tag/$new_tag/g" {} +
             # docs (all files)
             find docs -type f -exec sed -i "s/$old_tag/$new_tag/g" {} +
+            # fre_cli_version in test model yamls, e.g. "<old tag>-dev" -> "<new tag>-dev"
+            find fre -type f -name "*.yaml" -exec sed -i "s/^\(fre_cli_version: *\"\)$old_tag-dev\"/\1$new_tag-dev\"/" {} +
           fi
 
       # Commits to main after the tag are an untagged development state: '<new tag>-dev'

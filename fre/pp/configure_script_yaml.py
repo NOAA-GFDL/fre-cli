@@ -26,6 +26,9 @@ import fre.yamltools.combine_yamls_script as cy
 
 fre_logger = logging.getLogger(__name__)
 
+# fre-cli module loaded by workflow tasks when fre is an untagged development version (i.e. fre/test)
+FRE_DEV_MODULE_VERSION = 'test'
+
 
 def validate_yaml(yamlfile: dict) -> None:
     """
@@ -92,8 +95,10 @@ def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config
     rose_suite.set(keys=['template variables', 'PLATFORM'], value=f'"{platform}"')
     rose_suite.set(keys=['template variables', 'TARGET'], value=f'"{target}"')
 
-    # Set the fre-cli version, for the workflow to select the fre-cli version used by tasks
-    rose_suite.set(keys=['template variables', 'FRE_VERSION'], value=f'"{fre.version}"')
+    # Set the fre-cli version, for the workflow to select the fre-cli module used by tasks.
+    # Development versions (ending in '-dev') correspond to the fre/test module
+    fre_version = FRE_DEV_MODULE_VERSION if fre.is_dev_version(fre.version) else fre.version
+    rose_suite.set(keys=['template variables', 'FRE_VERSION'], value=f'"{fre_version}"')
 
     return rose_suite
 

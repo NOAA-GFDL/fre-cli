@@ -1,3 +1,5 @@
+fre_cli_version: "2026.01-dev"
+
 # reusable variables
 fre_properties:
   VERSION:           "foo"

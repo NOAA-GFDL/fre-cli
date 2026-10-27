@@ -109,8 +109,11 @@ The ``-dev`` suffix changes some behavior:
 * ``fre pp checkout`` defaults to the ``main`` branch of ``fre-postprocess-workflow``, rather than the matching tag
 * ``fre_cli_version`` in a model yaml may be the tag the development version is based on, with a warning
 
-``fre pp configure-yaml`` sets the ``FRE_VERSION`` template variable in ``rose-suite.conf`` to the installed version
-(including any ``-dev`` suffix), so the workflow can select the ``fre-cli`` version its tasks use.
+* ``fre pp configure-yaml`` sets the ``FRE_VERSION`` template variable in ``rose-suite.conf`` to ``test``
+  (i.e. the ``fre/test`` module) rather than the installed version
+
+Otherwise, ``fre pp configure-yaml`` sets ``FRE_VERSION`` to the installed version, so the workflow can select the
+``fre-cli`` version its tasks use.
 
 
 Get desired ``logging`` verbosity

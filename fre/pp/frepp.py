@@ -135,7 +135,8 @@ def configure_yaml(yamlfile, experiment, platform, target):
     """Generate rose-suite.conf and consolidated YAML in ~/cylc-src/[workflow_id] from model YAML.
 
     rose-suite.conf includes FRE_VERSION, set to $(fre --version), for the workflow to
-    select the fre-cli version used by its tasks.
+    select the fre-cli version used by its tasks. Development versions (ending in '-dev')
+    set FRE_VERSION to 'test', i.e. the fre/test module.
     """
     configure_script_yaml.yaml_info(yamlfile, experiment, platform, target)
 
