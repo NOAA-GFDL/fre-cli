@@ -16,7 +16,7 @@ from jsonschema import (
 import metomi.rose.config
 
 from fre.pp import configure_script_yaml as csy
-from fre.yamltools import combine_yamls_script_new as cy
+from fre.yamltools import combine_yamls_script as cy
 import fre.list_.list_yamls_script as ly
 
 # Set what would be click options
