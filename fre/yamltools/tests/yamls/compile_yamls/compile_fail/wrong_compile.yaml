@@ -8,4 +8,4 @@ compile:
             cppdefs: "-DINTERNAL_FILE_NML -Duse_libMPI -Duse_netCDF" 
             branch: 2022.01
             cppdefs: "-DHAVE_GETTID -Duse_libMPI -Duse_netCDF"
-            otherFlags: *FMSincludes
+            otherFlags: "{{ fre_properties.FMSincludes }}"
