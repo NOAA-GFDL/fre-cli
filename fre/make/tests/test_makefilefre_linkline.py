@@ -109,23 +109,23 @@ def test_linklinebuild_container_path_no_libs():
             container_linkerflags=["-q=testing"]
         )
 
-    # Mock os.system to capture commands
-    with patch('fre.make.gfdlfremake.makefilefre.os.system') as mock_system:
-        link_line_build(mock_obj)
+        # Mock os.system to capture commands
+        with patch('fre.make.gfdlfremake.makefilefre.os.system') as mock_system:
+            link_line_build(mock_obj)
 
-        # Should still call the sed commands even with empty libs
-        assert mock_system.call_count == 2
+            # Should still call the sed commands even with empty libs
+            assert mock_system.call_count == 2
 
-        # Check the first call (adding CLF variable)
-        first_call = mock_system.call_args_list[0][0][0]
-        assert f"sed -i '/MK_TEMPLATE = /a CLF = -q=testing' {container_path}/Makefile" == first_call
+            # Check the first call (adding CLF variable)
+            first_call = mock_system.call_args_list[0][0][0]
+            assert f"sed -i '/MK_TEMPLATE = /a CLF = -q=testing' {container_path}/Makefile" == first_call
 
-        # Check the second call (line 57 - the regex pattern we fixed)
-        second_call = mock_system.call_args_list[1][0][0]
-        assert f"sed -i 's|\\($(LDFLAGS)\\)|$(CLF) \\1|' {container_path}/Makefile" == second_call
+            # Check the second call (line 57 - the regex pattern we fixed)
+            second_call = mock_system.call_args_list[1][0][0]
+            assert f"sed -i 's|\\($(LDFLAGS)\\)|$(CLF) \\1|' {container_path}/Makefile" == second_call
 
-        linkline_file = Path(f"{mock_obj.filepath}/linkline.sh")
-        assert not linkline_file.exists()
+            linkline_file = Path(f"{mock_obj.filepath}/linkline.sh")
+            assert not linkline_file.exists()
 
 def test_linklinebuild_baremetal_path_no_libs():
     """
