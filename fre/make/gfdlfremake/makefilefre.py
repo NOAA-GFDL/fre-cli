@@ -205,19 +205,22 @@ class Makefile():
             fh.write("\t$(RM) -r "+self.e+"\n")
             fh.write("\t$(RM) -r Makefile \n")
 
-### This seems incomplete? ~ ejs
-## \param exp Experiment name
-## \param libs Additional libraries/linker flags defined by user
-## \param src_dir The path to the source directory
-## \param bld_dir The path to the build directory
-## \param mk_template_path The path of the template .mk file for compiling
-## \param tmp_dir A local path to temporarily store files build to be copied to the container
 class MakefileContainer(Makefile):
     """
     The makefile class for a container build. The Makefile gets built into a temporary
     directory so it can be copied into the container. 
     """
     def __init__(self,exp,libs,linkerflags,src_dir,bld_dir,mk_template_path,tmp_dir):
+        """
+        Param:
+            - self The Makefile object
+            - exp Experiment name
+            - libs Additional libraries/linker flags defined by user
+            - src_dir The path to the source directory
+            - bld_dir The path to the build directory
+            - mk_template_path The path of the template .mk file for compiling
+            - tmp_dir A local path to temporarily store files build to be copied to the container
+        """
         self.e = exp
         self.bmlf = ""
         self.clibs = libs
