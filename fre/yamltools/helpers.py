@@ -38,14 +38,12 @@ def yaml_load(yamlfile):
 def check_fre_version(yamlfile: str) -> None:
     """
     Check that the fre_cli_version specified in the model yaml matches the
-    installed version of fre-cli. If fre_cli_version is not specified, a
-    warning is logged. If fre_cli_version does not match, a ValueError is raised.
-    If the installed version is a development version (e.g. '2026.01-dev') and
-    fre_cli_version matches the tag it is based on (e.g. '2026.01'), a warning is logged.
+    installed version of fre-cli. If fre_cli_version is not specified or does
+    not match, a ValueError is raised.
 
     :param yamlfile: Path to model YAML configuration file
     :type yamlfile: str
-    :raises ValueError: if the fre_cli_version in the YAML does not match the installed fre-cli version
+    :raises ValueError: if the fre_cli_version in the YAML is missing or does not match the installed fre-cli version
     """
     try:
         loaded_yaml = yaml_load(yamlfile)
@@ -58,26 +56,14 @@ def check_fre_version(yamlfile: str) -> None:
 
     yaml_fre_version = loaded_yaml.get("fre_cli_version")
     if yaml_fre_version is None:
-        fre_logger.warning(
-            "fre_cli_version not specified in %s. "
-            "It is recommended to add 'fre_cli_version' to your model yaml "
-            "to ensure compatibility with the correct version of fre-cli.",
-            yamlfile
+        raise ValueError(
+            f"fre_cli_version not specified in {yamlfile}. "
+            f"Please add 'fre_cli_version: \"{fre.version}\"' to your model yaml "
+            f"to ensure compatibility with the correct version of fre-cli."
         )
-        return
 
     installed_version = fre.version
     if str(yaml_fre_version) == str(installed_version):
-        return
-
-    # development versions (e.g. '2026.01-dev') are compatible with the tag they're based on
-    if fre.is_dev_version(installed_version) and \
-       str(yaml_fre_version) == fre.base_version(installed_version):
-        fre_logger.warning(
-            "The fre_cli_version specified in the model yaml (%s) does not exactly match "
-            "the installed development version of fre-cli (%s). Proceeding anyway.",
-            yaml_fre_version, installed_version
-        )
         return
 
     if str(yaml_fre_version) != str(installed_version):
