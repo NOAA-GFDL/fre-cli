@@ -45,11 +45,18 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
     with open(yamlfile, 'r', encoding="utf-8") as yf:
         yaml_dict = yaml.load(yf, Loader = yaml.Loader)
 
-    platform_data = yaml_dict["build"].get("platformYaml")
-    compile_data = yaml_dict["build"].get("compileYaml")
-    exp_data = yaml_dict["experiments"].get(experiment)
-
+    # Add model yaml to list
     yamls = [model_yaml]
+
+    build_yamls = yaml_dict.get("build")
+    platform_data = None
+    compile_data = None
+    if build_yamls is not None:
+        platform_data = build_yamls.get("platformYaml")
+        compile_data = build_yamls.get("compileYaml")
+
+    exp_data = yaml_dict.get("experiments").get(experiment)
+
     # list yamls associated with the compile, run, post-processing, and analysis
     if experiment:
         if experiment not in yaml_dict["experiments"].keys():
@@ -59,12 +66,18 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
 
         if application:
             fre_logger.info("Gathering YAMLs associated with experiment %s and application %s", experiment, application)
-            yamls.extend([platform_data])
+
+            # Add platforms yaml to list if defined
+            if platform_data is not None:
+                yamls.extend([platform_data])
+
+            # Add settings yaml to list if defined
             settings_data = None
             if exp_data.get("settings") is not None:
                 settings_data = exp_data.get("settings")
                 yamls.extend([settings_data])
 
+            # Add application yamls if defined
             for app in application.split(","):
                 if app not in exp_data.keys():
                     raise ValueError(f" *** Application passed ({app}) is not defined in the model YAML.",
@@ -76,7 +89,8 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
         else:
             fre_logger.info("No application name passed. Gathering ALL YAMLs associated with %s", experiment)
             # Add yamls used for compilation
-            yamls.extend([platform_data, compile_data])
+            if platform_data is not None and compile_data is not None:
+                yamls.extend([platform_data, compile_data])
 
             # Add yamls listed under application name in model yaml
             for value in exp_data.values():
@@ -88,7 +102,12 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
                     yamls.append(value)
     else:
         fre_logger.info("No experiment name passed. Gathering only provide YAMLs related to compilation.")
-        yamls.extend([platform_data, compile_data])
+        if platform_data is not None and compile_data is not None:
+            yamls.extend([platform_data, compile_data])
+        else:
+            fre_logger.warning("")
+            fre_logger.warning("*** No platform or compile YAML defined. ONLY passing model YAML. ***")
+            fre_logger.warning("")
 
     yamls_full_path = ""
     # Add full path for yaml configurations
