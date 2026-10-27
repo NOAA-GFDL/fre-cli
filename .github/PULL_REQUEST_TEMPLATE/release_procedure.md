@@ -6,8 +6,8 @@ Note: [fre-cli](https://github.com/NOAA-GFDL/fre-cli) and [fre-postprocess-workf
 * [ ] 1. Create corresponding tag in [fre-postprocess-workflow](https://github.com/NOAA-GFDL/fre-postprocess-workflow/tags) (See fre-cli changes (3) for how to tag)
 
     **Note**: The workflow no longer hard-codes the fre-cli version. `fre pp configure-yaml` sets `FRE_VERSION` in
-    `rose-suite.conf` to `$(fre --version)`, and the workflow loads the matching `fre/<version>` module
-    (or `fre/test` for development versions ending in `-dev`).
+    `rose-suite.conf` to `$(fre --version)`, and the workflow loads the matching `fre/<version>` module.
+    For development versions (ending in `-dev`), `FRE_VERSION` is set to `test` instead, i.e. the `fre/test` module.
 
 ### fre-cli changes
 * [ ] 2. Verify that git submodules in the fre-cli reflect the latest state (or certain commit/tag) of the upstream repositories. 
