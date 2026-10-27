@@ -42,12 +42,12 @@ class compileYaml():
         try:
             self.yaml["container_addlibs"]
         except:
-            self.yaml["container_addlibs"]=""
+            self.yaml["container_addlibs"]=None
         ## Check for optional libraries and linker flags for linking in container
         try:
             self.yaml["container_linkerflags"]
         except:
-            self.yaml["container_linkerflags"]=""
+            self.yaml["container_linkerflags"]=None
 
         ## Check for optional libraries and packages for linking on bare-metal system
         try:
