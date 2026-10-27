@@ -5,6 +5,7 @@ Tests the list_yamls_subtool function with various flag combinations
 using the example model YAML file.
 """
 from pathlib import Path
+import re
 import pytest
 from fre.list_.list_yamls_script import list_yamls_subtool
 
@@ -195,6 +196,42 @@ class TestListYamlsScript:
                 yamlfile=model_yaml_path,
                 experiment="experiment1",
                 application=None
+            )
+
+            assert isinstance(result, str)
+
+    def test_list_yamls_error_raised_exp_X_application_passed(self, model_yaml_path, caplog):
+        """ Test that an error is raised when application is specified without specifying an experiment name """
+        with pytest.raises(ValueError):
+            result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment=None,
+                application="run"
+            )
+
+            assert isinstance(result, str)
+        assert "*** Must pass experiment name along with application name ***" in caplog.text
+
+    def test_list_yamls_error_raised_exp_dne(self, model_yaml_path, caplog):
+        """ Test that an error is raised if the experiment is not defined in the model YAML """
+        with pytest.raises(ValueError):
+            result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment="experiment_wrong",
+                application="run"
+            )
+
+            assert isinstance(result, str)
+        assert "Experiment passed is not defined in the model YAML." in caplog.text
+        assert "Users can list experiments via `fre list exps -y [model YAML]`" in caplog.text
+
+    def test_list_yamls_error_raised_application_dne(self, model_yaml_path, caplog):
+        """ Test that an error is raised if the application is not defined in the model YAML """
+        with pytest.raises(ValueError, match = "Application passed \\(runrunrun\\) is not defined in the model YAML."):
+            result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment="experiment1",
+                application="runrunrun"
             )
 
             assert isinstance(result, str)

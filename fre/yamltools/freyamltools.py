@@ -51,7 +51,7 @@ def combine_yamls(yamlfile,
 @click.option("-o", "--output", type=str,
               help="Output")
 @click.option("--no-clean", type=bool,
-              help="Do not remove anything from the combinedm resolved YAML file.")
+              help="Do not remove anything from the combined, resolved YAML file.")
 def combine(yamls, experiment, platform, target, output, no_clean): 
     """
     - Combine the model yaml with the compile, platform,

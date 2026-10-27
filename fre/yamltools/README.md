@@ -11,7 +11,7 @@ To access YAML examples, clone the fre-cli repository:
 
 ### Independent subtool use
 
-    fre yamltools combine -y "yamls/model.yaml,yamls/compile_yamls/platforms.yaml,yamls/compile_yamls/compile.yaml" -o out.yaml
+    fre yamltools combine -y yamls/model.yaml,yamls/compile_yamls/platforms.yaml,yamls/compile_yamls/compile.yaml -o out.yaml
 
 ### Piped from `fre list`
 
@@ -38,3 +38,4 @@ To access YAML examples, clone the fre-cli repository:
         - `-p, --platform [platform]`
         - `-t, --target [target]`
         - `-o, --output [path to output file]`
+        - `--no-clean`
