@@ -29,16 +29,19 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
 
     src_vars={}
 
-    for component_info in yml["postprocess"]["components"]:
+    component_info = yml["postprocess"]["components"]
+    yml_keys = component_info.keys()
+
+    for component_name in yml_keys:
         # if component in yaml not an active pp component, skip
-        if component_info.get("type") != pp_comp:
+        if component_name != pp_comp:
             fre_logger.info(
                 'Component in pp yaml config (%s) does not match active pp component (%s). '
-                'Skipping component remapping ...', component_info.get("type"), pp_comp)
+                'Skipping component remapping ...', component_name, pp_comp)
             continue
 
         # non-static
-        src_info = component_info.get("sources")
+        src_info = component_info[component_name].get("sources")
         for src_elem in src_info:
             # if variables are defined, append to dictionary
             if src_elem.get("variables"):
@@ -47,8 +50,8 @@ def get_variables(yml: dict, pp_comp: str) -> dict:
                 src_vars[src_elem.get("history_file")] = "all"
 
         # static
-        if component_info.get("static"):
-            static_info = component_info.get("static")
+        if component_info[component_name].get("static"):
+            static_info = component_info[component_name].get("static")
             for static_elem in static_info:
                 # if variables are defined, append to dictionary
                 if static_elem.get("variables"):
