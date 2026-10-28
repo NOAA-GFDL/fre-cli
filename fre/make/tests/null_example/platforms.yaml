@@ -20,6 +20,7 @@ platforms:
      containerRun: "apptainer" 
      containerBase: "docker.io/ecpe4s/noaa-intel-prototype:2023.09.25" 
      mkTemplate: "/apps/mkmf/templates/hpcme-intel21.mk"
+     volume: "{{ fre_properties.VOLUME }}"
    - name: ci.gnu
      compiler: gnu
      mkTemplate: "linux-ubuntu-xenial-gnu.mk"
