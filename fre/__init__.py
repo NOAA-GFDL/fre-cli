@@ -8,7 +8,8 @@ import logging
 # publish_conda.yml replaces this with the tag when building a release package.
 DEV_VERSION = "develop"
 version = DEV_VERSION
-__version__ = version
+# packaging metadata (pyproject.toml) requires a PEP 440 version, which 'develop' is not
+__version__ = "0+develop" if version == DEV_VERSION else version
 
 def is_dev_version(ver: str = version) -> bool:
     """
