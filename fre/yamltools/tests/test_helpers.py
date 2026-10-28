@@ -69,12 +69,15 @@ def test_check_fre_version_missing(yaml_without_version):
     with pytest.raises(ValueError, match="fre_cli_version not specified"):
         check_fre_version(yaml_without_version)
 
-def test_check_fre_version_dev_mismatch(tmp_path, monkeypatch):
-    """check_fre_version should raise ValueError when a dev version is based on a different tag."""
-    monkeypatch.setattr(fre, "version", "2026.02-dev")
+@pytest.mark.parametrize("installed_version, yaml_version",
+                         [ ("develop", "2026.01"),
+                           ("2026.01", "develop") ])
+def test_check_fre_version_dev_mismatch(tmp_path, monkeypatch, installed_version, yaml_version):
+    """check_fre_version should raise ValueError when a release and the develop version are mixed."""
+    monkeypatch.setattr(fre, "version", installed_version)
     path = tmp_path / "other_version.yaml"
     with open(path, 'w') as f:
-        yaml.dump({'fre_cli_version': '2026.01', 'fre_properties': []}, f)
+        yaml.dump({'fre_cli_version': yaml_version, 'fre_properties': []}, f)
     with pytest.raises(ValueError, match="does not match the installed version"):
         check_fre_version(str(path))
 

@@ -10,8 +10,7 @@ from fre.pp import checkout_script
 @pytest.mark.parametrize("fre_ver, expected_branch",
                          [ ("2026.01", "2026.01"),
                            ("2026.02.alpha2", "2026.02.alpha2"),
-                           ("2026.01-dev", "main"),
-                           ("2026.02.alpha2-dev", "main") ])
+                           ("develop", "main") ])
 def test_checkout_default_branch(tmp_path, monkeypatch, fre_ver, expected_branch):
     """
     Release and pre-release versions of fre check out the matching tag (i.e. fre --version),
@@ -34,7 +33,7 @@ def test_checkout_default_branch(tmp_path, monkeypatch, fre_ver, expected_branch
 def test_checkout_explicit_branch(tmp_path, monkeypatch):
     """ a user-specified branch overrides the default, even for development versions """
     monkeypatch.setenv("HOME", str(tmp_path))
-    monkeypatch.setattr(checkout_script, "fre_ver", "2026.01-dev")
+    monkeypatch.setattr(checkout_script, "fre_ver", "develop")
 
     calls = []
     def fake_run(cmd, **kwargs):

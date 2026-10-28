@@ -12,7 +12,7 @@ It supports four operational scenarios:
 4. Branch provided, directory exists: Validates that the existing directory matches the user-specified branch or tag
 
 The default branch/tag is the installed `fre` package version (e.g. a release or pre-release tag),
-unless `fre` is an untagged development version (ending in '-dev', e.g. fre/test), in which case
+unless `fre` is a development version ('develop', e.g. fre/test), in which case
 the default is the `main` branch.
 """
 import logging
@@ -45,7 +45,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str, optional
     :param branch: is a Git branch or tag name to checkout. If None, it defaults to the installed `fre` package version,
-                   or to the `main` branch if the installed `fre` is a development version (ending in '-dev').
+                   or to the `main` branch if the installed `fre` is a development version ('develop').
     :type branch: str, optional
 
     :return: None
@@ -61,7 +61,7 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     go_back_here = os.getcwd()
 
     # Determine fallback git tag based on fre package version
-    # untagged development versions of fre (e.g. fre/test) use the workflow's main branch
+    # development versions of fre ('develop', e.g. fre/test) use the workflow's main branch
     default_tag = FRE_WORKFLOWS_DEV_BRANCH if is_dev_version(fre_ver) else fre_ver
     git_clone_branch_arg = branch if branch is not None else default_tag
     if branch is None:

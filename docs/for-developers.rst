@@ -100,15 +100,15 @@ with an extra ``conda publish`` step.
 ``fre-cli`` versions
 ~~~~~~~~~~~~~~~~~~~~
 Releases and pre-releases are tagged (e.g. ``YYYY.MM``, or ``YYYY.MM.alpha1``, ``YYYY.MM.beta1``), and ``fre --version``
-reports the tag. Untagged states of ``main`` between tags (e.g. ``fre/test``) report ``<last tag>-dev``, e.g. ``YYYY.MM-dev``
-or ``YYYY.MM.alpha1-dev``. When a tag is pushed, ``.github/workflows/update_tag.yaml`` opens a pull request that updates
-references to the previous version, and sets the version in ``fre/__init__.py`` to ``<new tag>-dev``.
+reports the tag. All other states (e.g. ``main``, ``fre/test``, or a local install) report ``develop``, consistent with
+the ``develop`` conda package (``conda install fre-cli==develop``). The version in ``fre/__init__.py`` is always
+``develop``; when a release package is built, ``.github/workflows/publish_conda.yml`` replaces it with the tag. When a tag
+is pushed, ``.github/workflows/update_tag.yaml`` opens a pull request that updates references to the previous version.
 
-The ``-dev`` suffix changes some behavior:
+The ``develop`` version changes some behavior:
 
 * ``fre pp checkout`` defaults to the ``main`` branch of ``fre-postprocess-workflow``, rather than the matching tag
-* ``fre_cli_version`` in a model yaml may be the tag the development version is based on, with a warning
-
+* ``fre_cli_version`` in a model yaml must be ``develop``
 * ``fre pp configure-yaml`` sets the ``FRE_VERSION`` template variable in ``rose-suite.conf`` to ``test``
   (i.e. the ``fre/test`` module) rather than the installed version
 

@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Fetch tags
         run: |
@@ -24,18 +26,14 @@ jobs:
         run: |
           echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-      # The previous tag is read from fre/__init__.py rather than sorting git tags,
-      # since version sorting ranks pre-release tags (e.g. 2026.01.beta2) above releases (2026.01).
-      # Between tags, the version in fre/__init__.py is '<previous tag>-dev'.
+      # The previous tag is the most recent tag reachable from the commit before the new tag,
+      # rather than sorting git tags, since version sorting ranks pre-release tags
+      # (e.g. 2026.01.beta2) above releases (2026.01).
       - name: Get previous tag
         id: get_prev_tag
         run: |
-          prev_tag=$(python3 -c "
-          import re
-          content = open('fre/__init__.py').read()
-          m = re.search(r'^version = \"([^\"]+)\"', content, re.M)
-          print(re.sub(r'-dev$', '', m.group(1)))
-          ")
+          new_tag="${{ steps.get_tag.outputs.tag }}"
+          prev_tag=$(git describe --tags --abbrev=0 "${new_tag}^" 2>/dev/null || true)
           echo "prev_tag=${prev_tag}" >> $GITHUB_OUTPUT
 
       - name: Replace old tag with new tag in all relevant files
@@ -50,16 +48,7 @@ jobs:
             find . -type f -name "*.py" -exec sed -i "s/$old_tag/$new_tag/g" {} +
             # docs (all files)
             find docs -type f -exec sed -i "s/$old_tag/$new_tag/g" {} +
-            # fre_cli_version in test model yamls, e.g. "<old tag>-dev" -> "<new tag>-dev"
-            find fre -type f -name "*.yaml" -exec sed -i "s/^\(fre_cli_version: *\"\)$old_tag-dev\"/\1$new_tag-dev\"/" {} +
           fi
-
-      # Commits to main after the tag are an untagged development state: '<new tag>-dev'
-      - name: Set fre-cli development version
-        run: |
-          new_tag="${{ steps.get_tag.outputs.tag }}"
-          sed -i "s/^\(version = \"\)[^\"]*\"/\1${new_tag}-dev\"/" fre/__init__.py
-          grep '^version = ' fre/__init__.py
 
       - name: Update fre-cli version for container environment
         run: |
@@ -75,5 +64,5 @@ jobs:
           branch-suffix: timestamp     # add a timestamp to branch name
           delete-branch: true          # delete afer merge
           title: Update refs to version number post-release
-          body: automated change, replaces references to the old version number with the new version number upon releases, and sets the fre-cli version to '<new version>-dev'. This PR will need to be closed and reopened to run CI testing.
+          body: automated change, replaces references to the old version number with the new version number upon releases. This PR will need to be closed and reopened to run CI testing.
           exclude: container-files/cylc-flow-tools.yaml

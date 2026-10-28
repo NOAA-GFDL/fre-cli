@@ -108,7 +108,7 @@ You can always check the specific version, down to the patch-release space, with
 $ ] fre --version
 fre, version YYYY.NN.PP
 ```
-`fre/test` and other untagged states of `main` report the last tag with a `-dev` suffix, e.g. `fre, version YYYY.NN-dev`.
+`fre/test` and other non-release installs report `fre, version develop`, matching the `fre-cli==develop` conda package.
 
 # Disclaimer
 The United States Department of Commerce (DOC) GitHub project code is provided on an 'as is' basis and the

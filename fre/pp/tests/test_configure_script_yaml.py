@@ -207,6 +207,6 @@ def test_rose_init_fre_version_dev(monkeypatch):
     rose_init sets the FRE_VERSION template variable to 'test' (i.e. the fre/test module)
     if the installed fre is a development version
     """
-    monkeypatch.setattr(csy.fre, "version", "2026.02.alpha2-dev")
+    monkeypatch.setattr(csy.fre, "version", "develop")
     rose_suite = csy.rose_init(EXPERIMENT, PLATFORM, TARGET)
     assert rose_suite.get_value(['template variables', 'FRE_VERSION']) == '"test"'

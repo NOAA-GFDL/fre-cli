@@ -135,7 +135,7 @@ def configure_yaml(yamlfile, experiment, platform, target):
     """Generate rose-suite.conf and consolidated YAML in ~/cylc-src/[workflow_id] from model YAML.
 
     rose-suite.conf includes FRE_VERSION, set to $(fre --version), for the workflow to
-    select the fre-cli version used by its tasks. Development versions (ending in '-dev')
+    select the fre-cli version used by its tasks. Development versions ('develop')
     set FRE_VERSION to 'test', i.e. the fre/test module.
     """
     configure_script_yaml.yaml_info(yamlfile, experiment, platform, target)
@@ -154,7 +154,7 @@ def configure_yaml(yamlfile, experiment, platform, target):
 @click.option("-b", "--branch", type=str,
               required=False, default = None,
               help="fre-postprocess-workflow branch/tag to clone; default is $(fre --version), "
-                   "or 'main' if $(fre --version) is a development version ending in '-dev'")
+                   "or 'main' if $(fre --version) is 'develop'")
 def checkout(experiment, platform, target, branch=None):
     """Clone or verify fre-workflows repository template in ~/cylc-src."""
     checkout_script.checkout_template(experiment, platform, target, branch)
@@ -261,7 +261,7 @@ def ppval(path):
 @click.option("-b", "--branch",
               required=False, default=None,
               help="fre-postprocess-workflow branch/tag to clone; default is $(fre --version), "
-                   "or 'main' if $(fre --version) is a development version ending in '-dev'")
+                   "or 'main' if $(fre --version) is 'develop'")
 @click.option("-t", "--time",
               required=False, default=None,
               help="Time whose history files are ready")

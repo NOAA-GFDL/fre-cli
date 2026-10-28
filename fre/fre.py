@@ -15,7 +15,7 @@ fre_logger = logging.getLogger(__name__)
 @click.version_option(
     package_name = "fre-cli",
     version = version,
-    help = "Show the version and exit. Untagged development versions (e.g. fre/test) end in '-dev'."
+    help = "Show the version and exit. Non-release versions (e.g. fre/test) report 'develop'."
 )
 
 

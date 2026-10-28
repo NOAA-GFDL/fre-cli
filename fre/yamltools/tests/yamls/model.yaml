@@ -28,7 +28,7 @@ fre_properties:
 
   PP_CPLD_CHUNK_A: ""
 
-fre_cli_version: "2026.01-dev"
+fre_cli_version: "develop"
 
 build:
   # compile information
