@@ -6,7 +6,6 @@ fre_properties:
   BRANCH:               "main"
   INTEL:                "intel-classic"
   FMSincludes:          "-IFMS/include"
-  VOLUME:               "/gpfs/f5"
 
 build:
   compileYaml:  "compile.yaml"

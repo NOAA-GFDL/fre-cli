@@ -20,7 +20,6 @@ platforms:
      containerRun: "apptainer" 
      containerBase: "docker.io/ecpe4s/noaa-intel-prototype:2023.09.25" 
      mkTemplate: "/apps/mkmf/templates/hpcme-intel21.mk"
-     volume: "{{ fre_properties.VOLUME }}"
    - name: ci.gnu
      compiler: gnu
      mkTemplate: "linux-ubuntu-xenial-gnu.mk"
@@ -68,7 +67,6 @@ platforms:
      mkTemplate: "/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk"
      container2step: True
      container2base: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3rte"
-     volume: "{{ fre_properties.VOLUME }}"
 # hpcme.intel25 info to replace con.twostep
 #   - name: con.twostep
 #     compiler: intel
