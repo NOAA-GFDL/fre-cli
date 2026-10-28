@@ -11,6 +11,7 @@ import pytest
 import yaml
 from jsonschema import validate
 
+import fre
 from fre.yamltools import combine_yamls_script_new as cy
 
 
@@ -263,6 +264,7 @@ def test_combine_pp_yamls(tmp_path):
     """
 
     model = {
+        'fre_cli_version' : fre.version,
         'experiments' :
             {
                 'expname': {
