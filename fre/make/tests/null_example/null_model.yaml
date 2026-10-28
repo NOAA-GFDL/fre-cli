@@ -1,3 +1,5 @@
+fre_cli_version: "develop"
+
 # reusable variables
 fre_properties:
   VERSION:              "full"

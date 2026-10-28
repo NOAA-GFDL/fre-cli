@@ -21,11 +21,15 @@ from pathlib import Path
 from jsonschema import validate, SchemaError, ValidationError
 import metomi.rose.config
 
+import fre
 import fre.yamltools.combine_yamls_script_new as cy
 from fre.yamltools import helpers
 import fre.list_.list_yamls_script as ly
 
 fre_logger = logging.getLogger(__name__)
+
+# fre-cli module loaded by workflow tasks when fre is a development version ('develop', i.e. fre/test)
+FRE_DEV_MODULE_VERSION = 'test'
 
 
 def validate_yaml(yamlfile: dict) -> None:
@@ -92,6 +96,11 @@ def rose_init(experiment: str, platform: str, target: str) -> metomi.rose.config
     rose_suite.set(keys=['template variables', 'EXPERIMENT'], value=f'"{experiment}"')
     rose_suite.set(keys=['template variables', 'PLATFORM'], value=f'"{platform}"')
     rose_suite.set(keys=['template variables', 'TARGET'], value=f'"{target}"')
+
+    # Set the fre-cli version, for the workflow to select the fre-cli module used by tasks.
+    # Development versions ('develop') correspond to the fre/test module
+    fre_version = FRE_DEV_MODULE_VERSION if fre.is_dev_version(fre.version) else fre.version
+    rose_suite.set(keys=['template variables', 'FRE_VERSION'], value=f'"{fre_version}"')
 
     return rose_suite
 
