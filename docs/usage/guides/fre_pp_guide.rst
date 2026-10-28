@@ -1,6 +1,8 @@
 Guide
 ----------
-1. Using the main branch of the fre-postprocess-workflow repository: 
+1. Using the default branch of the fre-postprocess-workflow repository. By default, ``fre pp checkout`` checks out
+the tag matching the ``fre`` version (``fre --version``). For the development version of ``fre`` (``develop``, e.g.
+``fre/test``), the ``main`` branch is checked out instead.
 
 .. code-block::
 
