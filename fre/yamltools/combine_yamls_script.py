@@ -5,7 +5,8 @@ YAML Combination Utilities for FRE
 This module provides utility functions for combining model, settings, experiment, compile, platform, and analysis
 YAML files into unified configurations for the Flexible Runtime Environment (FRE) workflow.
 
-- can use fre list output to pipe to this tool (fre list yamls -y [model.yaml] | fre yamltools combine -e [experiment] -a [application])
+- can use fre list output to pipe to this tool. Ex:
+fre list yamls -y [model.yaml] | fre yamltools combine -e [experiment] -a [application]
 - can use this tool to pass in multiple yamls in a comma separated string (-y y1,y2)
 - checks fre-cli-version
 - uses uw config compose (to combine), resolve (to check unrendered values)
@@ -16,7 +17,6 @@ import logging
 import contextlib
 from pathlib import Path
 from typing import Optional
-import yaml
 from tempfile import TemporaryDirectory
 from uwtools.api import config
 from uwtools.api.logging import use_uwtools_logger
@@ -110,8 +110,8 @@ class MergeYamls():
         original_level = root_logger.level
 
         # Get nice uw tools cli output
-        # This does however, change the logging level 
-        uwlogger = use_uwtools_logger()
+        # This does however, change the logging level
+        use_uwtools_logger()
 
         ###  SHOULD BE RESOLVED BUT THIS IS TO CATCH ANY UNRESOLVED JUST IN CASE AND OUTPUT TO FILE IF SPECIFIED ##
         ## uw config realize: resolve final yaml
@@ -137,7 +137,9 @@ class MergeYamls():
 
         return final_yaml_dict
 
-def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:str, output: Optional[str]=None, no_clean: Optional[bool]=False) -> dict:
+def yamltools_combine_subtool(yamls:str, experiment:str, platform:str,
+                              target:str, output: Optional[str]=None,
+                              no_clean: Optional[bool]=False) -> dict:
     """
     :param yamls: is the list of YAML configuration files to combine
     :type yamls: str
@@ -150,7 +152,8 @@ def yamltools_combine_subtool(yamls:str, experiment:str, platform:str, target:st
     :param output: is the file path to a file that will incude the final combined, resolved YAML
                    configuration file
     :type output: str
-    :param no_clean: is a True/False value to determine whether or not to remove any keys/sections from the YAML. Default is False.
+    :param no_clean: is a True/False value to determine whether or not to remove any keys/sections
+                     from the YAML. Default is False.
     :type no_clean: boolean
 
     :return: Combined, resolved dictionary of YAMLs passed 
