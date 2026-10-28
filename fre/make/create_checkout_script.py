@@ -148,6 +148,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     ## Split and store the platforms and targets in a list
     experiment_name = yamlfile.split(".")[0]
 
+    # Combine model, compile, and platform yamls into a unified structure
     yamls = ly.list_yamls_subtool(yamlfile = yamlfile,
                                   experiment = None,
                                   application = None)
@@ -156,13 +157,6 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
                                                  platform = platform,
                                                  target = target,
                                                  output = None)
-#    # Combine model, compile, and platform yamls into a unified structure
-#    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
-#                                         experiment=experiment_name,
-#                                         platform=platform,
-#                                         target=target,
-#                                         use="compile",
-#                                         output=None)
 
     # Initialize FRE variables and YAML handlers
     fre_vars = varsfre.frevars(full_combined)

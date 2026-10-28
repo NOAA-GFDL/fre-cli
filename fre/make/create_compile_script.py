@@ -98,6 +98,7 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
     plist = platform
     tlist = target
 
+    # Combine model, compile, and platform yamls into a unified structure
     yamls = ly.list_yamls_subtool(yamlfile = yml,
                                   experiment = None,
                                   application = None)
@@ -106,13 +107,6 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
                                                  platform = platform,
                                                  target = target,
                                                  output = None)
-#    # Combine model, compile, and platform yamls
-#    full_combined = cy.consolidate_yamls(yamlfile=yml,
-#                                         experiment=name,
-#                                         platform=platform,
-#                                         target=target,
-#                                         use="compile",
-#                                         output=None)
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)

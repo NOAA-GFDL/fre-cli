@@ -82,6 +82,8 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
          are added directly to the Makefile.
     """
     name = yamlfile.split(".")[0]
+
+    # Combine model, compile, and platform yamls into a unified structure
     yamls = ly.list_yamls_subtool(yamlfile = yamlfile,
                                   experiment = None,
                                   application = None)
@@ -90,13 +92,6 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
                                                  platform = platform,
                                                  target = target,
                                                  output = None)
-#    # Combine model, compile, and platform yamls
-#    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
-#                                         experiment=name,
-#                                         platform=platform,
-#                                         target=target,
-#                                         use="compile",
-#                                         output=None)
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
