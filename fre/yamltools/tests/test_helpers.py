@@ -64,7 +64,7 @@ def test_check_fre_version_mismatch(yaml_with_wrong_version):
     with pytest.raises(ValueError, match="does not match the installed version"):
         check_fre_version(yaml_with_wrong_version)
 
-def test_check_fre_version_missing(yaml_without_version):
+def test_check_fre_version_missing(yaml_without_version, caplog):
     """check_fre_version should raise ValueError when fre_cli_version is missing."""
     with pytest.raises(ValueError, match="fre_cli_version not specified"):
         check_fre_version(yaml_without_version)

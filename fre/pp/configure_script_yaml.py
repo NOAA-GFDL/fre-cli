@@ -21,7 +21,7 @@ from pathlib import Path
 from jsonschema import validate, SchemaError, ValidationError
 import metomi.rose.config
 
-import fre.yamltools.combine_yamls_script as cy
+from fre.yamltools import combine_yamls_script as cy
 from fre.yamltools import helpers
 import fre.list_.list_yamls_script as ly
 
