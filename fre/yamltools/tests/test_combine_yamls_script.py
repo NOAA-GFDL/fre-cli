@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 import yaml
 from jsonschema import validate
-
+import fre
 from fre.yamltools import combine_yamls_script as cy
 
 
