@@ -263,6 +263,7 @@ def test_combine_pp_yamls(tmp_path):
     """
 
     model = {
+        'fre_cli_version' : fre.version,
         'experiments' :
             {
                 'expname': {
