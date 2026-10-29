@@ -6,7 +6,7 @@ import pytest
 import yaml
 
 import fre
-from fre.yamltools.helpers import yaml_load, check_fre_version, experiment_check
+from fre.yamltools.helpers import yaml_load, check_fre_version, clean_yaml, experiment_check
 
 
 @pytest.fixture
@@ -69,6 +69,10 @@ def test_check_fre_version_missing(yaml_without_version):
     with pytest.raises(ValueError, match="fre_cli_version not specified"):
         check_fre_version(yaml_without_version)
 
+def test_clean_fail():
+    """clean_yaml should fail if nto given a dictionary"""
+    with pytest.raises(ValueError, match=re.escape("YAML configuration could not be cleaned (experiments, fre_cli_version)")):
+        clean_yaml("fre/yamltools/tests/yamls/model.yaml")
 @pytest.mark.parametrize("installed_version, yaml_version",
                          [ ("develop", "2026.01"),
                            ("2026.01", "develop") ])

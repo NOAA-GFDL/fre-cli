@@ -2,13 +2,13 @@ fre_cli_version: "develop"
 
 # reusable variables
 fre_properties:
-  VERSION: &VERSION         "full"
-  FRE_STEM: &FRE_STEM       !join [null_model/, *VERSION]
+  VERSION:              "full"
+  FRE_STEM:             "null_model/{{ fre_properties.VERSION }}"
   # compile information
-  BRANCH: &branch            "main"
-  INTEL: &INTEL              "intel-classic"
-  FMSincludes: &FMSincludes  "-IFMS/include"
-  VOLUME: &VOLUME            "/gpfs/f5"
+  BRANCH:               "main"
+  INTEL:                "intel-classic"
+  FMSincludes:          "-IFMS/include"
+  VOLUME:               "/gpfs/f5"
 
 build:
   compileYaml:  "compile.yaml"
