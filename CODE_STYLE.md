@@ -105,7 +105,7 @@ def simple_func(foo: str):
 
 ## Testing Requirements
 
-- New code must have most of it's lines be covered functionally by tests under the corresponding `tests/` directory.
+- New code must have most of its lines be covered functionally by tests under the corresponding `tests/` directory.
 - The coverage threshold is defined by and enforced via the `codecov.yml` configuration
 - The tests should generally minimize patching and mocking as much as possible.
 - Mocking and/or patching are still acceptable to stand-in for return objects that are very large and expensive to create, or not possible to create in the CI
