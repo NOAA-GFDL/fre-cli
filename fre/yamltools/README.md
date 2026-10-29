@@ -22,7 +22,7 @@ To access YAML examples, clone the fre-cli repository:
    - Purpose:
         - Creates combined and resolved YAML file using the YAML configurations passed.
    - Options:
-        - `-y, --yamlfile [experiment yaml] (required)`
+        - `-y, --yamlfile [comma separated string of paths of yamls to combine] (required)`
         - `-e,  --experiment [experiment name]`
         - `-p, --platform [platform]`
         - `-t, --target [target]`

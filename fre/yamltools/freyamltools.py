@@ -13,7 +13,7 @@ def yamltools_cli():
 @yamltools_cli.command()
 @click.option("-y", "--yamls",
               type=str,
-              help="String of comma separated list of YAML files to be combined")
+              help="Comma separated string of paths of YAML file to be combined")
 @click.option("-e", "--experiment",
               type=str,
               help="Experiment name")
