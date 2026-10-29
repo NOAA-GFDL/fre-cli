@@ -359,35 +359,33 @@ def regrid_xy(yamlfile: str,
         # add temporal and static history files
         components = []
         comp_info = yamldict["postprocess"]["components"]
-        for component in comp_info.keys():
-            for temporal_history in comp_info[component]["sources"]:
+        for comp_name, comp_value in comp_info.items():
+            for temporal_history in comp_value["sources"]:
                 if temporal_history["history_file"] == source:
-                    components.append(comp_info[component])
-            if "static" not in comp_info[component]:
-                return
-            for static_history in comp_info[component]["static"]:
+                    components.append((comp_name, comp_value))
+            if not comp_value.get("static"):
+                continue
+            for static_history in comp_value["static"]:
                 if static_history["source"] == source:
-                    components.append(comp_info[component])
-
+                    components.append((comp_name, comp_value))
         # submit fregrid job for each component
-        for component in comp_info.keys():
+        for comp_name, comp_value in components:
             # If postprocess_on is not defined, it should have the default value of True
             # If postprocess_on is defined, check for a True or False value
-            if "postprocess_on" in comp_info[component]:
-                # skip component if postprocess_on = False
-                if not comp_info[component]["postprocess_on"]:
+            if "postprocess_on" in comp_value:
+                if not comp_value["postprocess_on"]:
                     fre_logger.warning("postprocess_on=False for %s in component %s." \
-                                       "Skipping %s", source, component, source)
+                                       "Skipping %s", source, comp_name, source)
                     continue
 
             # skip component if xyInterp is not set
-            if 'xyInterp' not in comp_info[component]:
-                fre_logger.info("Skipping native component '%s'", component)
+            if 'xyInterp' not in comp_value:
+                fre_logger.info("Skipping native component '%s'", comp_name)
                 continue
-            datadict["inputRealm"] = comp_info[component]["inputRealm"]
+            datadict["inputRealm"] = comp_value["inputRealm"]
             datadict["input_mosaic"] = get_input_mosaic(datadict)
-            datadict["output_nlat"], datadict["output_nlon"] = comp_info[component]["xyInterp"].split(",")
-            datadict["interp_method"] = comp_info[component]["interpMethod"]
+            datadict["output_nlat"], datadict["output_nlon"] = comp_value["xyInterp"].split(",")
+            datadict["interp_method"] = comp_value["interpMethod"]
             datadict["remap_file"] = get_remap_file(datadict)
             datadict["input_file"] = get_input_file(datadict, source)
             datadict["scalar_field"], regrid = get_scalar_fields(datadict)

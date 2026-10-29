@@ -177,7 +177,6 @@ def test_regrid_xy_static():
 
 @pytest.mark.skipif(not HAVE_FREGRID,
                     reason='fregrid not in env. it was removed from package reqs. you must load it externally')
-
 def test_get_input_mosaic():
     """
     Tests get_input_mosaic correctly copies the mosaic file to the input directory

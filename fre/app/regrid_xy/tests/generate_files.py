@@ -163,7 +163,7 @@ def make_data():
             history_file = source["history_file"]
             for i in range(1, ntiles+1):
                 dataset.to_netcdf(f"{input_dir}/{date}.{history_file}.tile{i}.nc")
-        if "static" in comp_info.keys():
+        if comp_info.get("static"):
             for static_source in comp_info["static"]:
                 history_file = static_source["source"]
                 for i in range(1, ntiles+1):
