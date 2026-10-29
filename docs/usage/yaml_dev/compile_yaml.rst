@@ -8,7 +8,8 @@ The compile yaml can follow the below structure:
 
    compile: 
      experiment: !join [*group_version, "_compile"]
-     container_addlibs: "list of libraries and packages needed for linking in container" (string)
+     container_addlibs: "list of libraries and packages needed for linking in container" (list of strings)
+     container_linkerflags: "list of linkerflags needed for linking in the container"    (list of strings)
      baremetal_linkerflags: "list of linker flags of libraries and packages needed"      (array with string elements)
      src: (information about each component)
        - component: "component name"                                                     (string)

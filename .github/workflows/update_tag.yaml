@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Fetch tags
         run: |
@@ -24,12 +26,14 @@ jobs:
         run: |
           echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
+      # The previous tag is the most recent tag reachable from the commit before the new tag,
+      # rather than sorting git tags, since version sorting ranks pre-release tags
+      # (e.g. 2026.01.beta2) above releases (2026.01).
       - name: Get previous tag
         id: get_prev_tag
         run: |
           new_tag="${{ steps.get_tag.outputs.tag }}"
-          prev_tag=$(git tag --sort=-version:refname | grep -v "^${new_tag}$" | head -n 1)
-          #prev_tag=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
+          prev_tag=$(git describe --tags --abbrev=0 "${new_tag}^" 2>/dev/null || true)
           echo "prev_tag=${prev_tag}" >> $GITHUB_OUTPUT
 
       - name: Replace old tag with new tag in all relevant files

@@ -6,21 +6,27 @@ workflow templates from the official NOAA-GFDL workflows Git repository into the
 local user's Cylc source directory (`~/cylc-src`).
 
 It supports four operational scenarios:
-1. Branch omitted, directory does not exist: Clones the workflow template using the current `fre` package version tag
+1. Branch omitted, directory does not exist: Clones the workflow template using the default branch/tag
 2. Branch provided, directory does not exist: Clones the workflow template using the specified branch or tag
-3. Branch omitted, directory exists: Validates that the existing directory matches the default `fre` package version tag
+3. Branch omitted, directory exists: Validates that the existing directory matches the default branch/tag
 4. Branch provided, directory exists: Validates that the existing directory matches the user-specified branch or tag
+
+The default branch/tag is the installed `fre` package version (e.g. a release or pre-release tag),
+unless `fre` is a development version ('develop', e.g. fre/test), in which case
+the default is the `main` branch.
 """
 import logging
 import os
 import subprocess
 
-from ..fre import version as fre_ver
 from . import make_workflow_name
+from .. import is_dev_version
+from ..fre import version as fre_ver
 
 fre_logger = logging.getLogger(__name__)
 
 FRE_WORKFLOWS_URL = 'https://github.com/NOAA-GFDL/fre-postprocess-workflow.git'
+FRE_WORKFLOWS_DEV_BRANCH = 'main'
 
 def checkout_template(experiment = None, platform = None, target = None, branch = None):
     """
@@ -38,7 +44,8 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     :type platform: str, optional
     :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str, optional
-    :param branch: is a Git branch or tag name to checkout. If None, it defaults to the installed `fre` package version.
+    :param branch: is a Git branch or tag name to checkout. If None, it defaults to the installed `fre` package version,
+                   or to the `main` branch if the installed `fre` is a development version ('develop').
     :type branch: str, optional
 
     :return: None
@@ -51,7 +58,8 @@ def checkout_template(experiment = None, platform = None, target = None, branch 
     """
 
     # Determine fallback git tag based on fre package version
-    default_tag = fre_ver
+    # development versions of fre ('develop', e.g. fre/test) use the workflow's main branch
+    default_tag = FRE_WORKFLOWS_DEV_BRANCH if is_dev_version(fre_ver) else fre_ver
     git_clone_branch_arg = branch if branch is not None else default_tag
     if branch is None:
         fre_logger.info(f"default tag is '{default_tag}'")
