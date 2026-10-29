@@ -58,11 +58,11 @@ def install_subtool(experiment: str, platform: str, target: str) -> None:
     if os.path.isdir(install_dir):
         # Compare expanded Cylc definitions to check if reinstall is required
         installed_def = subprocess.run(["cylc", "config", workflow_name],capture_output=True).stdout.decode('utf-8')
-
-        go_back_here = os.getcwd()
-        os.chdir(source_dir)
-        source_def = subprocess.run(['cylc', 'config', '.'], capture_output=True).stdout.decode('utf-8')
-
+        source_def = subprocess.run(
+            ['cylc', 'config', '.'],
+            cwd=source_dir,
+            capture_output=True
+        ).stdout.decode('utf-8')
         if installed_def == source_def:
             fre_logger.warning(f"NOTE: Workflow '{install_dir}' already installed, and the definition is unchanged.")
         else:
