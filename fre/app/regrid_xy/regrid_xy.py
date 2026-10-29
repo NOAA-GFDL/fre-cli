@@ -404,6 +404,7 @@ def regrid_xy(yamlfile: str,
             output_subdir.mkdir(parents=True, exist_ok=True)
 
             #construct fregrid command
+            # --maxxgrid=5e6 is needed for regridding ocean 0.25 or finer
             fregrid_command = [
                 "fregrid",
                 "--debug",
@@ -417,7 +418,8 @@ def regrid_xy(yamlfile: str,
                 "--nlat", datadict["output_nlat"],
                 "--scalar_field", datadict["scalar_field"],
                 "--output_dir", output_subdir,
-                "--associated_file_dir", input_dir
+                "--associated_file_dir", input_dir,
+                "--maxxgrid=5e6"
             ]
             fre_logger.debug("fregrid command: %s", fregrid_command)
 
