@@ -3,11 +3,11 @@ platforms:
      compiler: intel
      envSetup: ["module use -a /ncrc/home2/fms/local/modulefiles",
                  "source $MODULESHOME/init/sh",
-                 !join ["module load ", *INTEL, "/2023.2.0"],
+                 "module load {{ fre_properties.INTEL }}/2023.2.0",
                  "module load fre/bronx-23",
                  "module load cray-hdf5/1.12.2.11",
                  "module load cray-netcdf/4.9.0.11"]
-     mkTemplate: !join ["/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/", *INTEL, ".mk"]
+     mkTemplate: "/ncrc/home2/fms/local/opt/fre-commands/bronx-20/site/ncrc5/{{ fre_properties.INTEL }}.mk"
      modelRoot: ${HOME}/fremake_canopy/test
 
    ## one-stage build
@@ -20,7 +20,7 @@ platforms:
      containerRun: "apptainer" 
      containerBase: "docker.io/ecpe4s/noaa-intel-prototype:2023.09.25" 
      mkTemplate: "/apps/mkmf/templates/hpcme-intel21.mk"
-     volume: *VOLUME
+     volume: "{{ fre_properties.VOLUME }}"
    - name: ci.gnu
      compiler: gnu
      mkTemplate: "linux-ubuntu-xenial-gnu.mk"
@@ -55,7 +55,6 @@ platforms:
      container2step: True
      container2base: "ecpe4s/noaa-intel-prototype:2023.09.25"
 
-### TO-DO: Update fre make tests in another PR
 # to replace hpcme.2023:
 # Also used for fre make quick start
    - name: hpcme.intel25
@@ -69,4 +68,3 @@ platforms:
      mkTemplate: "/apps/mkmf/templates/hpcme-intel2025.03-oneapi.mk"
      container2step: True
      container2base: "gitlab.gfdl.noaa.gov:5050/fre/hpc-me/base-ubuntu24.04-intel:2025.3rte"
-     volume: *VOLUME

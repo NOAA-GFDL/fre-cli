@@ -31,8 +31,8 @@ import logging
 from multiprocessing.dummy import Pool
 from pathlib import Path
 from typing import Optional
-
-import fre.yamltools.combine_yamls_script as cy
+import fre.list_.list_yamls_script as ly
+import fre.yamltools.combine_yamls_script_new as cy
 from fre.make.make_helpers import get_mktemplate_path
 
 from .gfdlfremake import (
@@ -98,13 +98,15 @@ def compile_create(yamlfile:str, platform:tuple[str], target:tuple[str], makejob
     plist = platform
     tlist = target
 
-    # Combine model, compile, and platform yamls
-    full_combined = cy.consolidate_yamls(yamlfile=yml,
-                                         experiment=name,
-                                         platform=platform,
-                                         target=target,
-                                         use="compile",
-                                         output=None)
+    # Combine model, compile, and platform yamls into a unified structure
+    yamls = ly.list_yamls_subtool(yamlfile = yml,
+                                  experiment = None,
+                                  application = None)
+    full_combined = cy.yamltools_combine_subtool(yamls = yamls,
+                                                 experiment = None,
+                                                 platform = platform,
+                                                 target = target,
+                                                 output = None)
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
