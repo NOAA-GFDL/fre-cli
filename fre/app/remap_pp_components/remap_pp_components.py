@@ -376,6 +376,9 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
         - if no input files are found
         - if no offline diagnostic file is found
     """
+    # Define absolute paths for input and output directories
+    input_dir = Path(input_dir).resolve()
+    output_dir = Path(output_dir).resolve()
 
     # List variables
     fre_logger.info("Arguments:")
@@ -396,8 +399,7 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
         fre_logger.info("    ens_mem: %s", ens_mem)
 
     # Path to yaml configuration
-    exp_dir = Path(__file__).resolve().parents[3]
-    path_to_yamlconfig = os.path.join(exp_dir, yaml_config)
+    path_to_yamlconfig = Path(yaml_config).resolve()
     # Load and read yaml configuration
     with open(path_to_yamlconfig,'r') as yml:
         yml_info = yaml.safe_load(yml)
@@ -409,20 +411,20 @@ def remap_pp_components(input_dir: str, output_dir: str, begin_date: str, curren
     with helpers.change_directory(input_dir):
         # Save dictionary of variables associated with each post=processed component
         src_vars_dict = helpers.get_variables(yml_info, component)
-
         comp = component.strip('""')
         # Make sure component/source is in the yaml configuration file
-        for comp_info in yml_info["postprocess"]["components"]:
-            yaml_components = comp_info.get("type")
-
+        yml_comp_info = yml_info["postprocess"]["components"]
+        yml_keys = yml_comp_info.keys()
+        for component_name in yml_keys:
+            comp_info = yml_comp_info[component_name]
             # Check that pp_components defined matches those in the yaml file
-            fre_logger.debug("Is %s in %s?", comp, yaml_components)
-            if comp in yaml_components:
+            fre_logger.debug("Is %s in %s?", comp, component_name)
+            if comp in component_name:
                 fre_logger.info("Active component found in yaml config: %s", comp)
             else:
                 continue
             # Continue if not looking at correct information for requested component
-            if comp != comp_info.get("type"):
+            if comp != component_name:
                 fre_logger.warning("Info not associated with component, %s, requested", comp)
                 continue
 
