@@ -363,10 +363,11 @@ def regrid_xy(yamlfile: str,
             for temporal_history in comp_info[component]["sources"]:
                 if temporal_history["history_file"] == source:
                     components.append(comp_info[component])
-            if "static" in component:
-                for static_history in component["static"]:
-                    if static_history["source"] == source:
-                        components.append(comp_info[component])
+            if "static" not in comp_info[component]:
+                return
+            for static_history in comp_info[component]["static"]:
+                if static_history["source"] == source:
+                    components.append(comp_info[component])
 
         # submit fregrid job for each component
         for component in comp_info.keys():
