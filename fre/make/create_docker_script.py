@@ -26,7 +26,7 @@ import logging
 import os
 import subprocess
 import fre.list_.list_yamls_script as ly
-import fre.yamltools.combine_yamls_script_new as cy
+import fre.yamltools.combine_yamls_script as cy
 from fre.make.make_helpers import get_mktemplate_path
 
 from .gfdlfremake import (
