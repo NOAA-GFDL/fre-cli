@@ -18,22 +18,11 @@ To access YAML examples, clone the fre-cli repository:
     fre list yamls -y yamls/model.yaml | fre -v yamltools combine -o out.yaml
 
 ## Subtools
-- `fre yamltools combine-yamls [options]`
-   - Purpose: 
-        - Creates combined yaml file in which the [model].yaml, compile.yaml, and platforms.yaml are merged if `--use compile` is specified
-        - Creates combined yaml file in which the [model].yaml, [experiment].yaml, and [analysis].yaml are merged if `--use pp` is specified
-   - Options:
-        - `-y, --yamlfile [experiment yaml] (required)`
-        - `-p, --platform [platform] (required)`
-        - `-t, --target [target] (required)`
-        - `-e,  --experiment [experiment name]`
-        - `--use [compile|pp] (required)`
-
 - `fre yamltools combine [options]`
    - Purpose:
         - Creates combined and resolved YAML file using the YAML configurations passed.
    - Options:
-        - `-y, --yamlfile [experiment yaml] (required)`
+        - `-y, --yamlfile [comma separated string of paths of yamls to combine] (required)`
         - `-e,  --experiment [experiment name]`
         - `-p, --platform [platform]`
         - `-t, --target [target]`

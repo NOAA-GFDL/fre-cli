@@ -6,7 +6,7 @@ which provides a method to query the resolved, combined yaml file (`model.yaml`,
 
 from pathlib import Path
 import logging
-from fre.yamltools import combine_yamls_script_new as cy
+from fre.yamltools import combine_yamls_script as cy
 from fre.list_ import list_yamls_script as ly
 from fre.yamltools import helpers
 

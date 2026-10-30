@@ -13,7 +13,7 @@ import subprocess
 import logging
 from typing import Optional
 import fre.list_.list_yamls_script as ly
-import fre.yamltools.combine_yamls_script_new as cy
+import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
 # set up logging

@@ -23,7 +23,7 @@ import logging
 from typing import Optional
 from pathlib import Path
 import fre.list_.list_yamls_script as ly
-import fre.yamltools.combine_yamls_script_new as cy
+import fre.yamltools.combine_yamls_script as cy
 from fre.make.create_checkout_script import checkout_create
 from fre.make.create_makefile_script import makefile_create
 from fre.make.create_compile_script import compile_create
