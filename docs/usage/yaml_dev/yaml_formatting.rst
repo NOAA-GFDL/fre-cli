@@ -39,8 +39,8 @@ Where each dash indicates a list.
 
 5. Users can reference a previous key throughout the YAMLs.
 
-In order to use them as a reference elsewhere in either the same or other yamls,
-follow this Jinja2 structure example:
+In order to use them as a reference elsewhere in either the same or other
+yamls, follow this Jinja2 structure example:
 
 .. code-block::
 
