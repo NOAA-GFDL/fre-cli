@@ -1,6 +1,7 @@
 Helpful information and format recommendations for creating yaml files.
 
-1. You can define a block of values as well as individual ``[key]: [value]`` pairs:
+1. You can define a block of values as well as individual ``[key]: [value]``
+   pairs:
 
 .. code-block::
 
@@ -16,7 +17,8 @@ Helpful information and format recommendations for creating yaml files.
     - key: value
     - key: value
 
-3. If you want to associate information with a certain listed element, follow this structure:
+3. If you want to associate information with a certain listed element, follow
+   this structure:
 
 .. code-block::
 
@@ -28,17 +30,21 @@ Helpful information and format recommendations for creating yaml files.
 
 Where each dash indicates a list.
 
-4. Yamls also allow for the capability of reusable variables. These variables are defined by:
+4. Yamls also allow for the capability of reusable variables. These variables
+   are defined by:
 
 .. code-block::
 
   &ReusableVariable Value
 
-5. Users can reference a previous key throughout the YAMLs. In order to use them as a reference elsewhere in either the same or other yamls, follow this Jinja2 structure example:
+5. Users can reference a previous key throughout the YAMLs.
+
+In order to use them as a reference elsewhere in either the same or other yamls,
+follow this Jinja2 structure example:
 
 .. code-block::
 
-  section1: 
+  section1:
     key1: value1
     key2: value2
 
