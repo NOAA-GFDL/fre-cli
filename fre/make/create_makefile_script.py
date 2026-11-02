@@ -39,7 +39,8 @@ https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
 
 import logging
 from pathlib import Path
-import fre.yamltools.combine_yamls_script as cy
+import fre.list_.list_yamls_script as ly
+import fre.yamltools.combine_yamls_script_new as cy
 from fre.make.make_helpers import get_mktemplate_path
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 
@@ -82,13 +83,15 @@ def makefile_create(yamlfile: str, platform: tuple[str], target: tuple[str]):
     """
     name = yamlfile.split(".")[0]
 
-    # Combine model, compile, and platform yamls
-    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
-                                         experiment=name,
-                                         platform=platform,
-                                         target=target,
-                                         use="compile",
-                                         output=None)
+    # Combine model, compile, and platform yamls into a unified structure
+    yamls = ly.list_yamls_subtool(yamlfile = yamlfile,
+                                  experiment = None,
+                                  application = None)
+    full_combined = cy.yamltools_combine_subtool(yamls = yamls,
+                                                 experiment = None,
+                                                 platform = platform,
+                                                 target = target,
+                                                 output = None)
 
     ## Get the variables in the model yaml
     fre_vars = varsfre.frevars(full_combined)
