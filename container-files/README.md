@@ -38,7 +38,7 @@ cd fre-cli/container-files
 ex: noaa-gfdl::fre-cli==2026.01
 
 ## Build a container image
-podman build -f Dockerfile-fre-cli -t latest
+podman build --network host -f Dockerfile-fre-cli -t latest
 
 ## Save the image to a local tar file
 # It is recommended to name the container after the post-processing experiment name

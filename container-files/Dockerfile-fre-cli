@@ -3,38 +3,39 @@ FROM ubuntu:26.04 as builder
 
 # Install micromamba: micromamba is a tinier and faster version of mamba
 # Set where the micromamba env creation goes
-#ARG micromamba_env_location=/app/cylc-flow-tools
-ARG miniforge_env_location=/app/cylc-flow-tools
+ARG env_location=/app/cylc-flow-tools
+ARG miniforge_location=/app/miniforge
 
-## needed for micromamba installation: curl, bzip2, ca-certificate (used to securely connect to pkg repos over HTTPS)
+# Add this to path to globally set conda/mamba location for use
+ENV PATH=${miniforge_location}/bin:$PATH
+
+## needed for miniforge installation: curl, ca-certificate (used to securely connect to pkg repos over HTTPS)
 ## needed for stage-history pp task: uuid-runtime, time
 ## needed for refine-diag pp task: csh
 RUN apt-get update && apt-get install -y \
-#  curl \
-#  bzip2 \
-#  ca-certificates \
+  curl \
+  ca-certificates \
   uuid-runtime \
   time \
   csh
 
-#RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/2.9.0-0 | tar -xvj bin/micromamba
-RUN curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh"
-RUN bash Miniforge3-$(uname)-$(uname -m).sh -b
+RUN curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" \
+  && bash Miniforge3-$(uname)-$(uname -m).sh -b
 
 # Copy runscript in container and make it executable
 COPY runscript.sh /app/exec/runscript.sh
 RUN chmod +x /app/exec/runscript.sh
 
 ## Set up conda environment directory for cylc workflow
-COPY cylc-flow-tools.yaml ${miniforge_env_location}/cylc-flow-tools.yaml
+COPY cylc-flow-tools.yaml ${env_location}/cylc-flow-tools.yaml
 
-RUN conda env create --file ${miniforge_env_location}/cylc-flow-tools.yaml -p ${miniforge_env_location}/env \
-  && conda clean --all --yes
+RUN mamba env create --file ${env_location}/cylc-flow-tools.yaml -p ${env_location}/env \
+  && mamba clean --all --yes
 
 # Keeping in comment for now - might be useful for cylc workflow-state or tui things
 #RUN conda install urwid==2.*
 
 # Put env in path so it is already activated upon runtime
-ENV PATH=${miniforge_env_location}/env/bin:$PATH
+ENV PATH=${env_location}/env/bin:$PATH
 
 ENTRYPOINT ["/bin/bash"]
