@@ -42,7 +42,9 @@ jobs:
       # For tagged releases, replace the 'develop' version in __init__.py (in this checkout only)
       # with the tag, so that the packaged fre-cli reports the tag with `fre --version`.
       # Then make the tag available for the conda-build steps by setting the env var
-      # $GIT_DESCRIBE_TAG, which meta.yaml uses as the conda package version.
+      # $FRE_CLI_VERSION, which meta.yaml uses as the conda package version.
+      # Do not use $GIT_DESCRIBE_TAG: conda-build sets it itself from `git describe`
+      # (overriding ours), which made pushes to main publish as the last release tag.
       # $GITHUB_ENV is a special file path provided by the Actions runner.
       # When you write KEY=VALUE lines into it, those variables become available
       # as environment variables for all subsequent steps in the same job.
@@ -58,7 +60,7 @@ jobs:
           sed -i "s/^version = DEV_VERSION$/version = \"${VERSION}\"/" fre/__init__.py
           grep -q "^version = \"${VERSION}\"$" fre/__init__.py || { echo "ERROR: could not set version in fre/__init__.py"; exit 1; }
           grep '^version = ' fre/__init__.py
-          echo "GIT_DESCRIBE_TAG=$VERSION" >> $GITHUB_ENV
+          echo "FRE_CLI_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Configure Conda
         run: |
