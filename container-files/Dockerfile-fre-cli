@@ -36,7 +36,7 @@ RUN chmod +x /app/exec/runscript.sh
 COPY cylc-flow-tools.yaml ${env_location}/cylc-flow-tools.yaml
 
 RUN conda config --add channels noaa-gfdl \
-  && conda config --add envs_dirs ${env_location}/env
+  && conda config --add envs_dirs ${env_location}/env \
   && conda config --add pkgs_dirs ${env_location}/pkgs
 
 RUN conda env create --file ${env_location}/cylc-flow-tools.yaml -p ${env_location}/env \
