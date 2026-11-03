@@ -16,17 +16,17 @@ from jsonschema import (
 import metomi.rose.config
 
 from fre.pp import configure_script_yaml as csy
-from fre.yamltools import combine_yamls_script as cy
-
+from fre.yamltools import combine_yamls_script_new as cy
+import fre.list_.list_yamls_script as ly
 
 # Set what would be click options
-EXPERIMENT = "c96L65_am5f7b12r1_amip"
+EXPERIMENT = "experiment_1"
 PLATFORM = "gfdl.ncrc5-intel22-classic"
 TARGET = "prod-openmp"
 
 # Set example yaml paths, input directory
 TEST_DIR = Path("fre/pp/tests")
-TEST_YAML = Path("AM5_example/am5.yaml")
+TEST_YAML = Path("yamls/model.yaml")
 
 def test_combinedyaml_exists():
     """
@@ -34,15 +34,14 @@ def test_combinedyaml_exists():
     """
     assert Path(f"{TEST_DIR}/{TEST_YAML}").exists()
 
-def test_configure_script():
+def test_configure_script(monkeypatch):
     """
     Tests success of configure yaml script
     Creates rose-suite, regrid rose-app, remap rose-app
     TO-DO: will break this up for better tests
     """
     # Set home for ~/cylc-src location in script
-    old_home = os.environ["HOME"]
-    os.environ["HOME"] = str(Path(f"{TEST_DIR}/configure_yaml_out"))
+    monkeypatch.setenv("HOME", str(Path(f"{TEST_DIR}/configure_yaml_out")))
 
     # Set output directory
     OUT_DIR = Path(f"{os.getenv('HOME')}/cylc-src/{EXPERIMENT}__{PLATFORM}__{TARGET}")
@@ -54,8 +53,6 @@ def test_configure_script():
     # Invoke configure_yaml_script.py
     csy.yaml_info(model_yaml, EXPERIMENT, PLATFORM, TARGET)
 
-    os.environ["HOME"] = old_home
-
     # Check for configuration creation and final combined yaml
     assert all([ Path(f"{OUT_DIR}/{EXPERIMENT}.yaml").exists(),
                  Path(f"{OUT_DIR}/rose-suite.conf").exists()])
@@ -64,12 +61,15 @@ def test_validate():
     """
     Test the success of validation.
     """
-    yml_dict = cy.consolidate_yamls(yamlfile = f"{TEST_DIR}/{TEST_YAML}",
-                                 experiment = EXPERIMENT,
-                                 platform = PLATFORM,
-                                 target = TARGET,
-                                 use = "pp",
-                                 output = None)
+    yamls = ly.list_yamls_subtool(yamlfile = f"{TEST_DIR}/{TEST_YAML}",
+                                  experiment = EXPERIMENT,
+                                  application= "postprocess")
+    yml_dict = cy.yamltools_combine_subtool(yamls = yamls,
+                                            experiment = EXPERIMENT,
+                                            platform = PLATFORM,
+                                            target = TARGET,
+                                            output = None)
+
     try:
         csy.validate_yaml(yml_dict)
     except:
@@ -79,12 +79,15 @@ def test_validate_fail():
     """
     Test that validation fails when given the wrong yaml dictionary.
     """
-    yml_dict = cy.consolidate_yamls(yamlfile = f"{TEST_DIR}/{TEST_YAML}",
-                                 experiment = EXPERIMENT,
-                                 platform = PLATFORM,
-                                 target = TARGET,
-                                 use = "pp",
-                                 output = f"{Path(__file__).parent}/csy_out.yaml")
+    yamls = ly.list_yamls_subtool(yamlfile = f"{TEST_DIR}/{TEST_YAML}",
+                                  experiment = EXPERIMENT,
+                                  application= "postprocess")
+    yml_dict = cy.yamltools_combine_subtool(yamls = yamls,
+                                            experiment = EXPERIMENT,
+                                            platform = PLATFORM,
+                                            target = TARGET,
+                                            output = f"{Path(__file__).parent}/csy_out.yaml")
+
 
     # Missing history_dir, ptmp_dir, and postprocess
     wrong_yml_dict = {
@@ -190,3 +193,20 @@ def test_rose_suite_DO_ANALYSIS():
 #def test_mock_validation_wrong_schema_path():
 #    """
 #    """
+
+def test_rose_init_fre_version(monkeypatch):
+    """
+    rose_init sets the FRE_VERSION template variable to the installed fre version
+    """
+    monkeypatch.setattr(csy.fre, "version", "2026.02.alpha2")
+    rose_suite = csy.rose_init(EXPERIMENT, PLATFORM, TARGET)
+    assert rose_suite.get_value(['template variables', 'FRE_VERSION']) == '"2026.02.alpha2"'
+
+def test_rose_init_fre_version_dev(monkeypatch):
+    """
+    rose_init sets the FRE_VERSION template variable to 'test' (i.e. the fre/test module)
+    if the installed fre is a development version
+    """
+    monkeypatch.setattr(csy.fre, "version", "develop")
+    rose_suite = csy.rose_init(EXPERIMENT, PLATFORM, TARGET)
+    assert rose_suite.get_value(['template variables', 'FRE_VERSION']) == '"test"'

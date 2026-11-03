@@ -5,6 +5,7 @@ Tests the list_yamls_subtool function with various flag combinations
 using the example model YAML file.
 """
 from pathlib import Path
+import re
 import pytest
 from fre.list_.list_yamls_script import list_yamls_subtool
 
@@ -67,27 +68,24 @@ class TestListYamlsScript:
 
     def test_list_yamls_postprocess_only(self, model_yaml_path):
         """Test postprocess_only flag (without analysis) returns model YAML plus postprocessing YAMLs"""
-        with pytest.raises(ValueError): #, match = "  *** PROVIDE THE MISSING YAML CONFIGURATIONS ***"):
-            result = list_yamls_subtool(
-                yamlfile=model_yaml_path,
-                experiment="experiment1",
-                application="postprocess"
-            )
+        result = list_yamls_subtool(
+            yamlfile=model_yaml_path,
+            experiment="experiment1",
+            application="postprocess"
+        )
 
-            yaml_names = [Path(y).name for y in result.split(",")]
+        yaml_names = [Path(y).name for y in result.split(",")]
 
-            # Model YAML should always be included
-            assert "model.yaml" in yaml_names
-            # Should contain settings and postprocessing YAMLs
-            assert "settings.yaml" in yaml_names
-            assert "pp.c96_amip.yaml" in yaml_names
-            assert "pp-test.c96_amip.yaml" in yaml_names
-
-            # Should NOT contain compile, platform, run, or analysis YAMLs
-            assert "compile.yaml" not in yaml_names
-            assert "platforms.yaml" not in yaml_names
-            assert "run1.yaml" not in yaml_names
-            assert "analysis1.yaml" not in yaml_names
+        # Model YAML should always be included
+        assert "model.yaml" in yaml_names
+        # Should contain settings and postprocessing YAMLs
+        assert "settings.yaml" in yaml_names
+        assert "pp.c96_amip.yaml" in yaml_names
+        assert "pp-test.c96_amip.yaml" in yaml_names
+        # Should NOT contain compile, platform, run, or analysis YAMLs
+        assert "compile.yaml" not in yaml_names
+        assert "run1.yaml" not in yaml_names
+        assert "analysis1.yaml" not in yaml_names
 
     def test_list_yamls_analysis_only(self, model_yaml_path):
         """Test analysis_only flag (without postprocess) returns model YAML plus analysis YAMLs"""
@@ -138,23 +136,23 @@ class TestListYamlsScript:
 
     def test_list_yamls_no_experiment(self, model_yaml_path):
         """Test with no experiment name provided (default compile behavior)"""
-        with pytest.raises(ValueError): #, match = "  *** PROVIDE THE MISSING YAML CONFIGURATIONS ***"):
-            result = list_yamls_subtool(
-                yamlfile=model_yaml_path,
-                experiment="",
-                application=None
-            )
+#        with pytest.raises(ValueError): #, match = "  *** PROVIDE THE MISSING YAML CONFIGURATIONS ***"):
+        result = list_yamls_subtool(
+            yamlfile=model_yaml_path,
+            experiment="",
+            application=None
+        )
 
-            yaml_names = [Path(y).name for y in result.split(",")]
+        yaml_names = [Path(y).name for y in result.split(",")]
 
-            # Model YAML should always be included
-            assert "model.yaml" in yaml_names
-            # Should contain compile and platform YAMLs
-            assert "compile.yaml" in yaml_names
-            assert "platforms.yaml" in yaml_names
+        # Model YAML should always be included
+        assert "model.yaml" in yaml_names
+        # Should contain compile and platform YAMLs
+        assert "compile.yaml" in yaml_names
+        assert "platforms.yaml" in yaml_names
 
-            # Should NOT contain experiment-specific YAMLs
-            assert "run1.yaml" not in yaml_names
+        # Should NOT contain experiment-specific YAMLs
+        assert "run1.yaml" not in yaml_names
 
     def test_list_yamls_returns_full_paths(self, model_yaml_path):
         """Test that returned YAMLs have full paths"""
@@ -198,6 +196,42 @@ class TestListYamlsScript:
                 yamlfile=model_yaml_path,
                 experiment="experiment1",
                 application=None
+            )
+
+            assert isinstance(result, str)
+
+    def test_list_yamls_error_raised_exp_X_application_passed(self, model_yaml_path, caplog):
+        """ Test that an error is raised when application is specified without specifying an experiment name """
+        with pytest.raises(ValueError):
+            result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment=None,
+                application="run"
+            )
+
+            assert isinstance(result, str)
+        assert "*** Must pass experiment name along with application name ***" in caplog.text
+
+    def test_list_yamls_error_raised_exp_dne(self, model_yaml_path, caplog):
+        """ Test that an error is raised if the experiment is not defined in the model YAML """
+        with pytest.raises(ValueError):
+            result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment="experiment_wrong",
+                application="run"
+            )
+
+            assert isinstance(result, str)
+        assert "Experiment passed is not defined in the model YAML." in caplog.text
+        assert "Users can list experiments via `fre list exps -y [model YAML]`" in caplog.text
+
+    def test_list_yamls_error_raised_application_dne(self, model_yaml_path, caplog):
+        """ Test that an error is raised if the application is not defined in the model YAML """
+        with pytest.raises(ValueError, match = "Application passed \\(runrunrun\\) is not defined in the model YAML."):
+            result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment="experiment1",
+                application="runrunrun"
             )
 
             assert isinstance(result, str)

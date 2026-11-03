@@ -33,6 +33,7 @@ dependencies = [
         'numpy',
         'pyyaml',
         'xarray',
+        'uwtools',
 ]
 
 classifiers = [
@@ -59,6 +60,7 @@ docs = [
     "sphinx",
     "renku-sphinx-theme",
     "sphinx-rtd-theme",
+    "doc8",
 ]
 
 test = [
