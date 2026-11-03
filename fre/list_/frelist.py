@@ -44,9 +44,14 @@ def platforms(yamlfile):
               type=str,
               help="Experiment to be post-processed",
               required=True)
-def pp_components(yamlfile, experiment):
+@click.option("-a",
+              "--application",
+              type=str,
+              help="Post-processing application name.",
+              required=True)
+def pp_components(yamlfile, experiment, application):
     """ - List components to be post-processed for a defined experiment"""
-    list_pp_components_script.list_ppcomps_subtool(yamlfile, experiment)
+    list_pp_components_script.list_ppcomps_subtool(yamlfile, experiment, application)
 
 @list_cli.command()
 @click.option("-y",

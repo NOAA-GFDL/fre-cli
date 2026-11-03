@@ -11,6 +11,7 @@ information in these instructions is incomplete or found to be in error.
    ```bash
    conda config --append channels noaa-gfdl
    conda config --append channels conda-forge
+   conda config --append channels ufs-community
    ```
 
 2. **Initialize git submodules** (essential - contains mkmf tools):

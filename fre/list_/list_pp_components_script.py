@@ -19,12 +19,13 @@ postprocess:
 
 from pathlib import Path
 import logging
-from fre.yamltools import combine_yamls_script as cy
+from fre.yamltools import combine_yamls_script_new as cy
+from fre.list_ import list_yamls_script as ly
 from fre.yamltools import helpers
 
 fre_logger = logging.getLogger(__name__)
 
-def list_ppcomps_subtool(yamlfile: str, experiment: str):
+def list_ppcomps_subtool(yamlfile: str, experiment: str, application: str):
     """
     List_ppcomps_subtool lists the components to be post-processed.
 
@@ -32,6 +33,8 @@ def list_ppcomps_subtool(yamlfile: str, experiment: str):
     :type yamlfile: str
     :param experiment: is the experiment name defined in the model.yaml
     :type experiment: str
+    :param application:
+    :type applicatin: str
     """
     # set logger level to INFO
     former_log_level = fre_logger.level
@@ -40,14 +43,26 @@ def list_ppcomps_subtool(yamlfile: str, experiment: str):
     exp = experiment
     platform = None
     target = None
+    app = application
 
-    # Combine model / experiment
-    yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
-                                    experiment = exp,
-                                    platform = platform,
-                                    target = target,
-                                    use = "pp",
-                                    output = None)
+    yml_list = ly.list_yamls_subtool(yamlfile = yamlfile,
+                                     experiment = exp,
+                                     application = app)
+
+#    # Combine model / experiment
+#    yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
+#                                    experiment = exp,
+#                                    platform = platform,
+#                                    target = target,
+#                                    use = "pp",
+#                                    output = None)
+    yml_dict = cy.yamltools_combine_subtool(yamls = yml_list,
+                                            experiment = exp,
+                                            platform = platform,
+                                            target = target,
+                                            output = None,
+                                            no_clean = False)
+
 
     # Validate combined yaml information
     frelist_dir = Path(__file__).resolve().parents[2]
@@ -55,15 +70,15 @@ def list_ppcomps_subtool(yamlfile: str, experiment: str):
     # from fre.yamltools
     helpers.validate_yaml(yml_dict, schema_path)
 
+    comp_info = yml_dict["postprocess"]["components"]
     # log the experiment names, which should show up on screen for sure
     fre_logger.info("Components to be post-processed:")
-    for i in yml_dict["postprocess"]["components"]:
-        if "postprocess_on" in i:
-            if i.get("postprocess_on") is True:
-                fre_logger.info('   - %s', i.get("type"))
+    for i in comp_info.keys():
+        if "postprocess_on" in comp_info[i]:
+            if comp_info[i].get("postprocess_on") is True:
+                fre_logger.info('   - %s', i)
         else:
-            fre_logger.info('   - %s', i.get("type"))
-    fre_logger.info("\n")
+            fre_logger.info('   - %s', i)
 
     # set logger back to normal level
     fre_logger.setLevel(former_log_level)
