@@ -1,6 +1,6 @@
 package:
   name: fre-cli
-  version: '{{ environ.get("GIT_DESCRIBE_TAG", "develop") }}'
+  version: '{{ environ.get("FRE_CLI_VERSION", "develop") }}'
 
 source:
   path: .

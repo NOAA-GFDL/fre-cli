@@ -1,13 +1,14 @@
 #TRACK IMAGES: https://hub.docker.com/_/ubuntu
 FROM ubuntu:26.04 as builder
 
-# Install micromamba: micromamba is a tinier and faster version of mamba
-# Set where the micromamba env creation goes
+# Set where the environment creation goes
 ARG env_location=/app/cylc-flow-tools
+
+# Set where miniforge installation will go
 ARG miniforge_location=/app/miniforge
 
-# Add this to path to globally set conda/mamba location for use
-ENV PATH=${miniforge_location}/bin:$PATH
+## Add this to path to globally set conda/mamba location for use
+#ENV PATH=${miniforge_location}/bin:$PATH
 
 ## needed for miniforge installation: curl, ca-certificate (used to securely connect to pkg repos over HTTPS)
 ## needed for stage-history pp task: uuid-runtime, time
@@ -19,8 +20,13 @@ RUN apt-get update && apt-get install -y \
   time \
   csh
 
+# Install miniforge
 RUN curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" \
-  && bash Miniforge3-$(uname)-$(uname -m).sh -b
+  && bash Miniforge3-$(uname)-$(uname -m).sh -b -u -p "${miniforge_location}" \
+  && rm -f Miniforge3-$(uname)-$(uname -m).sh
+
+# Add this to path to globally set conda/mamba location for use
+ENV PATH=${miniforge_location}/bin:$PATH
 
 # Copy runscript in container and make it executable
 COPY runscript.sh /app/exec/runscript.sh
