@@ -35,8 +35,12 @@ RUN chmod +x /app/exec/runscript.sh
 ## Set up conda environment directory for cylc workflow
 COPY cylc-flow-tools.yaml ${env_location}/cylc-flow-tools.yaml
 
-RUN mamba env create --file ${env_location}/cylc-flow-tools.yaml -p ${env_location}/env \
-  && mamba clean --all --yes
+RUN conda config --add channels noaa-gfdl \
+  && conda config --add envs_dirs ${env_location}/env
+  && conda config --add pkgs_dirs ${env_location}/pkgs
+
+RUN conda env create --file ${env_location}/cylc-flow-tools.yaml -p ${env_location}/env \
+  && conda clean --all --yes
 
 # Keeping in comment for now - might be useful for cylc workflow-state or tui things
 #RUN conda install urwid==2.*
