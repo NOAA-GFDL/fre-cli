@@ -14,8 +14,8 @@ Files used to build container:
     - cylc-flow-tools.yaml (environment yaml)
     - runscript.sh
 
-The container will house the fre-cli tools and any necessary packages needed for
-those tools.
+The container will house the fre-cli tools and any necessary packages needed
+for those tools.
 
 Using podman and apptainer to build, follow these steps:
 
@@ -54,21 +54,21 @@ Using podman and apptainer to build, follow these steps:
 SETUP
 -----
 
-Now that the FRE workflows container is created, certain files and directories must
-be made accessible.
+Now that the FRE workflows container is created, certain files and directories
+must be made accessible.
 
 **Repos and Configuration files**
 
-In order to run the post-processing workflow, certain repositories and files are
-needed:
+In order to run the post-processing workflow, certain repositories and files
+are needed:
 
 - Directory that will include folders and files for container set-up and output
   (could be named `workflow-output` for example)
-    - Create an empty `workflow-output` folder in an area with ample space as this
-      is where the post-processing run output will be populated.
-    - This setup/output directory consists of a few subdirectories, pp, ptmp, and
-      temp, that will be created through the runscript.sh script found in the
-      container (`/app/exec/runscript.sh`)
+    - Create an empty `workflow-output` folder in an area with ample space as
+      this is where the post-processing run output will be populated.
+    - This setup/output directory consists of a few subdirectories, pp, ptmp,
+      and temp, that will be created through the runscript.sh script found in
+      the container (`/app/exec/runscript.sh`)
 
 - Yaml configuration files
     - Publicly available example yaml configuration files can be found `here, in fre-examples <https://github.com/NOAA-GFDL/fre-examples>`_
@@ -78,15 +78,16 @@ needed:
 Additionally, history files and grid spec files are needed.
 
 *If on Gaea*, history files and grid spec files are usually available in a certain location; retrieve their locations
-    - Paths to the history folder and grid spec file will be mounted as read only folders/files when running the
-      container
+    - Paths to the history folder and grid spec file will be mounted as read
+      only folders/files when running the container
 
 *If not on Gaea*, history file and grid spec data should be transferred to the `workflow-output` location:
     - workflow-output/history/
     - workflow-output/[experiment]_grid/
 
-FOR CLOUD USERS: Preparing for cloud usage requires history files and container image/runscript to be transferred to
-the cloud resource. The recommended method of file transfer is with Globus.
+FOR CLOUD USERS: Preparing for cloud usage requires history files and container
+image/runscript to be transferred to the cloud resource. The recommended method
+of file transfer is with Globus.
 
 Refer to globus documentation here: `Globus Online Data Transfer <https://docs.rdhpcs.noaa.gov/data/globus_online_data_transfer.html>`_
 
@@ -111,22 +112,24 @@ To run the container, follow these steps:
 
    apptainer exec --writable-tmpfs --bind [Path/to/setup/folder]:/mnt --bind [Path/to/gridspec location]:/mnt/[experiment-name]_grid:ro --bind [Path/to/history/files]:/mnt/history:ro [Path/to/created/container] /app/exec/runscript.sh
 
-NOTE: It is essential that binding is done correctly as the container’s runscript (for post-processing) relies
-heavily on these paths.
+NOTE: It is essential that binding is done correctly as the container’s
+runscript (for post-processing) relies heavily on these paths.
 
 Here,
-    - `--writable-tmpfs` allows files in the container to be editable, but temporarily (as long as the container
-       is running)
-    - `--bind` mounts the listed folders/files into the corresponding location in the container
+    - `--writable-tmpfs` allows files in the container to be editable, but
+       temporarily (as long as the container is running)
+    - `--bind` mounts the listed folders/files into the corresponding location
+       in the container
     - ro refers to read-only, so that data files are not corrupted in any way.
-    - At this point, the container’s runscript will begin to run. User input is required, listing the experiment,
-      platform, target, and post-processing yaml file.
+    - At this point, the container’s runscript will begin to run. User input is
+      required, listing the experiment, platform, target, and post-processing
+      yaml file.
 
-The post-processing experiment will be installed, configuration files will be validated, and the experiment should
-kick off.
+The post-processing experiment will be installed, configuration files will be
+validated, and the experiment should kick off.
 
 REVIEW
 ------
 
-The setup-output directory created earlier will hold pp output for review. It will also hold a newly created cylc-run
-directory.
+The setup-output directory created earlier will hold pp output for review. It
+will also hold a newly created cylc-run directory.
