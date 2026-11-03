@@ -1,5 +1,6 @@
 .. Fre-Cli documentation master file, created by sphinx-quickstart on Wed Mar  6 22:28:21 2024.
-   You can adapt this file completely to your liking, but it should at least contain the root
+   You can adapt this file completely to your liking, but it should at least
+   contain the root
    \`toctree\` directive (no backslashes)
    Some sphinx markdown examples:
    https://gist.github.com/SMotaal/24006b13b354e6edad0c486749171a70
