@@ -4,7 +4,7 @@
 
 [![codecov](https://codecov.io/gh/NOAA-GFDL/fre-cli/graph/badge.svg?token=iGb0wEuWs1)](https://codecov.io/gh/NOAA-GFDL/fre-cli)
 [![publish_conda](https://github.com/NOAA-GFDL/fre-cli/workflows/publish_conda/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions?query=workflow%3Apublish_conda+branch%3Amain++)
-[![create_test_conda_env](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/create_test_conda_env.yml/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/create_test_conda_env.yml)
+[![pytest](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/pytest.yml/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/pytest.yml)
 [![readthedocs](https://app.readthedocs.org/projects/noaa-gfdl-fre-cli/badge/?version=latest&style=flat)](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/)
 
 # **`fre-cli`**
