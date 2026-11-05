@@ -40,7 +40,7 @@ https://github.com/NOAA-GFDL/fre-cli/blob/main/docs/glossary.rst
 import logging
 from pathlib import Path
 import fre.list_.list_yamls_script as ly
-import fre.yamltools.combine_yamls_script_new as cy
+import fre.yamltools.combine_yamls_script as cy
 from fre.make.make_helpers import get_mktemplate_path
 from .gfdlfremake import makefilefre, varsfre, targetfre, yamlfre
 
