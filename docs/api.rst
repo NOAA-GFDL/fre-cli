@@ -2,4 +2,6 @@
 API
 ===
 
-.. include:: modules.rst
+.. toctree::
+
+   modules

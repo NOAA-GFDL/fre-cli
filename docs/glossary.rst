@@ -20,4 +20,4 @@ Glossary
     A Makefile is a configuration file required for code compilation with GNU make. For bare-metal and container
     builds, this file is created with the ``fre make makefile`` subtool. The Makefile contains information about
     the required components, library dependencies, linker flags, compiler flags, and the mk_template (defined in
-    the ``platforms.yaml``). 
+    the ``platforms.yaml``).
