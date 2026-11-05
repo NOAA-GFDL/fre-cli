@@ -1,0 +1,18 @@
+run:
+  workflow:
+    repository: "https://github.com/singhd789/fre-run-workflow.git"
+    version: "main"
+  settings:
+    site: "gaea"
+  switches:
+    clean_work: True
+
+postprocess:
+  workflow:
+    repository: "https://github.com/NOAA-GFDL/fre-workflows.git"
+    version: "main"
+  settings:
+    site: "ppan"
+  switches:
+    clean_work: True
+
