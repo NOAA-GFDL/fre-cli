@@ -1,12 +1,13 @@
-# Post-Processing Container
+# FRE-cli Container
 
-Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE workflow at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build and runscript, this post-processing container work allows for more effective sharing of the workflow.
+Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE workflow at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build and runscript, this fre-cli container work allows for more effective sharing of the workflow.
 
 ## PULLING CONTAINER FROM REGISTRY
 To pull the fre-cli container image from the NOAA-GFDL github container registry, use this command:
 
-docker pull ghcr.io/noaa-gfdl/hpc-me/ppp:latest
-
+```
+docker pull ghcr.io/noaa-gfdl/fre-cli:production
+```
 
 ## BUILDING LOCALLY
 
@@ -23,6 +24,10 @@ The container will house the fre-cli tools and subtools, and any necessary packa
 Using podman and apptainer to build, follow these steps:
 
 ```
+## Navigate to /tmp/containers/$USER
+# Users will have to create their own directory here
+cd /tmp/containers/$USER
+
 ## Clone the fre-cli repository
 git clone https://github.com/NOAA-GFDL/fre-cli.git
 
@@ -33,7 +38,7 @@ cd fre-cli/container-files
 ex: noaa-gfdl::fre-cli==2026.02.alpha1
 
 ## Build a container image
-podman build -f Dockerfile-fre-cli -t latest
+podman build --network host -f Dockerfile-fre-cli -t latest
 
 ## Save the image to a local tar file
 # It is recommended to name the container after the post-processing experiment name
@@ -91,7 +96,7 @@ To run the container, follow these steps:
 ## Use apptainer or singularity to run
 # Make sure directories are writable
 # Bind in necessary locations (setup folder, workflow folder, data locations)
-apptainer exec --writable-tmpfs --bind [Path/to/setup/folder]:/mnt --bind [Path/to/fre-worflows]:/mnt2 --bind [Path/to/gridspec location]:/mnt/[experiment-name]_grid:ro --bind [Path/to/history/files]:/mnt/history:ro [Path/to/created/container] /app/exec/runscript.sh
+apptainer exec --writable-tmpfs --bind [Path/to/setup/folder]:/mnt --bind [Path/to/gridspec location]:/mnt/[experiment-name]_grid:ro --bind [Path/to/history/files]:/mnt/history:ro [Path/to/created/container] /app/exec/runscript.sh
 ```
 NOTE: It is essential that binding is done correctly as the container’s runscript relies heavily on these paths.
 

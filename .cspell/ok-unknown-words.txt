@@ -290,6 +290,7 @@ meshgrid
 metaclass
 metavars
 metomi
+micromamba
 microphys
 miniforge
 minmax

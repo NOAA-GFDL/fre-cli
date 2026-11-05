@@ -1,33 +1,54 @@
-FROM condaforge/mambaforge:24.9.2-0 as builder
-#LABEL maintainer "Ciheim Brown"
-## Description ##
-# condaforge is based on a stripped down ubuntu image.  We need some extra bits for frerun + fremake
-####
+#TRACK IMAGES: https://hub.docker.com/_/ubuntu
+FROM ubuntu:26.04 as builder
 
-# Set where the conda installation goes
-ARG conda_location=/app/cylc-flow-tools
+# Set where the environment creation goes
+ARG env_location=/app/cylc-flow-tools
 
-# Change to encrypted HTTP
-RUN sed -i 's/http/https/g' /etc/apt/sources.list
+# Set where miniforge installation will go
+ARG miniforge_location=/app/miniforge
 
-# apt installs to /usr/bin/
-RUN apt update \
-  && apt -y install uuid-runtime time csh python bc 
+## Add this to path to globally set conda/mamba location for use
+#ENV PATH=${miniforge_location}/bin:$PATH
 
-# Update conda because this build container may be stale.
-RUN conda update -n base -c conda-forge conda
+## needed for miniforge installation: curl, ca-certificate (used to securely connect to pkg repos over HTTPS)
+## needed for stage-history pp task: uuid-runtime, time
+## needed for refine-diag pp task: csh
+RUN apt-get update && apt-get install -y \
+  curl \
+  ca-certificates \
+  uuid-runtime \
+  time \
+  csh
+
+# Install miniforge
+RUN curl -L -O "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-$(uname)-$(uname -m).sh" \
+  && bash Miniforge3-$(uname)-$(uname -m).sh -b -u -p "${miniforge_location}" \
+  && rm -f Miniforge3-$(uname)-$(uname -m).sh
+
+# Add this to path to globally set conda/mamba location for use
+ENV PATH=${miniforge_location}/bin:$PATH
 
 # Copy runscript in container and make it executable
-COPY container-files/runscript.sh /app/exec/runscript.sh
+COPY runscript.sh /app/exec/runscript.sh
 RUN chmod +x /app/exec/runscript.sh
 
-# Set up conda environment directory for cylc workflow
-COPY container-files/cylc-flow-tools.yaml ${conda_location}/cylc-flow-tools.yaml
-RUN mamba env create --file ${conda_location}/cylc-flow-tools.yaml -p ${conda_location}
+## Set up conda environment directory for cylc workflow
+COPY cylc-flow-tools.yaml ${env_location}/cylc-flow-tools.yaml
 
-# Maybe perhaps tag an external mounted volume /mnt2 as being safe...
-# RUN git config --global --add safe.directory /mnt2
+#RUN conda config --add channels noaa-gfdl \
+#  && conda config --add envs_dirs ${env_location}/env \
+#  && conda config --add pkgs_dirs ${env_location}/pkgs
 
-RUN conda install urwid==2.*
+RUN conda env create --file ${env_location}/cylc-flow-tools.yaml -p ${env_location}/env \
+  && conda clean --all --yes
+
+#Make conda environment editable? (if you need to install other packages)
+RUN chmod -R 777 ${env_location}
+
+# Keeping in comment for now - might be useful for cylc workflow-state or tui things
+#RUN conda install urwid==2.*
+
+# Put env in path so it is already activated upon runtime
+ENV PATH=${env_location}/env/bin:$PATH
 
 ENTRYPOINT ["/bin/bash"]
