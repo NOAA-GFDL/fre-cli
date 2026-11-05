@@ -7,7 +7,7 @@
               first.
 
    - Options:
-        - ``-y, --yamls [comma separated string of paths of yamls] ``
+        - ``-y, --yamls [comma separated string of paths of yamls]``
         - ``-e,  --experiment [experiment name]``
         - ``-p, --platform [platform]``
         - ``-t, --target [target]``
