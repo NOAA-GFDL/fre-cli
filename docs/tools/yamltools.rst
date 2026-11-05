@@ -2,9 +2,11 @@
 -----------------
 
 ``fre yamltools combine [options]``
-   - Purpose: Creates a fully resolved, combined YAML file
+   - Purpose: Creates a fully resolved, combined YAML file. Input yamls can be passed
+              as standard input from ``fre list yamls`.`
+
    - Options:
-        - ``-y, --yamlfile [comma separated string of paths of yamls] (required)``
+        - ``-y, --yamls [comma separated string of paths of yamls] ``
         - ``-e,  --experiment [experiment name]``
         - ``-p, --platform [platform]``
         - ``-t, --target [target]``

@@ -21,8 +21,9 @@ To access YAML examples, clone the fre-cli repository:
 - `fre yamltools combine [options]`
    - Purpose:
         - Creates combined and resolved YAML file using the YAML configurations passed.
+        - Input yamls can be passed as standard input from `fre list yamls`
    - Options:
-        - `-y, --yamlfile [comma separated string of paths of yamls to combine] (required)`
+        - `-y, --yamls [comma separated string of paths of yamls to combine] `
         - `-e,  --experiment [experiment name]`
         - `-p, --platform [platform]`
         - `-t, --target [target]`
