@@ -8,7 +8,7 @@ import pytest
 from fre.pp import checkout_script
 
 @pytest.mark.parametrize("fre_ver, expected_branch",
-                         [ ("2026.01", "2026.01"),
+                         [ ("2026.02.alpha1", "2026.02.alpha1"),
                            ("2026.02.alpha2", "2026.02.alpha2"),
                            ("develop", "main") ])
 def test_checkout_default_branch(tmp_path, monkeypatch, fre_ver, expected_branch):
@@ -42,6 +42,6 @@ def test_checkout_explicit_branch(tmp_path, monkeypatch):
     monkeypatch.setattr(checkout_script.subprocess, "run", fake_run)
 
     checkout_script.checkout_template(experiment = "FOO", platform = "BAR", target = "BAZ",
-                                      branch = "2026.01")
+                                      branch = "2026.02.alpha1")
 
-    assert '--branch=2026.01' in calls[0]
+    assert '--branch=2026.02.alpha1' in calls[0]

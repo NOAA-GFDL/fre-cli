@@ -74,8 +74,8 @@ def test_clean_fail():
     with pytest.raises(ValueError, match=re.escape("YAML configuration could not be cleaned (experiments, fre_cli_version)")):
         clean_yaml("fre/yamltools/tests/yamls/model.yaml")
 @pytest.mark.parametrize("installed_version, yaml_version",
-                         [ ("develop", "2026.01"),
-                           ("2026.01", "develop") ])
+                         [ ("develop", "2026.02.alpha1"),
+                           ("2026.02.alpha1", "develop") ])
 def test_check_fre_version_dev_mismatch(tmp_path, monkeypatch, installed_version, yaml_version):
     """check_fre_version should raise ValueError when a release and the develop version are mixed."""
     monkeypatch.setattr(fre, "version", installed_version)

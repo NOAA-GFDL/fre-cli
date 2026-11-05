@@ -4,7 +4,7 @@ channels:
   - NOAA-GFDL
 dependencies:
   - noaa-gfdl::hsm
-  - noaa-gfdl::fre-cli==XXXX.XX #Add version number manually
+  - noaa-gfdl::fre-cli==2026.02.alpha1 #Add version number manually
   - conda-forge::nco
   - conda-forge::rsync
   - conda-forge::make
