@@ -25,7 +25,8 @@ def yamltools_cli():
               help="Target name")
 @click.option("-o", "--output", type=str,
               help="Output")
-@click.option("--no-clean", type=bool,
+@click.option("--no-clean", is_flag=True, 
+              default=False, 
               help="Do not remove anything from the combined, resolved YAML file.")
 def combine(yamls, experiment, platform, target, output, no_clean): 
     """
