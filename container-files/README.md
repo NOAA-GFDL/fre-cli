@@ -34,8 +34,8 @@ git clone https://github.com/NOAA-GFDL/fre-cli.git
 ## Navigate into fre-cli/container-files
 cd fre-cli/container-files
 
-## Add the desired fre-cli version number in cylc-flow-tools.yaml
-ex: noaa-gfdl::fre-cli==2026.01
+## Add the desired frecli version number in cylc-flow-tools.yaml
+ex: noaa-gfdl::fre-cli==2026.02.alpha1
 
 ## Build a container image
 podman build --network host -f Dockerfile-fre-cli -t latest

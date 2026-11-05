@@ -15,10 +15,12 @@ Instructions for installing fre-cli on GFDL and NOAA RDHPCS systems via lmod and
 Install FRE-cli from local GitHub clone (for development)
 =========================================================
 
-When contributing to FRE, it is recommended to download and use the code from the repository directly to test changes.
+When contributing to FRE, it is recommended to download and use the code from
+the repository directly to test changes.
 Assuming one has ``conda`` in their path, then do the following::
 
-  # Append necessary channels- fre-cli needs only these two channels and no others to build.
+  # Append necessary channels- fre-cli needs only these two channels and no
+  # others to build.
   # it's possible depending on your conda installation that additional configuration steps are needed
   conda config --append channels noaa-gfdl
   conda config --append channels conda-forge

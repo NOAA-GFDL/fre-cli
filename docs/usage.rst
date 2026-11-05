@@ -1,11 +1,18 @@
 =====
 Usage
 =====
-Using a set of YAML configuration files, ``fre make`` compiles a FMS-based model, and ``fre pp`` postprocesses the history output and runs diagnostic analysis scripts. Please note that model running is not yet supported in FRE 2025; continue to use FRE Bronx frerun.
+Using a set of YAML configuration files, ``fre make`` compiles a FMS-based
+model, and ``fre pp`` postprocesses the history output and runs diagnostic
+analysis scripts. Please note that model running is not yet supported in FRE
+2025; continue to use FRE Bronx frerun.
 
 YAML Framework
 ==============
-In order to utilize these FRE tools, a distributed YAML structure is required. This framework includes a main model yaml, a compile yaml, a platforms yaml, and post-processing yamls. Throughout the compilation and post-processing steps, combined yamls that will be parsed for information are created. Yamls follow a dictionary-like structure with ``[key]: [value]`` fields.
+In order to utilize these FRE tools, a distributed YAML structure is required.
+This framework includes a main model yaml, a compile yaml, a platforms yaml,
+and post-processing yamls. Throughout the compilation and post-processing
+steps, combined yamls that will be parsed for information are created. Yamls
+follow a dictionary-like structure with ``[key]: [value]`` fields.
 
 Yaml Formatting
 ---------------

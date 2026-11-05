@@ -1,14 +1,14 @@
 ``combine-yamls``
 -----------------
 
-``fre yamltools combine-yamls [options]``
-   - Purpose: Creates a combined yaml file for either compilation or post-processing. 
-              If ``--use compile``, the model yaml is combined with the compile and platforms yaml.
-              If ``--use pp``, the model yaml is combined with post-processing and analysis yamls.
-              If ``--use cmor``, the model yaml is combined with cmor yamls.
+``fre yamltools combine [options]``
+   - Purpose: Creates a fully resolved, combined YAML file.
+     Input yamls can be passed as standard input from
+     ``fre list yamls``. The model YAML must be passed first.
    - Options:
-        - ``-y, --yamlfile [experiment yaml] (required)``
-        - ``-e, --experiment [experiment name]``
-        - ``-p, --platform [platform] (required)``
-        - ``-t, --target [target] (required)``
-        - ``--use [compile|pp|cmor] (required)``
+        - ``-y, --yamls [comma separated string of paths of yamls]``
+        - ``-e,  --experiment [experiment name]``
+        - ``-p, --platform [platform]``
+        - ``-t, --target [target]``
+        - ``-o, --output [path to output file]``
+        - ``--no-clean``

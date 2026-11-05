@@ -1,7 +1,14 @@
 FRE-cli Container (For post-processing use case)
 ================================================
 
-Previously, many GFDL workflows and configurations have only been accessible on gitlab. This is disadvantageous for outside collaboration, flexibility, community development. While the FRE workflow can now be conda installed, another deployment method of containerization has been developed. Containerzation of the FRE-cli subtools at GFDL bolsters portability while also simplifying the environment set-up for the user. With the environment set-up done through the container build, this FRE-cli container work allows for more effective sharing of the subtools.
+Previously, many GFDL workflows and configurations have only been accessible on
+gitlab. This is disadvantageous for outside collaboration, flexibility,
+community development. While the FRE workflow can now be conda installed,
+another deployment method of containerization has been developed.
+Containerzation of the FRE-cli subtools at GFDL bolsters portability while also
+simplifying the environment set-up for the user. With the environment set-up
+done through the container build and runscript, this FRE-cli container work
+allows for more effective sharing of the subtools.
 
 BUILDING
 --------

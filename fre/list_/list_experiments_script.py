@@ -5,7 +5,7 @@ configuration names defined.
 """
 
 import logging
-from fre.yamltools import combine_yamls_script_new as cy
+from fre.yamltools import combine_yamls_script as cy
 
 fre_logger = logging.getLogger(__name__)
 
