@@ -13,8 +13,8 @@ def yamltools_cli():
 @yamltools_cli.command()
 @click.option("-y", "--yamls",
               type=str,
-              help="Comma separated string of paths of YAML file to be combined. Model YAML
-                    must be passed first.")
+              help="""Comma separated string of paths of YAML file to be combined. Model YAML
+                    must be passed first.""")
 @click.option("-e", "--experiment",
               type=str,
               help="Experiment name")
