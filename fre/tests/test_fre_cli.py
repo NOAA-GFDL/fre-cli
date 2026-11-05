@@ -47,7 +47,7 @@ def test_cli_fre_version():
                   expected_out in result.output ] )
 
 @pytest.mark.parametrize("ver, is_dev",
-                         [ ("2026.01", False),
+                         [ ("2026.02.alpha1", False),
                            ("2026.02.alpha2", False),
                            ("develop", True) ])
 def test_fre_dev_version_helper(ver, is_dev):
