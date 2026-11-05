@@ -51,7 +51,8 @@ def check_fre_version(yamlfile: str) -> None:
     if yaml_fre_version is None:
         raise ValueError(
             f"fre_cli_version not specified in {yamlfile}. "
-            f"Please add 'fre_cli_version: \"{fre.version}\"' to your model yaml "
+            "Please  ensure the model YAML is passed first in the list of YAMLs."
+            f"Please add 'fre_cli_version: \"{fre.version}\"' to your model YAML "
             f"to ensure compatibility with the correct version of fre-cli."
         )
 
