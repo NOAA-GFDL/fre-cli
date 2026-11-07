@@ -93,7 +93,7 @@ def mask_atmos_plevel_subtool(infile: str = None,
             fre_logger.debug('setting pressure_mask attribute of %s to False', var)
             ds_out[var].attrs['pressure_mask'] = "False"
 
-            masked_var = var.split('_')[0]
+            masked_var = var.replace('_unmsk', '', 1)
 
             fre_logger.debug('writing out masked array to %s instead of %s', masked_var, var)
             ds_out[masked_var] = mask_field_above_surface_pressure(ds_in, var, ds_ps)
