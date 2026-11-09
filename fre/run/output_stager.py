@@ -19,9 +19,6 @@ import click
 
 fre_logger = logging.getLogger(__name__)
 
-VALID_MODES = {"history", "ascii", "restart"}
-
-
 @dataclass(frozen=True)
 class RunContext:
     """Immutable runtime context for the output stager."""
@@ -97,20 +94,6 @@ def validate_path(path_value: str | Path, *, must_be_file: bool = False) -> Path
     return path
 
 
-def validate_mode(mode: str) -> str:
-    """Validate that the mode is one of the allowed values."""
-    if mode not in VALID_MODES:
-        fre_logger.error(
-            "*ERROR*: Invalid mode '%s'. Must be one of: %s",
-            mode,
-            ", ".join(sorted(VALID_MODES)),
-        )
-        raise click.ClickException(
-            f"Invalid mode '{mode}'. Must be one of: {', '.join(sorted(VALID_MODES))}"
-        )
-    return mode
-
-
 def create_tar_archive(work_dir: Path, arch_dir: Path) -> None:
     """Create a TAR archive of work_dir and place it in arch_dir.
     
@@ -166,33 +149,16 @@ def acquire_lock(lock_target: Path):
         lock_file.unlink(missing_ok=True)
 
 @click.command()
-@click.option("--exit-status", is_flag=True, default=False, required=False,
-    help="Set to indicate a non-zero exit status from the model run.")
-@click.option("--combine", is_flag=True, default=False, required=False,
-    help="Enable the combine step for history output files.")
 @click.option("--check", is_flag=True, default=False, required=False,
     help="Enable the check step to verify output files.")
-@click.option("--save-on", is_flag=True, default=False, required=False,
-    help="Enable saving of history output files.")
-@click.option("--fill-grid-on", is_flag=True, default=False, required=False,
+@click.option("--fill-grid", is_flag=True, default=False, required=False,
     help="Enable the fill-grid step.")
-@click.option("--combine-ok", is_flag=True, default=False, required=False,
-    help="Indicate that the combine step completed successfully.")
-@click.option("--check-ok", is_flag=True, default=False, required=False,
-    help="Indicate that the check step completed successfully.")
-@click.option("--save-ok", is_flag=True, default=False, required=False,
-    help="Indicate that the save step completed successfully.")
-@click.option("--fill-grid-ok", is_flag=True, default=False, required=False,
-    help="Indicate that the fill-grid step completed successfully.")
-@click.option("--archive-on", is_flag=True, default=False, required=False,
-    help="Enable archiving of history output files.")
-@click.option("--ptmp-on", is_flag=True, default=False, required=False,
-    help="Enable staging of output files to the ptmp directory.")
-@click.option("--check-sum-on", is_flag=True, default=False, required=False,
+@click.option("--checksum", is_flag=True, default=False, required=False,
     help="Enable checksum verification of output files.")
-@click.option("--compress-on", is_flag=True, default=False, required=False,
+@click.option("--compress", is_flag=True, default=False, required=False,
     help="Enable compression of output files.")
-@click.option("--mode", required=True, type=str,
+@click.option("--mode", required=True,
+    type=click.Choice(['history', 'ascii', 'restart'], case_sensitive=False), 
     help="Mode for staging (required). Must be one of: history, ascii, restart.")
 @click.option("--verbose", is_flag=True, default=False, required=False,
     help="Enable verbose output.")
@@ -201,13 +167,9 @@ def acquire_lock(lock_target: Path):
 @click.argument("work_dir")
 @click.argument("ptmp_dir")
 @click.argument("arch_dir")
-@click.argument("mppnccombine_opt_string")
-@click.argument("ardiff_tmpdir")
-def outputStager(exit_status, combine, check, save_on, fill_grid_on,  # pylint: disable=invalid-name
-                 combine_ok, check_ok, save_ok, fill_grid_ok, archive_on,
-                 ptmp_on, check_sum_on, compress_on, mode, verbose,
-                 exp_name, output_type, work_dir, ptmp_dir, arch_dir,
-                 mppnccombine_opt_string, ardiff_tmpdir):
+def outputStager(check, fill_grid,  # pylint: disable=invalid-name
+                 checksum, compress, mode, verbose, exp_name,
+                 output_type, work_dir, ptmp_dir, arch_dir):
     """Stage output files for post-processing."""
     setup_run_context(verbose=verbose)
     
