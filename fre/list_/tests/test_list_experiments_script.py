@@ -27,11 +27,11 @@ def test_exp_list(caplog):
     list_experiments_script.list_experiments_subtool(f"{TEST_DIR}/{YAMLFILE}")
 
     # check the logging output
-    # experiment3_FOO is the resolved version of the yaml defined "experiment3_{{ fre_properties.VERSION }}"
+    # experiment3_foo is the resolved version of the yaml defined "experiment3_{{ fre_properties.VERSION }}"
     check_out = [ 'Experiments found:',
                   '   - experiment1',
                   '   - experiment2',
-                  '   - experiment3_FOO' ]
+                  '   - experiment3_foo' ]
     for i in check_out:
         assert i in caplog.text
 
