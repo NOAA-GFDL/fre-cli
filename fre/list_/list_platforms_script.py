@@ -27,23 +27,11 @@ def list_platforms_subtool(yamlfile: str):
     platform = None
     target = None
 
-#    model_yf_path = Path(yamlfile).resolve().parent
-#    with open(yamlfile, 'r') as yf:
-#        yml = yaml.safe_load(yf)
-#
-#    platform_yf_path = f"{model_yf_path}/{yml['build']['platformYaml']}"
-
     yml_list = ly.list_yamls_subtool(yamlfile = yamlfile,
                                      experiment = exp,
                                      application = None)
 
-#    # Combine model / experiment
-#    yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
-#                                    experiment = exp,
-#                                    platform = platform,
-#                                    target = target,
-#                                    use = "compile",
-#                                    output = None)
+    # Combine model / experiment
     yml_dict = cy.yamltools_combine_subtool(yamls = yml_list,
                                              experiment = exp,
                                              platform = platform,

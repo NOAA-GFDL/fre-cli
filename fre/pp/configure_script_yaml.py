@@ -287,7 +287,14 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
 
-    analysis_check = helpers.yaml_load(yamlfile).get("experiments")[e]
+    # resolve model yaml in case where experiment name key is using Jinja2 reference
+    yml_dict = cy.yamltools_combine_subtool(yamls = yamlfile,
+                                            experiment = e,
+                                            platform = p,
+                                            target = t,
+                                            output = None,
+                                            no_clean = True)
+    analysis_check = yml_dict.get("experiments")[e]
     analysis_value = None
     if "analysis" in analysis_check.keys():
         analysis_value = True

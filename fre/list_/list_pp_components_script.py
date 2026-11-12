@@ -49,13 +49,7 @@ def list_ppcomps_subtool(yamlfile: str, experiment: str, application: str):
                                      experiment = exp,
                                      application = app)
 
-#    # Combine model / experiment
-#    yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
-#                                    experiment = exp,
-#                                    platform = platform,
-#                                    target = target,
-#                                    use = "pp",
-#                                    output = None)
+    # Combine model / experiment
     yml_dict = cy.yamltools_combine_subtool(yamls = yml_list,
                                             experiment = exp,
                                             platform = platform,
