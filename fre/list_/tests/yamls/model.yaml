@@ -38,4 +38,8 @@ experiments:
       - "yaml_include/pp-test.c96_amip.yaml"
     analysis:
       - "analysis1.yaml"
-  experiment2: 
+  experiment2:
+  experiment3_{{ fre_properties.VERSION}}:
+    settings: "yaml_include/settings.yaml"
+    postprocess:
+      - "yaml_include/pp-test.c96_amip.yaml"

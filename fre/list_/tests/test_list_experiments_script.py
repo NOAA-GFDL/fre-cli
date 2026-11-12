@@ -20,13 +20,18 @@ def test_modelyaml_exists():
 
 # Test whole tool
 def test_exp_list(caplog):
-    ''' Test fre list exps subtool '''
+    '''
+    Test fre list exps subtool and test that experiment name can be resolved if
+    using Jinja2 references.
+    '''
     list_experiments_script.list_experiments_subtool(f"{TEST_DIR}/{YAMLFILE}")
 
     # check the logging output
+    # experiment3_FOO is the resolved version of the yaml defined "experiment3_{{ fre_properties.VERSION }}"
     check_out = [ 'Experiments found:',
                   '   - experiment1',
-                  '   - experiment2' ]
+                  '   - experiment2',
+                  '   - experiment3_FOO' ]
     for i in check_out:
         assert i in caplog.text
 
