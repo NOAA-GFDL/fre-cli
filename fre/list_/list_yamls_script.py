@@ -15,6 +15,8 @@ import sys
 import yaml
 import click
 
+from fre.yamltools import combine_yamls_script as cy
+
 fre_logger = logging.getLogger(__name__)
 
 def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
@@ -42,8 +44,13 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
         fre_logger.error("")
         raise ValueError("Must pass experiment name along with application name")
 
-    with open(yamlfile, 'r', encoding="utf-8") as yf:
-        yaml_dict = yaml.load(yf, Loader = yaml.Loader)
+    # resolve model yaml in case where experiment name key is using Jinja2 reference
+    yaml_dict = cy.yamltools_combine_subtool(yamls = yamlfile,
+                                             experiment = experiment,
+                                             platform = None,
+                                             target = None,
+                                             output = None,
+                                             no_clean = True)
 
     # Add model yaml to list
     yamls = [model_yaml]
