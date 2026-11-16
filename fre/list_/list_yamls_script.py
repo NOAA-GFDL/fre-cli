@@ -14,10 +14,8 @@ import contextlib
 import logging
 from pathlib import Path
 import sys
-import yaml
 import click
 from uwtools.api import config
-from fre.yamltools import combine_yamls_script as cy
 
 fre_logger = logging.getLogger(__name__)
 
@@ -68,7 +66,8 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
         if experiment not in model_yaml_dict["experiments"].keys():
             fre_logger.error("Experiment passed is not defined in the model YAML.")
             fre_logger.error("Users can list experiments via `fre list exps -y [model YAML]`")
-            raise ValueError(f"Experiment passed DNE. Available experiments include {model_yaml_dict['experiments'].keys()}")
+            raise ValueError("Experiment passed DNE. Available experiments include "
+                             f"{model_yaml_dict['experiments'].keys()}")
 
         if application:
             fre_logger.info("Gathering YAMLs associated with experiment %s and application %s", experiment, application)
