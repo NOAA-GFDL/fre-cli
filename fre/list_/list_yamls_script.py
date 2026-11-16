@@ -132,7 +132,7 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
     fre_logger.info("")
     fre_logger.info('If combining these yamls, there are 2 options:')
     fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
-    fre_logger.info('   2. Copy and paste this string as the -y option'
+    fre_logger.info('   2. Copy and paste this string as the -y option '
                            'in "fre yamltools combine -y <yamls>:')
     fre_logger.info('       "%s"', yamls_full_path)
     fre_logger.info("")
