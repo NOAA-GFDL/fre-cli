@@ -4,7 +4,7 @@
 
 ``all``
 -------
-* Executes the fre postprocessing steps in order (fre pp configure-yaml, fre pp checkout, fre pp validate, fre pp install, fre pp run, trigger and status)
+* Executes the fre postprocessing steps in order (fre pp configure-yaml, fre pp checkout, fre pp install, fre pp run, trigger and status)
 * Minimal syntax: ``fre pp all -e experiment_name -p platform_name -T target_name -c config_file [ -b [branch] -t [time] ]``
 * Module(s) needed: n/a
 * Example: ``fre pp all -e c96L65_am5f4b4r0_amip -p ncrc5.intel23 -T prod -c ./am5.yaml -b main``

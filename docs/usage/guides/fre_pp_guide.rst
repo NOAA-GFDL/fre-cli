@@ -16,9 +16,6 @@ the tag matching the ``fre`` version (``fre --version``). For the development ve
   # Create/configure the combined yaml file, rose-suite.conf, and any necessary rose-app.conf files
   fre pp configure-yaml -y [model yaml file] -e [experiment name] -p [platform] -t [target]
 
-  # Validate the rose experiment configuration files
-  fre pp validate -e [experiment name] -p [platform] -t [target]
-
   # Install the experiment
   fre pp install -e [experiment name] -p [platform] -t [target]
 
@@ -49,9 +46,6 @@ Users can also run all fre pp subtools in one command:
 
   # Create/configure the combined yaml file, rose-suite.conf, and any necessary rose-app.conf files
   fre pp configure-yaml -y [model yaml file] -e [experiment name] -p [platform] -t [target]
-
-  # Validate the rose experiment configuration files
-  fre pp validate -e [experiment name] -p [platform] -t [target]
 
   # Install the experiment
   fre pp install -e [experiment name] -p [platform] -t [target]

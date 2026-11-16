@@ -107,7 +107,7 @@ Here,
     - ro refers to read-only, so that data files are not corrupted in any way.
     - At this point, the container’s runscript will begin to run. User input is required, listing the experiment, platform, target, and post-processing yaml file.
 
-The experiment will be installed, configuration files will be validated, and the experiment should kick off.
+The experiment will be installed and the experiment should kick off.
 
 REVIEW
 ------

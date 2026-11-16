@@ -78,11 +78,6 @@ fre_pp_steps () {
     fre -v pp configure-yaml -e ${expname} -p ${plat} -t ${targ} -y ${yamlfile}
     check_exit_status "CONFIGURE-YAML"
 
-    ## Validate the configuration files
-    echo -e "\nRunning fre pp validate to validate rose-suite and rose-app configuration files for workflow ... "
-    fre -v pp validate -e ${expname} -p ${plat} -t ${targ} || echo "validate, no kill"
-    check_exit_status "VALIDATE"
-
     # Install
     echo -e "\nRunning fre pp install to install the workflow in ${HOME}/cylc-run/${name} ... "
     fre -v pp install -e ${expname} -p ${plat} -t ${targ}
