@@ -1,4 +1,7 @@
-The platform yaml contains user defined information for both bare-metal and container platforms. Information includes the platform name, the compiler used, necessary modules to load, an mk template, fc, cc, container build, and container run. This yaml file is not model specific.
+The platform yaml contains user defined information for both bare-metal and
+container platforms. Information includes the platform name, the compiler used,
+necessary modules to load, an mk template, fc, cc, container build, and
+container run. This yaml file is not model specific.
 
   .. code-block::
 

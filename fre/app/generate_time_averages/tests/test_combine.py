@@ -100,7 +100,7 @@ def test_combine_annual_av(create_annual_per_variable_climatologies):
                     frequency, interval)
 
     full_out_dir = Path(create_annual_per_variable_climatologies, 'out', 'atmos', 'av', 'annual_2yr')
-    output_file = full_out_dir / 'atmos.1980-1981.nc'
+    output_file = full_out_dir / 'atmos.1980-1981.ann.nc'
 
     assert output_file.exists()
 

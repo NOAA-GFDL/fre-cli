@@ -1,16 +1,20 @@
-The model yaml defines reusable variables and paths to compile, post-processing, analysis, and cmor yamls. Required fields in the model yaml include: ``fre_properties``, ``build``,  and ``experiments``.
+The model yaml defines reusable variables and paths to compile,
+post-processing, analysis, and cmor yamls. Required fields in the model yaml
+include: ``fre_properties``, ``build``,  and ``experiments``.
 
 * `fre_cli_version`: Version of fre-cli this yaml is compatible with
 
   - value type: string
-  - when specified, fre-cli will verify that the installed version matches this value
+  - when specified, fre-cli will verify that the installed version matches this
+    value
   - if the versions do not match, a clear error message will be displayed
   - if not specified, a warning will be logged recommending its addition
 
 * `fre_properties`: Reusable variables
 
   - list of variables
-  - these values can be extracted from ``fre_properties`` in a group's XML, if available
+  - these values can be extracted from ``fre_properties`` in a group's XML, if
+    available
   - value type: string
 
 * `build`: paths to information needed for compilation
@@ -23,7 +27,7 @@ The model.yaml can follow the structure below:
 
      fre_cli_version: "2025.04"
 
-     fre_properties: 
+     fre_properties:
        - &variable1  "value1"  (string)
        - &variable2  "value2"  (string)
 
@@ -33,9 +37,9 @@ The model.yaml can follow the structure below:
 
      experiments:
        - name: "name of post-processing experiment"                                       (string)
-         pp: 
+         pp:
            - "path/to/post-processing/yaml for that experiment in relation to model yaml" (string)
-         analysis: 
+         analysis:
            - "path/to/analysis/yaml for that experiment in relation to model yaml"        (string)
          cmor:
            - "path/to/cmor/yaml for that experiment in relation to model yaml"            (string)

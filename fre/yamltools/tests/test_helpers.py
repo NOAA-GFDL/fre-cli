@@ -1,11 +1,12 @@
 import os
+import re
 import tempfile
 
 import pytest
 import yaml
 
 import fre
-from fre.yamltools.helpers import yaml_load, check_fre_version
+from fre.yamltools.helpers import yaml_load, check_fre_version, clean_yaml
 
 
 @pytest.fixture
@@ -63,9 +64,23 @@ def test_check_fre_version_mismatch(yaml_with_wrong_version):
     with pytest.raises(ValueError, match="does not match the installed version"):
         check_fre_version(yaml_with_wrong_version)
 
-def test_check_fre_version_missing(yaml_without_version, caplog):
-    """check_fre_version should log info but not error when fre_cli_version is missing."""
-    import logging
-    with caplog.at_level(logging.WARNING):
+def test_check_fre_version_missing(yaml_without_version):
+    """check_fre_version should raise ValueError when fre_cli_version is missing."""
+    with pytest.raises(ValueError, match="fre_cli_version not specified"):
         check_fre_version(yaml_without_version)
-    assert "fre_cli_version not specified" in caplog.text, f"i'd suspect the 'import fre' in fre/yamltools/helpers"
+
+def test_clean_fail():
+    """clean_yaml should fail if nto given a dictionary"""
+    with pytest.raises(ValueError, match=re.escape("YAML configuration could not be cleaned (experiments, fre_cli_version)")):
+        clean_yaml("fre/yamltools/tests/yamls/model.yaml")
+@pytest.mark.parametrize("installed_version, yaml_version",
+                         [ ("develop", "2026.02.alpha1"),
+                           ("2026.02.alpha1", "develop") ])
+def test_check_fre_version_dev_mismatch(tmp_path, monkeypatch, installed_version, yaml_version):
+    """check_fre_version should raise ValueError when a release and the develop version are mixed."""
+    monkeypatch.setattr(fre, "version", installed_version)
+    path = tmp_path / "other_version.yaml"
+    with open(path, 'w') as f:
+        yaml.dump({'fre_cli_version': yaml_version, 'fre_properties': []}, f)
+    with pytest.raises(ValueError, match="does not match the installed version"):
+        check_fre_version(str(path))
