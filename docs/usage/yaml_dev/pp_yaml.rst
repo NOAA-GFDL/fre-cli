@@ -15,7 +15,7 @@ components are needed, as well as define any experiment specific
 
    postprocess:
      components:
-       - type: "component name"                                                          (string)
+       component_name:                                                                   (string)
          sources:
            - history_file: "history file to include with component"                      (string)
              variables: "specific variables to postprocess associated with component"    (array with string elements)
@@ -32,7 +32,6 @@ components are needed, as well as define any experiment specific
 
 Required keys include:
 
-    - type
     - sources
 
 **Settings yaml**
@@ -75,5 +74,4 @@ Required keys include:
     - pp_stop
     - pp_grid_spec
     - clean_work
-    - do_timeavgs
     - do_atmos_plevel_masking
