@@ -35,8 +35,9 @@ Where each dash indicates a list.
 
 .. code-block::
 
-  ReusableVariable:  "Value:
-  Variable:  "var2_{{ fre_properties.ReusableVariable }}"
+  fre_properties:
+    ReusableVariable:  "Value"
+    Variable:          "var2_{{ fre_properties.ReusableVariable }}"
 
 When referencing another variable, the value must be a string. However, if the
 new variable needs to be an integer or boolean for example, users can utilize
