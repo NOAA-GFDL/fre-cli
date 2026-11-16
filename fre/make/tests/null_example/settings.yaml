@@ -1,7 +1,7 @@
 directories:
-  history_dir:  !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, history]
-  pp_dir:       !join [/archive/$USER/, *FRE_STEM, /, *name, /, *platform, -, *target, /, pp]
-  analysis_dir: !join [/nbhome/$USER/, *FRE_STEM, /, *name]
+  history_dir:  "/archive/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}/{{ platform }}-{{ target }}/history"
+  pp_dir:       "/archive/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}/{{ platform }}-{{ target }}/pp"
+  analysis_dir: "/nbhome/$USER/{{ fre_properties.FRE_STEM }}/{{ name }}"
 
 # shared pp settings
 postprocess:

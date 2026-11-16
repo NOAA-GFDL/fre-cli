@@ -4,7 +4,7 @@
 
 [![codecov](https://codecov.io/gh/NOAA-GFDL/fre-cli/graph/badge.svg?token=iGb0wEuWs1)](https://codecov.io/gh/NOAA-GFDL/fre-cli)
 [![publish_conda](https://github.com/NOAA-GFDL/fre-cli/workflows/publish_conda/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions?query=workflow%3Apublish_conda+branch%3Amain++)
-[![create_test_conda_env](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/create_test_conda_env.yml/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/create_test_conda_env.yml)
+[![pytest](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/pytest.yml/badge.svg)](https://github.com/NOAA-GFDL/fre-cli/actions/workflows/pytest.yml)
 [![readthedocs](https://app.readthedocs.org/projects/noaa-gfdl-fre-cli/badge/?version=latest&style=flat)](https://noaa-gfdl.readthedocs.io/projects/fre-cli/en/latest/)
 
 # **`fre-cli`**
@@ -43,7 +43,7 @@ loading fre-cli into a user's environment.
 
 ```
 module use -a /ncrc/home2/fms/local/modulefiles
-module load fre/2026.01
+module load fre/2026.02.alpha1
 ```
 
 #### Activate a shared conda environment:
@@ -51,12 +51,12 @@ module load fre/2026.01
 - GFDL:
 ```
 module load miniforge
-conda activate /nbhome/fms/conda/envs/fre-2026.01
+conda activate /nbhome/fms/conda/envs/fre-2026.02.alpha1
 ```
 - Gaea:
 ```
 module use /usw/conda/modulefiles
-module load miniforge conda activate /ncrc/home2/fms/.conda/envs/fre-2026.01
+module load miniforge conda activate /ncrc/home2/fms/.conda/envs/fre-2026.02.alpha1
 ```
 
 ## Install via Conda
@@ -67,8 +67,8 @@ of how to install fre-cli via conda:
 ```
 conda config --append channels noaa-gfdl
 conda config --append channels conda-forge
-conda create --name fre-2026.01 --channel noaa-gfdl --channel conda-forge fre-cli::2026.01
-conda activate fre-2026.01
+conda create --name fre-2026.02.alpha1 --channel noaa-gfdl --channel conda-forge fre-cli::2026.02.alpha1
+conda activate fre-2026.02.alpha1
 # optional: install or load fre-nctools to gain access to regridding and certain time-averaging routines
 # add to your path like: export PATH=/path/to/your/fre-nctools/build/bin:$PATH
 # or if you have lmod/modules: module load fre-nctools/<version>
