@@ -45,3 +45,18 @@ def combine(yamls, experiment, platform, target, output, no_clean):
         yaml_paths = sys.stdin.read().strip()
 
     combine_yamls_script.yamltools_combine_subtool(yaml_paths, experiment, platform, target, output, no_clean)
+
+#@yamltools_cli.command()
+#@click.option("-y", "--yaml",
+#              type=str,
+#              help="Combined, resolved YAML file to be used for parsing",
+#              required=True)
+#@click.option("-js", "--json-schema",
+#              type=str,
+#              help="JSON schema file used to validate the YAML",
+#              required=True)
+#def validate(yaml, schema):
+#    """
+#    - Validate the combined, resolved YAML file against a JSON schema
+#    """
+#    validate_script.validate_subtool(yaml, schema)
