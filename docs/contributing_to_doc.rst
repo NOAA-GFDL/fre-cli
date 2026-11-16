@@ -1,47 +1,64 @@
 .. last updated early Jul 9 2025.
 
-``fre-cli``'s documentation is built with ``sphinx`` and written in restructured-text.
+``fre-cli``'s documentation is built with ``sphinx`` and written in
+restructured-text.
 A decent cheat-sheet for restructured-text can be found
 `at this gist <https://gist.github.com/SMotaal/24006b13b354e6edad0c486749171a70#sections>`__.
 
 with a PR to NOAA-GFDL/fre-cli (recommended)
 --------------------------------------------
 
-This approach is the easiest, most-automated we have to offer open-source contributors. It is completely appropriate
-for casual editing of the docs and previewing the changes, all while not eating up your personal github account's free
+This approach is the easiest, most-automated we have to offer open-source
+contributors. It is completely appropriate
+for casual editing of the docs and previewing the changes, all while not eating
+up your personal github account's free
 CI/CD minutes, and making PR reviews incredibly easy for documentation changes.
 
 * you DO NOT NEED a ``readthedocs.org`` account.
-* Make a branch, either with ``NOAA-GFDL/fre-cli`` as the remote, or your own fork.
-* Edit a file any non-zero amount, commit that change to your branch, and push. If the branch is identical to ``main``,
+* Make a branch, either with ``NOAA-GFDL/fre-cli`` as the remote, or your own
+  fork.
+* Edit a file any non-zero amount, commit that change to your branch, and push.
+  If the branch is identical to ``main``,
   you cannot open a PR!
-* Once the PR is opened, a ``readthedocs`` workflow will be run, even if that PR is in draft mode. To confirm it is
-  running, or did run, open your PR in a web browser, scroll to the bottom to find the latests workflow runs under
+* Once the PR is opened, a ``readthedocs`` workflow will be run, even if that
+  PR is in draft mode. To confirm it is
+  running, or did run, open your PR in a web browser, scroll to the bottom to
+  find the latests workflow runs under
   "checks", and click the ``readthedocs`` workflow.
 * after clicking, you should see a URL like ``https://noaa-gfdl--<PR_NUMBER>.org.readthedocs.build/projects/fre-cli/en/<PR_NUMBER>/``,
   where ``<PR_NUMBER>`` is the PR number, for examples, these doc updates were added in PR `530 <https://github.com/NOAA-GFDL/fre-cli/pull/530>`_ .
-* If the doc build is successful, you should see the usual ``fre-cli`` documentation page. If unsuccessful, you should
+* If the doc build is successful, you should see the usual ``fre-cli``
+  documentation page. If unsuccessful, you should
   see a ``404`` error.
-* To review documentation differences, play with the "Show diff" checkbox, which gives an explicit visual difference
+* To review documentation differences, play with the "Show diff" checkbox,
+  which gives an explicit visual difference
   highlight right on the built webpage
 
 
 with a fork and your own readthedocs account
 --------------------------------------------
 
-This approach is good for playing with configuration of the workflow and not making a lot of noise on the main repository
-with one's development. If you want to experiment more freely and not send notifications to every maintainer of ``fre-cli``,
+This approach is good for playing with configuration of the workflow and not
+making a lot of noise on the main repository
+with one's development. If you want to experiment more freely and not send
+notifications to every maintainer of ``fre-cli``,
 this is for you. It also won't use your own github account minutes.
 
-* Make sure you HAVE a fork underneath your github profile, if not, fork the repository under the NOAA-GFDL namespace
+* Make sure you HAVE a fork underneath your github profile, if not, fork the
+  repository under the NOAA-GFDL namespace
 * Navigate to readthedocs' `log-in page <https://app.readthedocs.org/accounts/signup/>`_ and sign in with your GitHub
-  account. This effectively creates a ``readthedocs.org`` account for you, attached to your ``github`` account.
-* Click "Add project" and search for ``fre-cli``. If your fork doesn't automatically come up, you do not have a fork!
+  account. This effectively creates a ``readthedocs.org`` account for you,
+  attached to your ``github`` account.
+* Click "Add project" and search for ``fre-cli``. If your fork doesn't
+  automatically come up, you do not have a fork!
   Go back to the first step in this list.
-* If your changes do not live on a branch named ``main`` (they should not, at least), configure the project to look
+* If your changes do not live on a branch named ``main`` (they should not, at
+  least), configure the project to look
   for your branch's name.
-* If perms and everything lines up right, on your next push to the aforementioned branch, the docs should build and
-  offer a preview relatively quickly. You should not have to re-configure anything to get it to work.
+* If perms and everything lines up right, on your next push to the
+  aforementioned branch, the docs should build and
+  offer a preview relatively quickly. You should not have to re-configure
+  anything to get it to work.
 
 
 local sphinx build
@@ -51,8 +68,10 @@ This is good for deep debugging of the documentation build.
 
 lightweight approach (recommended for docs-only)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you only need to build documentation and don't need the full ``fre-cli`` environment,
-you can use a minimal setup. This approach uses ``autodoc_mock_imports`` in ``docs/conf.py``
+If you only need to build documentation and don't need the full ``fre-cli``
+environment,
+you can use a minimal setup. This approach uses ``autodoc_mock_imports`` in
+``docs/conf.py``
 to mock heavy dependencies like ``netCDF4``, ``xarray``, etc.
 
 From the root-directory of your local repository copy:
@@ -62,18 +81,19 @@ From the root-directory of your local repository copy:
  # Create a lightweight docs-only environment
  conda create -n fre-cli-docs python=3.11 -y
  conda activate fre-cli-docs
- 
+
  # Install minimal dependencies
  pip install sphinx renku-sphinx-theme sphinx-rtd-theme click pyyaml jsonschema
- 
+
  # Set PYTHONPATH so Sphinx can find the fre modules
  export PYTHONPATH="${PWD}:${PYTHONPATH}"
- 
+
  # Generate API docs and build
  sphinx-apidoc --output-dir docs fre/ --separate
  sphinx-build docs build
 
-This will produce warnings about missing ``pytest`` and ``metomi`` imports from test modules,
+This will produce warnings about missing ``pytest`` and ``metomi`` imports from
+test modules,
 but the build will succeed. To view the result, open ``build/index.html`` in your browser.
 
 full environment approach
@@ -89,18 +109,19 @@ From the root-directory of your local repository copy:
 
  # Activate your fre-cli environment
  conda activate fre-cli
- 
+
  # optional: load fre-nctools into your PATH to gain access to regridding and certain time-averaging routines
  # module load fre-nctools
- 
+
  # Install documentation dependencies
  pip install .[docs]
- 
+
  # Generate API docs and build
  sphinx-apidoc --output-dir docs fre/ --separate
  sphinx-build docs build
 
-Then, to view the result, open up the resultant ``fre-cli/build/index.html`` with your favorite web browser.
+Then, to view the result, open up the resultant ``fre-cli/build/index.html``
+with your favorite web browser.
 You should be able to click around the locally built html and links should work as expected.
 
 .. note:: ``sphinx-build`` is quite permissive, though loud. It makes accurate and numerous complaints, but often
@@ -112,12 +133,14 @@ You should be able to click around the locally built html and links should work 
 Troubleshooting
 ~~~~~~~~~~~~~~~
 
-Both conda and python can interact oddly with c-shell. If you get the following error:
+Both conda and python can interact oddly with c-shell. If you get the following
+error:
 
 .. code-block:: console
 
  > pip install .[docs]
  pip: No match.
 
-You are likely in c-shell and can solve your issue by switching to a bash shell, re-loading your fre-cli environment,
+You are likely in c-shell and can solve your issue by switching to a bash
+shell, re-loading your fre-cli environment,
 and running the local sphinx build commands again.

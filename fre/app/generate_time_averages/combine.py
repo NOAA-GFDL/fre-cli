@@ -115,7 +115,7 @@ def combine( root_in_dir: str,
     with change_directory(indir):
         if frequency == 'yr':
             source = component + '.' + date_string + '.*.nc'
-            target = component + '.' + date_string + '.nc'
+            target = component + '.' + date_string + '.ann.nc'
             merge_netcdfs(source, target)
             fre_logger.debug("Output file created: %s", target)
             fre_logger.debug("Copying to %s", outdir)
