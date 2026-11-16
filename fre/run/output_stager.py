@@ -179,7 +179,6 @@ def outputStager(check, fill_grid,  # pylint: disable=invalid-name
     work_dir_path = validate_path(work_dir)
     ptmp_dir_path = validate_path(ptmp_dir)
     arch_dir_path = validate_path(arch_dir)
-    ardiff_tmpdir_path = validate_path(ardiff_tmpdir)
 
     lock_target = work_dir_path / f"{exp_name}.{output_type}"
     try:
