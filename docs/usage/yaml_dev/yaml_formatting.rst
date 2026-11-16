@@ -38,11 +38,11 @@ Where each dash indicates a list.
   ReusableVariable:  "Value:
   Variable:  "var2_{{ fre_properties.ReusableVariable }}"
 
-When referencing another variable, the value must be a string. However, if the new
-variable needs to be an integer or boolean for example, users can utilize standard
-YAML tags. The fre-cli composes and resolves YAML variables using "uwtools". For
-more information on how to use these tags and how uwtools handles them, reference
-the uwtools documentation `here <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/tags.html#custom-tags>`_.
+When referencing another variable, the value must be a string. However, if the
+new variable needs to be an integer or boolean for example, users can utilize
+standard YAML tags. The fre-cli composes and resolves YAML variables using
+"uwtools". For more information on how to use these tags and how uwtools
+handles them, reference the uwtools documentation `here <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/tags.html#custom-tags>`_.
 
 5. Users can reference a previous key throughout the YAMLs.
 
