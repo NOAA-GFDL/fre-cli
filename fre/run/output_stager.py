@@ -173,12 +173,12 @@ def outputStager(check, fill_grid,  # pylint: disable=invalid-name
     """Stage output files for post-processing."""
     setup_run_context(verbose=verbose)
     
-    # Validate mode
-    validate_mode(mode)
-
-    work_dir_path = validate_path(work_dir)
-    ptmp_dir_path = validate_path(ptmp_dir)
-    arch_dir_path = validate_path(arch_dir)
+#    # Validate mode
+#    validate_mode(mode)
+#
+#    work_dir_path = validate_path(work_dir)
+#    ptmp_dir_path = validate_path(ptmp_dir)
+#    arch_dir_path = validate_path(arch_dir)
 
     lock_target = work_dir_path / f"{exp_name}.{output_type}"
     try:
