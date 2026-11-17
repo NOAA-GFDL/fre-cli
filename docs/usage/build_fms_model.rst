@@ -1,13 +1,17 @@
-``fre make`` can compile a traditional "bare metal" executable or a containerized executable using a set of YAML configuration files.
+``fre make`` can compile a traditional "bare metal" executable or a
+containerized executable using a set of YAML configuration files.
 
-Through the fre-cli, ``fre make`` can be used to create and run a checkout script, makefile, and compile a model.
+Through the fre-cli, ``fre make`` can be used to create and run a checkout
+script, makefile, and compile a model.
 
 
 Capabilities
 -----------------
 Fremake Canopy Supports:
-  - multiple target use; ``-t`` flag to define each target (for multiple platform-target combinations)
-  - multiple platform use; ``-p`` flag to define each platform (for multiple platform-target combinations)
+  - multiple target use; ``-t`` flag to define each target (for multiple
+    platform-target combinations)
+  - multiple platform use; ``-p`` flag to define each platform (for multiple
+    platform-target combinations)
   - bare-metal build
   - container creation
   - parallel checkouts for bare-metal build
@@ -15,7 +19,8 @@ Fremake Canopy Supports:
   - one yaml format
   - additional library support if needed
 
-**Note: Users will not be able to create containers without access to podman (on GAEA). To get access, submit a helpdesk ticket.**
+**Note: Users will not be able to create containers without access to podman
+(on GAEA). To get access, submit a helpdesk ticket.**
 
 Required configuration files:
 
@@ -25,20 +30,33 @@ Required configuration files:
 
 These yamls are combined and further parsed with the ``fre make`` tools.
 
-The final combined yaml includes the name of the compile experiment, the platform and target passed in the command line subtool, as well as compile and platform yaml information. The platform that was passed corresponds to the one defined in the platforms YAML file. This file details essential configuration info such as setting up the runtime environment, listing what compiler to use, and providing which container applications to use. These configurations vary based on the specific site where the user is building the model executable or container. Additionally the platform and target passed are used to fill in the build directory in which the compile script is created and run. 
+The final combined yaml includes the name of the compile experiment, the
+platform and target passed in the command line subtool, as well as compile and
+platform yaml information. The platform that was passed corresponds to the one
+defined in the platforms YAML file. This file details essential configuration
+info such as setting up the runtime environment, listing what compiler to use,
+and providing which container applications to use. These configurations vary
+based on the specific site where the user is building the model executable or
+container. Additionally the platform and target passed are used to fill in the
+build directory in which the compile script is created and run.
 
-In regards to container platforms in the YAML file, fre make supports a one and two stage build:
+In regards to container platforms in the YAML file, fre make supports a one and
+two stage build:
 
   - one-stage build:
 
     - contains the intel compiler
-    - this container CANNOT be shared as we do not have the license to distribute
+    - this container CANNOT be shared as we do not have the license to
+      distribute
 
   - two-stage build:
 
-    - includes platform information with a second container base to build off of
-    - strips out the intel compiler and reduces the size of the container, making it shareable and easier to store.
+    - includes platform information with a second container base to build off
+      of
+    - strips out the intel compiler and reduces the size of the container,
+      making it shareable and easier to store.
 
-To perform the two-stage build, choose the right platform to use with the fre make subtools (with two container bases specified).
+To perform the two-stage build, choose the right platform to use with the fre
+make subtools (with two container bases specified).
 
 To follow a quickstart, see the `README <https://github.com/singhd789/fre-cli/blob/update-fremake-readme/fre/make/README.md#quickstart>`_.

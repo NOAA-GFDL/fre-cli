@@ -1,5 +1,0 @@
-platforms:
-  - name: gfdl.ncrc4-intel16
-    compiler: intel
-  - name: gfdl.ncrc5-intel22
-    compile: intel

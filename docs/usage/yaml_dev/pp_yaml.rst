@@ -1,10 +1,17 @@
-The post-processing yamls include information specific to experiments, such as component information. The post-processing yamls can further define more ``fre_properties`` that may be experiment specific. If there are any repeated reusable variables, the ones set in this yaml will overwrite those set in the model yaml.
+The post-processing yamls include information specific to experiments, such as
+component information. The post-processing yamls can further define more
+``fre_properties`` that may be experiment specific. If there are any repeated
+reusable variables, the ones set in this yaml will overwrite those set in the
+model yaml.
 
 **Post-processing yamls**
 
-The post-processing yamls include pp experiment yamls, along with a settings.yaml, that can be applied to all pp yamls. Users can add however many components are needed, as well as define any experiment specific `fre_properties`. The pp experiment yamls can follow the structure below:
+The post-processing yamls include pp experiment yamls, along with a
+settings.yaml, that can be applied to all pp yamls. Users can add however many
+components are needed, as well as define any experiment specific
+`fre_properties`. The pp experiment yamls can follow the structure below:
 
-.. code-block:: 
+.. code-block::
 
    postprocess:
      components:
@@ -24,17 +31,19 @@ The post-processing yamls include pp experiment yamls, along with a settings.yam
          postprocess_on: "switch to postprocess this component or not"                   (boolean)
 
 Required keys include:
-    
+
     - type
     - sources
 
 **Settings yaml**
 
-To define post-processing settings, a settings.yaml must also be created. This configuration file will include post-processing settings and switches and will be listed as the **first** yaml under the `pp` section of `experiments`.
+To define post-processing settings, a settings.yaml must also be created. This
+configuration file will include post-processing settings and switches and will
+be listed as the **first** yaml under the `pp` section of `experiments`.
 
 This file can follow the format below:
 
-.. code-block:: 
+.. code-block::
 
    directories:
      history_dir:
