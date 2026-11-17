@@ -63,12 +63,13 @@ def install_subtool(experiment: str, platform: str, target: str) -> None:
     # so an invalid workflow never lands in ~/cylc-run
     fre_logger.info(f"NOTE: Validating workflow definition in {source_dir}")
     try:
-        subprocess.run(["cylc", "validate", "."], cwd=source_dir, check=True, capture_output=True)
-    except subprocess.CalledProcessError:
+        subprocess.run(["cylc", "validate", "."], cwd=source_dir,
+                       check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as err:
         fre_logger.error(f"ERROR: 'cylc validate' failed for workflow in {source_dir}; "
                          "not installing. Fix the workflow definition and try again.")
-    except subprocess.CalledProcessError as err:
-        fre_logger.error(f"ERR: {err.stderr}")
+        fre_logger.error(err.stderr)
+        raise
 
     if os.path.isdir(install_dir):
         # Compare expanded Cylc definitions to check if reinstall is required
