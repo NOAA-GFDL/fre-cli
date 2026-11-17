@@ -132,8 +132,7 @@ Here,
       required, listing the experiment, platform, target, and post-processing
       yaml file.
 
-The experiment will be installed, configuration files will be validated, and
-the experiment should kick off.
+The experiment will be installed and the experiment should kick off.
 
 REVIEW
 ------

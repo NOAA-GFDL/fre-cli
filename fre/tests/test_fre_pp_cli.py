@@ -148,22 +148,6 @@ def test_cli_fre_pp_status_security_check():
     assert not Path('./unwanted_file.txt').exists()
     assert result.exit_code != 0
 
-#-- fre pp validate
-def test_cli_fre_pp_validate():
-    ''' fre pp validate '''
-    result = runner.invoke(fre.fre, args=["pp", "validate"])
-    assert result.exit_code == 2
-
-def test_cli_fre_pp_validate_help():
-    ''' fre pp validate --help '''
-    result = runner.invoke(fre.fre, args=["pp", "validate", "--help"])
-    assert result.exit_code == 0
-
-def test_cli_fre_pp_validate_opt_dne():
-    ''' fre pp validate optionDNE '''
-    result = runner.invoke(fre.fre, args=["pp", "validate", "optionDNE"])
-    assert result.exit_code == 2
-
 #-- fre pp wrapper
 def test_cli_fre_pp_wrapper():
     ''' fre pp wrapper '''

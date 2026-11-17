@@ -62,29 +62,15 @@ fre pp configure-yaml -e EXPNAME -p PLATFORM -t TARGET -y YAML
 
 ```
 
-3. (OPTIONAL BUT RECOMMENDED) Create `history-manifest` for config validation
-
-Create a `history-manifest` of a single tar file archive first for use in the validation. 
-This list represents the available source files within the history tar archives, and enables the 
-validation procedure to catch a wider variety of potential errors. This can be done like so-
-```
-tar -tf /archive/$USER/path/to/history/files/YYYYMMDD.nc.tar | grep -v tile[2-6] | sort > /home/$USER/cylc-src/EXPNAME__PLATFORM__TARGET/history-manifest
-```
-
-4. Validate the configuration
-```
-fre pp validate -e EXPNAME -p PLATFORM -t TARGET
-```
-
-Warnings related to directories are probably valid and should be fixed in `rose-suite.conf`, or created as necessary via `mkdir`.
-
 If you are running postprocessing gaea, you'll need to change the `SITE` variable in `rose-suite.conf` from `ppan` to `gaea`.
 
-5. Install the workflow
+3. Install the workflow
 
 ```
 fre pp install -e EXPNAME -p PLATFORM -t TARGET
 ```
+
+`fre pp install` runs `cylc validate` on the workflow in `~/cylc-src` first, and does not install it if validation fails.
 
 If you are attempting this on gaea, you'll need to make two one-time changes before installing.
 - Currently, `cylc`, `rose`, and `isodatetime` must be in your PATH for new shells. One approach to do this is
@@ -108,19 +94,19 @@ If you don't do this, Cylc will use your home directory for the scratch space an
             run = /gpfs/f5/scratch/gfdl_f/$USER
 ```
 
-6. Run the workflow
+4. Run the workflow
 
 ```
 fre pp run -e EXPNAME -p PLATFORM -t TARGET
 ```
 
-7. Report status of workflow progress
+5. Report status of workflow progress
 
 ```
 fre pp status -e EXPNAME -p PLATFORM -t TARGET
 ```
 
-8. Launch GUI
+6. Launch GUI
 
 ```
 TODO: fre pp gui?

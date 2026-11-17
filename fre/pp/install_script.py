@@ -24,9 +24,11 @@ def install_subtool(experiment: str, platform: str, target: str) -> None:
     """
     Install a Cylc workflow definition into `~/cylc-run`.
 
-    Copies the workflow configuration from `~/cylc-src/$(experiment)__$(platform)__$(target)`
-    to `~/cylc-run/$(experiment)__$(platform)__$(target)`. If the target directory already
-    exists, it compares the current definition with the installed definition using `cylc config`.
+    First validates the workflow definition in `~/cylc-src/$(experiment)__$(platform)__$(target)`
+    with `cylc validate`; an invalid workflow is not installed. Then copies the workflow
+    configuration to `~/cylc-run/$(experiment)__$(platform)__$(target)`. If the target directory
+    already exists, it compares the current definition with the installed definition using
+    `cylc config`.
 
     :param experiment: is the experiment name (e.g., ``'c96L65_am5f4b4r0_amip'``).
     :type experiment: str
@@ -35,6 +37,8 @@ def install_subtool(experiment: str, platform: str, target: str) -> None:
     :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
     :type target: str
 
+    :raises subprocess.CalledProcessError: If `cylc validate` reports the source workflow
+                                           definition is invalid; nothing is installed.
     :raises Exception: If a workflow with the same name is already installed in `~/cylc-run`
                        and its definition differs from `~/cylc-src`.
     :raises subprocess.CalledProcessError: If the underlying `cylc install` command fails.
@@ -54,6 +58,18 @@ def install_subtool(experiment: str, platform: str, target: str) -> None:
     # is identical. If the same, good. If not, bad.
     source_dir = Path(os.path.expanduser("~/cylc-src"), workflow_name)
     install_dir = Path(os.path.expanduser("~/cylc-run"), workflow_name)
+
+    # Validate the source workflow definition before installing it,
+    # so an invalid workflow never lands in ~/cylc-run
+    fre_logger.info(f"NOTE: Validating workflow definition in {source_dir}")
+    try:
+        subprocess.run(["cylc", "validate", "."], cwd=source_dir,
+                       check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as err:
+        fre_logger.error(f"ERROR: 'cylc validate' failed for workflow in {source_dir}; "
+                         "not installing. Fix the workflow definition and try again.")
+        fre_logger.error(err.stderr)
+        raise
 
     if os.path.isdir(install_dir):
         # Compare expanded Cylc definitions to check if reinstall is required
