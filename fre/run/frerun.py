@@ -18,4 +18,4 @@ def function(uppercase):
     run_test_function(uppercase)
     raise NotImplementedError('fre run has not been implemented yet!')
 
-run_cli.add_command(output_stager.outputStager, name="stager")
+run_cli.add_command(output_stager.outputStager, name="stage")

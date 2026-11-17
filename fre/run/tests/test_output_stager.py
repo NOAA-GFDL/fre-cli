@@ -52,8 +52,8 @@ def test_output_stager_cli_creates_archive(tmp_path, monkeypatch):
 
 
 def test_stager_is_registered_under_run_cli():
-    result = CliRunner().invoke(run_cli, ["stager", "--help"])
+    result = CliRunner().invoke(run_cli, ["stage", "--help"])
 
     assert result.exit_code == 0, result.output
-    assert "Usage: run-cli stager" in result.output
+    assert "Usage: run-cli stage" in result.output
     assert "EXP_NAME WORK_DIR ARCH_DIR" in result.output
