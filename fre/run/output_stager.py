@@ -155,17 +155,16 @@ def acquire_lock(lock_target: Path):
 @click.option("--verbose", is_flag=True, default=False, required=False,
     help="Enable verbose output.")
 @click.argument("exp_name")
-@click.argument("output_type")
 @click.argument("work_dir")
 @click.argument("arch_dir")
-def outputStager(mode, verbose, exp_name, output_type, work_dir, arch_dir):
+def outputStager(mode, verbose, exp_name, work_dir, arch_dir):
     """Stage output files for post-processing."""
     setup_run_context(verbose=verbose)
 
     work_dir_path = validate_path(work_dir)
     arch_dir_path = validate_path(arch_dir)
 
-    lock_target = work_dir_path / f"{exp_name}.{output_type}"
+    lock_target = work_dir_path / f"{exp_name}.{mode}"
     try:
         with acquire_lock(lock_target):
             create_tar_archive(work_dir_path, arch_dir_path)

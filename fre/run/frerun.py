@@ -1,7 +1,7 @@
 '''
 entry point for fre run subcommands
 '''
-d
+
 import click
 
 #from .frerunexample import run_test_function
@@ -26,11 +26,10 @@ def function(uppercase):
 @click.option("--verbose", is_flag=True, default=False, required=False,
     help="Enable verbose output.")
 @click.argument("exp_name")
-@click.argument("output_type")
 @click.argument("work_dir")
 @click.argument("arch_dir")
 @click.pass_context
-def stager(mode, verbose, exp_name, output_type, work_dir, arch_dir):
+def stager(mode, verbose, exp_name,  work_dir, arch_dir):
     """Stage output files for post-processing."""
     context.forward(output_stager.outputStager)
     
