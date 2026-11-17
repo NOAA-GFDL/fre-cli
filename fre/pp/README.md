@@ -70,6 +70,8 @@ If you are running postprocessing gaea, you'll need to change the `SITE` variabl
 fre pp install -e EXPNAME -p PLATFORM -t TARGET
 ```
 
+`fre pp install` runs `cylc validate` on the workflow in `~/cylc-src` first, and does not install it if validation fails.
+
 If you are attempting this on gaea, you'll need to make two one-time changes before installing.
 - Currently, `cylc`, `rose`, and `isodatetime` must be in your PATH for new shells. One approach to do this is
 to symlink the fms-user-installed fre-cli cylc/rose/isodatetime scripts into your local `~/bin` directory,

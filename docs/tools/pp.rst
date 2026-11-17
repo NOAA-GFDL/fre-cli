@@ -36,8 +36,9 @@
 ``install``
 -----------
 
-* Installs an experiment configuration into
-  ~/cylc_run/$(experiment)_$(platform)_$(target)
+* Validates the workflow definition with ``cylc validate``, then installs the
+  experiment configuration into ~/cylc_run/$(experiment)_$(platform)_$(target).
+  An invalid workflow is not installed.
 * Minimal Syntax:  ``fre pp install -e experiment_name -p platform_name -t
   target_name``
 * Module(s) needed: n/a
