@@ -31,11 +31,19 @@ Helpful information and format recommendations for creating yaml files.
 Where each dash indicates a list.
 
 4. Yamls also allow for the capability of reusable variables. These variables
-   are defined by:
+   can be defined using Jinja2 syntax:
 
 .. code-block::
 
-  &ReusableVariable Value
+  fre_properties:
+    ReusableVariable:  "Value"
+    Variable:          "var2_{{ fre_properties.ReusableVariable }}"
+
+When referencing another variable, the value must be a string. However, if the
+new variable needs to be an integer or boolean for example, users can utilize
+standard YAML tags. The fre-cli composes and resolves YAML variables using
+"uwtools". For more information on how to use these tags and how uwtools
+handles them, reference the uwtools documentation `here <https://uwtools.readthedocs.io/en/main/sections/user_guide/yaml/tags.html#custom-tags>`_.
 
 5. Users can reference a previous key throughout the YAMLs.
 
