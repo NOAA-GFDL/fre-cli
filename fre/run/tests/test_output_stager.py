@@ -7,6 +7,7 @@ import click
 import pytest
 
 from fre.run import output_stager
+from fre.run.frerun import run_cli
 
 
 def test_validate_path_rejects_missing_path(tmp_path):
@@ -48,3 +49,11 @@ def test_output_stager_cli_creates_archive(tmp_path, monkeypatch):
 
     assert result.exit_code == 0, result.output
     assert (arch_dir / "archive.tar").is_file()
+
+
+def test_stager_is_registered_under_run_cli():
+    result = CliRunner().invoke(run_cli, ["stager", "--help"])
+
+    assert result.exit_code == 0, result.output
+    assert "Usage: run-cli stager" in result.output
+    assert "EXP_NAME WORK_DIR ARCH_DIR" in result.output
