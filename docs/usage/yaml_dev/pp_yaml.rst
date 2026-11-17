@@ -36,9 +36,10 @@ Required keys include:
 
 **Settings yaml**
 
-To define experiment-specific settings, a settings.yaml can be created and listed
-under the experiment name in the `experiments` section. This configuration file
-can include settings and switches for the workflow.
+To define experiment-specific settings, a settings.yaml can be created
+and listed under the experiment name in the `experiments` section.
+This configuration file can include settings and switches for the
+workflow.
 
 This file can follow the format below:
 
