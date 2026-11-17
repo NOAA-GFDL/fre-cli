@@ -235,3 +235,27 @@ class TestListYamlsScript:
             )
 
             assert isinstance(result, str)
+
+    def test_list_yamls_resolves_exp_name(self, model_yaml_path):
+        """
+        Test expected yamls are listed when passing a certain experiment.
+
+        Test that experiment name is also found without a problem if it uses
+        Jinja2 syntax references and needs to be resolved first.
+        """
+        result = list_yamls_subtool(
+                yamlfile=model_yaml_path,
+                experiment="experiment3_foo",
+                application=None
+            )
+
+        # Verify we get all YAMLs
+        assert isinstance(result, str)
+
+        # Check that result contains expected YAML files
+        yaml_names = [Path(y).name for y in result.split(",")]
+        assert "model.yaml" in yaml_names
+        assert "platforms.yaml" in yaml_names
+        assert "compile.yaml" in yaml_names
+        assert "settings.yaml" in yaml_names
+        assert "pp-test.c96_amip.yaml" in yaml_names
