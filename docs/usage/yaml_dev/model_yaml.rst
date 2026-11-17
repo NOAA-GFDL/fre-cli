@@ -39,9 +39,9 @@ The model.yaml can follow the structure below:
        platformYaml: "path to platforms.yaml in relation to model yaml"  (string)
 
      experiments:
-       name_of_post-processing_experiment:
+       name_of_experiment:
          settings: "path/to/settings.yaml"                                                (string)
-         pp:
+         postprocess:
            - "path/to/post-processing/yaml for that experiment in relation to model yaml" (string)
          analysis:
            - "path/to/analysis/yaml for that experiment in relation to model yaml"        (string)

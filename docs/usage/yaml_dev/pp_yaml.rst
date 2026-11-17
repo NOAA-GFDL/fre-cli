@@ -36,9 +36,9 @@ Required keys include:
 
 **Settings yaml**
 
-To define post-processing settings, a settings.yaml must also be created. This
-configuration file will include post-processing settings and switches and will
-be listed as the **first** yaml under the `pp` section of `experiments`.
+To define experiment-specific settings, a settings.yaml can be created and listed
+under the experiment name in the `experiments` section. This configuration file
+can include settings and switches for the workflow.
 
 This file can follow the format below:
 
