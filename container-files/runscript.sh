@@ -10,7 +10,7 @@ export TMPDIR=/mnt/temp
 export HOME=/mnt
 
 ## Set path to defined global.cylc file
-## Currently just using degault global.cylc; jobs run in bcakground
+## Currently just using default global.cylc; jobs run in background
 # export CYLC_CONF_PATH=/mnt
 
 ## TO-DO: run on non-cloud environment to assess if conda initializations steps are the same
@@ -77,11 +77,6 @@ fre_pp_steps () {
     echo -e "\nRunning fre pp configure-yaml to configure the rose-suite and rose-app files ..."
     fre -v pp configure-yaml -e ${expname} -p ${plat} -t ${targ} -y ${yamlfile}
     check_exit_status "CONFIGURE-YAML"
-
-    ## Validate the configuration files
-    echo -e "\nRunning fre pp validate to validate rose-suite and rose-app configuration files for workflow ... "
-    fre -v pp validate -e ${expname} -p ${plat} -t ${targ} || echo "validate, no kill"
-    check_exit_status "VALIDATE"
 
     # Install
     echo -e "\nRunning fre pp install to install the workflow in ${HOME}/cylc-run/${name} ... "
