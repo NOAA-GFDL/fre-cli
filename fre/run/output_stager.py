@@ -56,8 +56,6 @@ def setup_run_context(verbose: bool = False) -> RunContext:
 
     fre_logger.info("<NOTE> : ====== FRE OUTPUT STAGER ======")
     fre_logger.info("<NOTE> : Starting at %s on %s", host, current_date)
-
-    # We might want to log this info...
     slurm_job_id = os.getenv("SLURM_JOB_ID")
     slurm_job_name = os.getenv("SLURM_JOB_NAME", "")
     slurm_submit_dir = os.getenv("SLURM_SUBMIT_DIR")
