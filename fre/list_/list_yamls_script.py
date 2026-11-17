@@ -46,7 +46,6 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
 
     # resolve just model yaml in case where experiment name key is using Jinja2 reference
     with open(os.devnull, 'w', encoding="utf-8") as f, contextlib.redirect_stdout(f):
-        print("This will not be displayed")
         model_yaml_dict = config.compose(configs=[yamlfile], realize=True).as_dict()
 
     # Add model yaml to list

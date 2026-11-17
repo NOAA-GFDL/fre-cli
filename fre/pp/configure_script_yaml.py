@@ -22,7 +22,6 @@ from jsonschema import validate, SchemaError, ValidationError
 import metomi.rose.config
 import fre
 from fre.yamltools import combine_yamls_script as cy
-from fre.yamltools import helpers
 import fre.list_.list_yamls_script as ly
 
 fre_logger = logging.getLogger(__name__)
@@ -306,7 +305,7 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     else:
         yamls = ly.list_yamls_subtool(yamlfile = yml,
                                       experiment = e,
-                                      application= f"postprocess")
+                                      application= "postprocess")
 
     full_yamldict = cy.yamltools_combine_subtool(yamls = yamls,
                                                  experiment = e,
