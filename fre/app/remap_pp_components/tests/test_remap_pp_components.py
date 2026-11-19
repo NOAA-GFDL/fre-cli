@@ -7,9 +7,8 @@ import pytest
 import fre.app.remap_pp_components.remap_pp_components as rmp
 
 # Test paths
-CWD = os.getcwd()
-TEST_DIR = Path(f"{CWD}/fre/app/remap_pp_components/tests")
-DATA_DIR = Path(f"{CWD}/fre/app/remap_pp_components/tests/test-data")
+TEST_DIR = Path(f"fre/app/remap_pp_components/tests")
+DATA_DIR = Path(f"fre/app/remap_pp_components/tests/test-data")
 
 # YAML configuration example file
 YAML_EX = f"{DATA_DIR}/yaml_ex.yaml"
@@ -87,6 +86,18 @@ def test_yaml_ex_exists():
     Test for the existence of example yaml configuration
     """
     assert Path(YAML_EX).exists()
+
+## UNIT TESTS ##
+def test_chunk_to_legacy():
+    """
+    Test conversion of ISO8601 durations to Bronx-style chunk
+    frequencies, including multi-digit values
+    """
+    assert rmp.chunk_to_legacy("P1Y") == "1yr"
+    assert rmp.chunk_to_legacy("P10Y") == "10yr"
+    assert rmp.chunk_to_legacy("P5M") == "5mo"
+    assert rmp.chunk_to_legacy("P12M") == "12mo"
+    assert rmp.chunk_to_legacy("P1D") == "error"
 
 ## CREATE TEST FILES ##
 def test_create_ncfile_with_ncgen_cdl():

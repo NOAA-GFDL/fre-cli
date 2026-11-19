@@ -1,5 +1,8 @@
 name: Update Tag Version References
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   push:
     tags:
@@ -11,22 +14,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Fetch tags
         run: |
-          git fetch --tags origin
+          git fetch --tags --force origin
  
       - name: Get the new tag
         id: get_tag
         run: |
           echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
+      # The previous tag is the most recent tag reachable from the commit before the new tag,
+      # rather than sorting git tags, since version sorting ranks pre-release tags
+      # (e.g. 2026.01.beta2) above releases (2026.01).
       - name: Get previous tag
         id: get_prev_tag
         run: |
           new_tag="${{ steps.get_tag.outputs.tag }}"
-          prev_tag=$(git tag --sort=-version:refname | grep -v "^${new_tag}$" | head -n 1)
-          #prev_tag=$(git tag --sort=-version:refname | head -n 2 | tail -n 1)
+          prev_tag=$(git describe --tags --abbrev=0 "${new_tag}^" 2>/dev/null || true)
           echo "prev_tag=${prev_tag}" >> $GITHUB_OUTPUT
 
       - name: Replace old tag with new tag in all relevant files
@@ -47,7 +54,7 @@ jobs:
         run: |
           new_tag="${{ steps.get_tag.outputs.tag }}"
           # Targeted update: only replace version on the fre-cli dependency line
-          sed -i "s/\(noaa-gfdl::fre-cli==\)[0-9.]\+/\1$new_tag/" container-files/cylc-flow-tools.yaml
+          sed -i "s/\(noaa-gfdl::fre-cli==\)[0-9A-Za-z.]\+/\1$new_tag/" container-files/cylc-flow-tools.yaml
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7.0.6
@@ -58,3 +65,4 @@ jobs:
           delete-branch: true          # delete afer merge
           title: Update refs to version number post-release
           body: automated change, replaces references to the old version number with the new version number upon releases. This PR will need to be closed and reopened to run CI testing.
+          exclude: container-files/cylc-flow-tools.yaml

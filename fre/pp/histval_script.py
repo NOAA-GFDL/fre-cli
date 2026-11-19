@@ -1,8 +1,11 @@
-''' 
-This script will locate all diag_manifest files in a provided directory containing 
-history files then run the nccheck script to validate the number of timesteps in each file.
-Ran as part of Stage-History task in fre postprocessing workflow.
-'''
+"""
+History Data Validation Utility for FRE Post-Processing (fre pp).
+
+The histval_script module verifies that history NetCDF files produced by FMS models match expected
+time step counts recorded in FMS `diag_manifest` YAML files.
+
+Executed during the `Stage-History` workflow step.
+"""
 
 import os
 import logging
@@ -12,30 +15,30 @@ from . import nccheck_script as ncc
 fre_logger = logging.getLogger(__name__)
 
 
-def validate(history: str, date_string: str, warn: bool):
+def validate(history: str, date_string: str, warn: bool) -> int:
     """
- 
-    Compares the number of timesteps in each netCDF (.nc) file to the number of expected 
-    timesteps as found in the diag_manifest file(s). Ran once over the entire history dir. Uses nccheck for comparison.
+    Validate time step counts across all history NetCDF files in a directory against `diag_manifest` data.
 
-    :param history: Path to history dir
+    Searches `history` directory for `diag_manifest` files, compiles expected file names, tile numbers,
+    and time levels into a consolidated manifest map, then invokes `nccheck_script.check` for each file.
+
+    :param history: is the path to a directory containing history output NetCDF files and `diag_manifest` YAML files.
     :type history: str
-    :param date_string: Date string of history files in YYYYMMDD format
+    :param date_string: is the date prefix string formatted as `YYYYMMDD` (e.g., ``'00010101'``).
     :type date_string: str
-    :param warn: Handle error as an exception and print the error message as a warning
+    :param warn: If True, missing `diag_manifest` files trigger a warning instead of raising `FileNotFoundError`.
     :type warn: bool
-    :raises FileNotFoundError: No diag manifest file was found in history directory
-    :raises ValueError: An unexpected number of timesteps was found
-    :return: Returns 0 unless an exception is raised
+
+    :raises FileNotFoundError: If no `diag_manifest` files are located in `history` and `warn` is False.
+    :raises ValueError: If one or more NetCDF files contain unexpected time level counts.
+    :return: Returns 0 upon successful validation.
     :rtype: int
     """
-
-    # Mega manifest sounds cool... it'll just be all of the data from the diag_manifests combined in list form
     mega_manifest=[]
     mismatches=[]
     info={}
 
-    # Find diag_manifest files and add to mega_manifest
+    # Locate diag_manifest files in history directory
     files = os.listdir(history)
     diag_count = 0
     for _file in files:
@@ -50,7 +53,7 @@ def validate(history: str, date_string: str, warn: bool):
             data = yaml.safe_load(f)
             mega_manifest.append(data)
 
-    # Make sure we found atleast one diag_manifest
+    # Ensure at least one manifest was found
     if diag_count < 1:
         if not warn:
             raise FileNotFoundError(
@@ -59,7 +62,7 @@ def validate(history: str, date_string: str, warn: bool):
             f" Warning: No diag_manifest files were found in {history}. History files cannot be validated.")
         return 0
 
-    # Go through the mega manifest, get expected timelevels and number of tiles, then add to dictionary
+    # Aggregate expected timelevels and tile numbers from manifests
     for y in range(len(mega_manifest)):
         for x in range(len(mega_manifest[y]['diag_files'])):
             filename = mega_manifest[y]['diag_files'][x]['file_name']
@@ -68,7 +71,7 @@ def validate(history: str, date_string: str, warn: bool):
             levels_and_tiles = (expected_timelevels, num_tiles)
             info.update({str(filename):levels_and_tiles})
 
-    # Run nccheck to compare actual timelevels to expected levels found in mega manifest
+    # Validate each tile/file with nccheck
     for filename in info:
         for z in range(info[filename][1]):
             if info[filename][1] > 1:
@@ -87,7 +90,7 @@ def validate(history: str, date_string: str, warn: bool):
                 fre_logger.error(f" Timesteps found in {filepath} differ from expectation in diag manifest")
                 mismatches.append(filepath)
 
-    #Error Handling
+    # Raise error if any mismatches were encountered
     if len(mismatches)!=0:
         fre_logger.error("Unexpected number of timesteps found")
         raise ValueError(

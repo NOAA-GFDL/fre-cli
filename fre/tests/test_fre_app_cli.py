@@ -10,11 +10,7 @@ Each tool generally gets 3 tests:
   right and thinks the tool has a --optionDNE option)
 """
 
-import os
-import subprocess
-import shutil
 from shutil import which
-from pathlib import Path
 
 import click
 from click.testing import CliRunner

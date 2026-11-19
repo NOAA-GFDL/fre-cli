@@ -1,0 +1,38 @@
+name: pylint
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+
+# cancel running jobs if theres a newer push
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pylint:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/noaa-gfdl/fre-cli:production 
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run pylint
+        run: |
+          source /opt/conda/etc/profile.d/conda.sh
+          conda deactivate
+          conda activate /app/cylc-flow-tools
+          pip install pylint
+          python -m pylint --rcfile pylintrc fre/

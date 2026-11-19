@@ -1,37 +1,43 @@
 """
-Script combines the model yaml with the compile and platforms yaml.
-Merged yaml dictionary is parsed to list experiment information.
+Module `list_platforms_script` contains the function `list_platforms_subtool`
+which provides a method to query the resolved, combined yaml file (`model.yaml`,
+`compile.yaml`, and `platforms.yaml`) and returns platform names.
 """
 
 from pathlib import Path
 import logging
 from fre.yamltools import combine_yamls_script as cy
+from fre.list_ import list_yamls_script as ly
 from fre.yamltools import helpers
 
 fre_logger = logging.getLogger(__name__)
 
 def list_platforms_subtool(yamlfile: str):
     """
-    List the platforms available
+    List_platforms_subtool lists the platform names.
 
-    :param yamlfile: path to the yaml configuration file
+    :param yamlfile: is the path to the model.yaml configuration file
     :type yamlfile: str
     """
     # set logger level to INFO
     former_log_level = fre_logger.level
     fre_logger.setLevel(logging.INFO)
 
-    exp = yamlfile.split("/")[-1].split(".")[0]
+    exp = None
     platform = None
     target = None
 
+    yml_list = ly.list_yamls_subtool(yamlfile = yamlfile,
+                                     experiment = exp,
+                                     application = None)
+
     # Combine model / experiment
-    yml_dict = cy.consolidate_yamls(yamlfile = yamlfile,
-                                    experiment = exp,
-                                    platform = platform,
-                                    target = target,
-                                    use = "compile",
-                                    output = None)
+    yml_dict = cy.yamltools_combine_subtool(yamls = yml_list,
+                                             experiment = exp,
+                                             platform = platform,
+                                             target = target,
+                                             output = None,
+                                             no_clean = False)
 
     # Validate the yaml
     fre_pkg_dir = Path(__file__).resolve().parents[1]
@@ -40,8 +46,7 @@ def list_platforms_subtool(yamlfile: str):
     helpers.validate_yaml(yml_dict, schema_path)
 
     fre_logger.info("Platforms available:")
-    for i in yml_dict.get("platforms"):
+    for i in yml_dict["platforms"]:
         fre_logger.info('    - %s', i.get("name"))
-    fre_logger.info("\n")
 
     fre_logger.setLevel(former_log_level)
