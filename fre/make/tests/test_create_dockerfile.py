@@ -143,7 +143,8 @@ def test_build_script_contents():
     with open('createContainer.sh', 'r') as f:
         lines = f.readlines()
 
-    expected_volume_mount = "podman build --volume /gpfs/f5:/gpfs/f5 -f Dockerfile -t null_model_full:debug"
+    expected_volume_mount = ("podman build --network host --volume /gpfs/f5:/gpfs/f5 "
+                             "-f Dockerfile -t null_model_full:debug")
 
     # strip off '\n'
     container_build_script = []

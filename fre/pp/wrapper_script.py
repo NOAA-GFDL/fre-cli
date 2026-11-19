@@ -1,19 +1,17 @@
 """
-frepp.py, a replacement for the frepp bash script located at:
-https://gitlab.gfdl.noaa.gov/fre2/system-settings/-/blob/main/bin/frepp
-Author: Carolyn.Whitlock
-"""
+The wrapper_script module contains methods to orchestrate end-to-end postprocessing, which involves:
 
-# add relative path import to rest of pp tools
-# add command-line args using same format as fre.py
-# include arg for pp start / stop
-# test yaml path
-# error handling
+1. **Checkout**: Clone or verify workflow templates (``checkout_template``).
+2. **Configure-yaml**: Consolidate YAML configs and create Rose settings (``yaml_info``).
+3. **Install**: Deploy workflow definition from ``~/cylc-src`` to ``~/cylc-run`` (``install_subtool``).
+4. **Run**: Launch or restart the Cylc workflow scheduler (``pp_run_subtool``).
+5. **Trigger** *(Optional)*: Trigger specific history chunk processing if the argument `time` is provided (``trigger``).
+6. **Status**: Query and report Cylc workflow execution state (``status_subtool``).
+"""
 
 import os
 import logging
 
-# Import from the local packages
 from .checkout_script import checkout_template
 from .configure_script_yaml import yaml_info
 from .install_script import install_subtool
@@ -23,30 +21,36 @@ from .status_script import status_subtool
 
 fre_logger = logging.getLogger(__name__)
 
-def run_all_fre_pp_steps(experiment = None, platform = None, target = None,
+def run_all_fre_pp_steps(experiment = None, platform = None, target = None, 
                          config_file = None, branch = None, time = None):
-    '''
-    Wrapper script for all the steps of the fre2 pp infrastructure. 
-    
-    Calls config_file, checkout_template, yaml_info, install_subtool, pp_run_subtool,
-    (trigger) and status_subtool in sequence. (trigger) is an optional step.
-    
-    :param experiment: One of the postprocessing experiment names from the yaml displayed
-        by fre list exps -y $yamlfile (e.g. c96L65_am5f4b4r0_amip), default None
-    :type experiment: str
-    :param platform: The location + compiler that was used to run the model
-        (e.g. gfdl.ncrc5-deploy), default None
-    :type platform: str
-    :param target: Options used for the model compiler (e.g. prod-openmp), default None
-    :type target: str
-    :param config_file: yamlfile used for experiment configuration
-    :type config_file: string
-    :param branch: which git branch to pull from, default None
-    :type branch: string
-    :param time: The start time of the segment to postprocess, if any.
-        Formatted as a series of integers. For more information, see trigger().
-    :type time: Cylc representation of a time point
-    '''
+    """
+    `Run_all_fre_pp_steps` executes all FRE post-processing pipeline steps in sequential order
+
+    :param experiment: is the experiment name as listed in the model YAML file
+                       (e.g., ``'c96L65_am5f4b4r0_amip'``). Must not be None.
+    :type experiment: str, optional
+    :param platform: is the FRE platform as defined in the platforms yaml
+    :type platform: str, optional
+    :param target: is the predefined FRE target; options include [prod/debug/repro]-openmp
+    :type target: str, optional
+    :param config_file: is the path to a model yaml file.
+    :type config_file: str, optional
+    :param branch: is the git branch or tag to checkout ``fre-workflows``. Defaults to installed `fre` package version.
+    :type branch: str, optional
+    :param time: is the start timestamp for the target history chunk to process (e.g., ``'00010101'``).
+                 If provided, it triggers the workflow segment via ``trigger()``.
+    :type time: str, optional
+
+    :raises ValueError: If mandatory parameters are missing or if invalid configurations are encountered.
+    :raises OSError: If configuration or template files cannot be read or created.
+    :raises Exception: If any underlying pipeline step (checkout, configure, install, run, or status) fails.
+
+    :return: None
+    :rtype: None
+
+    .. note::
+       This function corresponds to the CLI command ``fre pp all``.
+    """
     fre_logger.info('(run_all_fre_pp_steps) config_file path resolving...')
     config_file = os.path.abspath(config_file)
     fre_logger.info(f'config_file={config_file}')

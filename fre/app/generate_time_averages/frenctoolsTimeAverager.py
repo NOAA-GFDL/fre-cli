@@ -99,9 +99,9 @@ class frenctoolsTimeAverager(timeAverager):
                 with Popen(timavgcsh_command,
                            stdout=PIPE, stderr=PIPE, shell=False) as subp:
                     stdout, stderr = subp.communicate()
-                    stdoutput=stdout.decode()
+                    stdoutput=stdout.decode(errors='replace')
                     fre_logger.info('output= %s', stdoutput)
-                    stderror=stderr.decode()
+                    stderror=stderr.decode(errors='replace')
                     fre_logger.info('error = %s', stderror )
 
                     if subp.returncode != 0:
@@ -118,14 +118,15 @@ class frenctoolsTimeAverager(timeAverager):
             return exitstatus
 
         exitstatus = 1
+        infile_list = [infile] if isinstance(infile, str) else list(infile)
+        timavgcsh_command = [ shutil.which('timavg.csh'), '-dmb', '-o', outfile] + infile_list
         fre_logger.info( 'timavgcsh_command is %s', ' '.join(timavgcsh_command) )
-        timavgcsh_command = [ shutil.which('timavg.csh'), '-dmb', '-o', outfile, infile]
         with Popen(timavgcsh_command,
                    stdout = PIPE, stderr = PIPE, shell = False) as subp:
             stdout, stderr = subp.communicate()
-            stdoutput = stdout.decode()
+            stdoutput = stdout.decode(errors='replace')
             fre_logger.info('output = %s', stdoutput)
-            stderror = stderr.decode()
+            stderror = stderr.decode(errors='replace')
             fre_logger.info('error  = %s', stderror )
 
             if subp.returncode != 0:

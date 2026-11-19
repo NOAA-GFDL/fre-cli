@@ -1,16 +1,20 @@
-The model yaml defines reusable variables and paths to compile, post-processing, analysis, and cmor yamls. Required fields in the model yaml include: ``fre_properties``, ``build``,  and ``experiments``.
+The model yaml defines reusable variables and paths to compile,
+post-processing, analysis, and cmor yamls. Required fields in the model yaml
+include: ``fre_properties``, ``build``,  and ``experiments``.
 
 * `fre_cli_version`: Version of fre-cli this yaml is compatible with
 
   - value type: string
-  - when specified, fre-cli will verify that the installed version matches this value
+  - when specified, fre-cli will verify that the installed version matches this
+    value
   - if the versions do not match, a clear error message will be displayed
   - if not specified, a warning will be logged recommending its addition
 
 * `fre_properties`: Reusable variables
 
-  - list of variables
-  - these values can be extracted from ``fre_properties`` in a group's XML, if available
+  - dictionary
+  - these values can be extracted from ``fre_properties`` in a group's XML, if
+    available
   - value type: string
 
 * `build`: paths to information needed for compilation
@@ -23,19 +27,23 @@ The model.yaml can follow the structure below:
 
      fre_cli_version: "2025.04"
 
-     fre_properties: 
-       - &variable1  "value1"  (string)
-       - &variable2  "value2"  (string)
+     fre_properties:
+       variable1:  "value1"  (string)
+       variable2:  "value2"  (string)
+
+       # Example for how to reference another variable
+       variable3:  "value_{{ fre_properties.variable1 }}" (string)
 
      build:
        compileYaml: "path the compile yaml in relation to model yaml"    (string)
        platformYaml: "path to platforms.yaml in relation to model yaml"  (string)
 
      experiments:
-       - name: "name of post-processing experiment"                                       (string)
-         pp: 
+       name_of_experiment:
+         settings: "path/to/settings.yaml"                                                (string)
+         postprocess:
            - "path/to/post-processing/yaml for that experiment in relation to model yaml" (string)
-         analysis: 
+         analysis:
            - "path/to/analysis/yaml for that experiment in relation to model yaml"        (string)
          cmor:
            - "path/to/cmor/yaml for that experiment in relation to model yaml"            (string)

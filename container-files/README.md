@@ -30,7 +30,7 @@ git clone https://github.com/NOAA-GFDL/fre-cli.git
 cd fre-cli/container-files
 
 ## Add the desired frecli version number in cylc-flow-tools.yaml
-ex: noaa-gfdl::fre-cli==2026.01
+ex: noaa-gfdl::fre-cli==2026.02.alpha1
 
 ## Build a container image
 podman build -f Dockerfile-fre-cli -t latest
@@ -50,14 +50,11 @@ Now that the FRE workflows container is created, certain files and directories m
 
 In order to run the post-processing workflow, certain repositories and files are needed: 
 
-1. `fre-workflows` cloned repository
-    - Can be found here: https://github.com/NOAA-GFDL/fre-workflows 
-
-2. Directory that will include folders and files for container set-up and running (could be named `fre-cli-container-setup` for example)
+1. Directory that will include folders and files for container set-up and running (could be named `fre-cli-container-setup` for example)
     - The setup/output directory consists of a few subdirectories: pp, ptmp, and temp (these are created through the runscript.sh in this repository for the container)
     - ***Ensure you create the empty `fre-cli-container-setup` folder in an area with enough space as this is where the post-processing run output will be populated.***
 
-3. Yaml configuration files are also needed. 
+2. Yaml configuration files are also needed. 
     - Publicly available example yaml configuration files can be found here: https://github.com/NOAA-GFDL/fre-examples 
 
 #### <ins>Data files

@@ -2,6 +2,8 @@
 
 The FRE catalog toolset allows users to build, validate, or merge intake-esm compatible catalogs.
 
+For more information please visit the official Catalog Builder repository: https://github.com/NOAA-GFDL/CatalogBuilder
+
 
 ## **Usage**
 

@@ -1,4 +1,7 @@
-The platform yaml contains user defined information for both bare-metal and container platforms. Information includes the platform name, the compiler used, necessary modules to load, an mk template, fc, cc, container build, and container run. This yaml file is not model specific.
+The platform yaml contains user defined information for both bare-metal and
+container platforms. Information includes the platform name, the compiler used,
+necessary modules to load, an mk template, fc, cc, container build, and
+container run. This yaml file is not model specific.
 
   .. code-block::
 
@@ -17,6 +20,7 @@ The platform yaml contains user defined information for both bare-metal and cont
         containerRun: "apptainer" - the container run program
         containerBase: the base image used for the container
         mkTemplate: path to the mk template file
+        volume: path to any datasets to mount needed for the checkout during the container build
         containerOutputLocation: The path (str) to where the output model container will be located
       - name: container platform name (FOR TWO STAGE BUILD)
         compiler: compiler you are using

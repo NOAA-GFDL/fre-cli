@@ -7,12 +7,12 @@ The method checkout_create is the entry point called by fre make checkout-script
 fre make all.  Checkout_create calls baremetal_checkout_write for a bare-metal build or 
 container_checkout_write for a container build to write checkout.sh.
 """
-import shutil
 from pathlib import Path
 from datetime import datetime
 import subprocess
 import logging
 from typing import Optional
+import fre.list_.list_yamls_script as ly
 import fre.yamltools.combine_yamls_script as cy
 from .gfdlfremake import varsfre, yamlfre, checkout, targetfre
 
@@ -149,12 +149,14 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
     experiment_name = yamlfile.split(".")[0]
 
     # Combine model, compile, and platform yamls into a unified structure
-    full_combined = cy.consolidate_yamls(yamlfile=yamlfile,
-                                         experiment=experiment_name,
-                                         platform=platform,
-                                         target=target,
-                                         use="compile",
-                                         output=None)
+    yamls = ly.list_yamls_subtool(yamlfile = yamlfile,
+                                  experiment = None,
+                                  application = None)
+    full_combined = cy.yamltools_combine_subtool(yamls = yamls,
+                                                 experiment = None,
+                                                 platform = platform,
+                                                 target = target,
+                                                 output = None)
 
     # Initialize FRE variables and YAML handlers
     fre_vars = varsfre.frevars(full_combined)
@@ -163,7 +165,7 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
 
     # Validate the targets
     for t in target:
-        valid_t = targetfre.fretarget(t)
+        targetfre.fretarget(t)
 
     fre_logger.setLevel(level=logging.INFO)
 
@@ -207,17 +209,19 @@ def checkout_create(yamlfile: str, platform: tuple, target: tuple,
 
             elif Path(checkout_sh_path).exists() and not force_checkout:
                 fre_logger.info("Checkout script PREVIOUSLY created here: %s", checkout_sh_path)
-                fre_logger.warning("If editing source code after creating and running the checkout script for the "
-                                   "bare-metal build, continue to follow each fre make subtool individually ('makefile', "
-                                   "'compile-script' or 'dockerfile') to avoid conflicting 'existing checkout script' "
-                                   "errors (advise against using fre make all)")
                 if execute:
                     try:
                         subprocess.run(args=[checkout_sh_path], check=True)
                     except Exception as exc:
-                        raise OSError(f"\nError executing checkout script: {checkout_sh_path}.",
-                                      "\nSRC DIR might exist already. Try removing test folder: "
-                                      f"{platform_info['modelRoot']} or  specifying --force-checkout\n") from exc
+                        raise OSError(f"Error executing checkout script: {checkout_sh_path}.",
+                                       "\n\n!!SRC DIR may already exist!!\n"
+                                       "1. If not editing the checked out source code directly, try either:\n"
+                                      f"    - removing the output folder ({platform_info['modelRoot']})\n"
+                                       "    - specifying --force-checkout\n"
+                                       "2. If editing checked out source code directly for the bare-metal build:\n"
+                                       "    - users should now follow up with running each fre make subtool individually\n"
+                                       "      ('makefile', 'compile-script' or 'dockerfile') to avoid conflicting 'existing\n"
+                                       "      checkout script/SRC DIR` errors seen with 'fre make all'\n") from exc
                 else:
                     return
 
