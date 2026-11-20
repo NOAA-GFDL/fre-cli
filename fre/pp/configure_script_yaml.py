@@ -22,7 +22,6 @@ from jsonschema import validate, SchemaError, ValidationError
 import metomi.rose.config
 import fre
 from fre.yamltools import combine_yamls_script as cy
-from fre.yamltools import helpers
 import fre.list_.list_yamls_script as ly
 
 fre_logger = logging.getLogger(__name__)
@@ -287,7 +286,14 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     cylc_dir = os.path.join(os.path.expanduser("~/cylc-src"), f"{e}__{p}__{t}")
     outfile = os.path.join(cylc_dir, f"{e}.yaml")
 
-    analysis_check = helpers.yaml_load(yamlfile).get("experiments")[e]
+    # resolve model yaml in case where experiment name key is using Jinja2 reference
+    yml_dict = cy.yamltools_combine_subtool(yamls = yamlfile,
+                                            experiment = e,
+                                            platform = p,
+                                            target = t,
+                                            output = None,
+                                            no_clean = True)
+    analysis_check = yml_dict.get("experiments")[e]
     analysis_value = None
     if "analysis" in analysis_check.keys():
         analysis_value = True
@@ -299,7 +305,7 @@ def yaml_info(yamlfile: str = None, experiment: str = None, platform: str = None
     else:
         yamls = ly.list_yamls_subtool(yamlfile = yml,
                                       experiment = e,
-                                      application= f"postprocess")
+                                      application= "postprocess")
 
     full_yamldict = cy.yamltools_combine_subtool(yamls = yamls,
                                                  experiment = e,

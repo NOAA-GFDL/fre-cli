@@ -9,11 +9,13 @@ If `-e [experiment name]` is provided, the default behavior is to return all
 YAML configuration files associated with that experiment. If an experiment name
 is not given, the model, compile, and platform configurations are returned.
 """
+import os
+import contextlib
 import logging
 from pathlib import Path
 import sys
-import yaml
 import click
+from uwtools.api import config
 
 fre_logger = logging.getLogger(__name__)
 
@@ -42,27 +44,29 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
         fre_logger.error("")
         raise ValueError("Must pass experiment name along with application name")
 
-    with open(yamlfile, 'r', encoding="utf-8") as yf:
-        yaml_dict = yaml.load(yf, Loader = yaml.Loader)
+    # resolve just model yaml in case where experiment name key is using Jinja2 reference
+    with open(os.devnull, 'w', encoding="utf-8") as f, contextlib.redirect_stdout(f):
+        model_yaml_dict = config.compose(configs=[yamlfile], realize=True).as_dict()
 
     # Add model yaml to list
     yamls = [model_yaml]
 
-    build_yamls = yaml_dict.get("build")
+    build_yamls = model_yaml_dict.get("build")
     platform_data = None
     compile_data = None
     if build_yamls is not None:
         platform_data = build_yamls.get("platformYaml")
         compile_data = build_yamls.get("compileYaml")
 
-    exp_data = yaml_dict.get("experiments").get(experiment)
+    exp_data = model_yaml_dict.get("experiments").get(experiment)
 
     # list yamls associated with the compile, run, post-processing, and analysis
     if experiment:
-        if experiment not in yaml_dict["experiments"].keys():
+        if experiment not in model_yaml_dict["experiments"].keys():
             fre_logger.error("Experiment passed is not defined in the model YAML.")
             fre_logger.error("Users can list experiments via `fre list exps -y [model YAML]`")
-            raise ValueError(f"Experiment passed DNE. Available experiments include {yaml_dict['experiments'].keys()}")
+            raise ValueError("Experiment passed DNE. Available experiments include "
+                             f"{model_yaml_dict['experiments'].keys()}")
 
         if application:
             fre_logger.info("Gathering YAMLs associated with experiment %s and application %s", experiment, application)
@@ -127,8 +131,8 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
     fre_logger.info("")
     fre_logger.info('If combining these yamls, there are 2 options:')
     fre_logger.info('   1. Pipe this tool to "fre yamltools combine"')
-    fre_logger.info('   2. Copy and paste this string (including quotes) '
-                           'as the -y option in "fre yamltools combine -y <yamls>:')
+    fre_logger.info('   2. Copy and paste this string as the -y option '
+                           'in "fre yamltools combine -y <yamls>:')
     fre_logger.info('       "%s"', yamls_full_path)
     fre_logger.info("")
     fre_logger.setLevel(former_log_level)
@@ -145,6 +149,7 @@ def list_yamls_subtool(yamlfile: str, experiment: str, application: str):
 
     # if not piped to fre yamltools combine, no need to show all the yamls
     if not sys.stdout.isatty():
-        click.echo(yamls_full_path)
+        # click.echo adds a newline by default, nl=False suppresses this
+        click.echo(yamls_full_path, nl=False)
 
     return yamls_full_path

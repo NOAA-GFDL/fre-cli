@@ -7,7 +7,6 @@ post-processing workflow subtools:
 - configure_yaml: Combines the model yaml, settings yaml, and postprocessing yaml files 
                   into one resolved yaml file that is then validated against an MSD-owned 
                   schema file and parsed to create the rose-suite.conf file
-- validate: Validates the Cylc workflow definition (flow.cylc file)
 - install: Installs the experiment workflow configuration into ~/cylc-run/[WORKFLOW_ID]
 - run: Runs the experiment workflow configuration
 - status: Shows the status of the Cylc workflow definition tasks
@@ -29,7 +28,6 @@ import click
 # The following imports are fre tools
 from . import checkout_script
 from . import configure_script_yaml
-from . import validate_script
 from . import histval_script
 from . import ppval_script
 from . import install_script
@@ -82,25 +80,6 @@ def status(experiment, platform, target):
 def run(experiment, platform, target, pause, no_wait):
     """Start or trigger execution of a Cylc-installed post-processing workflow."""
     run_script.pp_run_subtool(experiment, platform, target, pause, no_wait)
-
-
-@pp_cli.command()
-@click.option("-e", "--experiment", type=str,
-              help="Experiment name",
-              required=True)
-@click.option("-p", "--platform", type=str,
-              help="Platform name",
-              required=True)
-@click.option("-t", "--target", type=str,
-              help="Target name",
-              required=True)
-def validate(experiment, platform, target):
-    """
-    Validate post-processing workflow directory configurations and suite definitions.
-    Can be used to check the cylc workflow definition syntax and can also be used for 
-    integrity checks to ensure there are no other configuration or scheduling conflicts.
-    """
-    validate_script.validate_subtool(experiment, platform, target)
 
 
 @pp_cli.command()

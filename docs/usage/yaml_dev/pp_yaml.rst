@@ -15,7 +15,7 @@ components are needed, as well as define any experiment specific
 
    postprocess:
      components:
-       - type: "component name"                                                          (string)
+       component_name:                                                                   (string)
          sources:
            - history_file: "history file to include with component"                      (string)
              variables: "specific variables to postprocess associated with component"    (array with string elements)
@@ -32,14 +32,14 @@ components are needed, as well as define any experiment specific
 
 Required keys include:
 
-    - type
     - sources
 
 **Settings yaml**
 
-To define post-processing settings, a settings.yaml must also be created. This
-configuration file will include post-processing settings and switches and will
-be listed as the **first** yaml under the `pp` section of `experiments`.
+To define experiment-specific settings, a settings.yaml can be created
+and listed under the experiment name in the `experiments` section.
+This configuration file can include settings and switches for the
+workflow.
 
 This file can follow the format below:
 
@@ -75,5 +75,4 @@ Required keys include:
     - pp_stop
     - pp_grid_spec
     - clean_work
-    - do_timeavgs
     - do_atmos_plevel_masking

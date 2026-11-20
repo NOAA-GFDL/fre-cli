@@ -12,7 +12,7 @@ include: ``fre_properties``, ``build``,  and ``experiments``.
 
 * `fre_properties`: Reusable variables
 
-  - list of variables
+  - dictionary
   - these values can be extracted from ``fre_properties`` in a group's XML, if
     available
   - value type: string
@@ -28,16 +28,20 @@ The model.yaml can follow the structure below:
      fre_cli_version: "2025.04"
 
      fre_properties:
-       - &variable1  "value1"  (string)
-       - &variable2  "value2"  (string)
+       variable1:  "value1"  (string)
+       variable2:  "value2"  (string)
+
+       # Example for how to reference another variable
+       variable3:  "value_{{ fre_properties.variable1 }}" (string)
 
      build:
        compileYaml: "path the compile yaml in relation to model yaml"    (string)
        platformYaml: "path to platforms.yaml in relation to model yaml"  (string)
 
      experiments:
-       - name: "name of post-processing experiment"                                       (string)
-         pp:
+       name_of_experiment:
+         settings: "path/to/settings.yaml"                                                (string)
+         postprocess:
            - "path/to/post-processing/yaml for that experiment in relation to model yaml" (string)
          analysis:
            - "path/to/analysis/yaml for that experiment in relation to model yaml"        (string)

@@ -5,7 +5,7 @@
 ``all``
 -------
 * Executes the fre postprocessing steps in order (fre pp configure-yaml, fre pp
-  checkout, fre pp validate, fre pp install, fre pp run, trigger and status)
+  checkout, fre pp install, fre pp run, trigger and status)
 * Minimal syntax: ``fre pp all -e experiment_name -p platform_name -T
   target_name -c config_file [ -b [branch] -t [time] ]``
 * Module(s) needed: n/a
@@ -36,8 +36,9 @@
 ``install``
 -----------
 
-* Installs an experiment configuration into
-  ~/cylc_run/$(experiment)_$(platform)_$(target)
+* Validates the workflow definition with ``cylc validate``, then installs the
+  experiment configuration into ~/cylc_run/$(experiment)_$(platform)_$(target).
+  An invalid workflow is not installed.
 * Minimal Syntax:  ``fre pp install -e experiment_name -p platform_name -t
   target_name``
 * Module(s) needed: n/a

@@ -41,7 +41,6 @@ def combine(yamls, experiment, platform, target, output, no_clean):
         yaml_paths = yamls
     else:
         fre_logger.info("PIPED")
-        # stdout from last tool adds a newline for some reason
         yaml_paths = sys.stdin.read().strip()
 
     combine_yamls_script.yamltools_combine_subtool(yaml_paths, experiment, platform, target, output, no_clean)
